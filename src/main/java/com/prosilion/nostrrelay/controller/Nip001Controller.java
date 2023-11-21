@@ -11,8 +11,8 @@ import org.springframework.web.util.HtmlUtils;
 public class Nip001Controller {
 
 
-	@MessageMapping("/hello")
-	@SendTo("/topic/greetings")
+	@MessageMapping("/nip001")
+	@SendTo("/topic/nip001")
 	public Nip001Response greeting(Nip001Message message) throws Exception {
 		Thread.sleep(1000); // simulated delay
 		return new Nip001Response("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");

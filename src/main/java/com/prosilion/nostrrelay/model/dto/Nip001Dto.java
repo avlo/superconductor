@@ -1,13 +1,13 @@
-package com.prosilion.nostrrelay.event;
+package com.prosilion.nostrrelay.model.dto;
 
-public class Nip001Message {
+public class Nip001Dto {
 
 	private String name;
 
-	public Nip001Message() {
+	public Nip001Dto() {
 	}
 
-	public Nip001Message(String name) {
+	public Nip001Dto(String name) {
 		this.name = name;
 	}
 

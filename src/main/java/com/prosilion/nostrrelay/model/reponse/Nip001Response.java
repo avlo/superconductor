@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay;
+package com.prosilion.nostrrelay.model.reponse;
 
 public class Nip001Response {
 

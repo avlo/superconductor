@@ -9,13 +9,9 @@ import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class Nip001Controller {
-
-
-	@MessageMapping("/nip001")
-	@SendTo("/topic/nip001")
-	public Nip001Response greeting(Nip001Dto message) throws Exception {
-		Thread.sleep(1000); // simulated delay
-		return new Nip001Response("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
-	}
-
+  @MessageMapping("/nip001")
+  @SendTo("/topic/nip001")
+  public Nip001Response publish(Nip001Dto nip001Dto) throws Exception {
+    return new Nip001Response(String.format("Received Nip001 payload: [%s]", HtmlUtils.htmlEscape(nip001Dto.getNip001Field())));
+  }
 }

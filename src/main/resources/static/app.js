@@ -44,7 +44,7 @@ function disconnect() {
 function sendName() {
     stompClient.publish({
         destination: "/app/nip001",
-        body: JSON.stringify({'name': $("#name").val()})
+        body: JSON.stringify({'nip001Field': $("#nip001Field").val()})
     });
 }
 

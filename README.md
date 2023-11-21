@@ -1,0 +1,2 @@
+# nostr-relay
+nostr-relay

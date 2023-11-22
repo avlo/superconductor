@@ -1,6 +1,11 @@
-# Nostr Relay, framework + applicaton
-- simple & clean, built atop Java Spring (Boot 3.1.5) & Spring WebSockets
-- designed and implemented using [SOLID OO](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) principles, valuing efficiency & ease of:
+# Java Nostr-Relay Framework
+- Simple.  Clean.  OO.
+  - Java 17+
+  - Spring WebSockets
+  - Spring Boot
+    
+- core [SOLID OO](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) principles, providing ease of:
+  - understandability
   - extensibility
   - customization
   - testing

@@ -1,6 +1,6 @@
 # Java Nostr-Relay Framework
 - Simple.  Clean.  OO.
-  - Java 17+
+  - Java 20
   - Spring WebSockets
   - Spring Boot
     

@@ -1,12 +1,12 @@
 package com.prosilion.nostrrelay.service;
 
-import com.prosilion.nostrrelay.model.dto.Nip001Dto;
+import com.prosilion.nostrrelay.model.Event;
 import org.springframework.stereotype.Service;
 
 @Service
-public class Nip001Service implements MessageService{
+public class Nip001Service implements EventService {
   @Override
-  public String processMessage(Nip001Dto dto) {
-    return dto.nip001Field();
+  public String processMessage(Event event) {
+    return event.content();
   }
 }

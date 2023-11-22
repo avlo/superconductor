@@ -5,8 +5,8 @@ const stompClient = new StompJs.Client({
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/nip001', (greeting) => {
-        showGreeting(JSON.parse(greeting.body).content);
+    stompClient.subscribe('/topic/topic_001', (event) => {
+        showEvent(JSON.parse(event.body).content);
     });
 };
 
@@ -28,7 +28,7 @@ function setConnected(connected) {
     else {
         $("#conversation").hide();
     }
-    $("#greetings").html("");
+    $("#events").html("");
 }
 
 function connect() {
@@ -41,21 +41,21 @@ function disconnect() {
     console.log("Disconnected");
 }
 
-function sentContent() {
+function sendContent() {
     stompClient.publish({
-        destination: "/app/nip001",
+        destination: "/app/topic_001",
         body: JSON.stringify({'content': $("#content").val()})
     });
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function showEvent(content) {
+    $("#events").append("<tr><td>" + content + "</td></tr>");
 }
 
 $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $( "#connect" ).click(() => connect());
     $( "#disconnect" ).click(() => disconnect());
-    $( "#send" ).click(() => sentContent());
+    $( "#send" ).click(() => sendContent());
 });
 

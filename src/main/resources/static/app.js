@@ -24,8 +24,7 @@ function setConnected(connected) {
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
         $("#conversation").show();
-    }
-    else {
+    } else {
         $("#conversation").hide();
     }
     $("#events").html("");
@@ -41,10 +40,30 @@ function disconnect() {
     console.log("Disconnected");
 }
 
+function createEnum(values) {
+    const enumObject = {};
+    for (const val of values) {
+        enumObject[val] = val;
+    }
+    return Object.freeze(enumObject);
+}
+
+var Tag = createEnum(['E', 'A', 'P']);
+
 function sendContent() {
     stompClient.publish({
         destination: "/app/topic_001",
-        body: JSON.stringify({'content': $("#content").val()})
+        body: JSON.stringify(
+            {
+                'id': "ID123",
+                'pubkey': "PUBKEY456",
+                'created_at': 123456,
+                'kind': 0,
+                'tags': [Tag.P, Tag.E, Tag.A],
+                'sig': "SIG_XXX",
+                'content': $("#content").val()
+            }
+        )
     });
 }
 
@@ -54,8 +73,8 @@ function showEvent(content) {
 
 $(function () {
     $("form").on('submit', (e) => e.preventDefault());
-    $( "#connect" ).click(() => connect());
-    $( "#disconnect" ).click(() => disconnect());
-    $( "#send" ).click(() => sendContent());
+    $("#connect").click(() => connect());
+    $("#disconnect").click(() => disconnect());
+    $("#send").click(() => sendContent());
 });
 

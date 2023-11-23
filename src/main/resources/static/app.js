@@ -50,16 +50,56 @@ function createEnum(values) {
 
 var Tag = createEnum(['E', 'A', 'P']);
 
-function sendContent() {
+async function createDigest(message) {
+    const utf8 = new Uint8Array(message.length);
+    new TextEncoder().encodeInto(message, utf8);
+    const hashBuffer = await window.crypto.subtle.digest("SHA-256", utf8);
+
+    // TODO: possibly make fxntional
+    // return hashBuffer.split("")
+    //     .map(c =>
+    //         c.charCodeAt(0)
+    //             .toString(16)
+    //             .padStart(2, "0"))
+    //     .join("");
+
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+    return hashArray
+        .map(b => b
+            .toString(16)
+            .padStart(2, "0"))
+        .join(""); // convert bytes to hex string
+}
+
+function send() {
+    const concat = [
+        '0',
+        $("#pubkey").val(),
+        $("#created_at").val(),
+        $("#kind").val(),
+        $("#e_tag").val(),
+        $("#content").val()
+    ].join(",");
+
+    const text = [
+        '[',
+        concat,
+        ']'
+    ].join('');
+
+    createDigest(text).then((hash) => sendContent(hash));
+}
+
+function sendContent(id_hash) {
     stompClient.publish({
         destination: "/app/topic_001",
         body: JSON.stringify(
             {
-                'id': "ID123",
-                'pubkey': "PUBKEY456",
-                'created_at': 123456,
-                'kind': 0,
-                'tags': [Tag.P, Tag.E, Tag.A],
+                'id': id_hash,
+                'pubkey': $("#pubkey").val(),
+                'created_at': $("#created_at").val(),
+                'kind': $("#kind").val(),
+                'tags': [$("#e_tag").val(), $("#a_tag").val()],
                 'sig': "SIG_XXX",
                 'content': $("#content").val()
             }
@@ -75,6 +115,6 @@ $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#connect").click(() => connect());
     $("#disconnect").click(() => disconnect());
-    $("#send").click(() => sendContent());
+    $("#send").click(() => send());
 });
 

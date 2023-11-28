@@ -5,7 +5,8 @@ const stompClient = new StompJs.Client({
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/topic_001', (event) => {
+    // stompClient.subscribe('/topic/topic_001', (event) => {
+    stompClient.subscribe('/', (event) => {
         showEvent(JSON.parse(event.body).content);
     });
 };
@@ -92,7 +93,8 @@ function send() {
 
 function sendContent(id_hash) {
     stompClient.publish({
-        destination: "/app/topic_001",
+        // destination: "/app/topic_001",
+        destination: "/",
         body: JSON.stringify(
             {
                 'id': id_hash,

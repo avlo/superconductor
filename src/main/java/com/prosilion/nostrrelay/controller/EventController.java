@@ -16,8 +16,10 @@ public class EventController {
     this.eventService = eventService;
   }
 
-  @MessageMapping("/topic_001")
-  @SendTo("/topic/topic_001")
+//  @MessageMapping("/topic_001")
+//  @SendTo("/topic/topic_001")
+  @MessageMapping("/")
+  @SendTo("/")
   public Response publish(Event event) {
     return new Response(String.format("Received Nip001 payload: [%s]", HtmlUtils.htmlEscape(eventService.processIncoming(event))));
   }

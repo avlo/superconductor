@@ -22,7 +22,7 @@ function disconnect() {
 
 function showGreeting(message) {
     showEvent(message);
-    console.log(message);
+    console.log("console log" + message);
 }
 
 function setConnected(connected) {
@@ -87,7 +87,7 @@ function send() {
 }
 
 function sendContent() {
-    console.log("111111111111111");
+    console.log("sending content...");
     ws.send(JSON.stringify(
         {
             'name': $("#name").val()

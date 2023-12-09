@@ -1,24 +1,29 @@
-const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/custom'
-});
+let ws;
 
-stompClient.onConnect = (frame) => {
+function connect() {
+    ws = new WebSocket('ws://localhost:8080/name');
+    ws.onmessage = function (data) {
+        showGreeting(data.data);
+    }
     setConnected(true);
-    console.log('Connected: ' + frame);
-    // stompClient.subscribe('/topic/topic_001', (event) => {
-    stompClient.subscribe('/', (event) => {
-        showEvent(JSON.parse(event.body).content);
-    });
-};
+}
 
-stompClient.onWebSocketError = (error) => {
-    console.error('Error with websocket', error);
-};
+function disconnect() {
+    if (ws != null) {
+        ws.close();
+    }
+    setConnected(false);
+    console.log("Disconnected");
+}
 
-stompClient.onStompError = (frame) => {
-    console.error('Broker reported error: ' + frame.headers['message']);
-    console.error('Additional details: ' + frame.body);
-};
+// function sendName() {
+//     ws.send($("#name").val());
+// }
+
+function showGreeting(message) {
+    showEvent(message);
+    console.log(message);
+}
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -29,16 +34,6 @@ function setConnected(connected) {
         $("#conversation").hide();
     }
     $("#events").html("");
-}
-
-function connect() {
-    stompClient.activate();
-}
-
-function disconnect() {
-    stompClient.deactivate();
-    setConnected(false);
-    console.log("Disconnected");
 }
 
 function createEnum(values) {
@@ -91,22 +86,29 @@ function send() {
     createDigest(text).then((hash) => sendContent(hash));
 }
 
-function sendContent(id_hash) {
-    stompClient.publish({
-        // destination: "/app/topic_001",
-        destination: "/",
-        body: JSON.stringify(
-            {
-                'id': id_hash,
-                'pubkey': $("#pubkey").val(),
-                'created_at': $("#created_at").val(),
-                'kind': $("#kind").val(),
-                'tags': [$("#e_tag").val(), $("#a_tag").val()],
-                'sig': "SIG_XXX",
-                'content': $("#content").val()
-            }
-        )
-    });
+function sendContent() {
+    console.log("111111111111111");
+    ws.send(JSON.stringify(
+        {
+            'name': $("#name").val()
+        })
+    );
+
+    // stompClient.publish({
+    //     // destination: "/app/topic_001",
+    //     destination: "/",
+    //     body: JSON.stringify(
+    //         {
+    //             'id': id_hash,
+    //             'pubkey': $("#pubkey").val(),
+    //             'created_at': $("#created_at").val(),
+    //             'kind': $("#kind").val(),
+    //             'tags': [$("#e_tag").val(), $("#a_tag").val()],
+    //             'sig': "SIG_XXX",
+    //             'content': $("#content").val()
+    //         }
+    //     )
+    // });
 }
 
 function showEvent(content) {
@@ -117,6 +119,6 @@ $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#connect").click(() => connect());
     $("#disconnect").click(() => disconnect());
-    $("#send").click(() => send());
+    $("#send").click(() => sendContent());
 });
 

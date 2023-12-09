@@ -1,7 +1,7 @@
 let ws;
 
 function connect() {
-    ws = new WebSocket('ws://localhost:8080/name');
+    ws = new WebSocket('ws://localhost:8080');
     ws.onmessage = function (data) {
         showGreeting(data.data);
     }

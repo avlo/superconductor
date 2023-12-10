@@ -5,7 +5,10 @@ import com.prosilion.nostrrelay.service.BaseMessageEncoderWrapper;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.java.Log;
+import nostr.event.BaseEvent;
 import nostr.event.BaseMessage;
+import nostr.event.json.codec.BaseEventEncoder;
+import nostr.event.json.codec.BaseMessageDecoder;
 import nostr.event.message.EventMessage;
 import nostr.id.Identity;
 import org.springframework.stereotype.Component;
@@ -82,7 +85,12 @@ public class NostrEventController {
     chatEndpoints.forEach(endpoint -> {
       synchronized (endpoint) {
         try {
+          log.log(Level.INFO, "33333333333333333333333333333333333333");
+          log.log(Level.INFO, "33333333333333333333333333333333333333");
           endpoint.session.getBasicRemote().sendObject(message);
+          log.log(Level.INFO, new BaseEventEncoder((BaseEvent) ((EventMessage)message).getEvent()).encode());
+          log.log(Level.INFO, "33333333333333333333333333333333333333");
+          log.log(Level.INFO, "33333333333333333333333333333333333333");
         } catch (IOException | EncodeException e) {
           e.printStackTrace();
         }

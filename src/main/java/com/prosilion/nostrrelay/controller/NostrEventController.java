@@ -3,6 +3,7 @@ package com.prosilion.nostrrelay.controller;
 import com.prosilion.nostrrelay.service.BaseMessageDecoderWrapper;
 import com.prosilion.nostrrelay.service.BaseMessageEncoderWrapper;
 import com.prosilion.nostrrelay.service.EventService;
+import com.prosilion.nostrrelay.service.EventServiceImpl;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.java.Log;
@@ -10,6 +11,7 @@ import nostr.event.BaseEvent;
 import nostr.event.BaseMessage;
 import nostr.event.json.codec.BaseEventEncoder;
 import nostr.event.message.EventMessage;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Set;
@@ -21,14 +23,15 @@ import java.util.logging.Level;
     , decoders = BaseMessageDecoderWrapper.class
     , encoders = BaseMessageEncoderWrapper.class
 )
+@Component
 @Log
 public class NostrEventController {
   private Session session;
   private final static Set<NostrEventController> chatEndpoints = new CopyOnWriteArraySet<>();
   private final EventService eventService;
 
-  public NostrEventController(EventService eventService) {
-    this.eventService = eventService;
+  public NostrEventController() {
+    this.eventService = new EventServiceImpl();
   }
 
   @OnOpen

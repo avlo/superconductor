@@ -2,9 +2,7 @@ package com.prosilion.nostrrelay.service;
 
 import nostr.event.BaseMessage;
 import nostr.event.message.EventMessage;
-import org.springframework.stereotype.Service;
 
-@Service
 public class EventServiceImpl implements EventService {
   @Override
   public BaseMessage processIncoming(BaseMessage message) {

@@ -11,7 +11,7 @@ import nostr.event.BaseEvent;
 import nostr.event.BaseMessage;
 import nostr.event.json.codec.BaseEventEncoder;
 import nostr.event.message.EventMessage;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 import java.util.Set;
@@ -23,11 +23,12 @@ import java.util.logging.Level;
     , decoders = BaseMessageDecoderWrapper.class
     , encoders = BaseMessageEncoderWrapper.class
 )
-@Component
+@Controller
 @Log
 public class NostrEventController {
   private Session session;
   private final static Set<NostrEventController> chatEndpoints = new CopyOnWriteArraySet<>();
+
   private final EventService eventService;
 
   public NostrEventController() {
@@ -65,12 +66,8 @@ public class NostrEventController {
     chatEndpoints.forEach(endpoint -> {
       synchronized (endpoint) {
         try {
-          log.log(Level.INFO, "33333333333333333333333333333333333333");
-          log.log(Level.INFO, "33333333333333333333333333333333333333");
           endpoint.session.getBasicRemote().sendObject(message);
           log.log(Level.INFO, new BaseEventEncoder((BaseEvent) ((EventMessage) message).getEvent()).encode());
-          log.log(Level.INFO, "33333333333333333333333333333333333333");
-          log.log(Level.INFO, "33333333333333333333333333333333333333");
         } catch (IOException | EncodeException e) {
           e.printStackTrace();
         }

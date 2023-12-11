@@ -1,8 +1,10 @@
 package com.prosilion.nostrrelay.service;
 
+import lombok.extern.java.Log;
 import nostr.event.BaseMessage;
 import nostr.event.message.EventMessage;
 
+@Log
 public class EventServiceImpl implements EventService {
   @Override
   public BaseMessage processIncoming(BaseMessage message) {

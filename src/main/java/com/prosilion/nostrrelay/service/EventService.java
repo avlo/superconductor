@@ -2,6 +2,6 @@ package com.prosilion.nostrrelay.service;
 
 import nostr.event.BaseMessage;
 
-public interface EventService {
-  BaseMessage processIncoming(BaseMessage message);
+public interface EventService<T extends MessageCauldron> {
+  BaseMessage processIncoming(T message);
 }

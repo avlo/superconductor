@@ -1,9 +1,6 @@
 package com.prosilion.nostrrelay.controller;
 
-import com.prosilion.nostrrelay.service.BaseMessageDecoderWrapper;
-import com.prosilion.nostrrelay.service.BaseMessageEncoderWrapper;
-import com.prosilion.nostrrelay.service.EventService;
-import com.prosilion.nostrrelay.service.EventServiceImpl;
+import com.prosilion.nostrrelay.service.*;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.java.Log;
@@ -33,7 +30,7 @@ public class NostrEventController {
   public NostrEventController() {
     // TODO: replace below ctor w/ autowiring.  currently doesn't work
     //   seemingly due to @ServerEndpoint-related auto-config conflict(s)
-    this.eventService = new EventServiceImpl();
+    this.eventService = new EventServiceImpl(new EventMessageService());
   }
 
   @OnOpen
@@ -44,7 +41,7 @@ public class NostrEventController {
   }
 
   @OnMessage
-  public void onMessage(Session session, BaseMessage message) {
+  public void onMessage(Session session, MessageCauldron<? extends BaseMessage> message) {
     log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{message, session});
     broadcast(eventService.processIncoming(message));
   }

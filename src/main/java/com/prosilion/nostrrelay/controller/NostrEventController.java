@@ -66,6 +66,7 @@ public class NostrEventController {
     chatEndpoints.forEach(endpoint -> {
       synchronized (endpoint) {
         try {
+          log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getCommand());
           endpoint.session.getBasicRemote().sendObject(message);
           log.log(Level.INFO, new BaseEventEncoder((BaseEvent) ((EventMessage) message).getEvent()).encode());
         } catch (IOException | EncodeException e) {

@@ -18,7 +18,7 @@ public class EventServiceImpl implements EventService<EventMessageCauldron> {
   }
 
   @Override
-  public BaseMessage processIncoming(EventMessageCauldron message) {
+  public BaseMessage  processIncoming(EventMessageCauldron message) {
     log.log(Level.INFO, "EventServiceImpl processIncoming: {0}", message.getMessage().getCommand());
     return eventMessageService.getMessage(message.getMessage());
   }

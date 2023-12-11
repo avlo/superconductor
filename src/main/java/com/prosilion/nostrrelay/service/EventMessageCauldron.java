@@ -2,7 +2,7 @@ package com.prosilion.nostrrelay.service;
 
 import nostr.event.message.EventMessage;
 
-public class EventMessageCauldron implements MessageCauldron<EventMessage> {
+public class EventMessageCauldron implements MessageCauldron {
   private final EventMessage eventMessage;
 
   public EventMessageCauldron(EventMessage eventMessage) {

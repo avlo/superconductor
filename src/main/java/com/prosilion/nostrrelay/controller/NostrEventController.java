@@ -1,6 +1,11 @@
 package com.prosilion.nostrrelay.controller;
 
-import com.prosilion.nostrrelay.service.*;
+import com.prosilion.nostrrelay.service.EventMessageService;
+import com.prosilion.nostrrelay.service.EventService;
+import com.prosilion.nostrrelay.service.EventServiceImpl;
+import com.prosilion.nostrrelay.service.MessageCauldron;
+import com.prosilion.nostrrelay.util.BaseMessageDecoderWrapper;
+import com.prosilion.nostrrelay.util.BaseMessageEncoderWrapper;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.java.Log;
@@ -41,7 +46,7 @@ public class NostrEventController {
   }
 
   @OnMessage
-  public void onMessage(Session session, MessageCauldron<? extends BaseMessage> message) {
+  public void onMessage(Session session, MessageCauldron message) {
     log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{message, session});
     broadcast(eventService.processIncoming(message));
   }

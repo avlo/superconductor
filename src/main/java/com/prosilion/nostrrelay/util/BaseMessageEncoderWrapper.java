@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.service;
+package com.prosilion.nostrrelay.util;
 
 import jakarta.websocket.Encoder;
 import nostr.event.BaseMessage;

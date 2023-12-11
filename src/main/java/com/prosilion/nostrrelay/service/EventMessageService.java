@@ -11,7 +11,7 @@ import java.util.logging.Level;
 public class EventMessageService implements MessageService {
   @Override
   public EventMessage getMessage(EventMessage message) {
-    log.log(Level.INFO, "EventServiceImpl instanceof EVENT: {0}", message.getEvent());
+    log.log(Level.INFO, "EventMessageService getMessage: {0}", message.getEvent());
 //          var subId = msg.getSubscriptionId();
     return message;
   }

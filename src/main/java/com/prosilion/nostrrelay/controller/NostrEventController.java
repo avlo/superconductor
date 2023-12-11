@@ -28,10 +28,11 @@ import java.util.logging.Level;
 public class NostrEventController {
   private Session session;
   private final static Set<NostrEventController> chatEndpoints = new CopyOnWriteArraySet<>();
-
   private final EventService eventService;
 
   public NostrEventController() {
+    // TODO: replace below ctor w/ autowiring.  currently doesn't work
+    //   seemingly due to @ServerEndpoint-related auto-config conflict(s)
     this.eventService = new EventServiceImpl();
   }
 

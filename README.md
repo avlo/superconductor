@@ -44,4 +44,4 @@ or full/debug console logging
 
 ## (Optional) thin nostr-web-client for convenience/testing/development
 
-  localhost:8080
+  http://localhost:8080/NIP01.html

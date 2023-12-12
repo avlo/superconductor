@@ -70,6 +70,7 @@ function send() {
         $("#created_at").val(),
         $("#kind").val(),
         $("#e_tag").val(),
+        $("#p_tag").val(),
         $("#content").val()
     ].join(",");
 
@@ -82,29 +83,31 @@ function send() {
     createDigest(text).then((hash) => sendContent(hash));
 }
 
-function sendContent() {
-    console.log("sending content...");
-    ws.send(JSON.stringify(
-        {
-            'content': $("#content").val()
-        })
-    );
+function replaceHash(id_hash) {
+    let jsonstring = "["
+        + "\"EVENT\","
+        +
+        JSON.stringify(
+            {
+                'id': id_hash,
+                'kind': $("#kind").val(),
+                'content': $("#content").val(),
+                'pubkey': $("#pubkey").val(),
+                'created_at': Date.now(),
+                'tags': [['e', $("#e_tag").val()], ['p', $("#p_tag").val()]],
+                'sig': '86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546'
+            }
+        ) +
+        "]";
+    return jsonstring;
+}
 
-    // stompClient.publish({
-    //     // destination: "/app/topic_001",
-    //     destination: "/",
-    //     body: JSON.stringify(
-    //         {
-    //             'id': id_hash,
-    //             'pubkey': $("#pubkey").val(),
-    //             'created_at': $("#created_at").val(),
-    //             'kind': $("#kind").val(),
-    //             'tags': [$("#e_tag").val(), $("#a_tag").val()],
-    //             'sig': "SIG_XXX",
-    //             'content': $("#content").val()
-    //         }
-    //     )
-    // });
+function sendContent(id_hash) {
+    console.log("\nsending content...\n\n");
+    let localjsonstring = replaceHash(id_hash);
+    console.log(localjsonstring);
+    console.log('\n\n');
+    ws.send(localjsonstring);
 }
 
 function showEvent(content) {
@@ -115,6 +118,6 @@ $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#connect").click(() => connect());
     $("#disconnect").click(() => disconnect());
-    $("#send").click(() => sendContent());
+    $("#send").click(() => send());
 });
 

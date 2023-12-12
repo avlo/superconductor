@@ -1,6 +1,6 @@
 package com.prosilion.nostrrelay.controller;
 
-import com.prosilion.nostrrelay.service.MessageCauldron;
+import com.prosilion.nostrrelay.service.MessageGeneric;
 import com.prosilion.nostrrelay.util.BaseMessageDecoderWrapper;
 import com.prosilion.nostrrelay.util.BaseMessageEncoderWrapper;
 import jakarta.websocket.*;
@@ -32,9 +32,9 @@ public class NostrEventController {
   }
 
   @OnMessage
-  public void onMessage(Session session, MessageCauldron cauldron) {
-    log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{cauldron, session});
-    broadcast(cauldron.processIncoming());
+  public void onMessage(Session session, MessageGeneric messageGeneric) {
+    log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageGeneric, session});
+    broadcast(messageGeneric.processIncoming());
   }
 
   @OnClose

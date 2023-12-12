@@ -3,11 +3,11 @@ package com.prosilion.nostrrelay.service;
 import nostr.event.BaseMessage;
 import nostr.event.message.EventMessage;
 
-public class EventMessageCauldron implements MessageCauldron {
+public class EventMessageGeneric implements MessageGeneric {
   private final EventMessage eventMessage;
   private final EventService eventService;
 
-  public EventMessageCauldron(EventMessage eventMessage) {
+  public EventMessageGeneric(EventMessage eventMessage) {
     this.eventMessage = eventMessage;
     this.eventService = new EventServiceImpl(new EventMessageServiceImpl());
   }

@@ -6,7 +6,7 @@ import nostr.event.BaseMessage;
 import java.util.logging.Level;
 
 @Log
-public class EventServiceImpl implements EventService<EventMessageCauldron> {
+public class EventServiceImpl implements EventService<EventMessageGeneric> {
   final MessageService eventMessageService;
 
   public EventServiceImpl(EventMessageServiceImpl eventMessageService) {
@@ -14,8 +14,8 @@ public class EventServiceImpl implements EventService<EventMessageCauldron> {
   }
 
   @Override
-  public BaseMessage processIncoming(EventMessageCauldron message) {
-    log.log(Level.INFO, "EventServiceImpl processIncoming: {0}", message.getMessage().getCommand());
-    return eventMessageService.getMessage(message.getMessage());
+  public BaseMessage processIncoming(EventMessageGeneric eventMessageGeneric) {
+    log.log(Level.INFO, "EventServiceImpl processIncoming: {0}", eventMessageGeneric.getMessage().getCommand());
+    return eventMessageService.getMessage(eventMessageGeneric.getMessage());
   }
 }

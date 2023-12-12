@@ -4,4 +4,5 @@ import nostr.event.BaseMessage;
 
 public interface MessageCauldron<T extends BaseMessage> {
   T getMessage();
+  BaseMessage processIncoming();
 }

@@ -2,23 +2,19 @@ package com.prosilion.nostrrelay.service;
 
 import lombok.extern.java.Log;
 import nostr.event.BaseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.logging.Level;
 
 @Log
-@Service
 public class EventServiceImpl implements EventService<EventMessageCauldron> {
-  final EventMessageService eventMessageService;
+  final MessageService eventMessageService;
 
-  @Autowired
-  public EventServiceImpl(EventMessageService eventMessageService) {
+  public EventServiceImpl(EventMessageServiceImpl eventMessageService) {
     this.eventMessageService = eventMessageService;
   }
 
   @Override
-  public BaseMessage  processIncoming(EventMessageCauldron message) {
+  public BaseMessage processIncoming(EventMessageCauldron message) {
     log.log(Level.INFO, "EventServiceImpl processIncoming: {0}", message.getMessage().getCommand());
     return eventMessageService.getMessage(message.getMessage());
   }

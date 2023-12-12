@@ -1,8 +1,5 @@
 package com.prosilion.nostrrelay.controller;
 
-import com.prosilion.nostrrelay.service.EventMessageService;
-import com.prosilion.nostrrelay.service.EventService;
-import com.prosilion.nostrrelay.service.EventServiceImpl;
 import com.prosilion.nostrrelay.service.MessageCauldron;
 import com.prosilion.nostrrelay.util.BaseMessageDecoderWrapper;
 import com.prosilion.nostrrelay.util.BaseMessageEncoderWrapper;
@@ -16,8 +13,6 @@ import nostr.event.message.EventMessage;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 
 @ServerEndpoint(
@@ -29,26 +24,17 @@ import java.util.logging.Level;
 @Log
 public class NostrEventController {
   private Session session;
-  private final static Set<NostrEventController> chatEndpoints = new CopyOnWriteArraySet<>();
-  private final EventService eventService;
-
-  public NostrEventController() {
-    // TODO: replace below ctor w/ autowiring.  currently doesn't work
-    //   seemingly due to @ServerEndpoint-related auto-config conflict(s)
-    this.eventService = new EventServiceImpl(new EventMessageService());
-  }
 
   @OnOpen
   public void onOpen(Session session) {
     log.log(Level.INFO, "NostrEventController @OnOpen from session: {0}", new Object[]{session});
     this.session = session;
-    chatEndpoints.add(this);
   }
 
   @OnMessage
-  public void onMessage(Session session, MessageCauldron message) {
-    log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{message, session});
-    broadcast(eventService.processIncoming(message));
+  public void onMessage(Session session, MessageCauldron cauldron) {
+    log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{cauldron, session});
+    broadcast(cauldron.processIncoming());
   }
 
   @OnClose
@@ -65,17 +51,13 @@ public class NostrEventController {
     // Do error handling here
   }
 
-  private static void broadcast(BaseMessage message) {
-    chatEndpoints.forEach(endpoint -> {
-      synchronized (endpoint) {
-        try {
-          log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getCommand());
-          endpoint.session.getBasicRemote().sendObject(message);
-          log.log(Level.INFO, new BaseEventEncoder((BaseEvent) ((EventMessage) message).getEvent()).encode());
-        } catch (IOException | EncodeException e) {
-          e.printStackTrace();
-        }
-      }
-    });
+  private void broadcast(BaseMessage message) {
+    try {
+      log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getCommand());
+      session.getBasicRemote().sendObject(message);
+      log.log(Level.INFO, new BaseEventEncoder((BaseEvent) ((EventMessage) message).getEvent()).encode());
+    } catch (IOException | EncodeException e) {
+      e.printStackTrace();
+    }
   }
 }

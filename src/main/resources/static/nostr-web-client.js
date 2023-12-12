@@ -1,7 +1,6 @@
-let ws;
+let ws = new WebSocket('ws://localhost:8080');
 
 function connect() {
-    ws = new WebSocket('ws://localhost:8080');
     ws.onmessage = function (data) {
         showGreeting(data.data);
     }
@@ -32,15 +31,15 @@ function setConnected(connected) {
     $("#events").html("");
 }
 
-function createEnum(values) {
-    const enumObject = {};
-    for (const val of values) {
-        enumObject[val] = val;
-    }
-    return Object.freeze(enumObject);
-}
-
-var Tag = createEnum(['E', 'A', 'P']);
+// function createEnum(values) {
+//     const enumObject = {};
+//     for (const val of values) {
+//         enumObject[val] = val;
+//     }
+//     return Object.freeze(enumObject);
+// }
+//
+// var Tag = createEnum(['E', 'A', 'P']);
 
 async function createDigest(message) {
     const utf8 = new Uint8Array(message.length);
@@ -84,10 +83,9 @@ function send() {
 }
 
 function replaceHash(id_hash) {
-    let jsonstring = "["
+    return "["
         + "\"EVENT\","
-        +
-        JSON.stringify(
+        + JSON.stringify(
             {
                 'id': id_hash,
                 'kind': $("#kind").val(),
@@ -97,9 +95,8 @@ function replaceHash(id_hash) {
                 'tags': [['e', $("#e_tag").val()], ['p', $("#p_tag").val()]],
                 'sig': '86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546'
             }
-        ) +
-        "]";
-    return jsonstring;
+        )
+        + "]";
 }
 
 function sendContent(id_hash) {
@@ -111,7 +108,8 @@ function sendContent(id_hash) {
 }
 
 function showEvent(content) {
-    $("#events").append("<tr><td>" + content + "</td></tr>");
+    let jsonPretty = JSON.stringify(JSON.parse(content),null,2);
+    $("#events").append("<tr><td><pre>" + syntaxHighlight(jsonPretty) + "</pre></td></tr>");
 }
 
 $(function () {
@@ -121,3 +119,21 @@ $(function () {
     $("#send").click(() => send());
 });
 
+function syntaxHighlight(json) {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}

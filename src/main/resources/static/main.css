@@ -12,3 +12,10 @@ body {
     -moz-border-radius: 5px;
     border-radius: 5px;
 }
+
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; white-space:pre-wrap; font-size: 12px}
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }

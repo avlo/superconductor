@@ -1,7 +1,7 @@
 package com.prosilion.nostrrelay.service;
 
-import nostr.event.BaseMessage;
+import nostr.base.IEvent;
 
-public interface EventService<T extends MessageGeneric> {
-  BaseMessage processIncoming(T message);
+public interface EventService<T extends EventMessageService> {
+  IEvent processIncoming();
 }

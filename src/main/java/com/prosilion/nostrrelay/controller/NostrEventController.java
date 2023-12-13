@@ -1,8 +1,8 @@
 package com.prosilion.nostrrelay.controller;
 
-import com.prosilion.nostrrelay.service.MessageGeneric;
-import com.prosilion.nostrrelay.util.BaseMessageDecoderWrapper;
-import com.prosilion.nostrrelay.util.BaseMessageEncoderWrapper;
+import com.prosilion.nostrrelay.service.MessageService;
+import com.prosilion.nostrrelay.util.DecodedMessageMarshaller;
+import com.prosilion.nostrrelay.util.MessageEncoder;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.java.Log;
@@ -17,8 +17,8 @@ import java.util.logging.Level;
 
 @ServerEndpoint(
     value = "/"
-    , decoders = BaseMessageDecoderWrapper.class
-    , encoders = BaseMessageEncoderWrapper.class
+    , decoders = DecodedMessageMarshaller.class
+    , encoders = MessageEncoder.class
 )
 @Controller
 @Log
@@ -32,9 +32,9 @@ public class NostrEventController {
   }
 
   @OnMessage
-  public void onMessage(Session session, MessageGeneric messageGeneric) {
-    log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageGeneric, session});
-    broadcast(messageGeneric.processIncoming());
+  public void onMessage(Session session, MessageService messageService) {
+    log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageService, session});
+    broadcast(messageService.processIncoming());
   }
 
   @OnClose

@@ -1,21 +1,24 @@
 package com.prosilion.nostrrelay.service;
 
 import lombok.extern.java.Log;
-import nostr.event.BaseMessage;
+import nostr.api.factory.impl.NIP01;
+import nostr.base.IEvent;
+import nostr.event.message.EventMessage;
 
 import java.util.logging.Level;
 
 @Log
-public class EventServiceImpl implements EventService<EventMessageGeneric> {
-  final MessageService eventMessageService;
+public class EventServiceImpl<T extends MessageService> implements EventService {
 
-  public EventServiceImpl(EventMessageServiceImpl eventMessageService) {
-    this.eventMessageService = eventMessageService;
+  private final IEvent event;
+
+  public EventServiceImpl(EventMessage eventMessage) {
+    this.event = eventMessage.getEvent();
+    log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
+    log.log(Level.INFO, "EVENT message JSON: {0}", event.toString());
   }
 
-  @Override
-  public BaseMessage processIncoming(EventMessageGeneric eventMessageGeneric) {
-    log.log(Level.INFO, "EventServiceImpl processIncoming: {0}", eventMessageGeneric.getMessage().getCommand());
-    return eventMessageService.getMessage(eventMessageGeneric.getMessage());
+  public IEvent processIncoming() {
+    return new NIP01.TextNoteEventFactory("SERVER PROCESSED").create();
   }
 }

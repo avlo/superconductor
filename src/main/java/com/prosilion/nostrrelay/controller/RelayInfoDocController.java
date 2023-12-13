@@ -11,7 +11,7 @@ import java.util.logging.Level;
 @Log
 @RestController
 @RequestMapping("/")
-public class RelayInformationDocumentController {
+public class RelayInfoDocController {
   private static final String SAMPLE = "{\n" +
       "  \"description\": \"localhost description\",\n" +
       "  \"name\": \"localhost name\",\n" +

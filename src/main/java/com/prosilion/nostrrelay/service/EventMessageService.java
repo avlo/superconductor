@@ -14,7 +14,8 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
 
   public EventMessageService(T eventMessage) {
     log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
-    log.log(Level.INFO, "EVENT sub id: {0}", eventMessage.getSubscriptionId());
+    // TOOD: update subscription logic
+    eventMessage.setSubscriptionId("SUB ID");
     log.log(Level.INFO, "EVENT message type: {0}", eventMessage.getEvent());
     this.eventMessage = eventMessage;
     this.eventService = new EventServiceImpl(eventMessage);

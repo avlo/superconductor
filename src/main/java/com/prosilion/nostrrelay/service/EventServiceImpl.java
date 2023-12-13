@@ -8,7 +8,7 @@ import nostr.event.message.EventMessage;
 import java.util.logging.Level;
 
 @Log
-public class EventServiceImpl<T extends MessageService> implements EventService {
+public class EventServiceImpl<T extends EventMessageService<EventMessage>> implements EventService<T> {
 
   private final IEvent event;
 

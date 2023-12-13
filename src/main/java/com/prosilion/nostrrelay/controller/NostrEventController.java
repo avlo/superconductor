@@ -32,7 +32,7 @@ public class NostrEventController {
   }
 
   @OnMessage
-  public void onMessage(Session session, MessageService messageService) {
+  public void onMessage(Session session, MessageService<BaseMessage> messageService) {
     log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageService, session});
     broadcast(messageService.processIncoming());
   }
@@ -57,7 +57,7 @@ public class NostrEventController {
       session.getBasicRemote().sendObject(message);
       log.log(Level.INFO, new BaseEventEncoder((BaseEvent) ((EventMessage) message).getEvent()).encode());
     } catch (IOException | EncodeException e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage());
     }
   }
 }

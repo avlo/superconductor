@@ -6,7 +6,7 @@ import nostr.event.message.CloseMessage;
 import java.util.logging.Level;
 
 @Log
-public class CloseMessageService implements MessageService {
+public class CloseMessageService<T extends CloseMessage> implements MessageService<CloseMessage> {
   private final CloseMessage closeMessage;
 
   public CloseMessageService(CloseMessage closeMessage) {

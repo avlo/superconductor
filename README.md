@@ -3,12 +3,17 @@
   - Java 20
   - Spring WebSockets
   - Spring Boot
+  - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) library by tcheeric
     
 - core [SOLID OO](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) principles, providing ease of:
   - understandability
   - extensibility
   - customization
   - testing
+
+## Supported NIPS (and more underway)
+  - NIP01
+  - Relay Information Document
 
 ## Requirements
 
@@ -31,12 +36,12 @@
     
 or full/debug console logging
 
-    $ mvn spring-boot:run -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE 
+    $ mvn spring-boot:run -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE
 
-relay will be available after the following console/log MessageBroker message (usually < 30 seconds to appear):
+## Relay Endpoint
 
->    INFO 119355 --- [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[3 current WS(3)-HttpStream(0)-HttpPoll(0), 3 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(3)-CONNECTED(3)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 8, active threads = 0, queued tasks = 0, completed tasks = 18], outboundChannel[pool size = 3, active threads = 0, queued tasks = 0, completed tasks = 3], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+  ws://localhost:8080
 
-## Connect web-browser (simple client) to relay
+## (Optional) thin nostr-web-client for convenience/testing/development
 
-    localhost:8080
+  http://localhost:8080/NIP01.html

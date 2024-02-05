@@ -2,7 +2,7 @@
 - Simple.  Clean.  OO.
   - Java 20
   - Spring WebSockets
-  - Spring Boot
+  - Spring Boot 3.x
   - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) library by tcheeric
     
 - core [SOLID OO](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) principles, providing ease of:
@@ -11,9 +11,17 @@
   - customization
   - testing
 
-## Supported NIPS (and more underway)
-  - NIP01
-  - Relay Information Document
+## NIPS
+  #### Supported
+  - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol)
+
+  #### In-Progress
+  - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
+  - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
+  - [NIP-75](https://nostr-nips.com/nip-75) (Zap Goals / Lightning Network Payments)
+
+  #### Additional Candidates
+  - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
 
 ## Requirements
 
@@ -30,12 +38,30 @@
 >     Default locale: en_US, platform encoding: UTF-8
 >     OS name: "linux", version: "5.15.0-72-generic", arch: "amd64", family: "unix"
 
-## Build and run project
+## Build and install nostr-java library
 
+    $ cd <your_git_home_dir>
+    $ git clone git@github.com:tcheeric/nostr-java.git
+    $ cd nostr-java
+    $ mvn clean install
+
+then [setup requisite nostr-java properties files](https://github.com/tcheeric/nostr-client/?tab=readme-ov-file#setup)
+
+## Build and install nostr-relay server
+
+    $ cd <your_git_home_dir>
+    $ git clone https://github.com/avlo/nostr-relay
+    $ cd nostr-relay
+    $ mvn clean install
+
+## Run nostr-relay server
+
+    $ cd <your_git_home_dir>/nostr-relay
     $ mvn spring-boot:run
     
 or full/debug console logging
 
+    $ cd <your_git_home_dir>/nostr-relay
     $ mvn spring-boot:run -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE
 
 ## Relay Endpoint

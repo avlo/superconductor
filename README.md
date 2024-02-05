@@ -2,7 +2,7 @@
 - Simple.  Clean.  OO.
   - Java 20
   - Spring WebSockets
-  - Spring Boot
+  - Spring Boot 3.x
   - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) library by tcheeric
     
 - core [SOLID OO](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) principles, providing ease of:
@@ -11,9 +11,17 @@
   - customization
   - testing
 
-## Supported NIPS (and more underway)
-  - NIP01
-  - Relay Information Document
+## NIPS
+  #### Supported
+  - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol)
+
+  #### In-Progress
+  - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
+  - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
+  - [NIP-75](https://nostr-nips.com/nip-75) (Zap Goals / Lightning Network Payments)
+
+  #### Additional Candidates
+  - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
 
 ## Requirements
 

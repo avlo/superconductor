@@ -7,13 +7,18 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
 import nostr.event.Kind;
 import nostr.event.message.EventMessage;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Level;
 
 @Log
 @UtilityClass
 public class EventServiceFactory {
-  public static EventService<EventMessage> createEventService(Kind kind, EventMessage eventMessage) {
+
+//  TODO: below suggested by IDE, no idea what it does but might be useful.  revisit
+//  @Contract("_, _ -> new")
+  public static @NotNull EventService<EventMessage> createEventService(@NotNull Kind kind, EventMessage eventMessage) {
     switch (kind) {
       case SET_METADATA -> {
         log.log(Level.INFO, "SET_METADATA KIND decoded should match SET_METADATA -> [{0}]", kind.getName());

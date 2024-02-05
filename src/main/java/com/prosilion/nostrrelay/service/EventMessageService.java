@@ -6,6 +6,7 @@ import nostr.api.NIP01;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Level;
 
@@ -15,7 +16,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
   private final EventService<EventMessage> eventService;
   private final T eventMessage;
 
-  public EventMessageService(T eventMessage) {
+  public EventMessageService(@NotNull T eventMessage) {
     log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
     // TOOD: update subscription logic
     eventMessage.setSubscriptionId("SUB ID");

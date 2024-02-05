@@ -38,12 +38,30 @@
 >     Default locale: en_US, platform encoding: UTF-8
 >     OS name: "linux", version: "5.15.0-72-generic", arch: "amd64", family: "unix"
 
-## Build and run project
+## Build and install nostr-java library
 
+    $ cd <your_git_home_dir>
+    $ git clone git@github.com:tcheeric/nostr-java.git
+    $ cd nostr-java
+    $ mvn clean install
+
+then [setup requisite nostr-java properties files](https://github.com/tcheeric/nostr-client/?tab=readme-ov-file#setup)
+
+## Build and install nostr-relay server
+
+    $ cd <your_git_home_dir>
+    $ git clone https://github.com/avlo/nostr-relay
+    $ cd nostr-relay
+    $ mvn clean install
+
+## Run nostr-relay server
+
+    $ cd <your_git_home_dir>/nostr-relay
     $ mvn spring-boot:run
     
 or full/debug console logging
 
+    $ cd <your_git_home_dir>/nostr-relay
     $ mvn spring-boot:run -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE
 
 ## Relay Endpoint

@@ -14,14 +14,12 @@
 ## NIPS
   #### Supported
   - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol)
+  - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
 
   #### In-Progress
   - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
   - [NIP-75](https://nostr-nips.com/nip-75) (Zap Goals / Lightning Network Payments)
-
-  #### Additional Candidates
-  - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
 
 ## Requirements
 
@@ -64,10 +62,10 @@ or full/debug console logging
     $ cd <your_git_home_dir>/nostr-relay
     $ mvn spring-boot:run -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE
 
-## Relay Endpoint
+## Relay Endpoint for clients
 
   ws://localhost:8080
 
-## (Optional) thin nostr-web-client for convenience/testing/development
+##### (Optional) bundled web-client URL for convenience/dev-testing/etc
 
   http://localhost:8080/NIP01.html

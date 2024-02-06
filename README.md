@@ -1,4 +1,4 @@
-# Java Nostr-Relay Framework
+# Java Nostr-Relay Framework & Web Application
 - Simple.  Clean.  OO.
   - Java 20
   - Spring WebSockets

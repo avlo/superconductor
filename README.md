@@ -17,9 +17,12 @@
   - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
 
   #### In-Progress
+  - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
+    - [ScdMatrix](https://github.com/avlo/scdecisionmatrix) server implementation
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
+    - [ScdMatrix](https://github.com/avlo/scdecisionmatrix) client implementation
   - [NIP-75](https://nostr-nips.com/nip-75) (Zap Goals / Lightning Network Payments)
-  - ~~[NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)~~ (currently removed from consideration since requisite functionality is available via NIP-99, above)
+  
 
 ## Requirements
 

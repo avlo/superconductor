@@ -25,16 +25,20 @@ import java.util.logging.Level;
 @Log
 public class NostrEventController {
   private Session session;
+
   @OnMessage
   public void onMessage(Session session, @NotNull MessageService<BaseMessage> messageService) {
     log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageService, session});
     broadcast(messageService.processIncoming());
   }
+
   private void broadcast(@NotNull BaseMessage message) {
     try {
       log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getCommand());
       session.getBasicRemote().sendObject(message);
-      log.log(Level.INFO, new BaseEventEncoder((BaseEvent) ((EventMessage) message).getEvent()).encode());
+      EventMessage baseEvent = (EventMessage) message;
+      BaseEvent event = (BaseEvent) baseEvent.getEvent();
+      log.log(Level.INFO, new BaseEventEncoder(event).encode());
     } catch (IOException | EncodeException e) {
       log.log(Level.SEVERE, e.getMessage());
     }
@@ -45,6 +49,7 @@ public class NostrEventController {
     log.log(Level.INFO, "NostrEventController @OnOpen from session: {0}", new Object[]{session});
     this.session = session;
   }
+
   @OnClose
   public void onClose(Session session) {
 //    chatEndpoints.remove(this);
@@ -53,6 +58,7 @@ public class NostrEventController {
 //    message.setContent("Disconnected!");
 //    broadcast(message);
   }
+
   @OnError
   public void onError(Session session, Throwable throwable) {
     // Do error handling here

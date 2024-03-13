@@ -3,7 +3,6 @@ package com.prosilion.nostrrelay.service;
 import com.prosilion.nostrrelay.config.EventServiceFactory;
 import lombok.extern.java.Log;
 import nostr.api.NIP01;
-import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
     var kind = ((GenericEvent) eventMessage.getEvent()).getKind();
     log.log(Level.INFO, "EVENT message type: {0}", eventMessage.getEvent());
     this.eventMessage = eventMessage;
-    eventService = EventServiceFactory.createEventService(Kind.valueOf(kind), eventMessage);
+    eventService = EventServiceFactory.createEventService(kind, eventMessage);
   }
 
   @Override

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href="/main.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="/nostr-web-client.js"></script>
+    <script src="/nip99.js"></script>
 </head>
 <body>
 <noscript><h2 style="color: #ff0000">Enable Javascript to view this page</h2></noscript>
@@ -25,13 +25,35 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="content">Send message: </label>
-                    <input type="text" id="content" class="form-control" placeholder="message...">
+                    <label for="title">Listing Title: </label>
+                    <input type="text" id="title" class="form-control" placeholder="listing title...">    <!-- DONE -->
                 </div>
-                <input type="hidden" id="pubkey" name="pubkey" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
-                <input type="hidden" id="kind" name="kind" value=30402>
-                <input type="hidden" id="e_tag" name="e_tag" value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">
-                <input type="hidden" id="p_tag" name="p_tag" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
+                <div class="form-group">
+                    <label for="summary">Summary: </label>
+                    <input type="text" id="summary" class="form-control" placeholder="summary...">    <!-- DONE -->
+                </div>
+                <div class="form-group">
+                    <label for="content">Long Form Content in Markdown </label>
+                    <input type="text" id="content" class="form-control" placeholder="content in markdown...">    <!-- DONE -->
+                </div>
+<!--                    obtain below via javascirpt -->
+<!--                <input type="hidden" id="published_at" name="published_at" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">-->
+                <input type="hidden" id="location" name="location" value="peroulades">    <!-- DONE -->
+                <input type="hidden" id="t" name="t" value="#my_category">    <!-- DONE -->
+                <input type="hidden" id="price" name="price" value=666.66>    <!-- DONE -->
+                <input type="hidden" id="currency" name="currency" value="BTC">   <!-- DONE -->
+                <input type="hidden" id="pubkey" name="pubkey" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">  <!-- DONE -->
+                <input type="hidden" id="kind" name="kind" value=30402>   <!-- DONE -->
+
+<!--                ADD created_at -->
+<!--                ADD id -->
+
+<!--                    optional: below refers to another event-->
+<!--                <input type="hidden" id="e" name="e" value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">-->
+<!--                    optional: below refers to another replaceable event-->
+<!--                <input type="hidden" id="a" name="a" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">-->
+<!--                    optional: below refers to another user -->
+<!--                <input type="hidden" id="p" name="p" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">-->
                 <button id="send" class="btn btn-default" type="submit">Send</button>
             </form>
         </div>

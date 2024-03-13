@@ -108,6 +108,11 @@ function sendContent(id_hash) {
 }
 
 function showEvent(content) {
+    console.log("11111111111111111111111111")
+    console.log("11111111111111111111111111")
+    console.log(content)
+    console.log("11111111111111111111111111")
+    console.log("11111111111111111111111111")
     let jsonPretty = JSON.stringify(JSON.parse(content),null,2);
     $("#events").append("<tr><td><pre>" + syntaxHighlight(jsonPretty) + "</pre></td></tr>");
 }

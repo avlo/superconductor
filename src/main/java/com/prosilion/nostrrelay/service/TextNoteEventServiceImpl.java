@@ -1,9 +1,11 @@
 package com.prosilion.nostrrelay.service;
 
 import lombok.extern.java.Log;
-import nostr.api.factory.impl.NIP01;
+//import nostr.api.factory.api.NIP01;
+import nostr.api.NIP01;
 import nostr.base.IEvent;
 import nostr.event.BaseTag;
+import nostr.event.NIP01Event;
 import nostr.event.message.EventMessage;
 import nostr.event.tag.EventTag;
 import nostr.id.Identity;
@@ -20,9 +22,8 @@ public class TextNoteEventServiceImpl extends EventServiceImpl<EventMessage> {
   @Override
   public IEvent processIncoming() {
     log.log(Level.INFO, "processing incoming TEXT_NOTE_EVENT: [{0}]", getEventMessage());
-    Identity sender = Identity.getInstance();
     List<BaseTag> tags = List.of(new EventTag(getEventMessage().getEvent().getId()));
     var originalContent = getEventMessage().toString();
-    return new NIP01.TextNoteEventFactory(sender, tags, originalContent).create();
+    return new NIP01<>(Identity.getInstance()).createTextNoteEvent(tags, originalContent).getEvent();
   }
 }

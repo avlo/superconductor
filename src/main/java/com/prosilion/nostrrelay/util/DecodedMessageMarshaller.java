@@ -13,9 +13,9 @@ import nostr.event.message.EventMessage;
 import java.util.logging.Level;
 
 @Log
-public class DecodedMessageMarshaller implements Decoder.Text<MessageService<BaseMessage>> {
+public class DecodedMessageMarshaller<T extends BaseMessage> implements Decoder.Text<MessageService<T>> {
   @Override
-  public MessageService<BaseMessage> decode(String s) {
+  public MessageService<T> decode(String s) {
     log.log(Level.INFO, "attempting to decode string: {0}", s);
     BaseMessage message = new BaseMessageDecoder(s).decode();
     switch (message.getCommand()) {

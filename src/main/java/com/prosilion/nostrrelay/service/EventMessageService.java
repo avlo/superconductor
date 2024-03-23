@@ -1,6 +1,5 @@
 package com.prosilion.nostrrelay.service;
 
-import com.prosilion.nostrrelay.config.EventServiceFactory;
 import lombok.extern.java.Log;
 import nostr.api.NIP01;
 import nostr.event.Kind;
@@ -12,8 +11,7 @@ import java.util.logging.Level;
 
 @Log
 public class EventMessageService<T extends EventMessage> implements MessageService<EventMessage> {
-
-  private final EventService<EventMessage> eventService;
+  private final EventService<T> eventService;
   private final T eventMessage;
 
   public EventMessageService(@NotNull T eventMessage) {
@@ -23,11 +21,30 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
     var kind = ((GenericEvent) eventMessage.getEvent()).getKind();
     log.log(Level.INFO, "EVENT message type: {0}", eventMessage.getEvent());
     this.eventMessage = eventMessage;
-    eventService = EventServiceFactory.createEventService(Kind.valueOf(kind), eventMessage);
+    eventService = createEventService(Kind.valueOf(kind), eventMessage);
   }
 
   @Override
   public EventMessage processIncoming() {
     return NIP01.createEventMessage(eventService.processIncoming(), eventMessage.getSubscriptionId());
+  }
+
+  private @NotNull EventService<T> createEventService(@NotNull Kind kind, T eventMessage) {
+    switch (kind) {
+      case SET_METADATA -> {
+        log.log(Level.INFO, "SET_METADATA KIND decoded should match SET_METADATA -> [{0}]", kind.getName());
+        return new EventServiceImpl<>(eventMessage);
+      }
+      case TEXT_NOTE -> {
+        log.log(Level.INFO, "TEXT_NOTE KIND decoded should match TEXT_NOTE -> [{0}]", kind.getName());
+        return new TextNoteEventServiceImpl<>(eventMessage);
+      }
+      case CLASSIFIED_LISTING -> {
+        log.log(Level.INFO, "CLASSIFIED_LISTING KIND decoded should match CLASSIFIED_LISTING -> [{0}]", kind.getName());
+        return new ClassifiedEventServiceImpl<>(eventMessage);
+      }
+
+      default -> throw new AssertionError("Unknown kind: " + kind.getName());
+    }
   }
 }

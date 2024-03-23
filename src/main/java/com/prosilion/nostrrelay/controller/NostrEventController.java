@@ -23,16 +23,16 @@ import java.util.logging.Level;
 )
 @Controller
 @Log
-public class NostrEventController {
+public class NostrEventController<T extends BaseMessage> {
   private Session session;
 
   @OnMessage
-  public void onMessage(Session session, @NotNull MessageService<BaseMessage> messageService) {
+  public void onMessage(Session session, @NotNull MessageService<T> messageService) {
     log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageService, session});
     broadcast(messageService.processIncoming());
   }
 
-  private void broadcast(@NotNull BaseMessage message) {
+  private void broadcast(@NotNull T message) {
     try {
       log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getCommand());
       session.getBasicRemote().sendObject(message);

@@ -68,8 +68,6 @@ function send() {
         $("#pubkey").val(),
         $("#created_at").val(),
         $("#kind").val(),
-        // $("#e_tag").val(),
-        // $("#p_tag").val(),
         $("#title").val(),
         $("#summary").val(),
         $("#content").val(),
@@ -95,16 +93,16 @@ function replaceHash(id_hash) {
             {
                 'id': id_hash,
                 'kind': $("#kind").val(),
-                'title': $("#title").val(),
-                'summary': $("#summary").val(),
                 'content': $("#content").val(),
-                'location': $("#location").val(),
-                't': $("#t").val(),
-                'price': $("#price").val(),
-                'currency': $("#currency").val(),
+                'tags': [
+                    ['title', $("#title").val()],
+                    ['summary', $("#summary").val()],
+                    ['location', $("#location").val()],
+                    ['price', $("#price").val()],
+                    ['currency', $("#currency").val()]
+                ],
                 'pubkey': $("#pubkey").val(),
                 'created_at': Date.now(),
-                // 'tags': [['e', $("#e_tag").val()], ['p', $("#p_tag").val()]],
                 'sig': '86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546'
             }
         )

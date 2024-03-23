@@ -17,6 +17,7 @@
 
     <properties>
         <spring-boot.version>3.2.2</spring-boot.version>
+        <nostr-java.version>0.4-SNAPSHOT</nostr-java.version>
         <starter.version>0.0.1-SNAPSHOT</starter.version>
     </properties>
 
@@ -56,17 +57,17 @@
         <dependency>
             <groupId>nostr-java</groupId>
             <artifactId>nostr-java-api</artifactId>
-            <version>0.3.1</version>
+            <version>${nostr-java.version}</version>
         </dependency>
         <dependency>
             <groupId>nostr-java</groupId>
             <artifactId>nostr-java-ws-handler-interface</artifactId>
-            <version>0.3.1</version>
+            <version>${nostr-java.version}</version>
         </dependency>
         <dependency>
             <groupId>nostr-java</groupId>
             <artifactId>nostr-java-id</artifactId>
-            <version>0.3.1</version>
+            <version>${nostr-java.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

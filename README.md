@@ -68,6 +68,8 @@ or full/debug console logging
 
   ws://localhost:8080
 
-##### (Optional) bundled web-client URL for convenience/dev-testing/etc
+##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 
   http://localhost:8080/NIP01.html
+
+  http://localhost:8080/NIP99.html

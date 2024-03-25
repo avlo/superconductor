@@ -7,7 +7,7 @@
     <artifactId>nostr-relay</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>nostr-relay</name>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -18,7 +18,6 @@
     <properties>
         <spring-boot.version>3.2.2</spring-boot.version>
         <nostr-java.version>0.4-SNAPSHOT</nostr-java.version>
-        <starter.version>0.0.1-SNAPSHOT</starter.version>
     </properties>
 
     <dependencies>

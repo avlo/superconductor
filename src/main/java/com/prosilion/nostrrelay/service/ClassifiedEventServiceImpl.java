@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 @Log
-public class ClassifiedEventServiceImpl<T extends EventMessage> extends EventServiceImpl<T> implements ClassifiedEventService {
+public class ClassifiedEventServiceImpl<T extends EventMessage> extends EventServiceImpl<T> implements ClassifiedEventService<T> {
   private final ClassifiedListing classifiedListing;
 
   public ClassifiedEventServiceImpl(T eventMessage) {

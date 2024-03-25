@@ -6,7 +6,6 @@ import nostr.base.IEvent;
 import nostr.event.BaseTag;
 import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
 import nostr.event.impl.GenericEvent;
-import nostr.event.impl.GenericTag;
 import nostr.event.message.EventMessage;
 import nostr.event.tag.PriceTag;
 import nostr.id.Identity;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 @Log
-public class ClassifiedEventServiceImpl<T extends EventMessage> extends EventServiceImpl<T> {
+public class ClassifiedEventServiceImpl<T extends EventMessage> extends EventServiceImpl<T> implements ClassifiedEventService {
   private final ClassifiedListing classifiedListing;
 
   public ClassifiedEventServiceImpl(T eventMessage) {
@@ -36,7 +35,4 @@ public class ClassifiedEventServiceImpl<T extends EventMessage> extends EventSer
     return new NIP99<>(Identity.getInstance()).createClassifiedListingEvent(classifiedListing, priceTag).getEvent();
   }
 
-  private static String getTagValue(List<BaseTag> tags, int index) {
-    return (String) ((GenericTag) tags.get(index)).getAttributes().get(0).getValue();
-  }
 }

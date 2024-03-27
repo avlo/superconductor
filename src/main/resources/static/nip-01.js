@@ -1,4 +1,4 @@
-let ws = new WebSocket('ws://localhost:8081');
+let ws = new WebSocket('ws://localhost:5555');
 
 function connect() {
     ws.onmessage = function (data) {

@@ -1,8 +1,8 @@
 package com.prosilion.nostrrelay.util;
 
-import com.prosilion.nostrrelay.service.CloseMessageService;
-import com.prosilion.nostrrelay.service.EventMessageService;
-import com.prosilion.nostrrelay.service.MessageService;
+import com.prosilion.nostrrelay.service.message.CloseMessageService;
+import com.prosilion.nostrrelay.service.message.EventMessageService;
+import com.prosilion.nostrrelay.service.message.MessageService;
 import jakarta.websocket.Decoder;
 import lombok.extern.java.Log;
 import nostr.event.BaseMessage;
@@ -19,6 +19,10 @@ public class DecodedMessageMarshaller<T extends BaseMessage> implements Decoder.
     log.log(Level.INFO, "attempting to decode string: {0}", s);
     BaseMessage message = new BaseMessageDecoder(s).decode();
     switch (message.getCommand()) {
+      case "REQ" -> {
+        log.log(Level.INFO, "REQ decoded, contents: {0}", message);
+        return new EventMessageService((EventMessage) message);
+      }
       case "EVENT" -> {
         log.log(Level.INFO, "EVENT decoded, contents: {0}", message);
         return new EventMessageService((EventMessage) message);

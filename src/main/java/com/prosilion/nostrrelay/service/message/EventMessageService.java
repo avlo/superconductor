@@ -1,5 +1,9 @@
-package com.prosilion.nostrrelay.service;
+package com.prosilion.nostrrelay.service.message;
 
+import com.prosilion.nostrrelay.service.event.ClassifiedEventServiceImpl;
+import com.prosilion.nostrrelay.service.event.EventService;
+import com.prosilion.nostrrelay.service.event.EventServiceImpl;
+import com.prosilion.nostrrelay.service.event.TextNoteEventServiceImpl;
 import lombok.extern.java.Log;
 import nostr.api.NIP01;
 import nostr.event.Kind;

@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.service;
+package com.prosilion.nostrrelay.service.event;
 
 import com.google.gson.Gson;
 import lombok.Getter;

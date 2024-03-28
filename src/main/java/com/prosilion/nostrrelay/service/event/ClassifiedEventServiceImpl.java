@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.service;
+package com.prosilion.nostrrelay.service.event;
 
 import lombok.extern.java.Log;
 import nostr.api.NIP99;

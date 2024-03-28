@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.service;
+package com.prosilion.nostrrelay.service.message;
 
 import lombok.extern.java.Log;
 import nostr.event.message.CloseMessage;

@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.service;
+package com.prosilion.nostrrelay.service.event;
 
 import nostr.base.IEvent;
 import nostr.event.message.EventMessage;

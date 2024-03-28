@@ -1,6 +1,6 @@
 package com.prosilion.nostrrelay.controller;
 
-import com.prosilion.nostrrelay.service.MessageService;
+import com.prosilion.nostrrelay.service.message.MessageService;
 import com.prosilion.nostrrelay.util.DecodedMessageMarshaller;
 import com.prosilion.nostrrelay.util.MessageEncoder;
 import jakarta.websocket.*;

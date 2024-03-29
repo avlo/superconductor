@@ -10,6 +10,7 @@ import nostr.event.message.EventMessage;
 import nostr.id.Identity;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 @Log
@@ -25,7 +26,7 @@ public class EventServiceImpl<T extends EventMessage> implements EventService<T>
     log.log(Level.INFO, "EVENT message JSON: {0}", new Gson().toJson(eventMessage.getEvent().toString()));
   }
 
-  public IEvent processIncoming() {
+  public IEvent processIncoming() throws InvocationTargetException, IllegalAccessException {
     log.log(Level.INFO, "processing BASE EVENT...", eventMessage.getEvent().toString());
     return new NIP01<>(Identity.getInstance()).createTextNoteEvent("******************* SERVER CONFIRMS PROCESSED, BASE *******************").getEvent();
   }

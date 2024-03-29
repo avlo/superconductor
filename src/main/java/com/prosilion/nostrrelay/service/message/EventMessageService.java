@@ -11,6 +11,7 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 @Log
@@ -29,7 +30,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
   }
 
   @Override
-  public EventMessage processIncoming() {
+  public EventMessage processIncoming() throws InvocationTargetException, IllegalAccessException {
     return NIP01.createEventMessage(eventService.processIncoming(), eventMessage.getSubscriptionId());
   }
 

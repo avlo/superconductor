@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 @ServerEndpoint(
@@ -27,7 +28,7 @@ public class NostrEventController<T extends BaseMessage> {
   private Session session;
 
   @OnMessage
-  public void onMessage(Session session, @NotNull MessageService<T> messageService) {
+  public void onMessage(Session session, @NotNull MessageService<T> messageService) throws InvocationTargetException, IllegalAccessException {
     log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageService, session});
     broadcast(messageService.processIncoming());
   }

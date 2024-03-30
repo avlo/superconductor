@@ -15,10 +15,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-@DataJpaTest(showSql = true)
+@DataJpaTest
 class EventRepositoryTest {
+
   @Autowired
-  EventRepository genericEventEventRepository;
+  EventRepository eventRepository;
   TextNoteEventDto textNoteEventDto;
 
   @BeforeEach
@@ -37,12 +38,12 @@ class EventRepositoryTest {
 
   @Test
   void save() throws InvocationTargetException, IllegalAccessException {
-    TextNoteEventEntity returnEvent = genericEventEventRepository.save(textNoteEventDto.convertDtoToEntity());
+    TextNoteEventEntity returnEvent = eventRepository.save(textNoteEventDto.convertDtoToEntity());
     System.out.println("222222222222222222222");
     System.out.println(returnEvent);
     System.out.println("222222222222222222222");
 
-    TextNoteEvent textNoteEvent = genericEventEventRepository.findByContent("CONTENT").convertEntityToDto();
+    TextNoteEvent textNoteEvent = eventRepository.findByContent("CONTENT").convertEntityToDto();
     System.out.println("333333333333333333333");
     System.out.println(textNoteEvent);
     System.out.println("333333333333333333333");

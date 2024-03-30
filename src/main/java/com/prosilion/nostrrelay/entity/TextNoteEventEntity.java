@@ -21,7 +21,7 @@ public class TextNoteEventEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  // @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "native")
+  //  @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "native")
   @Column
   private long id;
 
@@ -42,7 +42,7 @@ public class TextNoteEventEntity {
   // @JsonProperty("tags")
   // private List<BaseTag> tags;
 
-  @Basic
+  @Lob
   @Column
   private String content;
 

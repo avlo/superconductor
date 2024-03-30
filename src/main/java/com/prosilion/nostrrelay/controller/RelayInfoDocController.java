@@ -13,8 +13,8 @@ import java.util.logging.Level;
 @RequestMapping("/")
 public class RelayInfoDocController {
   private static final String SAMPLE = "{\n" +
-      "  \"description\": \"localhost description\",\n" +
-      "  \"name\": \"localhost name\",\n" +
+      "  \"description\": \"nicks RelayInfoDocController\",\n" +
+      "  \"name\": \"nicks RelayInfoDocController\",\n" +
       "  \"pubkey\": \"52b4a076bcbbbdc3a1aefa3735816cf74993b1b8db202b01c883c58be7fad8bd\",\n" +
       "  \"software\": \"custom\",\n" +
       "  \"supported_nips\": [\n" +
@@ -28,7 +28,7 @@ public class RelayInfoDocController {
       "    \"max_subscriptions\": 20,\n" +
       "    \"auth_required\": false\n" +
       "  },\n" +
-      "  \"payments_url\": \"https://none.none\",\n" +
+      "  \"payments_url\": \"https://localhost\",\n" +
       "  \"fees\": {\n" +
       "    \"subscription\": [\n" +
       "      {\n" +

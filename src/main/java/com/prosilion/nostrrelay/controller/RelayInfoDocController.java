@@ -12,33 +12,39 @@ import java.util.logging.Level;
 @RestController
 @RequestMapping("/")
 public class RelayInfoDocController {
-  private static final String SAMPLE = "{\n" +
-      "  \"description\": \"nicks RelayInfoDocController\",\n" +
-      "  \"name\": \"nicks RelayInfoDocController\",\n" +
-      "  \"pubkey\": \"52b4a076bcbbbdc3a1aefa3735816cf74993b1b8db202b01c883c58be7fad8bd\",\n" +
-      "  \"software\": \"custom\",\n" +
-      "  \"supported_nips\": [\n" +
-      "    1\n" +
-      "  ],\n" +
-      "  \"version\": \"0.0.1\",\n" +
-      "  \"limitation\": {\n" +
-      "    \"payment_required\": false,\n" +
-      "    \"max_message_length\": 65535,\n" +
-      "    \"max_event_tags\": 2000,\n" +
-      "    \"max_subscriptions\": 20,\n" +
-      "    \"auth_required\": false\n" +
-      "  },\n" +
-      "  \"payments_url\": \"https://localhost\",\n" +
-      "  \"fees\": {\n" +
-      "    \"subscription\": [\n" +
-      "      {\n" +
-      "        \"amount\": 2500000,\n" +
-      "        \"unit\": \"msats\",\n" +
-      "        \"period\": 2592000\n" +
-      "      }\n" +
-      "    ]\n" +
-      "  }\n" +
-      "}";
+  public static final String DESCRIPTION = "description";
+  private static final String SAMPLE;
+
+  static {
+
+    SAMPLE = "{\n" +
+        "  \"" + DESCRIPTION + "\": \"nicks RelayInfoDocController\",\n" +
+        "  \"name\": \"nicks RelayInfoDocController\",\n" +
+        "  \"pubkey\": \"52b4a076bcbbbdc3a1aefa3735816cf74993b1b8db202b01c883c58be7fad8bd\",\n" +
+        "  \"software\": \"custom\",\n" +
+        "  \"supported_nips\": [\n" +
+        "    1\n" +
+        "  ],\n" +
+        "  \"version\": \"0.0.1\",\n" +
+        "  \"limitation\": {\n" +
+        "    \"payment_required\": false,\n" +
+        "    \"max_message_length\": 65535,\n" +
+        "    \"max_event_tags\": 2000,\n" +
+        "    \"max_subscriptions\": 20,\n" +
+        "    \"auth_required\": false\n" +
+        "  },\n" +
+        "  \"payments_url\": \"https://localhost\",\n" +
+        "  \"fees\": {\n" +
+        "    \"subscription\": [\n" +
+        "      {\n" +
+        "        \"amount\": 2500000,\n" +
+        "        \"unit\": \"msats\",\n" +
+        "        \"period\": 2592000\n" +
+        "      }\n" +
+        "    ]\n" +
+        "  }\n" +
+        "}";
+  }
 
   @GetMapping(path = "/"
 //      , produces = {NostrMediaType.APPLICATION_NOSTR_JSON_VALUE}

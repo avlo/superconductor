@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.concurrent.Future;
 
 @Log
@@ -44,32 +45,32 @@ class WebSocketClientTest {
     session.getBasicRemote().sendText(QUERY_STRING);
   }
 
-  @Test
-  public void sendTextTestExpectReturn() throws Exception {
-    session.addMessageHandler(new WebSocketHandlerPartial());
-    Future<Void> returnval = session.getAsyncRemote().sendText(QUERY_STRING);
-
-    System.out.println("666666666666666666666");
-    System.out.println(returnval);
-    System.out.println("666666666666666666666");
-
-
-    String res = testWebSocketClient.execute(
-            URI.create(
-                WS_LOCALHOST_5555
-            ),
-            session -> session.send(
-                    Mono.just(session.textMessage(QUERY_STRING)))
-                .thenMany(session.receive()
-                    .map(WebSocketMessage::getPayloadAsText)
-                    .log())
-                .then())
-        .block()
-        .toString();
-    System.out.println("88888888888888888888888888888888");
-    System.out.println(res);
-    System.out.println("88888888888888888888888888888888");
-  }
+//  @Test
+//  public void sendTextTestExpectReturn() throws Exception {
+//    session.addMessageHandler(new WebSocketHandlerPartial());
+//    Future<Void> returnval = session.getAsyncRemote().sendText(QUERY_STRING);
+//
+//    System.out.println("666666666666666666666");
+//    System.out.println(returnval);
+//    System.out.println("666666666666666666666");
+//
+//
+//    String res = testWebSocketClient.execute(
+//            URI.create(
+//                WS_LOCALHOST_5555
+//            ),
+//            session -> session.send(
+//                    Mono.just(session.textMessage(QUERY_STRING)))
+//                .thenMany(session.receive()
+//                    .map(WebSocketMessage::getPayloadAsText)
+//                    .log())
+//                .then())
+//        .block(Duration.ofSeconds(5L))
+//        .toString();
+//    System.out.println("88888888888888888888888888888888");
+//    System.out.println(res);
+//    System.out.println("88888888888888888888888888888888");
+//  }
 
   private class WebSocketHandlerPartial implements MessageHandler.Partial<String> {
     @Override

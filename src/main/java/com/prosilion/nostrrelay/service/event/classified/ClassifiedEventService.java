@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.service.event;
+package com.prosilion.nostrrelay.service.event.classified;
 
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericTag;

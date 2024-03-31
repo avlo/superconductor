@@ -1,6 +1,6 @@
 package com.prosilion.nostrrelay.service.message;
 
-import com.prosilion.nostrrelay.service.event.ReqService;
+import com.prosilion.nostrrelay.service.request.ReqService;
 import lombok.extern.java.Log;
 import nostr.event.Kind;
 import nostr.event.list.FiltersList;

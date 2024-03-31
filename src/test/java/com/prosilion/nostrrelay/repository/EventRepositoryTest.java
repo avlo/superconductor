@@ -1,12 +1,11 @@
 package com.prosilion.nostrrelay.repository;
 
 import com.prosilion.nostrrelay.dto.TextNoteEventDto;
-import com.prosilion.nostrrelay.entity.TextNoteEventEntity;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericTag;
-import nostr.event.impl.TextNoteEvent;
 import nostr.id.IIdentity;
 import nostr.id.Identity;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,21 +30,28 @@ class EventRepositoryTest {
     IIdentity sender = Identity.getInstance();
     textNoteEventDto = new TextNoteEventDto(sender.getPublicKey(), tags, "CONTENT");
     textNoteEventDto.setId("ID");
-    System.out.println("1111111111111111111");
-    System.out.println(textNoteEventDto);
-    System.out.println("1111111111111111111");
   }
 
   @Test
-  void save() throws InvocationTargetException, IllegalAccessException {
-    TextNoteEventEntity returnEvent = eventRepository.save(textNoteEventDto.convertDtoToEntity());
-    System.out.println("222222222222222222222");
-    System.out.println(returnEvent);
-    System.out.println("222222222222222222222");
+  void saveEventTest() {
+    Assertions.assertDoesNotThrow(() -> eventRepository.save(textNoteEventDto.convertDtoToEntity()));
+  }
 
-    TextNoteEvent textNoteEvent = eventRepository.findByContent("CONTENT").convertEntityToDto();
-    System.out.println("333333333333333333333");
-    System.out.println(textNoteEvent);
-    System.out.println("333333333333333333333");
+  @Test
+  void convertReturnedEvenToDtoTest() throws InvocationTargetException, IllegalAccessException {
+    eventRepository.save(textNoteEventDto.convertDtoToEntity());
+    Assertions.assertTrue(eventRepository.findByContent("CONTENT").isPresent());
+  }
+
+  @Test
+  void notFoundEntityTest() throws InvocationTargetException, IllegalAccessException {
+    eventRepository.save(textNoteEventDto.convertDtoToEntity());
+    Assertions.assertFalse(eventRepository.findByContent("CONTENT_SHOULD_NOT_FIND").isPresent());
+  }
+
+  @Test
+  void entityToDtoConversionTest() throws InvocationTargetException, IllegalAccessException {
+    eventRepository.save(textNoteEventDto.convertDtoToEntity());
+    Assertions.assertTrue(eventRepository.findByContent("CONTENT").get().getContent().contains("CONTENT"));
   }
 }

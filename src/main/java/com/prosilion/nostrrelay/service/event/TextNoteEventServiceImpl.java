@@ -1,8 +1,5 @@
 package com.prosilion.nostrrelay.service.event;
 
-import com.prosilion.nostrrelay.config.ApplicationContextProvider;
-import com.prosilion.nostrrelay.dto.TextNoteEventDto;
-import com.prosilion.nostrrelay.repository.EventRepository;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import nostr.api.NIP01;
@@ -20,11 +17,8 @@ import java.util.List;
 @Getter
 public class TextNoteEventServiceImpl<T extends EventMessage> extends EventServiceImpl<T> {
 
-  private final EventRepository eventRepository;
-
   public TextNoteEventServiceImpl(T eventMessage) {
     super(eventMessage);
-    eventRepository = ApplicationContextProvider.getApplicationContext().getBean(EventRepository.class);
   }
 
   @Override
@@ -44,13 +38,8 @@ public class TextNoteEventServiceImpl<T extends EventMessage> extends EventServi
     //        GenericTag.create("p", 1, "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")
     //    );
     List<BaseTag> tags = List.of(new EventTag(getEventMessage().getEvent().getId()));
-
     IIdentity sender = Identity.getInstance();
-    TextNoteEventDto textNoteEventDto = new TextNoteEventDto(sender.getPublicKey(), tags, getEventMessage().toString());
-    textNoteEventDto.setId(getEventMessage().getEvent().getId());
-
-    eventRepository.save(textNoteEventDto.convertDtoToEntity());
-
-    return new NIP01<>(Identity.getInstance()).createTextNoteEvent(tags, "CONTENT").getEvent();
+    save(sender.getPublicKey(), tags, getEventMessage().toString());
+    return new NIP01<>(Identity.getInstance()).createTextNoteEvent(tags, getEventMessage().toString()).getEvent();
   }
 }

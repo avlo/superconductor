@@ -1,0 +1,194 @@
+
+nostr-java
+ ☐ general cleanup
+   ☐ fix NIP99 createClassifiedListingEvent cast
+ ☐ unit tests
+ ☐ integration tests
+ ✘ NIP33 (parameterized replaceable event) has been moved to NIPO01 @cancelled (24-03-23 13:36)
+   replaced and simplified in NIP-01
+
+nostr-relay
+  ☐ generalize generation of event.id
+    to obtain the event.id, we sha256 the serialized event. The serialization is done over the UTF-8 JSON-serialized string (with no white space or line breaks) of the following structure
+    [
+      0,
+      <pubkey, as a lowercase hex string>,
+      <created_at, as a number>,
+      <kind, as a number>,
+      <tags, as an array of arrays of non-null strings>,
+      <content, as a string>
+    ]
+  ☐ generalize generation of signature
+    "sig": <64-bytes lowercase hex of the signature of the sha256 hash of the serialized event data, which is the same as the "id" field>
+☐ integration tests
+  ☐ round trip (on REQ event)
+    nip01 html test
+    nip99 html test  
+  ✔ save @done (24-03-31 14:03)
+  ✔ findById @done (24-03-31 14:03)
+☐ general cleanup
+   event saver POC added and working, needs refinement
+     proper nostr class to save, either
+       ☐ TextNotEvent or
+       ☐ NIPO01Event
+       ☐ other?
+     standard framework for ease of adding/customizing new NIPs 
+   ☐ potentially @ControllerAdvice for JPA related stuff
+   ☐ potentially EntityManagerFactoryUtils
+
+ ☐ add ReqMessage handler, upon receiving REQ message:
+   ✔ wrap existing nostr-java models relay db @Entity class @done (24-03-31 15:02)
+   ☐ 1 EVENTS table (see EVENT-table.todo)
+     relay SHOULD query its internal database and return events that match REQ message filter
+     ✔ add events table @done (24-03-31 15:02)
+       should every event be stored?
+         investigate events persistence/attributes requirements
+           any/all of single-letter events "e", "p", "a" tags must be stored
+           ☐ ["e", <32-bytes lowercase hex of the id of another event>, <recommended relay URL, optional>]
+           ☐ ["p", <32-bytes lowercase hex of another pubkey>, <recommended relay URL, optional>]
+             "a" event types
+               parameterized replaceable
+               ☐ ["a", <kind integer>:<32-bytes lowercase hex of a pubkey>:<d tag value>, <recommended relay URL, optional>]
+               non-parameterized replaceable
+               ☐ ["a", <kind integer>:<32-bytes lowercase hex of a pubkey>:, <recommended relay URL, optional>]
+           ☐ docs state that all other single-letter (a-z,A-Z) key-tags must also be stored
+             assume all other/multi-letter key-tags are storage optional, but will be required in our relay-server for ClassifiedEvents
+           kind attributes
+             ☐ REGULAR == stored mandatory
+               1000 <= n < 10000
+             ☐ REPLACEABLE == for each combination of pubkey and kind, only latest event MUST be stored by relays, older versions MAY be discarded
+               10000 <= n < 20000 || n == 0 || n == 3
+               ☐ index via pubkey + kind
+             ☐ EPHEMERAL == not expected to be stored (but can be)
+               20000 <= n < 30000
+             ☐ PARAMETERIZED REPLACEABLE == for each combination of pubkey, kind and the d tag's first value, only the latest event MUST be stored by relays, older versions MAY be discarded
+               30000 <= n < 40000
+               ☐ index via pubkey, kind and d tag's first value
+               ☐ re: replaceable events with same timestamp, event with the lowest id (first in lexical order, [i'm guessing (db id]) should be retained, and the other discarded.
+        ☐ When answering to REQ messages for replaceable events such as {"kinds":[0],"authors":[<hex-key>]}, even if the relay has more than one version stored, it SHOULD return just the latest one.
+     ☐ add events table query mechanism based on filters     
+
+***************************
+***************************
+   ☐ 2 FILTERS table (see FILTERS-table.todo)
+     store that (user's) filter (if not yet exists) and...
+      ☐ UID (possibly not, too restricive.  use join (below) instead)
+      ☐ "ids": <a list of event ids>,
+      ☐ "authors": <a list of lowercase pubkeys, the pubkey of an event must be one of these>,
+      ☐ "kinds": <a list of a kind numbers>,
+      pound in front of tag means query/subscribe
+        ☐ "#<single-letter (a-zA-Z)>": <a list of tag values, for #e — a list of event ids, for #p — a list of event pubkeys etc>
+          ["e", <32-bytes lowercase hex of the id of another event>, <recommended relay URL, optional>]
+          ["p", <32-bytes lowercase hex of another pubkey>, <recommended relay URL, optional>]
+        ☐ "#<multi-letter>": <a list of tag values, for Classified event related filters
+      ☐ "since": <an integer unix timestamp in seconds, events must be newer than this to pass>,
+      ☐ "until": <an integer unix timestamp in seconds, events must be older than this to pass>,
+      ☐ "limit": <maximum number of events relays SHOULD return in the initial query>  
+
+   ☐ 3 TAGS table (see TAGS-table.todo)
+     i'm inclined to have a table for each tag, as each tag doesn't necessarily have same structure
+
+   ...send again all future (filter matching [via OR?]) events (by anyone?) to all "registered" websockets until the websocket is closed
+   ☐ 4 SUBSCRIBER table (transient)
+     ✔ websocket uniqueness might be identifiable by websocketID/session/sig/other? @done (24-03-31 20:16) correct         
+     ☐ subscription id
+     ☐ websocket id
+       
+     SUBSCRIBER-FILTERS join table (transient)
+     ☐ subscriber fk
+     ☐ filters FK
+       
+     filters (table)
+     ☐ filter_event join table
+        or subscriber_filter-filter-event join table?
+     ☐ filter-author_event join table
+       or subscriber_filter-author_event join table? points to event having this same pubkey (authors pubkey)
+     ☐ filter-kinds
+     ☐ filter-referencedEvents
+     ☐ filter-referencePubKeys
+     ☐ since (long)
+     ☐ until (long)
+     ☐ limit (int)    
+***************************
+***************************
+   ☐ when websocket is closed, remove entry
+
+ ☐ status 4000 sent by relay closes websocket and client(s) shouldn't connect again
+ ☐ <subscription_id> are WebSocket connection independent; even if <subscription_id>s are the same string, they should be treated as different subscriptions for different connections.
+
+scdmatrix
+  ✘ research product (diff w/ classifies event) @cancelled (24-03-24 23:57)
+  ✘ research stall @cancelled (24-03-24 23:57)
+  ☐ will make API calls to nost-relay server @done (24-03-25 00:28)
+    ✔ EVENT calls work @done (24-03-27 13:02)
+    ☐ REQ calls needed
+
+  Contract inclusion/composition of
+    ✘ ClassifiedEvent, no- rather, Contract will have it's various values set by ContractService @cancelled (24-03-25 00:19)
+    ☐ String text
+      ☐ summar/title/description
+
+    ☐ Long payerStake, payeeStake, payoutAmount
+      ☐ additional parameters added to classified event tags
+
+    ☐ Boolean completed
+      ☐ additional parameters added to classified event tags
+
+    ☐ Date agreedCompletionTime
+      ☐ additional parameters added to classified event tags
+
+    ☐ CreatorRoleEnum creatorRole
+      ☐ posibly additional parameters added to classified event tags
+
+    ☐ ContractStateEnum payerState
+      ☐ posibly additional parameters added to classified event tags
+
+    ☐ ContractStateEnum payeeState
+      ☐ posibly additional parameters added to classified event tags
+
+    ☐ Long appUserId
+      ☐ posibly classified event owner pubkey?
+
+    ☐ Long counterPartyId
+      ☐ posibly classified event receiver pubkey?    
+
+  ContractService usage of
+    ☐ ClassifiedEvent
+    ☐ ClassifiedEventServiceImpl
+
+~~~~~~~
+
+NIP-01 tags
+  single letter (expected to be indexed by relays, such that it is possible, for example, to query or subscribe to events that reference the event)
+    "e": <32-bytes lowercase hex of the id of another event>, <recommended relay URL, optional>
+    "p": <32-bytes lowercase hex of a pubkey>, <recommended relay URL, optional>
+    parameterized replaceable event (30000 <= n < 40000)
+      "a": <kind integer>:<32-bytes lowercase hex of a pubkey>:<d tag value>, <recommended relay URL, optional>
+    (non)parameterized replaceable event (30000 <= n < 40000)
+      "a": <kind integer>:<32-bytes lowercase hex of a pubkey>, <recommended relay URL, optional>
+
+NIP-99
+  user ad
+
+~~~~~
+
+✘ nostr-java-api/src/main/java/nostr/api/NIP33.java @cancelled (24-03-23 13:12)
+✔ nostr-java-api/src/main/java/nostr/api/NIP99.java @done (24-03-22 22:48)
+✘ nostr-java-api/src/main/java/nostr/api/factory/impl/NIP33.java @cancelled (24-03-23 13:13)
+✔ nostr-java-api/src/main/java/nostr/api/factory/impl/NIP99Impl.java @done (24-03-22 22:48)
+✔ nostr-java-event/src/main/java/nostr/event/NIP99Event.java @done (24-03-22 22:48)
+✔ nostr-java-event/src/main/java/nostr/event/impl/ClassifiedListingEvent.java @done (24-03-22 22:47)
+✘ nostr-java-event/src/main/java/nostr/event/impl/UpdatableEvent.java @cancelled (24-03-23 13:32)
+✘ nostr-java-event/src/main/java/nostr/event/impl/ValidatableEvent.java @cancelled (24-03-23 13:32)
+✘ nostr-java-event/src/main/java/nostr/event/json/deserializer/KindDeserializer.java @cancelled (24-03-23 13:33)
+✔ nostr-java-event/src/main/java/nostr/event/json/serializer/ClassifiedEventSerializer.java @done (24-03-22 22:47)
+✔ nostr-java-event/src/main/java/nostr/event/json/serializer/PriceTagSerializer.java @done (24-03-22 22:48)
+✔ nostr-java-event/src/main/java/nostr/event/message/ClassifiedListingEventMessage.java @done (24-03-22 22:48)
+✔ nostr-java-event/src/main/java/nostr/event/tag/PriceTag.java @done (24-03-22 22:48)
+
+
+
+
+["EVENT",{"id":"d6173464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70","kind":"1","content":"111111111","pubkey":"2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984","created_at":1711354281731,"tags":[["e","494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"],["p","2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"]],"sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"}]
+
+["EVENT",{"id":"4b2e7745a6ce4541b9ebe842ab8f2ff88d7167559f1e4dfb72865ca69d16c68b","kind":"1","content":"111111111","pubkey":"2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984","created_at":1711384309992,"tags":[["e","494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"],["p","2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"]],"sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"}]

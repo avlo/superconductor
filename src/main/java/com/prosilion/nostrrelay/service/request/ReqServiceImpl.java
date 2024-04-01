@@ -26,10 +26,7 @@ public class ReqServiceImpl<T extends ReqMessage> implements ReqService<T> {
   }
 
   public T processIncoming(Session session) {
-    String sessionId = session.getId();
-    String basicRemoteString = session.getBasicRemote().toString();
-    String containerString = session.getContainer().toString();
-    Subscriber subscriber = new Subscriber(subId, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    Subscriber subscriber = new Subscriber(subId, session.getId());
     subscriberService.save(subscriber);
     filtersService.processFilters(subscriber);
     return null;

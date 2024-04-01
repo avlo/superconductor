@@ -66,10 +66,12 @@ or full/debug console logging
 
 ## Relay Endpoint for clients
 
-  ws://localhost:8080
+  ws://localhost:5555
 
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 
-  http://localhost:8080/NIP01.html
+  http://localhost:5555/NIP01.html
 
-  http://localhost:8080/NIP99.html
+  http://localhost:5555/NIP99.html
+
+  http://localhost:5555/REQ.html

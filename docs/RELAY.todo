@@ -70,7 +70,7 @@ nostr-relay
 
 ***************************
 ***************************
-   ☐ 2 FILTERS table (see FILTERS-table.todo)
+   ☐ 2) FILTERS table (see FILTERS-table.todo)
      store that (user's) filter (if not yet exists) and...
       ☐ UID (possibly not, too restricive.  use join (below) instead)
       ☐ "ids": <a list of event ids>,
@@ -84,9 +84,6 @@ nostr-relay
       ☐ "since": <an integer unix timestamp in seconds, events must be newer than this to pass>,
       ☐ "until": <an integer unix timestamp in seconds, events must be older than this to pass>,
       ☐ "limit": <maximum number of events relays SHOULD return in the initial query>  
-
-   ☐ 3 TAGS table (see TAGS-table.todo)
-     i'm inclined to have a table for each tag, as each tag doesn't necessarily have same structure
 
    ...send again all future (filter matching [via OR?]) events (by anyone?) to all "registered" websockets until the websocket is closed
    ☐ 4 SUBSCRIBER table (transient)
@@ -109,9 +106,12 @@ nostr-relay
      ☐ since (long)
      ☐ until (long)
      ☐ limit (int)    
-***************************
-***************************
+
    ☐ when websocket is closed, remove entry
+***************************
+***************************
+☐ 3 TAGS table (see TAGS-table.todo)
+     i'm inclined to have a table for each tag, as each tag doesn't necessarily have same structure
 
  ☐ status 4000 sent by relay closes websocket and client(s) shouldn't connect again
  ☐ <subscription_id> are WebSocket connection independent; even if <subscription_id>s are the same string, they should be treated as different subscriptions for different connections.

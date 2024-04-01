@@ -2,9 +2,9 @@ package com.prosilion.nostrrelay.service.message;
 
 import com.prosilion.nostrrelay.service.request.ReqService;
 import com.prosilion.nostrrelay.service.request.ReqServiceImpl;
+import jakarta.websocket.Session;
 import lombok.extern.java.Log;
 import nostr.event.Kind;
-import nostr.event.list.FiltersList;
 import nostr.event.message.ReqMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,17 +16,14 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<R
   private final T reqMessage;
 
   public ReqMessageService(@NotNull T reqMessage) {
-    log.log(Level.INFO, "REQ message NIP: {0}", reqMessage.getNip());
-    FiltersList filters = reqMessage.getFiltersList();
     log.log(Level.INFO, "REQ fitlers: {0}", reqMessage.getFiltersList());
-    log.log(Level.INFO, "REQ command: {0}", reqMessage.getCommand());
     this.reqMessage = reqMessage;
     reqService = new ReqServiceImpl<>(reqMessage);
   }
 
   @Override
-  public ReqMessage processIncoming() {
-    return reqService.processIncoming();
+  public ReqMessage processIncoming(Session session) {
+    return reqService.processIncoming(session);
   }
 
   private ReqService<T> createEventService(@NotNull Kind kind, T reqMessage) {

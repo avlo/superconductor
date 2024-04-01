@@ -1,28 +1,37 @@
 package com.prosilion.nostrrelay.service.request;
 
+import com.prosilion.nostrrelay.config.ApplicationContextProvider;
+import com.prosilion.nostrrelay.entity.Subscriber;
+import com.prosilion.nostrrelay.service.filters.FiltersServiceImpl;
+import com.prosilion.nostrrelay.service.filters.SubscriberServiceImpl;
+import jakarta.websocket.Session;
 import lombok.Getter;
 import lombok.extern.java.Log;
-import nostr.event.list.FiltersList;
 import nostr.event.message.ReqMessage;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.logging.Level;
+import java.security.Principal;
 
 @Log
 @Getter
 public class ReqServiceImpl<T extends ReqMessage> implements ReqService<T> {
-  private FiltersList filtersList;
   private String subId;
+  private SubscriberServiceImpl subscriberService;
+  private FiltersServiceImpl filtersService;
 
-  public ReqServiceImpl(@NotNull T eventMessage) {
-    filtersList = eventMessage.getFiltersList();
-    subId = eventMessage.getSubscriptionId();
+  public ReqServiceImpl(@NotNull T reqMessage) {
+    filtersService = new FiltersServiceImpl(reqMessage.getFiltersList());
+    subscriberService = ApplicationContextProvider.getApplicationContext().getBean(SubscriberServiceImpl.class);
+    subId = reqMessage.getSubscriptionId();
   }
 
-  public T processIncoming() {
-    //    TODO:
-    //    log.log(Level.INFO, "processing BASE EVENT...", eventMessage.getEvent().toString());
-    //    return new NIP01<>(Identity.getInstance()).createTextNoteEvent("******************* SERVER CONFIRMS PROCESSED, BASE *******************").getEvent();
+  public T processIncoming(Session session) {
+    String sessionId = session.getId();
+    String basicRemoteString = session.getBasicRemote().toString();
+    String containerString = session.getContainer().toString();
+    Subscriber subscriber = new Subscriber(subId, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    subscriberService.save(subscriber);
+    filtersService.processFilters(subscriber);
     return null;
   }
 }

@@ -30,7 +30,7 @@ public class NostrEventController<T extends BaseMessage> {
   @OnMessage
   public void onMessage(Session session, @NotNull MessageService<T> messageService) throws InvocationTargetException, IllegalAccessException {
     log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageService, session});
-    broadcast(messageService.processIncoming());
+    broadcast(messageService.processIncoming(session));
   }
 
   private void broadcast(@NotNull T message) {

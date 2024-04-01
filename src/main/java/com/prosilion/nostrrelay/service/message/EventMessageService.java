@@ -4,6 +4,7 @@ import com.prosilion.nostrrelay.service.event.classified.ClassifiedEventServiceI
 import com.prosilion.nostrrelay.service.event.EventService;
 import com.prosilion.nostrrelay.service.event.EventServiceImpl;
 import com.prosilion.nostrrelay.service.event.textnote.TextNoteEventServiceImpl;
+import jakarta.websocket.Session;
 import lombok.extern.java.Log;
 import nostr.api.NIP01;
 import nostr.event.Kind;
@@ -30,7 +31,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
   }
 
   @Override
-  public EventMessage processIncoming() throws InvocationTargetException, IllegalAccessException {
+  public EventMessage processIncoming(Session session) throws InvocationTargetException, IllegalAccessException {
     return NIP01.createEventMessage(eventService.processIncoming(), eventMessage.getSubscriptionId());
   }
 

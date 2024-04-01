@@ -1,26 +1,31 @@
 package com.prosilion.nostrrelay.service.filters;
 
+import com.prosilion.nostrrelay.config.ApplicationContextProvider;
+import com.prosilion.nostrrelay.entity.Subscriber;
 import nostr.event.impl.Filters;
 import nostr.event.list.EventList;
-import nostr.event.list.GenericTagQueryList;
-import nostr.event.list.KindList;
-import nostr.event.list.PublicKeyList;
+import nostr.event.list.FiltersList;
 public class FiltersServiceImpl {
-  private final Filters filters;
+  private final FiltersList filtersList;
+  private final SubscriberFilterEventServiceImpl subscriberFilterEventService;
 
-  public FiltersServiceImpl(Filters filters) {
-    this.filters = filters;
+  public FiltersServiceImpl(FiltersList filtersList) {
+    this.filtersList = filtersList;
+    this.subscriberFilterEventService = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFilterEventServiceImpl.class);
   }
 
-  public void processFilters() {
-    EventList eventList = filters.getEvents();
-    PublicKeyList authors = filters.getAuthors();
-    KindList kindList = filters.getKinds();
-    EventList referencedEvents = filters.getReferencedEvents();
-    PublicKeyList referencedPubKeys = filters.getReferencePubKeys();
-    Long since = filters.getSince();
-    Long until = filters.getUntil();
-    int limit = filters.getLimit();
-    GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
+  public void processFilters(Subscriber subscriber) {
+    for (Filters filters : filtersList.getList()) {
+      EventList eventList = filters.getEvents();
+      subscriberFilterEventService.process(subscriber, eventList);
+      //      PublicKeyList authors = filters.getAuthors();
+      //      KindList kindList = filters.getKinds();
+      //      EventList referencedEvents = filters.getReferencedEvents();
+      //      PublicKeyList referencedPubKeys = filters.getReferencePubKeys();
+      //      Long since = filters.getSince();
+      //      Long until = filters.getUntil();
+      //      int limit = filters.getLimit();
+      //      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
+    }
   }
 }

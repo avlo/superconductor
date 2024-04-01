@@ -1,5 +1,6 @@
 package com.prosilion.nostrrelay.service.message;
 
+import jakarta.websocket.Session;
 import lombok.extern.java.Log;
 import nostr.event.message.CloseMessage;
 
@@ -15,7 +16,7 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
   }
 
   @Override
-  public CloseMessage processIncoming() {
+  public CloseMessage processIncoming(Session session) {
     log.log(Level.INFO, "processing CLOSE event");
     return new CloseMessage(closeMessage.getSubscriptionId());
   }

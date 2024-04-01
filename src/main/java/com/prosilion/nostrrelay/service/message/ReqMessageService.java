@@ -1,6 +1,7 @@
 package com.prosilion.nostrrelay.service.message;
 
 import com.prosilion.nostrrelay.service.request.ReqService;
+import com.prosilion.nostrrelay.service.request.ReqServiceImpl;
 import lombok.extern.java.Log;
 import nostr.event.Kind;
 import nostr.event.list.FiltersList;
@@ -11,7 +12,7 @@ import java.util.logging.Level;
 
 @Log
 public class ReqMessageService<T extends ReqMessage> implements MessageService<ReqMessage> {
-  private final ReqService<T> eventService;
+  private final ReqService<T> reqService;
   private final T reqMessage;
 
   public ReqMessageService(@NotNull T reqMessage) {
@@ -20,16 +21,12 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<R
     log.log(Level.INFO, "REQ fitlers: {0}", reqMessage.getFiltersList());
     log.log(Level.INFO, "REQ command: {0}", reqMessage.getCommand());
     this.reqMessage = reqMessage;
-    //    TODO:
-    //    eventService = createEventService(Kind.valueOf(kind), reqMessage);
-    eventService = null;
+    reqService = new ReqServiceImpl<>(reqMessage);
   }
 
   @Override
   public ReqMessage processIncoming() {
-    //    TODO:
-    //    return NIP01.createEventMessage(eventService.processIncoming(), reqMessage.getSubscriptionId());
-    return null;
+    return reqService.processIncoming();
   }
 
   private ReqService<T> createEventService(@NotNull Kind kind, T reqMessage) {

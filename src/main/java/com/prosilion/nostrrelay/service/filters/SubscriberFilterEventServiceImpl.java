@@ -2,7 +2,7 @@ package com.prosilion.nostrrelay.service.filters;
 
 import com.prosilion.nostrrelay.entity.Subscriber;
 import com.prosilion.nostrrelay.entity.join.SubscriberFilterEvent;
-import com.prosilion.nostrrelay.repository.SubscriberFilterEventRepository;
+import com.prosilion.nostrrelay.repository.join.SubscriberFilterEventRepository;
 import nostr.event.list.EventList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

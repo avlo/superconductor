@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.repository;
+package com.prosilion.nostrrelay.repository.join;
 
 import com.prosilion.nostrrelay.entity.join.SubscriberFilterEvent;
 import org.springframework.data.jpa.repository.JpaRepository;

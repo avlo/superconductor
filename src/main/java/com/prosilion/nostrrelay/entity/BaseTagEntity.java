@@ -16,10 +16,13 @@ public class BaseTagEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Column(name = "\"key\"")
   private String key;
+
   @Column(name = "\"value\"")
   private String idEvent;
+
   private String recommendedRelayUrl;
   private Marker marker;
 

@@ -21,16 +21,19 @@ public class TextNoteEventEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
-  private String eventId;
-  private String pubKey;
-  private Long createdAt;
-  private Integer kind;
-  // List<BaseTag> to be stored in their own join table ENTITY_TAGS
-  // private List<BaseTag> tags;
+
   @Lob
   private String content;
+
+  // List<BaseTag> to be stored in their own join table ENTITY_TAGS
+  // private List<BaseTag> tags;
+
   private String signature;
+  private String eventId;
+  private String pubKey;
+  private Integer kind;
   private Integer nip;
+  private Long createdAt;
 
   public TextNoteEventDto convertEntityToDto() {
     List<BaseTag> tags = List.of(

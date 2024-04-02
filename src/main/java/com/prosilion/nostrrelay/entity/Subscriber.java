@@ -19,6 +19,7 @@ public class Subscriber implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   private String subscriberId;
   private String session;
 

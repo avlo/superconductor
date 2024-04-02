@@ -59,7 +59,7 @@ public class TextNoteEventServiceImpl<T extends EventMessage> extends EventServi
   private void saveTags(TextNoteEvent event) throws InvocationTargetException, IllegalAccessException, NoResultException {
     for (BaseTag baseTag : event.getTags()) {
       BaseTagDto dto = new BaseTagDto(((EventTag) baseTag).getIdEvent());
-//      dto.setName(baseTag.getCode());
+      dto.setKey(baseTag.getCode());
       BaseTagEntity entity = dto.convertDtoToEntity();
       Optional.of(baseTagRepository.save(entity)).orElseThrow(NoResultException::new);
     }

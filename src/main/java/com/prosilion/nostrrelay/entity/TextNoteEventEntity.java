@@ -18,40 +18,18 @@ import java.util.List;
 @Entity
 @Table(name = "text_note_event")
 public class TextNoteEventEntity {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  //  @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "native")
-  @Column
   private long id;
-
-  @Basic
-  @Column
+  private String eventId;
   private String pubKey;
-
-  @Basic
-  @Column
   private Long createdAt;
-
-  @Basic
-  @Column
   private Integer kind;
-
-  // @Key
-  // @EqualsAndHashCode.Exclude
-  // @JsonProperty("tags")
+  // List<BaseTag> to be stored in their own join table ENTITY_TAGS
   // private List<BaseTag> tags;
-
   @Lob
-  @Column
   private String content;
-
-  @Basic
-  @Column
   private String signature;
-
-  @Basic
-  @Column
   private Integer nip;
 
   public TextNoteEventDto convertEntityToDto() {

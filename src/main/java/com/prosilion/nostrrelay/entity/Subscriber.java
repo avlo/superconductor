@@ -7,9 +7,11 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 import java.io.Serializable;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @Entity
@@ -17,7 +19,6 @@ public class Subscriber implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
   private String subscriberId;
   private String session;
 

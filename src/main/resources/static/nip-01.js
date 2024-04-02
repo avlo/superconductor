@@ -62,11 +62,13 @@ async function createDigest(message) {
         .join(""); // convert bytes to hex string
 }
 
-function send() {
+function hashThenSend() {
     const concat = [
         '0',
         $("#pubkey").val(),
-        $("#created_at").val(),
+        // TODO: re-add below as fixed value exclusively used for testing
+        // $("#created_at").val(),
+        '1712006760',
         $("#kind").val(),
         $("#e_tag").val(),
         $("#p_tag").val(),
@@ -91,7 +93,9 @@ function replaceHash(id_hash) {
                 'kind': $("#kind").val(),
                 'content': $("#content").val(),
                 'pubkey': $("#pubkey").val(),
-                'created_at': Date.now(),
+                // TODO: re-add below as fixed value exclusively used for testing
+                // 'created_at': Date.now(),
+                'created_at': '1712006760',
                 'tags': [
                     ['e', $("#e_tag").val()],
                     ['p', $("#p_tag").val()]
@@ -119,7 +123,7 @@ $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#connect").click(() => connect());
     $("#disconnect").click(() => disconnect());
-    $("#send").click(() => send());
+    $("#send").click(() => hashThenSend());
 });
 
 function syntaxHighlight(json) {

@@ -16,6 +16,7 @@ public class TextNoteEventDto extends TextNoteEvent {
   public TextNoteEventEntity convertDtoToEntity() throws InvocationTargetException, IllegalAccessException {
     TextNoteEventEntity textNoteEventEntity = new TextNoteEventEntity();
     BeanUtils.copyProperties(textNoteEventEntity, this);
+    BeanUtils.copyProperty(textNoteEventEntity, "eventId", this.getId());
     return textNoteEventEntity;
   }
 }

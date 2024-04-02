@@ -65,11 +65,11 @@ async function createDigest(message) {
 function send() {
     const concat = [
         '0',
-        $("#pubkey").val(),
+        // $("#pubkey").val(),
         $("#created_at").val(),
-        $("#kind").val(),
-        $("#e_tag").val(),
-        $("#p_tag").val(),
+        // $("#kind").val(),
+        // $("#e_tag").val(),
+        // $("#p_tag").val(),
         $("#content").val()
     ].join(",");
 
@@ -90,9 +90,8 @@ function replaceHash(id_hash) {
             {
                 // 'kind': $("#kind").val(),
                 // 'content': $("#content").val(),
-                // 'pubkey': $("#pubkey").val(),
                 // 'created_at': Date.now(),
-                'ids': [ "1111111111111111111","2222222222222222222" ]
+                'ids': [ $("#content").val() ]
             }
         )
         + "]";

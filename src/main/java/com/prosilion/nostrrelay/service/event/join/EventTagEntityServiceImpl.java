@@ -4,16 +4,24 @@ import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.dto.BaseTagDto;
 import com.prosilion.nostrrelay.dto.TextNoteEventDto;
 import com.prosilion.nostrrelay.entity.BaseTagEntity;
+import com.prosilion.nostrrelay.entity.TextNoteEventEntity;
+import com.prosilion.nostrrelay.entity.join.EventTagEntity;
 import com.prosilion.nostrrelay.repository.BaseTagRepository;
 import com.prosilion.nostrrelay.repository.EventRepository;
 import com.prosilion.nostrrelay.repository.join.EventTagEntityRepository;
 import jakarta.persistence.NoResultException;
+import jakarta.transaction.Transactional;
+import nostr.base.annotation.Tag;
 import nostr.event.BaseTag;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.tag.EventTag;
+import nostr.event.tag.ValueTag;
+import org.eclipse.jetty.util.Fields;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,12 +36,14 @@ public class EventTagEntityServiceImpl {
     eventTagEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityRepository.class);
   }
 
+  @Transactional
   public void save(TextNoteEvent textNoteEvent, String id) throws InvocationTargetException, IllegalAccessException {
-    saveEntity(textNoteEvent, id);
-    saveTags(textNoteEvent);
+    Long savedEventId = saveEntity(textNoteEvent, id);
+    List<Long> savedTagIds = saveTags(textNoteEvent);
+    saveEventTags(savedEventId, savedTagIds);
   }
 
-  private void saveEntity(TextNoteEvent event, String id) throws InvocationTargetException, IllegalAccessException, NoResultException {
+  private Long saveEntity(TextNoteEvent event, String id) throws InvocationTargetException, IllegalAccessException, NoResultException {
     TextNoteEventDto textNoteEventDto = new TextNoteEventDto(
         event.getPubKey(),
         event.getTags(),
@@ -42,19 +52,24 @@ public class EventTagEntityServiceImpl {
     textNoteEventDto.setId(id);
     textNoteEventDto.setCreatedAt(event.getCreatedAt());
     textNoteEventDto.setSignature(event.getSignature());
-    Optional.of(eventRepository.save(textNoteEventDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
+    TextNoteEventEntity textNoteEventEntity = Optional.of(eventRepository.save(textNoteEventDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
+    return textNoteEventEntity.getId();
   }
 
-  private void saveTags(TextNoteEvent event) throws InvocationTargetException, IllegalAccessException, NoResultException {
+  private List<Long> saveTags(TextNoteEvent event) throws InvocationTargetException, IllegalAccessException, NoResultException {
+    List<Long> savedIds = new ArrayList<>();
     for (BaseTag baseTag : event.getTags()) {
-      BaseTagDto dto = new BaseTagDto(((EventTag) baseTag).getIdEvent());
+      BaseTagDto dto = new BaseTagDto(((ValueTag)baseTag).getValue());
       dto.setKey(baseTag.getCode());
       BaseTagEntity entity = dto.convertDtoToEntity();
-      Optional.of(baseTagRepository.save(entity)).orElseThrow(NoResultException::new);
+      savedIds.add(Optional.of(baseTagRepository.save(entity)).orElseThrow(NoResultException::new).getId());
     }
+    return savedIds;
   }
 
-  private void saveEventTags() {
-
+  private void saveEventTags(Long eventId, List<Long> tagIds) {
+    for (Long tagId : tagIds) {
+      Optional.of(eventTagEntityRepository.save(new EventTagEntity(eventId, tagId))).orElseThrow(NoResultException::new);
+    }
   }
 }

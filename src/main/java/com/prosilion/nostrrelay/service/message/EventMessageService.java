@@ -1,6 +1,6 @@
 package com.prosilion.nostrrelay.service.message;
 
-import com.prosilion.nostrrelay.service.event.classified.ClassifiedEventServiceImpl;
+import com.prosilion.nostrrelay.service.event.classifiedlisting.ClassifiedListingEventServiceImpl;
 import com.prosilion.nostrrelay.service.event.EventService;
 import com.prosilion.nostrrelay.service.event.EventServiceImpl;
 import com.prosilion.nostrrelay.service.event.textnote.TextNoteEventServiceImpl;
@@ -47,7 +47,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
       }
       case CLASSIFIED_LISTING -> {
         log.log(Level.INFO, "CLASSIFIED_LISTING KIND decoded should match CLASSIFIED_LISTING -> [{0}]", kind.getName());
-        return new ClassifiedEventServiceImpl<>(eventMessage);
+        return new ClassifiedListingEventServiceImpl<>(eventMessage);
       }
 
       default -> throw new AssertionError("Unknown kind: " + kind.getName());

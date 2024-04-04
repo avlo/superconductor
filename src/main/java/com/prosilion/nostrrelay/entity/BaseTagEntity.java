@@ -1,6 +1,6 @@
 package com.prosilion.nostrrelay.entity;
 
-import com.prosilion.nostrrelay.dto.BaseTagDto;
+import com.prosilion.nostrrelay.dto.tag.BaseTagDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

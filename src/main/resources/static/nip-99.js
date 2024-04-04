@@ -77,6 +77,8 @@ function hashThenSend() {
         $("#t").val(),
         $("#price").val(),
         $("#currency").val(),
+        $("#e_tag").val(),
+        $("#p_tag").val(),
     ].join(",");
 
     const text = [
@@ -101,7 +103,9 @@ function replaceHash(id_hash) {
                     ['summary', $("#summary").val()],
                     ['location', $("#location").val()],
                     ['price', $("#price").val()],
-                    ['currency', $("#currency").val()]
+                    ['currency', $("#currency").val()],
+                    ['e', $("#e_tag").val()],
+                    ['p', $("#p_tag").val()]
                 ],
                 'pubkey': $("#pubkey").val(),
                 // TODO: re-add below as fixed value exclusively used for testing

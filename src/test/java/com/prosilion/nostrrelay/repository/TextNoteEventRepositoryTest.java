@@ -1,6 +1,6 @@
 package com.prosilion.nostrrelay.repository;
 
-import com.prosilion.nostrrelay.dto.TextNoteEventDto;
+import com.prosilion.nostrrelay.dto.event.TextNoteEventDto;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericTag;
 import nostr.id.IIdentity;
@@ -15,10 +15,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @DataJpaTest
-class EventRepositoryTest {
+class TextNoteEventRepositoryTest {
 
   @Autowired
-  EventRepository eventRepository;
+  TextNoteEventRepository textNoteEventRepository;
   TextNoteEventDto textNoteEventDto;
 
   @BeforeEach
@@ -34,24 +34,24 @@ class EventRepositoryTest {
 
   @Test
   void saveEventTest() {
-    Assertions.assertDoesNotThrow(() -> eventRepository.save(textNoteEventDto.convertDtoToEntity()));
+    Assertions.assertDoesNotThrow(() -> textNoteEventRepository.save(textNoteEventDto.convertDtoToEntity()));
   }
 
   @Test
   void convertReturnedEvenToDtoTest() throws InvocationTargetException, IllegalAccessException {
-    eventRepository.save(textNoteEventDto.convertDtoToEntity());
-    Assertions.assertTrue(eventRepository.findByContent("CONTENT").isPresent());
+    textNoteEventRepository.save(textNoteEventDto.convertDtoToEntity());
+    Assertions.assertTrue(textNoteEventRepository.findByContent("CONTENT").isPresent());
   }
 
   @Test
   void notFoundEntityTest() throws InvocationTargetException, IllegalAccessException {
-    eventRepository.save(textNoteEventDto.convertDtoToEntity());
-    Assertions.assertFalse(eventRepository.findByContent("CONTENT_SHOULD_NOT_FIND").isPresent());
+    textNoteEventRepository.save(textNoteEventDto.convertDtoToEntity());
+    Assertions.assertFalse(textNoteEventRepository.findByContent("CONTENT_SHOULD_NOT_FIND").isPresent());
   }
 
   @Test
   void entityToDtoConversionTest() throws InvocationTargetException, IllegalAccessException {
-    eventRepository.save(textNoteEventDto.convertDtoToEntity());
-    Assertions.assertTrue(eventRepository.findByContent("CONTENT").get().getContent().contains("CONTENT"));
+    textNoteEventRepository.save(textNoteEventDto.convertDtoToEntity());
+    Assertions.assertTrue(textNoteEventRepository.findByContent("CONTENT").get().getContent().contains("CONTENT"));
   }
 }

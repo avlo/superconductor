@@ -1,10 +1,9 @@
 package com.prosilion.nostrrelay.entity;
 
-import com.prosilion.nostrrelay.dto.TextNoteEventDto;
+import com.prosilion.nostrrelay.dto.event.TextNoteEventDto;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericTag;
@@ -12,8 +11,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "text_note_event")

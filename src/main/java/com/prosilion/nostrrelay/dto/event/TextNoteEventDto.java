@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.dto;
+package com.prosilion.nostrrelay.dto.event;
 
 import com.prosilion.nostrrelay.entity.TextNoteEventEntity;
 import nostr.base.PublicKey;

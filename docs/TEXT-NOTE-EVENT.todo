@@ -1,0 +1,54 @@
+EVENT table, req'd:
+  private String id;
+
+  @JsonDeserialize(using = PublicKeyDeserializer.class)
+  private PublicKey pubKey;
+
+  private Long createdAt;
+
+  private Integer kind;
+
+  for basetags, EVENT service must be aware of join table EVENT_BASETAG, see below
+
+  private String content;
+
+  @JsonDeserialize(using = SignatureDeserializer.class)
+  private Signature signature;
+
+  more research req'd:
+    @JsonIgnore
+    private Integer nip;
+
+  if below req persistence, EVENT service awareness req'd for joint table EVENT_ATTRIBUTES/EVENT_ELEMENTATTRIBUTES, see below
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    private final List<ElementAttribute> attributes;
+
+not req'd:
+
+  private byte[] _serializedEvent;
+
+~~~~
+
+BASETAG table
+  baseTag attributes
+    -
+    -
+    -
+
+  EVENT_BASETAG join table
+
+~~~~
+
+ATTRIBUTES/ELEMENTATTRIBUTES table req'd?  needs more research
+
+assuming below is required
+  @JsonIgnore
+  ElementAttribute attributes
+    -
+    -
+    -
+
+EVENT_ATTRIBUTES/EVENT_ELEMENTATTRIBUTES join table
+  Event to ElementAttribute
+

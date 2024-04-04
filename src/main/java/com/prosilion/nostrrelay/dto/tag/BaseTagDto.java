@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.dto;
+package com.prosilion.nostrrelay.dto.tag;
 
 import com.prosilion.nostrrelay.entity.BaseTagEntity;
 import lombok.Getter;

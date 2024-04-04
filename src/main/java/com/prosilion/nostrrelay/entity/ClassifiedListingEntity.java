@@ -1,34 +1,42 @@
 package com.prosilion.nostrrelay.entity;
 
-import com.prosilion.nostrrelay.dto.tag.BaseTagDto;
+import com.prosilion.nostrrelay.dto.tag.ClassifiedListingDto;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import nostr.event.Marker;
+import nostr.event.tag.PriceTag;
 import org.springframework.beans.BeanUtils;
-@Getter
-@Setter
+
+import java.util.List;
+@Data
 @NoArgsConstructor
 @Entity
-@Table(name = "base_tag")
-public class BaseTagEntity {
+@Table(name = "classified_listing")
+public class ClassifiedListingEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "\"key\"")
-  private String key;
+  private String title;
+  private String summary;
+  private String location;
 
-  @Column(name = "\"value\"")
-  private String idEvent;
+  @Column(name = "published_at")
+  private Long publishedAt;
 
-  private String recommendedRelayUrl;
-  private Marker marker;
+  //  private List<PriceTag> priceTags;
 
-  public BaseTagDto convertEntityToDto() {
-    BaseTagDto baseTagDto = new BaseTagDto(idEvent);
-    BeanUtils.copyProperties(baseTagDto, this);
-    return baseTagDto;
+  public ClassifiedListingEntity(String title, String summary, String location, Long publishedAt) {
+    this.title = title;
+    this.summary = summary;
+    this.location = location;
+    this.publishedAt = publishedAt;
+  }
+
+  public ClassifiedListingDto convertEntityToDto() {
+    List<PriceTag> priceTags = List.of(new PriceTag("666", "number", "BTC", "frequency"));
+    ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(title, summary, priceTags);
+    BeanUtils.copyProperties(classifiedListingDto, this);
+    return classifiedListingDto;
   }
 }

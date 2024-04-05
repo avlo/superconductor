@@ -3,9 +3,9 @@ package com.prosilion.nostrrelay.service.event.join;
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.dto.tag.BaseTagDto;
 import com.prosilion.nostrrelay.entity.BaseTagEntity;
-import com.prosilion.nostrrelay.entity.join.EventTagEntity;
+import com.prosilion.nostrrelay.entity.join.EventTagEntityJoin;
 import com.prosilion.nostrrelay.repository.BaseTagRepository;
-import com.prosilion.nostrrelay.repository.join.EventTagEntityRepository;
+import com.prosilion.nostrrelay.repository.join.EventTagEntityRepositoryJoin;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import nostr.event.BaseTag;
@@ -21,11 +21,11 @@ import java.util.Optional;
 @Service
 public class EventTagEntityServiceImpl {
   private final BaseTagRepository baseTagRepository;
-  private final EventTagEntityRepository eventTagEntityRepository;
+  private final EventTagEntityRepositoryJoin eventTagEntityRepositoryJoin;
 
   public EventTagEntityServiceImpl() {
     baseTagRepository = ApplicationContextProvider.getApplicationContext().getBean(BaseTagRepository.class);
-    eventTagEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityRepository.class);
+    eventTagEntityRepositoryJoin = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityRepositoryJoin.class);
   }
 
   @Transactional
@@ -48,7 +48,7 @@ public class EventTagEntityServiceImpl {
 
   private void saveEventTags(Long eventId, List<Long> tagIds) {
     for (Long tagId : tagIds) {
-      Optional.of(eventTagEntityRepository.save(new EventTagEntity(eventId, tagId))).orElseThrow(NoResultException::new);
+      Optional.of(eventTagEntityRepositoryJoin.save(new EventTagEntityJoin(eventId, tagId))).orElseThrow(NoResultException::new);
     }
   }
 }

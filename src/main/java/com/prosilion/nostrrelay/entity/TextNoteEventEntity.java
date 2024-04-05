@@ -6,16 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
-import nostr.event.impl.GenericTag;
-import org.springframework.beans.BeanUtils;
+import org.apache.commons.beanutils.BeanUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "text_note_event")
-public class TextNoteEventEntity {
+public class TextNoteEventEntity implements EventEntityDecorator {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
@@ -26,20 +26,9 @@ public class TextNoteEventEntity {
   // List<BaseTag> to be stored in their own join table ENTITY_TAGS
   // private List<BaseTag> tags;
 
-  private String signature;
-  private String eventId;
-  private String pubKey;
-  private Integer kind;
-  private Integer nip;
-  private Long createdAt;
-
-  public TextNoteEventDto convertEntityToDto() {
-    List<BaseTag> tags = List.of(
-        GenericTag.create("e", 1, "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"),
-        GenericTag.create("p", 1, "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")
-    );
-    TextNoteEventDto textNoteEventDto = new TextNoteEventDto(new PublicKey(pubKey), tags, content);
-    BeanUtils.copyProperties(textNoteEventDto, this);
+  public TextNoteEventDto convertEntityToDto(PublicKey publicKey, List<BaseTag> baseTags) throws InvocationTargetException, IllegalAccessException {
+    TextNoteEventDto textNoteEventDto = new TextNoteEventDto(publicKey, baseTags, content);
+    BeanUtils.copyProperty(textNoteEventDto, "content", this.getContent());
     return textNoteEventDto;
   }
 }

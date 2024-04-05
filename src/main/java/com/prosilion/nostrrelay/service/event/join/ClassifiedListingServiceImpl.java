@@ -2,7 +2,7 @@ package com.prosilion.nostrrelay.service.event.join;
 
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.entity.ClassifiedListingEntity;
-import com.prosilion.nostrrelay.entity.join.ClassifiedListingEventTagEntity;
+import com.prosilion.nostrrelay.entity.join.ClassifiedListingEventTagEntityJoin;
 import com.prosilion.nostrrelay.repository.ClassifiedListingRepository;
 import com.prosilion.nostrrelay.repository.join.ClassifiedListingEventTagEntityRepository;
 import jakarta.persistence.NoResultException;
@@ -48,8 +48,8 @@ public class ClassifiedListingServiceImpl {
         .orElseThrow(NoResultException::new);
   }
 
-  private ClassifiedListingEventTagEntity saveClassifiedListingJoin(Long eventId, Long classifiedListingId) {
-    return Optional.of(classifiedListingEventTagEntityRepository.save(new ClassifiedListingEventTagEntity(eventId, classifiedListingId))).orElseThrow(NoResultException::new);
+  private ClassifiedListingEventTagEntityJoin saveClassifiedListingJoin(Long eventId, Long classifiedListingId) {
+    return Optional.of(classifiedListingEventTagEntityRepository.save(new ClassifiedListingEventTagEntityJoin(eventId, classifiedListingId))).orElseThrow(NoResultException::new);
   }
 
   public ClassifiedListingEntity findById(Long id) {

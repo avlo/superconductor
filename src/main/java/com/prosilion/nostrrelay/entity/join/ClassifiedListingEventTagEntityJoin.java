@@ -11,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Entity
 @Table(name = "classified_listing-tag-join")
-public class ClassifiedListingEventTagEntity implements Serializable {
+public class ClassifiedListingEventTagEntityJoin implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -19,7 +19,7 @@ public class ClassifiedListingEventTagEntity implements Serializable {
   private Long classifiedListingEventId;
   private Long classifiedListingId;
 
-  public ClassifiedListingEventTagEntity(Long classifiedListingEventId, Long classifiedListingId) {
+  public ClassifiedListingEventTagEntityJoin(Long classifiedListingEventId, Long classifiedListingId) {
     this.classifiedListingEventId = classifiedListingEventId;
     this.classifiedListingId = classifiedListingId;
   }

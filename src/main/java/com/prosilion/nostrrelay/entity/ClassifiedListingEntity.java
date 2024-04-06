@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
 import nostr.event.tag.PriceTag;
 import org.springframework.beans.BeanUtils;
-
-import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
@@ -24,7 +22,6 @@ public class ClassifiedListingEntity {
   @Column(name = "published_at")
   private Long publishedAt;
 
-
   public ClassifiedListingEntity(String title, String summary, String location, Long publishedAt) {
     this.title = title;
     this.summary = summary;
@@ -34,7 +31,7 @@ public class ClassifiedListingEntity {
 
   public ClassifiedListing convertEntityToDto() {
     // TODO: below
-    List<PriceTag> priceTags = List.of(new PriceTag("666", "number", "BTC", "frequency"));
+    PriceTag priceTags = new PriceTag("666", "number", "BTC", "frequency");
     ClassifiedListing classifiedListingDto = new ClassifiedListing(title, summary, priceTags);
     BeanUtils.copyProperties(classifiedListingDto, this);
     return classifiedListingDto;

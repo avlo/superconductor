@@ -1,17 +1,17 @@
 package com.prosilion.nostrrelay.service.event;
 
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
+import com.prosilion.nostrrelay.dto.ClassifiedListingDto;
+import com.prosilion.nostrrelay.dto.PriceTagDto;
 import com.prosilion.nostrrelay.entity.ClassifiedListingEntity;
 import com.prosilion.nostrrelay.repository.ClassifiedListingEntityRepository;
 import com.prosilion.nostrrelay.service.event.join.ClassifiedListingEntityEventEntityService;
 import jakarta.persistence.NoResultException;
 import lombok.extern.java.Log;
 import nostr.base.ElementAttribute;
-import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
 import nostr.event.message.EventMessage;
-import nostr.event.tag.PriceTag;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -22,11 +22,13 @@ import java.util.logging.Level;
 public class ClassifiedListingEventService<T extends EventMessage> extends EventService<T> {
   private final ClassifiedListingEntityRepository classifiedListingEntityRepository;
   private final ClassifiedListingEntityEventEntityService joinService;
+  private final PriceTagEntityService priceTagEntityService;
 
   public ClassifiedListingEventService(T eventMessage) {
     super(eventMessage);
     classifiedListingEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityRepository.class);
     joinService = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityEventEntityService.class);
+    priceTagEntityService = ApplicationContextProvider.getApplicationContext().getBean(PriceTagEntityService.class);
   }
 
   @Override
@@ -37,28 +39,23 @@ public class ClassifiedListingEventService<T extends EventMessage> extends Event
 
     List<GenericTag> genericTagsOnly = event.getTags().stream().map(baseTag -> (GenericTag) baseTag).toList();
 
-    ClassifiedListing classifiedListing = new ClassifiedListing(
+    ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(
         getReturnVal(genericTagsOnly, "title"),
         getReturnVal(genericTagsOnly, "summary"),
         // TODO:
-        List.of(new PriceTag("price", "$666", "BTC", "frequency"))
+        new PriceTagDto("price", "$666", "BTC", "frequency")
     );
-    classifiedListing.setLocation(getReturnVal(genericTagsOnly, "location"));
-    classifiedListing.setPublishedAt(event.getCreatedAt());
+    classifiedListingDto.setLocation(getReturnVal(genericTagsOnly, "location"));
+    classifiedListingDto.setPublishedAt(event.getCreatedAt());
 
-    ClassifiedListingEntity classifiedListingEntity = saveClassifiedListing(classifiedListing);
+    ClassifiedListingEntity classifiedListingEntity = saveClassifiedListing(classifiedListingDto);
 
     joinService.save(savedEventId, classifiedListingEntity.getId());
+    priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
   }
 
-  private ClassifiedListingEntity saveClassifiedListing(ClassifiedListing classifiedListing) {
-    return Optional.of(classifiedListingEntityRepository.save(
-            new ClassifiedListingEntity(
-                classifiedListing.getTitle(),
-                classifiedListing.getSummary(),
-                classifiedListing.getLocation(),
-                classifiedListing.getPublishedAt())))
-        .orElseThrow(NoResultException::new);
+  private ClassifiedListingEntity saveClassifiedListing(ClassifiedListingDto classifiedListingDto) throws InvocationTargetException, IllegalAccessException {
+    return Optional.of(classifiedListingEntityRepository.save(classifiedListingDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
   }
 
   private static String getReturnVal(List<GenericTag> genericTags, String val) {

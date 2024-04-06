@@ -1,9 +1,9 @@
 package com.prosilion.nostrrelay.entity;
 
-import com.prosilion.nostrrelay.dto.ClassifiedListingDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
 import nostr.event.tag.PriceTag;
 import org.springframework.beans.BeanUtils;
 
@@ -24,7 +24,6 @@ public class ClassifiedListingEntity {
   @Column(name = "published_at")
   private Long publishedAt;
 
-  //  private List<PriceTag> priceTags;
 
   public ClassifiedListingEntity(String title, String summary, String location, Long publishedAt) {
     this.title = title;
@@ -33,9 +32,9 @@ public class ClassifiedListingEntity {
     this.publishedAt = publishedAt;
   }
 
-  public ClassifiedListingDto convertEntityToDto() {
+  public ClassifiedListing convertEntityToDto() {
     List<PriceTag> priceTags = List.of(new PriceTag("666", "number", "BTC", "frequency"));
-    ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(title, summary, priceTags);
+    ClassifiedListing classifiedListingDto = new ClassifiedListing(title, summary, priceTags);
     BeanUtils.copyProperties(classifiedListingDto, this);
     return classifiedListingDto;
   }

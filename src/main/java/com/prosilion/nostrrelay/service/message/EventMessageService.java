@@ -1,9 +1,9 @@
 package com.prosilion.nostrrelay.service.message;
 
-import com.prosilion.nostrrelay.service.event.ClassifiedListingEventServiceImpl;
+import com.prosilion.nostrrelay.service.event.ClassifiedListingEventService;
 import com.prosilion.nostrrelay.service.event.EventService;
 import com.prosilion.nostrrelay.service.event.EventServiceImpl;
-import com.prosilion.nostrrelay.service.event.TextNoteEventServiceImpl;
+import com.prosilion.nostrrelay.service.event.TextNoteEventService;
 import jakarta.websocket.Session;
 import lombok.extern.java.Log;
 import nostr.api.NIP01;
@@ -44,11 +44,11 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
       }
       case TEXT_NOTE -> {
         log.log(Level.INFO, "TEXT_NOTE KIND decoded should match TEXT_NOTE -> [{0}]", kind.getName());
-        return new TextNoteEventServiceImpl<>(eventMessage);
+        return new TextNoteEventService<>(eventMessage);
       }
       case CLASSIFIED_LISTING -> {
         log.log(Level.INFO, "CLASSIFIED_LISTING KIND decoded should match CLASSIFIED_LISTING -> [{0}]", kind.getName());
-        return new ClassifiedListingEventServiceImpl<>(eventMessage);
+        return new ClassifiedListingEventService<>(eventMessage);
       }
 
       default -> throw new AssertionError("Unknown kind: " + kind.getName());

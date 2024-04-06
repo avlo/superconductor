@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EventTagEntityServiceImpl {
+public class EventTagEntityService {
   private final BaseTagRepository baseTagRepository;
   private final EventTagEntityRepositoryJoin join;
 
-  public EventTagEntityServiceImpl() {
+  public EventTagEntityService() {
     baseTagRepository = ApplicationContextProvider.getApplicationContext().getBean(BaseTagRepository.class);
     join = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityRepositoryJoin.class);
   }

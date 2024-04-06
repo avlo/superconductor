@@ -7,11 +7,11 @@ import nostr.event.list.EventList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
-public class SubscriberFilterEventServiceImpl {
+public class SubscriberFilterEventService {
   private final SubscriberFilterEventRepositoryJoin subscriberFilterEventRepositoryJoin;
 
   @Autowired
-  public SubscriberFilterEventServiceImpl(SubscriberFilterEventRepositoryJoin subscriberFilterEventRepositoryJoin) {
+  public SubscriberFilterEventService(SubscriberFilterEventRepositoryJoin subscriberFilterEventRepositoryJoin) {
     this.subscriberFilterEventRepositoryJoin = subscriberFilterEventRepositoryJoin;
   }
 

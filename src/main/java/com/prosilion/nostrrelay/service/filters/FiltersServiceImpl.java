@@ -7,11 +7,11 @@ import nostr.event.list.EventList;
 import nostr.event.list.FiltersList;
 public class FiltersServiceImpl {
   private final FiltersList filtersList;
-  private final SubscriberFilterEventServiceImpl subscriberFilterEventService;
+  private final SubscriberFilterEventService subscriberFilterEventService;
 
   public FiltersServiceImpl(FiltersList filtersList) {
     this.filtersList = filtersList;
-    this.subscriberFilterEventService = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFilterEventServiceImpl.class);
+    this.subscriberFilterEventService = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFilterEventService.class);
   }
 
   public void processFilters(Subscriber subscriber) {

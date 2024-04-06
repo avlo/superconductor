@@ -36,11 +36,11 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<R
     //      }
     //      case TEXT_NOTE -> {
     //        log.log(Level.INFO, "TEXT_NOTE KIND decoded should match TEXT_NOTE -> [{0}]", kind.getName());
-    //        return new TextNoteEventServiceImpl<>(reqMessage);
+    //        return new TextNoteEventService<>(reqMessage);
     //      }
     //      case CLASSIFIED_LISTING -> {
     //        log.log(Level.INFO, "CLASSIFIED_LISTING KIND decoded should match CLASSIFIED_LISTING -> [{0}]", kind.getName());
-    //        return new ClassifiedListingEventServiceImpl<>(reqMessage);
+    //        return new ClassifiedListingEventService<>(reqMessage);
     //      }
     //
     //      default -> throw new AssertionError("Unknown kind: " + kind.getName());

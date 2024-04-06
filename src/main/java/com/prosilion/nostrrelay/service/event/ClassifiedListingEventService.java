@@ -1,8 +1,7 @@
 package com.prosilion.nostrrelay.service.event;
 
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
-import com.prosilion.nostrrelay.service.event.EventServiceImpl;
-import com.prosilion.nostrrelay.service.event.join.ClassifiedListingServiceImpl;
+import com.prosilion.nostrrelay.service.event.join.ClassifiedListingService;
 import lombok.extern.java.Log;
 import nostr.base.ElementAttribute;
 import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
@@ -16,12 +15,12 @@ import java.util.List;
 import java.util.logging.Level;
 
 @Log
-public class ClassifiedListingEventServiceImpl<T extends EventMessage> extends EventServiceImpl<T> {
-  private final ClassifiedListingServiceImpl classifiedListingService;
+public class ClassifiedListingEventService<T extends EventMessage> extends EventServiceImpl<T> {
+  private final ClassifiedListingService classifiedListingService;
 
-  public ClassifiedListingEventServiceImpl(T eventMessage) {
+  public ClassifiedListingEventService(T eventMessage) {
     super(eventMessage);
-    classifiedListingService = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingServiceImpl.class);
+    classifiedListingService = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingService.class);
   }
 
   @Override

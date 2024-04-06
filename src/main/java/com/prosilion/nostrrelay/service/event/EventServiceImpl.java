@@ -5,7 +5,7 @@ import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.dto.EventDto;
 import com.prosilion.nostrrelay.entity.EventEntity;
 import com.prosilion.nostrrelay.repository.EventRepository;
-import com.prosilion.nostrrelay.service.event.join.EventTagEntityServiceImpl;
+import com.prosilion.nostrrelay.service.event.join.EventTagEntityService;
 import jakarta.persistence.NoResultException;
 import lombok.Getter;
 import lombok.extern.java.Log;
@@ -23,14 +23,14 @@ import java.util.logging.Level;
 @Log
 @Getter
 public class EventServiceImpl<T extends EventMessage> implements EventService<T> {
-  private final EventTagEntityServiceImpl eventTagEntityService;
+  private final EventTagEntityService eventTagEntityService;
   private final EventRepository eventRepository;
 
   private final T eventMessage;
 
   public EventServiceImpl(@NotNull T eventMessage) {
     this.eventMessage = eventMessage;
-    eventTagEntityService = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityServiceImpl.class);
+    eventTagEntityService = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityService.class);
     eventRepository = ApplicationContextProvider.getApplicationContext().getBean(EventRepository.class);
     log.log(Level.INFO, "EventService Constructed");
     log.log(Level.INFO, "EVENT message KIND: {0}", ((GenericEvent) eventMessage.getEvent()).getKind());

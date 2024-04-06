@@ -14,11 +14,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 @Service
-public class ClassifiedListingServiceImpl {
+public class ClassifiedListingService {
   private final ClassifiedListingRepository classifiedListingRepository;
   private final ClassifiedListingEntityEventEntityRepositoryJoin join;
 
-  public ClassifiedListingServiceImpl() {
+  public ClassifiedListingService() {
     classifiedListingRepository = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingRepository.class);
     join = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityEventEntityRepositoryJoin.class);
   }

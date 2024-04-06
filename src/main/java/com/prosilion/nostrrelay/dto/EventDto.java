@@ -21,8 +21,8 @@ public class EventDto extends NIP01Event {
   }
 
   public EventEntity convertDtoToEntity() {
-    EventEntity eventEntityImpl = new EventEntity(getId(), getKind(), getNip(), getPubKey().toString(), getCreatedAt(), getSignature().toString(), getContent());
-    BeanUtils.copyProperties(eventEntityImpl, this, "tags");
-    return eventEntityImpl;
+    EventEntity eventEntity = new EventEntity(getId(), getKind(), getNip(), getPubKey().toString(), getCreatedAt(), getSignature().toString(), getContent());
+    BeanUtils.copyProperties(eventEntity, this, "tags");
+    return eventEntity;
   }
 }

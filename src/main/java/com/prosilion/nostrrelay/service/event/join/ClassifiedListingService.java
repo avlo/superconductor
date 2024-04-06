@@ -2,9 +2,9 @@ package com.prosilion.nostrrelay.service.event.join;
 
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.entity.ClassifiedListingEntity;
-import com.prosilion.nostrrelay.entity.join.ClassifiedListingEntityEventEntityJoin;
-import com.prosilion.nostrrelay.repository.ClassifiedListingRepository;
-import com.prosilion.nostrrelay.repository.join.ClassifiedListingEntityEventEntityRepositoryJoin;
+import com.prosilion.nostrrelay.entity.join.ClassifiedListingEntityEventEntity;
+import com.prosilion.nostrrelay.repository.ClassifiedListingEntityRepository;
+import com.prosilion.nostrrelay.repository.join.ClassifiedListingEntityEventEntityRepository;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
@@ -15,22 +15,21 @@ import java.util.Optional;
 
 @Service
 public class ClassifiedListingService {
-  private final ClassifiedListingRepository classifiedListingRepository;
-  private final ClassifiedListingEntityEventEntityRepositoryJoin join;
+  private final ClassifiedListingEntityRepository classifiedListingEntityRepository;
+  private final ClassifiedListingEntityEventEntityRepository join;
 
   public ClassifiedListingService() {
-    classifiedListingRepository = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingRepository.class);
-    join = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityEventEntityRepositoryJoin.class);
+    classifiedListingEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityRepository.class);
+    join = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityEventEntityRepository.class);
   }
 
   @Transactional
   public Long save(ClassifiedListing classifiedListing, Long eventId) throws InvocationTargetException, IllegalAccessException {
-    Long classifiedListingId = saveClassifiedListing(classifiedListing).getId();
-    return saveJoin(eventId, classifiedListingId).getId();
+    return saveJoin(eventId, saveClassifiedListing(classifiedListing).getId()).getId();
   }
 
   private ClassifiedListingEntity saveClassifiedListing(ClassifiedListing classifiedListing) {
-    return Optional.of(classifiedListingRepository.save(
+    return Optional.of(classifiedListingEntityRepository.save(
             new ClassifiedListingEntity(
                 classifiedListing.getTitle(),
                 classifiedListing.getSummary(),
@@ -39,11 +38,11 @@ public class ClassifiedListingService {
         .orElseThrow(NoResultException::new);
   }
 
-  private ClassifiedListingEntityEventEntityJoin saveJoin(Long eventId, Long classifiedListingId) {
-    return Optional.of(join.save(new ClassifiedListingEntityEventEntityJoin(eventId, classifiedListingId))).orElseThrow(NoResultException::new);
+  private ClassifiedListingEntityEventEntity saveJoin(Long eventId, Long classifiedListingId) {
+    return Optional.of(join.save(new ClassifiedListingEntityEventEntity(eventId, classifiedListingId))).orElseThrow(NoResultException::new);
   }
 
   public ClassifiedListingEntity findById(Long id) {
-    return classifiedListingRepository.findById(id).get();
+    return classifiedListingEntityRepository.findById(id).get();
   }
 }

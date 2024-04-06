@@ -3,9 +3,9 @@ package com.prosilion.nostrrelay.service.event.join;
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.dto.BaseTagDto;
 import com.prosilion.nostrrelay.entity.BaseTagEntity;
-import com.prosilion.nostrrelay.entity.join.EventTagEntityJoin;
-import com.prosilion.nostrrelay.repository.BaseTagRepository;
-import com.prosilion.nostrrelay.repository.join.EventTagEntityRepositoryJoin;
+import com.prosilion.nostrrelay.entity.join.EventEntityTagEntity;
+import com.prosilion.nostrrelay.repository.BaseTagEntityRepository;
+import com.prosilion.nostrrelay.repository.join.EventEntityTagEntityRepository;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import nostr.event.BaseTag;
@@ -19,16 +19,16 @@ import java.util.Optional;
 
 @Service
 public class EventTagEntityService {
-  private final BaseTagRepository baseTagRepository;
-  private final EventTagEntityRepositoryJoin join;
+  private final BaseTagEntityRepository baseTagEntityRepository;
+  private final EventEntityTagEntityRepository join;
 
   public EventTagEntityService() {
-    baseTagRepository = ApplicationContextProvider.getApplicationContext().getBean(BaseTagRepository.class);
-    join = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityRepositoryJoin.class);
+    baseTagEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(BaseTagEntityRepository.class);
+    join = ApplicationContextProvider.getApplicationContext().getBean(EventEntityTagEntityRepository.class);
   }
 
   @Transactional
-  public Long save(List<BaseTag> tags, Long id) throws InvocationTargetException, IllegalAccessException {
+  public Long saveBaseTags(List<BaseTag> tags, Long id) throws InvocationTargetException, IllegalAccessException {
     List<Long> savedTagIds = saveTags(tags);
     saveEventTags(id, savedTagIds);
     return id;
@@ -40,14 +40,14 @@ public class EventTagEntityService {
       BaseTagDto dto = new BaseTagDto(((ValueTag) baseTag).getValue());
       dto.setKey(baseTag.getCode());
       BaseTagEntity entity = dto.convertDtoToEntity();
-      savedIds.add(Optional.of(baseTagRepository.save(entity)).orElseThrow(NoResultException::new).getId());
+      savedIds.add(Optional.of(baseTagEntityRepository.save(entity)).orElseThrow(NoResultException::new).getId());
     }
     return savedIds;
   }
 
   private void saveEventTags(Long eventId, List<Long> tagIds) {
     for (Long tagId : tagIds) {
-      Optional.of(join.save(new EventTagEntityJoin(eventId, tagId))).orElseThrow(NoResultException::new);
+      Optional.of(join.save(new EventEntityTagEntity(eventId, tagId))).orElseThrow(NoResultException::new);
     }
   }
 }

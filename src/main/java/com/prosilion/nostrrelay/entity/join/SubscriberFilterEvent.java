@@ -16,7 +16,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter_event-join")
-public class SubscriberFilterEventJoin implements Serializable {
+public class SubscriberFilterEvent implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -24,7 +24,7 @@ public class SubscriberFilterEventJoin implements Serializable {
   private Long subscriberId;
   private String eventId;
 
-  public SubscriberFilterEventJoin(Subscriber subscriber, String eventId) {
+  public SubscriberFilterEvent(Subscriber subscriber, String eventId) {
     this.subscriberId = subscriber.getId();
     this.eventId = eventId;
   }

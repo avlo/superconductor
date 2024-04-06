@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.dto.EventDto;
 import com.prosilion.nostrrelay.entity.EventEntity;
-import com.prosilion.nostrrelay.repository.EventRepository;
+import com.prosilion.nostrrelay.repository.EventEntityRepository;
 import com.prosilion.nostrrelay.service.event.join.EventTagEntityService;
 import jakarta.persistence.NoResultException;
 import lombok.Getter;
@@ -24,14 +24,14 @@ import java.util.logging.Level;
 @Getter
 public class EventServiceImpl<T extends EventMessage> implements EventService<T> {
   private final EventTagEntityService eventTagEntityService;
-  private final EventRepository eventRepository;
+  private final EventEntityRepository eventEntityRepository;
 
   private final T eventMessage;
 
   public EventServiceImpl(@NotNull T eventMessage) {
     this.eventMessage = eventMessage;
     eventTagEntityService = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityService.class);
-    eventRepository = ApplicationContextProvider.getApplicationContext().getBean(EventRepository.class);
+    eventEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(EventEntityRepository.class);
     log.log(Level.INFO, "EventService Constructed");
     log.log(Level.INFO, "EVENT message KIND: {0}", ((GenericEvent) eventMessage.getEvent()).getKind());
     log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
@@ -43,23 +43,23 @@ public class EventServiceImpl<T extends EventMessage> implements EventService<T>
   }
 
   protected Long saveEventEntity(GenericEvent event) throws InvocationTargetException, IllegalAccessException, NoResultException {
-    List<BaseTag> baseTags = event.getTags().stream()
+    List<BaseTag> baseTagsOnly = event.getTags().stream()
         .filter(baseTag -> List.of("a", "p", "e").contains(baseTag.getCode()))
         .toList();
-    event.getTags().removeAll(baseTags);
+    event.getTags().removeAll(baseTagsOnly);
 
-    EventDto eventDto = new EventDto(
+    EventDto eventToSave = new EventDto(
         event.getPubKey(),
         event.getId(),
         Kind.valueOf(event.getKind()),
         event.getNip(),
         event.getCreatedAt(),
         event.getSignature(),
-        baseTags,
+        baseTagsOnly,
         event.getContent()
     );
 
-    EventEntity eventEntityImpl = Optional.of(eventRepository.save(eventDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
-    return eventTagEntityService.save(baseTags, eventEntityImpl.getId());
+    EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
+    return eventTagEntityService.saveBaseTags(baseTagsOnly, savedEntity.getId());
   }
 }

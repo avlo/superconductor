@@ -10,17 +10,17 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "event-base_tag-join")
-public class EventTagEntityJoin implements Serializable {
+@Table(name = "classified_listing-event-join")
+public class ClassifiedListingEntityEventEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Long eventId;
-  private Long baseTagId;
+  private Long classifiedListingId;
 
-  public EventTagEntityJoin(Long eventId, Long baseTagId) {
+  public ClassifiedListingEntityEventEntity(Long eventId, Long classifiedListingId) {
     this.eventId = eventId;
-    this.baseTagId = baseTagId;
+    this.classifiedListingId = classifiedListingId;
   }
 }

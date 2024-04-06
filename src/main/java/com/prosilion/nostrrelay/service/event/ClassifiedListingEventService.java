@@ -29,14 +29,14 @@ public class ClassifiedListingEventService<T extends EventMessage> extends Event
     GenericEvent event = (GenericEvent) getEventMessage().getEvent();
     Long savedEventId = super.saveEventEntity(event);
 
-    List<GenericTag> genericTags = event.getTags().stream().map(baseTag -> (GenericTag) baseTag).toList();
+    List<GenericTag> genericTagsOnly = event.getTags().stream().map(baseTag -> (GenericTag) baseTag).toList();
 
     ClassifiedListing classifiedListing = new ClassifiedListing(
-        getReturnVal(genericTags, "title"),
-        getReturnVal(genericTags, "summary"),
+        getReturnVal(genericTagsOnly, "title"),
+        getReturnVal(genericTagsOnly, "summary"),
         List.of(new PriceTag("price", "$666", "BTC", "frequency"))
     );
-    classifiedListing.setLocation(getReturnVal(genericTags, "location"));
+    classifiedListing.setLocation(getReturnVal(genericTagsOnly, "location"));
     classifiedListing.setPublishedAt(event.getCreatedAt());
 
     classifiedListingService.save(classifiedListing, savedEventId);

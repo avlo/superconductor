@@ -19,7 +19,7 @@ import java.util.List;
 class TextNoteEventRepositoryTest {
 
   @Autowired
-  EventRepository textNoteEventRepository;
+  EventEntityRepository textNoteEventEntityRepository;
   EventDto textNoteEventDto;
 
   @BeforeEach
@@ -43,24 +43,24 @@ class TextNoteEventRepositoryTest {
 
   @Test
   void saveEventTest() {
-    Assertions.assertDoesNotThrow(() -> textNoteEventRepository.save(textNoteEventDto.convertDtoToEntity()));
+    Assertions.assertDoesNotThrow(() -> textNoteEventEntityRepository.save(textNoteEventDto.convertDtoToEntity()));
   }
 
   @Test
   void convertReturnedEvenToDtoTest() throws InvocationTargetException, IllegalAccessException {
-    textNoteEventRepository.save(textNoteEventDto.convertDtoToEntity());
-    Assertions.assertTrue(textNoteEventRepository.findByContent("CONTENT").isPresent());
+    textNoteEventEntityRepository.save(textNoteEventDto.convertDtoToEntity());
+    Assertions.assertTrue(textNoteEventEntityRepository.findByContent("CONTENT").isPresent());
   }
 
   @Test
   void notFoundEntityTest() throws InvocationTargetException, IllegalAccessException {
-    textNoteEventRepository.save(textNoteEventDto.convertDtoToEntity());
-    Assertions.assertFalse(textNoteEventRepository.findByContent("CONTENT_SHOULD_NOT_FIND").isPresent());
+    textNoteEventEntityRepository.save(textNoteEventDto.convertDtoToEntity());
+    Assertions.assertFalse(textNoteEventEntityRepository.findByContent("CONTENT_SHOULD_NOT_FIND").isPresent());
   }
 
   @Test
   void entityToDtoConversionTest() throws InvocationTargetException, IllegalAccessException {
-    textNoteEventRepository.save(textNoteEventDto.convertDtoToEntity());
-    Assertions.assertTrue(textNoteEventRepository.findByContent("CONTENT").get().getContent().contains("CONTENT"));
+    textNoteEventEntityRepository.save(textNoteEventDto.convertDtoToEntity());
+    Assertions.assertTrue(textNoteEventEntityRepository.findByContent("CONTENT").get().getContent().contains("CONTENT"));
   }
 }

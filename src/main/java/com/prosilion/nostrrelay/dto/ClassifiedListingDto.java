@@ -1,20 +1,21 @@
-package com.prosilion.nostrrelay.dto.tag;
+package com.prosilion.nostrrelay.dto;
 
 import com.prosilion.nostrrelay.entity.BaseTagEntity;
 import lombok.Getter;
 import lombok.Setter;
-import nostr.event.tag.EventTag;
+import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
+import nostr.event.tag.PriceTag;
 import org.apache.commons.beanutils.BeanUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 @Setter
 @Getter
-public class BaseTagDto extends EventTag {
-  private String key;
+public class ClassifiedListingDto extends ClassifiedListing {
 
-  public BaseTagDto(String id) {
-    super(id);
+  public ClassifiedListingDto(String title, String summary, List<PriceTag> priceTags) {
+    super(title, summary, priceTags);
   }
 
   public BaseTagEntity convertDtoToEntity() throws InvocationTargetException, IllegalAccessException {

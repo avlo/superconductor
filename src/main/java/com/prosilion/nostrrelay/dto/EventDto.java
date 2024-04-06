@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.dto.event;
+package com.prosilion.nostrrelay.dto;
 
 import com.prosilion.nostrrelay.entity.EventEntity;
 import nostr.base.PublicKey;

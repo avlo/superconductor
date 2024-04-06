@@ -1,7 +1,7 @@
 package com.prosilion.nostrrelay.service.event.join;
 
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
-import com.prosilion.nostrrelay.dto.tag.BaseTagDto;
+import com.prosilion.nostrrelay.dto.BaseTagDto;
 import com.prosilion.nostrrelay.entity.BaseTagEntity;
 import com.prosilion.nostrrelay.entity.join.EventTagEntityJoin;
 import com.prosilion.nostrrelay.repository.BaseTagRepository;
@@ -20,11 +20,11 @@ import java.util.Optional;
 @Service
 public class EventTagEntityServiceImpl {
   private final BaseTagRepository baseTagRepository;
-  private final EventTagEntityRepositoryJoin eventTagEntityRepositoryJoin;
+  private final EventTagEntityRepositoryJoin join;
 
   public EventTagEntityServiceImpl() {
     baseTagRepository = ApplicationContextProvider.getApplicationContext().getBean(BaseTagRepository.class);
-    eventTagEntityRepositoryJoin = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityRepositoryJoin.class);
+    join = ApplicationContextProvider.getApplicationContext().getBean(EventTagEntityRepositoryJoin.class);
   }
 
   @Transactional
@@ -47,7 +47,7 @@ public class EventTagEntityServiceImpl {
 
   private void saveEventTags(Long eventId, List<Long> tagIds) {
     for (Long tagId : tagIds) {
-      Optional.of(eventTagEntityRepositoryJoin.save(new EventTagEntityJoin(eventId, tagId))).orElseThrow(NoResultException::new);
+      Optional.of(join.save(new EventTagEntityJoin(eventId, tagId))).orElseThrow(NoResultException::new);
     }
   }
 }

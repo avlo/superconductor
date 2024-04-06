@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.service.event.classifiedlisting;
+package com.prosilion.nostrrelay.service.event;
 
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.service.event.EventServiceImpl;
@@ -28,7 +28,7 @@ public class ClassifiedListingEventServiceImpl<T extends EventMessage> extends E
   public void processIncoming() throws InvocationTargetException, IllegalAccessException {
     log.log(Level.INFO, "processing incoming CLASSIFIED_LISTING: [{0}]", getEventMessage());
     GenericEvent event = (GenericEvent) getEventMessage().getEvent();
-    Long savedEventId = saveEventEntity(event);
+    Long savedEventId = super.saveEventEntity(event);
 
     List<GenericTag> genericTags = event.getTags().stream().map(baseTag -> (GenericTag) baseTag).toList();
 
@@ -45,7 +45,6 @@ public class ClassifiedListingEventServiceImpl<T extends EventMessage> extends E
 
   private static String getReturnVal(List<GenericTag> genericTags, String val) {
     List<ElementAttribute> atts = genericTags.stream().filter(tag -> tag.getCode().equals(val)).findFirst().get().getAttributes();
-    String eaa = (String) atts.stream().map(ea -> ea.getValue()).findFirst().get();
-    return eaa;
+    return (String) atts.stream().map(ea -> ea.getValue()).findFirst().get();
   }
 }

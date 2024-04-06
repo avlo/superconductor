@@ -1,9 +1,8 @@
 package com.prosilion.nostrrelay.repository;
 
-import com.prosilion.nostrrelay.dto.event.EventDto;
+import com.prosilion.nostrrelay.dto.EventDto;
 import nostr.event.BaseTag;
 import nostr.event.Kind;
-import nostr.event.NIP01Event;
 import nostr.event.impl.GenericTag;
 import nostr.id.IIdentity;
 import nostr.id.Identity;

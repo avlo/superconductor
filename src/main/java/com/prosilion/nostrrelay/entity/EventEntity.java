@@ -1,6 +1,6 @@
 package com.prosilion.nostrrelay.entity;
 
-import com.prosilion.nostrrelay.dto.event.EventDto;
+import com.prosilion.nostrrelay.dto.EventDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "event")
-public class EventEntity implements EventEntityIf {
+public class EventEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;

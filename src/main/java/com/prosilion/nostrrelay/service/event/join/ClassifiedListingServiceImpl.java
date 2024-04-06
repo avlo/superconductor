@@ -7,29 +7,26 @@ import com.prosilion.nostrrelay.repository.ClassifiedListingRepository;
 import com.prosilion.nostrrelay.repository.join.ClassifiedListingEntityEventEntityRepositoryJoin;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
-import nostr.event.impl.ClassifiedListingEvent;
 import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
-import nostr.event.tag.PriceTag;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ClassifiedListingServiceImpl {
   private final ClassifiedListingRepository classifiedListingRepository;
-  private final ClassifiedListingEntityEventEntityRepositoryJoin joinTable;
+  private final ClassifiedListingEntityEventEntityRepositoryJoin join;
 
   public ClassifiedListingServiceImpl() {
     classifiedListingRepository = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingRepository.class);
-    joinTable = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityEventEntityRepositoryJoin.class);
+    join = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityEventEntityRepositoryJoin.class);
   }
 
   @Transactional
   public Long save(ClassifiedListing classifiedListing, Long eventId) throws InvocationTargetException, IllegalAccessException {
     Long classifiedListingId = saveClassifiedListing(classifiedListing).getId();
-    return saveClassifiedListingJoin(eventId, classifiedListingId).getId();
+    return saveJoin(eventId, classifiedListingId).getId();
   }
 
   private ClassifiedListingEntity saveClassifiedListing(ClassifiedListing classifiedListing) {
@@ -42,8 +39,8 @@ public class ClassifiedListingServiceImpl {
         .orElseThrow(NoResultException::new);
   }
 
-  private ClassifiedListingEntityEventEntityJoin saveClassifiedListingJoin(Long eventId, Long classifiedListingId) {
-    return Optional.of(joinTable.save(new ClassifiedListingEntityEventEntityJoin(eventId, classifiedListingId))).orElseThrow(NoResultException::new);
+  private ClassifiedListingEntityEventEntityJoin saveJoin(Long eventId, Long classifiedListingId) {
+    return Optional.of(join.save(new ClassifiedListingEntityEventEntityJoin(eventId, classifiedListingId))).orElseThrow(NoResultException::new);
   }
 
   public ClassifiedListingEntity findById(Long id) {

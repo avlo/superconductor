@@ -1,6 +1,6 @@
 package com.prosilion.nostrrelay.entity;
 
-import com.prosilion.nostrrelay.dto.tag.ClassifiedListingDto;
+import com.prosilion.nostrrelay.dto.ClassifiedListingDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

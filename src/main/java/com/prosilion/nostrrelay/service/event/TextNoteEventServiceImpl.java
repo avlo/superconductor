@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.service.event.textnote;
+package com.prosilion.nostrrelay.service.event;
 
 import com.prosilion.nostrrelay.service.event.EventServiceImpl;
 import lombok.extern.java.Log;

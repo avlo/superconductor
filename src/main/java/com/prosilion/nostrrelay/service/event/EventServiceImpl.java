@@ -2,7 +2,7 @@ package com.prosilion.nostrrelay.service.event;
 
 import com.google.gson.Gson;
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
-import com.prosilion.nostrrelay.dto.event.EventDto;
+import com.prosilion.nostrrelay.dto.EventDto;
 import com.prosilion.nostrrelay.entity.EventEntity;
 import com.prosilion.nostrrelay.repository.EventRepository;
 import com.prosilion.nostrrelay.service.event.join.EventTagEntityServiceImpl;

@@ -2,7 +2,7 @@ package com.prosilion.nostrrelay.service.message;
 
 import com.prosilion.nostrrelay.service.event.ClassifiedListingEventService;
 import com.prosilion.nostrrelay.service.event.EventService;
-import com.prosilion.nostrrelay.service.event.EventServiceImpl;
+import com.prosilion.nostrrelay.service.event.EventServiceIF;
 import com.prosilion.nostrrelay.service.event.TextNoteEventService;
 import jakarta.websocket.Session;
 import lombok.extern.java.Log;
@@ -17,7 +17,7 @@ import java.util.logging.Level;
 
 @Log
 public class EventMessageService<T extends EventMessage> implements MessageService<EventMessage> {
-  private final EventService<T> eventService;
+  private final EventServiceIF<T> eventService;
   private final T eventMessage;
 
   public EventMessageService(@NotNull T eventMessage) {
@@ -36,11 +36,11 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
     return NIP01.createEventMessage(eventMessage.getEvent(), eventMessage.getSubscriptionId());
   }
 
-  private @NotNull EventService<T> createEventService(@NotNull Kind kind, T eventMessage) {
+  private @NotNull EventServiceIF<T> createEventService(@NotNull Kind kind, T eventMessage) {
     switch (kind) {
       case SET_METADATA -> {
         log.log(Level.INFO, "SET_METADATA KIND decoded should match SET_METADATA -> [{0}]", kind.getName());
-        return new EventServiceImpl<>(eventMessage);
+        return new EventService<>(eventMessage);
       }
       case TEXT_NOTE -> {
         log.log(Level.INFO, "TEXT_NOTE KIND decoded should match TEXT_NOTE -> [{0}]", kind.getName());

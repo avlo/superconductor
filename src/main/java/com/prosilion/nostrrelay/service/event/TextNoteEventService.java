@@ -8,7 +8,7 @@ import nostr.event.message.EventMessage;
 import java.lang.reflect.InvocationTargetException;
 
 @Log
-public class TextNoteEventService<T extends EventMessage> extends EventServiceImpl<T> {
+public class TextNoteEventService<T extends EventMessage> extends EventService<T> {
 
   public TextNoteEventService(T eventMessage) {
     super(eventMessage);

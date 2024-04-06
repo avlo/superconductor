@@ -32,7 +32,7 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<R
     //    switch (kind) {
     //      case SET_METADATA -> {
     //        log.log(Level.INFO, "SET_METADATA KIND decoded should match SET_METADATA -> [{0}]", kind.getName());
-    //        return new EventServiceImpl<>(reqMessage);
+    //        return new EventService<>(reqMessage);
     //      }
     //      case TEXT_NOTE -> {
     //        log.log(Level.INFO, "TEXT_NOTE KIND decoded should match TEXT_NOTE -> [{0}]", kind.getName());

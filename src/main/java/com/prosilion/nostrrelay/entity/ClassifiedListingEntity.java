@@ -33,6 +33,7 @@ public class ClassifiedListingEntity {
   }
 
   public ClassifiedListing convertEntityToDto() {
+    // TODO: below
     List<PriceTag> priceTags = List.of(new PriceTag("666", "number", "BTC", "frequency"));
     ClassifiedListing classifiedListingDto = new ClassifiedListing(title, summary, priceTags);
     BeanUtils.copyProperties(classifiedListingDto, this);

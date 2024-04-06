@@ -1,23 +1,23 @@
 package com.prosilion.nostrrelay.service.filters;
 
 import com.prosilion.nostrrelay.entity.Subscriber;
-import com.prosilion.nostrrelay.entity.join.SubscriberFilterEvent;
-import com.prosilion.nostrrelay.repository.join.SubscriberFilterEventRepository;
+import com.prosilion.nostrrelay.entity.join.SubscriberFilterEventJoin;
+import com.prosilion.nostrrelay.repository.join.SubscriberFilterEventRepositoryJoin;
 import nostr.event.list.EventList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
 public class SubscriberFilterEventServiceImpl {
-  private final SubscriberFilterEventRepository subscriberFilterEventRepository;
+  private final SubscriberFilterEventRepositoryJoin subscriberFilterEventRepositoryJoin;
 
   @Autowired
-  public SubscriberFilterEventServiceImpl(SubscriberFilterEventRepository subscriberFilterEventRepository) {
-    this.subscriberFilterEventRepository = subscriberFilterEventRepository;
+  public SubscriberFilterEventServiceImpl(SubscriberFilterEventRepositoryJoin subscriberFilterEventRepositoryJoin) {
+    this.subscriberFilterEventRepositoryJoin = subscriberFilterEventRepositoryJoin;
   }
 
   public void process(Subscriber subscriber, EventList eventList) {
     eventList.getList().iterator().forEachRemaining(genericEvent ->
-        subscriberFilterEventRepository.save(
-            new SubscriberFilterEvent(subscriber, genericEvent.getId())));
+        subscriberFilterEventRepositoryJoin.save(
+            new SubscriberFilterEventJoin(subscriber, genericEvent.getId())));
   }
 }

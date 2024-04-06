@@ -32,7 +32,8 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
 
   @Override
   public EventMessage processIncoming(Session session) throws InvocationTargetException, IllegalAccessException {
-    return NIP01.createEventMessage(eventService.processIncoming(), eventMessage.getSubscriptionId());
+    eventService.processIncoming();
+    return NIP01.createEventMessage(eventMessage.getEvent(), eventMessage.getSubscriptionId());
   }
 
   private @NotNull EventService<T> createEventService(@NotNull Kind kind, T eventMessage) {

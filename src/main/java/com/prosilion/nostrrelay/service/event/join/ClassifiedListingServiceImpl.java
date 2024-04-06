@@ -2,9 +2,9 @@ package com.prosilion.nostrrelay.service.event.join;
 
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.entity.ClassifiedListingEntity;
-import com.prosilion.nostrrelay.entity.join.ClassifiedListingEventTagEntityJoin;
+import com.prosilion.nostrrelay.entity.join.ClassifiedListingEntityEventEntityJoin;
 import com.prosilion.nostrrelay.repository.ClassifiedListingRepository;
-import com.prosilion.nostrrelay.repository.join.ClassifiedListingEventTagEntityRepository;
+import com.prosilion.nostrrelay.repository.join.ClassifiedListingEntityEventEntityRepositoryJoin;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import nostr.event.impl.ClassifiedListingEvent;
@@ -19,21 +19,15 @@ import java.util.Optional;
 @Service
 public class ClassifiedListingServiceImpl {
   private final ClassifiedListingRepository classifiedListingRepository;
-  private final ClassifiedListingEventTagEntityRepository classifiedListingEventTagEntityRepository;
+  private final ClassifiedListingEntityEventEntityRepositoryJoin joinTable;
 
   public ClassifiedListingServiceImpl() {
     classifiedListingRepository = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingRepository.class);
-    classifiedListingEventTagEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEventTagEntityRepository.class);
+    joinTable = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityEventEntityRepositoryJoin.class);
   }
 
   @Transactional
-  public Long save(ClassifiedListingEvent event, Long eventId) throws InvocationTargetException, IllegalAccessException {
-    PriceTag priceTag = new PriceTag("price", "$666", "BTC", "frequency");
-    ClassifiedListing classifiedListing = new ClassifiedListing(
-        event.getClassifiedListing().getTitle(),
-        event.getClassifiedListing().getSummary(), List.of(priceTag));
-    classifiedListing.setLocation(event.getClassifiedListing().getLocation());
-    classifiedListing.setPublishedAt(event.getClassifiedListing().getPublishedAt());
+  public Long save(ClassifiedListing classifiedListing, Long eventId) throws InvocationTargetException, IllegalAccessException {
     Long classifiedListingId = saveClassifiedListing(classifiedListing).getId();
     return saveClassifiedListingJoin(eventId, classifiedListingId).getId();
   }
@@ -48,8 +42,8 @@ public class ClassifiedListingServiceImpl {
         .orElseThrow(NoResultException::new);
   }
 
-  private ClassifiedListingEventTagEntityJoin saveClassifiedListingJoin(Long eventId, Long classifiedListingId) {
-    return Optional.of(classifiedListingEventTagEntityRepository.save(new ClassifiedListingEventTagEntityJoin(eventId, classifiedListingId))).orElseThrow(NoResultException::new);
+  private ClassifiedListingEntityEventEntityJoin saveClassifiedListingJoin(Long eventId, Long classifiedListingId) {
+    return Optional.of(joinTable.save(new ClassifiedListingEntityEventEntityJoin(eventId, classifiedListingId))).orElseThrow(NoResultException::new);
   }
 
   public ClassifiedListingEntity findById(Long id) {

@@ -9,7 +9,6 @@ import com.prosilion.nostrrelay.repository.join.EventTagEntityRepositoryJoin;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import nostr.event.BaseTag;
-import nostr.event.impl.GenericEvent;
 import nostr.event.tag.ValueTag;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +28,15 @@ public class EventTagEntityServiceImpl {
   }
 
   @Transactional
-  public Long save(GenericEvent genericEvent, Long id) throws InvocationTargetException, IllegalAccessException {
-    List<Long> savedTagIds = saveTags(genericEvent);
+  public Long save(List<BaseTag> tags, Long id) throws InvocationTargetException, IllegalAccessException {
+    List<Long> savedTagIds = saveTags(tags);
     saveEventTags(id, savedTagIds);
     return id;
   }
 
-  private List<Long> saveTags(GenericEvent event) throws InvocationTargetException, IllegalAccessException, NoResultException {
+  private List<Long> saveTags(List<BaseTag> tags) throws InvocationTargetException, IllegalAccessException, NoResultException {
     List<Long> savedIds = new ArrayList<>();
-    for (BaseTag baseTag : event.getTags()) {
+    for (BaseTag baseTag : tags) {
       BaseTagDto dto = new BaseTagDto(((ValueTag) baseTag).getValue());
       dto.setKey(baseTag.getCode());
       BaseTagEntity entity = dto.convertDtoToEntity();

@@ -1,7 +1,9 @@
 package com.prosilion.nostrrelay.repository;
 
-import com.prosilion.nostrrelay.dto.event.TextNoteEventDto;
+import com.prosilion.nostrrelay.dto.event.EventDto;
 import nostr.event.BaseTag;
+import nostr.event.Kind;
+import nostr.event.NIP01Event;
 import nostr.event.impl.GenericTag;
 import nostr.id.IIdentity;
 import nostr.id.Identity;
@@ -18,8 +20,8 @@ import java.util.List;
 class TextNoteEventRepositoryTest {
 
   @Autowired
-  TextNoteEventRepository textNoteEventRepository;
-  TextNoteEventDto textNoteEventDto;
+  EventRepository textNoteEventRepository;
+  EventDto textNoteEventDto;
 
   @BeforeEach
   void setUp() {
@@ -28,7 +30,15 @@ class TextNoteEventRepositoryTest {
         GenericTag.create("p", 1, "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")
     );
     IIdentity sender = Identity.getInstance();
-    textNoteEventDto = new TextNoteEventDto(sender.getPublicKey(), tags, "CONTENT");
+    textNoteEventDto = new EventDto(
+        sender.getPublicKey(),
+        "SOME ID",
+        Kind.TEXT_NOTE,
+        1,
+        12345667L,
+        null,
+        tags,
+        "CONTENT");
     textNoteEventDto.setId("ID");
   }
 

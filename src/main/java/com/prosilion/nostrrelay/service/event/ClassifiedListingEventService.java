@@ -54,7 +54,7 @@ public class ClassifiedListingEventService<T extends EventMessage> extends Event
     priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
   }
 
-  private ClassifiedListingEntity saveClassifiedListing(ClassifiedListingDto classifiedListingDto) throws InvocationTargetException, IllegalAccessException {
+  private ClassifiedListingEntity saveClassifiedListing(ClassifiedListingDto classifiedListingDto) {
     return Optional.of(classifiedListingEntityRepository.save(classifiedListingDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
   }
 

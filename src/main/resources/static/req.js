@@ -62,7 +62,7 @@ async function createDigest(message) {
         .join(""); // convert bytes to hex string
 }
 
-function send() {
+function hashThenSend() {
     const concat = [
         '0',
         // $("#pubkey").val(),
@@ -88,10 +88,14 @@ function replaceHash(id_hash) {
         + "\"" + id_hash + "\","
         + JSON.stringify(
             {
-                // 'kind': $("#kind").val(),
-                // 'content': $("#content").val(),
-                // 'created_at': Date.now(),
-                'ids': [ $("#content").val() ]
+                'ids': [$("#content").val(), "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc1234", "432101ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc5678"],
+                'authors': [$("#authors1").val(), $("#authors2").val()],
+                'kinds': [1,23,3],
+                '#e': [$("#referencedEvents").val(), "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc1234"],
+                '#p': [$("#referencePubKeys").val()],
+                'since': '1712006760',
+                'until': '1712006761',
+                'limit': '1'
             }
         )
         + "]";
@@ -114,7 +118,7 @@ $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#connect").click(() => connect());
     $("#disconnect").click(() => disconnect());
-    $("#send").click(() => send());
+    $("#send").click(() => hashThenSend());
 });
 
 function syntaxHighlight(json) {

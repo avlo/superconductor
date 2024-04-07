@@ -75,8 +75,9 @@ function hashThenSend() {
         $("#content").val(),
         $("#location").val(),
         $("#t").val(),
-        $("#price").val(),
+        $("#number").val(),
         $("#currency").val(),
+        $("#frequency").val(),
         $("#e_tag").val(),
         $("#p_tag").val(),
     ].join(",");
@@ -102,8 +103,7 @@ function replaceHash(id_hash) {
                     ['title', $("#title").val()],
                     ['summary', $("#summary").val()],
                     ['location', $("#location").val()],
-                    ['price', $("#price").val()],
-                    ['currency', $("#currency").val()],
+                    ['price', $("#number").val(), $("#currency").val(), $("#frequency").val()],
                     ['e', $("#e_tag").val()],
                     ['p', $("#p_tag").val()]
                 ],

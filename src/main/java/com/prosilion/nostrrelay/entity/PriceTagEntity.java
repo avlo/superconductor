@@ -1,7 +1,6 @@
 package com.prosilion.nostrrelay.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,13 +16,12 @@ public class PriceTagEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String price;
   private String number;
   private String currency;
   private String frequency;
 
   public PriceTag convertEntityToDto() {
-    PriceTag priceTag = PriceTag.builder().price(price).number(number).currency(currency).frequency(frequency).build();
+    PriceTag priceTag = PriceTag.builder().number(number).currency(currency).frequency(frequency).build();
     BeanUtils.copyProperties(priceTag, this);
     return priceTag;
   }

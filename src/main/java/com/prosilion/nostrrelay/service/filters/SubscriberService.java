@@ -3,17 +3,20 @@ package com.prosilion.nostrrelay.service.filters;
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.entity.Subscriber;
 import com.prosilion.nostrrelay.repository.SubscriberRepository;
+import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 
-@Service
-public class SubscriberServiceImpl {
-  private SubscriberRepository subscriberRepository;
+import java.util.Optional;
 
-  public SubscriberServiceImpl() {
+@Service
+public class SubscriberService {
+  private final SubscriberRepository subscriberRepository;
+
+  public SubscriberService() {
     subscriberRepository = ApplicationContextProvider.getApplicationContext().getBean(SubscriberRepository.class);
   }
 
-  public void save(Subscriber subscriber) {
-    subscriberRepository.save(subscriber);
+  public Subscriber save(Subscriber subscriber) {
+    return Optional.of(subscriberRepository.save(subscriber)).orElseThrow(NoResultException::new);
   }
 }

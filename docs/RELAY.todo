@@ -18,7 +18,7 @@ nostr-relay
       <tags, as an array of arrays of non-null strings>,
       <content, as a string>
     ]
-  ☐ generalize generation of signature
+  ✔ generalize generation of signature @done (24-04-06 20:50)
     "sig": <64-bytes lowercase hex of the signature of the sha256 hash of the serialized event data, which is the same as the "id" field>
 ☐ integration tests
   ☐ round trip (on REQ event)
@@ -29,9 +29,9 @@ nostr-relay
 ☐ general cleanup
    event saver POC added and working, needs refinement
      proper nostr class to save, either
-       ☐ TextNotEvent or
-       ☐ NIPO01Event
-       ☐ other?
+       ✔ TextNotEvent or @done (24-04-06 20:50)
+       ✘ NIPO01Event @cancelled (24-04-06 20:50)
+       ✘ other? @cancelled (24-04-06 20:50)
      standard framework for ease of adding/customizing new NIPs 
    ☐ potentially @ControllerAdvice for JPA related stuff
    ☐ potentially EntityManagerFactoryUtils

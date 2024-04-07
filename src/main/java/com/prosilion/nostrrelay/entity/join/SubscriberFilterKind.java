@@ -10,17 +10,17 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "subscriber-filter_event-join")
-public class SubscriberFilterEvent implements Serializable {
+@Table(name = "subscriber-filter_kind-join")
+public class SubscriberFilterKind implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Long filterId;
-  private String eventId;
+  private Integer kindId;
 
-  public SubscriberFilterEvent(Long filterId, String eventId) {
+  public SubscriberFilterKind(Long filterId, Integer kindId) {
     this.filterId = filterId;
-    this.eventId = eventId;
+    this.kindId = kindId;
   }
 }

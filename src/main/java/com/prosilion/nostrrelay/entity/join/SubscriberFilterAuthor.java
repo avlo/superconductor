@@ -16,11 +16,11 @@ public class SubscriberFilterAuthor implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private Long subscriberId;
+  private Long filterId;
   private String author;
 
-  public SubscriberFilterAuthor(Long subscriberId, String author) {
-    this.subscriberId = subscriberId;
+  public SubscriberFilterAuthor(Long filterId, String author) {
+    this.filterId = filterId;
     this.author = author;
   }
 }

@@ -44,8 +44,8 @@ nostr-relay
        should every event be stored?
          investigate events persistence/attributes requirements
            any/all of single-letter events "e", "p", "a" tags must be stored
-           ☐ ["e", <32-bytes lowercase hex of the id of another event>, <recommended relay URL, optional>]
-           ☐ ["p", <32-bytes lowercase hex of another pubkey>, <recommended relay URL, optional>]
+           ✔ ["e", <32-bytes lowercase hex of the id of another event>, <recommended relay URL, optional>] @done (24-04-07 14:07)
+           ✔ ["p", <32-bytes lowercase hex of another pubkey>, <recommended relay URL, optional>] @done (24-04-07 14:07)
              "a" event types
                parameterized replaceable
                ☐ ["a", <kind integer>:<32-bytes lowercase hex of a pubkey>:<d tag value>, <recommended relay URL, optional>]
@@ -72,40 +72,40 @@ nostr-relay
 ***************************
    ☐ 2) FILTERS table (see FILTERS-table.todo)
      store that (user's) filter (if not yet exists) and...
-      ☐ UID (possibly not, too restricive.  use join (below) instead)
-      ☐ "ids": <a list of event ids>,
-      ☐ "authors": <a list of lowercase pubkeys, the pubkey of an event must be one of these>,
-      ☐ "kinds": <a list of a kind numbers>,
+      ✔ UID (possibly not, too restricive.  use join (below) instead) @done (24-04-07 14:06)
+      ✔ "ids": <a list of event ids>, @done (24-04-07 14:06)
+      ✔ "authors": <a list of lowercase pubkeys, the pubkey of an event must be one of these>, @done (24-04-07 14:06)
+      ✔ "kinds": <a list of a kind numbers>, @done (24-04-07 14:07)
       pound in front of tag means query/subscribe
-        ☐ "#<single-letter (a-zA-Z)>": <a list of tag values, for #e — a list of event ids, for #p — a list of event pubkeys etc>
+        ✔ "#<single-letter (a-zA-Z)>": <a list of tag values, for #e — a list of event ids, for #p — a list of event pubkeys etc> @done (24-04-07 14:06)
           ["e", <32-bytes lowercase hex of the id of another event>, <recommended relay URL, optional>]
           ["p", <32-bytes lowercase hex of another pubkey>, <recommended relay URL, optional>]
         ☐ "#<multi-letter>": <a list of tag values, for Classified event related filters
-      ☐ "since": <an integer unix timestamp in seconds, events must be newer than this to pass>,
-      ☐ "until": <an integer unix timestamp in seconds, events must be older than this to pass>,
-      ☐ "limit": <maximum number of events relays SHOULD return in the initial query>  
+      ✔ "since": <an integer unix timestamp in seconds, events must be newer than this to pass>, @done (24-04-07 14:06)
+      ✔ "until": <an integer unix timestamp in seconds, events must be older than this to pass>, @done (24-04-07 14:06)
+      ✔ "limit": <maximum number of events relays SHOULD return in the initial query> @done (24-04-07 14:06)  
 
    ...send again all future (filter matching [via OR?]) events (by anyone?) to all "registered" websockets until the websocket is closed
-   ☐ 4 SUBSCRIBER table (transient)
+   ✔ 4 SUBSCRIBER table (transient) @done (24-04-07 14:06)
      ✔ websocket uniqueness might be identifiable by websocketID/session/sig/other? @done (24-03-31 20:16) correct         
-     ☐ subscription id
-     ☐ websocket id
+     ✔ subscription id @done (24-04-07 14:06)
+     ✔ websocket id @done (24-04-07 14:06)
        
      SUBSCRIBER-FILTERS join table (transient)
-     ☐ subscriber fk
-     ☐ filters FK
+     ✔ subscriber fk @done (24-04-07 14:06)
+     ✔ filters FK @done (24-04-07 14:06)
        
      filters (table)
-     ☐ filter_event join table
+     ✔ filter_event join table @done (24-04-07 14:06)
         or subscriber_filter-filter-event join table?
-     ☐ filter-author_event join table
+     ✔ filter-author_event join table @done (24-04-07 14:06)
        or subscriber_filter-author_event join table? points to event having this same pubkey (authors pubkey)
-     ☐ filter-kinds
-     ☐ filter-referencedEvents
-     ☐ filter-referencePubKeys
-     ☐ since (long)
-     ☐ until (long)
-     ☐ limit (int)    
+     ✔ filter-kinds @done (24-04-07 14:06)
+     ✔ filter-referencedEvents @done (24-04-07 14:06)
+     ✔ filter-referencePubKeys @done (24-04-07 14:06)
+     ✔ since (long) @done (24-04-07 14:06)
+     ✔ until (long) @done (24-04-07 14:06)
+     ✔ limit (int) @done (24-04-07 14:06)  
 
    ☐ when websocket is closed, remove entry
 ***************************

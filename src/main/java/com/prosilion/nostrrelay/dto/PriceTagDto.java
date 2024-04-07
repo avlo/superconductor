@@ -25,6 +25,7 @@ public class PriceTagDto extends PriceTag {
   }
 
   public static PriceTagDto createPriceTagDtoFromAttributes(List<ElementAttribute> atts) {
+//    TODO: refactor
     String one = atts.get(0).getValue().toString();
     String two = atts.get(1).getValue().toString();
     String three = atts.get(2).getValue().toString();

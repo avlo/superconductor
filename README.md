@@ -75,7 +75,7 @@ or full/debug console logging
 *user: sa*  
 *password: // blank* 
 
-Display all framework table contents (case sensitive):
+Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
     select id, event_id, kind, nip, content, created_at, pub_key, signature from event;
     select id, "key" as "key", "value" as "value", marker, recommended_relay_url from base_tag;

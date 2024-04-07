@@ -39,11 +39,13 @@ public class ClassifiedListingEventService<T extends EventMessage> extends Event
 
     List<GenericTag> genericTagsOnly = event.getTags().stream().map(baseTag -> (GenericTag) baseTag).toList();
 
+    List<List<ElementAttribute>> priceTagDto = genericTagsOnly.stream()
+        .filter(tag -> tag.getCode().equalsIgnoreCase("price")).map(GenericTag::getAttributes).toList();
+
     ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(
         getReturnVal(genericTagsOnly, "title"),
         getReturnVal(genericTagsOnly, "summary"),
-        // TODO:
-        new PriceTagDto("price", "$666", "BTC", "frequency")
+        PriceTagDto.createPriceTagDtoFromAttributes(priceTagDto.stream().findFirst().orElseThrow())
     );
     classifiedListingDto.setLocation(getReturnVal(genericTagsOnly, "location"));
     classifiedListingDto.setPublishedAt(event.getCreatedAt());

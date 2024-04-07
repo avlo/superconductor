@@ -68,7 +68,7 @@ or full/debug console logging
 
   ws://localhost:5555
 
-## DB console: ##
+## Default/embedded H2 DB console: ##
 
     localhost:8080/h2-console/
 

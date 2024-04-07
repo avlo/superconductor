@@ -89,7 +89,7 @@ function replaceHash(id_hash) {
         + JSON.stringify(
             {
                 'ids': [$("#content").val()],
-                'authors': [$("#authors").val()],
+                'authors': [$("#authors1").val(), $("#authors2").val()],
                 'kinds': '1',
                 '#e': [$("#referencedEvents").val()],
                 '#p': [$("#referencePubKeys").val()],

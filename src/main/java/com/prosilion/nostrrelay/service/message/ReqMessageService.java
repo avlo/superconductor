@@ -1,7 +1,7 @@
 package com.prosilion.nostrrelay.service.message;
 
+import com.prosilion.nostrrelay.service.request.ReqServiceIF;
 import com.prosilion.nostrrelay.service.request.ReqService;
-import com.prosilion.nostrrelay.service.request.ReqServiceImpl;
 import jakarta.websocket.Session;
 import lombok.extern.java.Log;
 import nostr.event.Kind;
@@ -12,13 +12,13 @@ import java.util.logging.Level;
 
 @Log
 public class ReqMessageService<T extends ReqMessage> implements MessageService<ReqMessage> {
-  private final ReqService<T> reqService;
+  private final ReqServiceIF<T> reqService;
   private final T reqMessage;
 
   public ReqMessageService(@NotNull T reqMessage) {
     log.log(Level.INFO, "REQ fitlers: {0}", reqMessage.getFiltersList());
     this.reqMessage = reqMessage;
-    reqService = new ReqServiceImpl<>(reqMessage);
+    reqService = new ReqService<>(reqMessage);
   }
 
   @Override
@@ -26,8 +26,8 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<R
     return reqService.processIncoming(session);
   }
 
-  private ReqService<T> createEventService(@NotNull Kind kind, T reqMessage) {
-    //    private @NotNull ReqService<T> createEventService(@NotNull Kind kind, T reqMessage) {
+  private ReqServiceIF<T> createEventService(@NotNull Kind kind, T reqMessage) {
+    //    private @NotNull ReqServiceIF<T> createEventService(@NotNull Kind kind, T reqMessage) {
     //    TODO:
     //    switch (kind) {
     //      case SET_METADATA -> {

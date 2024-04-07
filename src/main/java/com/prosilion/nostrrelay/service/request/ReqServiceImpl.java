@@ -16,8 +16,8 @@ import java.security.Principal;
 @Getter
 public class ReqServiceImpl<T extends ReqMessage> implements ReqService<T> {
   private String subId;
-  private SubscriberServiceImpl subscriberService;
-  private FiltersServiceImpl filtersService;
+  private final SubscriberServiceImpl subscriberService;
+  private final FiltersServiceImpl filtersService;
 
   public ReqServiceImpl(@NotNull T reqMessage) {
     filtersService = new FiltersServiceImpl(reqMessage.getFiltersList());

@@ -17,7 +17,7 @@ public class FiltersServiceImpl {
   public void processFilters(Subscriber subscriber) {
     for (Filters filters : filtersList.getList()) {
       EventList eventList = filters.getEvents();
-      subscriberFilterEventService.process(subscriber, eventList);
+      subscriberFilterEventService.save(subscriber, eventList);
       //      PublicKeyList authors = filters.getAuthors();
       //      KindList kindList = filters.getKinds();
       //      EventList referencedEvents = filters.getReferencedEvents();

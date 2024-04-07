@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SubscriberServiceImpl {
-  private SubscriberRepository subscriberRepository;
+  private final SubscriberRepository subscriberRepository;
 
   public SubscriberServiceImpl() {
     subscriberRepository = ApplicationContextProvider.getApplicationContext().getBean(SubscriberRepository.class);

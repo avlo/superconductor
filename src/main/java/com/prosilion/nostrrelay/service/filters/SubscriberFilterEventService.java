@@ -15,9 +15,9 @@ public class SubscriberFilterEventService {
     this.subscriberFilterEventRepository = subscriberFilterEventRepository;
   }
 
-  public void process(Subscriber subscriber, EventList eventList) {
-    eventList.getList().iterator().forEachRemaining(genericEvent ->
+  public void save(Subscriber subscriber, EventList eventList) {
+    eventList.getList().iterator().forEachRemaining(event ->
         subscriberFilterEventRepository.save(
-            new SubscriberFilterEvent(subscriber, genericEvent.getId())));
+            new SubscriberFilterEvent(subscriber.getId(), event.getId())));
   }
 }

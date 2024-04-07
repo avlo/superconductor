@@ -24,8 +24,8 @@ public class SubscriberFilterEvent implements Serializable {
   private Long subscriberId;
   private String eventId;
 
-  public SubscriberFilterEvent(Subscriber subscriber, String eventId) {
-    this.subscriberId = subscriber.getId();
+  public SubscriberFilterEvent(Long subscriberId, String eventId) {
+    this.subscriberId = subscriberId;
     this.eventId = eventId;
   }
 }

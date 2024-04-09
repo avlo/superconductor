@@ -1,32 +1,32 @@
 package com.prosilion.nostrrelay.service;
 
-import com.prosilion.nostrrelay.entity.EventEntity;
 import com.prosilion.nostrrelay.pubsub.AddNostrEvent;
 import com.prosilion.nostrrelay.pubsub.AddSubscriberFiltersEvent;
 import com.prosilion.nostrrelay.pubsub.RemoveSubscriberEvent;
 import nostr.event.Kind;
+import nostr.event.impl.GenericEvent;
 import nostr.event.list.FiltersList;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
-public class EventNotifierEngine {
-  private final ApplicationEventPublisher publisher;
-  private final HashMap<Long, FiltersList> subscriberIdFiltersMap;
-  private final HashMap<Kind, EventEntity> eventMap;
+public class EventNotifierEngine<T extends GenericEvent> {
+  private final Map<Long, FiltersList> subscriberIdFiltersMap;
+  private final Map<Kind, Map<Long, T>> kindEventMap;
 
-  public EventNotifierEngine(ApplicationEventPublisher publisher) {
-    this.publisher = publisher;
+  public EventNotifierEngine() {
     this.subscriberIdFiltersMap = new HashMap<>(); // use fast-hash map as/if necessary in the future
-    this.eventMap = new HashMap<>();
+    this.kindEventMap = new HashMap<>();
   }
 
   @EventListener
-  public void event(AddNostrEvent addNostrEvent) {
-    eventMap.put(addNostrEvent.kind(), addNostrEvent.eventEntity());
+  public void event(AddNostrEvent<T> addNostrEvent) {
+    kindEventMap.put(addNostrEvent.getKind(), addNostrEvent.getEventIdEventMap());
+    System.out.println("11111111111111111");
+    System.out.println("11111111111111111");
   }
 
   @EventListener

@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.dto.EventDto;
 import com.prosilion.nostrrelay.entity.EventEntity;
+import com.prosilion.nostrrelay.pubsub.AddNostrEvent;
 import com.prosilion.nostrrelay.repository.EventEntityRepository;
+import com.prosilion.nostrrelay.service.EventNotifierEngine;
 import com.prosilion.nostrrelay.service.event.join.EventEntityTagEntityService;
 import jakarta.persistence.NoResultException;
 import lombok.Getter;
@@ -22,16 +24,20 @@ import java.util.logging.Level;
 
 @Log
 @Getter
-public class EventService<T extends EventMessage> implements EventServiceIF<T> {
+public class EventService<T extends EventMessage, U extends GenericEvent> implements EventServiceIF<T> {
   private final EventEntityTagEntityService eventEntityTagEntityService;
   private final EventEntityRepository eventEntityRepository;
+  //  ApplicationEventPublisher publisher;
+  private final EventNotifierEngine<U> eventNotifierEngine;
 
   private final T eventMessage;
 
   public EventService(@NotNull T eventMessage) {
     this.eventMessage = eventMessage;
-    eventEntityTagEntityService = ApplicationContextProvider.getApplicationContext().getBean(EventEntityTagEntityService.class);
-    eventEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(EventEntityRepository.class);
+    this.eventEntityTagEntityService = ApplicationContextProvider.getApplicationContext().getBean(EventEntityTagEntityService.class);
+    this.eventEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(EventEntityRepository.class);
+    this.eventNotifierEngine = new EventNotifierEngine<>();
+
     log.log(Level.INFO, "EventServiceIF Constructed");
     log.log(Level.INFO, "EVENT message KIND: {0}", ((GenericEvent) eventMessage.getEvent()).getKind());
     log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
@@ -62,4 +68,14 @@ public class EventService<T extends EventMessage> implements EventServiceIF<T> {
     EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
     return eventEntityTagEntityService.saveBaseTags(baseTagsOnly, savedEntity.getId());
   }
+
+  protected void publishEvent(Long id, U event) {
+    System.out.println("11111111111111111111");
+    eventNotifierEngine.event(new AddNostrEvent<U>(Kind.valueOf(event.getKind()), id, event));
+  }
+
+  //  @Override
+  //  public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+  //    this.publisher = publisher;
+  //  }
 }

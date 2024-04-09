@@ -8,10 +8,13 @@ import com.prosilion.nostrrelay.repository.ClassifiedListingEntityRepository;
 import com.prosilion.nostrrelay.service.event.join.ClassifiedListingEntityEventEntityService;
 import jakarta.persistence.NoResultException;
 import lombok.extern.java.Log;
+import nostr.api.factory.impl.NIP99Impl;
 import nostr.base.ElementAttribute;
+import nostr.event.impl.ClassifiedListingEvent;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
 import nostr.event.message.EventMessage;
+import nostr.id.Identity;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,7 +23,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 
 @Log
-public class ClassifiedListingEventService<T extends EventMessage> extends EventService<T> {
+public class ClassifiedListingEventService<T extends EventMessage> extends EventService<T, ClassifiedListingEvent> {
   private final ClassifiedListingEntityRepository classifiedListingEntityRepository;
   private final ClassifiedListingEntityEventEntityService joinService;
   private final PriceTagEntityService priceTagEntityService;
@@ -44,9 +47,19 @@ public class ClassifiedListingEventService<T extends EventMessage> extends Event
 
     joinService.save(savedEventId, classifiedListingEntity.getId());
     priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
+
+    ClassifiedListingEvent classifiedListingEvent = new NIP99Impl.ClassifiedListingEventFactory(
+        // TODO: below should be correct sender
+        Identity.generateRandomIdentity(),
+        event.getTags(),
+        event.getContent(),
+        classifiedListingDto.convertDtoToEntity().convertEntityToDto()
+    ).create();
+    classifiedListingEvent.setId(event.getId());
+    super.publishEvent(savedEventId, classifiedListingEvent);
   }
 
-//  TODO: refactor below
+  //  TODO: refactor below
   @NotNull
   private static ClassifiedListingDto getClassifiedListingDto(GenericEvent event, Result priceTagDtoResult) {
     ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(
@@ -82,5 +95,6 @@ public class ClassifiedListingEventService<T extends EventMessage> extends Event
     return classifiedListingEntityRepository.findById(id).get();
   }
 
-  private record Result(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> priceTagDto) {}
+  private record Result(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> priceTagDto) {
+  }
 }

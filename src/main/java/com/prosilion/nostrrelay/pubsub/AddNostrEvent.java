@@ -13,9 +13,11 @@ import java.util.Map;
 public class AddNostrEvent<T extends GenericEvent> {
   private final Kind kind;
   private final Map<Long, T> eventIdEventMap;
+  private final Long id;
 
   public AddNostrEvent(Kind kind, Long id, T event) {
     this.kind = kind;
+    this.id = id;
     this.eventIdEventMap = new HashMap<>();
     this.eventIdEventMap.put(id, event);
   }

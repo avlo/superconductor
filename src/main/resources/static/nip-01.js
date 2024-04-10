@@ -67,8 +67,8 @@ function hashThenSend() {
         '0',
         $("#pubkey").val(),
         // TODO: re-add below as fixed value exclusively used for testing
-        // $("#created_at").val(),
-        '1712006760',
+        $("#created_at").val(),
+        // '1712006760',
         $("#kind").val(),
         $("#e_tag").val(),
         $("#p_tag").val(),
@@ -93,9 +93,9 @@ function replaceHash(id_hash) {
                 'kind': $("#kind").val(),
                 'content': $("#content").val(),
                 'pubkey': $("#pubkey").val(),
-                // TODO: re-add below as fixed value exclusively used for testing
-                // 'created_at': Date.now(),
-                'created_at': '1712006760',
+                'created_at': Date.now(),
+                // TODO: hardcoding value exclusively used for testing
+                // 'created_at': '1712006760',
                 'tags': [
                     ['e', $("#e_tag").val()],
                     ['p', $("#p_tag").val()]

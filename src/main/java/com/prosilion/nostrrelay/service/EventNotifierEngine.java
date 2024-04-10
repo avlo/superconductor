@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class EventNotifierEngine<T extends GenericEvent> {
@@ -18,13 +19,20 @@ public class EventNotifierEngine<T extends GenericEvent> {
   private final Map<Kind, Map<Long, T>> kindEventMap;
 
   public EventNotifierEngine() {
-    this.subscriberIdFiltersMap = new HashMap<>(); // use fast-hash map as/if necessary in the future
+    this.subscriberIdFiltersMap = new HashMap<>(new HashMap<>()); // use fast-hash map as/if necessary in the future
     this.kindEventMap = new HashMap<>();
   }
 
   @EventListener
   public void event(AddNostrEvent<T> addNostrEvent) {
-    kindEventMap.put(addNostrEvent.getKind(), addNostrEvent.getEventIdEventMap());
+    Optional.ofNullable(
+        kindEventMap.get(addNostrEvent.getKind())
+    ).orElse(
+        new HashMap<>()
+    ).putIfAbsent(
+        addNostrEvent.getId(),
+        addNostrEvent.getEventIdEventMap().get(addNostrEvent.getId())
+    );
   }
 
   @EventListener

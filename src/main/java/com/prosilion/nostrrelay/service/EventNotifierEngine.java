@@ -25,14 +25,9 @@ public class EventNotifierEngine<T extends GenericEvent> {
 
   @EventListener
   public void event(AddNostrEvent<T> addNostrEvent) {
-    Optional.ofNullable(
-        kindEventMap.get(addNostrEvent.getKind())
-    ).orElse(
-        new HashMap<>()
-    ).putIfAbsent(
-        addNostrEvent.getId(),
-        addNostrEvent.getEventIdEventMap().get(addNostrEvent.getId())
-    );
+    Map<Long, T> map = Optional.ofNullable(kindEventMap.get(addNostrEvent.getKind())).orElse(new HashMap<>());
+    map.putIfAbsent(addNostrEvent.getId(), addNostrEvent.getEventIdEventMap().get(addNostrEvent.getId()));
+    kindEventMap.put(addNostrEvent.getKind(), map);
   }
 
   @EventListener

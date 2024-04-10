@@ -27,7 +27,7 @@ import java.util.logging.Level;
 public class EventService<T extends EventMessage, U extends GenericEvent> implements EventServiceIF<T> {
   private final EventEntityTagEntityService eventEntityTagEntityService;
   private final EventEntityRepository eventEntityRepository;
-  //  ApplicationEventPublisher publisher;
+  //  private final ApplicationEventPublisher publisher;  // will be used to notify subscribers
   private final EventNotifierEngine<U> eventNotifierEngine;
 
   private final T eventMessage;
@@ -36,7 +36,8 @@ public class EventService<T extends EventMessage, U extends GenericEvent> implem
     this.eventMessage = eventMessage;
     this.eventEntityTagEntityService = ApplicationContextProvider.getApplicationContext().getBean(EventEntityTagEntityService.class);
     this.eventEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(EventEntityRepository.class);
-    this.eventNotifierEngine = new EventNotifierEngine<>();
+    this.eventNotifierEngine = ApplicationContextProvider.getApplicationContext().getBean(EventNotifierEngine.class);
+    //    this.publisher = ApplicationContextProvider.getApplicationContext().getBean(ApplicationEventPublisher.class);
 
     log.log(Level.INFO, "EventServiceIF Constructed");
     log.log(Level.INFO, "EVENT message KIND: {0}", ((GenericEvent) eventMessage.getEvent()).getKind());
@@ -70,12 +71,6 @@ public class EventService<T extends EventMessage, U extends GenericEvent> implem
   }
 
   protected void publishEvent(Long id, U event) {
-    System.out.println("11111111111111111111");
     eventNotifierEngine.event(new AddNostrEvent<U>(Kind.valueOf(event.getKind()), id, event));
   }
-
-  //  @Override
-  //  public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-  //    this.publisher = publisher;
-  //  }
 }

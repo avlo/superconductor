@@ -8,13 +8,11 @@ import com.prosilion.nostrrelay.repository.ClassifiedListingEntityRepository;
 import com.prosilion.nostrrelay.service.event.join.ClassifiedListingEntityEventEntityService;
 import jakarta.persistence.NoResultException;
 import lombok.extern.java.Log;
-import nostr.api.factory.impl.NIP99Impl;
 import nostr.base.ElementAttribute;
 import nostr.event.impl.ClassifiedListingEvent;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
 import nostr.event.message.EventMessage;
-import nostr.id.Identity;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -31,8 +29,8 @@ public class ClassifiedListingEventService<T extends EventMessage> extends Event
   public ClassifiedListingEventService(T eventMessage) {
     super(eventMessage);
     classifiedListingEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityRepository.class);
-    joinService = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityEventEntityService.class);
     priceTagEntityService = ApplicationContextProvider.getApplicationContext().getBean(PriceTagEntityService.class);
+    joinService = ApplicationContextProvider.getApplicationContext().getBean(ClassifiedListingEntityEventEntityService.class);
   }
 
   @Override
@@ -48,13 +46,12 @@ public class ClassifiedListingEventService<T extends EventMessage> extends Event
     joinService.save(savedEventId, classifiedListingEntity.getId());
     priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
 
-    ClassifiedListingEvent classifiedListingEvent = new NIP99Impl.ClassifiedListingEventFactory(
-        // TODO: below should be correct sender
-        Identity.generateRandomIdentity(),
+    ClassifiedListingEvent classifiedListingEvent = new ClassifiedListingEvent(
+        event.getPubKey(),
         event.getTags(),
         event.getContent(),
         classifiedListingDto.convertDtoToEntity().convertEntityToDto()
-    ).create();
+    );
     classifiedListingEvent.setId(event.getId());
     super.publishEvent(savedEventId, classifiedListingEvent);
   }

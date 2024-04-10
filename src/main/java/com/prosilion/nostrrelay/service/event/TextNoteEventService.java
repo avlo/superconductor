@@ -1,7 +1,6 @@
 package com.prosilion.nostrrelay.service.event;
 
 import lombok.extern.java.Log;
-import nostr.api.factory.impl.NIP01Impl;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
@@ -21,10 +20,11 @@ public class TextNoteEventService<T extends EventMessage> extends EventService<T
     GenericEvent event = (GenericEvent) getEventMessage().getEvent();
     event.setNip(1);
     event.setKind(Kind.TEXT_NOTE.getValue());
-    TextNoteEvent textNoteEvent = new NIP01Impl.TextNoteEventFactory(
+    TextNoteEvent textNoteEvent = new TextNoteEvent(
+        event.getPubKey(),
         event.getTags(),
         event.getContent()
-    ).create();
+    );
     Long id = super.saveEventEntity(event);
     textNoteEvent.setId(event.getId());
     super.publishEvent(id, textNoteEvent);

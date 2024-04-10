@@ -21,9 +21,7 @@ public class SubscriberFiltersService {
     // TODO: below add might also suffice for update?
     subscriberFiltersManager.saveFilters(subscriberId, filtersList);
 
-    // add filters to engine/pool
-    // also TODO: below use of FilterList might more accureately need to be custom FiltersListStructure
-    //        returned from above saveFilters() method
-    publisher.publishEvent(new AddSubscriberFiltersEvent(subscriberId, filtersList));   //Notify the listeners
+    // TODO: potentially replace FilterList with custom/efficient data-structure/predicate if advantageous to do so
+    publisher.publishEvent(new AddSubscriberFiltersEvent(subscriberId, filtersList));
   }
 }

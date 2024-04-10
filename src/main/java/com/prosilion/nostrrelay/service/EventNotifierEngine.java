@@ -25,8 +25,6 @@ public class EventNotifierEngine<T extends GenericEvent> {
   @EventListener
   public void event(AddNostrEvent<T> addNostrEvent) {
     kindEventMap.put(addNostrEvent.getKind(), addNostrEvent.getEventIdEventMap());
-    System.out.println("11111111111111111");
-    System.out.println("11111111111111111");
   }
 
   @EventListener

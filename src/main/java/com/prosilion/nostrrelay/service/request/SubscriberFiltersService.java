@@ -18,10 +18,14 @@ public class SubscriberFiltersService {
   }
 
   public void save(Long subscriberId, FiltersList filtersList) {
-    // TODO: below add might also suffice for update?
+    // TODO: below save() call might also suffice for subscriber/subscriber-filters update?
     subscriberFiltersManager.saveFilters(subscriberId, filtersList);
 
     // TODO: potentially replace FilterList with custom/efficient data-structure/predicate if advantageous to do so
+    /**
+     * {@link AddSubscriberFiltersEvent} is registered & used by
+     * {@link com.prosilion.nostrrelay.service.EventNotifierEngine} (and not SubscriberPool)
+     */
     publisher.publishEvent(new AddSubscriberFiltersEvent(subscriberId, filtersList));
   }
 }

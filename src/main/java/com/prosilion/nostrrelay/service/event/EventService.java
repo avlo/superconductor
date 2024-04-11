@@ -27,7 +27,6 @@ import java.util.logging.Level;
 public class EventService<T extends EventMessage, U extends GenericEvent> implements EventServiceIF<T> {
   private final EventEntityTagEntityService eventEntityTagEntityService;
   private final EventEntityRepository eventEntityRepository;
-  //  private final ApplicationEventPublisher publisher;  // will be used to notify subscribers
   private final EventNotifierEngine<U> eventNotifierEngine;
 
   private final T eventMessage;
@@ -71,6 +70,6 @@ public class EventService<T extends EventMessage, U extends GenericEvent> implem
   }
 
   protected void publishEvent(Long id, U event) {
-    eventNotifierEngine.event(new AddNostrEvent<U>(Kind.valueOf(event.getKind()), id, event));
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<U>(Kind.valueOf(event.getKind()), id, event));
   }
 }

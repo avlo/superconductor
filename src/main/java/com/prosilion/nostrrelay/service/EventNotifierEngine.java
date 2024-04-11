@@ -15,28 +15,28 @@ import java.util.Optional;
 
 @Service
 public class EventNotifierEngine<T extends GenericEvent> {
-  private final Map<Long, FiltersList> subscriberIdFiltersMap;
+  private final Map<Long, FiltersList> subscribersFiltersMap;
   private final Map<Kind, Map<Long, T>> kindEventMap;
 
   public EventNotifierEngine() {
-    this.subscriberIdFiltersMap = new HashMap<>(new HashMap<>()); // use fast-hash map as/if necessary in the future
+    this.subscribersFiltersMap = new HashMap<>(new HashMap<>()); // use fast-hash map as/if necessary in the future
     this.kindEventMap = new HashMap<>();
   }
 
   @EventListener
-  public void event(AddNostrEvent<T> addNostrEvent) {
+  public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
     Map<Long, T> map = Optional.ofNullable(kindEventMap.get(addNostrEvent.getKind())).orElse(new HashMap<>());
     map.putIfAbsent(addNostrEvent.getId(), addNostrEvent.getEventIdEventMap().get(addNostrEvent.getId()));
     kindEventMap.put(addNostrEvent.getKind(), map);
   }
 
   @EventListener
-  public void event(AddSubscriberFiltersEvent addSubscriber) {
-    subscriberIdFiltersMap.put(addSubscriber.subscriberId(), addSubscriber.filtersList());
+  public void addSubscriberFiltersHandler(AddSubscriberFiltersEvent addSubscriber) {
+    subscribersFiltersMap.put(addSubscriber.subscriberId(), addSubscriber.filtersList());
   }
 
   @EventListener
-  public void event(RemoveSubscriberEvent removeSubscriber) {
-    subscriberIdFiltersMap.remove(removeSubscriber.subscriberId());
+  public void removeSubscriberHandler(RemoveSubscriberEvent removeSubscriber) {
+    subscribersFiltersMap.remove(removeSubscriber.subscriberId());
   }
 }

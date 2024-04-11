@@ -18,18 +18,27 @@ import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 class EventNotifierEngineTest {
-  private static final PublicKey PUB_KEY_TEXTNOTE_1 = new PublicKey("aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
-  private static final PublicKey PUB_KEY_TEXTNOTE_2 = new PublicKey("bbb73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
-  private static final PublicKey PUB_KEY_TEXTNOTE_3 = new PublicKey("ccc73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
-  private static final PublicKey PUB_KEY_CLASSIFIED_1 = new PublicKey("ddd73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
-  private static final PublicKey PUB_KEY_CLASSIFIED_2 = new PublicKey("eee73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
-  private static final PublicKey PUB_KEY_CLASSIFIED_3 = new PublicKey("fff73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
+  public static PublicKey PUB_KEY_TEXTNOTE_1;
+  public static String hexPubKey1 = "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
+  public static final PublicKey PUB_KEY_TEXTNOTE_2 = new PublicKey("bbb73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
+  public static final PublicKey PUB_KEY_TEXTNOTE_3 = new PublicKey("ccc73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
+  public static final PublicKey PUB_KEY_CLASSIFIED_1 = new PublicKey("ddd73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
+  public static final PublicKey PUB_KEY_CLASSIFIED_2 = new PublicKey("eee73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
+  public static final PublicKey PUB_KEY_CLASSIFIED_3 = new PublicKey("fff73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
+  public static final String TEXT_NOTE_EVENT_1 = "TEXT-NOTE-EVENT-11111";
+  public static final String TEXT_NOTE_EVENT_2 = "TEXT-NOTE-EVENT-2222";
+  public static final String TEXT_NOTE_EVENT_3 = "TEXT-NOTE-EVENT-3333";
+  public static final String CLASSIFIED_BASETAG_1 = "CLASSIFIED-BASE-TAG-11111";
+  public static final String CLASSIFIED_BASETAG_2 = "CLASSIFIED-BASE-TAG-2222";
+  public static final String CLASSIFIED_BASETAG_3 = "CLASSIFIED-BASE-TAG-3333";
+
   private static final String CONTENT = "CONTENT";
   private static EventNotifierEngine eventNotifierEngine;
 
   @BeforeAll
   public static void setup() {
     eventNotifierEngine = new EventNotifierEngine();
+    PUB_KEY_TEXTNOTE_1 = new PublicKey(hexPubKey1);
   }
 
   @Test()
@@ -37,12 +46,12 @@ class EventNotifierEngineTest {
   void addSingleTextNoteEvent() {
     TextNoteEvent textNoteEvent = new TextNoteEvent(
         PUB_KEY_TEXTNOTE_3,
-        List.of(new EventTag("TEXT-NOTE-EVENT-3333")),
+        List.of(new EventTag(TEXT_NOTE_EVENT_3)),
         CONTENT
     );
 
     textNoteEvent.setId("333333333333333333");
-    eventNotifierEngine.event(new AddNostrEvent<TextNoteEvent>(
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
         Kind.valueOf(
             textNoteEvent.getKind()
         ),
@@ -56,13 +65,13 @@ class EventNotifierEngineTest {
   void addTwoTextNoteEvents() {
     TextNoteEvent textNoteEvent1 = new TextNoteEvent(
         PUB_KEY_TEXTNOTE_1,
-        List.of(new EventTag("TEXT-NOTE-EVENT-11111")),
+        List.of(new EventTag(TEXT_NOTE_EVENT_1)),
         CONTENT
     );
     textNoteEvent1.setId("1111111111");
     textNoteEvent1.setKind(Kind.TEXT_NOTE.getValue());
 
-    eventNotifierEngine.event(new AddNostrEvent<TextNoteEvent>(
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
         Kind.valueOf(
             textNoteEvent1.getKind()
         ),
@@ -71,13 +80,13 @@ class EventNotifierEngineTest {
 
     TextNoteEvent textNoteEvent2 = new TextNoteEvent(
         PUB_KEY_TEXTNOTE_2,
-        List.of(new EventTag("TEXT-NOTE-EVENT-2222")),
+        List.of(new EventTag(TEXT_NOTE_EVENT_2)),
         CONTENT
     );
     textNoteEvent2.setId("2222222222");
     textNoteEvent2.setKind(Kind.TEXT_NOTE.getValue());
 
-    eventNotifierEngine.event(new AddNostrEvent<TextNoteEvent>(
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
         Kind.valueOf(
             textNoteEvent2.getKind()
         ),
@@ -91,7 +100,7 @@ class EventNotifierEngineTest {
   void testTwoClassifiedEvents() {
     ClassifiedListingEvent classifiedEvent1 = new ClassifiedListingEvent(
         PUB_KEY_CLASSIFIED_1,
-        List.of(new EventTag("CLASSIFIED-BASE-TAG-11111")),
+        List.of(new EventTag(CLASSIFIED_BASETAG_1)),
         CONTENT,
         new ClassifiedListing(
             "classified title 111111",
@@ -101,7 +110,7 @@ class EventNotifierEngineTest {
     classifiedEvent1.setId("1111111111");
     classifiedEvent1.setKind(Kind.CLASSIFIED_LISTING.getValue());
 
-    eventNotifierEngine.event(new AddNostrEvent<ClassifiedListingEvent>(
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
         Kind.valueOf(
             classifiedEvent1.getKind()
         ),
@@ -111,7 +120,7 @@ class EventNotifierEngineTest {
 
     ClassifiedListingEvent classifiedEvent2 = new ClassifiedListingEvent(
         PUB_KEY_CLASSIFIED_2,
-        List.of(new EventTag("CLASSIFIED-BASE-TAG-2222")),
+        List.of(new EventTag(CLASSIFIED_BASETAG_2)),
         CONTENT,
         new ClassifiedListing(
             "classified title 2222",
@@ -121,7 +130,7 @@ class EventNotifierEngineTest {
     classifiedEvent2.setId("222222222222222");
     classifiedEvent2.setKind(Kind.CLASSIFIED_LISTING.getValue());
 
-    eventNotifierEngine.event(new AddNostrEvent<ClassifiedListingEvent>(
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
         Kind.valueOf(
             classifiedEvent2.getKind()
         ),
@@ -135,7 +144,7 @@ class EventNotifierEngineTest {
   void addSingleClassifiedEvent() {
     ClassifiedListingEvent classifiedEvent = new ClassifiedListingEvent(
         PUB_KEY_CLASSIFIED_3,
-        List.of(new EventTag("CLASSIFIED-BASE-TAG-3333")),
+        List.of(new EventTag(CLASSIFIED_BASETAG_3)),
         CONTENT,
         new ClassifiedListing(
             "classified title 3333",
@@ -145,7 +154,7 @@ class EventNotifierEngineTest {
     classifiedEvent.setId("33333333333333");
     classifiedEvent.setKind(Kind.CLASSIFIED_LISTING.getValue());
 
-    eventNotifierEngine.event(new AddNostrEvent<ClassifiedListingEvent>(
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
         Kind.valueOf(
             classifiedEvent.getKind()
         ),

@@ -29,7 +29,10 @@ public class SubscriberService {
     // TODO: below add might also suffice for update?
     subscriberFiltersService.save(savedSubscriber.getId(), filtersList);
 
-    // adds to subscriber pool
+    /**
+     * {@link AddSubscriberEvent} is registered & used by
+     * {@link com.prosilion.nostrrelay.service.SubscriberPool} (not EventNotifierEngine)
+     */
     publisher.publishEvent(new AddSubscriberEvent(savedSubscriber));   //Notify the listeners
   }
 }

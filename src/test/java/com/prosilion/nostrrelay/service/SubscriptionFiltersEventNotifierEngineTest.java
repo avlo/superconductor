@@ -9,10 +9,8 @@ import nostr.event.list.EventList;
 import nostr.event.list.FiltersList;
 import nostr.event.list.KindList;
 import nostr.event.list.PublicKeyList;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -21,6 +19,7 @@ import java.util.Map;
 import static com.prosilion.nostrrelay.service.EventNotifierEngineTest.*;
 
 @ExtendWith(SpringExtension.class)
+@TestMethodOrder(OrderAnnotation.class)
 class SubscriptionFiltersEventNotifierEngineTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
   public static PublicKey PUB_KEY_TEXTNOTE_2;

@@ -2,7 +2,8 @@ package com.prosilion.nostrrelay.service;
 
 import com.prosilion.nostrrelay.pubsub.AddNostrEvent;
 import com.prosilion.nostrrelay.pubsub.AddSubscriberFiltersEvent;
-import com.prosilion.nostrrelay.pubsub.RemoveSubscriberEvent;
+import com.prosilion.nostrrelay.pubsub.RemoveSubscriberFilterEvent;
+import lombok.Getter;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.list.FiltersList;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Getter
 @Service
 public class EventNotifierEngine<T extends GenericEvent> {
   private final Map<Long, FiltersList> subscribersFiltersMap;
@@ -28,6 +30,7 @@ public class EventNotifierEngine<T extends GenericEvent> {
     Map<Long, T> map = Optional.ofNullable(kindEventMap.get(addNostrEvent.getKind())).orElse(new HashMap<>());
     map.putIfAbsent(addNostrEvent.getId(), addNostrEvent.getEventIdEventMap().get(addNostrEvent.getId()));
     kindEventMap.put(addNostrEvent.getKind(), map);
+    // notify subscriber logic comes next
   }
 
   @EventListener
@@ -36,7 +39,7 @@ public class EventNotifierEngine<T extends GenericEvent> {
   }
 
   @EventListener
-  public void removeSubscriberHandler(RemoveSubscriberEvent removeSubscriber) {
+  public void removeSubscriberFilterHandler(RemoveSubscriberFilterEvent removeSubscriber) {
     subscribersFiltersMap.remove(removeSubscriber.subscriberId());
   }
 }

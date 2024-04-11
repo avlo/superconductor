@@ -8,19 +8,21 @@ import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.PriceTag;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Map;
 
 @ExtendWith(SpringExtension.class)
+@TestMethodOrder(OrderAnnotation.class)
 class EventNotifierEngineTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
   public static String hexPubKey1 = "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
-  public static final PublicKey PUB_KEY_TEXTNOTE_2 = new PublicKey("bbb73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
+  public static PublicKey PUB_KEY_TEXTNOTE_2;
+  public static String hexPubKey2 = "bbb73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
   public static final PublicKey PUB_KEY_TEXTNOTE_3 = new PublicKey("ccc73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
   public static final PublicKey PUB_KEY_CLASSIFIED_1 = new PublicKey("ddd73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
   public static final PublicKey PUB_KEY_CLASSIFIED_2 = new PublicKey("eee73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
@@ -39,25 +41,7 @@ class EventNotifierEngineTest {
   public static void setup() {
     eventNotifierEngine = new EventNotifierEngine();
     PUB_KEY_TEXTNOTE_1 = new PublicKey(hexPubKey1);
-  }
-
-  @Test()
-  @Order(2)
-  void addSingleTextNoteEvent() {
-    TextNoteEvent textNoteEvent = new TextNoteEvent(
-        PUB_KEY_TEXTNOTE_3,
-        List.of(new EventTag(TEXT_NOTE_EVENT_3)),
-        CONTENT
-    );
-
-    textNoteEvent.setId("333333333333333333");
-    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
-        Kind.valueOf(
-            textNoteEvent.getKind()
-        ),
-        Long.valueOf(textNoteEvent.getId()),
-        textNoteEvent)
-    );
+    PUB_KEY_TEXTNOTE_2 = new PublicKey(hexPubKey2);
   }
 
   @Test
@@ -78,6 +62,10 @@ class EventNotifierEngineTest {
         Long.valueOf(textNoteEvent1.getId()),
         textNoteEvent1));
 
+    Map<Kind, Map<Long, TextNoteEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
+    Assertions.assertEquals(1, kindEventMap.size());
+    Assertions.assertEquals(1, kindEventMap.get(Kind.TEXT_NOTE).size());
+
     TextNoteEvent textNoteEvent2 = new TextNoteEvent(
         PUB_KEY_TEXTNOTE_2,
         List.of(new EventTag(TEXT_NOTE_EVENT_2)),
@@ -93,6 +81,61 @@ class EventNotifierEngineTest {
         Long.valueOf(textNoteEvent2.getId()),
         textNoteEvent2)
     );
+
+    kindEventMap = eventNotifierEngine.getKindEventMap();
+    Assertions.assertEquals(1, kindEventMap.size());
+    Assertions.assertEquals(2, kindEventMap.get(Kind.TEXT_NOTE).size());
+  }
+
+  @Test
+  @Order(2)
+  void addSingleTextNoteEvent() {
+    TextNoteEvent textNoteEvent = new TextNoteEvent(
+        PUB_KEY_TEXTNOTE_3,
+        List.of(new EventTag(TEXT_NOTE_EVENT_3)),
+        CONTENT
+    );
+
+    textNoteEvent.setId("333333333333333333");
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
+        Kind.valueOf(
+            textNoteEvent.getKind()
+        ),
+        Long.valueOf(textNoteEvent.getId()),
+        textNoteEvent)
+    );
+
+    Map<Kind, Map<Long, TextNoteEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
+    Assertions.assertEquals(1, kindEventMap.size());
+    Assertions.assertEquals(3, kindEventMap.get(Kind.TEXT_NOTE).size());
+  }
+
+  @Test
+  @Order(3)
+  void addSingleClassifiedEvent() {
+    ClassifiedListingEvent classifiedEvent = new ClassifiedListingEvent(
+        PUB_KEY_CLASSIFIED_3,
+        List.of(new EventTag(CLASSIFIED_BASETAG_3)),
+        CONTENT,
+        new ClassifiedListing(
+            "classified title 3333",
+            "classified summarysummary 3333",
+            new PriceTag("333", "USD", "1")
+        ));
+    classifiedEvent.setId("33333333333333");
+    classifiedEvent.setKind(Kind.CLASSIFIED_LISTING.getValue());
+
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
+        Kind.valueOf(
+            classifiedEvent.getKind()
+        ),
+        Long.valueOf(classifiedEvent.getId()),
+        classifiedEvent)
+    );
+    Map<Kind, Map<Long, TextNoteEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
+    Assertions.assertEquals(2, kindEventMap.size());
+    Assertions.assertEquals(3, kindEventMap.get(Kind.TEXT_NOTE).size());
+    Assertions.assertEquals(1, kindEventMap.get(Kind.CLASSIFIED_LISTING).size());
   }
 
   @Test
@@ -118,6 +161,11 @@ class EventNotifierEngineTest {
         classifiedEvent1)
     );
 
+    Map<Kind, Map<Long, TextNoteEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
+    Assertions.assertEquals(2, kindEventMap.size());
+    Assertions.assertEquals(3, kindEventMap.get(Kind.TEXT_NOTE).size());
+    Assertions.assertEquals(2, kindEventMap.get(Kind.CLASSIFIED_LISTING).size());
+
     ClassifiedListingEvent classifiedEvent2 = new ClassifiedListingEvent(
         PUB_KEY_CLASSIFIED_2,
         List.of(new EventTag(CLASSIFIED_BASETAG_2)),
@@ -137,29 +185,10 @@ class EventNotifierEngineTest {
         Long.valueOf(classifiedEvent2.getId()),
         classifiedEvent2)
     );
-  }
 
-  @Test
-  @Order(3)
-  void addSingleClassifiedEvent() {
-    ClassifiedListingEvent classifiedEvent = new ClassifiedListingEvent(
-        PUB_KEY_CLASSIFIED_3,
-        List.of(new EventTag(CLASSIFIED_BASETAG_3)),
-        CONTENT,
-        new ClassifiedListing(
-            "classified title 3333",
-            "classified summarysummary 3333",
-            new PriceTag("333", "USD", "1")
-        ));
-    classifiedEvent.setId("33333333333333");
-    classifiedEvent.setKind(Kind.CLASSIFIED_LISTING.getValue());
-
-    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
-        Kind.valueOf(
-            classifiedEvent.getKind()
-        ),
-        Long.valueOf(classifiedEvent.getId()),
-        classifiedEvent)
-    );
+    kindEventMap = eventNotifierEngine.getKindEventMap();
+    Assertions.assertEquals(2, kindEventMap.size());
+    Assertions.assertEquals(3, kindEventMap.get(Kind.TEXT_NOTE).size());
+    Assertions.assertEquals(3, kindEventMap.get(Kind.CLASSIFIED_LISTING).size());
   }
 }

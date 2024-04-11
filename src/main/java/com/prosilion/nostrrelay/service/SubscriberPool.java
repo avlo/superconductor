@@ -1,7 +1,7 @@
 package com.prosilion.nostrrelay.service;
 
 import com.prosilion.nostrrelay.pubsub.AddSubscriberEvent;
-import com.prosilion.nostrrelay.pubsub.RemoveSubscriberEvent;
+import com.prosilion.nostrrelay.pubsub.RemoveSubscriberFilterEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -26,9 +26,9 @@ public class SubscriberPool {
   }
 
   @EventListener
-  public void event(RemoveSubscriberEvent removeSubscriberEvent) {
-    if (subscriberIds.remove(removeSubscriberEvent.subscriberId())) {
-      publisher.publishEvent(new RemoveSubscriberEvent(removeSubscriberEvent.subscriberId()));
+  public void event(RemoveSubscriberFilterEvent removeSubscriberFilterEvent) {
+    if (subscriberIds.remove(removeSubscriberFilterEvent.subscriberId())) {
+      publisher.publishEvent(new RemoveSubscriberFilterEvent(removeSubscriberFilterEvent.subscriberId()));
     }
   }
 }

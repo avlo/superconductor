@@ -9,31 +9,33 @@ import nostr.event.list.EventList;
 import nostr.event.list.FiltersList;
 import nostr.event.list.KindList;
 import nostr.event.list.PublicKeyList;
-import nostr.id.Identity;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static com.prosilion.nostrrelay.service.EventNotifierEngineTest.TEXT_NOTE_EVENT_1;
-import static com.prosilion.nostrrelay.service.EventNotifierEngineTest.hexPubKey1;
+import java.util.Map;
+
+import static com.prosilion.nostrrelay.service.EventNotifierEngineTest.*;
 
 @ExtendWith(SpringExtension.class)
 class SubscriptionFiltersEventNotifierEngineTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
-  public static String hexPubKey1 = "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
+  public static PublicKey PUB_KEY_TEXTNOTE_2;
   private static EventNotifierEngine eventNotifierEngine;
 
   @BeforeAll
   public static void setup() {
     eventNotifierEngine = new EventNotifierEngine();
     PUB_KEY_TEXTNOTE_1 = new PublicKey(hexPubKey1);
+    PUB_KEY_TEXTNOTE_2 = new PublicKey(hexPubKey2);
   }
 
-  @Test()
+  @Test
   @Order(1)
-  void addSubscriber1Event() {
+  void addSubscriberFilterEvent() {
     final var filtersList = new FiltersList();
     filtersList.add(Filters.builder()
         .events(new EventList(new BaseEvent.ProxyEvent(hexPubKey1)))
@@ -46,5 +48,34 @@ class SubscriptionFiltersEventNotifierEngineTest {
         .build()
     );
     eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(1L, filtersList));
+
+    Map<Long, FiltersList> subscribersFiltersMapState = eventNotifierEngine.getSubscribersFiltersMap();
+    Assertions.assertEquals(subscribersFiltersMapState.size(), 1);
+  }
+
+  @Test
+  @Order(2)
+  void addTwoSubscriberFiltersEvent() {
+    final var filtersList = new FiltersList();
+    filtersList.add(Filters.builder()
+        .events(new EventList(new BaseEvent.ProxyEvent(hexPubKey2)))
+        .authors(new PublicKeyList(PUB_KEY_TEXTNOTE_2))
+        .kinds(new KindList(Kind.TEXT_NOTE.getValue(), Kind.CLASSIFIED_LISTING.getValue()))
+        .referencedEvents(new EventList(new BaseEvent.ProxyEvent(TEXT_NOTE_EVENT_2)))
+        .since(1712006760L)
+        .until(2712006760L)
+        .limit(1)
+        .build()
+    );
+    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(2L, filtersList));
+
+    Map<Long, FiltersList> subscribersFiltersMapState = eventNotifierEngine.getSubscribersFiltersMap();
+    Assertions.assertEquals(subscribersFiltersMapState.size(), 2);
+  }
+
+  @Test
+  @Order(3)
+  void addDuplicateSubscriberFiltersEvent() {
+
   }
 }

@@ -70,6 +70,6 @@ public class EventService<T extends EventMessage, U extends GenericEvent> implem
   }
 
   protected void publishEvent(Long id, U event) {
-    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<U>(Kind.valueOf(event.getKind()), id, event));
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<U>(id, event, Kind.valueOf(event.getKind())));
   }
 }

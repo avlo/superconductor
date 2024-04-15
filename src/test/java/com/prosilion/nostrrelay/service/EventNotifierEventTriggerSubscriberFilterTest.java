@@ -65,11 +65,12 @@ class EventNotifierEventTriggerSubscriberFilterTest {
     textNoteEvent1.setCreatedAt(1712006760L);
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
+        Long.valueOf(textNoteEvent1.getId()),
+        textNoteEvent1,
         Kind.valueOf(
             textNoteEvent1.getKind()
-        ),
-        Long.valueOf(textNoteEvent1.getId()),
-        textNoteEvent1));
+        ))
+    );
 
     ClassifiedListing classifiedListing = new ClassifiedListing(
         "classified title 222",
@@ -89,11 +90,11 @@ class EventNotifierEventTriggerSubscriberFilterTest {
     classifiedEvent.setCreatedAt(1712006760L);
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
+        Long.valueOf(classifiedEvent.getId()),
+        classifiedEvent,
         Kind.valueOf(
             classifiedEvent.getKind()
-        ),
-        Long.valueOf(classifiedEvent.getId()),
-        classifiedEvent)
+        ))
     );
   }
 

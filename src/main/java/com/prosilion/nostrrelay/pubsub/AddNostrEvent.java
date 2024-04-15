@@ -15,7 +15,7 @@ public class AddNostrEvent<T extends GenericEvent> {
   private final Map<Long, T> eventIdEventMap;
   private final Long id;
 
-  public AddNostrEvent(Kind kind, Long id, T event) {
+  public AddNostrEvent(Long id, T event, Kind kind) {
     this.kind = kind;
     this.id = id;
     this.eventIdEventMap = new HashMap<>();

@@ -56,11 +56,12 @@ class EventNotifierEngineTest {
     textNoteEvent1.setKind(Kind.TEXT_NOTE.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
+        Long.valueOf(textNoteEvent1.getId()),
+        textNoteEvent1,
         Kind.valueOf(
             textNoteEvent1.getKind()
-        ),
-        Long.valueOf(textNoteEvent1.getId()),
-        textNoteEvent1));
+        ))
+    );
 
     Map<Kind, Map<Long, TextNoteEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
     Assertions.assertEquals(1, kindEventMap.size());
@@ -75,11 +76,11 @@ class EventNotifierEngineTest {
     textNoteEvent2.setKind(Kind.TEXT_NOTE.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
+        Long.valueOf(textNoteEvent2.getId()),
+        textNoteEvent2,
         Kind.valueOf(
             textNoteEvent2.getKind()
-        ),
-        Long.valueOf(textNoteEvent2.getId()),
-        textNoteEvent2)
+        ))
     );
 
     kindEventMap = eventNotifierEngine.getKindEventMap();
@@ -98,11 +99,11 @@ class EventNotifierEngineTest {
 
     textNoteEvent.setId("333333333333333333");
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
+        Long.valueOf(textNoteEvent.getId()),
+        textNoteEvent,
         Kind.valueOf(
             textNoteEvent.getKind()
-        ),
-        Long.valueOf(textNoteEvent.getId()),
-        textNoteEvent)
+        ))
     );
 
     Map<Kind, Map<Long, TextNoteEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
@@ -126,11 +127,11 @@ class EventNotifierEngineTest {
     classifiedEvent.setKind(Kind.CLASSIFIED_LISTING.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
+        Long.valueOf(classifiedEvent.getId()),
+        classifiedEvent,
         Kind.valueOf(
             classifiedEvent.getKind()
-        ),
-        Long.valueOf(classifiedEvent.getId()),
-        classifiedEvent)
+        ))
     );
     Map<Kind, Map<Long, TextNoteEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
     Assertions.assertEquals(2, kindEventMap.size());
@@ -154,11 +155,11 @@ class EventNotifierEngineTest {
     classifiedEvent1.setKind(Kind.CLASSIFIED_LISTING.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
+        Long.valueOf(classifiedEvent1.getId()),
+        classifiedEvent1,
         Kind.valueOf(
             classifiedEvent1.getKind()
-        ),
-        Long.valueOf(classifiedEvent1.getId()),
-        classifiedEvent1)
+        ))
     );
 
     Map<Kind, Map<Long, TextNoteEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
@@ -179,11 +180,11 @@ class EventNotifierEngineTest {
     classifiedEvent2.setKind(Kind.CLASSIFIED_LISTING.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
+        Long.valueOf(classifiedEvent2.getId()),
+        classifiedEvent2,
         Kind.valueOf(
             classifiedEvent2.getKind()
-        ),
-        Long.valueOf(classifiedEvent2.getId()),
-        classifiedEvent2)
+        ))
     );
 
     kindEventMap = eventNotifierEngine.getKindEventMap();

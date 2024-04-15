@@ -25,8 +25,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -38,7 +36,6 @@ import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
-@SpringBootTest
 class SubscriberFilterTriggerEventNotifierTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
   public static final PublicKey PUB_KEY_CLASSIFIED_2 = new PublicKey("fff73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
@@ -52,9 +49,6 @@ class SubscriberFilterTriggerEventNotifierTest {
   private static final String CLASSIFIED_ID_OF_INTEREST = "22222222222";
 
   private static EventNotifierEngine eventNotifierEngine;
-
-  @Autowired
-  private static SubscriberNotifier subscriberNotifier;
 
   @MockBean
   private static ApplicationEventPublisher publisher;

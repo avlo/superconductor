@@ -14,6 +14,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
@@ -24,11 +26,13 @@ import static com.prosilion.nostrrelay.service.EventNotifierEngineTest.*;
 class SubscriptionFiltersEventNotifierEngineTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
   public static PublicKey PUB_KEY_TEXTNOTE_2;
+  @MockBean
+  private static ApplicationEventPublisher publisher;
   private static EventNotifierEngine eventNotifierEngine;
 
   @BeforeAll
   public static void setup() {
-    eventNotifierEngine = new EventNotifierEngine();
+    eventNotifierEngine = new EventNotifierEngine(publisher);
     PUB_KEY_TEXTNOTE_1 = new PublicKey(hexPubKey1);
     PUB_KEY_TEXTNOTE_2 = new PublicKey(hexPubKey2);
   }

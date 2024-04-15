@@ -11,6 +11,8 @@ import nostr.event.tag.PriceTag;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -35,11 +37,13 @@ class EventNotifierEngineTest {
   public static final String CLASSIFIED_BASETAG_3 = "CLASSIFIED-BASE-TAG-3333";
 
   private static final String CONTENT = "CONTENT";
+  @MockBean
+  private static ApplicationEventPublisher publisher;
   private static EventNotifierEngine eventNotifierEngine;
 
   @BeforeAll
   public static void setup() {
-    eventNotifierEngine = new EventNotifierEngine();
+    eventNotifierEngine = new EventNotifierEngine(publisher);
     PUB_KEY_TEXTNOTE_1 = new PublicKey(hexPubKey1);
     PUB_KEY_TEXTNOTE_2 = new PublicKey(hexPubKey2);
   }

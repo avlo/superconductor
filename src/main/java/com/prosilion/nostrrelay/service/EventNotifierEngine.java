@@ -7,6 +7,8 @@ import lombok.Getter;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.list.FiltersList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +19,13 @@ import java.util.Optional;
 @Getter
 @Service
 public class EventNotifierEngine<T extends GenericEvent> {
+  private final ApplicationEventPublisher publisher;
   private final Map<Long, FiltersList> subscribersFiltersMap;
   private final Map<Kind, Map<Long, T>> kindEventMap;
 
-  public EventNotifierEngine() {
+  @Autowired
+  public EventNotifierEngine(ApplicationEventPublisher publisher) {
+    this.publisher = publisher;
     this.subscribersFiltersMap = new HashMap<>(new HashMap<>()); // use fast-hash map as/if necessary in the future
     this.kindEventMap = new HashMap<>();
   }
@@ -36,6 +41,7 @@ public class EventNotifierEngine<T extends GenericEvent> {
   @EventListener
   public void addSubscriberFiltersHandler(AddSubscriberFiltersEvent addSubscriber) {
     subscribersFiltersMap.put(addSubscriber.subscriberId(), addSubscriber.filtersList());
+    // notify subscriber logic comes next; pending tests to reside in @SubscriberFilterTriggerEventNotifierTest
   }
 
   @EventListener

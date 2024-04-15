@@ -44,6 +44,7 @@ class EventNotifierEventTriggerSubscriberFilterTest {
   public static final String CLASSIFIED_BASETAG_2 = "CLASSIFIED-BASE-TAG-22222";
   private static final String CONTENT = "CONTENT";
   private static EventNotifierEngine eventNotifierEngine;
+  private static String FILENAME = "trigger-text.txt";
 
   @BeforeAll
   public static void setup() {
@@ -107,38 +108,44 @@ class EventNotifierEventTriggerSubscriberFilterTest {
         .build()
     );
     eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(1L, filtersList));
+    checker();
+  }
 
-    Map<Long, FiltersList> map = eventNotifierEngine.getSubscribersFiltersMap();
+  @Test
+  @Order(99)
+  void checker() {
+    Map<Long, FiltersList> subscribersFiltersMap = eventNotifierEngine.getSubscribersFiltersMap();
     Map<Kind, Map<Long, GenericEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
-    map.forEach((name, student) -> {
-      prettyPrintUsingGson(Optional.ofNullable(Nostr.Json.encode(student)).orElse(""), false);
+
+    subscribersFiltersMap.forEach((name, student) -> {
+      printText("SUBSCRIBER FILTERS\n\n", false);
+      printText(String.format("%s: ", name.toString()), true);
+      prettyPrintUsingGson(Optional.ofNullable(Nostr.Json.encode(student)).orElse(""), true);
     });
 
+    printText("---------------------\n", true);
+    printText("EVENT MAP\n\n", true);
     kindEventMap.forEach((letter, nestedMap) -> {
       nestedMap.forEach((name, student) -> {
+        printText(String.format("%s: ", name.toString()), true);
         prettyPrintUsingGson(Optional.ofNullable(Nostr.Json.encode(student)).orElse(""), true);
       });
     });
   }
 
-  public void prettyPrintUsingGson(String uglyJson, boolean append) {
-    String filename = "trigger-text.txt";
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    JsonElement jsonElement = JsonParser.parseString(uglyJson);
+  private void printText(String printString, boolean append) {
     try {
-      FileWriter fw = new FileWriter(filename, append);
-      if (!append) {
-        fw.write("SUBSCRIBER FILTERS\n");
-      }
-      fw.write(gson.toJson(jsonElement));
-      fw.write("\n\n");
-      if (!append) {
-        fw.write("---------------------\n");
-        fw.write("EVENT MAP\n\n");
-      }
+      FileWriter fw = new FileWriter(FILENAME, append);
+      fw.write(printString);
       fw.close();
     } catch (Exception e) {
-      System.out.println(gson.toJson(jsonElement));
+      System.out.println(printString);
     }
+  }
+
+  private void prettyPrintUsingGson(String uglyJson, boolean append) {
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    JsonElement jsonElement = JsonParser.parseString(uglyJson);
+    printText(gson.toJson(jsonElement) + "\n\n", append);
   }
 }

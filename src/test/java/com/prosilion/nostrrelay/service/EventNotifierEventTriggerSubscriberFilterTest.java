@@ -17,8 +17,6 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.list.EventList;
 import nostr.event.list.FiltersList;
-import nostr.event.list.KindList;
-import nostr.event.list.PublicKeyList;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.PriceTag;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,13 +36,17 @@ import java.util.Optional;
 @TestMethodOrder(OrderAnnotation.class)
 class EventNotifierEventTriggerSubscriberFilterTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
-  public static String hexPubKey1 = "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
-  public static final String TEXT_NOTE_EVENT_1 = "TEXT-NOTE-EVENT-11111";
   public static final PublicKey PUB_KEY_CLASSIFIED_2 = new PublicKey("fff73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
   public static final String CLASSIFIED_BASETAG_2 = "CLASSIFIED-BASE-TAG-22222";
+  public static final String TEXT_NOTE_EVENT_1 = "TEXT-NOTE-EVENT-11111";
+  private static final String hexPubKey1 = "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
+  private static final String FILENAME = "trigger-text.txt";
   private static final String CONTENT = "CONTENT";
+
+  private static final String EVENT_ID_OF_INTEREST = "1111111111";
+  private static final String CLASSIFIED_ID_OF_INTEREST = "22222222222";
+
   private static EventNotifierEngine eventNotifierEngine;
-  private static String FILENAME = "trigger-text.txt";
 
   @BeforeAll
   public static void setup() {
@@ -54,18 +56,18 @@ class EventNotifierEventTriggerSubscriberFilterTest {
 
   @Test
   @Order(1)
-  void addTextNoteEvents() {
+  void addTextNoteEventAddClassifiedEvent() {
     TextNoteEvent textNoteEvent1 = new TextNoteEvent(
         PUB_KEY_TEXTNOTE_1,
         List.of(new EventTag(TEXT_NOTE_EVENT_1)),
         CONTENT
     );
-    textNoteEvent1.setId("1111111111");
+    textNoteEvent1.setId(EVENT_ID_OF_INTEREST);
     textNoteEvent1.setKind(Kind.TEXT_NOTE.getValue());
     textNoteEvent1.setCreatedAt(1712006760L);
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
-        Long.valueOf(textNoteEvent1.getId()),
+        11L,
         textNoteEvent1,
         Kind.valueOf(
             textNoteEvent1.getKind()
@@ -85,12 +87,12 @@ class EventNotifierEventTriggerSubscriberFilterTest {
         CONTENT,
         classifiedListing);
 
-    classifiedEvent.setId("22222222222");
+    classifiedEvent.setId(CLASSIFIED_ID_OF_INTEREST);
     classifiedEvent.setKind(Kind.CLASSIFIED_LISTING.getValue());
     classifiedEvent.setCreatedAt(1712006760L);
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
-        Long.valueOf(classifiedEvent.getId()),
+        22L,
         classifiedEvent,
         Kind.valueOf(
             classifiedEvent.getKind()
@@ -100,29 +102,48 @@ class EventNotifierEventTriggerSubscriberFilterTest {
 
   @Test
   @Order(2)
-  void addSubscriberFilter() {
+  void addSimpleSubscriberFilter() {
     final var filtersList = new FiltersList();
     filtersList.add(Filters.builder()
-        .events(new EventList(new BaseEvent.ProxyEvent(hexPubKey1)))
-        .authors(new PublicKeyList(PUB_KEY_TEXTNOTE_1))
-        .kinds(new KindList(Kind.TEXT_NOTE.getValue(), Kind.CLASSIFIED_LISTING.getValue()))
-        .referencedEvents(new EventList(new BaseEvent.ProxyEvent(TEXT_NOTE_EVENT_1)))
-        .since(1712006760L)
-        .until(2712006760L)
-        .limit(1)
+        .events(new EventList(new BaseEvent.ProxyEvent(EVENT_ID_OF_INTEREST)))
         .build()
     );
-    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(1L, filtersList));
+
+    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(
+        1L,
+        filtersList)
+    );
   }
+
+//  @Test
+//  @Order(3)
+//  void addFullyPopulatedSubscriberFilter() {
+//    final var filtersList = new FiltersList();
+//    filtersList.add(Filters.builder()
+//        .events(new EventList(new BaseEvent.ProxyEvent(EVENT_ID_OF_INTEREST)))
+//        .authors(new PublicKeyList(PUB_KEY_TEXTNOTE_1))
+//        .kinds(new KindList(Kind.TEXT_NOTE.getValue(), Kind.CLASSIFIED_LISTING.getValue()))
+//        .referencedEvents(new EventList(new BaseEvent.ProxyEvent(TEXT_NOTE_EVENT_1)))
+//        .since(1712006760L)
+//        .until(2712006760L)
+//        .limit(1)
+//        .build()
+//    );
+//
+//    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(
+//        2L,
+//        filtersList)
+//    );
+//  }
 
   @Test
   @Order(99)
   void checker() {
     Map<Long, FiltersList> subscribersFiltersMap = eventNotifierEngine.getSubscribersFiltersMap();
     Map<Kind, Map<Long, GenericEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
+    printText("SUBSCRIBER FILTERS\n\n", false);
 
     subscribersFiltersMap.forEach((name, student) -> {
-      printText("SUBSCRIBER FILTERS\n\n", false);
       printText(String.format("%s: ", name.toString()), true);
       prettyPrintUsingGson(Optional.ofNullable(Nostr.Json.encode(student)).orElse(""), true);
     });

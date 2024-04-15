@@ -21,7 +21,6 @@ import nostr.event.list.KindList;
 import nostr.event.list.PublicKeyList;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.PriceTag;
-import org.apache.commons.collections.MapUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -30,6 +29,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -110,25 +110,35 @@ class EventNotifierEventTriggerSubscriberFilterTest {
 
     Map<Long, FiltersList> map = eventNotifierEngine.getSubscribersFiltersMap();
     Map<Kind, Map<Long, GenericEvent>> kindEventMap = eventNotifierEngine.getKindEventMap();
-    System.out.println("111111111111111111111");
-    System.out.println("111111111111111111111");
-    MapUtils.debugPrint(System.out, "subscribersFiltersMap", map);
-
-    System.out.println("---------------------");
+    map.forEach((name, student) -> {
+      prettyPrintUsingGson(Optional.ofNullable(Nostr.Json.encode(student)).orElse(""), false);
+    });
 
     kindEventMap.forEach((letter, nestedMap) -> {
       nestedMap.forEach((name, student) -> {
-//        System.out.println(Optional.ofNullable(Nostr.Json.encode(student)).orElse(""));
-        prettyPrintUsingGson(Optional.ofNullable(Nostr.Json.encode(student)).orElse(""));
+        prettyPrintUsingGson(Optional.ofNullable(Nostr.Json.encode(student)).orElse(""), true);
       });
     });
-    System.out.println("222222222222222222222");
-    System.out.println("222222222222222222222");
   }
 
-  public void prettyPrintUsingGson(String uglyJson) {
+  public void prettyPrintUsingGson(String uglyJson, boolean append) {
+    String filename = "trigger-text.txt";
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     JsonElement jsonElement = JsonParser.parseString(uglyJson);
-    System.out.println(gson.toJson(jsonElement));
+    try {
+      FileWriter fw = new FileWriter(filename, append);
+      if (!append) {
+        fw.write("SUBSCRIBER FILTERS\n");
+      }
+      fw.write(gson.toJson(jsonElement));
+      fw.write("\n\n");
+      if (!append) {
+        fw.write("---------------------\n");
+        fw.write("EVENT MAP\n\n");
+      }
+      fw.close();
+    } catch (Exception e) {
+      System.out.println(gson.toJson(jsonElement));
+    }
   }
 }

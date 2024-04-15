@@ -54,7 +54,7 @@ class EventNotifierEventTriggerSubscriberFilterTest {
 
   @Test
   @Order(1)
-  void addTwoTextNoteEvents() {
+  void addTextNoteEvents() {
     TextNoteEvent textNoteEvent1 = new TextNoteEvent(
         PUB_KEY_TEXTNOTE_1,
         List.of(new EventTag(TEXT_NOTE_EVENT_1)),
@@ -95,7 +95,11 @@ class EventNotifierEventTriggerSubscriberFilterTest {
         Long.valueOf(classifiedEvent.getId()),
         classifiedEvent)
     );
+  }
 
+  @Test
+  @Order(2)
+  void addSubscriberFilter() {
     final var filtersList = new FiltersList();
     filtersList.add(Filters.builder()
         .events(new EventList(new BaseEvent.ProxyEvent(hexPubKey1)))
@@ -108,7 +112,6 @@ class EventNotifierEventTriggerSubscriberFilterTest {
         .build()
     );
     eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(1L, filtersList));
-    checker();
   }
 
   @Test

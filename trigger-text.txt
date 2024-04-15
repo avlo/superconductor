@@ -1,0 +1,66 @@
+SUBSCRIBER FILTERS
+
+1: [
+  {
+    "kinds": [
+      1,
+      30402
+    ],
+    "since": 1712006760,
+    "until": 2712006760,
+    "limit": 1,
+    "ids": [
+      "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70"
+    ],
+    "authors": [
+      "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70"
+    ],
+    "#e": [
+      "TEXT-NOTE-EVENT-11111"
+    ]
+  }
+]
+
+---------------------
+EVENT MAP
+
+1111111111: {
+  "id": "1111111111",
+  "kind": 1,
+  "content": "CONTENT",
+  "pubkey": "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70",
+  "created_at": 1712006760,
+  "tags": [
+    [
+      "e",
+      "TEXT-NOTE-EVENT-11111",
+      "REPLY"
+    ]
+  ]
+}
+
+22222222222: {
+  "id": "22222222222",
+  "kind": 30402,
+  "content": "CONTENT",
+  "classifiedListing": {
+    "title": "classified title 222",
+    "summary": "classified summarysummary 2222",
+    "publishedAt": 1712006760,
+    "price": [
+      "222",
+      "USD",
+      "1"
+    ]
+  },
+  "pubkey": "fff73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70",
+  "created_at": 1712006760,
+  "tags": [
+    [
+      "e",
+      "CLASSIFIED-BASE-TAG-22222",
+      "REPLY"
+    ]
+  ]
+}
+

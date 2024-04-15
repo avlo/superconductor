@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.FileWriter;
@@ -46,16 +48,35 @@ class EventNotifierEventTriggerSubscriberFilterTest {
   private static final String EVENT_ID_OF_INTEREST = "1111111111";
   private static final String CLASSIFIED_ID_OF_INTEREST = "22222222222";
 
+  @MockBean
+  private static ApplicationEventPublisher publisher;
   private static EventNotifierEngine eventNotifierEngine;
+  private static SubscriberNotifier subscriberNotifier;
 
   @BeforeAll
   public static void setup() {
-    eventNotifierEngine = new EventNotifierEngine();
+    eventNotifierEngine = new EventNotifierEngine(publisher);
+    subscriberNotifier = new SubscriberNotifier();
     PUB_KEY_TEXTNOTE_1 = new PublicKey(hexPubKey1);
   }
 
   @Test
   @Order(1)
+  void addSimpleSubscriberFilter() {
+    final var filtersList = new FiltersList();
+    filtersList.add(Filters.builder()
+        .events(new EventList(new BaseEvent.ProxyEvent(EVENT_ID_OF_INTEREST)))
+        .build()
+    );
+
+    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(
+        1L,
+        filtersList)
+    );
+  }
+
+  @Test
+  @Order(2)
   void addTextNoteEventAddClassifiedEvent() {
     TextNoteEvent textNoteEvent1 = new TextNoteEvent(
         PUB_KEY_TEXTNOTE_1,
@@ -97,21 +118,6 @@ class EventNotifierEventTriggerSubscriberFilterTest {
         Kind.valueOf(
             classifiedEvent.getKind()
         ))
-    );
-  }
-
-  @Test
-  @Order(2)
-  void addSimpleSubscriberFilter() {
-    final var filtersList = new FiltersList();
-    filtersList.add(Filters.builder()
-        .events(new EventList(new BaseEvent.ProxyEvent(EVENT_ID_OF_INTEREST)))
-        .build()
-    );
-
-    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(
-        1L,
-        filtersList)
     );
   }
 

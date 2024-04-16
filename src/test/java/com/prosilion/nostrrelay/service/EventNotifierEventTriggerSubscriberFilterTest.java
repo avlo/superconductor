@@ -17,6 +17,8 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.list.EventList;
 import nostr.event.list.FiltersList;
+import nostr.event.list.KindList;
+import nostr.event.list.PublicKeyList;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.PriceTag;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,7 +29,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.FileWriter;
@@ -38,6 +40,7 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext
 class EventNotifierEventTriggerSubscriberFilterTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
   public static final PublicKey PUB_KEY_CLASSIFIED_2 = new PublicKey("fff73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70");
@@ -51,14 +54,10 @@ class EventNotifierEventTriggerSubscriberFilterTest {
   private static final String CLASSIFIED_ID_OF_INTEREST = "22222222222";
 
   @Autowired
-  private static ApplicationEventPublisher publisher;
-  private static EventNotifierEngine eventNotifierEngine;
-  private static SubscriberNotifier subscriberNotifier;
+  private EventNotifierEngine eventNotifierEngine;
 
   @BeforeAll
   public static void setup() {
-    eventNotifierEngine = new EventNotifierEngine(publisher);
-    subscriberNotifier = new SubscriberNotifier();
     PUB_KEY_TEXTNOTE_1 = new PublicKey(hexPubKey1);
   }
 
@@ -123,26 +122,26 @@ class EventNotifierEventTriggerSubscriberFilterTest {
     );
   }
 
-//  @Test
-//  @Order(3)
-//  void addFullyPopulatedSubscriberFilter() {
-//    final var filtersList = new FiltersList();
-//    filtersList.add(Filters.builder()
-//        .events(new EventList(new BaseEvent.ProxyEvent(EVENT_ID_OF_INTEREST)))
-//        .authors(new PublicKeyList(PUB_KEY_TEXTNOTE_1))
-//        .kinds(new KindList(Kind.TEXT_NOTE.getValue(), Kind.CLASSIFIED_LISTING.getValue()))
-//        .referencedEvents(new EventList(new BaseEvent.ProxyEvent(TEXT_NOTE_EVENT_1)))
-//        .since(1712006760L)
-//        .until(2712006760L)
-//        .limit(1)
-//        .build()
-//    );
-//
-//    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(
-//        2L,
-//        filtersList)
-//    );
-//  }
+  @Test
+  @Order(3)
+  void addFullyPopulatedSubscriberFilter() {
+    final var filtersList = new FiltersList();
+    filtersList.add(Filters.builder()
+        .events(new EventList(new BaseEvent.ProxyEvent(EVENT_ID_OF_INTEREST)))
+        .authors(new PublicKeyList(PUB_KEY_TEXTNOTE_1))
+        .kinds(new KindList(Kind.TEXT_NOTE.getValue(), Kind.CLASSIFIED_LISTING.getValue()))
+        .referencedEvents(new EventList(new BaseEvent.ProxyEvent(TEXT_NOTE_EVENT_1)))
+        .since(1712006760L)
+        .until(2712006760L)
+        .limit(1)
+        .build()
+    );
+
+    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(
+        2L,
+        filtersList)
+    );
+  }
 
   @Test
   @Order(99)

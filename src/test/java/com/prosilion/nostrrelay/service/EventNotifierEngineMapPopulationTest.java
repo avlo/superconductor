@@ -11,8 +11,9 @@ import nostr.event.tag.PriceTag;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -20,6 +21,8 @@ import java.util.Map;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext
 class EventNotifierEngineMapPopulationTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
   public static String hexPubKey1 = "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
@@ -37,13 +40,12 @@ class EventNotifierEngineMapPopulationTest {
   public static final String CLASSIFIED_BASETAG_3 = "CLASSIFIED-BASE-TAG-3333";
 
   private static final String CONTENT = "CONTENT";
-  @MockBean
-  private static ApplicationEventPublisher publisher;
-  private static EventNotifierEngine eventNotifierEngine;
+
+  @Autowired
+  private EventNotifierEngine eventNotifierEngine;
 
   @BeforeAll
   public static void setup() {
-    eventNotifierEngine = new EventNotifierEngine(publisher);
     PUB_KEY_TEXTNOTE_1 = new PublicKey(hexPubKey1);
     PUB_KEY_TEXTNOTE_2 = new PublicKey(hexPubKey2);
   }
@@ -60,7 +62,7 @@ class EventNotifierEngineMapPopulationTest {
     textNoteEvent1.setKind(Kind.TEXT_NOTE.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
-        Long.valueOf(textNoteEvent1.getId()),
+        1L,
         textNoteEvent1,
         Kind.valueOf(
             textNoteEvent1.getKind()
@@ -80,7 +82,7 @@ class EventNotifierEngineMapPopulationTest {
     textNoteEvent2.setKind(Kind.TEXT_NOTE.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
-        Long.valueOf(textNoteEvent2.getId()),
+        2L,
         textNoteEvent2,
         Kind.valueOf(
             textNoteEvent2.getKind()
@@ -103,7 +105,7 @@ class EventNotifierEngineMapPopulationTest {
 
     textNoteEvent.setId("333333333333333333");
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<TextNoteEvent>(
-        Long.valueOf(textNoteEvent.getId()),
+        3L,
         textNoteEvent,
         Kind.valueOf(
             textNoteEvent.getKind()
@@ -131,7 +133,7 @@ class EventNotifierEngineMapPopulationTest {
     classifiedEvent.setKind(Kind.CLASSIFIED_LISTING.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
-        Long.valueOf(classifiedEvent.getId()),
+        4L,
         classifiedEvent,
         Kind.valueOf(
             classifiedEvent.getKind()
@@ -159,7 +161,7 @@ class EventNotifierEngineMapPopulationTest {
     classifiedEvent1.setKind(Kind.CLASSIFIED_LISTING.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
-        Long.valueOf(classifiedEvent1.getId()),
+        5L,
         classifiedEvent1,
         Kind.valueOf(
             classifiedEvent1.getKind()
@@ -184,7 +186,7 @@ class EventNotifierEngineMapPopulationTest {
     classifiedEvent2.setKind(Kind.CLASSIFIED_LISTING.getValue());
 
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<ClassifiedListingEvent>(
-        Long.valueOf(classifiedEvent2.getId()),
+        6L,
         classifiedEvent2,
         Kind.valueOf(
             classifiedEvent2.getKind()

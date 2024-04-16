@@ -20,12 +20,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
 
-import static com.prosilion.nostrrelay.service.EventNotifierEngineMapPopulationTest.*;
-
 @ExtendWith(SpringExtension.class)
 class SubscriptionFiltersEventNotifierEngineTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
+  public static String hexPubKey1 = "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
   public static PublicKey PUB_KEY_TEXTNOTE_2;
+  public static String hexPubKey2 = "bbb73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
+  public static final String TEXT_NOTE_EVENT_1 = "TEXT-NOTE-EVENT-11111";
+  public static final String TEXT_NOTE_EVENT_2 = "TEXT-NOTE-EVENT-2222";
   @MockBean
   private static ApplicationEventPublisher publisher;
   private static EventNotifierEngine eventNotifierEngine;

@@ -20,7 +20,7 @@ import java.util.Map;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
-class EventNotifierEngineTest {
+class EventNotifierEngineMapPopulationTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
   public static String hexPubKey1 = "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
   public static PublicKey PUB_KEY_TEXTNOTE_2;

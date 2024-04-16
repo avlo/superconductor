@@ -20,7 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
 
-import static com.prosilion.nostrrelay.service.EventNotifierEngineTest.*;
+import static com.prosilion.nostrrelay.service.EventNotifierEngineMapPopulationTest.*;
 
 @ExtendWith(SpringExtension.class)
 class SubscriptionFiltersEventNotifierEngineTest {

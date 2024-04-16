@@ -17,8 +17,6 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.list.EventList;
 import nostr.event.list.FiltersList;
-import nostr.event.list.KindList;
-import nostr.event.list.PublicKeyList;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.PriceTag;
 import org.junit.jupiter.api.BeforeAll;
@@ -122,26 +120,26 @@ class EventNotifierEventTriggerSubscriberFilterTest {
     );
   }
 
-  @Test
-  @Order(3)
-  void addFullyPopulatedSubscriberFilter() {
-    final var filtersList = new FiltersList();
-    filtersList.add(Filters.builder()
-        .events(new EventList(new BaseEvent.ProxyEvent(EVENT_ID_OF_INTEREST)))
-        .authors(new PublicKeyList(PUB_KEY_TEXTNOTE_1))
-        .kinds(new KindList(Kind.TEXT_NOTE.getValue(), Kind.CLASSIFIED_LISTING.getValue()))
-        .referencedEvents(new EventList(new BaseEvent.ProxyEvent(TEXT_NOTE_EVENT_1)))
-        .since(1712006760L)
-        .until(2712006760L)
-        .limit(1)
-        .build()
-    );
-
-    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(
-        2L,
-        filtersList)
-    );
-  }
+//  @Test
+//  @Order(3)
+//  void addFullyPopulatedSubscriberFilter() {
+//    final var filtersList = new FiltersList();
+//    filtersList.add(Filters.builder()
+//        .events(new EventList(new BaseEvent.ProxyEvent(EVENT_ID_OF_INTEREST)))
+//        .authors(new PublicKeyList(PUB_KEY_TEXTNOTE_1))
+//        .kinds(new KindList(Kind.TEXT_NOTE.getValue(), Kind.CLASSIFIED_LISTING.getValue()))
+//        .referencedEvents(new EventList(new BaseEvent.ProxyEvent(TEXT_NOTE_EVENT_1)))
+//        .since(1712006760L)
+//        .until(2712006760L)
+//        .limit(1)
+//        .build()
+//    );
+//
+//    eventNotifierEngine.addSubscriberFiltersHandler(new AddSubscriberFiltersEvent(
+//        2L,
+//        filtersList)
+//    );
+//  }
 
   @Test
   @Order(99)

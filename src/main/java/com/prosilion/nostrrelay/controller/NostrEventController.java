@@ -1,16 +1,20 @@
 package com.prosilion.nostrrelay.controller;
 
+import com.prosilion.nostrrelay.pubsub.FireNostrEvent;
 import com.prosilion.nostrrelay.service.message.MessageService;
 import com.prosilion.nostrrelay.util.DecodedMessageMarshaller;
 import com.prosilion.nostrrelay.util.MessageEncoder;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.java.Log;
+import nostr.api.NIP01;
 import nostr.event.BaseEvent;
 import nostr.event.BaseMessage;
+import nostr.event.impl.GenericEvent;
 import nostr.event.json.codec.BaseEventEncoder;
 import nostr.event.message.EventMessage;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
@@ -24,16 +28,22 @@ import java.util.logging.Level;
 )
 @Controller
 @Log
-public class NostrEventController<T extends BaseMessage> {
-  private Session session;
+public class NostrEventController<T extends BaseMessage, U extends GenericEvent> {
+  private Session session = null;
 
   @OnMessage
   public void onMessage(Session session, @NotNull MessageService<T> messageService) throws InvocationTargetException, IllegalAccessException {
     log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageService, session});
-    broadcast(messageService.   processIncoming(session));
+    this.session = session;
+    messageService.processIncoming(session.getId());
   }
 
-  private void broadcast(@NotNull T message) {
+  @EventListener
+  public void fireEvent(FireNostrEvent<U> tFireNostrEvent) {
+    T message = (T) NIP01.createEventMessage(tFireNostrEvent.getEvent(), String.valueOf(tFireNostrEvent.getSubscriberId()));
+    broadcast(message);
+  }
+  public void broadcast(@NotNull T message) {
     try {
       log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getCommand());
       session.getBasicRemote().sendObject(message);

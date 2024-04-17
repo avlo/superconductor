@@ -19,7 +19,7 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<R
   }
 
   @Override
-  public ReqMessage processIncoming(Session session) {
-    return reqService.processIncoming(session);
+  public ReqMessage processIncoming(String sessionId) {
+    return reqService.processIncoming(sessionId);
   }
 }

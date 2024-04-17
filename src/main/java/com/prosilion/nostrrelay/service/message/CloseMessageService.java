@@ -16,7 +16,7 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
   }
 
   @Override
-  public CloseMessage processIncoming(Session session) {
+  public CloseMessage processIncoming(String sessionId) {
     log.log(Level.INFO, "processing CLOSE event");
     return new CloseMessage(closeMessage.getSubscriptionId());
   }

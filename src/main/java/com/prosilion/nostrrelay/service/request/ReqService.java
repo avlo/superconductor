@@ -2,7 +2,6 @@ package com.prosilion.nostrrelay.service.request;
 
 import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.entity.Subscriber;
-import jakarta.websocket.Session;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import nostr.event.list.FiltersList;
@@ -22,8 +21,8 @@ public class ReqService<T extends ReqMessage> implements ReqServiceIF<T> {
     this.subId = reqMessage.getSubscriptionId();
   }
 
-  public T processIncoming(Session session) {
-    Subscriber subscriber = new Subscriber(subId, session.getId());
+  public T processIncoming(String sessionId) {
+    Subscriber subscriber = new Subscriber(subId, sessionId);
     subscriberService.save(subscriber, filtersList);
     return null;
   }

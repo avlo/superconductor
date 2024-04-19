@@ -14,21 +14,27 @@ import java.util.List;
 @Getter
 public class PriceTagDto extends PriceTag {
 
-  public PriceTagDto(String number, String currency, String frequency) {
-    super(number, currency, frequency);
-  }
+	public PriceTagDto(String number, String currency, String frequency) {
+		super(number, currency, frequency);
+	}
 
-  public PriceTagEntity convertDtoToEntity() throws InvocationTargetException, IllegalAccessException {
-    PriceTagEntity priceTagEntity = new PriceTagEntity();
-    BeanUtils.copyProperties(priceTagEntity, this);
-    return priceTagEntity;
-  }
+	public PriceTagEntity convertDtoToEntity() {
+		PriceTagEntity priceTagEntity = new PriceTagEntity();
+		try {
+			BeanUtils.copyProperties(priceTagEntity, this);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(e);
+		}
+		return priceTagEntity;
+	}
 
-  public static PriceTagDto createPriceTagDtoFromAttributes(List<ElementAttribute> atts) {
+	public static PriceTagDto createPriceTagDtoFromAttributes(List<ElementAttribute> atts) {
 //    TODO: refactor
-    String one = atts.get(0).getValue().toString();
-    String two = atts.get(1).getValue().toString();
-    String three = atts.get(2).getValue().toString();
-    return new PriceTagDto(one, two, three);
-  }
+		String one = atts.get(0).getValue().toString();
+		String two = atts.get(1).getValue().toString();
+		String three = atts.get(2).getValue().toString();
+		return new PriceTagDto(one, two, three);
+	}
 }

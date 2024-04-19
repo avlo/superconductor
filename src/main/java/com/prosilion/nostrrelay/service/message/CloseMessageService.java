@@ -1,23 +1,18 @@
 package com.prosilion.nostrrelay.service.message;
 
-import jakarta.websocket.Session;
 import lombok.extern.java.Log;
 import nostr.event.message.CloseMessage;
+import org.springframework.stereotype.Service;
 
 import java.util.logging.Level;
 
 @Log
-public class CloseMessageService<T extends CloseMessage> implements MessageService<CloseMessage> {
-  private final CloseMessage closeMessage;
+@Service
+public class CloseMessageService<T extends CloseMessage> implements MessageService<T> {
 
-  public CloseMessageService(CloseMessage closeMessage) {
-    log.log(Level.INFO, "CLOSE service initiated");
-    this.closeMessage = closeMessage;
-  }
-
-  @Override
-  public CloseMessage processIncoming(Session session) {
-    log.log(Level.INFO, "processing CLOSE event");
-    return new CloseMessage(closeMessage.getSubscriptionId());
-  }
+	@Override
+	public void processIncoming(T closeMessage) {
+		log.log(Level.INFO, "processing CLOSE event");
+		new CloseMessage(closeMessage.getSubscriptionId());
+	}
 }

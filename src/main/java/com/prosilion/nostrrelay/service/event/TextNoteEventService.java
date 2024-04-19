@@ -5,28 +5,30 @@ import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.message.EventMessage;
-
-import java.lang.reflect.InvocationTargetException;
+import org.springframework.stereotype.Service;
 
 @Log
-public class TextNoteEventService<T extends EventMessage> extends EventService<T, TextNoteEvent> {
+@Service
+public class TextNoteEventService<T extends EventMessage> implements EventServiceIF<T> {
 
-  public TextNoteEventService(T eventMessage) {
-    super(eventMessage);
-  }
+	EventService<T, TextNoteEvent> eventService;
 
-  @Override
-  public void processIncoming() throws InvocationTargetException, IllegalAccessException {
-    GenericEvent event = (GenericEvent) getEventMessage().getEvent();
-    event.setNip(1);
-    event.setKind(Kind.TEXT_NOTE.getValue());
-    TextNoteEvent textNoteEvent = new TextNoteEvent(
-        event.getPubKey(),
-        event.getTags(),
-        event.getContent()
-    );
-    Long id = super.saveEventEntity(event);
-    textNoteEvent.setId(event.getId());
-    super.publishEvent(id, textNoteEvent);
-  }
+	public TextNoteEventService(EventService<T, TextNoteEvent> eventService) {
+		this.eventService = eventService;
+	}
+
+	@Override
+	public void processIncoming(T eventMessage) {
+		GenericEvent event = (GenericEvent) eventMessage.getEvent();
+		event.setNip(1);
+		event.setKind(Kind.TEXT_NOTE.getValue());
+		TextNoteEvent textNoteEvent = new TextNoteEvent(
+				event.getPubKey(),
+				event.getTags(),
+				event.getContent()
+		);
+		Long id = eventService.saveEventEntity(event);
+		textNoteEvent.setId(event.getId());
+		eventService.publishEvent(id, textNoteEvent);
+	}
 }

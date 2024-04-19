@@ -5,5 +5,5 @@ import nostr.event.message.EventMessage;
 import java.lang.reflect.InvocationTargetException;
 
 public interface EventServiceIF<T extends EventMessage> {
-  void processIncoming() throws InvocationTargetException, IllegalAccessException;
+	void processIncoming(T eventMessage) throws InvocationTargetException, IllegalAccessException;
 }

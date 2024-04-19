@@ -1,5 +1,5 @@
 const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080'
+    brokerURL: 'ws://localhost:5555'
 });
 
 stompClient.onConnect = (frame) => {
@@ -40,16 +40,6 @@ function disconnect() {
     setConnected(false);
     console.log("Disconnected");
 }
-
-// function createEnum(values) {
-//     const enumObject = {};
-//     for (const val of values) {
-//         enumObject[val] = val;
-//     }
-//     return Object.freeze(enumObject);
-// }
-//
-// var Tag = createEnum(['E', 'A', 'P']);
 
 async function createDigest(message) {
     const utf8 = new Uint8Array(message.length);

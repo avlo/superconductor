@@ -1,24 +1,24 @@
-let ws = new WebSocket('ws://localhost:5555');
+const stompClient = new StompJs.Client({
+    brokerURL: 'ws://localhost:5555'
+});
 
-function connect() {
-    ws.onmessage = function (data) {
-        showGreeting(data.data);
-    }
+stompClient.onConnect = (frame) => {
     setConnected(true);
-}
+    console.log('Connected: ' + frame);
+    // stompClient.subscribe('/topic/topic_001', (event) => {
+    stompClient.subscribe('/', (event) => {
+        showEvent(JSON.parse(event.body).content);
+    });
+};
 
-function disconnect() {
-    if (ws != null) {
-        ws.close();
-    }
-    setConnected(false);
-    console.log("Disconnected");
-}
+stompClient.onWebSocketError = (error) => {
+    console.error('Error with websocket', error);
+};
 
-function showGreeting(message) {
-    showEvent(message);
-    console.log("console log" + message);
-}
+stompClient.onStompError = (frame) => {
+    console.error('Broker reported error: ' + frame.headers['message']);
+    console.error('Additional details: ' + frame.body);
+};
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -31,15 +31,15 @@ function setConnected(connected) {
     $("#events").html("");
 }
 
-// function createEnum(values) {
-//     const enumObject = {};
-//     for (const val of values) {
-//         enumObject[val] = val;
-//     }
-//     return Object.freeze(enumObject);
-// }
-//
-// var Tag = createEnum(['E', 'A', 'P']);
+function connect() {
+    stompClient.activate();
+}
+
+function disconnect() {
+    stompClient.deactivate();
+    setConnected(false);
+    console.log("Disconnected");
+}
 
 async function createDigest(message) {
     const utf8 = new Uint8Array(message.length);
@@ -122,7 +122,12 @@ function sendContent(id_hash) {
     let localjsonstring = replaceHash(id_hash);
     console.log(localjsonstring);
     console.log('\n\n');
-    ws.send(localjsonstring);
+
+    stompClient.publish({
+        // destination: "/app/topic_001",
+        destination: "/",
+        body: localjsonstring
+    });
 }
 
 function showEvent(content) {

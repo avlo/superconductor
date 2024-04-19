@@ -39,7 +39,10 @@ public class NostrEventController<T extends BaseMessage> {
 	@EventListener
 	public void handleWebsocketConnectListener(SessionConnectEvent event) {
 		System.out.println(String.format("NostrEventController registered SessionConnectEvent event: [%s]", event.getWebSocketSession().getId()));
+		this.sessionId = event.getWebSocketSession().getId();
 	}
+
+	String sessionId;
 
 	@MessageMapping("/")
 	@SendTo("/")
@@ -48,7 +51,7 @@ public class NostrEventController<T extends BaseMessage> {
 		switch (message.getCommand()) {
 			case "REQ" -> {
 				log.log(Level.INFO, "REQ decoded, contents: {0}", message);
-				reqMessageService.processIncoming((ReqMessage) message, "connectionId");
+				reqMessageService.processIncoming((ReqMessage) message, sessionId);
 			}
 			case "EVENT" -> {
 				log.log(Level.INFO, "EVENT decoded, contents: {0}", message);

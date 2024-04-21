@@ -3,7 +3,7 @@ package com.prosilion.nostrrelay.service;
 import com.prosilion.nostrrelay.pubsub.AddNostrEvent;
 import com.prosilion.nostrrelay.pubsub.AddSubscriberFiltersEvent;
 import com.prosilion.nostrrelay.pubsub.RemoveSubscriberFilterEvent;
-import com.prosilion.nostrrelay.pubsub.SubscriberNotifier;
+import com.prosilion.nostrrelay.pubsub.SubscriberNotifierEvent;
 import lombok.Getter;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
@@ -34,10 +34,10 @@ public class EventNotifierEngine<T extends GenericEvent> {
   @EventListener
   public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
     Map<Long, T> map = Optional.ofNullable(kindEventMap.get(addNostrEvent.getKind())).orElse(new HashMap<>());
-    map.putIfAbsent(addNostrEvent.getId(), addNostrEvent.getEventIdEventMap().get(addNostrEvent.getId()));
+    map.putIfAbsent(addNostrEvent.getId(), addNostrEvent.getEvent());
     // TODO: if event is a replaceable event, update existing event
     kindEventMap.put(addNostrEvent.getKind(), map);
-    publisher.publishEvent(new SubscriberNotifier<T>(subscribersFiltersMap, addNostrEvent));
+    publisher.publishEvent(new SubscriberNotifierEvent<T>(subscribersFiltersMap, addNostrEvent));
   }
 
   @EventListener

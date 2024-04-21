@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class TextNoteEventService<T extends EventMessage> implements EventServiceIF<T> {
 
-	EventService<T, TextNoteEvent> eventService;
+	EventService<TextNoteEvent> eventService;
 
-	public TextNoteEventService(EventService<T, TextNoteEvent> eventService) {
+	public TextNoteEventService(EventService<TextNoteEvent> eventService) {
 		this.eventService = eventService;
 	}
 

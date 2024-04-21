@@ -25,10 +25,10 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
 	private final ClassifiedListingEntityRepository classifiedListingEntityRepository;
 	private final ClassifiedListingEntityEventEntityService joinService;
 	private final PriceTagEntityService priceTagEntityService;
-	private final EventService<T, ClassifiedListingEvent> eventService;
+	private final EventService<ClassifiedListingEvent> eventService;
 
 	public ClassifiedListingEventService(
-			EventService<T, ClassifiedListingEvent> eventService,
+			EventService<ClassifiedListingEvent> eventService,
 			ClassifiedListingEntityRepository classifiedListingEntityRepository,
 			ClassifiedListingEntityEventEntityService joinService,
 			PriceTagEntityService priceTagEntityService) {

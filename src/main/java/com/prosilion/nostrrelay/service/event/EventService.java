@@ -12,7 +12,6 @@ import lombok.extern.java.Log;
 import nostr.event.BaseTag;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
-import nostr.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,40 +21,40 @@ import java.util.Optional;
 @Log
 @Getter
 @Service
-public class EventService<T extends EventMessage, U extends GenericEvent> {
-	private final EventEntityTagEntityService eventEntityTagEntityService;
-	private final EventEntityRepository eventEntityRepository;
-	private final EventNotifierEngine<U> eventNotifierEngine;
+public class EventService<T extends GenericEvent> {
+  private final EventEntityTagEntityService eventEntityTagEntityService;
+  private final EventEntityRepository eventEntityRepository;
+  private final EventNotifierEngine<T> eventNotifierEngine;
 
-	@Autowired
-	public EventService(EventEntityTagEntityService eventEntityTagEntityService, EventEntityRepository eventEntityRepository, EventNotifierEngine<U> eventNotifierEngine) {
-		this.eventEntityTagEntityService = eventEntityTagEntityService;
-		this.eventEntityRepository = eventEntityRepository;
-		this.eventNotifierEngine = eventNotifierEngine;
-	}
+  @Autowired
+  public EventService(EventEntityTagEntityService eventEntityTagEntityService, EventEntityRepository eventEntityRepository, EventNotifierEngine<T> eventNotifierEngine) {
+    this.eventEntityTagEntityService = eventEntityTagEntityService;
+    this.eventEntityRepository = eventEntityRepository;
+    this.eventNotifierEngine = eventNotifierEngine;
+  }
 
-	protected Long saveEventEntity(GenericEvent event) {
-		List<BaseTag> baseTagsOnly = event.getTags().stream()
-				.filter(baseTag -> List.of("a", "p", "e").contains(baseTag.getCode()))
-				.toList();
-		event.getTags().removeAll(baseTagsOnly);
+  protected Long saveEventEntity(GenericEvent event) {
+    List<BaseTag> baseTagsOnly = event.getTags().stream()
+        .filter(baseTag -> List.of("a", "p", "e").contains(baseTag.getCode()))
+        .toList();
+    event.getTags().removeAll(baseTagsOnly);
 
-		EventDto eventToSave = new EventDto(
-				event.getPubKey(),
-				event.getId(),
-				Kind.valueOf(event.getKind()),
-				event.getNip(),
-				event.getCreatedAt(),
-				event.getSignature(),
-				baseTagsOnly,
-				event.getContent()
-		);
+    EventDto eventToSave = new EventDto(
+        event.getPubKey(),
+        event.getId(),
+        Kind.valueOf(event.getKind()),
+        event.getNip(),
+        event.getCreatedAt(),
+        event.getSignature(),
+        baseTagsOnly,
+        event.getContent()
+    );
 
-		EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
-		return eventEntityTagEntityService.saveBaseTags(baseTagsOnly, savedEntity.getId());
-	}
+    EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
+    return eventEntityTagEntityService.saveBaseTags(baseTagsOnly, savedEntity.getId());
+  }
 
-	protected void publishEvent(Long id, U event) {
-		eventNotifierEngine.nostrEventHandler(new AddNostrEvent<U>(id, event, Kind.valueOf(event.getKind())));
-	}
+  protected void publishEvent(Long id, T event) {
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<>(id, event, Kind.valueOf(event.getKind())));
+  }
 }

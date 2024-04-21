@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class EventNotifierEngine<T extends GenericEvent> {
   public EventNotifierEngine(ApplicationEventPublisher publisher) {
     this.publisher = publisher;
     this.subscribersFiltersMap = new HashMap<>(new HashMap<>()); // use fast-hash map as/if necessary in the future
-    this.kindEventMap = new HashMap<>();
+    this.kindEventMap = new EnumMap<>(Kind.class);
   }
 
   @EventListener

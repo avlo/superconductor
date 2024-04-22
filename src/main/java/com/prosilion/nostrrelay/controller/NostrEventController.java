@@ -13,20 +13,16 @@ import nostr.event.message.CloseMessage;
 import nostr.event.message.EventMessage;
 import nostr.event.message.ReqMessage;
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.session.web.socket.events.SessionConnectEvent;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 
 @Log
@@ -36,30 +32,32 @@ public class NostrEventController {
   private final ReqMessageService<ReqMessage> reqMessageService;
   private final EventMessageService<EventMessage> eventMessageService;
   private final CloseMessageService<CloseMessage> closeMessageService;
-  private final Map<String, WebSocketSession> sessionHashMap = new HashMap<>();
-
+  //  private final Map<String, WebSocketSession> sessionHashMap = new HashMap<>();
+  private final SimpMessageSendingOperations messagingTemplate;
 
   public NostrEventController(
       ReqMessageService<ReqMessage> reqMessageService,
       EventMessageService<EventMessage> eventMessageService,
-      CloseMessageService<CloseMessage> closeMessageService) {
+      CloseMessageService<CloseMessage> closeMessageService,
+      SimpMessageSendingOperations messagingTemplate) {
     this.reqMessageService = reqMessageService;
     this.eventMessageService = eventMessageService;
     this.closeMessageService = closeMessageService;
+    this.messagingTemplate = messagingTemplate;
   }
 
   //  @Async
   @EventListener
   public void handleWebsocketConnectListener(SessionConnectEvent event) {
     System.out.println(String.format("NostrEventController registered SessionConnectEvent event: [%s]", event.getWebSocketSession().getId()));
-    this.sessionHashMap.put(event.getWebSocketSession().getId(), event.getWebSocketSession());
+//    this.sessionHashMap.put(event.getWebSocketSession().getId(), event.getWebSocketSession());
   }
 
   //  @Async
   @EventListener
   public void handleWebsocketDisconnectListener(SessionDisconnectEvent event) {
     System.out.println(String.format("NostrEventController disconnect event: [%s]", event.getSessionId()));
-    this.sessionHashMap.remove(event.getSessionId());
+//    this.sessionHashMap.remove(event.getSessionId());
   }
 
   @MessageMapping("/")
@@ -84,23 +82,22 @@ public class NostrEventController {
     }
   }
 
+  //  @Async
   @EventListener
-  public void broadcast(BroadcastMessageEvent message) {
-    try {
-      log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getMessage().getCommand());
-      WebSocketSession session = sessionHashMap.get(message.getSessionId());
-      WebSocketMessage<String> webSocketMessage = new TextMessage(message.getMessage().toString());
+  public void broadcast(BroadcastMessageEvent<EventMessage> message) {
+    log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getMessage().getCommand());
 
-      ConcurrentWebSocketSessionDecorator decorator = new ConcurrentWebSocketSessionDecorator(session, 1000, 1024);
-      decorator.sendMessage(webSocketMessage);
+    messagingTemplate.convertAndSend(message.getSessionId(), message, createHeaders(message.getSessionId()));
 
-      EventMessage baseEvent = (EventMessage) message.getMessage();
-      BaseEvent event = (BaseEvent) baseEvent.getEvent();
-      log.log(Level.INFO, new BaseEventEncoder(event).encode());
-    } catch (IOException e) {
-      log.log(Level.SEVERE, e.getMessage());
-    }
+    EventMessage baseEvent = message.getMessage();
+    BaseEvent event = (BaseEvent) baseEvent.getEvent();
+    log.log(Level.INFO, new BaseEventEncoder(event).encode());
   }
 
-
+  private MessageHeaders createHeaders(String sessionId) {
+    SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+    headerAccessor.setSessionId(sessionId);
+    headerAccessor.setLeaveMutable(true);
+    return headerAccessor.getMessageHeaders();
+  }
 }

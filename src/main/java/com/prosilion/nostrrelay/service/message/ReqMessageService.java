@@ -8,16 +8,12 @@ import org.springframework.stereotype.Service;
 
 @Log
 @Service
-public class ReqMessageService<T extends ReqMessage> implements MessageService<T> {
+public class ReqMessageService<T extends ReqMessage> {
 	private final ReqService<T> reqService;
 
 	@Autowired
 	public ReqMessageService(ReqService<T> reqService) {
 		this.reqService = reqService;
-	}
-
-	@Override
-	public void processIncoming(T t) {
 	}
 
 	public void processIncoming(T reqMessage, String sessionId) {

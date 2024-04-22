@@ -2,6 +2,7 @@ package com.prosilion.nostrrelay.service.request;
 
 import com.prosilion.nostrrelay.entity.Subscriber;
 import com.prosilion.nostrrelay.pubsub.AddSubscriberEvent;
+import com.prosilion.nostrrelay.service.SubscriberSessionPool;
 import jakarta.persistence.NoResultException;
 import nostr.event.list.FiltersList;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,7 +32,7 @@ public class SubscriberService {
 
 		/**
 		 * {@link AddSubscriberEvent} is registered & used by
-		 * {@link com.prosilion.nostrrelay.service.SubscriberPool} (not EventNotifierEngine)
+		 * {@link SubscriberSessionPool} (not EventNotifierEngine)
 		 */
 		publisher.publishEvent(new AddSubscriberEvent(savedSubscriber));   //Notify the listeners
 	}

@@ -5,6 +5,7 @@ import com.prosilion.nostrrelay.pubsub.FireNostrEvent;
 import com.prosilion.nostrrelay.pubsub.SubscriberNotifierEvent;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
+import nostr.event.impl.TextNoteEvent;
 import nostr.event.list.FiltersList;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -41,8 +42,8 @@ public class SubscriberNotifierService<T extends GenericEvent> {
           addMatch(subscriberFilters, addNostrEvent).ifPresent(event ->
               eventsToSend.put(subscriberId, event)));
     });
-    eventsToSend.forEach((aLong, tAddNostrEvent) ->
-        publisher.publishEvent(new FireNostrEvent<T>(aLong, tAddNostrEvent.getEvent())));
+    eventsToSend.forEach((subscriberId, event) ->
+        publisher.publishEvent(new FireNostrEvent(subscriberId, (TextNoteEvent) event.getEvent())));
   }
 
   private Optional<AddNostrEvent<T>> addMatch(Filters subscriberFilters, AddNostrEvent<T> eventToCheck) {

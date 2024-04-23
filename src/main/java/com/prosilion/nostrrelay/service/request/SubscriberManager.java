@@ -18,4 +18,8 @@ public class SubscriberManager {
 	public Subscriber save(Subscriber subscriber) {
 		return Optional.of(subscriberRepository.save(subscriber)).orElseThrow(NoResultException::new);
 	}
+
+	public Optional<Subscriber> get(Long subscriberId) {
+		return Optional.of(subscriberRepository.findById(subscriberId)).orElseThrow(NoResultException::new);
+	}
 }

@@ -1,7 +1,11 @@
 package com.prosilion.nostrrelay.service.event;
 
+import com.prosilion.nostrrelay.entity.Subscriber;
+import com.prosilion.nostrrelay.pubsub.BroadcastMessageEvent;
 import com.prosilion.nostrrelay.pubsub.FireNostrEvent;
+import com.prosilion.nostrrelay.service.request.SubscriberService;
 import lombok.extern.java.Log;
+import nostr.api.NIP01;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
@@ -12,11 +16,12 @@ import org.springframework.stereotype.Service;
 @Log
 @Service
 public class TextNoteEventService<T extends EventMessage> implements EventServiceIF<T> {
+	private final SubscriberService subscriberService;
+	private final EventService<TextNoteEvent> eventService;
 
-	EventService<TextNoteEvent> eventService;
-
-	public TextNoteEventService(EventService<TextNoteEvent> eventService) {
+	public TextNoteEventService(EventService<TextNoteEvent> eventService, SubscriberService subscriberService) {
 		this.eventService = eventService;
+		this.subscriberService = subscriberService;
 	}
 
 	@Override
@@ -35,10 +40,11 @@ public class TextNoteEventService<T extends EventMessage> implements EventServic
 	}
 
 	@EventListener
-	public void handleFireNostEvent(FireNostrEvent<TextNoteEvent> textNoteEvent) {
-//		create textnote message
-//		pass to message listener )which is controller
-//		controller knows about session pool
-//		controller calls approparite session(s)
+	public void handleFireNostrEvent(FireNostrEvent textNoteEvent) {
+		// TODO: value of?
+		EventMessage message = NIP01.createEventMessage(textNoteEvent.event(), String.valueOf(textNoteEvent.subscriberId()));
+		Subscriber subscriber = subscriberService.get(textNoteEvent.subscriberId());
+		BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(subscriber.getSession(), message);
+		eventService.publishEvent(event);
 	}
 }

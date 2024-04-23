@@ -6,8 +6,24 @@ stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
     // stompClient.subscribe('/topic/topic_001', (event) => {
-    stompClient.subscribe('/', (event) => {
-        showEvent(JSON.parse(event.body).content);
+    stompClient.subscribe('/', function (message) {
+        // called when the client receives a STOMP message from the server
+        if (message) {
+            console.log("1111111111111111111111111111");
+            console.log(message);
+            if (message.body) {
+                console.log("2222222222222222222222222");
+                console.log(message.body);
+                console.log("3333333333333333333333");
+                // showEvent(JSON.parse(message.body));
+                console.log("4444444444444444444444");
+                showEvent(JSON.parse(message.body).content);
+                console.log("555555555555555555555555");
+            } else {
+                console.log("XXXXXXXXXXXXXXXXXXXXXXX");
+                console.log("XXXXXXXXXXXXXXXXXXXXXXX");
+            }
+        }
     });
 };
 

@@ -82,7 +82,7 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
 	//  @Async
 	@EventListener
   public <U extends BaseMessage> void broadcast(BroadcastMessageEvent<U> message) throws IOException {
-    log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getMessage().getCommand());
+    log.log(Level.INFO, "NostrEventController broadcast message: {0}", message.getMessage().toString());
     mapSessions.get(message.getSessionId()).sendMessage(new TextMessage(message.getMessage().toString()));
 	}
 }

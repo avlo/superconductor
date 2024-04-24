@@ -63,8 +63,7 @@ public class EventService<T extends GenericEvent> {
     eventNotifierEngine.nostrEventHandler(new AddNostrEvent<>(id, event, Kind.valueOf(event.getKind())));
   }
 
-  protected <U extends BaseMessage> U publishEvent(BroadcastMessageEvent<U> messageEvent) {
+  protected <U extends BaseMessage> void publishEvent(BroadcastMessageEvent<U> messageEvent) {
     publisher.publishEvent(messageEvent);
-    return null;
   }
 }

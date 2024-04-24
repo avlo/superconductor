@@ -1,6 +1,10 @@
-let ws = new WebSocket('ws://localhost:5555');
+let ws
 
 function connect() {
+    ws = new WebSocket('ws://localhost:5555');
+    ws.onmessage = function (messageEvent) {
+        showEvent(messageEvent.data);
+    }
     setConnected(true);
 }
 
@@ -93,12 +97,6 @@ function sendContent(id_hash) {
 }
 
 function showEvent(content) {
-    console.log("++++++++++++++++++++++++");
-    console.log("REQ");
-    console.log("++++++++++++++++++++++++");
-    console.log("content: " + content);
-    console.log("++++++++++++++++++++++++");
-
     let jsonPretty = JSON.stringify(JSON.parse(content), null, 2);
     $("#events").append("<tr><td><pre>" + syntaxHighlight(jsonPretty) + "</pre></td></tr>");
 }

@@ -1,17 +1,19 @@
 package com.prosilion.nostrrelay.pubsub;
 
+import com.prosilion.nostrrelay.util.MessageEncoder;
 import lombok.Getter;
 import lombok.Setter;
 import nostr.event.BaseMessage;
+import org.springframework.web.socket.TextMessage;
 
 @Setter
 @Getter
 public class BroadcastMessageEvent<T extends BaseMessage> {
-  private final T message;
+  private final TextMessage message;
   private final String sessionId;
 
-  public BroadcastMessageEvent(String sessionId, T message) {
+  public BroadcastMessageEvent(String sessionId, T incoming) {
     this.sessionId = sessionId;
-    this.message = message;
+    this.message = new TextMessage(new MessageEncoder().encode(incoming));
   }
 }

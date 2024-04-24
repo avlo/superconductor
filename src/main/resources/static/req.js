@@ -1,40 +1,8 @@
-const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:5555'
-});
+let ws = new WebSocket('ws://localhost:5555');
 
-stompClient.onConnect = (frame) => {
+function connect() {
     setConnected(true);
-    console.log('Connected: ' + frame);
-    // stompClient.subscribe('/topic/topic_001', (event) => {
-    stompClient.subscribe('/', function (message) {
-        // called when the client receives a STOMP message from the server
-        if (message) {
-            console.log("1111111111111111111111111111");
-            console.log(message);
-            if (message.body) {
-                console.log("2222222222222222222222222");
-                console.log(message.body);
-                console.log("3333333333333333333333");
-                // showEvent(JSON.parse(message.body));
-                console.log("4444444444444444444444");
-                showEvent(JSON.parse(message.body).content);
-                console.log("555555555555555555555555");
-            } else {
-                console.log("XXXXXXXXXXXXXXXXXXXXXXX");
-                console.log("XXXXXXXXXXXXXXXXXXXXXXX");
-            }
-        }
-    });
-};
-
-stompClient.onWebSocketError = (error) => {
-    console.error('Error with websocket', error);
-};
-
-stompClient.onStompError = (frame) => {
-    console.error('Broker reported error: ' + frame.headers['message']);
-    console.error('Additional details: ' + frame.body);
-};
+}
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -47,12 +15,10 @@ function setConnected(connected) {
     $("#events").html("");
 }
 
-function connect() {
-    stompClient.activate();
-}
-
 function disconnect() {
-    stompClient.deactivate();
+    if (ws != null) {
+        ws.close();
+    }
     setConnected(false);
     console.log("Disconnected");
 }
@@ -123,11 +89,7 @@ function sendContent(id_hash) {
     console.log(localjsonstring);
     console.log('\n\n');
 
-    stompClient.publish({
-        // destination: "/app/topic_001",
-        destination: "/",
-        body: localjsonstring
-    });
+    ws.send(localjsonstring);
 }
 
 function showEvent(content) {

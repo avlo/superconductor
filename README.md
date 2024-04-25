@@ -70,7 +70,7 @@ or full/debug console logging
 
 ## Default/embedded H2 DB console: ##
 
-    localhost:8080/h2-console/
+    localhost:5555/h2-console/
 
 *user: sa*  
 *password: // blank* 

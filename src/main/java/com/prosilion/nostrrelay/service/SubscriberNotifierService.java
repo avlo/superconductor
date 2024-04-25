@@ -33,7 +33,6 @@ public class SubscriberNotifierService<T extends GenericEvent> {
 		// for each filter type, see if it matches the relevant event attribute
 		// if there's a match, send event to subscriber
 
-
 		// TODO: prudent replace all below parallelizable
 		Map<Long, AddNostrEvent<T>> eventsToSend = new HashMap<>();
 		subscribersFiltersMap.forEach((subscriberId, subscriberIdFiltersList) -> {

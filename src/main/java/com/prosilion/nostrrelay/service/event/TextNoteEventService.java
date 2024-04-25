@@ -1,6 +1,5 @@
 package com.prosilion.nostrrelay.service.event;
 
-import com.prosilion.nostrrelay.service.request.SubscriberService;
 import lombok.extern.java.Log;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class TextNoteEventService<T extends EventMessage> implements EventServiceIF<T> {
 	private final EventService<TextNoteEvent> eventService;
 
-	public TextNoteEventService(EventService<TextNoteEvent> eventService, SubscriberService subscriberService) {
+	public TextNoteEventService(EventService<TextNoteEvent> eventService) {
 		this.eventService = eventService;
 	}
 

@@ -5,20 +5,16 @@ import lombok.Setter;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Setter
 @Getter
 public class AddNostrEvent<T extends GenericEvent> {
-  private final Kind kind;
-  private final Map<Long, T> eventIdEventMap;
   private final Long id;
+  private final T event;
+  private final Kind kind;
 
-  public AddNostrEvent(Kind kind, Long id, T event) {
-    this.kind = kind;
+  public AddNostrEvent(Long id, T event, Kind kind) {
     this.id = id;
-    this.eventIdEventMap = new HashMap<>();
-    this.eventIdEventMap.put(id, event);
+    this.event = event;
+    this.kind = kind;
   }
 }

@@ -12,22 +12,30 @@ import nostr.event.list.PublicKeyList;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
 
-import static com.prosilion.nostrrelay.service.EventNotifierEngineTest.*;
-
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
+@DirtiesContext
 class SubscriptionFiltersEventNotifierEngineTest {
   public static PublicKey PUB_KEY_TEXTNOTE_1;
+  public static String hexPubKey1 = "aaa73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
   public static PublicKey PUB_KEY_TEXTNOTE_2;
+  public static String hexPubKey2 = "bbb73464e0688bb3f585f683e57fe1b95e1b47301172ccbe29b30a14ce358c70";
+  public static final String TEXT_NOTE_EVENT_1 = "TEXT-NOTE-EVENT-11111";
+  public static final String TEXT_NOTE_EVENT_2 = "TEXT-NOTE-EVENT-2222";
+  @MockBean
+  private static ApplicationEventPublisher publisher;
   private static EventNotifierEngine eventNotifierEngine;
 
   @BeforeAll
   public static void setup() {
-    eventNotifierEngine = new EventNotifierEngine();
+    eventNotifierEngine = new EventNotifierEngine(publisher);
     PUB_KEY_TEXTNOTE_1 = new PublicKey(hexPubKey1);
     PUB_KEY_TEXTNOTE_2 = new PublicKey(hexPubKey2);
   }

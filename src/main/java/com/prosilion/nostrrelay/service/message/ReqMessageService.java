@@ -1,25 +1,22 @@
 package com.prosilion.nostrrelay.service.message;
 
 import com.prosilion.nostrrelay.service.request.ReqService;
-import com.prosilion.nostrrelay.service.request.ReqServiceIF;
-import jakarta.websocket.Session;
 import lombok.extern.java.Log;
 import nostr.event.message.ReqMessage;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.logging.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Log
-public class ReqMessageService<T extends ReqMessage> implements MessageService<ReqMessage> {
-  private final ReqServiceIF<T> reqService;
+@Service
+public class ReqMessageService<T extends ReqMessage> {
+	private final ReqService<T> reqService;
 
-  public ReqMessageService(@NotNull T reqMessage) {
-    log.log(Level.INFO, "REQ fitlers: {0}", reqMessage.getFiltersList());
-    reqService = new ReqService<>(reqMessage);
-  }
+	@Autowired
+	public ReqMessageService(ReqService<T> reqService) {
+		this.reqService = reqService;
+	}
 
-  @Override
-  public ReqMessage processIncoming(Session session) {
-    return reqService.processIncoming(session);
-  }
+	public void processIncoming(T reqMessage, String sessionId) {
+		reqService.processIncoming(reqMessage, sessionId);
+	}
 }

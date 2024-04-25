@@ -11,15 +11,21 @@ import java.lang.reflect.InvocationTargetException;
 @Setter
 @Getter
 public class BaseTagDto extends EventTag {
-  private String key;
+	private String key;
 
-  public BaseTagDto(String id) {
-    super(id);
-  }
+	public BaseTagDto(String id) {
+		super(id);
+	}
 
-  public BaseTagEntity convertDtoToEntity() throws InvocationTargetException, IllegalAccessException {
-    BaseTagEntity baseTagEntity = new BaseTagEntity();
-    BeanUtils.copyProperties(baseTagEntity, this);
-    return baseTagEntity;
-  }
+	public BaseTagEntity convertDtoToEntity() {
+		BaseTagEntity baseTagEntity = new BaseTagEntity();
+		try {
+			BeanUtils.copyProperties(baseTagEntity, this);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(e);
+		}
+		return baseTagEntity;
+	}
 }

@@ -1,23 +1,11 @@
-let ws = new WebSocket('ws://localhost:5555');
+let ws
 
 function connect() {
-    ws.onmessage = function (data) {
-        showGreeting(data.data);
+    ws = new WebSocket('ws://localhost:5555');
+    ws.onmessage = function (messageEvent) {
+        showEvent(messageEvent.data);
     }
     setConnected(true);
-}
-
-function disconnect() {
-    if (ws != null) {
-        ws.close();
-    }
-    setConnected(false);
-    console.log("Disconnected");
-}
-
-function showGreeting(message) {
-    showEvent(message);
-    console.log("console log" + message);
 }
 
 function setConnected(connected) {
@@ -31,15 +19,13 @@ function setConnected(connected) {
     $("#events").html("");
 }
 
-// function createEnum(values) {
-//     const enumObject = {};
-//     for (const val of values) {
-//         enumObject[val] = val;
-//     }
-//     return Object.freeze(enumObject);
-// }
-//
-// var Tag = createEnum(['E', 'A', 'P']);
+function disconnect() {
+    if (ws != null) {
+        ws.close();
+    }
+    setConnected(false);
+    console.log("Disconnected");
+}
 
 async function createDigest(message) {
     const utf8 = new Uint8Array(message.length);
@@ -106,6 +92,7 @@ function sendContent(id_hash) {
     let localjsonstring = replaceHash(id_hash);
     console.log(localjsonstring);
     console.log('\n\n');
+
     ws.send(localjsonstring);
 }
 

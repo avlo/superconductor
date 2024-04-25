@@ -1,11 +1,10 @@
 package com.prosilion.nostrrelay.service.request;
 
-import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.entity.Subscriber;
 import com.prosilion.nostrrelay.pubsub.AddSubscriberEvent;
+import com.prosilion.nostrrelay.service.SubscriberSessionPool;
 import jakarta.persistence.NoResultException;
 import nostr.event.list.FiltersList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +16,12 @@ public class SubscriberService {
   private final SubscriberFiltersService subscriberFiltersService;
   private final ApplicationEventPublisher publisher;
 
-  @Autowired
-  public SubscriberService(ApplicationEventPublisher publisher) {
-    this.subscriberManager = ApplicationContextProvider.getApplicationContext().getBean(SubscriberManager.class);
-    this.subscriberFiltersService = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFiltersService.class);
+  public SubscriberService(
+      SubscriberManager subscriberManager,
+      SubscriberFiltersService subscriberFiltersService,
+      ApplicationEventPublisher publisher) {
+    this.subscriberManager = subscriberManager;
+    this.subscriberFiltersService = subscriberFiltersService;
     this.publisher = publisher;
   }
 
@@ -31,8 +32,22 @@ public class SubscriberService {
 
     /**
      * {@link AddSubscriberEvent} is registered & used by
-     * {@link com.prosilion.nostrrelay.service.SubscriberPool} (not EventNotifierEngine)
+     * {@link SubscriberSessionPool} (not EventNotifierEngine)
      */
     publisher.publishEvent(new AddSubscriberEvent(savedSubscriber));   //Notify the listeners
+  }
+
+  public Subscriber get(Long subscriberId) {
+    return subscriberManager.get(subscriberId).get();
+  }
+
+  public void removeSubscriberBySessionId(String sessionId) {
+    subscriberManager.removeBySessionId(sessionId);
+  }
+
+  public Subscriber deactivateSubscriberBySessionId(String sessionId) {
+    Subscriber s = subscriberManager.getBySessionId(sessionId);
+    s.setActive(false);
+    return subscriberManager.save(s);
   }
 }

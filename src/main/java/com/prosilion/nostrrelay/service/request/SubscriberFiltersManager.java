@@ -1,6 +1,5 @@
 package com.prosilion.nostrrelay.service.request;
 
-import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.entity.join.*;
 import com.prosilion.nostrrelay.repository.join.*;
 import jakarta.persistence.NoResultException;
@@ -11,121 +10,136 @@ import nostr.event.list.KindList;
 import nostr.event.list.PublicKeyList;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class SubscriberFiltersManager {
-  private final SubscriberFilterRepository subscriberFilterRepository;
-  private final SubscriberFilterEventRepository subscriberFilterEventRepository;
-  private final SubscriberFilterAuthorRepository subscriberFilterAuthorRepository;
-  private final SubscriberFilterKindRepository subscriberFilterKindRepository;
-  private final SubscriberFilterReferencedEventRepository subscriberFilterReferencedEventRepository;
-  private final SubscriberFilterReferencedPubkeyRepository subscriberFilterReferencedPubkeyRepository;
+	private final SubscriberFilterRepository subscriberFilterRepository;
+	private final SubscriberFilterEventRepository subscriberFilterEventRepository;
+	private final SubscriberFilterAuthorRepository subscriberFilterAuthorRepository;
+	private final SubscriberFilterKindRepository subscriberFilterKindRepository;
+	private final SubscriberFilterReferencedEventRepository subscriberFilterReferencedEventRepository;
+	private final SubscriberFilterReferencedPubkeyRepository subscriberFilterReferencedPubkeyRepository;
 
-  public SubscriberFiltersManager() {
-    this.subscriberFilterRepository = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFilterRepository.class);
-    this.subscriberFilterEventRepository = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFilterEventRepository.class);
-    this.subscriberFilterAuthorRepository = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFilterAuthorRepository.class);
-    this.subscriberFilterKindRepository = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFilterKindRepository.class);
-    this.subscriberFilterReferencedEventRepository = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFilterReferencedEventRepository.class);
-    this.subscriberFilterReferencedPubkeyRepository = ApplicationContextProvider.getApplicationContext().getBean(SubscriberFilterReferencedPubkeyRepository.class);
-  }
+	public SubscriberFiltersManager(
+			SubscriberFilterRepository subscriberFilterRepository,
+			SubscriberFilterEventRepository subscriberFilterEventRepository,
+			SubscriberFilterAuthorRepository subscriberFilterAuthorRepository,
+			SubscriberFilterKindRepository subscriberFilterKindRepository,
+			SubscriberFilterReferencedEventRepository subscriberFilterReferencedEventRepository,
+			SubscriberFilterReferencedPubkeyRepository subscriberFilterReferencedPubkeyRepository) {
+		this.subscriberFilterRepository = subscriberFilterRepository;
+		this.subscriberFilterEventRepository = subscriberFilterEventRepository;
+		this.subscriberFilterAuthorRepository = subscriberFilterAuthorRepository;
+		this.subscriberFilterKindRepository = subscriberFilterKindRepository;
+		this.subscriberFilterReferencedEventRepository = subscriberFilterReferencedEventRepository;
+		this.subscriberFilterReferencedPubkeyRepository = subscriberFilterReferencedPubkeyRepository;
+	}
 
-  public void saveFilters(Long subscriberId, FiltersList filtersList) {
-    for (Filters filters : filtersList.getList()) {
-      Long filterId = saveSubscriberFilter(subscriberId, filters);
-      //      TODO: all below can be parallelized
-      saveEvents(filterId, filters.getEvents());
-      saveAuthors(filterId, filters.getAuthors());
-      saveKinds(filterId, filters.getKinds());
-      saveReferencedEvents(filterId, filters.getReferencedEvents());
-      saveReferencedPubkeys(filterId, filters.getReferencePubKeys());
-      //      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
-    }
-  }
+	public void saveFilters(Long subscriberId, FiltersList filtersList) {
+		for (Filters filters : filtersList.getList()) {
+			Long filterId = saveSubscriberFilter(subscriberId, filters);
+			//      TODO: all below can be parallelized
+			saveEvents(filterId, filters.getEvents());
+			saveAuthors(filterId, filters.getAuthors());
+			saveKinds(filterId, filters.getKinds());
+			saveReferencedEvents(filterId, filters.getReferencedEvents());
+			saveReferencedPubkeys(filterId, filters.getReferencePubKeys());
+			//      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
+		}
+	}
 
-  public void updateFilters(Long subscriberId, FiltersList filtersList) {
-    for (Filters filters : filtersList.getList()) {
-      Long filterId = saveSubscriberFilter(subscriberId, filters);
-      //      TODO: all below can be parallelized
-      saveEvents(filterId, filters.getEvents());
-      saveAuthors(filterId, filters.getAuthors());
-      saveKinds(filterId, filters.getKinds());
-      saveReferencedEvents(filterId, filters.getReferencedEvents());
-      saveReferencedPubkeys(filterId, filters.getReferencePubKeys());
-      //      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
-    }
-  }
+	public void updateFilters(Long subscriberId, FiltersList filtersList) {
+		for (Filters filters : filtersList.getList()) {
+			Long filterId = saveSubscriberFilter(subscriberId, filters);
+			//      TODO: all below can be parallelized
+			saveEvents(filterId, filters.getEvents());
+			saveAuthors(filterId, filters.getAuthors());
+			saveKinds(filterId, filters.getKinds());
+			saveReferencedEvents(filterId, filters.getReferencedEvents());
+			saveReferencedPubkeys(filterId, filters.getReferencePubKeys());
+			//      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
+		}
+	}
 
-  private Long saveSubscriberFilter(Long subscriberId, Filters filters) {
-    return subscriberFilterRepository.save(
-        new SubscriberFilter(subscriberId, filters.getSince(), filters.getUntil(), filters.getLimit())).getId();
-  }
+	private Long saveSubscriberFilter(Long subscriberId, Filters filters) {
+		return subscriberFilterRepository.save(
+				new SubscriberFilter(subscriberId, filters.getSince(), filters.getUntil(), filters.getLimit())).getId();
+	}
 
-  private void saveEvents(Long filterId, EventList eventList) {
-    eventList.getList().iterator().forEachRemaining(event ->
-        subscriberFilterEventRepository.save(
-            new SubscriberFilterEvent(filterId, event.getId())));
-  }
+	private void saveEvents(Long filterId, EventList incomingEvents) {
+//		TODO: research whether/not below intention requires manual filtering.
+//		 perhaps an existing framework exists for it
+//		Optional<List<SubscriberFilterEvent>> existingEvents = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterId);
+//		incomingEvents.getList().stream()
+//						.filter(incomingEvent -> existingEvents.stream().anyMatch(existingEvent -> incomingEvent.))
 
-  private void saveAuthors(Long filterId, PublicKeyList authorList) {
-    authorList.getList().iterator().forEachRemaining(author ->
-        subscriberFilterAuthorRepository.save(
-            new SubscriberFilterAuthor(filterId, author.toString())));
-  }
+		incomingEvents.getList().iterator().forEachRemaining(event ->
+				subscriberFilterEventRepository.save(
+						new SubscriberFilterEvent(filterId, event.getId())));
+	}
 
-  private void saveKinds(Long filterId, KindList kindList) {
-    kindList.getList().iterator().forEachRemaining(kind ->
-        subscriberFilterKindRepository.save(
-            new SubscriberFilterKind(filterId, kind)));
-  }
+	private void saveAuthors(Long filterId, PublicKeyList authorList) {
+		authorList.getList().iterator().forEachRemaining(author ->
+				subscriberFilterAuthorRepository.save(
+						new SubscriberFilterAuthor(filterId, author.toString())));
+	}
 
-  private void saveReferencedEvents(Long filterId, EventList eventList) {
-    eventList.getList().iterator().forEachRemaining(event ->
-        subscriberFilterReferencedEventRepository.save(
-            new SubscriberFilterReferencedEvent(filterId, event.getId())));
-  }
+	private void saveKinds(Long filterId, KindList kindList) {
+		kindList.getList().iterator().forEachRemaining(kind ->
+				subscriberFilterKindRepository.save(
+						new SubscriberFilterKind(filterId, kind)));
+	}
 
-  private void saveReferencedPubkeys(Long filterId, PublicKeyList publicKeyList) {
-    publicKeyList.getList().iterator().forEachRemaining(pubkey ->
-        subscriberFilterReferencedPubkeyRepository.save(
-            new SubscriberFilterReferencedPubkey(filterId, pubkey.toString())));
-  }
+	private void saveReferencedEvents(Long filterId, EventList eventList) {
+		eventList.getList().iterator().forEachRemaining(event ->
+				subscriberFilterReferencedEventRepository.save(
+						new SubscriberFilterReferencedEvent(filterId, event.getId())));
+	}
 
-  /**
-   * REMOVES
-   */
+	private void saveReferencedPubkeys(Long filterId, PublicKeyList publicKeyList) {
+		publicKeyList.getList().iterator().forEachRemaining(pubkey ->
+				subscriberFilterReferencedPubkeyRepository.save(
+						new SubscriberFilterReferencedPubkey(filterId, pubkey.toString())));
+	}
 
-  public void removeAllFilters(Long subscriberId) {
-    Long filterId = removeSubscriberFilter(subscriberId);
-    //      TODO: all below can be parallelized
-    removeEvents(filterId);
-    removeAuthors(filterId);
-    removeKinds(filterId);
-    removeReferencedEvents(filterId);
-    removeReferencedPubkeys(filterId);
-    //      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
-  }
+	/**
+	 * REMOVES
+	 */
 
-  private Long removeSubscriberFilter(Long subscriberId) {
-    return subscriberFilterRepository.findById(subscriberId).orElseThrow(NoResultException::new).getId();
-  }
+	public void removeAllFilters(Long subscriberId) {
+		Long filterId = removeSubscriberFilter(subscriberId);
+		//      TODO: all below can be parallelized
+		removeEvents(filterId);
+		removeAuthors(filterId);
+		removeKinds(filterId);
+		removeReferencedEvents(filterId);
+		removeReferencedPubkeys(filterId);
+		//      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
+	}
 
-  private void removeEvents(Long filterId) {
-    subscriberFilterEventRepository.deleteById(filterId);
-  }
+	private Long removeSubscriberFilter(Long subscriberId) {
+		return subscriberFilterRepository.findById(subscriberId).orElseThrow(NoResultException::new).getId();
+	}
 
-  private void removeAuthors(Long filterId) {
-    subscriberFilterAuthorRepository.deleteById(filterId);
-  }
+	private void removeEvents(Long filterId) {
+		subscriberFilterEventRepository.deleteById(filterId);
+	}
 
-  private void removeKinds(Long filterId) {
-    subscriberFilterKindRepository.deleteById(filterId);
-  }
+	private void removeAuthors(Long filterId) {
+		subscriberFilterAuthorRepository.deleteById(filterId);
+	}
 
-  private void removeReferencedEvents(Long filterId) {
-    subscriberFilterReferencedEventRepository.deleteById(filterId);
-  }
+	private void removeKinds(Long filterId) {
+		subscriberFilterKindRepository.deleteById(filterId);
+	}
 
-  private void removeReferencedPubkeys(Long filterId) {
-    subscriberFilterReferencedPubkeyRepository.deleteById(filterId);
-  }
+	private void removeReferencedEvents(Long filterId) {
+		subscriberFilterReferencedEventRepository.deleteById(filterId);
+	}
+
+	private void removeReferencedPubkeys(Long filterId) {
+		subscriberFilterReferencedPubkeyRepository.deleteById(filterId);
+	}
 }

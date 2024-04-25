@@ -1,67 +1,99 @@
 package com.prosilion.nostrrelay.controller;
 
-import com.prosilion.nostrrelay.service.message.MessageService;
-import com.prosilion.nostrrelay.util.DecodedMessageMarshaller;
-import com.prosilion.nostrrelay.util.MessageEncoder;
-import jakarta.websocket.*;
-import jakarta.websocket.server.ServerEndpoint;
+import com.prosilion.nostrrelay.pubsub.BroadcastMessageEvent;
+import com.prosilion.nostrrelay.service.message.CloseMessageService;
+import com.prosilion.nostrrelay.service.message.EventMessageService;
+import com.prosilion.nostrrelay.service.message.ReqMessageService;
+import com.prosilion.nostrrelay.service.request.SubscriberService;
 import lombok.extern.java.Log;
-import nostr.event.BaseEvent;
 import nostr.event.BaseMessage;
-import nostr.event.json.codec.BaseEventEncoder;
+import nostr.event.json.codec.BaseMessageDecoder;
+import nostr.event.message.CloseMessage;
 import nostr.event.message.EventMessage;
+import nostr.event.message.ReqMessage;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
-@ServerEndpoint(
-    value = "/"
-    , decoders = DecodedMessageMarshaller.class
-    , encoders = MessageEncoder.class
-)
-@Controller
 @Log
-public class NostrEventController<T extends BaseMessage> {
-  private Session session;
+@Controller
+@EnableWebSocket
+public class NostrEventController extends TextWebSocketHandler implements WebSocketConfigurer {
+  private final ReqMessageService<ReqMessage> reqMessageService;
+  private final EventMessageService<EventMessage> eventMessageService;
+  private final CloseMessageService<CloseMessage> closeMessageService;
+  private final SubscriberService subscriberService;
+  private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
 
-  @OnMessage
-  public void onMessage(Session session, @NotNull MessageService<T> messageService) throws InvocationTargetException, IllegalAccessException {
-    log.log(Level.INFO, "NostrEventController @OnMessage: {0}\nFrom session: {1}\n", new Object[]{messageService, session});
-    broadcast(messageService.   processIncoming(session));
+  @Autowired
+  public NostrEventController(
+      ReqMessageService<ReqMessage> reqMessageService,
+      EventMessageService<EventMessage> eventMessageService,
+      CloseMessageService<CloseMessage> closeMessageService,
+      SubscriberService subscriberService) {
+    this.reqMessageService = reqMessageService;
+    this.eventMessageService = eventMessageService;
+    this.closeMessageService = closeMessageService;
+    this.subscriberService = subscriberService;
   }
 
-  private void broadcast(@NotNull T message) {
-    try {
-      log.log(Level.INFO, "NostrEventController broadcast: {0}", message.getCommand());
-      session.getBasicRemote().sendObject(message);
-      EventMessage baseEvent = (EventMessage) message;
-      BaseEvent event = (BaseEvent) baseEvent.getEvent();
-      log.log(Level.INFO, new BaseEventEncoder(event).encode());
-    } catch (IOException | EncodeException e) {
-      log.log(Level.SEVERE, e.getMessage());
+  @Override
+  public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+    registry.addHandler(this, "/");
+  }
+
+  @Override
+  public void afterConnectionEstablished(WebSocketSession session) {
+    log.info(String.format("Connected new session [%s]", session.getId()));
+    mapSessions.put(session.getId(), session);
+  }
+
+  @Override
+  public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+    log.info(String.format("Closed session [%s]", session.getId()));
+    subscriberService.deactivateSubscriberBySessionId(session.getId());
+    mapSessions.remove(session.getId());
+  }
+
+  @Override
+  public void handleTextMessage(@NotNull WebSocketSession session, TextMessage baseMessage) {
+    log.info(String.format("Message from session [%s]", session.getId()));
+    BaseMessage message = new BaseMessageDecoder(baseMessage.getPayload()).decode();
+    switch (message.getCommand()) {
+      case "REQ" -> {
+        log.log(Level.INFO, "REQ decoded, contents: {0}", message);
+        reqMessageService.processIncoming((ReqMessage) message, session.getId());
+      }
+      case "EVENT" -> {
+        log.log(Level.INFO, "EVENT decoded, contents: {0}", message);
+        eventMessageService.processIncoming((EventMessage) message);
+      }
+      case "CLOSE" -> {
+        log.log(Level.INFO, "CLOSE decoded, contents: {0}", message);
+        closeMessageService.processIncoming((CloseMessage) message);
+      }
+      default -> throw new AssertionError("Unknown command " + message.getCommand());
+
     }
   }
 
-  @OnOpen
-  public void onOpen(Session session) {
-    log.log(Level.INFO, "NostrEventController @OnOpen from session: {0}", new Object[]{session});
-    this.session = session;
-  }
-
-  @OnClose
-  public void onClose(Session session) {
-//    chatEndpoints.remove(this);
-//    Message message = new Message();
-//    message.setFrom(users.get(session.getId()));
-//    message.setContent("Disconnected!");
-//    broadcast(message);
-  }
-
-  @OnError
-  public void onError(Session session, Throwable throwable) {
-    // Do error handling here
+  //  @Async
+  @EventListener
+  public <U extends BaseMessage> void broadcast(BroadcastMessageEvent<U> message) throws IOException {
+    log.log(Level.INFO, String.format("NostrEventController broadcast to%nsession:%n\t%s%nmessage:%n\t%s%n", message.getSessionId(), message.getMessage().getPayload()));
+    mapSessions.get(message.getSessionId()).sendMessage(message.getMessage());
   }
 }

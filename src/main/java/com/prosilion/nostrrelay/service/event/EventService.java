@@ -1,54 +1,44 @@
 package com.prosilion.nostrrelay.service.event;
 
-import com.google.gson.Gson;
-import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.dto.EventDto;
 import com.prosilion.nostrrelay.entity.EventEntity;
 import com.prosilion.nostrrelay.pubsub.AddNostrEvent;
+import com.prosilion.nostrrelay.pubsub.BroadcastMessageEvent;
 import com.prosilion.nostrrelay.repository.EventEntityRepository;
 import com.prosilion.nostrrelay.service.EventNotifierEngine;
 import com.prosilion.nostrrelay.service.event.join.EventEntityTagEntityService;
 import jakarta.persistence.NoResultException;
 import lombok.Getter;
 import lombok.extern.java.Log;
+import nostr.event.BaseMessage;
 import nostr.event.BaseTag;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
-import nostr.event.message.EventMessage;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 
 @Log
 @Getter
-public class EventService<T extends EventMessage, U extends GenericEvent> implements EventServiceIF<T> {
+@Service
+public class EventService<T extends GenericEvent> {
   private final EventEntityTagEntityService eventEntityTagEntityService;
   private final EventEntityRepository eventEntityRepository;
-  private final EventNotifierEngine<U> eventNotifierEngine;
+  private final EventNotifierEngine<T> eventNotifierEngine;
+  private final ApplicationEventPublisher publisher;
 
-  private final T eventMessage;
-
-  public EventService(@NotNull T eventMessage) {
-    this.eventMessage = eventMessage;
-    this.eventEntityTagEntityService = ApplicationContextProvider.getApplicationContext().getBean(EventEntityTagEntityService.class);
-    this.eventEntityRepository = ApplicationContextProvider.getApplicationContext().getBean(EventEntityRepository.class);
-    this.eventNotifierEngine = ApplicationContextProvider.getApplicationContext().getBean(EventNotifierEngine.class);
-    //    this.publisher = ApplicationContextProvider.getApplicationContext().getBean(ApplicationEventPublisher.class);
-
-    log.log(Level.INFO, "EventServiceIF Constructed");
-    log.log(Level.INFO, "EVENT message KIND: {0}", ((GenericEvent) eventMessage.getEvent()).getKind());
-    log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
-    log.log(Level.INFO, "EVENT message JSON: {0}", new Gson().toJson(eventMessage.getEvent().toString()));
+  @Autowired
+  public EventService(EventEntityTagEntityService eventEntityTagEntityService, EventEntityRepository eventEntityRepository, EventNotifierEngine<T> eventNotifierEngine, ApplicationEventPublisher publisher) {
+    this.publisher = publisher;
+    this.eventEntityTagEntityService = eventEntityTagEntityService;
+    this.eventEntityRepository = eventEntityRepository;
+    this.eventNotifierEngine = eventNotifierEngine;
   }
 
-  public void processIncoming() throws InvocationTargetException, IllegalAccessException {
-    log.log(Level.INFO, "processing BASE EVENT...", eventMessage.getEvent().toString());
-  }
-
-  protected Long saveEventEntity(GenericEvent event) throws InvocationTargetException, IllegalAccessException, NoResultException {
+  protected Long saveEventEntity(GenericEvent event) {
     List<BaseTag> baseTagsOnly = event.getTags().stream()
         .filter(baseTag -> List.of("a", "p", "e").contains(baseTag.getCode()))
         .toList();
@@ -69,7 +59,11 @@ public class EventService<T extends EventMessage, U extends GenericEvent> implem
     return eventEntityTagEntityService.saveBaseTags(baseTagsOnly, savedEntity.getId());
   }
 
-  protected void publishEvent(Long id, U event) {
-    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<U>(Kind.valueOf(event.getKind()), id, event));
+  protected void publishEvent(Long id, T event) {
+    eventNotifierEngine.nostrEventHandler(new AddNostrEvent<>(id, event, Kind.valueOf(event.getKind())));
+  }
+
+  protected <U extends BaseMessage> void publishEvent(BroadcastMessageEvent<U> messageEvent) {
+    publisher.publishEvent(messageEvent);
   }
 }

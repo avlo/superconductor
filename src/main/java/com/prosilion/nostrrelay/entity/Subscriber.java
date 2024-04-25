@@ -18,10 +18,12 @@ public class Subscriber implements Serializable {
   private Long id;
 
   private String subscriberId;
-  private String session;
+  private String sessionId;
+  private boolean active;
 
-  public Subscriber(@NonNull String subscriberId, @NonNull String session) {
+  public Subscriber(@NonNull String subscriberId, @NonNull String sessionId, boolean active) {
     this.subscriberId = subscriberId;
-    this.session = session;
+    this.sessionId = sessionId;
+    this.active = active;
   }
 }

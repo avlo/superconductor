@@ -1,30 +1,27 @@
 package com.prosilion.nostrrelay.service.request;
 
-import com.prosilion.nostrrelay.config.ApplicationContextProvider;
 import com.prosilion.nostrrelay.entity.Subscriber;
-import jakarta.websocket.Session;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import nostr.event.list.FiltersList;
 import nostr.event.message.ReqMessage;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
 
 @Log
 @Getter
+@Service
 public class ReqService<T extends ReqMessage> implements ReqServiceIF<T> {
-  private final SubscriberService subscriberService;
-  private final FiltersList filtersList;
-  private final String subId;
+	private final SubscriberService subscriberService;
 
-  public ReqService(@NotNull T reqMessage) {
-    subscriberService = ApplicationContextProvider.getApplicationContext().getBean(SubscriberService.class);
-    this.filtersList = reqMessage.getFiltersList();
-    this.subId = reqMessage.getSubscriptionId();
-  }
+	public ReqService(SubscriberService subscriberService) {
+		this.subscriberService = subscriberService;
+	}
 
-  public T processIncoming(Session session) {
-    Subscriber subscriber = new Subscriber(subId, session.getId());
-    subscriberService.save(subscriber, filtersList);
-    return null;
-  }
+	public void processIncoming(@NotNull T reqMessage, String sessionId) {
+		FiltersList filtersList = reqMessage.getFiltersList();
+		String subId = reqMessage.getSubscriptionId();
+		Subscriber subscriber = new Subscriber(subId, sessionId, true);
+		subscriberService.save(subscriber, filtersList);
+	}
 }

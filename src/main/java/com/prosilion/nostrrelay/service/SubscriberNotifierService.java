@@ -24,8 +24,8 @@ public class SubscriberNotifierService<T extends GenericEvent> {
 
 	@EventListener
 	public void newEventHandler(SubscriberNotifierEvent<T> subscriberNotifierEvent) {
-		Map<Long, FiltersList> subscribersFiltersMap = subscriberNotifierEvent.getSubscribersFiltersMap();
-		AddNostrEvent<T> addNostrEvent = subscriberNotifierEvent.getAddNostrEvent();
+		Map<Long, FiltersList> subscribersFiltersMap = subscriberNotifierEvent.subscribersFiltersMap();
+		AddNostrEvent<T> addNostrEvent = subscriberNotifierEvent.addNostrEvent();
 
 		// iterate subscribers map
 		// get the subscribers filters

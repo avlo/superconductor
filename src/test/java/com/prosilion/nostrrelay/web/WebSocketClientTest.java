@@ -15,6 +15,8 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.net.URI;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext
@@ -30,7 +32,7 @@ class WebSocketClientTest {
     testWebSocketClient = new TestWebSocketClient();
     session = ContainerProvider.getWebSocketContainer().connectToServer(testWebSocketClient, URI.create(WS_LOCALHOST_5555));
     Assertions.assertTrue(session.isOpen());
-    session.getBasicRemote().sendText(QUERY_STRING);
+    assertDoesNotThrow(() -> session.getBasicRemote().sendText(QUERY_STRING));
   }
 
 //  @Test

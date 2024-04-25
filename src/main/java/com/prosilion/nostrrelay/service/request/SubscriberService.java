@@ -26,7 +26,9 @@ public class SubscriberService {
   }
 
   public void save(Subscriber subscriber, FiltersList filtersList) {
-    Subscriber savedSubscriber = Optional.of(subscriberManager.save(subscriber)).orElseThrow(NoResultException::new);
+    Subscriber savedSubscriber = Optional.of(
+            subscriberManager.save(subscriber))
+        .orElseThrow(NoResultException::new);
     // TODO: below add might also suffice for update?
     subscriberFiltersService.save(savedSubscriber.getId(), filtersList);
 

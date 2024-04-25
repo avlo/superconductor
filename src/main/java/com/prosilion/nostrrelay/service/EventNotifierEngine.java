@@ -43,8 +43,17 @@ public class EventNotifierEngine<T extends GenericEvent> {
 
   @EventListener
   public void addSubscriberFiltersHandler(AddSubscriberFiltersEvent addSubscriber) {
-    subscribersFiltersMap.put(addSubscriber.subscriberId(), addSubscriber.filtersList());
-    // TODO: notify subscriber logic comes next; pending tests to reside in @SubscriberFilterTriggerEventNotifierTest
+    // TODO: below currently checks for existing subscriber filters, but does not yet update those existing
+//      filters with incoming filters.  the latter is a TODO
+    FiltersList filtersList = Optional.ofNullable(subscribersFiltersMap.get(addSubscriber.subscriberId())).orElse(addSubscriber.filtersList());
+//    TODO: merge existing filters and new filters
+
+    subscribersFiltersMap.putIfAbsent(addSubscriber.subscriberId(), filtersList);
+
+    // TODO: notify subscriber logic below; pending tests to reside in @SubscriberFilterTriggerEventNotifierTest
+    kindEventMap.forEach((kind, eventMap) ->
+        eventMap.forEach((eventId, event) ->
+            publisher.publishEvent(new SubscriberNotifierEvent<T>(subscribersFiltersMap, new AddNostrEvent<>(eventId, event, kind)))));
   }
 
   @EventListener

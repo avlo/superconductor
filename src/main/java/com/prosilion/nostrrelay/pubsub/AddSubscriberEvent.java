@@ -8,6 +8,6 @@ public record AddSubscriberEvent(Subscriber subscriber) {
     return subscriber.getId();
   }
   public String getSubscriberSessionId() {
-    return subscriber.getSession();
+    return subscriber.getSessionId();
   }
 }

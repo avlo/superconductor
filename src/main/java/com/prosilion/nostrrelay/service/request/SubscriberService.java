@@ -40,4 +40,14 @@ public class SubscriberService {
   public Subscriber get(Long subscriberId) {
     return subscriberManager.get(subscriberId).get();
   }
+
+  public void removeSubscriberBySessionId(String sessionId) {
+    subscriberManager.removeBySessionId(sessionId);
+  }
+
+  public Subscriber deactivateSubscriberBySessionId(String sessionId) {
+    Subscriber s = subscriberManager.getBySessionId(sessionId);
+    s.setActive(false);
+    return subscriberManager.save(s);
+  }
 }

@@ -44,7 +44,7 @@ public class TextNoteEventService<T extends EventMessage> implements EventServic
 		// TODO: value of?
 		EventMessage message = NIP01.createEventMessage(textNoteEvent.event(), String.valueOf(textNoteEvent.subscriberId()));
 		Subscriber subscriber = subscriberService.get(textNoteEvent.subscriberId());
-		BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(subscriber.getSession(), message);
+		BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(subscriber.getSessionId(), message);
 		eventService.publishEvent(event);
 	}
 }

@@ -10,6 +10,9 @@ import nostr.event.list.KindList;
 import nostr.event.list.PublicKeyList;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class SubscriberFiltersManager {
 	private final SubscriberFilterRepository subscriberFilterRepository;
@@ -65,8 +68,14 @@ public class SubscriberFiltersManager {
 				new SubscriberFilter(subscriberId, filters.getSince(), filters.getUntil(), filters.getLimit())).getId();
 	}
 
-	private void saveEvents(Long filterId, EventList eventList) {
-		eventList.getList().iterator().forEachRemaining(event ->
+	private void saveEvents(Long filterId, EventList incomingEvents) {
+//		TODO: research whether/not below intention requires manual filtering.
+//		 perhaps an existing framework exists for it
+//		Optional<List<SubscriberFilterEvent>> existingEvents = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterId);
+//		incomingEvents.getList().stream()
+//						.filter(incomingEvent -> existingEvents.stream().anyMatch(existingEvent -> incomingEvent.))
+
+		incomingEvents.getList().iterator().forEachRemaining(event ->
 				subscriberFilterEventRepository.save(
 						new SubscriberFilterEvent(filterId, event.getId())));
 	}

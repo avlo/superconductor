@@ -4,7 +4,7 @@ import com.prosilion.nostrrelay.pubsub.BroadcastMessageEvent;
 import com.prosilion.nostrrelay.service.message.CloseMessageService;
 import com.prosilion.nostrrelay.service.message.EventMessageService;
 import com.prosilion.nostrrelay.service.message.ReqMessageService;
-import com.prosilion.nostrrelay.util.MessageEncoder;
+import com.prosilion.nostrrelay.service.request.SubscriberService;
 import lombok.extern.java.Log;
 import nostr.event.BaseMessage;
 import nostr.event.json.codec.BaseMessageDecoder;
@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -31,20 +32,22 @@ import java.util.logging.Level;
 @Controller
 @EnableWebSocket
 public class NostrEventController extends TextWebSocketHandler implements WebSocketConfigurer {
-
   private final ReqMessageService<ReqMessage> reqMessageService;
   private final EventMessageService<EventMessage> eventMessageService;
   private final CloseMessageService<CloseMessage> closeMessageService;
+  private final SubscriberService subscriberService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
 
   @Autowired
   public NostrEventController(
       ReqMessageService<ReqMessage> reqMessageService,
       EventMessageService<EventMessage> eventMessageService,
-      CloseMessageService<CloseMessage> closeMessageService) {
+      CloseMessageService<CloseMessage> closeMessageService,
+      SubscriberService subscriberService) {
     this.reqMessageService = reqMessageService;
     this.eventMessageService = eventMessageService;
     this.closeMessageService = closeMessageService;
+    this.subscriberService = subscriberService;
   }
 
   @Override
@@ -56,6 +59,13 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
   public void afterConnectionEstablished(WebSocketSession session) {
     log.info(String.format("Connected new session [%s]", session.getId()));
     mapSessions.put(session.getId(), session);
+  }
+
+  @Override
+  public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+    log.info(String.format("Closed session [%s]", session.getId()));
+    subscriberService.deactivateSubscriberBySessionId(session.getId());
+    mapSessions.remove(session.getId());
   }
 
   @Override
@@ -83,7 +93,7 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
   //  @Async
   @EventListener
   public <U extends BaseMessage> void broadcast(BroadcastMessageEvent<U> message) throws IOException {
-    log.log(Level.INFO, "NostrEventController broadcast message: {0}", message.getMessage().toString());
+    log.log(Level.INFO, String.format("NostrEventController broadcast to%nsession:%n\t%s%nmessage:%n\t%s%n", message.getSessionId(), message.getMessage().getPayload()));
     mapSessions.get(message.getSessionId()).sendMessage(message.getMessage());
   }
 }

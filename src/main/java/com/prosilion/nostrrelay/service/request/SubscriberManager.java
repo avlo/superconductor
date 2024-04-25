@@ -9,17 +9,37 @@ import java.util.Optional;
 
 @Service
 public class SubscriberManager {
-	private final SubscriberRepository subscriberRepository;
+  private final SubscriberRepository subscriberRepository;
 
-	public SubscriberManager(SubscriberRepository subscriberRepository) {
-		this.subscriberRepository = subscriberRepository;
-	}
+  public SubscriberManager(SubscriberRepository subscriberRepository) {
+    this.subscriberRepository = subscriberRepository;
+  }
 
-	public Subscriber save(Subscriber subscriber) {
-		return Optional.of(subscriberRepository.save(subscriber)).orElseThrow(NoResultException::new);
-	}
+  public Subscriber save(Subscriber subscriberToSave) {
+//    TODO: stream below
+    try {
+      // if subscriber already exists
+      Subscriber matchingSubscriber = getBySubscriberId(subscriberToSave.getSubscriberId());
+      subscriberToSave.setId(matchingSubscriber.getId());
+    } catch (NoResultException e) {
+      // if subscriber doesn't exist
+    }
+    return subscriberRepository.save(subscriberToSave);
+  }
 
-	public Optional<Subscriber> get(Long subscriberId) {
-		return Optional.of(subscriberRepository.findById(subscriberId)).orElseThrow(NoResultException::new);
-	}
+  public Optional<Subscriber> get(Long id) {
+    return Optional.of(subscriberRepository.findById(id)).orElseThrow(NoResultException::new);
+  }
+
+  public Subscriber getBySubscriberId(String subscriberId) {
+    return subscriberRepository.findBySubscriberId(subscriberId).orElseThrow(NoResultException::new);
+  }
+
+  public Subscriber getBySessionId(String sessionId) {
+    return subscriberRepository.findBySessionId(sessionId).orElseThrow(NoResultException::new);
+  }
+
+  public void removeBySessionId(String sessionId) {
+    subscriberRepository.deleteBySessionId(sessionId);
+  }
 }

@@ -19,6 +19,11 @@ public class SubscriberFiltersService {
 
   public void save(Long subscriberId, FiltersList filtersList) {
     // TODO: below save() call might also suffice for subscriber/subscriber-filters update?
+    //        no, it didn't.
+    /**
+     * see {@link SubscriberFiltersManager} line 72 for details
+     */
+
     subscriberFiltersManager.saveFilters(subscriberId, filtersList);
 
     // TODO: potentially replace FilterList with custom/efficient data-structure/predicate if advantageous to do so

@@ -21,7 +21,7 @@ public class ReqService<T extends ReqMessage> implements ReqServiceIF<T> {
 	public void processIncoming(@NotNull T reqMessage, String sessionId) {
 		FiltersList filtersList = reqMessage.getFiltersList();
 		String subId = reqMessage.getSubscriptionId();
-		Subscriber subscriber = new Subscriber(subId, sessionId);
+		Subscriber subscriber = new Subscriber(subId, sessionId, true);
 		subscriberService.save(subscriber, filtersList);
 	}
 }

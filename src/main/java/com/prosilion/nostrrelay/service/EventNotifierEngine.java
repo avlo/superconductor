@@ -34,10 +34,10 @@ public class EventNotifierEngine<T extends GenericEvent> {
 
   @EventListener
   public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
-    Map<Long, T> map = Optional.ofNullable(kindEventMap.get(addNostrEvent.getKind())).orElse(new HashMap<>());
-    map.putIfAbsent(addNostrEvent.getId(), addNostrEvent.getEvent());
+    Map<Long, T> map = Optional.ofNullable(kindEventMap.get(addNostrEvent.kind())).orElse(new HashMap<>());
+    map.putIfAbsent(addNostrEvent.id(), addNostrEvent.event());
     // TODO: if event is a replaceable event, update existing event
-    kindEventMap.put(addNostrEvent.getKind(), map);
+    kindEventMap.put(addNostrEvent.kind(), map);
     publisher.publishEvent(new SubscriberNotifierEvent<T>(subscribersFiltersMap, addNostrEvent));
   }
 

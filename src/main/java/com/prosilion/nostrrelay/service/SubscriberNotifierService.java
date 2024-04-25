@@ -41,13 +41,13 @@ public class SubscriberNotifierService<T extends GenericEvent> {
 							eventsToSend.put(subscriberId, event)));
 		});
 		eventsToSend.forEach((subscriberId, event) ->
-				publisher.publishEvent(new FireNostrEvent<T>(subscriberId, event.getEvent())));
+				publisher.publishEvent(new FireNostrEvent<T>(subscriberId, event.event())));
 	}
 
 	private Optional<AddNostrEvent<T>> addMatch(Filters subscriberFilters, AddNostrEvent<T> eventToCheck) {
 		// TODO: convert to stream
 		for (GenericEvent subscriberEvent : subscriberFilters.getEvents().getList()) {
-			String eventToCheckContent = eventToCheck.getEvent().getContent();
+			String eventToCheckContent = eventToCheck.event().getContent();
 			String subscriberInterestContent = subscriberEvent.getId();
 			if (subscriberInterestContent.equals(eventToCheckContent)) {
 				Optional<AddNostrEvent<T>> optional = Optional.of(eventToCheck);

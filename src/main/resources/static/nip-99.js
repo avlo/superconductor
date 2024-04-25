@@ -1,24 +1,12 @@
-const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:5555'
-});
+let ws
 
-stompClient.onConnect = (frame) => {
+function connect() {
+    ws = new WebSocket('ws://localhost:5555');
+    ws.onmessage = function (messageEvent) {
+        showEvent(messageEvent.data);
+    }
     setConnected(true);
-    console.log('Connected: ' + frame);
-    // stompClient.subscribe('/topic/topic_001', (event) => {
-    stompClient.subscribe('/', (event) => {
-        showEvent(JSON.parse(event.body).content);
-    });
-};
-
-stompClient.onWebSocketError = (error) => {
-    console.error('Error with websocket', error);
-};
-
-stompClient.onStompError = (frame) => {
-    console.error('Broker reported error: ' + frame.headers['message']);
-    console.error('Additional details: ' + frame.body);
-};
+}
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -31,12 +19,10 @@ function setConnected(connected) {
     $("#events").html("");
 }
 
-function connect() {
-    stompClient.activate();
-}
-
 function disconnect() {
-    stompClient.deactivate();
+    if (ws != null) {
+        ws.close();
+    }
     setConnected(false);
     console.log("Disconnected");
 }
@@ -123,19 +109,10 @@ function sendContent(id_hash) {
     console.log(localjsonstring);
     console.log('\n\n');
 
-    stompClient.publish({
-        // destination: "/app/topic_001",
-        destination: "/",
-        body: localjsonstring
-    });
+    ws.send(localjsonstring);
 }
 
 function showEvent(content) {
-    console.log("22222222222222222222222222")
-    console.log("22222222222222222222222222")
-    console.log(content)
-    console.log("22222222222222222222222222")
-    console.log("22222222222222222222222222")
     let jsonPretty = JSON.stringify(JSON.parse(content),null,2);
     $("#events").append("<tr><td><pre>" + syntaxHighlight(jsonPretty) + "</pre></td></tr>");
 }

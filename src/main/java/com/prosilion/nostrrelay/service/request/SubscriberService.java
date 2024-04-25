@@ -46,7 +46,7 @@ public class SubscriberService {
   }
 
   public Subscriber deactivateSubscriberBySessionId(String sessionId) {
-    Subscriber s = subscriberManager.getBySessionId(sessionId);
+    Subscriber s = Optional.of(subscriberManager.getBySessionId(sessionId)).orElseThrow(NoResultException::new);
     s.setActive(false);
     return subscriberManager.save(s);
   }

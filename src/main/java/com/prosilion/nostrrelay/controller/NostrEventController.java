@@ -5,6 +5,7 @@ import com.prosilion.nostrrelay.service.message.CloseMessageService;
 import com.prosilion.nostrrelay.service.message.EventMessageService;
 import com.prosilion.nostrrelay.service.message.ReqMessageService;
 import com.prosilion.nostrrelay.service.request.SubscriberService;
+import jakarta.persistence.NoResultException;
 import lombok.extern.java.Log;
 import nostr.event.BaseMessage;
 import nostr.event.json.codec.BaseMessageDecoder;
@@ -63,8 +64,13 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
 
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-    log.info(String.format("Closed session [%s]", session.getId()));
-    subscriberService.deactivateSubscriberBySessionId(session.getId());
+    log.info(String.format("Closing session [%s]...", session.getId()));
+    try {
+      subscriberService.deactivateSubscriberBySessionId(session.getId());
+      log.info("Subscriber session closed.");
+    } catch (NoResultException e) {
+      log.info("Non-Subscriber session closed.");
+    }
     mapSessions.remove(session.getId());
   }
 

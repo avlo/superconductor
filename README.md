@@ -77,20 +77,20 @@ or full/debug console logging
 
 Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
-    select id, event_id, kind, nip, content, created_at, pub_key, signature from event;
-    select id, "key" as "key", "value" as "value", marker, recommended_relay_url from base_tag;
-    select id, base_tag_id, event_id from "event-base_tag-join";
-    select id, title, summary, published_at, location from classified_listing;
-    select id, classified_listing_id, event_id from "classified_listing-event-join";
-    select id, number, currency, frequency from price_tag;
-    select id, price_tag_id, event_id from "event-price_tag-join";
-    select id, subscriber_id, session from subscriber;
-    select id, subscriber_id, "since", "until", "limit" from "subscriber-filter-join";
-    select id, filter_id, event_id from "subscriber-filter_event-join";
-    select id, filter_id, author from "subscriber-filter_author-join";
-    select id, filter_id, kind_id from "subscriber-filter_kind-join";
-    select id, filter_id, referenced_event_id from "subscriber-filter_referenced_event-join";
-    select id, filter_id, referenced_pubkey from "subscriber-filter_referenced_pubkey-join";
+	select id, event_id, kind, nip, content, created_at, pub_key, signature from event;
+	select id, "key" as "key", "value" as "value", marker, recommended_relay_url from base_tag;
+	select id, base_tag_id, event_id from "event-base_tag-join";
+	select id, title, summary, published_at, location from classified_listing;
+	select id, classified_listing_id, event_id from "classified_listing-event-join";
+	select id, number, currency, frequency from price_tag;
+	select id, price_tag_id, event_id from "event-price_tag-join";
+	select id, active, subscriber_id, session_id from subscriber;
+	select id, subscriber_id, "since", "until", "limit" from "subscriber-filter-join";
+	select id, filter_id, event_id from "subscriber-filter_event-join";
+	select id, filter_id, author from "subscriber-filter_author-join";
+	select id, filter_id, kind_id from "subscriber-filter_kind-join";
+	select id, filter_id, referenced_event_id from "subscriber-filter_referenced_event-join";
+	select id, filter_id, referenced_pubkey from "subscriber-filter_referenced_pubkey-join";
 
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 

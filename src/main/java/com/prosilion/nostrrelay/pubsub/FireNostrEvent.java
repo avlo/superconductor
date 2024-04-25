@@ -1,6 +1,6 @@
 package com.prosilion.nostrrelay.pubsub;
 
-import nostr.event.impl.TextNoteEvent;
+import nostr.event.impl.GenericEvent;
 
-public record FireNostrEvent(Long subscriberId, TextNoteEvent event) {
+public record FireNostrEvent<T extends GenericEvent>(Long subscriberId, T event) {
 }

@@ -55,9 +55,9 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
 				event.getPubKey(),
 				event.getTags(),
 				event.getContent(),
-				classifiedListingDto.convertDtoToEntity().convertEntityToDto()
-		);
+				classifiedListingDto);
 		classifiedListingEvent.setId(event.getId());
+		classifiedListingEvent.setCreatedAt(event.getCreatedAt());
 		eventService.publishEvent(savedEventId, classifiedListingEvent);
 	}
 

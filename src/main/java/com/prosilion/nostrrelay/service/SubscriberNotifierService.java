@@ -10,9 +10,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class SubscriberNotifierService<T extends GenericEvent> {
@@ -37,23 +38,23 @@ public class SubscriberNotifierService<T extends GenericEvent> {
 		Map<Long, AddNostrEvent<T>> eventsToSend = new HashMap<>();
 		subscribersFiltersMap.forEach((subscriberId, subscriberIdFiltersList) -> {
 			subscriberIdFiltersList.getList().forEach(subscriberFilters ->
-					addMatch(subscriberFilters, addNostrEvent).ifPresent(event ->
-							eventsToSend.put(subscriberId, event)));
+					addMatch(subscriberFilters, addNostrEvent).forEach(event ->
+							eventsToSend.putIfAbsent(subscriberId, event)));
 		});
 		eventsToSend.forEach((subscriberId, event) ->
 				publisher.publishEvent(new FireNostrEvent<T>(subscriberId, event.event())));
 	}
 
-	private Optional<AddNostrEvent<T>> addMatch(Filters subscriberFilters, AddNostrEvent<T> eventToCheck) {
+	private List<AddNostrEvent<T>> addMatch(Filters subscriberFilters, AddNostrEvent<T> eventToCheck) {
+
+		List<AddNostrEvent<T>> matches = new ArrayList<>();
+
 		// TODO: convert to stream
 		for (GenericEvent subscriberEvent : subscriberFilters.getEvents().getList()) {
-			String eventToCheckContent = eventToCheck.event().getContent();
-			String subscriberInterestContent = subscriberEvent.getId();
-			if (subscriberInterestContent.equals(eventToCheckContent)) {
-				Optional<AddNostrEvent<T>> optional = Optional.of(eventToCheck);
-				return optional;
+			if (subscriberEvent.getId().equals(eventToCheck.event().getContent())) {
+				matches.add(eventToCheck);
 			}
 		}
-		return Optional.empty();
+		return matches;
 	}
 }

@@ -43,9 +43,8 @@
     $ cd <your_git_home_dir>
     $ git clone git@github.com:tcheeric/nostr-java.git
     $ cd nostr-java
+    $ git checkout develop
     $ mvn clean install
-
-then [setup requisite nostr-java properties files](https://github.com/tcheeric/nostr-client/?tab=readme-ov-file#setup)
 
 ## Build and install nostr-relay server
 

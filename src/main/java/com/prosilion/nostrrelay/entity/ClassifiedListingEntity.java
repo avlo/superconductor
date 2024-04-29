@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
 import nostr.event.tag.PriceTag;
 import org.springframework.beans.BeanUtils;
+
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -31,7 +34,7 @@ public class ClassifiedListingEntity {
 
   public ClassifiedListing convertEntityToDto() {
     // TODO: below
-    PriceTag priceTags = new PriceTag("666", "BTC", "frequency");
+    PriceTag priceTags = new PriceTag(new BigDecimal(666), "BTC", "frequency");
     ClassifiedListing classifiedListingDto = new ClassifiedListing(title, summary, priceTags);
     BeanUtils.copyProperties(classifiedListingDto, this);
     return classifiedListingDto;

@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -127,7 +128,7 @@ class EventNotifierEngineMapPopulationTest {
         new ClassifiedListing(
             "classified title 3333",
             "classified summarysummary 3333",
-            new PriceTag("333", "USD", "1")
+            new PriceTag(new BigDecimal(333), "USD", "1")
         ));
     classifiedEvent.setId("33333333333333");
     classifiedEvent.setKind(Kind.CLASSIFIED_LISTING.getValue());
@@ -155,7 +156,7 @@ class EventNotifierEngineMapPopulationTest {
         new ClassifiedListing(
             "classified title 111111",
             "classified summarysummary 11111",
-            new PriceTag("1111", "BTC", "1")
+            new PriceTag(new BigDecimal(1111), "BTC", "1")
         ));
     classifiedEvent1.setId("1111111111");
     classifiedEvent1.setKind(Kind.CLASSIFIED_LISTING.getValue());
@@ -180,7 +181,7 @@ class EventNotifierEngineMapPopulationTest {
         new ClassifiedListing(
             "classified title 2222",
             "classified summarysummary 22222",
-            new PriceTag("2222", "USD", "1")
+            new PriceTag(new BigDecimal(2222), "USD", "1")
         ));
     classifiedEvent2.setId("222222222222222");
     classifiedEvent2.setKind(Kind.CLASSIFIED_LISTING.getValue());

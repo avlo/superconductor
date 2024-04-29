@@ -31,6 +31,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.FileWriter;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -97,7 +98,7 @@ class EventNotifierEventTriggerSubscriberFilterTest {
     ClassifiedListing classifiedListing = new ClassifiedListing(
         "classified title 222",
         "classified summarysummary 2222",
-        new PriceTag("222", "USD", "1")
+        new PriceTag(new BigDecimal(222), "USD", "1")
     );
     classifiedListing.setPublishedAt(1712006760L);
 

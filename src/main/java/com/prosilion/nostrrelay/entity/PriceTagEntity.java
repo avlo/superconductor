@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nostr.event.tag.PriceTag;
 import org.springframework.beans.BeanUtils;
+
+import java.math.BigDecimal;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -16,7 +19,7 @@ public class PriceTagEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String number;
+  private BigDecimal number;
   private String currency;
   private String frequency;
 

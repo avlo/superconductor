@@ -48,12 +48,14 @@ public class EventNotifierEngine<T extends GenericEvent> {
     FiltersList filtersList = Optional.ofNullable(subscribersFiltersMap.get(addSubscriber.subscriberId())).orElse(addSubscriber.filtersList());
 //    TODO: merge existing filters and new filters
 
-    subscribersFiltersMap.putIfAbsent(addSubscriber.subscriberId(), filtersList);
-
+    Map<Long, FiltersList> shortMap = new HashMap<>(new HashMap<>());
+    shortMap.put(addSubscriber.subscriberId(), filtersList);
     // TODO: notify subscriber logic below; pending tests to reside in @SubscriberFilterTriggerEventNotifierTest
     kindEventMap.forEach((kind, eventMap) ->
         eventMap.forEach((eventId, event) ->
-            publisher.publishEvent(new SubscriberNotifierEvent<T>(subscribersFiltersMap, new AddNostrEvent<>(eventId, event, kind)))));
+            publisher.publishEvent(new SubscriberNotifierEvent<T>(shortMap, new AddNostrEvent<>(eventId, event, kind)))));
+
+    subscribersFiltersMap.putIfAbsent(addSubscriber.subscriberId(), filtersList);
   }
 
   @EventListener

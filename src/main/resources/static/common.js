@@ -1,4 +1,5 @@
 let ws
+let currentSubscriptonId
 
 function connect() {
     ws = new WebSocket('ws://localhost:5555');
@@ -11,6 +12,7 @@ function connect() {
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
+    $("#reqclose").prop("disabled", !connected);
     if (connected) {
         $("#conversation").show();
     } else {
@@ -24,7 +26,7 @@ function disconnect() {
         ws.close();
     }
     setConnected(false);
-    console.log("Disconnected");
+    console.log("Disconnected via WS close");
 }
 
 async function createDigest(message) {
@@ -41,16 +43,27 @@ async function createDigest(message) {
 
 function sendContent(id_hash) {
     console.log("\nsending content...\n\n");
+    currentSubscriptonId = id_hash;
     let localjsonstring = replaceHash(id_hash);
     console.log(localjsonstring);
     console.log('\n\n');
-
     ws.send(localjsonstring);
 }
 
 function sendClose() {
-    console.log("\nsending close...\n\n");
-    ws.send("[CLOSE]");
+    let localjsonstring = replaceCloseHash(currentSubscriptonId);
+    console.log(localjsonstring);
+    console.log('\n\n');
+    ws.send(localjsonstring);
+    setConnected(false);
+    console.log("Disconnected via Nostr CLOSE");
+}
+
+function replaceCloseHash(id_hash) {
+    return "["
+        + "\"CLOSE\","
+        + "\"" + id_hash + "\""
+        + "]";
 }
 
 function showEvent(content) {

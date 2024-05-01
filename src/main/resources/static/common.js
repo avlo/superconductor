@@ -31,15 +31,6 @@ async function createDigest(message) {
     const utf8 = new Uint8Array(message.length);
     new TextEncoder().encodeInto(message, utf8);
     const hashBuffer = await window.crypto.subtle.digest("SHA-256", utf8);
-
-    // TODO: possibly make fxntional
-    // return hashBuffer.split("")
-    //     .map(c =>
-    //         c.charCodeAt(0)
-    //             .toString(16)
-    //             .padStart(2, "0"))
-    //     .join("");
-
     const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
     return hashArray
         .map(b => b
@@ -57,6 +48,11 @@ function sendContent(id_hash) {
     ws.send(localjsonstring);
 }
 
+function sendClose() {
+    console.log("\nsending close...\n\n");
+    ws.send("[CLOSE]");
+}
+
 function showEvent(content) {
     let jsonPretty = JSON.stringify(JSON.parse(content), null, 2);
     $("#events").append("<tr><td><pre>" + syntaxHighlight(jsonPretty) + "</pre></td></tr>");
@@ -66,6 +62,7 @@ $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#connect").click(() => connect());
     $("#disconnect").click(() => disconnect());
+    $("#reqclose").click(() => sendClose());
     $("#send").click(() => hashThenSend());
 });
 

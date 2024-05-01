@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface SubscriberFilterEventRepository extends JpaRepository<SubscriberFilterEvent, Long> {
   Optional<List<SubscriberFilterEvent>> findSubscriberFilterEventsByFilterId(Long filterId);
+  void deleteByFilterId(Long filterId);
 }

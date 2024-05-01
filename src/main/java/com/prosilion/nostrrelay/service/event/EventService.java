@@ -93,7 +93,7 @@ public class EventService<T extends GenericEvent> {
     publishEvent(event);
   }
 
-  protected <U extends BaseMessage> void publishEvent(BroadcastMessageEvent<U> messageEvent) {
+  public <U extends BaseMessage> void publishEvent(BroadcastMessageEvent<U> messageEvent) {
     publisher.publishEvent(messageEvent);
   }
 }

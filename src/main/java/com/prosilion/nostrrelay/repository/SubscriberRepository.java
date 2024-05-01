@@ -11,8 +11,4 @@ public interface SubscriberRepository extends JpaRepository<Subscriber, Long> {
   Optional<Subscriber> findBySubscriberId(String subscriberId);
 
   Optional<Subscriber> findBySessionId(String sessionId);
-
-  void deleteBySessionId(String sessionId);
-
-  void deleteBySubscriberId(String subscriberId);
 }

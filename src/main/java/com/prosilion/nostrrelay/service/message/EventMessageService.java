@@ -14,39 +14,39 @@ import java.util.logging.Level;
 
 @Log
 @Service
-public class EventMessageService<T extends EventMessage> implements MessageService<T> {
+public class EventMessageService<T extends EventMessage> {
 
-	private final TextNoteEventService<T> textNoteEventService;
-	private final ClassifiedListingEventService<T> classifiedListingEventService;
+  private final TextNoteEventService<T> textNoteEventService;
+  private final ClassifiedListingEventService<T> classifiedListingEventService;
 
-	@Autowired
-	public EventMessageService(TextNoteEventService<T> textNoteEventService, ClassifiedListingEventService<T> classifiedListingEventService) {
-		this.textNoteEventService = textNoteEventService;
-		this.classifiedListingEventService = classifiedListingEventService;
-	}
+  @Autowired
+  public EventMessageService(TextNoteEventService<T> textNoteEventService, ClassifiedListingEventService<T> classifiedListingEventService) {
+    this.textNoteEventService = textNoteEventService;
+    this.classifiedListingEventService = classifiedListingEventService;
+  }
 
-	public void processIncoming(@NotNull T eventMessage) {
-		log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
-		// TOOD: update subscription logic
-		eventMessage.setSubscriptionId("SUB ID");
-		var kind = ((GenericEvent) eventMessage.getEvent()).getKind();
-		log.log(Level.INFO, "EVENT message type: {0}", eventMessage.getEvent());
-		createEventService(Kind.valueOf(kind), eventMessage);
+  public void processIncoming(@NotNull T eventMessage) {
+    log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
+    // TOOD: update subscription logic
+    eventMessage.setSubscriptionId("SUB ID");
+    var kind = ((GenericEvent) eventMessage.getEvent()).getKind();
+    log.log(Level.INFO, "EVENT message type: {0}", eventMessage.getEvent());
+    createEventService(Kind.valueOf(kind), eventMessage);
 //    return NIP01.createEventMessage(eventMessage.getEvent(), eventMessage.getSubscriptionId());
-	}
+  }
 
-	private void createEventService(@NotNull Kind kind, T eventMessage) {
-		switch (kind) {
-			case TEXT_NOTE -> {
-				log.log(Level.INFO, "TEXT_NOTE KIND decoded should match TEXT_NOTE -> [{0}]", kind.getName());
-				textNoteEventService.processIncoming(eventMessage);
-			}
-			case CLASSIFIED_LISTING -> {
-				log.log(Level.INFO, "CLASSIFIED_LISTING KIND decoded should match CLASSIFIED_LISTING -> [{0}]", kind.getName());
-				classifiedListingEventService.processIncoming(eventMessage);
-			}
+  private void createEventService(@NotNull Kind kind, T eventMessage) {
+    switch (kind) {
+      case TEXT_NOTE -> {
+        log.log(Level.INFO, "TEXT_NOTE KIND decoded should match TEXT_NOTE -> [{0}]", kind.getName());
+        textNoteEventService.processIncoming(eventMessage);
+      }
+      case CLASSIFIED_LISTING -> {
+        log.log(Level.INFO, "CLASSIFIED_LISTING KIND decoded should match CLASSIFIED_LISTING -> [{0}]", kind.getName());
+        classifiedListingEventService.processIncoming(eventMessage);
+      }
 
-			default -> throw new AssertionError("Unknown kind: " + kind.getName());
-		}
-	}
+      default -> throw new AssertionError("Unknown kind: " + kind.getName());
+    }
+  }
 }

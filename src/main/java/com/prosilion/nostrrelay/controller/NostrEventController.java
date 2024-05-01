@@ -4,7 +4,6 @@ import com.prosilion.nostrrelay.pubsub.BroadcastMessageEvent;
 import com.prosilion.nostrrelay.service.message.CloseMessageService;
 import com.prosilion.nostrrelay.service.message.EventMessageService;
 import com.prosilion.nostrrelay.service.message.ReqMessageService;
-import com.prosilion.nostrrelay.service.request.SubscriberService;
 import jakarta.persistence.NoResultException;
 import lombok.extern.java.Log;
 import nostr.event.BaseMessage;
@@ -36,19 +35,16 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
   private final ReqMessageService<ReqMessage> reqMessageService;
   private final EventMessageService<EventMessage> eventMessageService;
   private final CloseMessageService<CloseMessage> closeMessageService;
-  private final SubscriberService subscriberService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
 
   @Autowired
   public NostrEventController(
       ReqMessageService<ReqMessage> reqMessageService,
       EventMessageService<EventMessage> eventMessageService,
-      CloseMessageService<CloseMessage> closeMessageService,
-      SubscriberService subscriberService) {
+      CloseMessageService<CloseMessage> closeMessageService) {
     this.reqMessageService = reqMessageService;
     this.eventMessageService = eventMessageService;
     this.closeMessageService = closeMessageService;
-    this.subscriberService = subscriberService;
   }
 
   @Override
@@ -66,7 +62,9 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
     log.info(String.format("Closing session [%s]...", session.getId()));
     try {
-      subscriberService.deactivateSubscriberBySessionId(session.getId());
+//      TODO: NIP specs somewhat ambiguous whether to de-activate session or remove it.  for now, do remove
+//      closeMessageService.deactivateSubscriberBySessionId(session.getId());
+      closeMessageService.removeSubscriberBySessionId(session.getId());
       log.info("Subscriber session closed.");
     } catch (NoResultException e) {
       log.info("Non-Subscriber session closed.");
@@ -87,9 +85,11 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
         log.log(Level.INFO, "EVENT decoded, contents: {0}", message);
         eventMessageService.processIncoming((EventMessage) message);
       }
+      // below "CLOSE" already handled by afterConnectionClosed(...) via SpringWebSocket above
+      //   so below might be superfluous, keep for now until confident determination
       case "CLOSE" -> {
         log.log(Level.INFO, "CLOSE decoded, contents: {0}", message);
-        closeMessageService.processIncoming((CloseMessage) message);
+        closeMessageService.processIncoming((CloseMessage) message, session.getId());
       }
       default -> throw new AssertionError("Unknown command " + message.getCommand());
 

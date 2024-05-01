@@ -39,7 +39,9 @@ public class SubscriberManager {
     return subscriberRepository.findBySessionId(sessionId).orElseThrow(NoResultException::new);
   }
 
-  public void removeBySessionId(String sessionId) {
-    subscriberRepository.deleteBySessionId(sessionId);
+  public Long removeBySessionId(String sessionId) {
+    Subscriber s = getBySessionId(sessionId);
+    subscriberRepository.deleteById(s.getId());
+    return s.getId();
   }
 }

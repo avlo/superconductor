@@ -33,4 +33,8 @@ public class SubscriberFiltersService {
      */
     publisher.publishEvent(new AddSubscriberFiltersEvent(subscriberId, filtersList));
   }
+
+  public void deleteBySubscriberId(Long subscriberId) {
+    subscriberFiltersManager.removeAllFilters(subscriberId);
+  }
 }

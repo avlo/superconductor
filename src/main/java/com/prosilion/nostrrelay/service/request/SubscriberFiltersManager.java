@@ -114,6 +114,7 @@ public class SubscriberFiltersManager {
     removeKinds(filterId);
     removeReferencedEvents(filterId);
     removeReferencedPubkeys(filterId);
+    removeEvents(filterId);
     removeFilters(filterId);
     //      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
   }
@@ -122,8 +123,12 @@ public class SubscriberFiltersManager {
     return subscriberFilterRepository.findBySubscriberId(subscriberId).orElseThrow(NoResultException::new).getId();
   }
 
+  private void removeFilters(Long subscriberId) {
+    subscriberFilterRepository.deleteById(subscriberId);
+  }
+
   @Transactional
-  public void removeFilters(Long filterId) {
+  public void removeEvents(Long filterId) {
     subscriberFilterEventRepository.deleteByFilterId(filterId);
   }
 

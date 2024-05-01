@@ -1,5 +1,6 @@
 let ws
 let currentSubscriptonId
+let dateNow
 
 function connect() {
     ws = new WebSocket('ws://localhost:5555');
@@ -7,6 +8,8 @@ function connect() {
         showEvent(messageEvent.data);
     }
     setConnected(true);
+    dateNow = Date.now();
+    console.log("date now: " + dateNow);
 }
 
 function setConnected(connected) {
@@ -43,6 +46,7 @@ async function createDigest(message) {
 
 function sendContent(id_hash) {
     console.log("\nsending content...\n\n");
+    console.log("sending w/ date now: " + dateNow);
     currentSubscriptonId = id_hash;
     let localjsonstring = replaceHash(id_hash);
     console.log(localjsonstring);

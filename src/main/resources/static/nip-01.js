@@ -3,7 +3,7 @@ function hashThenSend() {
         '0',
         $("#pubkey").val(),
         // TODO: re-add below as fixed value exclusively used for testing
-        $("#created_at").val(),
+        dateNow,
         // '1712006760',
         $("#kind").val(),
         $("#e_tag").val(),

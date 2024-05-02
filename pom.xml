@@ -5,7 +5,7 @@
 
   <groupId>com.prosilion</groupId>
   <artifactId>nostr-relay</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.5</version>
   <name>nostr-relay</name>
   <packaging>jar</packaging>
 

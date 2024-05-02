@@ -5,6 +5,7 @@ import com.prosilion.nostrrelay.repository.SubscriberRepository;
 import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,12 +36,18 @@ public class SubscriberManager {
     return subscriberRepository.findBySubscriberId(subscriberId).orElseThrow(NoResultException::new);
   }
 
-  public Subscriber getBySessionId(String sessionId) {
+  public List<Subscriber> getBySessionId(String sessionId) {
     return subscriberRepository.findBySessionId(sessionId).orElseThrow(NoResultException::new);
   }
 
-  public Long removeBySessionId(String sessionId) {
-    Subscriber s = getBySessionId(sessionId);
+  public List<Long> removeBySessionId(String sessionId) {
+    List<Subscriber> subscribers = getBySessionId(sessionId);
+    subscribers.forEach(s -> subscriberRepository.deleteById(s.getId()));
+    return subscribers.stream().map(Subscriber::getId).toList();
+  }
+
+  public Long removeBySubscriberId(String subscriberId) {
+    Subscriber s = getBySubscriberId(subscriberId);
     subscriberRepository.deleteById(s.getId());
     return s.getId();
   }

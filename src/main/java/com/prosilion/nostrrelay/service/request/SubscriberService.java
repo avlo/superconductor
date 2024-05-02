@@ -7,6 +7,7 @@ import nostr.event.list.FiltersList;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,15 +42,21 @@ public class SubscriberService {
     return subscriberManager.get(subscriberId).get();
   }
 
-  public Long removeSubscriberBySessionId(String sessionId) {
-    Subscriber s = Optional.of(subscriberManager.getBySessionId(sessionId)).orElseThrow(NoResultException::new);
-    subscriberFiltersService.deleteBySubscriberId(s.getId());
+  public List<Long> removeSubscriberBySessionId(String sessionId) {
+    List<Subscriber> subscribers = Optional.of(subscriberManager.getBySessionId(sessionId)).orElseThrow(NoResultException::new);
+    subscribers.forEach(s -> subscriberFiltersService.deleteBySubscriberId(s.getId()));
     return subscriberManager.removeBySessionId(sessionId);
   }
 
-  public String deactivateSubscriberBySessionId(String sessionId) throws NoResultException {
-    Subscriber s = Optional.of(subscriberManager.getBySessionId(sessionId)).orElseThrow(NoResultException::new);
-    s.setActive(false);
-    return subscriberManager.save(s).getSubscriberId();
+  public Long removeSubscriberBySubscriberId(String subscriberId) {
+    Subscriber s = Optional.of(subscriberManager.getBySubscriberId(subscriberId)).orElseThrow(NoResultException::new);
+    subscriberFiltersService.deleteBySubscriberId(s.getId());
+    return subscriberManager.removeBySubscriberId(subscriberId);
   }
+
+//  public String deactivateSubscriberBySessionId(String sessionId) throws NoResultException {
+//    Subscriber s = Optional.of(subscriberManager.getBySessionId(sessionId)).orElseThrow(NoResultException::new);
+//    s.setActive(false);
+//    return subscriberManager.save(s).getSubscriberId();
+//  }
 }

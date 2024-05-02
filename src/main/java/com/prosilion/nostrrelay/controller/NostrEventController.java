@@ -89,7 +89,7 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
       //   so below might be superfluous, keep for now until confident determination
       case "CLOSE" -> {
         log.log(Level.INFO, "CLOSE decoded, contents: {0}", message);
-        closeMessageService.processIncoming((CloseMessage) message, session.getId());
+        closeMessageService.processIncoming((CloseMessage) message);
       }
       default -> throw new AssertionError("Unknown command " + message.getCommand());
 

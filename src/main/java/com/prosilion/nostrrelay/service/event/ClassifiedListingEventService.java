@@ -22,81 +22,82 @@ import java.util.logging.Level;
 @Log
 @Service
 public class ClassifiedListingEventService<T extends EventMessage> implements EventServiceIF<T> {
-	private final ClassifiedListingEntityRepository classifiedListingEntityRepository;
-	private final ClassifiedListingEntityEventEntityService joinService;
-	private final PriceTagEntityService priceTagEntityService;
-	private final EventService<ClassifiedListingEvent> eventService;
+  private final ClassifiedListingEntityRepository classifiedListingEntityRepository;
+  private final ClassifiedListingEntityEventEntityService joinService;
+  private final PriceTagEntityService priceTagEntityService;
+  private final EventService<ClassifiedListingEvent> eventService;
 
-	public ClassifiedListingEventService(
-			EventService<ClassifiedListingEvent> eventService,
-			ClassifiedListingEntityRepository classifiedListingEntityRepository,
-			ClassifiedListingEntityEventEntityService joinService,
-			PriceTagEntityService priceTagEntityService) {
-		this.eventService = eventService;
-		this.classifiedListingEntityRepository = classifiedListingEntityRepository;
-		this.joinService = joinService;
-		this.priceTagEntityService = priceTagEntityService;
-	}
+  public ClassifiedListingEventService(
+      EventService<ClassifiedListingEvent> eventService,
+      ClassifiedListingEntityRepository classifiedListingEntityRepository,
+      ClassifiedListingEntityEventEntityService joinService,
+      PriceTagEntityService priceTagEntityService) {
+    this.eventService = eventService;
+    this.classifiedListingEntityRepository = classifiedListingEntityRepository;
+    this.joinService = joinService;
+    this.priceTagEntityService = priceTagEntityService;
+  }
 
-	@Override
-	public void processIncoming(T eventMessage) {
-		log.log(Level.INFO, "processing incoming CLASSIFIED_LISTING: [{0}]", eventMessage);
-		GenericEvent event = (GenericEvent) eventMessage.getEvent();
-		Long savedEventId = eventService.saveEventEntity(event);
+  @Override
+  public void processIncoming(T eventMessage) {
+    log.log(Level.INFO, "processing incoming CLASSIFIED_LISTING: [{0}]", eventMessage);
+    GenericEvent event = (GenericEvent) eventMessage.getEvent();
+    Long savedEventId = eventService.saveEventEntity(event);
 
-		Result priceTagDtoResult = createPriceTagDto(event);
-		ClassifiedListingDto classifiedListingDto = getClassifiedListingDto(event, priceTagDtoResult);
-		ClassifiedListingEntity classifiedListingEntity = saveClassifiedListing(classifiedListingDto);
+    ClassifiedListingDto classifiedListingDto = getClassifiedListingDto(event, createPriceTagDto(event));
+    ClassifiedListingEntity classifiedListingEntity = saveClassifiedListing(classifiedListingDto);
 
-		joinService.save(savedEventId, classifiedListingEntity.getId());
-		priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
+    joinService.save(savedEventId, classifiedListingEntity.getId());
+    priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
 
-		ClassifiedListingEvent classifiedListingEvent = new ClassifiedListingEvent(
-				event.getPubKey(),
-				event.getTags(),
-				event.getContent(),
-				classifiedListingDto);
-		classifiedListingEvent.setId(event.getId());
-		classifiedListingEvent.setCreatedAt(event.getCreatedAt());
-		eventService.publishEvent(savedEventId, classifiedListingEvent);
-	}
+    ClassifiedListingEvent classifiedListingEvent = new ClassifiedListingEvent(
+        event.getPubKey(),
+        event.getTags(),
+        event.getContent(),
+        classifiedListingDto);
+    classifiedListingEvent.setId(event.getId());
+    classifiedListingEvent.setCreatedAt(event.getCreatedAt());
+    eventService.publishEvent(savedEventId, classifiedListingEvent);
+  }
 
-	//  TODO: refactor below
-	@NotNull
-	private static ClassifiedListingDto getClassifiedListingDto(GenericEvent event, Result priceTagDtoResult) {
-		ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(
-				getReturnVal(priceTagDtoResult.genericTagsOnly(), "title"),
-				getReturnVal(priceTagDtoResult.genericTagsOnly(), "summary"),
-				PriceTagDto.createPriceTagDtoFromAttributes(priceTagDtoResult.priceTagDto().stream().findFirst().orElseThrow())
-		);
-		classifiedListingDto.setLocation(getReturnVal(priceTagDtoResult.genericTagsOnly(), "location"));
-		classifiedListingDto.setPublishedAt(event.getCreatedAt());
-		return classifiedListingDto;
-	}
+  @NotNull
+  private static ClassifiedListingDto getClassifiedListingDto(GenericEvent event, Result priceTagDtoResult) {
+    ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(
+        getReturnVal(priceTagDtoResult.genericTagsOnly(), "title"),
+        getReturnVal(priceTagDtoResult.genericTagsOnly(), "summary"),
+        PriceTagDto.createPriceTagDtoFromAttributes(priceTagDtoResult.priceTagDto().stream().findFirst().orElseThrow())
+    );
+    classifiedListingDto.setLocation(getReturnVal(priceTagDtoResult.genericTagsOnly(), "location"));
+    classifiedListingDto.setPublishedAt(event.getCreatedAt());
+    return classifiedListingDto;
+  }
 
-	//  TODO: refactor below method
-	@NotNull
-	private static Result createPriceTagDto(GenericEvent event) {
-		List<GenericTag> genericTagsOnly = event.getTags().stream().map(baseTag -> (GenericTag) baseTag).toList();
+  @NotNull
+  private static Result createPriceTagDto(GenericEvent event) {
+    List<GenericTag> genericTagsOnly = event.getTags().stream().map(GenericTag.class::cast).toList();
 
-		List<List<ElementAttribute>> priceTagDto = genericTagsOnly.stream()
-				.filter(tag -> tag.getCode().equalsIgnoreCase("price")).map(GenericTag::getAttributes).toList();
-		return new Result(genericTagsOnly, priceTagDto);
-	}
+    List<List<ElementAttribute>> priceTagDto = genericTagsOnly.stream()
+        .filter(tag -> tag.getCode().equalsIgnoreCase("price")).map(GenericTag::getAttributes).toList();
+    return new Result(genericTagsOnly, priceTagDto);
+  }
 
-	private ClassifiedListingEntity saveClassifiedListing(ClassifiedListingDto classifiedListingDto) {
-		return Optional.of(classifiedListingEntityRepository.save(classifiedListingDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
-	}
+  private ClassifiedListingEntity saveClassifiedListing(ClassifiedListingDto classifiedListingDto) {
+    return Optional.of(classifiedListingEntityRepository.save(classifiedListingDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
+  }
 
-	private static String getReturnVal(List<GenericTag> genericTags, String val) {
-		List<ElementAttribute> atts = genericTags.stream().filter(tag -> tag.getCode().equals(val)).findFirst().get().getAttributes();
-		return (String) atts.stream().map(ea -> ea.getValue()).findFirst().get();
-	}
+  private static String getReturnVal(List<GenericTag> genericTags, String val) {
+    List<ElementAttribute> atts = genericTags.stream().filter(tag -> tag.getCode()
+            .equals(val))
+        .findFirst()
+        .orElseThrow()
+        .getAttributes();
+    return (String) atts.stream().map(ElementAttribute::getValue).findFirst().orElseThrow();
+  }
 
-	public ClassifiedListingEntity findById(Long id) {
-		return classifiedListingEntityRepository.findById(id).get();
-	}
+  public ClassifiedListingEntity findById(Long id) {
+    return classifiedListingEntityRepository.findById(id).orElseThrow();
+  }
 
-	private record Result(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> priceTagDto) {
-	}
+  private record Result(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> priceTagDto) {
+  }
 }

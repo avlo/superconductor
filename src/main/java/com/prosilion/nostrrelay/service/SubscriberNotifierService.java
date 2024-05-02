@@ -49,6 +49,19 @@ public class SubscriberNotifierService<T extends GenericEvent> {
         matches.add(eventToCheck);
       }
     }
+
+    List<AddNostrEvent<T>> matches2 = new ArrayList<>();
+    List<GenericEvent> genericEventList = subscriberFilters.getEvents().getList();
+    genericEventList.stream().filter(event -> event.getId().equals(eventToCheck.event().getContent())).anyMatch(event -> matches2.add(eventToCheck));
+
+    System.out.println("111111111111111111");
+    System.out.println("111111111111111111");
+    System.out.println(matches);
+    System.out.println("------------------");
+    System.out.println(matches2);
+    System.out.println("111111111111111111");
+    System.out.println("111111111111111111");
+
     return matches;
   }
 }

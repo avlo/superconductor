@@ -10,10 +10,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SubscriberNotifierService<T extends GenericEvent> {
@@ -40,30 +40,10 @@ public class SubscriberNotifierService<T extends GenericEvent> {
   }
 
   private List<AddNostrEvent<T>> addMatch(Filters subscriberFilters, AddNostrEvent<T> eventToCheck) {
-
-    List<AddNostrEvent<T>> matches = new ArrayList<>();
-
-    // TODO: convert to stream
-    for (GenericEvent subscriberEvent : subscriberFilters.getEvents().getList()) {
-      if (subscriberEvent.getId().equals(eventToCheck.event().getContent())) {
-        matches.add(eventToCheck);
-      }
-    }
-
-//    https://stackoverflow.com/questions/45397570/java-8-streams-find-items-from-one-list-that-match-conditions-calculated-based
-
-    List<AddNostrEvent<T>> matches2 = new ArrayList<>();
-    List<GenericEvent> genericEventList = subscriberFilters.getEvents().getList();
-    genericEventList.stream().filter(event -> event.getId().equals(eventToCheck.event().getContent())).anyMatch(event -> matches2.add(eventToCheck));
-
-    System.out.println("111111111111111111");
-    System.out.println("111111111111111111");
-    System.out.println(matches);
-    System.out.println("------------------");
-    System.out.println(matches2);
-    System.out.println("111111111111111111");
-    System.out.println("111111111111111111");
-
-    return matches;
+    return subscriberFilters.getEvents().getList()
+        .stream()
+        .filter(event -> event.getId().equals(eventToCheck.event().getContent()))
+        .map(event -> eventToCheck)
+        .collect(Collectors.toList());
   }
 }

@@ -5,7 +5,7 @@
 
   <groupId>com.prosilion</groupId>
   <artifactId>nostr-relay</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>${project.version}</version>
   <name>nostr-relay</name>
   <packaging>jar</packaging>
 
@@ -16,6 +16,8 @@
   </parent>
 
   <properties>
+    <project.version>1.0.0</project.version>
+
     <spring-boot.version>3.2.4</spring-boot.version>
     <nostr-java.version>0.6-SNAPSHOT</nostr-java.version>
 
@@ -134,6 +136,14 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>${build-helper-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>parse-version</id>
+            <goals>
+              <goal>parse-version</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

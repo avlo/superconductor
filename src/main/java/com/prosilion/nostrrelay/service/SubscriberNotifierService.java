@@ -50,6 +50,8 @@ public class SubscriberNotifierService<T extends GenericEvent> {
       }
     }
 
+//    https://stackoverflow.com/questions/45397570/java-8-streams-find-items-from-one-list-that-match-conditions-calculated-based
+
     List<AddNostrEvent<T>> matches2 = new ArrayList<>();
     List<GenericEvent> genericEventList = subscriberFilters.getEvents().getList();
     genericEventList.stream().filter(event -> event.getId().equals(eventToCheck.event().getContent())).anyMatch(event -> matches2.add(eventToCheck));

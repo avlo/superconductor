@@ -10,20 +10,20 @@ import org.springframework.stereotype.Service;
 @Log
 @Getter
 @Service
-public class ReqService<T extends ReqMessage> implements ReqServiceIF<T> {
-  private final SubscriberService subscriberService;
+public class ReqService<T extends ReqMessage> {
+	private final SubscriberService subscriberService;
 
-  public ReqService(SubscriberService subscriberService) {
-    this.subscriberService = subscriberService;
-  }
+	public ReqService(SubscriberService subscriberService) {
+		this.subscriberService = subscriberService;
+	}
 
-  public void processIncoming(@NotNull T reqMessage, String sessionId) {
-    subscriberService.save(
-        new Subscriber(
-            reqMessage.getSubscriptionId(),
-            sessionId,
-            true),
-        reqMessage.getFiltersList()
-    );
-  }
+	public void processIncoming(@NotNull T reqMessage, String sessionId) {
+		subscriberService.save(
+				new Subscriber(
+						reqMessage.getSubscriptionId(),
+						sessionId,
+						true),
+				reqMessage.getFiltersList()
+		);
+	}
 }

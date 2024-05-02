@@ -6,13 +6,13 @@ import com.prosilion.nostrrelay.entity.ClassifiedListingEntity;
 import com.prosilion.nostrrelay.repository.ClassifiedListingEntityRepository;
 import com.prosilion.nostrrelay.service.event.join.ClassifiedListingEntityEventEntityService;
 import jakarta.persistence.NoResultException;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.java.Log;
 import nostr.base.ElementAttribute;
 import nostr.event.impl.ClassifiedListingEvent;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
 import nostr.event.message.EventMessage;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

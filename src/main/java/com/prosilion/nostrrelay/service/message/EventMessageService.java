@@ -2,11 +2,11 @@ package com.prosilion.nostrrelay.service.message;
 
 import com.prosilion.nostrrelay.service.event.ClassifiedListingEventService;
 import com.prosilion.nostrrelay.service.event.TextNoteEventService;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.java.Log;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -27,12 +27,9 @@ public class EventMessageService<T extends EventMessage> {
 
   public void processIncoming(@NotNull T eventMessage) {
     log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
-    // TOOD: update subscription logic
-    eventMessage.setSubscriptionId("SUB ID");
     var kind = ((GenericEvent) eventMessage.getEvent()).getKind();
     log.log(Level.INFO, "EVENT message type: {0}", eventMessage.getEvent());
     createEventService(Kind.valueOf(kind), eventMessage);
-//    return NIP01.createEventMessage(eventMessage.getEvent(), eventMessage.getSubscriptionId());
   }
 
   private void createEventService(@NotNull Kind kind, T eventMessage) {

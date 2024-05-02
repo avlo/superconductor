@@ -86,12 +86,10 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
   }
 
   private static String getReturnVal(List<GenericTag> genericTags, String val) {
-    List<ElementAttribute> atts = genericTags.stream().filter(tag -> tag.getCode()
-            .equals(val))
-        .findFirst()
-        .orElseThrow()
-        .getAttributes();
-    return (String) atts.stream().map(ElementAttribute::getValue).findFirst().orElseThrow();
+    return genericTags.stream()
+        .filter(tag -> tag.getCode().equals(val)).findFirst().orElseThrow()
+        .getAttributes().stream().map(ElementAttribute::getValue).findFirst().orElseThrow()
+        .toString();
   }
 
   public ClassifiedListingEntity findById(Long id) {

@@ -2,3 +2,6 @@
 nostr-relay.iml
 target/
 .project
+
+pom.xml.versionsBackup
+trigger-text.txt

@@ -5,7 +5,7 @@
 
   <groupId>com.prosilion</groupId>
   <artifactId>nostr-relay</artifactId>
-  <version>${project.version}</version>
+  <version>0.0.1</version>
   <name>nostr-relay</name>
   <packaging>jar</packaging>
 
@@ -16,8 +16,6 @@
   </parent>
 
   <properties>
-    <project.version>1.0.0</project.version>
-
     <spring-boot.version>3.2.4</spring-boot.version>
     <nostr-java.version>0.6-SNAPSHOT</nostr-java.version>
 

@@ -58,11 +58,15 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
     mapSessions.put(session.getId(), session);
   }
 
+  /**
+   * Handles WebSocket close event.  Differentiated from Nostr Close Event in method
+   * {@link #handleTextMessage(WebSocketSession, TextMessage) }
+   */
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
     log.info(String.format("Closing session [%s]...", session.getId()));
     try {
-//      TODO: NIP specs somewhat ambiguous whether to de-activate session or remove it.  for now, do remove
+//      NIP specs somewhat ambiguous whether to de-activate session or remove it.  for now, do remove
 //      closeMessageService.deactivateSubscriberBySessionId(session.getId());
       closeMessageService.removeSubscriberBySessionId(session.getId());
       log.info("Subscriber session closed.");
@@ -72,6 +76,11 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
     mapSessions.remove(session.getId());
   }
 
+  /**
+   * Nostr Event Handlers
+   * note: Nostr CLOSE event is differentiated from WebSocket close event in method
+   * {@link #afterConnectionClosed(WebSocketSession, CloseStatus) }
+   */
   @Override
   public void handleTextMessage(@NotNull WebSocketSession session, TextMessage baseMessage) {
     log.info(String.format("Message from session [%s]", session.getId()));
@@ -85,8 +94,6 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
         log.log(Level.INFO, "EVENT decoded, contents: {0}", message);
         eventMessageService.processIncoming((EventMessage) message);
       }
-      // below "CLOSE" already handled by afterConnectionClosed(...) via SpringWebSocket above
-      //   so below might be superfluous, keep for now until confident determination
       case "CLOSE" -> {
         log.log(Level.INFO, "CLOSE decoded, contents: {0}", message);
         closeMessageService.processIncoming((CloseMessage) message);

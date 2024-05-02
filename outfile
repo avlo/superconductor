@@ -1,0 +1,20 @@
+src/main/java/com/prosilion/nostrrelay/entity/ClassifiedListingEntity.java:36:    // TODO: below
+src/main/java/com/prosilion/nostrrelay/service/SubscriberNotifierService.java:31:    // TODO: prudent replace all below parallelizable
+src/main/java/com/prosilion/nostrrelay/service/SubscriberNotifierService.java:46:    // TODO: convert to stream
+src/main/java/com/prosilion/nostrrelay/service/event/ClassifiedListingEventService.java:64:	//  TODO: refactor below
+src/main/java/com/prosilion/nostrrelay/service/event/ClassifiedListingEventService.java:77:	//  TODO: refactor below method
+src/main/java/com/prosilion/nostrrelay/service/request/SubscriberManager.java:20://    TODO: stream below
+src/main/java/com/prosilion/nostrrelay/service/request/SubscriberFiltersService.java:21:    // TODO: below save() call might also suffice for subscriber/subscriber-filters update?
+src/main/java/com/prosilion/nostrrelay/service/request/SubscriberFiltersService.java:29:    // TODO: potentially replace FilterList with custom/efficient data-structure/predicate if advantageous to do so
+src/main/java/com/prosilion/nostrrelay/service/request/SubscriberFiltersManager.java:41:      //      TODO: all below can be parallelized
+src/main/java/com/prosilion/nostrrelay/service/request/SubscriberFiltersManager.java:54:      //      TODO: all below can be parallelized
+src/main/java/com/prosilion/nostrrelay/service/request/SubscriberFiltersManager.java:70://		TODO: research whether/not below intention requires manual filtering.
+src/main/java/com/prosilion/nostrrelay/service/request/SubscriberFiltersManager.java:112:    //      TODO: all below can be parallelized
+src/main/java/com/prosilion/nostrrelay/service/request/SubscriberService.java:32:    // TODO: below add might also suffice for update?
+src/main/java/com/prosilion/nostrrelay/service/EventNotifierEngine.java:39:    // TODO: if event is a replaceable event, update existing event
+src/main/java/com/prosilion/nostrrelay/service/EventNotifierEngine.java:46:    // TODO: below currently checks for existing subscriber filters, but does not yet update those existing
+src/main/java/com/prosilion/nostrrelay/service/EventNotifierEngine.java:47://      filters with incoming filters.  the latter is a TODO
+src/main/java/com/prosilion/nostrrelay/service/EventNotifierEngine.java:49://    TODO: merge existing filters and new filters
+src/main/java/com/prosilion/nostrrelay/service/EventNotifierEngine.java:53:    // TODO: notify subscriber logic below; pending tests to reside in @SubscriberFilterTriggerEventNotifierTest
+src/main/java/com/prosilion/nostrrelay/controller/NostrEventController.java:65://      TODO: NIP specs somewhat ambiguous whether to de-activate session or remove it.  for now, do remove
+src/main/java/com/prosilion/nostrrelay/dto/PriceTagDto.java:35://    TODO: refactor

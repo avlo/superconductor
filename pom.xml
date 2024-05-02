@@ -18,6 +18,7 @@
   <properties>
     <spring-boot.version>3.2.4</spring-boot.version>
     <nostr-java.version>0.6-SNAPSHOT</nostr-java.version>
+    <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
   </properties>
 
   <dependencies>
@@ -135,6 +136,11 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${spring-boot.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven-javadoc-plugin.version}</version>
       </plugin>
     </plugins>
   </build>

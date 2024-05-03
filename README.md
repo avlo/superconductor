@@ -7,7 +7,7 @@
     
 - core [SOLID OO](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) principles, providing ease of:
   - understandability
-  - extensibility / modularization [(_HOW-TO: creating new KIND handlers_)](#creating-new-kind-handlers)
+  - extensibility / modularization [(_HOW-TO: creating relay event-handlers_)](#creating-relay-event-handlers)
   - customization
   - testing
 
@@ -99,4 +99,76 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 
   http://localhost:5555/REQ.html
 
-## Creating new KIND handlers
+
+<br>
+<hr style="border:2px solid grey">
+
+## Creating relay event-handlers
+
+The nostr-relay framework handles Nostr events via _**event services**_ for related _**event types**_.  These event types are structured (and extended) as defined in tcheeric's [nostr-java API](https://github.com/tcheeric/nostr-java).  After implementing the below two considerations, nostr-relay framework will handle the rest.
+
+---
+
+### Step 1 of 2: Create a new event type: _(the Object Oriented way)_
+_(note: It is highly recommended to check tcheeric's [nostr-java-event](https://github.com/tcheeric/nostr-java/tree/main/nostr-java-event) module for an already-existing-and-pertinent event type for your needs **before** creating your own.  If you find what you need there, you can skip this section and jump directly to _**[Create a new event-handler](step-1-of-2:-create-a-new-event-handler/service:-_(the-polymorphic-way)_)**_)_
+
+Define a new class for your event, minimally as follows:
+
+```java
+import nostr.base.PublicKey;
+import nostr.event.BaseTag;
+import nostr.event.Kind;
+import nostr.event.impl.GenericEvent;
+
+public class YourNewEvent extends GenericEvent {                                  <--- extend GenericEvent
+  public YourNewEvent(PublicKey pubKey, List<BaseTag> tags, String content) {     <--- provide minimal args constructor
+    super(pubKey, Kind.YOUR_NEW_EVENT_KIND, tags, content);                       <--- call parent constructor passing YOUR_NEW_EVENT_KIND
+  }
+}
+```
+---
+
+### Step 1 of 2: Create a new event handler/service: _(the Polymorphic way)_
+
+Define a new class for your service which implements [EventServiceIF\<T extends EventMessage>](src/main/java/com/prosilion/nostrrelay/service/event/EventServiceIF.java) interface:
+
+```java
+public interface EventServiceIF<T extends EventMessage> {
+  void processIncoming(T eventMessage);
+  Kind getKind();
+}
+```
+
+for example (_leveraging OO [decorator pattern](https://www.digitalocean.com/community/tutorials/decorator-design-pattern-in-java-example)_):
+
+```java
+import org.springframework.stereotype.Service;
+
+@Service                                                                                 <--- SpringWebMVC managed bean
+public class YourNewEventService<T extends EventMessage> implements EventServiceIF<T> {  <--- implement EventServiceIF<T> interface
+  public final Kind kind = Kind.YOUR_NEW_EVENT_KIND;                                     <--- define YOUR_NEW_EVENT_KIND
+  private final EventService<YourNewEvent> eventService;
+
+  @Autowired
+  public YourNewEventService(EventService<YourNewEvent> eventService) {       <--- constructor EventService<YourNewEvent> bean parameter
+    this.eventService = eventService;                                              provides
+  }
+
+  @Override
+  public void processIncoming(T eventMessage) {                               <--- implement EventServiceIF<T> interface method
+    GenericEvent event = (GenericEvent) eventMessage.getEvent();              <--- example business logic ┐
+    event.setNip(YOUR_NIP_VALUE);                                                                         |
+    event.setKind(Kind.YOUR_NEW_EVENT_KIND.getValue());                                                   |
+    YourNewEvent yourNewEvent = new YourNewEvent(                                                         |
+        event.getPubKey(),                                                                                |
+        event.getTags(),                                                                                  |
+        event.getContent()                                                   <----------------------------┘
+    );
+    Long id = eventService.saveEventEntity(event);                           <--- save to DB
+    yourNewEvent.setId(event.getId());                                       <--- update event id
+    eventService.publishEvent(id, yourNewEvent);                             <--- publish event to service
+  }
+}
+```
+
+After recompiling and redeploying nostr-relay, your service should now be available and active.

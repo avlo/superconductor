@@ -7,7 +7,7 @@
     
 - core [SOLID OO](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) principles, providing ease of:
   - understandability
-  - extensibility
+  - extensibility / modularization [(_HOW-TO: creating new KIND handlers_)](#creating-new-kind-handlers)
   - customization
   - testing
 
@@ -98,3 +98,5 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
   http://localhost:5555/NIP99.html
 
   http://localhost:5555/REQ.html
+
+## Creating new KIND handlers

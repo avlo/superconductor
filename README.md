@@ -166,5 +166,14 @@ public class YourNewEventService<T extends EventMessage> implements EventService
   }
 }
 ```
-
 After recompiling and redeploying nostr-relay, your service should now be available and active.
+<br>
+<hr style="border:2px solid grey">
+
+# Hooking event types into to Nostr-Relay DB
+
+For most/canonical Nostr events (as per [NIP01 spec: Basic protocol flow description, Events, Signatures and Tags](https://nostr-nips.com/nip-01)), nostr-relay will likely already handle all necessary event storage and retrieval considerations.  Otherwise, the following is a HOW-TO for new/exceptional cases:
+
+Under Construction
+
+<img src="https://media.tenor.com/MRCIli40TYoAAAAi/under-construction90s-90s.gif" width="30"/>

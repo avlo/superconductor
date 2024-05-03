@@ -2,6 +2,7 @@ package com.prosilion.nostrrelay.service.message;
 
 import com.prosilion.nostrrelay.service.event.EventServiceIF;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 import lombok.extern.java.Log;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
@@ -16,9 +17,10 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @Log
+@Getter
 @Service
-public class EventMessageService<T extends EventMessage> {
-
+public class EventMessageService<T extends EventMessage> implements MessageService<T> {
+  public final String command = "EVENT";
   //  TODO: revisit, EnumMap more approp
   private final Map<Kind, EventServiceIF<T>> kindEventServiceMap;
 
@@ -27,7 +29,8 @@ public class EventMessageService<T extends EventMessage> {
     this.kindEventServiceMap = eventServices.stream().collect(Collectors.toMap(EventServiceIF<T>::getKind, Function.identity()));
   }
 
-  public void processIncoming(@NotNull T eventMessage) {
+  @Override
+  public void processIncoming(@NotNull T eventMessage, String sessionId) {
     log.log(Level.INFO, "EVENT message NIP: {0}", eventMessage.getNip());
     var kind = ((GenericEvent) eventMessage.getEvent()).getKind();
     log.log(Level.INFO, "EVENT message type: {0}", eventMessage.getEvent());

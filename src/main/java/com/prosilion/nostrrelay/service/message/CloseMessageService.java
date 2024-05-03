@@ -2,6 +2,7 @@ package com.prosilion.nostrrelay.service.message;
 
 import com.prosilion.nostrrelay.pubsub.RemoveSubscriberFilterEvent;
 import com.prosilion.nostrrelay.service.request.SubscriberService;
+import lombok.Getter;
 import lombok.extern.java.Log;
 import nostr.event.message.CloseMessage;
 import org.springframework.context.ApplicationEventPublisher;
@@ -11,10 +12,12 @@ import java.util.List;
 import java.util.logging.Level;
 
 @Log
+@Getter
 @Service
-public class CloseMessageService<T extends CloseMessage> {
+public class CloseMessageService<T extends CloseMessage> implements MessageService<T> {
   private final ApplicationEventPublisher publisher;
   private final SubscriberService subscriberService;
+  public final String command = "CLOSE";
 
   public CloseMessageService(
       SubscriberService subscriberService,
@@ -23,7 +26,8 @@ public class CloseMessageService<T extends CloseMessage> {
     this.subscriberService = subscriberService;
   }
 
-  public void processIncoming(T closeMessage) {
+  @Override
+  public void processIncoming(T closeMessage, String sessionId) {
     log.log(Level.INFO, "processing CLOSE event");
     removeSubscriberBySubscriberId(closeMessage.getSubscriptionId());
   }

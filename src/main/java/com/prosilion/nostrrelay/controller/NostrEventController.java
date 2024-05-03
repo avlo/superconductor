@@ -2,16 +2,12 @@ package com.prosilion.nostrrelay.controller;
 
 import com.prosilion.nostrrelay.pubsub.BroadcastMessageEvent;
 import com.prosilion.nostrrelay.service.message.CloseMessageService;
-import com.prosilion.nostrrelay.service.message.EventMessageService;
-import com.prosilion.nostrrelay.service.message.ReqMessageService;
+import com.prosilion.nostrrelay.service.message.MessageService;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.java.Log;
 import nostr.event.BaseMessage;
 import nostr.event.json.codec.BaseMessageDecoder;
-import nostr.event.message.CloseMessage;
-import nostr.event.message.EventMessage;
-import nostr.event.message.ReqMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
@@ -25,25 +21,23 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 @Log
 @Controller
 @EnableWebSocket
-public class NostrEventController extends TextWebSocketHandler implements WebSocketConfigurer {
-  private final ReqMessageService<ReqMessage> reqMessageService;
-  private final EventMessageService<EventMessage> eventMessageService;
-  private final CloseMessageService<CloseMessage> closeMessageService;
+public class NostrEventController<T extends BaseMessage> extends TextWebSocketHandler implements WebSocketConfigurer {
+  private final Map<String, MessageService<T>> messageServiceMap;
+  private final CloseMessageService closeMessageService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
 
   @Autowired
-  public NostrEventController(
-      ReqMessageService<ReqMessage> reqMessageService,
-      EventMessageService<EventMessage> eventMessageService,
-      CloseMessageService<CloseMessage> closeMessageService) {
-    this.reqMessageService = reqMessageService;
-    this.eventMessageService = eventMessageService;
+  public NostrEventController(List<MessageService<T>> messageServices, CloseMessageService closeMessageService) {
+    this.messageServiceMap = messageServices.stream().collect(Collectors.toMap(MessageService<T>::getCommand, Function.identity()));
     this.closeMessageService = closeMessageService;
   }
 
@@ -84,23 +78,8 @@ public class NostrEventController extends TextWebSocketHandler implements WebSoc
   @Override
   public void handleTextMessage(@NotNull WebSocketSession session, TextMessage baseMessage) {
     log.info(String.format("Message from session [%s]", session.getId()));
-    BaseMessage message = new BaseMessageDecoder(baseMessage.getPayload()).decode();
-    switch (message.getCommand()) {
-      case "REQ" -> {
-        log.log(Level.INFO, "REQ decoded, contents: {0}", message);
-        reqMessageService.processIncoming((ReqMessage) message, session.getId());
-      }
-      case "EVENT" -> {
-        log.log(Level.INFO, "EVENT decoded, contents: {0}", message);
-        eventMessageService.processIncoming((EventMessage) message);
-      }
-      case "CLOSE" -> {
-        log.log(Level.INFO, "CLOSE decoded, contents: {0}", message);
-        closeMessageService.processIncoming((CloseMessage) message);
-      }
-      default -> throw new AssertionError("Unknown command " + message.getCommand());
-
-    }
+    T message = (T) new BaseMessageDecoder(baseMessage.getPayload()).decode();
+    messageServiceMap.get(message.getCommand()).processIncoming(message, session.getId());
   }
 
   //  @Async

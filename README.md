@@ -128,7 +128,7 @@ public class YourNewEvent extends GenericEvent {                                
 ```
 ---
 
-### Step 1 of 2: Create a new event handler/service: _(the Polymorphic way)_
+### Step 2 of 2: Create a new event handler/service: _(the Polymorphic way)_
 
 Define a new class for your service which implements _[EventServiceIF\<T>](src/main/java/com/prosilion/nostrrelay/service/event/EventServiceIF.java)_ interface:
 

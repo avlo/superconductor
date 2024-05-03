@@ -130,7 +130,7 @@ public class YourNewEvent extends GenericEvent {                                
 
 ### Step 1 of 2: Create a new event handler/service: _(the Polymorphic way)_
 
-Define a new class for your service which implements [EventServiceIF\<T extends EventMessage>](src/main/java/com/prosilion/nostrrelay/service/event/EventServiceIF.java) interface:
+Define a new class for your service which implements _[EventServiceIF\<T>](src/main/java/com/prosilion/nostrrelay/service/event/EventServiceIF.java)_ interface:
 
 ```java
 public interface EventServiceIF<T extends EventMessage> {
@@ -139,7 +139,7 @@ public interface EventServiceIF<T extends EventMessage> {
 }
 ```
 
-for example (_leveraging OO [decorator pattern](https://www.digitalocean.com/community/tutorials/decorator-design-pattern-in-java-example)_):
+for example (_leveraging [decorator pattern](https://www.digitalocean.com/community/tutorials/decorator-design-pattern-in-java-example)_):
 
 ```java
 import org.springframework.stereotype.Service;
@@ -151,7 +151,7 @@ public class YourNewEventService<T extends EventMessage> implements EventService
 
   @Autowired
   public YourNewEventService(EventService<YourNewEvent> eventService) {       <--- constructor EventService<YourNewEvent> bean parameter
-    this.eventService = eventService;                                              provides
+    this.eventService = eventService;                                              provides decorator behavior
   }
 
   @Override

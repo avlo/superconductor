@@ -5,8 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import nostr.base.ElementAttribute;
 import nostr.event.tag.PriceTag;
-import org.springframework.beans.BeanUtils;
+import org.apache.commons.beanutils.BeanUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -20,7 +21,13 @@ public class PriceTagDto extends PriceTag {
 
   public PriceTagEntity convertDtoToEntity() {
     PriceTagEntity priceTagEntity = new PriceTagEntity();
-    BeanUtils.copyProperties(priceTagEntity, this);
+    try {
+      BeanUtils.copyProperties(priceTagEntity, this);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    } catch (InvocationTargetException e) {
+      throw new RuntimeException(e);
+    }
     return priceTagEntity;
   }
 

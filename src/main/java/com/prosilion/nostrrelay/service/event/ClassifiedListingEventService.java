@@ -7,8 +7,10 @@ import com.prosilion.nostrrelay.repository.ClassifiedListingEntityRepository;
 import com.prosilion.nostrrelay.service.event.join.ClassifiedListingEntityEventEntityService;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 import lombok.extern.java.Log;
 import nostr.base.ElementAttribute;
+import nostr.event.Kind;
 import nostr.event.impl.ClassifiedListingEvent;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
@@ -20,8 +22,10 @@ import java.util.Optional;
 import java.util.logging.Level;
 
 @Log
+@Getter
 @Service
 public class ClassifiedListingEventService<T extends EventMessage> implements EventServiceIF<T> {
+  public final Kind kind = Kind.CLASSIFIED_LISTING;
   private final ClassifiedListingEntityRepository classifiedListingEntityRepository;
   private final ClassifiedListingEntityEventEntityService joinService;
   private final PriceTagEntityService priceTagEntityService;

@@ -1,7 +1,6 @@
 package com.prosilion.nostrrelay.service.message;
 
-import com.prosilion.nostrrelay.service.event.ClassifiedListingEventService;
-import com.prosilion.nostrrelay.service.event.TextNoteEventService;
+import com.prosilion.nostrrelay.service.event.EventServiceIF;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.java.Log;
 import nostr.event.Kind;
@@ -10,19 +9,22 @@ import nostr.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 @Log
 @Service
 public class EventMessageService<T extends EventMessage> {
 
-  private final TextNoteEventService<T> textNoteEventService;
-  private final ClassifiedListingEventService<T> classifiedListingEventService;
+  //  TODO: revisit, EnumMap more approp
+  private final Map<Kind, EventServiceIF<T>> kindEventServiceMap;
 
   @Autowired
-  public EventMessageService(TextNoteEventService<T> textNoteEventService, ClassifiedListingEventService<T> classifiedListingEventService) {
-    this.textNoteEventService = textNoteEventService;
-    this.classifiedListingEventService = classifiedListingEventService;
+  public EventMessageService(List<EventServiceIF<T>> eventServices) {
+    this.kindEventServiceMap = eventServices.stream().collect(Collectors.toMap(EventServiceIF<T>::getKind, Function.identity()));
   }
 
   public void processIncoming(@NotNull T eventMessage) {
@@ -33,17 +35,6 @@ public class EventMessageService<T extends EventMessage> {
   }
 
   private void createEventService(@NotNull Kind kind, T eventMessage) {
-    switch (kind) {
-      case TEXT_NOTE -> {
-        log.log(Level.INFO, "TEXT_NOTE KIND decoded should match TEXT_NOTE -> [{0}]", kind.getName());
-        textNoteEventService.processIncoming(eventMessage);
-      }
-      case CLASSIFIED_LISTING -> {
-        log.log(Level.INFO, "CLASSIFIED_LISTING KIND decoded should match CLASSIFIED_LISTING -> [{0}]", kind.getName());
-        classifiedListingEventService.processIncoming(eventMessage);
-      }
-
-      default -> throw new AssertionError("Unknown kind: " + kind.getName());
-    }
+    kindEventServiceMap.get(kind).processIncoming(eventMessage);
   }
 }

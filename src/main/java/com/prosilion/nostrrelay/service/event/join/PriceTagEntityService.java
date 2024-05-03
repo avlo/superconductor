@@ -1,4 +1,4 @@
-package com.prosilion.nostrrelay.service.event;
+package com.prosilion.nostrrelay.service.event.join;
 
 import com.prosilion.nostrrelay.dto.PriceTagDto;
 import com.prosilion.nostrrelay.entity.join.EventEntityPriceTagEntity;

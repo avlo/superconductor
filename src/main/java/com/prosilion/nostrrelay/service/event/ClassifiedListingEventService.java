@@ -5,6 +5,7 @@ import com.prosilion.nostrrelay.dto.PriceTagDto;
 import com.prosilion.nostrrelay.entity.ClassifiedListingEntity;
 import com.prosilion.nostrrelay.repository.ClassifiedListingEntityRepository;
 import com.prosilion.nostrrelay.service.event.join.ClassifiedListingEntityEventEntityService;
+import com.prosilion.nostrrelay.service.event.join.PriceTagEntityService;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

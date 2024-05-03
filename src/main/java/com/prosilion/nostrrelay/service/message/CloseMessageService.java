@@ -42,8 +42,6 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
     RemoveSubscriberFilterEvent removeSubscriberFilterEvent = new RemoveSubscriberFilterEvent(
         subscriberService.removeSubscriberBySubscriberId(subscriberId));
     publisher.publishEvent(removeSubscriberFilterEvent);
-//    CloseMessage message = NIP01.createCloseMessage(String.valueOf(removeSubscriberFilterEvent.subscriberId()));
-//    eventService.publishEvent(new BroadcastMessageEvent<>(sessionId, message));
   }
 
 //  public void deactivateSubscriberBySessionId(String sessionId) throws NoResultException {

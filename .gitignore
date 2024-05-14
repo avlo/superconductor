@@ -1,0 +1,7 @@
+.idea
+superconductor.iml
+target/
+.project
+
+pom.xml.versionsBackup
+trigger-text.txt

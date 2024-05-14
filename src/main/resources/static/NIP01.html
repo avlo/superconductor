@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<link rel="shortcut icon" href="/favicon.ico">
+<html>
+<head>
+    <title>NIP01 Simple Web Client</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="/main.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/nip-01.js"></script>
+    <script src="/common.js"></script>
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Enable Javascript to view this page</h2></noscript>
+<div id="main-content" class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="connect">WebSocket connection:</label>
+                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
+                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="content">Send message: </label>
+                    <input type="text" value="1111111111" id="content" class="form-control" placeholder="message...">
+                </div>
+                <input type="hidden" id="pubkey" name="pubkey" value="bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
+                <input type="hidden" id="kind" name="kind" value=1>
+                <input type="hidden" id="e_tag" name="e_tag" value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">
+                <input type="hidden" id="p_tag" name="p_tag" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
+                <button id="send" class="btn btn-default" type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="conversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Events</th>
+                </tr>
+                </thead>
+                <tbody id="events">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

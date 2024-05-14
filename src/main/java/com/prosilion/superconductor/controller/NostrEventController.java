@@ -100,13 +100,13 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
 
   @EventListener
   public <U extends BaseMessage> void broadcast(BroadcastMessageEvent<U> message) throws IOException {
-    log.info("NostrEventController broadcast to\nsession:\n\t{}\nmessage:\n\t{}\n", message.getSessionId(), message.getMessage().getPayload());
+    log.info("NostrEventController broadcast to\nsession:\n\t{}\nmessage:\n\t{}", message.getSessionId(), message.getMessage().getPayload());
     mapSessions.get(message.getSessionId()).sendMessage(message.getMessage());
   }
 
   @EventListener
   public void broadcast(OkClientResponse message) throws IOException {
-    log.info("NostrEventController OK response to\nclient:\n\t{}\n:\n\t{}\n", message.getSessionId(), message.getOkResponseMessage());
+    log.info("NostrEventController OK response to\nclient:\n\t{}\nresponse:\n\t{}", message.getSessionId(), message.getOkResponseMessage().getPayload());
     mapSessions.get(message.getSessionId()).sendMessage(message.getOkResponseMessage());
   }
 }

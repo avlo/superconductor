@@ -4,10 +4,12 @@ import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.service.message.CloseMessageService;
 import com.prosilion.superconductor.service.message.MessageService;
 import com.prosilion.superconductor.service.message.RelayInfoDocService;
+import com.prosilion.superconductor.service.okresponse.OkClientResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseMessage;
 import nostr.event.json.codec.BaseMessageDecoder;
+import nostr.event.message.CloseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
@@ -34,14 +36,14 @@ import java.util.stream.Collectors;
 @EnableWebSocket
 public class NostrEventController<T extends BaseMessage> extends TextWebSocketHandler implements WebSocketConfigurer {
   private final Map<String, MessageService<T>> messageServiceMap;
-  private final CloseMessageService closeMessageService;
+  private final CloseMessageService<CloseMessage> closeMessageService;
   private final RelayInfoDocService relayInfoDocService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
 
   @Autowired
   public NostrEventController(
       List<MessageService<T>> messageServices,
-      CloseMessageService closeMessageService,
+      CloseMessageService<CloseMessage> closeMessageService,
       RelayInfoDocService relayInfoDocService) {
     this.messageServiceMap = messageServices.stream().collect(Collectors.toMap(MessageService<T>::getCommand, Function.identity()));
     this.closeMessageService = closeMessageService;
@@ -96,10 +98,15 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     messageServiceMap.get(message.getCommand()).processIncoming(message, session.getId());
   }
 
-  //  @Async
   @EventListener
   public <U extends BaseMessage> void broadcast(BroadcastMessageEvent<U> message) throws IOException {
     log.info("NostrEventController broadcast to\nsession:\n\t{}\nmessage:\n\t{}\n", message.getSessionId(), message.getMessage().getPayload());
     mapSessions.get(message.getSessionId()).sendMessage(message.getMessage());
+  }
+
+  @EventListener
+  public void broadcast(OkClientResponse message) throws IOException {
+    log.info("NostrEventController OK response to\nclient:\n\t{}\n:\n\t{}\n", message.getSessionId(), message.getOkResponseMessage());
+    mapSessions.get(message.getSessionId()).sendMessage(message.getOkResponseMessage());
   }
 }

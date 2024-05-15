@@ -2,9 +2,9 @@ package com.prosilion.superconductor.service.event.join;
 
 import com.prosilion.superconductor.dto.BaseTagDto;
 import com.prosilion.superconductor.entity.BaseTagEntity;
-import com.prosilion.superconductor.entity.join.EventEntityTagEntity;
+import com.prosilion.superconductor.entity.join.EventEntityBaseTagEntity;
 import com.prosilion.superconductor.repository.BaseTagEntityRepository;
-import com.prosilion.superconductor.repository.join.EventEntityTagEntityRepository;
+import com.prosilion.superconductor.repository.join.EventEntityBaseTagEntityRepository;
 import com.prosilion.superconductor.util.BaseTagValueMapper;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
@@ -16,11 +16,11 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class EventEntityTagEntityService {
+public class EventEntityBaseTagEntityService {
   private final BaseTagEntityRepository baseTagEntityRepository;
-  private final EventEntityTagEntityRepository join;
+  private final EventEntityBaseTagEntityRepository join;
 
-  public EventEntityTagEntityService(BaseTagEntityRepository baseTagEntityRepository, EventEntityTagEntityRepository join) {
+  public EventEntityBaseTagEntityService(BaseTagEntityRepository baseTagEntityRepository, EventEntityBaseTagEntityRepository join) {
     this.baseTagEntityRepository = baseTagEntityRepository;
     this.join = join;
   }
@@ -44,7 +44,7 @@ public class EventEntityTagEntityService {
 
   private void saveEventTags(Long eventId, List<Long> tagIds) {
     for (Long tagId : tagIds) {
-      Optional.of(join.save(new EventEntityTagEntity(eventId, tagId))).orElseThrow(NoResultException::new);
+      Optional.of(join.save(new EventEntityBaseTagEntity(eventId, tagId))).orElseThrow(NoResultException::new);
     }
   }
 }

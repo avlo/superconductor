@@ -8,7 +8,7 @@ import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.repository.EventEntityRepository;
 import com.prosilion.superconductor.service.EventNotifierEngine;
-import com.prosilion.superconductor.service.event.join.EventEntityTagEntityService;
+import com.prosilion.superconductor.service.event.join.EventEntityBaseTagEntityService;
 import com.prosilion.superconductor.service.request.SubscriberService;
 import com.prosilion.superconductor.util.BaseTagValueMapper;
 import jakarta.persistence.NoResultException;
@@ -34,7 +34,7 @@ import java.util.Optional;
 @Getter
 @Service
 public class EventService<T extends GenericEvent> {
-  private final EventEntityTagEntityService eventEntityTagEntityService;
+  private final EventEntityBaseTagEntityService eventEntityBaseTagEntityService;
   private final EventEntityRepository eventEntityRepository;
   private final EventNotifierEngine<T> eventNotifierEngine;
   private final SubscriberService subscriberService;
@@ -42,13 +42,13 @@ public class EventService<T extends GenericEvent> {
 
   @Autowired
   public EventService(
-      EventEntityTagEntityService eventEntityTagEntityService,
+      EventEntityBaseTagEntityService eventEntityBaseTagEntityService,
       EventEntityRepository eventEntityRepository,
       EventNotifierEngine<T> eventNotifierEngine,
       ApplicationEventPublisher publisher,
       SubscriberService subscriberService) {
     this.publisher = publisher;
-    this.eventEntityTagEntityService = eventEntityTagEntityService;
+    this.eventEntityBaseTagEntityService = eventEntityBaseTagEntityService;
     this.eventEntityRepository = eventEntityRepository;
     this.eventNotifierEngine = eventNotifierEngine;
     this.subscriberService = subscriberService;
@@ -71,7 +71,7 @@ public class EventService<T extends GenericEvent> {
     );
 
     EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
-    return eventEntityTagEntityService.saveBaseTags(baseTagsOnly.stream().map(this::getValue).toList(), savedEntity.getId());
+    return eventEntityBaseTagEntityService.saveBaseTags(baseTagsOnly.stream().map(this::getValue).toList(), savedEntity.getId());
   }
 
   private BaseTagValueMapper getValue(BaseTag baseTag) {

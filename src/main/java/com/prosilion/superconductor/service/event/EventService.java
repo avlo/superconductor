@@ -2,6 +2,7 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.entity.EventEntity;
+import com.prosilion.superconductor.entity.GenericTagEntity;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
@@ -9,6 +10,7 @@ import com.prosilion.superconductor.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.repository.EventEntityRepository;
 import com.prosilion.superconductor.service.EventNotifierEngine;
 import com.prosilion.superconductor.service.event.join.EventEntityBaseTagEntityService;
+import com.prosilion.superconductor.service.event.join.EventEntityGenericTagEntityService;
 import com.prosilion.superconductor.service.request.SubscriberService;
 import com.prosilion.superconductor.util.BaseTagValueMapper;
 import jakarta.persistence.NoResultException;
@@ -35,6 +37,7 @@ import java.util.Optional;
 @Service
 public class EventService<T extends GenericEvent> {
   private final EventEntityBaseTagEntityService eventEntityBaseTagEntityService;
+  private final EventEntityGenericTagEntityService<GenericTagEntity> eventEntityGenericTagEntityService;
   private final EventEntityRepository eventEntityRepository;
   private final EventNotifierEngine<T> eventNotifierEngine;
   private final SubscriberService subscriberService;
@@ -43,12 +46,14 @@ public class EventService<T extends GenericEvent> {
   @Autowired
   public EventService(
       EventEntityBaseTagEntityService eventEntityBaseTagEntityService,
+      EventEntityGenericTagEntityService<GenericTagEntity> eventEntityGenericTagEntityService,
       EventEntityRepository eventEntityRepository,
       EventNotifierEngine<T> eventNotifierEngine,
       ApplicationEventPublisher publisher,
       SubscriberService subscriberService) {
     this.publisher = publisher;
     this.eventEntityBaseTagEntityService = eventEntityBaseTagEntityService;
+    this.eventEntityGenericTagEntityService = eventEntityGenericTagEntityService;
     this.eventEntityRepository = eventEntityRepository;
     this.eventNotifierEngine = eventNotifierEngine;
     this.subscriberService = subscriberService;
@@ -71,7 +76,9 @@ public class EventService<T extends GenericEvent> {
     );
 
     EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
-    return eventEntityBaseTagEntityService.saveBaseTags(baseTagsOnly.stream().map(this::getValue).toList(), savedEntity.getId());
+    eventEntityGenericTagEntityService.saveGenericTags(event, savedEntity.getId());
+    eventEntityBaseTagEntityService.saveBaseTags(baseTagsOnly.stream().map(this::getValue).toList(), savedEntity.getId());
+    return savedEntity.getId();
   }
 
   private BaseTagValueMapper getValue(BaseTag baseTag) {

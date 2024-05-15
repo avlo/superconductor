@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.request;
 
-import com.prosilion.superconductor.entity.join.SubscriberFilter;
-import com.prosilion.superconductor.repository.join.*;
+import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
+import com.prosilion.superconductor.repository.join.subscriber.*;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import nostr.event.impl.Filters;

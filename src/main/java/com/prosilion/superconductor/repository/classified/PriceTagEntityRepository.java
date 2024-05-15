@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.repository;
+package com.prosilion.superconductor.repository.classified;
 
 import com.prosilion.superconductor.entity.PriceTagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

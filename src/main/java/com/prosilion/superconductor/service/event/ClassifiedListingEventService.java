@@ -3,7 +3,7 @@ package com.prosilion.superconductor.service.event;
 import com.prosilion.superconductor.dto.ClassifiedListingDto;
 import com.prosilion.superconductor.dto.PriceTagDto;
 import com.prosilion.superconductor.entity.ClassifiedListingEntity;
-import com.prosilion.superconductor.repository.ClassifiedListingEntityRepository;
+import com.prosilion.superconductor.repository.classified.ClassifiedListingEntityRepository;
 import com.prosilion.superconductor.service.event.join.ClassifiedListingEntityEventEntityService;
 import com.prosilion.superconductor.service.event.join.PriceTagEntityService;
 import jakarta.persistence.NoResultException;

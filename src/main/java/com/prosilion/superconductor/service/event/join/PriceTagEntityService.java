@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.service.event.join;
 
 import com.prosilion.superconductor.dto.PriceTagDto;
-import com.prosilion.superconductor.entity.join.EventEntityPriceTagEntity;
-import com.prosilion.superconductor.repository.PriceTagEntityRepository;
-import com.prosilion.superconductor.repository.join.EventEntityPriceTagEntityRepository;
+import com.prosilion.superconductor.entity.join.classified.EventEntityPriceTagEntity;
+import com.prosilion.superconductor.repository.classified.PriceTagEntityRepository;
+import com.prosilion.superconductor.repository.join.classified.EventEntityPriceTagEntityRepository;
 import org.springframework.stereotype.Service;
 
 @Service

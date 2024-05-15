@@ -1,6 +1,6 @@
-package com.prosilion.superconductor.repository.join;
+package com.prosilion.superconductor.repository.join.classified;
 
-import com.prosilion.superconductor.entity.join.ClassifiedListingEntityEventEntity;
+import com.prosilion.superconductor.entity.join.classified.ClassifiedListingEntityEventEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

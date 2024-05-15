@@ -1,6 +1,6 @@
-package com.prosilion.superconductor.repository.join;
+package com.prosilion.superconductor.repository.join.subscriber;
 
-import com.prosilion.superconductor.entity.join.SubscriberFilterReferencedEvent;
+import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterReferencedEvent;
 import nostr.event.impl.GenericEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

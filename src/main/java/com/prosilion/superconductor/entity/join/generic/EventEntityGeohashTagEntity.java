@@ -18,7 +18,7 @@ public class EventEntityGeohashTagEntity implements EventEntityGenericTagEntity 
   private Long eventId;
   private Long geohashTagId;
 
-  public EventEntityGeohashTagEntity(Long eventId, Long geohashTagId) {
+  public <T extends EventEntityGenericTagEntity> EventEntityGeohashTagEntity(Long eventId, Long geohashTagId) {
     this.eventId = eventId;
     this.geohashTagId = geohashTagId;
   }

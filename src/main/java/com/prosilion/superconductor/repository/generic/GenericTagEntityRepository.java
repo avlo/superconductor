@@ -1,10 +1,8 @@
 package com.prosilion.superconductor.repository.generic;
 
-import com.prosilion.superconductor.entity.GenericTagEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 
-@Repository
-public interface GenericTagEntityRepository<T extends GenericTagEntity> extends JpaRepository<T, Long> {
+public interface GenericTagEntityRepository<T extends GenericTagEntity> {
   String getCode();
+  Long save(T genericTagEntity);
 }

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.entity.GenericTagEntity;
+import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 
 public interface GenericTagDto {
   void setCode(String code);

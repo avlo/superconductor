@@ -2,7 +2,7 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.entity.EventEntity;
-import com.prosilion.superconductor.entity.GenericTagEntity;
+import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;

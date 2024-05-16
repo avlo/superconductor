@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.service.event.join;
 
-import com.prosilion.superconductor.dto.GenericTagDto;
 import com.prosilion.superconductor.dto.GeohashTagDto;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.join.generic.EventEntityGenericTagEntity;
@@ -37,27 +36,39 @@ public class EventEntityGenericTagEntityService {
   }
 
   public void saveGenericTags(GenericEvent event, Long id) {
-    List<GenericTag> genericTagsOnly = event.getTags().stream()
-        .filter(GenericTag.class::isInstance)
-        .map(GenericTag.class::cast).toList();
-
-    List<List<ElementAttribute>> gTags = genericTagsOnly.stream()
-        .filter(tag -> tag.getCode().equalsIgnoreCase("g")).map(GenericTag::getAttributes).toList();
-
-    List<GenericTagResult> tags = gTags.stream()
-        .map(elementAttribute -> new GenericTagResult(elementAttribute.get(0).getName(), elementAttribute.get(0).getValue().toString()))
-        .toList();
-
-    List<Long> savedTagIds = saveTags(tags);
-    tags.forEach(tag -> saveJoins(tag.code(), id, savedTagIds));
+    List<Map<String, String>> map = createResultMap(event);
+    List<GeohashTagDto> dtos = getDtos(map);
+    List<Long> savedTagIds = saveTags(dtos);
+    dtos.forEach(tag -> saveJoins(tag.getCode(), id, savedTagIds));
   }
 
-  private List<Long> saveTags(List<GenericTagResult> tags) {
+  private List<Map<String, String>> createResultMap(GenericEvent event) {
+    List<Map<String, String>> maps = event.getTags().stream()
+        .filter(GenericTag.class::isInstance)
+        .map(GenericTag.class::cast)
+        .filter(tags -> tags.getCode().equalsIgnoreCase("g"))
+        .map(gTag -> {
+          List<ElementAttribute> attributes = gTag.getAttributes();
+          ElementAttribute elementAttribute = attributes.get(0);
+          return Map.of(gTag.getCode(), elementAttribute.getValue().toString());
+        })
+        .toList();
+    return maps;
+  }
+
+  private List<GeohashTagDto> getDtos(List<Map<String, String>> map) {
+    return map.stream().collect(Collectors.toSet()).stream().map(dto -> {
+      String g = dto.get("g");
+      GeohashTagDto geohashTagDto = new GeohashTagDto(g);
+      return geohashTagDto;
+    }).toList();
+  }
+
+  private List<Long> saveTags(List<GeohashTagDto> tags) {
     List<Long> savedIds = new ArrayList<>();
-    for (GenericTagResult tag : tags) {
-      GenericTagDto dto = new GeohashTagDto(tag.location());
-      GenericTagEntity entity = dto.convertDtoToEntity();
-      GenericTagEntityRepository<GenericTagEntity> genericTagEntityRepository = genericTagEntityRepositoryMap.get(tag.code());
+    for (GeohashTagDto tag : tags) {
+      GenericTagEntity entity = tag.convertDtoToEntity();
+      GenericTagEntityRepository<GenericTagEntity> genericTagEntityRepository = genericTagEntityRepositoryMap.get(tag.getCode());
       GenericTagEntity saved = genericTagEntityRepository.save(entity);
       savedIds.add(saved.getId());
     }
@@ -69,8 +80,5 @@ public class EventEntityGenericTagEntityService {
       EventEntityGenericTagEntity join = new EventEntityGeohashTagEntity(eventId, tagId);
       joins.get(code).save(join);
     }
-  }
-
-  public record GenericTagResult(String code, String location) {
   }
 }

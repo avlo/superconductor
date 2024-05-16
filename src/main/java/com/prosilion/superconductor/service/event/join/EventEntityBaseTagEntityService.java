@@ -8,6 +8,11 @@ import com.prosilion.superconductor.repository.join.EventEntityBaseTagEntityRepo
 import com.prosilion.superconductor.util.BaseTagValueMapper;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
+import nostr.event.BaseTag;
+import nostr.event.impl.GenericEvent;
+import nostr.event.tag.EventTag;
+import nostr.event.tag.PubKeyTag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,15 +25,25 @@ public class EventEntityBaseTagEntityService {
   private final BaseTagEntityRepository baseTagEntityRepository;
   private final EventEntityBaseTagEntityRepository join;
 
+  @Autowired
   public EventEntityBaseTagEntityService(BaseTagEntityRepository baseTagEntityRepository, EventEntityBaseTagEntityRepository join) {
     this.baseTagEntityRepository = baseTagEntityRepository;
     this.join = join;
   }
 
-  public Long saveBaseTags(List<BaseTagValueMapper> tags, Long id) {
+  public void saveBaseTags(GenericEvent event, Long id) {
+    List<BaseTag> baseTagsOnly = event.getTags().stream()
+        .filter(baseTag -> List.of("a", "p", "e").contains(baseTag.getCode()))
+        .toList();
+    List<BaseTagValueMapper> tags = baseTagsOnly.stream().map(this::getValue).toList();
     List<Long> savedTagIds = saveTags(tags);
     saveJoins(id, savedTagIds);
-    return id;
+  }
+
+  private BaseTagValueMapper getValue(BaseTag baseTag) {
+    if (baseTag.getCode().equals("e")) // event
+      return new BaseTagValueMapper(baseTag, ((EventTag) baseTag).getIdEvent());
+    return new BaseTagValueMapper(baseTag, ((PubKeyTag) baseTag).getPublicKey().toString());
   }
 
   private List<Long> saveTags(List<BaseTagValueMapper> tags) {

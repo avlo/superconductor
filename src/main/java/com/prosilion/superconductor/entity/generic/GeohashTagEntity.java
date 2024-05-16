@@ -17,18 +17,16 @@ public class GeohashTagEntity extends GenericTagEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  private String code;
   private String location;
 
   public GeohashTagEntity(String code, String location) {
-    this.code = code;
+    super.setCode(code);
     this.location = location;
   }
 
   public GenericTagDto convertEntityToDto() {
     GenericTagDto geohashTagDto = new GeohashTagDto(location);
-    BeanUtils.copyProperties(this, geohashTagDto);
+    BeanUtils.copyProperties(this, geohashTagDto, "code");
     return geohashTagDto;
   }
 }

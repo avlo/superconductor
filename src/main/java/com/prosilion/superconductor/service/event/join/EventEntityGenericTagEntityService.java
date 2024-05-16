@@ -8,15 +8,15 @@ import com.prosilion.superconductor.entity.join.generic.EventEntityGeohashTagEnt
 import com.prosilion.superconductor.repository.generic.GenericTagEntityRepository;
 import com.prosilion.superconductor.repository.join.generic.EventEntityGenericTagEntityRepository;
 import jakarta.transaction.Transactional;
-import nostr.event.BaseTag;
+import nostr.base.ElementAttribute;
 import nostr.event.impl.GenericEvent;
+import nostr.event.impl.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,7 +27,9 @@ public class EventEntityGenericTagEntityService {
   private final Map<String, EventEntityGenericTagEntityRepository<EventEntityGenericTagEntity>> joins;
 
   @Autowired
-  public EventEntityGenericTagEntityService(List<GenericTagEntityRepository<GenericTagEntity>> repositories, List<EventEntityGenericTagEntityRepository<EventEntityGenericTagEntity>> joins) {
+  public EventEntityGenericTagEntityService(
+      List<GenericTagEntityRepository<GenericTagEntity>> repositories,
+      List<EventEntityGenericTagEntityRepository<EventEntityGenericTagEntity>> joins) {
     this.genericTagEntityRepositoryMap = repositories.stream().collect(
         Collectors.toMap(GenericTagEntityRepository::getCode, Function.identity()));
     this.joins = joins.stream().collect(
@@ -35,22 +37,27 @@ public class EventEntityGenericTagEntityService {
   }
 
   public void saveGenericTags(GenericEvent event, Long id) {
-    List<Result> tags = event.getTags().stream()
-        .filter(genericTags -> Objects.equals("g", genericTags.getCode()))
-        .map(o -> new Result(o.getCode(), o))
+    List<GenericTag> genericTagsOnly = event.getTags().stream()
+        .filter(GenericTag.class::isInstance)
+        .map(GenericTag.class::cast).toList();
+
+    List<List<ElementAttribute>> gTags = genericTagsOnly.stream()
+        .filter(tag -> tag.getCode().equalsIgnoreCase("g")).map(GenericTag::getAttributes).toList();
+
+    List<GenericTagResult> tags = gTags.stream()
+        .map(elementAttribute -> new GenericTagResult(elementAttribute.get(0).getName(), elementAttribute.get(0).getValue().toString()))
         .toList();
 
     List<Long> savedTagIds = saveTags(tags);
-    tags.forEach(tag -> saveJoins(tag.genericTag().getCode(), id, savedTagIds));
+    tags.forEach(tag -> saveJoins(tag.code(), id, savedTagIds));
   }
 
-  private List<Long> saveTags(List<Result> tags) {
+  private List<Long> saveTags(List<GenericTagResult> tags) {
     List<Long> savedIds = new ArrayList<>();
-    for (Result tag : tags) {
-      GenericTagDto dto = new GeohashTagDto(tag.code());
-      dto.setCode(tag.genericTag().getCode());
+    for (GenericTagResult tag : tags) {
+      GenericTagDto dto = new GeohashTagDto(tag.location());
       GenericTagEntity entity = dto.convertDtoToEntity();
-      GenericTagEntityRepository<GenericTagEntity> genericTagEntityRepository = genericTagEntityRepositoryMap.get(tag.genericTag().getCode());
+      GenericTagEntityRepository<GenericTagEntity> genericTagEntityRepository = genericTagEntityRepositoryMap.get(tag.code());
       GenericTagEntity saved = genericTagEntityRepository.save(entity);
       savedIds.add(saved.getId());
     }
@@ -64,6 +71,6 @@ public class EventEntityGenericTagEntityService {
     }
   }
 
-  public record Result(String code, BaseTag genericTag) {
+  public record GenericTagResult(String code, String location) {
   }
 }

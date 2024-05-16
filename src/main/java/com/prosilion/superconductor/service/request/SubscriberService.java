@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.service.request;
 
 import com.prosilion.superconductor.entity.Subscriber;
-import com.prosilion.superconductor.pubsub.AddSubscriberEvent;
 import com.prosilion.superconductor.pubsub.RemoveSubscriberFilterEvent;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.list.FiltersList;
@@ -36,7 +35,6 @@ public class SubscriberService {
     log.info("saving subscriberId [{}], session [{}]", subscriber.getSubscriberId(), subscriber.getSessionId());
     Subscriber savedSubscriber = subscriberManager.save(subscriber);
     subscriberFiltersService.save(savedSubscriber.getId(), filtersList);
-    publisher.publishEvent(new AddSubscriberEvent(savedSubscriber));
   }
 
   public Subscriber get(Long subscriberId) {

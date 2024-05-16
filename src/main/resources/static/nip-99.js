@@ -10,7 +10,7 @@ function hashThenSend() {
         $("#summary").val(),
         $("#content").val(),
         $("#location").val(),
-        $("#t").val(),
+        $("#g").val(),
         $("#number").val(),
         $("#currency").val(),
         $("#frequency").val(),
@@ -35,6 +35,7 @@ function replaceHash(id_hash) {
                 'id': id_hash,
                 'kind': $("#kind").val(),
                 'content': $("#content").val(),
+                'g': $("#g").val(),
                 'tags': [
                     ['title', $("#title").val()],
                     ['summary', $("#summary").val()],

@@ -67,6 +67,17 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
   }
 
   @NotNull
+  private static Result createPriceTagDto(GenericEvent event) {
+    List<GenericTag> genericTagsOnly = event.getTags().stream()
+        .filter(GenericTag.class::isInstance)
+        .map(GenericTag.class::cast).toList();
+
+    List<List<ElementAttribute>> priceTagDto = genericTagsOnly.stream()
+        .filter(tag -> tag.getCode().equalsIgnoreCase("price")).map(GenericTag::getAttributes).toList();
+    return new Result(genericTagsOnly, priceTagDto);
+  }
+
+  @NotNull
   private static ClassifiedListingDto getClassifiedListingDto(GenericEvent event, Result priceTagDtoResult) {
     ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(
         getReturnVal(priceTagDtoResult.genericTagsOnly(), "title"),
@@ -76,17 +87,6 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
     classifiedListingDto.setLocation(getReturnVal(priceTagDtoResult.genericTagsOnly(), "location"));
     classifiedListingDto.setPublishedAt(event.getCreatedAt());
     return classifiedListingDto;
-  }
-
-  @NotNull
-  private static Result createPriceTagDto(GenericEvent event) {
-    List<GenericTag> genericTagsOnly = event.getTags().stream()
-        .filter(GenericTag.class::isInstance)
-        .map(GenericTag.class::cast).toList();
-
-    List<List<ElementAttribute>> priceTagDto = genericTagsOnly.stream()
-        .filter(tag -> tag.getCode().equalsIgnoreCase("price")).map(GenericTag::getAttributes).toList();
-    return new Result(genericTagsOnly, priceTagDto);
   }
 
   private ClassifiedListingEntity saveClassifiedListing(ClassifiedListingDto classifiedListingDto) {

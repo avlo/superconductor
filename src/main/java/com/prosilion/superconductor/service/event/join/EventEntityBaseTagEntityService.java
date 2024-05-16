@@ -27,7 +27,7 @@ public class EventEntityBaseTagEntityService {
 
   public Long saveBaseTags(List<BaseTagValueMapper> tags, Long id) {
     List<Long> savedTagIds = saveTags(tags);
-    saveEventTags(id, savedTagIds);
+    saveJoins(id, savedTagIds);
     return id;
   }
 
@@ -42,7 +42,7 @@ public class EventEntityBaseTagEntityService {
     return savedIds;
   }
 
-  private void saveEventTags(Long eventId, List<Long> tagIds) {
+  private void saveJoins(Long eventId, List<Long> tagIds) {
     for (Long tagId : tagIds) {
       Optional.of(join.save(new EventEntityBaseTagEntity(eventId, tagId))).orElseThrow(NoResultException::new);
     }

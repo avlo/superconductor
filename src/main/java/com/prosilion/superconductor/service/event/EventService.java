@@ -2,7 +2,6 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.entity.EventEntity;
-import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
@@ -37,7 +36,7 @@ import java.util.Optional;
 @Service
 public class EventService<T extends GenericEvent> {
   private final EventEntityBaseTagEntityService eventEntityBaseTagEntityService;
-  private final EventEntityGenericTagEntityService<GenericTagEntity> eventEntityGenericTagEntityService;
+  private final EventEntityGenericTagEntityService eventEntityGenericTagEntityService;
   private final EventEntityRepository eventEntityRepository;
   private final EventNotifierEngine<T> eventNotifierEngine;
   private final SubscriberService subscriberService;
@@ -46,7 +45,7 @@ public class EventService<T extends GenericEvent> {
   @Autowired
   public EventService(
       EventEntityBaseTagEntityService eventEntityBaseTagEntityService,
-      EventEntityGenericTagEntityService<GenericTagEntity> eventEntityGenericTagEntityService,
+      EventEntityGenericTagEntityService eventEntityGenericTagEntityService,
       EventEntityRepository eventEntityRepository,
       EventNotifierEngine<T> eventNotifierEngine,
       ApplicationEventPublisher publisher,

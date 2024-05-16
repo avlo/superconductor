@@ -31,7 +31,7 @@ public class EventEntityGenericTagEntityService {
     this.genericTagEntityRepositoryMap = repositories.stream().collect(
         Collectors.toMap(GenericTagEntityRepository::getCode, Function.identity()));
     this.joins = joins.stream().collect(
-        Collectors.toMap(EventEntityGenericTagEntityRepository::getKey, Function.identity()));
+        Collectors.toMap(EventEntityGenericTagEntityRepository::getCode, Function.identity()));
   }
 
   public void saveGenericTags(GenericEvent event, Long id) {
@@ -51,7 +51,8 @@ public class EventEntityGenericTagEntityService {
       dto.setCode(tag.genericTag().getCode());
       GenericTagEntity entity = dto.convertDtoToEntity();
       GenericTagEntityRepository<GenericTagEntity> genericTagEntityRepository = genericTagEntityRepositoryMap.get(tag.genericTag().getCode());
-      savedIds.add(genericTagEntityRepository.save(entity));
+      GenericTagEntity saved = genericTagEntityRepository.save(entity);
+      savedIds.add(saved.getId());
     }
     return savedIds;
   }

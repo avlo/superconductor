@@ -3,15 +3,17 @@ package com.prosilion.superconductor.entity.generic;
 import com.prosilion.superconductor.dto.GenericTagDto;
 import com.prosilion.superconductor.dto.GeohashTagDto;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "geohash_tag")
-public class GeohashTagEntity implements GenericTagEntity {
+public class GeohashTagEntity extends GenericTagEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

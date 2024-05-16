@@ -13,7 +13,6 @@ import jakarta.persistence.NoResultException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.api.NIP01;
-import nostr.event.BaseMessage;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
@@ -74,10 +73,6 @@ public class EventService<T extends GenericEvent> {
     EventMessage message = NIP01.createEventMessage(fireNostrEvent.event(), String.valueOf(fireNostrEvent.subscriberId()));
     Subscriber subscriber = subscriberService.get(fireNostrEvent.subscriberId());
     BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(subscriber.getSessionId(), message);
-    publishEvent(event);
-  }
-
-  public <U extends BaseMessage> void publishEvent(BroadcastMessageEvent<U> messageEvent) {
-    publisher.publishEvent(messageEvent);
+    publisher.publishEvent(event);
   }
 }

@@ -2,8 +2,8 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.ClassifiedListingDto;
 import com.prosilion.superconductor.dto.PriceTagDto;
-import com.prosilion.superconductor.entity.ClassifiedListingEntity;
-import com.prosilion.superconductor.repository.ClassifiedListingEntityRepository;
+import com.prosilion.superconductor.entity.classified.ClassifiedListingEntity;
+import com.prosilion.superconductor.repository.classified.ClassifiedListingEntityRepository;
 import com.prosilion.superconductor.service.event.join.ClassifiedListingEntityEventEntityService;
 import com.prosilion.superconductor.service.event.join.PriceTagEntityService;
 import jakarta.persistence.NoResultException;
@@ -48,6 +48,7 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
   public void processIncoming(T eventMessage) {
     log.info("processing incoming CLASSIFIED_LISTING: [{}]", eventMessage);
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
+    event.setNip(99);
     Long savedEventId = eventService.saveEventEntity(event);
 
     ClassifiedListingDto classifiedListingDto = getClassifiedListingDto(event, createPriceTagDto(event));
@@ -67,6 +68,17 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
   }
 
   @NotNull
+  private static Result createPriceTagDto(GenericEvent event) {
+    List<GenericTag> genericTagsOnly = event.getTags().stream()
+        .filter(GenericTag.class::isInstance)
+        .map(GenericTag.class::cast).toList();
+
+    List<List<ElementAttribute>> priceTagDto = genericTagsOnly.stream()
+        .filter(tag -> tag.getCode().equalsIgnoreCase("price")).map(GenericTag::getAttributes).toList();
+    return new Result(genericTagsOnly, priceTagDto);
+  }
+
+  @NotNull
   private static ClassifiedListingDto getClassifiedListingDto(GenericEvent event, Result priceTagDtoResult) {
     ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(
         getReturnVal(priceTagDtoResult.genericTagsOnly(), "title"),
@@ -76,17 +88,6 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
     classifiedListingDto.setLocation(getReturnVal(priceTagDtoResult.genericTagsOnly(), "location"));
     classifiedListingDto.setPublishedAt(event.getCreatedAt());
     return classifiedListingDto;
-  }
-
-  @NotNull
-  private static Result createPriceTagDto(GenericEvent event) {
-    List<GenericTag> genericTagsOnly = event.getTags().stream()
-        .filter(GenericTag.class::isInstance)
-        .map(GenericTag.class::cast).toList();
-
-    List<List<ElementAttribute>> priceTagDto = genericTagsOnly.stream()
-        .filter(tag -> tag.getCode().equalsIgnoreCase("price")).map(GenericTag::getAttributes).toList();
-    return new Result(genericTagsOnly, priceTagDto);
   }
 
   private ClassifiedListingEntity saveClassifiedListing(ClassifiedListingDto classifiedListingDto) {

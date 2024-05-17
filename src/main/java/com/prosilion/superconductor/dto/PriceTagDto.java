@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.entity.PriceTagEntity;
+import com.prosilion.superconductor.entity.classified.PriceTagEntity;
 import lombok.Getter;
 import lombok.Setter;
 import nostr.base.ElementAttribute;

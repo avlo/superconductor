@@ -18,8 +18,8 @@ public abstract class GenericTagDto implements GenericTagDtoIF {
     return value;
   }
 
-  protected <T extends GenericTagEntity> T convertDtoToEntity(T genericTagEntity, String code) {
-    BeanUtils.copyProperties(this, genericTagEntity, code);
+  protected <T extends GenericTagEntity> T convertDtoToEntity(T genericTagEntity, Character code) {
+    BeanUtils.copyProperties(this, genericTagEntity, String.valueOf(code));
     genericTagEntity.setCode(code);
     return genericTagEntity;
   }

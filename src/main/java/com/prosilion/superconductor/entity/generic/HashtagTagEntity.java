@@ -16,7 +16,7 @@ import lombok.Setter;
 public class HashtagTagEntity extends GenericTagEntity {
   private String hashTag;
 
-  public HashtagTagEntity(String code, String hashTag) {
+  public HashtagTagEntity(Character code, String hashTag) {
     super.setCode(code);
     this.hashTag = hashTag;
   }

@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class EventEntityGenericTagEntityService {
-  private final Map<String, GenericTagEntityRepository<GenericTagEntity>> genericTagEntityRepositoryMap;
-  private final Map<String, EventEntityGenericTagEntityRepository<EventEntityGenericTagEntity>> joins;
+  private final Map<Character, GenericTagEntityRepository<GenericTagEntity>> genericTagEntityRepositoryMap;
+  private final Map<Character, EventEntityGenericTagEntityRepository<EventEntityGenericTagEntity>> joins;
 
   @Autowired
   public EventEntityGenericTagEntityService(
@@ -37,7 +37,7 @@ public class EventEntityGenericTagEntityService {
     saveTags(createDtos(selectReposByRelevantTags(singleLetterGenericTags)));
   }
 
-  private List<Map<String, String>> selectReposByRelevantTags(List<BaseTag> baseTags) {
+  private List<Map<Character, String>> selectReposByRelevantTags(List<BaseTag> baseTags) {
     return baseTags.stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast)
@@ -47,18 +47,18 @@ public class EventEntityGenericTagEntityService {
   }
 
   private boolean containsKey(GenericTag tags) {
-    return genericTagEntityRepositoryMap.containsKey(tags.getCode());
+    return genericTagEntityRepositoryMap.containsKey(tags.getCode().charAt(0));
   }
 
-  private Map<String, String> mapAtts(GenericTag gTag) {
-    return Map.of(gTag.getCode(), gTag.getAttributes().get(0).getValue().toString());
+  private Map<Character, String> mapAtts(GenericTag gTag) {
+    return Map.of(gTag.getCode().charAt(0), gTag.getAttributes().get(0).getValue().toString());
   }
 
-  private List<GenericTagDto> createDtos(List<Map<String, String>> list) {
-    return list.stream().flatMap(tag -> tag.entrySet().stream()).map(this::createDtos).toList();
+  private List<GenericTagDto> createDtos(List<Map<Character, String>> list) {
+    return list.stream().flatMap(tag -> tag.entrySet().stream()).map(this::createDto).toList();
   }
 
-  private GenericTagDto createDtos(Map.Entry<String, String> s) {
+  private GenericTagDto createDto(Map.Entry<Character, String> s) {
     return TagDtoFactory.createDto(s.getKey(), s.getValue());
   }
 

@@ -36,7 +36,7 @@ public class EventEntityBaseTagEntityService {
   }
 
   private BaseTagValueMapper getValue(BaseTag baseTag) {
-    if (baseTag.getCode().equals("e")) // event
+    if (baseTag.getCode().equals("e")) // event tag
       return new BaseTagValueMapper(baseTag, ((EventTag) baseTag).getIdEvent());
     return new BaseTagValueMapper(baseTag, ((PubKeyTag) baseTag).getPublicKey().toString());
   }

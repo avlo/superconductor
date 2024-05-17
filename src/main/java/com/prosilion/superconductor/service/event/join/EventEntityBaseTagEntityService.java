@@ -4,7 +4,6 @@ import com.prosilion.superconductor.dto.BaseTagDto;
 import com.prosilion.superconductor.entity.join.EventEntityBaseTagEntity;
 import com.prosilion.superconductor.repository.BaseTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityBaseTagEntityRepository;
-import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import nostr.event.BaseTag;
 import nostr.event.tag.EventTag;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -32,9 +30,9 @@ public class EventEntityBaseTagEntityService {
   }
 
   private BaseTagValueMapper getValue(BaseTag baseTag) {
-    if (baseTag.getCode().equals("e")) // event tag
-      return new BaseTagValueMapper(baseTag, ((EventTag) baseTag).getIdEvent());
-    return new BaseTagValueMapper(baseTag, ((PubKeyTag) baseTag).getPublicKey().toString());
+    return baseTag.getCode().equals("e") ?
+        new BaseTagValueMapper(baseTag, ((EventTag) baseTag).getIdEvent()) :
+        new BaseTagValueMapper(baseTag, ((PubKeyTag) baseTag).getPublicKey().toString());
   }
 
   private List<Long> saveTags(List<BaseTagValueMapper> tags) {
@@ -48,11 +46,9 @@ public class EventEntityBaseTagEntityService {
     return dto;
   }
 
-
   private void saveJoins(Long eventId, List<Long> tagIds) {
-    for (Long tagId : tagIds) {
-      Optional.of(join.save(new EventEntityBaseTagEntity(eventId, tagId))).orElseThrow(NoResultException::new);
-    }
+    tagIds.stream().map(tagId -> new EventEntityBaseTagEntity(eventId, tagId))
+        .forEach(join::save);
   }
 
   public record BaseTagValueMapper(BaseTag baseTag, String value) {

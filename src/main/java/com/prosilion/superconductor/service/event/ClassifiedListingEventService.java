@@ -48,6 +48,7 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
   public void processIncoming(T eventMessage) {
     log.info("processing incoming CLASSIFIED_LISTING: [{}]", eventMessage);
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
+    event.setNip(99);
     Long savedEventId = eventService.saveEventEntity(event);
 
     ClassifiedListingDto classifiedListingDto = getClassifiedListingDto(event, createPriceTagDto(event));

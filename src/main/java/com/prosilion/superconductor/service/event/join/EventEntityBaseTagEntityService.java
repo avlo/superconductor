@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.service.event.join;
 
 import com.prosilion.superconductor.dto.BaseTagDto;
-import com.prosilion.superconductor.entity.BaseTagEntity;
 import com.prosilion.superconductor.entity.join.EventEntityBaseTagEntity;
 import com.prosilion.superconductor.repository.BaseTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityBaseTagEntityRepository;
@@ -13,7 +12,6 @@ import nostr.event.tag.PubKeyTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,9 +28,7 @@ public class EventEntityBaseTagEntityService {
   }
 
   public void saveBaseTags(List<BaseTag> baseTagsOnly, Long id) {
-    List<BaseTagValueMapper> tags = baseTagsOnly.stream().map(this::getValue).toList();
-    List<Long> savedTagIds = saveTags(tags);
-    saveJoins(id, savedTagIds);
+    saveJoins(id, saveTags(baseTagsOnly.stream().map(this::getValue).toList()));
   }
 
   private BaseTagValueMapper getValue(BaseTag baseTag) {
@@ -42,21 +38,23 @@ public class EventEntityBaseTagEntityService {
   }
 
   private List<Long> saveTags(List<BaseTagValueMapper> tags) {
-    List<Long> savedIds = new ArrayList<>();
-    for (BaseTagValueMapper tagValueMapper : tags) {
-      BaseTagDto dto = new BaseTagDto(tagValueMapper.value());
-      dto.setKey(tagValueMapper.baseTag().getCode());
-      BaseTagEntity entity = dto.convertDtoToEntity();
-      savedIds.add(Optional.of(baseTagEntityRepository.save(entity)).orElseThrow(NoResultException::new).getId());
-    }
-    return savedIds;
+    return tags.stream().map(tagValueMapper ->
+        baseTagEntityRepository.save(map(tagValueMapper).convertDtoToEntity()).getId()).toList();
   }
+
+  private BaseTagDto map(BaseTagValueMapper tagValueMapper) {
+    BaseTagDto dto = new BaseTagDto(tagValueMapper.value());
+    dto.setKey(tagValueMapper.baseTag().getCode());
+    return dto;
+  }
+
 
   private void saveJoins(Long eventId, List<Long> tagIds) {
     for (Long tagId : tagIds) {
       Optional.of(join.save(new EventEntityBaseTagEntity(eventId, tagId))).orElseThrow(NoResultException::new);
     }
   }
+
   public record BaseTagValueMapper(BaseTag baseTag, String value) {
   }
 }

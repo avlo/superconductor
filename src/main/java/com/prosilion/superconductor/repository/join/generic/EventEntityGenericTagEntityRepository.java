@@ -6,7 +6,5 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
 public interface EventEntityGenericTagEntityRepository<T extends EventEntityGenericTagEntity> extends JpaRepository<T, Long> {
-  default String getCode() {
-    return "Y";
-  }
+  String getCode();
 }

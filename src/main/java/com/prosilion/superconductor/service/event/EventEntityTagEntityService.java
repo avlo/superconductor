@@ -4,9 +4,12 @@ import com.prosilion.superconductor.service.event.join.EventEntityBaseTagEntityS
 import com.prosilion.superconductor.service.event.join.EventEntityGenericTagEntityService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import nostr.event.BaseTag;
 import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Getter
@@ -24,7 +27,15 @@ public class EventEntityTagEntityService {
   }
 
   public void saveTags(GenericEvent event, Long id) {
-    eventEntityGenericTagEntityService.saveGenericTags(event, id);
-    eventEntityBaseTagEntityService.saveBaseTags(event, id);
+    List<BaseTag> baseTagsOnly = event.getTags().stream()
+        .filter(baseTag -> List.of("a", "p", "e").contains(baseTag.getCode()))
+        .toList();
+    eventEntityBaseTagEntityService.saveBaseTags(baseTagsOnly, id);
+
+    List<BaseTag> remainingSingleLetterGenericTags = event.getTags().stream()
+        .filter(baseTag -> (baseTag.getCode().length() == 1))
+        .filter(baseTag -> !List.of("a", "p", "e").contains(baseTag.getCode()))
+        .toList();
+    eventEntityGenericTagEntityService.saveGenericTags(remainingSingleLetterGenericTags, id);
   }
 }

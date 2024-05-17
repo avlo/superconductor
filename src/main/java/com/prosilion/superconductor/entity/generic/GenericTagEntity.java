@@ -20,8 +20,8 @@ public class GenericTagEntity implements Serializable {
   private Long id;
   private String code;
 
-  public GenericTagDto convertEntityToDto(GenericTagDto geohashTagDto) {
-    BeanUtils.copyProperties(this, geohashTagDto, "code");
-    return geohashTagDto;
+  public GenericTagDto convertEntityToDto(GenericTagDto genericTagDto) {
+    BeanUtils.copyProperties(this, genericTagDto, "code");
+    return genericTagDto;
   }
 }

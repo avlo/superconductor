@@ -1,14 +1,14 @@
 package com.prosilion.superconductor.service.event.join;
 
-import com.prosilion.superconductor.dto.GeohashTagDto;
+import com.prosilion.superconductor.dto.GenericTagDto;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.join.generic.EventEntityGenericTagEntity;
-import com.prosilion.superconductor.entity.join.generic.EventEntityGeohashTagEntity;
 import com.prosilion.superconductor.repository.generic.GenericTagEntityRepository;
 import com.prosilion.superconductor.repository.join.generic.EventEntityGenericTagEntityRepository;
+import com.prosilion.superconductor.util.TagDtoFactory;
 import jakarta.transaction.Transactional;
 import nostr.base.ElementAttribute;
-import nostr.event.impl.GenericEvent;
+import nostr.event.BaseTag;
 import nostr.event.impl.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,50 +35,42 @@ public class EventEntityGenericTagEntityService {
         Collectors.toMap(EventEntityGenericTagEntityRepository::getCode, Function.identity()));
   }
 
-  public void saveGenericTags(GenericEvent event, Long id) {
-    List<Map<String, String>> map = createResultMap(event);
-    List<GeohashTagDto> dtos = getDtos(map);
-    List<Long> savedTagIds = saveTags(dtos);
-    dtos.forEach(tag -> saveJoins(tag.getCode(), id, savedTagIds));
+  public void saveGenericTags(List<BaseTag> singleLetterGenericTags, Long id) {
+    saveTags(getDtos(createResultMap(singleLetterGenericTags)));
   }
 
-  private List<Map<String, String>> createResultMap(GenericEvent event) {
-    List<Map<String, String>> maps = event.getTags().stream()
+  private List<Map<String, String>> createResultMap(List<BaseTag> singleLetterGenericTags) {
+    return singleLetterGenericTags.stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast)
-        .filter(tags -> tags.getCode().equalsIgnoreCase("g"))
+        .filter(tags -> genericTagEntityRepositoryMap.containsKey(tags.getCode()))
         .map(gTag -> {
           List<ElementAttribute> attributes = gTag.getAttributes();
           ElementAttribute elementAttribute = attributes.get(0);
           return Map.of(gTag.getCode(), elementAttribute.getValue().toString());
         })
         .toList();
-    return maps;
   }
 
-  private List<GeohashTagDto> getDtos(List<Map<String, String>> map) {
-    return map.stream().collect(Collectors.toSet()).stream().map(dto -> {
-      String g = dto.get("g");
-      GeohashTagDto geohashTagDto = new GeohashTagDto(g);
-      return geohashTagDto;
-    }).toList();
+  private List<GenericTagDto> getDtos(List<Map<String, String>> list) {
+    return list.stream()
+        .flatMap(tag -> tag.entrySet().stream()).map(
+            s -> {
+              GenericTagDto dto = TagDtoFactory.createDto(s.getKey(), s.getValue());
+              return dto;
+            })
+        .toList();
   }
 
-  private List<Long> saveTags(List<GeohashTagDto> tags) {
+  private void saveTags(List<GenericTagDto> tags) {
     List<Long> savedIds = new ArrayList<>();
-    for (GeohashTagDto tag : tags) {
+    for (GenericTagDto tag : tags) {
       GenericTagEntity entity = tag.convertDtoToEntity();
-      GenericTagEntityRepository<GenericTagEntity> genericTagEntityRepository = genericTagEntityRepositoryMap.get(tag.getCode());
-      GenericTagEntity saved = genericTagEntityRepository.save(entity);
-      savedIds.add(saved.getId());
-    }
-    return savedIds;
-  }
+      GenericTagEntity saved = genericTagEntityRepositoryMap.get(tag.getCode()).save(entity);
 
-  private void saveJoins(String code, Long eventId, List<Long> tagIds) {
-    for (Long tagId : tagIds) {
-      EventEntityGenericTagEntity join = new EventEntityGeohashTagEntity(eventId, tagId);
-      joins.get(code).save(join);
+      EventEntityGenericTagEntity join = TagDtoFactory.createEntity(tag.getCode(), entity.getId(), saved.getId());
+      joins.get(tag.getCode()).save(join);
+      savedIds.add(saved.getId());
     }
   }
 }

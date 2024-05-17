@@ -31,10 +31,7 @@ public class EventEntityBaseTagEntityService {
     this.join = join;
   }
 
-  public void saveBaseTags(GenericEvent event, Long id) {
-    List<BaseTag> baseTagsOnly = event.getTags().stream()
-        .filter(baseTag -> List.of("a", "p", "e").contains(baseTag.getCode()))
-        .toList();
+  public void saveBaseTags(List<BaseTag> baseTagsOnly, Long id) {
     List<BaseTagValueMapper> tags = baseTagsOnly.stream().map(this::getValue).toList();
     List<Long> savedTagIds = saveTags(tags);
     saveJoins(id, savedTagIds);

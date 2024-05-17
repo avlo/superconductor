@@ -79,10 +79,14 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 	select id, event_id, kind, nip, content, created_at, pub_key, signature from event;
 	select id, "key" as "key", "value" as "value", marker, recommended_relay_url from base_tag;
 	select id, base_tag_id, event_id from "event-base_tag-join";
-	select id, title, summary, published_at, location from classified_listing;
+	select id, geohash_tag_id, event_id from "event-geohash_tag-join";
+	select id, hash_tag_id, event_id FROM "event-hashtag_tag-join";
+	select id, code, location from geohash_tag;
+	select id, code, hash_tag FROM HASHTAG_TAG;
 	select id, classified_listing_id, event_id from "classified_listing-event-join";
-	select id, number, currency, frequency from price_tag;
+	select id, title, summary, published_at, location from classified_listing;
 	select id, price_tag_id, event_id from "event-price_tag-join";
+	select id, number, currency, frequency from price_tag;
 	select id, active, subscriber_id, session_id from subscriber;
 	select id, subscriber_id, "since", "until", "limit" from "subscriber-filter-join";
 	select id, filter_id, event_id from "subscriber-filter_event-join";

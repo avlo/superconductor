@@ -7,16 +7,18 @@ import nostr.event.tag.HashtagTag;
 
 @Getter
 public class HashtagTagDto extends GenericTagDto implements GenericTagDtoIF {
-  private final String code;
   private final HashtagTag hashtagTag;
   public HashtagTagDto(String hashTag) {
     super(hashTag);
     hashtagTag = HashtagTag.builder().hashTag(hashTag).build();
-    code = hashtagTag.getCode();
   }
 
   @Override
+  public String getCode() {
+    return hashtagTag.getCode();
+  }
+  @Override
   public <T extends GenericTagEntity> T convertDtoToEntity() {
-    return (T) convertDtoToEntity(new HashtagTagEntity(code, getValue()), code);
+    return (T) convertDtoToEntity(new HashtagTagEntity(getCode(), getValue()), getCode());
   }
 }

@@ -7,16 +7,18 @@ import nostr.event.tag.GeohashTag;
 
 @Getter
 public class GeohashTagDto extends GenericTagDto implements GenericTagDtoIF {
-  private final String code;
   private final GeohashTag geohashTag;
   public GeohashTagDto(String location) {
     super(location);
     geohashTag = GeohashTag.builder().location(location).build();
-    code = geohashTag.getCode();
   }
 
   @Override
+  public String getCode() {
+    return getGeohashTag().getCode();
+  }
+  @Override
   public <T extends GenericTagEntity> T convertDtoToEntity() {
-    return (T) convertDtoToEntity(new GeohashTagEntity(code, getValue()), code);
+    return (T) convertDtoToEntity(new GeohashTagEntity(getCode(), getValue()), getCode());
   }
 }

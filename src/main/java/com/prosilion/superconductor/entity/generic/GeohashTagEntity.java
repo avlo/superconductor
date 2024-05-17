@@ -2,11 +2,11 @@ package com.prosilion.superconductor.entity.generic;
 
 import com.prosilion.superconductor.dto.GenericTagDto;
 import com.prosilion.superconductor.dto.GeohashTagDto;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 @Setter
 @Getter
@@ -14,9 +14,6 @@ import org.springframework.beans.BeanUtils;
 @Entity
 @Table(name = "geohash_tag")
 public class GeohashTagEntity extends GenericTagEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
   private String location;
 
   public GeohashTagEntity(String code, String location) {
@@ -25,8 +22,6 @@ public class GeohashTagEntity extends GenericTagEntity {
   }
 
   public GenericTagDto convertEntityToDto() {
-    GenericTagDto geohashTagDto = new GeohashTagDto(location);
-    BeanUtils.copyProperties(this, geohashTagDto, "code");
-    return geohashTagDto;
+    return convertEntityToDto(new GeohashTagDto(location));
   }
 }

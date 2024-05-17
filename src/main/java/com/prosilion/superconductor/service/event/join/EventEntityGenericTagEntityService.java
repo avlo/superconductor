@@ -7,13 +7,11 @@ import com.prosilion.superconductor.repository.generic.GenericTagEntityRepositor
 import com.prosilion.superconductor.repository.join.generic.EventEntityGenericTagEntityRepository;
 import com.prosilion.superconductor.util.TagDtoFactory;
 import jakarta.transaction.Transactional;
-import nostr.base.ElementAttribute;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -35,42 +33,44 @@ public class EventEntityGenericTagEntityService {
         Collectors.toMap(EventEntityGenericTagEntityRepository::getCode, Function.identity()));
   }
 
-  public void saveGenericTags(List<BaseTag> singleLetterGenericTags, Long id) {
-    saveTags(getDtos(createResultMap(singleLetterGenericTags)));
+  public void saveGenericTags(List<BaseTag> singleLetterGenericTags) {
+    saveTags(createDtos(selectReposByRelevantTags(singleLetterGenericTags)));
   }
 
-  private List<Map<String, String>> createResultMap(List<BaseTag> singleLetterGenericTags) {
-    return singleLetterGenericTags.stream()
+  private List<Map<String, String>> selectReposByRelevantTags(List<BaseTag> baseTags) {
+    return baseTags.stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast)
-        .filter(tags -> genericTagEntityRepositoryMap.containsKey(tags.getCode()))
-        .map(gTag -> {
-          List<ElementAttribute> attributes = gTag.getAttributes();
-          ElementAttribute elementAttribute = attributes.get(0);
-          return Map.of(gTag.getCode(), elementAttribute.getValue().toString());
-        })
+        .filter(this::containsKey)
+        .map(this::mapAtts)
         .toList();
   }
 
-  private List<GenericTagDto> getDtos(List<Map<String, String>> list) {
-    return list.stream()
-        .flatMap(tag -> tag.entrySet().stream()).map(
-            s -> {
-              GenericTagDto dto = TagDtoFactory.createDto(s.getKey(), s.getValue());
-              return dto;
-            })
-        .toList();
+  private boolean containsKey(GenericTag tags) {
+    return genericTagEntityRepositoryMap.containsKey(tags.getCode());
+  }
+
+  private Map<String, String> mapAtts(GenericTag gTag) {
+    return Map.of(gTag.getCode(), gTag.getAttributes().get(0).getValue().toString());
+  }
+
+  private List<GenericTagDto> createDtos(List<Map<String, String>> list) {
+    return list.stream().flatMap(tag -> tag.entrySet().stream()).map(this::createDtos).toList();
+  }
+
+  private GenericTagDto createDtos(Map.Entry<String, String> s) {
+    return TagDtoFactory.createDto(s.getKey(), s.getValue());
   }
 
   private void saveTags(List<GenericTagDto> tags) {
-    List<Long> savedIds = new ArrayList<>();
-    for (GenericTagDto tag : tags) {
-      GenericTagEntity entity = tag.convertDtoToEntity();
-      GenericTagEntity saved = genericTagEntityRepositoryMap.get(tag.getCode()).save(entity);
+    tags.stream().map(this::saveTag).forEach(this::saveJoins);
+  }
 
-      EventEntityGenericTagEntity join = TagDtoFactory.createEntity(tag.getCode(), entity.getId(), saved.getId());
-      joins.get(tag.getCode()).save(join);
-      savedIds.add(saved.getId());
-    }
+  private GenericTagEntity saveTag(GenericTagDto tag) {
+    return genericTagEntityRepositoryMap.get(tag.getCode()).save(tag.convertDtoToEntity());
+  }
+
+  private void saveJoins(GenericTagEntity tag) {
+    joins.get(tag.getCode()).save(TagDtoFactory.createEntity(tag.getCode(), tag.getId(), tag.getId()));
   }
 }

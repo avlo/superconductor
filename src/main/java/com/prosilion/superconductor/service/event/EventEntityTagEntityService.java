@@ -36,6 +36,6 @@ public class EventEntityTagEntityService {
         .filter(baseTag -> (baseTag.getCode().length() == 1))
         .filter(baseTag -> !List.of("a", "p", "e").contains(baseTag.getCode()))
         .toList();
-    eventEntityGenericTagEntityService.saveGenericTags(remainingSingleLetterGenericTags, id);
+    eventEntityGenericTagEntityService.saveGenericTags(remainingSingleLetterGenericTags);
   }
 }

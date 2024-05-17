@@ -5,11 +5,9 @@ import com.prosilion.superconductor.entity.BaseTagEntity;
 import com.prosilion.superconductor.entity.join.EventEntityBaseTagEntity;
 import com.prosilion.superconductor.repository.BaseTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityBaseTagEntityRepository;
-import com.prosilion.superconductor.util.BaseTagValueMapper;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import nostr.event.BaseTag;
-import nostr.event.impl.GenericEvent;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.PubKeyTag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +56,7 @@ public class EventEntityBaseTagEntityService {
     for (Long tagId : tagIds) {
       Optional.of(join.save(new EventEntityBaseTagEntity(eventId, tagId))).orElseThrow(NoResultException::new);
     }
+  }
+  public record BaseTagValueMapper(BaseTag baseTag, String value) {
   }
 }

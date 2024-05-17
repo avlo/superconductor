@@ -14,8 +14,8 @@ public class GeohashTagDto extends GenericTagDto implements GenericTagDtoIF {
   }
 
   @Override
-  public String getCode() {
-    return getGeohashTag().getCode();
+  public Character getCode() {
+    return getGeohashTag().getCode().charAt(0);
   }
   @Override
   public <T extends GenericTagEntity> T convertDtoToEntity() {

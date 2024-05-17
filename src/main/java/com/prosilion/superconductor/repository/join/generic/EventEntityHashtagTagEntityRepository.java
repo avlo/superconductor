@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EventEntityHashtagTagEntityRepository<T extends EventEntityHashtagTagEntity> extends EventEntityGenericTagEntityRepository<T> {
-  default String getCode() {
-    return "t";
+  default Character getCode() {
+    return 't';
   }
 }

@@ -23,6 +23,7 @@
   #### Supported
   - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol)
   - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
+  - [NIP-14](https://nostr-nips.com/nip-14) (Subject Tag)
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
     - [ScdMatrix](https://github.com/avlo/scdecisionmatrix) client implementation (in progress)
 

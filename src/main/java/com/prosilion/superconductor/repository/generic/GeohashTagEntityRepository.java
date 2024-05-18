@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GeohashTagEntityRepository<T extends GeohashTagEntity> extends GenericTagEntityRepository<T> {
-  default String getCode() {
-    return "g";
+  default Character getCode() {
+    return 'g';
   }
 }

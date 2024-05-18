@@ -18,7 +18,7 @@ public class GenericTagEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private String code;
+  private Character code;
 
   public GenericTagDto convertEntityToDto(GenericTagDto genericTagDto) {
     BeanUtils.copyProperties(this, genericTagDto, "code");

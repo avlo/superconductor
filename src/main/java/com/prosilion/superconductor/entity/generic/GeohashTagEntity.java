@@ -16,7 +16,7 @@ import lombok.Setter;
 public class GeohashTagEntity extends GenericTagEntity {
   private String location;
 
-  public GeohashTagEntity(String code, String location) {
+  public GeohashTagEntity(Character code, String location) {
     super.setCode(code);
     this.location = location;
   }

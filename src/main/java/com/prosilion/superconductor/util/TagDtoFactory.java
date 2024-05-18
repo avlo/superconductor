@@ -10,15 +10,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TagDtoFactory {
-  public static GenericTagDto createDto(String code, String value) {
+  public static GenericTagDto createDto(Character code, String value) {
     switch (code) {
 //      case "d":
 //        // identity
-      case "g":
+      case 'g':
         return new GeohashTagDto(value);
 //      case "r":
 //        // code block
-      case "t":
+      case 't':
         return new HashtagTagDto(value);
 //      case "u":
 //        // code block
@@ -27,15 +27,15 @@ public class TagDtoFactory {
     }
   }
 
-  public static EventEntityGenericTagEntity createEntity(String code, Long eventId, Long tagId) {
+  public static EventEntityGenericTagEntity createEntity(Character code, Long eventId, Long tagId) {
     switch (code) {
 //      case "d":
 //        // identity
-      case "g":
+      case 'g':
         return new EventEntityGeohashTagEntity(eventId, tagId);
 //      case "r":
 //        // code block
-      case "t":
+      case 't':
         return new EventEntityHashtagTagEntity(eventId, tagId);
 //      case "u":
 //        // code block

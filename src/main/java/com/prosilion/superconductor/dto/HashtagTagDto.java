@@ -14,8 +14,8 @@ public class HashtagTagDto extends GenericTagDto implements GenericTagDtoIF {
   }
 
   @Override
-  public String getCode() {
-    return hashtagTag.getCode();
+  public Character getCode() {
+    return hashtagTag.getCode().charAt(0);
   }
   @Override
   public <T extends GenericTagEntity> T convertDtoToEntity() {

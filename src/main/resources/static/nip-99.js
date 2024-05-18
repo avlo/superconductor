@@ -6,6 +6,7 @@ function hashThenSend() {
         $("#created_at").val(),
         // '1712006666',
         $("#kind").val(),
+        $("#subject").val(),
         $("#title").val(),
         $("#summary").val(),
         $("#content").val(),
@@ -37,6 +38,7 @@ function replaceHash(id_hash) {
                 'kind': $("#kind").val(),
                 'content': $("#content").val(),
                 'tags': [
+                    ['subject', $("#subject").val()],
                     ['title', $("#title").val()],
                     ['summary', $("#summary").val()],
                     ['location', $("#location").val()],

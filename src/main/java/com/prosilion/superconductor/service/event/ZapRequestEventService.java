@@ -2,6 +2,10 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.RelaysTagDto;
 import com.prosilion.superconductor.dto.ZapRequestDto;
+import com.prosilion.superconductor.entity.classified.ZapRequestEventEntity;
+import com.prosilion.superconductor.repository.classified.ZapRequestEventEntityRepository;
+import com.prosilion.superconductor.service.event.join.ZapRequestEventEntityEventEntityService;
+import jakarta.persistence.NoResultException;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Getter
@@ -22,9 +27,16 @@ import java.util.List;
 public class ZapRequestEventService<T extends EventMessage> implements EventServiceIF<T> {
   public final Kind kind = Kind.ZAP_REQUEST;
   private final EventService<ZapRequestEvent> eventService;
+  private final ZapRequestEventEntityRepository zapRequestEventEntityRepository;
+  private final ZapRequestEventEntityEventEntityService joinService;
 
-  public ZapRequestEventService(EventService<ZapRequestEvent> eventService) {
+  public ZapRequestEventService(
+      EventService<ZapRequestEvent> eventService,
+      ZapRequestEventEntityRepository zapRequestEventEntityRepository,
+      ZapRequestEventEntityEventEntityService joinService) {
     this.eventService = eventService;
+    this.zapRequestEventEntityRepository = zapRequestEventEntityRepository;
+    this.joinService = joinService;
   }
 
   @Override
@@ -34,9 +46,12 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
     event.setNip(57);
     event.setKind(Kind.ZAP_REQUEST.getValue());
-    Long id = eventService.saveEventEntity(event);
+    Long savedEventId = eventService.saveEventEntity(event);
 
     ZapRequestDto zapRequestDto = getZapRequestDto(event, createRelaysTagDto(event));
+    ZapRequestEventEntity zapRequestEventEntity = saveZapRequestEvent(zapRequestDto);
+
+    joinService.save(savedEventId, zapRequestEventEntity.getId());
 
     ZapRequestEvent zapRequestEvent = new ZapRequestEvent(
         event.getPubKey(),
@@ -46,7 +61,7 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
     );
     zapRequestEvent.setId(event.getId());
     zapRequestEvent.setCreatedAt(event.getCreatedAt());
-    eventService.publishEvent(id, zapRequestEvent);
+    eventService.publishEvent(savedEventId, zapRequestEvent);
   }
 
   @NotNull
@@ -68,6 +83,10 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
         getReturnVal(relaysTagDtoResult.genericTagsOnly(), "lnurl"),
         event.getPubKey()
     );
+  }
+
+  private ZapRequestEventEntity saveZapRequestEvent(ZapRequestDto zapRequestDto) {
+    return Optional.of(zapRequestEventEntityRepository.save(zapRequestDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
   }
 
   private static String getReturnVal(List<GenericTag> genericTags, String val) {

@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nostr.base.Relay;
 import nostr.event.tag.RelaysTag;
-
-import java.util.List;
 
 @Setter
 @Getter
@@ -21,6 +18,6 @@ public class RelaysTagEntity {
   private String uri;
 
   public RelaysTag convertEntityToDto() {
-    return RelaysTag.builder().relays(List.of(new Relay(uri))).build();
+    return new RelaysTag(uri);
   }
 }

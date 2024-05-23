@@ -3,11 +3,11 @@ package com.prosilion.superconductor.dto;
 import com.prosilion.superconductor.entity.classified.ClassifiedListingEntity;
 import lombok.Getter;
 import lombok.Setter;
-import nostr.event.tag.ClassifiedListing;
+import nostr.event.impl.ClassifiedListingEvent;
 
 @Setter
 @Getter
-public class ClassifiedListingDto extends ClassifiedListing {
+public class ClassifiedListingDto extends ClassifiedListingEvent.ClassifiedListing {
   final PriceTagDto priceTag;
 
   public ClassifiedListingDto(String title, String summary, PriceTagDto priceTag) {

@@ -68,24 +68,24 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
   }
 
   @NotNull
-  private static Result createPriceTagDto(GenericEvent event) {
+  private static ClassifiedListingEventService.DiscoveredPriceTag createPriceTagDto(GenericEvent event) {
     List<GenericTag> genericTagsOnly = event.getTags().stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast).toList();
 
     List<List<ElementAttribute>> priceTagDto = genericTagsOnly.stream()
         .filter(tag -> tag.getCode().equalsIgnoreCase("price")).map(GenericTag::getAttributes).toList();
-    return new Result(genericTagsOnly, priceTagDto);
+    return new DiscoveredPriceTag(genericTagsOnly, priceTagDto);
   }
 
   @NotNull
-  private static ClassifiedListingDto getClassifiedListingDto(GenericEvent event, Result priceTagDtoResult) {
+  private static ClassifiedListingDto getClassifiedListingDto(GenericEvent event, DiscoveredPriceTag priceTag) {
     ClassifiedListingDto classifiedListingDto = new ClassifiedListingDto(
-        getReturnVal(priceTagDtoResult.genericTagsOnly(), "title"),
-        getReturnVal(priceTagDtoResult.genericTagsOnly(), "summary"),
-        PriceTagDto.createPriceTagDtoFromAttributes(priceTagDtoResult.priceTagDto().stream().findFirst().orElseThrow())
+        getReturnVal(priceTag.genericTagsOnly(), "title"),
+        getReturnVal(priceTag.genericTagsOnly(), "summary"),
+        PriceTagDto.createPriceTagDtoFromAttributes(priceTag.priceTagDto().stream().findFirst().orElseThrow())
     );
-    classifiedListingDto.setLocation(getReturnVal(priceTagDtoResult.genericTagsOnly(), "location"));
+    classifiedListingDto.setLocation(getReturnVal(priceTag.genericTagsOnly(), "location"));
     classifiedListingDto.setPublishedAt(event.getCreatedAt());
     return classifiedListingDto;
   }
@@ -105,6 +105,6 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
     return classifiedListingEntityRepository.findById(id).orElseThrow();
   }
 
-  private record Result(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> priceTagDto) {
+  private record DiscoveredPriceTag(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> priceTagDto) {
   }
 }

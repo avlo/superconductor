@@ -3,11 +3,11 @@ package com.prosilion.superconductor.dto;
 import com.prosilion.superconductor.entity.ZapRequestEventEntity;
 import lombok.Getter;
 import lombok.Setter;
-import nostr.event.impl.ZapRequestEvent;
+import nostr.event.impl.ZapRequest;
 
 @Setter
 @Getter
-public class ZapRequestDto extends ZapRequestEvent.ZapRequest {
+public class ZapRequestDto extends ZapRequest {
   private final RelaysTagDto relaysTagDto;
   private final String recipientPubKey;
   private final Long amount;

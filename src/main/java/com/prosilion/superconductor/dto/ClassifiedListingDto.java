@@ -3,11 +3,13 @@ package com.prosilion.superconductor.dto;
 import com.prosilion.superconductor.entity.classified.ClassifiedListingEntity;
 import lombok.Getter;
 import lombok.Setter;
-import nostr.event.impl.ClassifiedListingEvent;
+import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
+
+import java.util.Optional;
 
 @Setter
 @Getter
-public class ClassifiedListingDto extends ClassifiedListingEvent.ClassifiedListing {
+public class ClassifiedListingDto extends ClassifiedListing {
   final PriceTagDto priceTag;
 
   public ClassifiedListingDto(String title, String summary, PriceTagDto priceTag) {
@@ -19,8 +21,9 @@ public class ClassifiedListingDto extends ClassifiedListingEvent.ClassifiedListi
     ClassifiedListingEntity classifiedListingEntity = new ClassifiedListingEntity();
     classifiedListingEntity.setTitle(getTitle());
     classifiedListingEntity.setSummary(getSummary());
-    classifiedListingEntity.setLocation(getLocation());
-    classifiedListingEntity.setPublishedAt(getPublishedAt());
+    Optional.ofNullable(getPublishedAt()).ifPresent(classifiedListingEntity::setPublishedAt);
+    Optional.ofNullable(getLocation()).ifPresent(classifiedListingEntity::setLocation);
+    classifiedListingEntity.setPriceTags(priceTag);
     return classifiedListingEntity;
   }
 }

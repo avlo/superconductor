@@ -1,11 +1,11 @@
-package com.prosilion.superconductor.entity.classified;
+package com.prosilion.superconductor.entity;
 
 import com.prosilion.superconductor.dto.RelaysTagDto;
 import com.prosilion.superconductor.dto.ZapRequestDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nostr.base.PublicKey;
+import nostr.event.tag.RelaysTag;
 
 @Data
 @NoArgsConstructor
@@ -16,21 +16,21 @@ public class ZapRequestEventEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private Integer amount;
+  private Long amount;
   private String lnUrl;
-  private PublicKey recipientPubKey;
+  private String recipientPubKey;
 
   @Transient
   private RelaysTagDto relaysTagDto;
 
-  public ZapRequestEventEntity(Integer amount, String lnUrl, PublicKey recipientPubKey, RelaysTagDto relaysTagDto) {
+  public ZapRequestEventEntity(String recipientPubKey, Long amount, String lnUrl, RelaysTagDto relaysTagDto) {
+    this.recipientPubKey = recipientPubKey;
     this.amount = amount;
     this.lnUrl = lnUrl;
-    this.recipientPubKey = recipientPubKey;
     this.relaysTagDto = relaysTagDto;
   }
 
   public ZapRequestDto convertEntityToDto() {
-    return new ZapRequestDto(relaysTagDto, amount, lnUrl, recipientPubKey);
+    return new ZapRequestDto(recipientPubKey, amount, lnUrl, relaysTagDto);
   }
 }

@@ -2,14 +2,16 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.RelaysTagDto;
 import com.prosilion.superconductor.dto.ZapRequestDto;
-import com.prosilion.superconductor.entity.classified.ZapRequestEventEntity;
+import com.prosilion.superconductor.entity.ZapRequestEventEntity;
 import com.prosilion.superconductor.repository.classified.ZapRequestEventEntityRepository;
 import com.prosilion.superconductor.service.event.join.ZapRequestEventEntityEventEntityService;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.ElementAttribute;
+import nostr.base.PublicKey;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
@@ -42,51 +44,58 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
   @Override
   @Async
   public void processIncoming(T eventMessage) {
-    log.info("processing incoming TEXT_NOTE: [{}]", eventMessage);
+    log.info("processing incoming ZAP_REQUEST: [{}]", eventMessage);
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
     event.setNip(57);
     event.setKind(Kind.ZAP_REQUEST.getValue());
     Long savedEventId = eventService.saveEventEntity(event);
 
-    ZapRequestDto zapRequestDto = getZapRequestDto(event, createRelaysTagDto(event));
-    ZapRequestEventEntity zapRequestEventEntity = saveZapRequestEvent(zapRequestDto);
+    ZapRequestDto zapRequestEventDto = createZapRequestDto(event, getRelaysTag(event));
+    ZapRequestEventEntity zapRequestEventEntity = saveZapRequestEvent(zapRequestEventDto);
 
     joinService.save(savedEventId, zapRequestEventEntity.getId());
 
     ZapRequestEvent zapRequestEvent = new ZapRequestEvent(
         event.getPubKey(),
+        new PublicKey(zapRequestEventDto.getRecipientPubKey()),
         event.getTags(),
         event.getContent(),
-        zapRequestDto
+        zapRequestEventDto
     );
     zapRequestEvent.setId(event.getId());
     zapRequestEvent.setCreatedAt(event.getCreatedAt());
     eventService.publishEvent(savedEventId, zapRequestEvent);
   }
 
+  @SneakyThrows
   @NotNull
-  private static Result createRelaysTagDto(GenericEvent event) {
+  private DiscoveredRelayTags getRelaysTag(GenericEvent event) {
     List<GenericTag> genericTagsOnly = event.getTags().stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast).toList();
 
-    List<List<ElementAttribute>> priceTagDto = genericTagsOnly.stream()
-        .filter(tag -> tag.getCode().equalsIgnoreCase("relays")).map(GenericTag::getAttributes).toList();
-    return new Result(genericTagsOnly, priceTagDto);
+    List<List<ElementAttribute>> relaysTag = genericTagsOnly.stream()
+        .filter(ZapRequestEventService::isZapRequestTag).map(GenericTag::getAttributes).toList();
+    return new DiscoveredRelayTags(genericTagsOnly, relaysTag);
+  }
+
+  private static boolean isZapRequestTag(GenericTag tag) {
+    return tag.getCode().equalsIgnoreCase("relays")
+        || tag.getCode().equalsIgnoreCase("amount")
+        || tag.getCode().equalsIgnoreCase("lnurl");
   }
 
   @NotNull
-  private static ZapRequestDto getZapRequestDto(GenericEvent event, Result relaysTagDtoResult) {
+  private ZapRequestDto createZapRequestDto(GenericEvent event, DiscoveredRelayTags discoveredRelayTags) {
     return new ZapRequestDto(
-        RelaysTagDto.createRelaysTagDtoFromAttributes(relaysTagDtoResult.priceTagDto().stream().findFirst().orElseThrow()),
-        Integer.valueOf(getReturnVal(relaysTagDtoResult.genericTagsOnly(), "amount")),
-        getReturnVal(relaysTagDtoResult.genericTagsOnly(), "lnurl"),
-        event.getPubKey()
-    );
+        event.getPubKey().toString(),
+        Long.valueOf(getReturnVal(discoveredRelayTags.genericTagsOnly(), "amount")),
+        getReturnVal(discoveredRelayTags.genericTagsOnly(), "lnurl"),
+        new RelaysTagDto(getReturnVal(discoveredRelayTags.genericTagsOnly(), "relays")));
   }
 
-  private ZapRequestEventEntity saveZapRequestEvent(ZapRequestDto zapRequestDto) {
-    return Optional.of(zapRequestEventEntityRepository.save(zapRequestDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
+  private ZapRequestEventEntity saveZapRequestEvent(ZapRequestDto zapRequestEventDto) {
+    return Optional.of(zapRequestEventEntityRepository.save(zapRequestEventDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
   }
 
   private static String getReturnVal(List<GenericTag> genericTags, String val) {
@@ -96,6 +105,6 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
         .toString();
   }
 
-  private record Result(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> priceTagDto) {
+  private record DiscoveredRelayTags(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> zapRequestDto) {
   }
 }

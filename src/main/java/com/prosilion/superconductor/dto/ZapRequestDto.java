@@ -1,19 +1,27 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.entity.classified.ZapRequestEventEntity;
+import com.prosilion.superconductor.entity.ZapRequestEventEntity;
 import lombok.Getter;
 import lombok.Setter;
-import nostr.base.PublicKey;
-import nostr.event.impl.ZapRequestEvent.ZapRequest;
+import nostr.event.tag.ZapRequest;
 
 @Setter
 @Getter
 public class ZapRequestDto extends ZapRequest {
-  public ZapRequestDto(RelaysTagDto relaysTagDto, Integer amount, String lnUrl, PublicKey recipientPubKey) {
-    super(relaysTagDto, amount, lnUrl, recipientPubKey);
+  private final RelaysTagDto relaysTagDto;
+  private final String recipientPubKey;
+  private final Long amount;
+  private final String lnUrl;
+
+  public ZapRequestDto(String recipientPubKey, Long amount, String lnUrl, RelaysTagDto relaysTagDto) {
+    super(relaysTagDto, amount, lnUrl);
+    this.recipientPubKey = recipientPubKey;
+    this.amount = amount;
+    this.lnUrl = lnUrl;
+    this.relaysTagDto = relaysTagDto;
   }
 
   public ZapRequestEventEntity convertDtoToEntity() {
-    return new ZapRequestEventEntity(getAmount(), getLnUrl(), getRecipientPubKey(), new RelaysTagDto(getRelaysTag().getRelayUris()));
+    return new ZapRequestEventEntity(recipientPubKey, amount, lnUrl, relaysTagDto);
   }
 }

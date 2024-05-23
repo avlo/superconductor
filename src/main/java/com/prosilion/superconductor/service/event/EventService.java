@@ -13,8 +13,10 @@ import jakarta.persistence.NoResultException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.api.NIP01;
+import nostr.event.BaseEvent;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
+import nostr.event.json.codec.BaseEventEncoder;
 import nostr.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -71,6 +73,11 @@ public class EventService<T extends GenericEvent> {
   @EventListener
   public void broadcastToClients(FireNostrEvent<T> fireNostrEvent) {
     EventMessage message = NIP01.createEventMessage(fireNostrEvent.event(), String.valueOf(fireNostrEvent.subscriberId()));
+    System.out.println("111111111111111");
+    System.out.println("111111111111111");
+    System.out.println(new BaseEventEncoder((BaseEvent) message.getEvent()).encode());
+    System.out.println("111111111111111");
+    System.out.println("111111111111111");
     Subscriber subscriber = subscriberService.get(fireNostrEvent.subscriberId());
     BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(subscriber.getSessionId(), message);
     publisher.publishEvent(event);

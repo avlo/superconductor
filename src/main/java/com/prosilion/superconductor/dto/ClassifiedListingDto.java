@@ -3,7 +3,7 @@ package com.prosilion.superconductor.dto;
 import com.prosilion.superconductor.entity.classified.ClassifiedListingEntity;
 import lombok.Getter;
 import lombok.Setter;
-import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
+import nostr.event.tag.ClassifiedListing;
 
 @Setter
 @Getter

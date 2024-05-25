@@ -9,16 +9,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class PriceTagEntityService {
 
-	private final PriceTagEntityRepository priceTagEntityRepository;
-	private final EventEntityPriceTagEntityRepository join;
+  private final PriceTagEntityRepository priceTagEntityRepository;
+  private final EventEntityPriceTagEntityRepository join;
 
-	public PriceTagEntityService(PriceTagEntityRepository priceTagEntityRepository, EventEntityPriceTagEntityRepository join) {
-		this.priceTagEntityRepository = priceTagEntityRepository;
-		this.join = join;
-	}
+  public PriceTagEntityService(PriceTagEntityRepository priceTagEntityRepository, EventEntityPriceTagEntityRepository join) {
+    this.priceTagEntityRepository = priceTagEntityRepository;
+    this.join = join;
+  }
 
-	public Long savePriceTag(Long entityId, PriceTagDto priceTag) {
-		Long savedPriceTagId = priceTagEntityRepository.save(priceTag.convertDtoToEntity()).getId();
-		return join.save(new EventEntityPriceTagEntity(entityId, savedPriceTagId)).getId();
-	}
+  public Long savePriceTag(Long entityId, PriceTagDto priceTag) {
+    Long savedPriceTagId = priceTagEntityRepository.save(priceTag.convertDtoToEntity()).getId();
+    return join.save(new EventEntityPriceTagEntity(entityId, savedPriceTagId)).getId();
+  }
 }

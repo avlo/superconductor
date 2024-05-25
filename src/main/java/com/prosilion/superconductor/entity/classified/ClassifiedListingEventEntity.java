@@ -5,12 +5,13 @@ import com.prosilion.superconductor.dto.PriceTagDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "classified_listing")
-public class ClassifiedListingEntity {
+public class ClassifiedListingEventEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -22,18 +23,14 @@ public class ClassifiedListingEntity {
   @Column(name = "published_at")
   private Long publishedAt;
 
-  @Transient
-  private PriceTagDto priceTags;
-
-  public ClassifiedListingEntity(String title, String summary, String location, Long publishedAt, PriceTagDto priceTags) {
+  public ClassifiedListingEventEntity(@NonNull String title, @NonNull String summary, String location, Long publishedAt) {
     this.title = title;
     this.summary = summary;
     this.location = location;
     this.publishedAt = publishedAt;
-    this.priceTags = priceTags;
   }
 
-  public ClassifiedListingDto convertEntityToDto() {
-    return new ClassifiedListingDto(title, summary, priceTags);
+  public ClassifiedListingDto convertEntityToDto(PriceTagDto priceTagDto) {
+    return new ClassifiedListingDto(title, summary, priceTagDto);
   }
 }

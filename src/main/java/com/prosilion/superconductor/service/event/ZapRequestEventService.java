@@ -50,7 +50,7 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
     event.setKind(Kind.ZAP_REQUEST.getValue());
     Long savedEventId = eventService.saveEventEntity(event);
 
-    ZapRequestDto zapRequestEventDto = createZapRequestDto(event, getRelaysTag(event));
+    ZapRequestDto zapRequestEventDto = createZapRequestDto(event);
     ZapRequestEventEntity zapRequestEventEntity = saveZapRequestEvent(zapRequestEventDto);
 
     joinService.save(savedEventId, zapRequestEventEntity.getId());
@@ -69,14 +69,14 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
 
   @SneakyThrows
   @NotNull
-  private DiscoveredRelayTags getRelaysTag(GenericEvent event) {
+  private DiscoveredZapRequestTag getZapRequestTag(GenericEvent event) {
     List<GenericTag> genericTagsOnly = event.getTags().stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast).toList();
 
     List<List<ElementAttribute>> relaysTag = genericTagsOnly.stream()
         .filter(ZapRequestEventService::isZapRequestTag).map(GenericTag::getAttributes).toList();
-    return new DiscoveredRelayTags(genericTagsOnly, relaysTag);
+    return new DiscoveredZapRequestTag(genericTagsOnly, relaysTag);
   }
 
   private static boolean isZapRequestTag(GenericTag tag) {
@@ -86,12 +86,14 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
   }
 
   @NotNull
-  private ZapRequestDto createZapRequestDto(GenericEvent event, DiscoveredRelayTags discoveredRelayTags) {
+  private ZapRequestDto createZapRequestDto(GenericEvent event) {
+    DiscoveredZapRequestTag discoveredZapRequestTag = getZapRequestTag(event);
+
     return new ZapRequestDto(
         event.getPubKey().toString(),
-        Long.valueOf(getReturnVal(discoveredRelayTags.genericTagsOnly(), "amount")),
-        getReturnVal(discoveredRelayTags.genericTagsOnly(), "lnurl"),
-        new RelaysTagDto(getReturnVal(discoveredRelayTags.genericTagsOnly(), "relays")));
+        Long.valueOf(getReturnVal(discoveredZapRequestTag.genericTagsOnly(), "amount")),
+        getReturnVal(discoveredZapRequestTag.genericTagsOnly(), "lnurl"),
+        new RelaysTagDto(getReturnVal(discoveredZapRequestTag.genericTagsOnly(), "relays")));
   }
 
   private ZapRequestEventEntity saveZapRequestEvent(ZapRequestDto zapRequestEventDto) {
@@ -105,6 +107,6 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
         .toString();
   }
 
-  private record DiscoveredRelayTags(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> zapRequestDto) {
+  private record DiscoveredZapRequestTag(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> zapRequestDto) {
   }
 }

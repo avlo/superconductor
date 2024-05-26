@@ -7,8 +7,9 @@ function hashThenSend() {
         // '1712006666',
         $("#kind").val(),
         $("#subject").val(),
-        $("#title").val(),
-        $("#summary").val(),
+        $("#relays").val(),
+        $("#amount").val(),
+        $("#lnurl").val(),
         $("#content").val(),
         $("#location").val(),
         $("#g_tag").val(),
@@ -39,11 +40,9 @@ function replaceHash(id_hash) {
                 'content': $("#content").val(),
                 'tags': [
                     ['subject', $("#subject").val()],
-                    ['title', $("#title").val()],
-                    ['published_at', Date.now()],
-                    ['summary', $("#summary").val()],
-                    ['location', $("#location").val()],
-                    ['price', $("#number").val(), $("#currency").val(), $("#frequency").val()],
+                    ['relays', $("#relays").val()],
+                    ['amount', $("#amount").val()],
+                    ['lnurl', $("#lnurl").val()],
                     ['e', $("#e_tag").val()],
                     ['p', $("#p_tag").val()],
                     ['t', $("#t_tag").val()],
@@ -51,6 +50,8 @@ function replaceHash(id_hash) {
                 ],
                 'pubkey': $("#pubkey").val(),
                 'created_at': Date.now(),
+                // TODO: hardcoding value exclusively used for testing
+                // 'created_at': '1712006666',
                 'sig': '86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546'
             }
         )

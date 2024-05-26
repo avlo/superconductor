@@ -1,26 +1,22 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.entity.classified.ClassifiedListingEntity;
+import com.prosilion.superconductor.entity.classified.ClassifiedListingEventEntity;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
-import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
+import nostr.event.impl.ClassifiedListing;
 
 @Setter
 @Getter
 public class ClassifiedListingDto extends ClassifiedListing {
-  final PriceTagDto priceTag;
+  private final PriceTagDto priceTag;
 
-  public ClassifiedListingDto(String title, String summary, PriceTagDto priceTag) {
+  public ClassifiedListingDto(@NonNull String title, @NonNull String summary, @NonNull PriceTagDto priceTag) {
     super(title, summary, priceTag);
     this.priceTag = priceTag;
   }
 
-  public ClassifiedListingEntity convertDtoToEntity() {
-    ClassifiedListingEntity classifiedListingEntity = new ClassifiedListingEntity();
-    classifiedListingEntity.setTitle(getTitle());
-    classifiedListingEntity.setSummary(getSummary());
-    classifiedListingEntity.setLocation(getLocation());
-    classifiedListingEntity.setPublishedAt(getPublishedAt());
-    return classifiedListingEntity;
+  public ClassifiedListingEventEntity convertDtoToEntity() {
+    return new ClassifiedListingEventEntity(getTitle(), getSummary(), getLocation(), getPublishedAt());
   }
 }

@@ -2,12 +2,12 @@
 <link rel="shortcut icon" href="/favicon.ico">
 <html>
 <head>
-  <title>NIP99 Classified Ad</title>
+  <title>NIP75 ZapReqest Event</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link href="/main.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="/nip-99.js"></script>
+  <script src="/nip-57.js"></script>
   <script src="/common.js"></script>
 </head>
 <body>
@@ -27,38 +27,42 @@
     <div class="col-md-6">
       <form class="form-inline">
         <div class="form-group">
-          <label for="title">Listing Title: </label>
-          <input type="text" value="classified title" id="title" class="form-control" placeholder="listing title...">
+          <label for="relays">Relays Tag: </label>
+          <input type="text" value="wss://abc.def" id="relays" class="form-control" placeholder="relays...">
+        </div>
+        <div class="form-group">
+          <label for="amount">Amount: </label>
+          <input type="text" value="666" id="amount" class="form-control" placeholder="amount...">
+        </div>
+        <div class="form-group">
+          <label for="lnurl">LnUrl: </label>
+          <input type="text" value="http://some.lnurl" id="lnurl" class="form-control" placeholder="lnurl...">
         </div>
         <div class="form-group">
           <label for="subject">Subject: </label>
-          <input type="text" value="classified subject" id="subject" class="form-control" placeholder="subject...">
-        </div>
-        <div class="form-group">
-          <label for="summary">Summary: </label>
-          <input type="text" value="classified summary" id="summary" class="form-control" placeholder="summary...">
+          <input type="text" value="subject Zap Request" id="subject" class="form-control" placeholder="subject...">
         </div>
         <div class="form-group">
           <label for="content">Content: </label>
-          <input type="text" value="classified content" id="content" class="form-control" placeholder="content in markdown...">
+          <input type="text" value="content Zap Request" id="content" class="form-control" placeholder="content in markdown...">
         </div>
         <div class="form-group">
           <label for="g_tag">GeoTag: </label>
-          <input type="text" value="classified geo-tag-1" id="g_tag" class="form-control" placeholder="geo-tag">
+          <input type="text" value="ZapRequest geo-tag-1" id="g_tag" class="form-control" placeholder="geo-tag">
         </div>
         <div class="form-group">
           <label for="t_tag">HashTag: </label>
-          <input type="text" value="classified hash-tag-1111" id="t_tag" class="form-control" placeholder="t-tag">
+          <input type="text" value="ZapRequest hash-tag-1111" id="t_tag" class="form-control" placeholder="t-tag">
         </div>
         <!--                    obtain below via javascirpt -->
         <!--                <input type="hidden" id="published_at" name="published_at" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">-->
-        <input type="hidden" id="location" name="location" value="classified peroulades">
-        <input type="hidden" id="number" name="number" value=666.66>
+        <input type="hidden" id="location" name="location" value="peroulades">
+        <input type="hidden" id="number" name="number" value=666>
         <input type="hidden" id="currency" name="currency" value="BTC">
         <input type="hidden" id="frequency" name="frequency" value="1">
         <input type="hidden" id="pubkey" name="pubkey"
                value="cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
-        <input type="hidden" id="kind" name="kind" value=30402>
+        <input type="hidden" id="kind" name="kind" value=9734>
         <!--                    below refers to another event-->
         <input type="hidden" id="e_tag" name="e_tag"
                value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">

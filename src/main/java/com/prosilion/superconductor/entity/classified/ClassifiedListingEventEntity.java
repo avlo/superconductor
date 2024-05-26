@@ -1,18 +1,17 @@
 package com.prosilion.superconductor.entity.classified;
 
+import com.prosilion.superconductor.dto.ClassifiedListingDto;
+import com.prosilion.superconductor.dto.PriceTagDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
-import nostr.event.tag.PriceTag;
-
-import java.math.BigDecimal;
+import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "classified_listing")
-public class ClassifiedListingEntity {
+public class ClassifiedListingEventEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -24,16 +23,14 @@ public class ClassifiedListingEntity {
   @Column(name = "published_at")
   private Long publishedAt;
 
-  public ClassifiedListingEntity(String title, String summary, String location, Long publishedAt) {
+  public ClassifiedListingEventEntity(@NonNull String title, @NonNull String summary, String location, Long publishedAt) {
     this.title = title;
     this.summary = summary;
     this.location = location;
     this.publishedAt = publishedAt;
   }
 
-  public ClassifiedListing convertEntityToDto() {
-    // TODO: below
-    PriceTag priceTags = new PriceTag(new BigDecimal(666), "BTC", "frequency");
-    return new ClassifiedListing(title, summary, priceTags);
+  public ClassifiedListingDto convertEntityToDto(PriceTagDto priceTagDto) {
+    return new ClassifiedListingDto(title, summary, priceTagDto);
   }
 }

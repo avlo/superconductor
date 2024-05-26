@@ -49,5 +49,7 @@ public class EventEntityTagEntityService {
         .findFirst()
         .ifPresent(baseTag -> eventEntitySubjectTagEntityService.saveSubjectTag(
             new SubjectTagDto(((SubjectTag) baseTag).getSubject()), id));
+
+//    TODO: relay tags?  amount tags?  etc?
   }
 }

@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.entity.classified;
 
+import com.prosilion.superconductor.dto.PriceTagDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nostr.event.tag.PriceTag;
 
 import java.math.BigDecimal;
 
@@ -22,7 +22,7 @@ public class PriceTagEntity {
   private String currency;
   private String frequency;
 
-  public PriceTag convertEntityToDto() {
-    return PriceTag.builder().number(number).currency(currency).frequency(frequency).build();
+  public PriceTagDto convertEntityToDto() {
+    return new PriceTagDto(number, currency, frequency);
   }
 }

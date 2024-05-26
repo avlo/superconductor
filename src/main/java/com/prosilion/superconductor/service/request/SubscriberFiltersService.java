@@ -21,7 +21,8 @@ public class SubscriberFiltersService {
   @Async
   public void save(Long subscriberId, FiltersList filtersList) {
     subscriberFiltersManager.saveFilters(subscriberId, filtersList);
-    publisher.publishEvent(new AddSubscriberFiltersEvent(subscriberId, filtersList));
+    AddSubscriberFiltersEvent event = new AddSubscriberFiltersEvent(subscriberId, filtersList);
+    publisher.publishEvent(event);
   }
 
   @Async

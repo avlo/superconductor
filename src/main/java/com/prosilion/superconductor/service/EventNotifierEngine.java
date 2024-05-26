@@ -2,14 +2,11 @@ package com.prosilion.superconductor.service;
 
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.pubsub.AddSubscriberFiltersEvent;
-import com.prosilion.superconductor.pubsub.RemoveSubscriberFilterEvent;
 import com.prosilion.superconductor.pubsub.SubscriberNotifierEvent;
 import lombok.Getter;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
-import nostr.event.list.FiltersList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -21,25 +18,10 @@ import java.util.Optional;
 @Getter
 @Service
 public class EventNotifierEngine<T extends GenericEvent> {
-  private final ApplicationEventPublisher publisher;
-
-
-// TODO: below currently stores:
+  private final SubscriberNotifierService<T> subscriberNotifierService;
+  // TODO: below map currently stores:
 //
-//      Map<SubscriberId, FiltersList Object>
-//
-//  should instead store:
-//      Map<SubscriberId, FiltersList Id>
-//
-//  upon which a service lookup and filters list population occurs
-//
-  private final Map<Long, FiltersList> subscribersFiltersMap;
-
-
-
-// TODO: below map currently stores:
-//
-//      Map<Kind, <Map<EventId, Event>>
+//      Map<Kind(enum), <Map<EventId, Event>>
 //
 //  should instead store two maps:
 //      Map<Kind, ServiceType>  // static == fast
@@ -51,9 +33,8 @@ public class EventNotifierEngine<T extends GenericEvent> {
 
 
   @Autowired
-  public EventNotifierEngine(ApplicationEventPublisher publisher) {
-    this.publisher = publisher;
-    this.subscribersFiltersMap = new HashMap<>(new HashMap<>()); // use fast-hash map as/if necessary in the future
+  public EventNotifierEngine(SubscriberNotifierService<T> subscriberNotifierService) {
+    this.subscriberNotifierService = subscriberNotifierService;
     this.kindEventMap = new EnumMap<>(Kind.class);
   }
 
@@ -63,24 +44,16 @@ public class EventNotifierEngine<T extends GenericEvent> {
     map.putIfAbsent(addNostrEvent.id(), addNostrEvent.event());
     // TODO: if event is a replaceable event, update existing event
     kindEventMap.put(addNostrEvent.kind(), map);
-    publisher.publishEvent(new SubscriberNotifierEvent<T>(subscribersFiltersMap, addNostrEvent));
+    subscriberNotifierService.notifySubscriber(addNostrEvent);
   }
 
   @EventListener
-  public void addSubscriberFiltersHandler(AddSubscriberFiltersEvent addSubscriber) {
-    FiltersList filtersList = Optional.ofNullable(subscribersFiltersMap.get(addSubscriber.subscriberId())).orElse(addSubscriber.filtersList());
-
-    Map<Long, FiltersList> subscriberFilterListMap = new HashMap<>(new HashMap<>());
-    subscriberFilterListMap.put(addSubscriber.subscriberId(), filtersList);
+  public void addSubscriberFiltersHandler(AddSubscriberFiltersEvent subscriberFilters) {
     kindEventMap.forEach((kind, eventMap) ->
         eventMap.forEach((eventId, event) ->
-            publisher.publishEvent(new SubscriberNotifierEvent<T>(subscriberFilterListMap, new AddNostrEvent<>(eventId, event, kind)))));
-
-    subscribersFiltersMap.putIfAbsent(addSubscriber.subscriberId(), filtersList);
-  }
-
-  @EventListener
-  public void removeSubscriberFilterHandler(RemoveSubscriberFilterEvent removeSubscriber) {
-    subscribersFiltersMap.remove(removeSubscriber.subscriberId());
+            subscriberNotifierService.notifySubscriber(new SubscriberNotifierEvent<>(
+                Map.of(subscriberFilters.subscriberId(), subscriberFilters.filtersList()),
+                new AddNostrEvent<>(eventId, event, kind))
+            )));
   }
 }

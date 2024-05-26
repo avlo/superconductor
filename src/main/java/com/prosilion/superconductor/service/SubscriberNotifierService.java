@@ -6,7 +6,6 @@ import com.prosilion.superconductor.pubsub.SubscriberNotifierEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
 import nostr.event.impl.GenericEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -22,8 +21,10 @@ public class SubscriberNotifierService<T extends GenericEvent> {
     this.filterMatcher = filterMatcher;
   }
 
-  @EventListener
-  public void newEventHandler(SubscriberNotifierEvent<T> subscriberNotifierEvent) {
+  public void notifySubscriber(AddNostrEvent<T> subscriberNotifierEvent) {
+  }
+
+  public void notifySubscriber(SubscriberNotifierEvent<T> subscriberNotifierEvent) {
     Map<Long, AddNostrEvent<T>> eventsToSend = new HashMap<>();
 
     subscriberNotifierEvent.subscribersFiltersMap().forEach((subscriberId, subscriberIdFiltersList) ->

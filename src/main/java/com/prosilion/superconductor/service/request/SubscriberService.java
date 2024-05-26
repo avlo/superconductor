@@ -1,10 +1,8 @@
 package com.prosilion.superconductor.service.request;
 
 import com.prosilion.superconductor.entity.Subscriber;
-import com.prosilion.superconductor.pubsub.RemoveSubscriberFilterEvent;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.list.FiltersList;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,20 +12,17 @@ import java.util.List;
 public class SubscriberService {
   private final SubscriberManager subscriberManager;
   private final SubscriberFiltersService subscriberFiltersService;
-  private final ApplicationEventPublisher publisher;
 
   public SubscriberService(
       SubscriberManager subscriberManager,
-      SubscriberFiltersService subscriberFiltersService,
-      ApplicationEventPublisher publisher) {
+      SubscriberFiltersService subscriberFiltersService) {
     this.subscriberManager = subscriberManager;
     this.subscriberFiltersService = subscriberFiltersService;
-    this.publisher = publisher;
   }
 
   public void save(Subscriber subscriber, FiltersList filtersList) {
     try {
-      publisher.publishEvent(new RemoveSubscriberFilterEvent(removeSubscriberBySubscriberId(subscriber.getSubscriberId())));
+      removeSubscriberBySubscriberId(subscriber.getSubscriberId());
       log.info("removing matched subscriberId [{}], session [{}]", subscriber.getSubscriberId(), subscriber.getSessionId());
     } catch (NoExistingUserException e) {
       log.info("no match to remove for subscriberId [{}], session [{}]", subscriber.getSubscriberId(), subscriber.getSessionId());

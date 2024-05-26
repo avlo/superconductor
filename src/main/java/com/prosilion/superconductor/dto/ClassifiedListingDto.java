@@ -4,7 +4,7 @@ import com.prosilion.superconductor.entity.classified.ClassifiedListingEventEnti
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import nostr.event.impl.ClassifiedListingEvent.ClassifiedListing;
+import nostr.event.impl.ClassifiedListing;
 
 import java.util.Optional;
 

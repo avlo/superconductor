@@ -22,8 +22,33 @@ import java.util.Optional;
 @Service
 public class EventNotifierEngine<T extends GenericEvent> {
   private final ApplicationEventPublisher publisher;
+
+
+// TODO: below currently stores:
+//
+//      Map<SubscriberId, FiltersList Object>
+//
+//  should instead store:
+//      Map<SubscriberId, FiltersList Id>
+//
+//  upon which a service lookup and filters list population occurs
+//
   private final Map<Long, FiltersList> subscribersFiltersMap;
+
+
+
+// TODO: below map currently stores:
+//
+//      Map<Kind, <Map<EventId, Event>>
+//
+//  should instead store two maps:
+//      Map<Kind, ServiceType>  // static == fast
+//  and then
+//      InsertSortByKey: Map<EventId, Kind>  for fast lookup
+//
+//  upon which a service lookup and event object population occurs
   private final Map<Kind, Map<Long, T>> kindEventMap;
+
 
   @Autowired
   public EventNotifierEngine(ApplicationEventPublisher publisher) {

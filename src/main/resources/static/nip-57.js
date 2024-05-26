@@ -7,14 +7,9 @@ function hashThenSend() {
         // '1712006666',
         $("#kind").val(),
         $("#subject").val(),
-
-
         $("#relays").val(),
         $("#amount").val(),
         $("#lnurl").val(),
-
-        $("#title").val(),
-        $("#summary").val(),
         $("#content").val(),
         $("#location").val(),
         $("#g_tag").val(),
@@ -48,10 +43,6 @@ function replaceHash(id_hash) {
                     ['relays', $("#relays").val()],
                     ['amount', $("#amount").val()],
                     ['lnurl', $("#lnurl").val()],
-                    ['title', $("#title").val()],
-                    ['summary', $("#summary").val()],
-                    ['location', $("#location").val()],
-                    ['price', $("#number").val(), $("#currency").val(), $("#frequency").val()],
                     ['e', $("#e_tag").val()],
                     ['p', $("#p_tag").val()],
                     ['t', $("#t_tag").val()],

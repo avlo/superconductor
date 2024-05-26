@@ -17,6 +17,7 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
 import nostr.event.impl.ZapRequestEvent;
 import nostr.event.message.EventMessage;
+import nostr.event.tag.PubKeyTag;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,7 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
 
     ZapRequestEvent zapRequestEvent = new ZapRequestEvent(
         event.getPubKey(),
-        new PublicKey(zapRequestEventDto.getRecipientPubKey()),
+        new PubKeyTag(new PublicKey(zapRequestEventDto.getRecipientPubKey())),
         event.getTags(),
         event.getContent(),
         zapRequestEventDto

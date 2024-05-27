@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Getter
 @Service
@@ -39,19 +37,22 @@ public class EventNotifierService<T extends GenericEvent> {
     kindEventMap.put(addNostrEvent.kind(), map);
   }
 
-  public Map<Long, T> getEvents() {
-    return kindEventMap.entrySet().stream().flatMap(entry ->
-        entry.getValue().entrySet().stream()).collect(
-        Collectors.toMap(
-            Map.Entry::getKey,
-            Map.Entry::getValue
-        ));
-  }
-
-  public List<AddNostrEvent<T>> getAddNostrEvents() {
-    return kindEventMap.entrySet().stream().flatMap(kindMapEntry ->
-            kindMapEntry.getValue().entrySet().stream().map(longTEntry ->
-                new AddNostrEvent<T>(kindMapEntry.getKey(), longTEntry.getKey(), longTEntry.getValue())))
-        .toList();
-  }
+  /**
+   * public Map<Long, T> getEvents() {
+   *     return kindEventMap.entrySet().stream().flatMap(entry ->
+   *         entry.getValue().entrySet().stream()).collect(
+   *         Collectors.toMap(
+   *             Map.Entry::getKey,
+   *             Map.Entry::getValue
+   *         ));
+   *   }
+   *
+   *   public List<AddNostrEvent<T>> getAddNostrEvents() {
+   *     return kindEventMap.entrySet().stream().flatMap(kindMapEntry ->
+   *             kindMapEntry.getValue().entrySet().stream().map(longTEntry ->
+   *                 new AddNostrEvent<T>(kindMapEntry.getKey(), longTEntry.getKey(), longTEntry.getValue())))
+   *         .toList();
+   *   }
+   *
+   */
 }

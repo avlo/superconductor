@@ -50,6 +50,10 @@ public class EventService<T extends GenericEvent> {
     return savedEntity.getId();
   }
 
+  public Optional<EventEntity> getEvent(Long id) {
+    return eventEntityRepository.findById(id);
+  }
+
   protected void publishEvent(Long id, T event) {
     notifierService.nostrEventHandler(new AddNostrEvent<>(Kind.valueOf(event.getKind()), id, event));
   }

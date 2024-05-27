@@ -1,16 +1,25 @@
 package com.prosilion.superconductor.service.request;
 
+import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
-import com.prosilion.superconductor.repository.join.subscriber.*;
-import jakarta.persistence.NoResultException;
+import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterEvent;
+import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterAuthorRepository;
+import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterEventRepository;
+import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterKindRepository;
+import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterReferencedEventRepository;
+import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterReferencedPubkeyRepository;
+import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterRepository;
 import jakarta.transaction.Transactional;
 import nostr.event.impl.Filters;
+import nostr.event.impl.GenericEvent;
 import nostr.event.list.EventList;
 import nostr.event.list.FiltersList;
 import nostr.event.list.KindList;
 import nostr.event.list.PublicKeyList;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -38,6 +47,58 @@ public class SubscriberFiltersManager {
     this.subscriberFilterReferencedPubkeyRepository = subscriberFilterReferencedPubkeyRepository;
   }
 
+  /**
+   * SELECTS
+   */
+
+  public FiltersList getSubscriberFilters(Long subscriberId) {
+    FiltersList filtersList = new FiltersList();
+    List<Long> filterIds = getFilterIds(subscriberId);
+    for (Long filterId : filterIds) {
+      Filters filter = new Filters();
+      filter.setEvents(getFilterEventsIds(filterId));
+      filtersList.add(filter);
+    }
+    return filtersList;
+  }
+
+  private List<Long> getFilterIds(Long subscriberId) {
+    return subscriberFilterRepository.findAllBySubscriberId(subscriberId).orElseThrow().stream().map(SubscriberFilter::getId).toList();
+  }
+
+  private EventList getFilterEventsIds(Long filterIds) {
+    /**
+     *  stream variation of same logic below, commented here for efficiency later
+     *     List<SubscriberFilterEvent> list = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds).orElseThrow().stream().toList();
+     *     EventList eventList = new EventList();
+     *
+     *     list.stream().map(s -> {
+     *       Optional<List<EventEntity>> result = subscriberFilterEventRepository.findEventsBySubscriberFilterEventString(s.getEventId());
+     *       return result.orElseThrow().stream().map(EventEntity::convertEntityToDto).toList().stream().filter(Objects::nonNull).map(GenericEvent.class::cast).toList();
+     *     }).toList().forEach(eventList::addAll);
+     *
+     *     return eventList;
+     */
+
+    List<SubscriberFilterEvent> list = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds).orElseThrow().stream().toList();
+
+    EventList eventList = new EventList();
+    for (SubscriberFilterEvent s : list) {
+      eventList.addAll(
+          subscriberFilterEventRepository.findEventsBySubscriberFilterEventString(s.getEventId())
+              .orElseThrow()
+              .stream().map(EventEntity::convertEntityToDto).toList().stream().filter(Objects::nonNull)
+              .map(GenericEvent.class::cast)
+              .toList());
+    }
+
+    return eventList;
+  }
+
+  /**
+   * SAVES
+   */
+
   public void saveFilters(Long subscriberId, FiltersList filtersList) {
     for (Filters filters : filtersList.getList()) {
       Long filterId = saveSubscriberFilter(subscriberId, filters);
@@ -55,7 +116,7 @@ public class SubscriberFiltersManager {
   }
 
   private void saveEvents(Long filterId, EventList incomingEvents) {
-    incomingEvents.getList().forEach(event -> subscriberFilterEventRepository.save(filterId, event));
+    incomingEvents.getList().forEach(event -> subscriberFilterEventRepository.save(filterId, event.getId()));
   }
 
   private void saveAuthors(Long filterId, PublicKeyList incomingAuthors) {
@@ -73,12 +134,13 @@ public class SubscriberFiltersManager {
   private void saveReferencedPubkeys(Long filterId, PublicKeyList incomingReferencedPubKeys) {
     incomingReferencedPubKeys.getList().forEach(referencedPubKey -> subscriberFilterReferencedPubkeyRepository.save(filterId, referencedPubKey));
   }
+
   /**
    * REMOVES
    */
 
   public void removeAllFilters(Long subscriberId) {
-    Long filterId = getFilterId(subscriberId);
+    List<Long> filterId = getFilterIds(subscriberId);
     removeAuthors(filterId);
     removeKinds(filterId);
     removeReferencedEvents(filterId);
@@ -88,31 +150,27 @@ public class SubscriberFiltersManager {
     //      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
   }
 
-  private Long getFilterId(Long subscriberId) {
-    return subscriberFilterRepository.findBySubscriberId(subscriberId).orElseThrow(NoResultException::new).getId();
+  private void removeFilters(List<Long> subscriberIds) {
+    subscriberFilterRepository.deleteAllBySubscriberIdIn(subscriberIds);
   }
 
-  private void removeFilters(Long subscriberId) {
-    subscriberFilterRepository.deleteById(subscriberId);
+  public void removeEvents(List<Long> filterIds) {
+    subscriberFilterEventRepository.deleteAllByFilterIdIn(filterIds);
   }
 
-  public void removeEvents(Long filterId) {
-    subscriberFilterEventRepository.deleteByFilterId(filterId);
+  public void removeAuthors(List<Long> filterIds) {
+    subscriberFilterAuthorRepository.deleteAllByFilterIdIn(filterIds);
   }
 
-  public void removeAuthors(Long filterId) {
-    subscriberFilterAuthorRepository.deleteByFilterId(filterId);
+  public void removeKinds(List<Long> filterIds) {
+    subscriberFilterKindRepository.deleteAllByFilterIdIn(filterIds);
   }
 
-  public void removeKinds(Long filterId) {
-    subscriberFilterKindRepository.deleteByFilterId(filterId);
+  public void removeReferencedEvents(List<Long> filterIds) {
+    subscriberFilterReferencedEventRepository.deleteAllByFilterIdIn(filterIds);
   }
 
-  public void removeReferencedEvents(Long filterId) {
-    subscriberFilterReferencedEventRepository.deleteByFilterId(filterId);
-  }
-
-  public void removeReferencedPubkeys(Long filterId) {
-    subscriberFilterReferencedPubkeyRepository.deleteByFilterId(filterId);
+  public void removeReferencedPubkeys(List<Long> filterIds) {
+    subscriberFilterReferencedPubkeyRepository.deleteAllByFilterIdIn(filterIds);
   }
 }

@@ -1,23 +1,33 @@
 package com.prosilion.superconductor.service.request;
 
 import com.prosilion.superconductor.entity.Subscriber;
+import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
+import com.prosilion.superconductor.pubsub.FireNostrEvent;
 import lombok.extern.slf4j.Slf4j;
+import nostr.api.NIP01;
+import nostr.event.impl.GenericEvent;
 import nostr.event.list.FiltersList;
+import nostr.event.message.EventMessage;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 public class SubscriberService {
   private final SubscriberManager subscriberManager;
   private final SubscriberFiltersService subscriberFiltersService;
+  private final ApplicationEventPublisher publisher;
 
   public SubscriberService(
       SubscriberManager subscriberManager,
-      SubscriberFiltersService subscriberFiltersService) {
+      SubscriberFiltersService subscriberFiltersService,
+      ApplicationEventPublisher publisher) {
     this.subscriberManager = subscriberManager;
     this.subscriberFiltersService = subscriberFiltersService;
+    this.publisher = publisher;
   }
 
   public void save(Subscriber subscriber, FiltersList filtersList) {
@@ -30,10 +40,6 @@ public class SubscriberService {
     log.info("saving subscriberId [{}], session [{}]", subscriber.getSubscriberId(), subscriber.getSessionId());
     Subscriber savedSubscriber = subscriberManager.save(subscriber);
     subscriberFiltersService.save(savedSubscriber.getId(), filtersList);
-  }
-
-  public Subscriber get(Long subscriberId) {
-    return subscriberManager.get(subscriberId).get();
   }
 
   /**
@@ -65,4 +71,18 @@ public class SubscriberService {
 //    s.setActive(false);
 //    return subscriberManager.save(s).getSubscriberId();
 //  }
+
+  public Map<Long, FiltersList> getCrazinessAllSubscribersFilterMap() {
+    return subscriberFiltersService.getYouBetterRefactorEntireSubscriberFiltersMap();
+  }
+
+  public <T extends GenericEvent> void broadcastToClients(FireNostrEvent<T> fireNostrEvent) {
+    EventMessage message = NIP01.createEventMessage(fireNostrEvent.event(), String.valueOf(fireNostrEvent.subscriberId()));
+    BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(get(fireNostrEvent.subscriberId()).getSessionId(), message);
+    publisher.publishEvent(event);
+  }
+
+  private Subscriber get(Long subscriberId) {
+    return subscriberManager.get(subscriberId).get();
+  }
 }

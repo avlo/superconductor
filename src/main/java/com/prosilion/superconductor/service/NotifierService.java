@@ -2,8 +2,6 @@ package com.prosilion.superconductor.service;
 
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.pubsub.AddSubscriberFiltersEvent;
-import com.prosilion.superconductor.pubsub.SubscriberNotifierEvent;
-import com.prosilion.superconductor.service.request.SubscriberFiltersService;
 import lombok.Getter;
 import nostr.event.impl.GenericEvent;
 import nostr.event.list.FiltersList;
@@ -17,28 +15,26 @@ import java.util.Map;
 @Getter
 @Service
 public class NotifierService<T extends GenericEvent> {
-  private final SubscriberNotifierService<T> subscriberNotifierService;
   private final EventNotifierService<T> eventNotifierService;
-  private final SubscriberFiltersService subscriberFiltersService;
+  private final SubscriberNotifierService<T> subscriberNotifierService;
 
   @Autowired
-  public NotifierService(SubscriberNotifierService<T> subscriberNotifierService, EventNotifierService<T> eventNotifierService, SubscriberFiltersService subscriberFiltersService) {
+  public NotifierService(SubscriberNotifierService<T> subscriberNotifierService, EventNotifierService<T> eventNotifierService) {
     this.subscriberNotifierService = subscriberNotifierService;
     this.eventNotifierService = eventNotifierService;
-    this.subscriberFiltersService = subscriberFiltersService;
   }
 
   public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
     eventNotifierService.updateEventMap(addNostrEvent);
-    subscriberNotifierService.newEventHandler(new SubscriberNotifierEvent<>(subscriberFiltersService.getSubscribersFiltersMap(), addNostrEvent));
+    subscriberNotifierService.newEventHandler(addNostrEvent);
   }
 
   @EventListener
-  public void addSubscriberFiltersHandler(AddSubscriberFiltersEvent addSubscriber) {
+  public void subscriptionEventHandler(AddSubscriberFiltersEvent addSubscriber) {
     Map<Long, FiltersList> subscriberFilterListMap = new HashMap<>(new HashMap<>());
     subscriberFilterListMap.put(addSubscriber.subscriberId(), addSubscriber.filtersList());
     eventNotifierService.getKindEventMap().forEach((kind, eventMap) ->
         eventMap.forEach((eventId, event) ->
-            subscriberNotifierService.newEventHandler(new SubscriberNotifierEvent<>(subscriberFilterListMap, new AddNostrEvent<>(kind, eventId, event)))));
+            subscriberNotifierService.newEventHandler(new AddNostrEvent<>(kind, eventId, event))));
   }
 }

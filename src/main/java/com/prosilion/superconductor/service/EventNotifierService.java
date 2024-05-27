@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.service;
 
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
-import lombok.Getter;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import org.springframework.stereotype.Service;
@@ -11,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Getter
 @Service
 public class EventNotifierService<T extends GenericEvent> {
   // TODO: below map currently stores:
@@ -35,6 +33,10 @@ public class EventNotifierService<T extends GenericEvent> {
     map.putIfAbsent(addNostrEvent.id(), addNostrEvent.event());
     // TODO: if event is a replaceable event, update existing event
     kindEventMap.put(addNostrEvent.kind(), map);
+  }
+
+  public Map<Kind, Map<Long, T>> getKindEventMap() {
+    return kindEventMap;
   }
 
   /**

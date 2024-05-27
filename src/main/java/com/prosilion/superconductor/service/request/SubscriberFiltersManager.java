@@ -52,6 +52,7 @@ public class SubscriberFiltersManager {
    */
 
   public FiltersList getSubscriberFilters(Long subscriberId) {
+    // TODO: refactor cleanup once all getters are done
     FiltersList filtersList = new FiltersList();
     List<Long> filterIds = getFilterIds(subscriberId);
     for (Long filterId : filterIds) {

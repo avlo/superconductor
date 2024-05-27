@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Getter
 @Service
@@ -36,10 +35,8 @@ public class NotifierService<T extends GenericEvent> {
 
   @EventListener
   public void addSubscriberFiltersHandler(AddSubscriberFiltersEvent addSubscriber) {
-    FiltersList filtersList = Optional.ofNullable(subscriberFiltersService.getSubscriberFiltersList(addSubscriber.subscriberId())).orElse(addSubscriber.filtersList());
-
     Map<Long, FiltersList> subscriberFilterListMap = new HashMap<>(new HashMap<>());
-    subscriberFilterListMap.put(addSubscriber.subscriberId(), filtersList);
+    subscriberFilterListMap.put(addSubscriber.subscriberId(), addSubscriber.filtersList());
     eventNotifierService.getKindEventMap().forEach((kind, eventMap) ->
         eventMap.forEach((eventId, event) ->
             subscriberNotifierService.newEventHandler(new SubscriberNotifierEvent<>(subscriberFilterListMap, new AddNostrEvent<>(kind, eventId, event)))));

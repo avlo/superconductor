@@ -35,15 +35,11 @@ public class SubscriberFiltersService {
     this.publisher = publisher;
   }
 
-  public FiltersList getSubscriberFiltersList(Long subscriberId) {
-    return subscribersFiltersMap.get(subscriberId);
-  }
-
   @Async
   public void save(Long subscriberId, FiltersList filtersList) {
     subscriberFiltersManager.saveFilters(subscriberId, filtersList);
     subscribersFiltersMap.put(subscriberId, filtersList);
-    publisher.publishEvent(new AddSubscriberFiltersEvent(subscriberId, getSubscriberFiltersList(subscriberId)));
+    publisher.publishEvent(new AddSubscriberFiltersEvent(subscriberId, subscribersFiltersMap.get(subscriberId)));
   }
 
   @Async

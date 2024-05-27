@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.service.request;
 
 import com.prosilion.superconductor.pubsub.AddSubscriberFiltersEvent;
+import lombok.Getter;
 import nostr.event.list.FiltersList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,6 +25,7 @@ public class SubscriberFiltersService {
 //
 //  upon which a service lookup and filters list population occurs
 //
+  @Getter
   private final Map<Long, FiltersList> subscribersFiltersMap;
 
   @Autowired
@@ -33,11 +35,15 @@ public class SubscriberFiltersService {
     this.publisher = publisher;
   }
 
+  public FiltersList getSubscriberFiltersList(Long subscriberId) {
+    return subscribersFiltersMap.get(subscriberId);
+  }
+
   @Async
   public void save(Long subscriberId, FiltersList filtersList) {
     subscriberFiltersManager.saveFilters(subscriberId, filtersList);
     subscribersFiltersMap.put(subscriberId, filtersList);
-    publisher.publishEvent(new AddSubscriberFiltersEvent(subscriberId, filtersList));
+    publisher.publishEvent(new AddSubscriberFiltersEvent(subscriberId, getSubscriberFiltersList(subscriberId)));
   }
 
   @Async

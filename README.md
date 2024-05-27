@@ -24,13 +24,13 @@
   - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol)
   - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
   - [NIP-14](https://nostr-nips.com/nip-14) (Subject Tag)
+  - [NIP-57](https://nostr-nips.com/nip-75) (Zap Goals / Lightning Network Requests & Receipts)
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
     - [ScdMatrix](https://github.com/avlo/scdecisionmatrix) client implementation (in progress)
 
   #### In-Progress
   - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
     - [ScdMatrix](https://github.com/avlo/scdecisionmatrix) server implementation
-  - [NIP-75](https://nostr-nips.com/nip-75) (Zap Goals / Lightning Network Payments)
 
 ## Requirements
 

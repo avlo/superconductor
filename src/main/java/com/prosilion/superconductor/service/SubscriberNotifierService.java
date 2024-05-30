@@ -5,10 +5,8 @@ import com.prosilion.superconductor.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.service.request.SubscriberService;
 import com.prosilion.superconductor.util.FilterMatcher;
 import nostr.event.impl.GenericEvent;
+import nostr.event.list.FiltersList;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class SubscriberNotifierService<T extends GenericEvent> {
@@ -20,15 +18,18 @@ public class SubscriberNotifierService<T extends GenericEvent> {
     this.filterMatcher = filterMatcher;
   }
 
-  public void newEventHandler(AddNostrEvent<T> addNostrEvent) {
-    Map<Long, AddNostrEvent<T>> eventsToSend = new HashMap<>();
+  public void subscriptionEventHandler(Long subscriberId, AddNostrEvent<T> addNostrEvent) {
+    broadcastMatch(addNostrEvent, subscriberId, subscriberService.getFiltersList(subscriberId));
+  }
 
-    subscriberService.getCrazinessAllSubscribersFilterMap().forEach((subscriberId, subscriberIdFiltersList) ->
-        subscriberIdFiltersList.getList().forEach(subscriberFilters ->
-            filterMatcher.addEventMatch(subscriberFilters, addNostrEvent).forEach(event ->
-                eventsToSend.putIfAbsent(subscriberId, event))));
+  public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
+    subscriberService.getCrazinessAllSubscribersFilterMap().forEach((subscriberId, filtersList) ->
+        broadcastMatch(addNostrEvent, subscriberId, filtersList));
+  }
 
-    eventsToSend.forEach((subscriberId, event) ->
-        subscriberService.broadcastToClients(new FireNostrEvent<>(subscriberId, event.event())));
+  private void broadcastMatch(AddNostrEvent<T> addNostrEvent, Long subscriberId, FiltersList filtersList) {
+    filtersList.getList().forEach(filters ->
+        filterMatcher.intersectFilterMatches(filters, addNostrEvent).forEach(event ->
+            subscriberService.broadcastToClients(new FireNostrEvent<>(subscriberId, event.event()))));
   }
 }

@@ -44,6 +44,11 @@ public class EventEntity {
     this.content = content;
   }
 
+  public EventEntity(long id, String eventId, Integer kind, Integer nip, String pubKey, Long createdAt, String signature, String content) {
+    this(eventId, kind, nip, pubKey, createdAt, signature, content);
+    this.id = id;
+  }
+
   public EventDto convertEntityToDto() {
     byte[] rawData = NostrUtil.hexToBytes(signature);
     Signature signature = new Signature();

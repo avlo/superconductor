@@ -23,7 +23,13 @@ import static java.util.Objects.nonNull;
 @Component
 @NoArgsConstructor
 public class FilterMatcher<T extends GenericEvent> {
-  public List<AddNostrEvent<T>> addEventMatch(Filters subscriberFilters, AddNostrEvent<T> eventToCheck) {
+  BiPredicate<GenericEvent, AddNostrEvent<T>> eventsPredicate = (t, u) -> t.getId().equals(u.event().getId());
+  BiPredicate<PublicKey, AddNostrEvent<T>> authorsPredicate = (t, u) -> t.toString().equals(u.event().getPubKey().toString());
+  BiPredicate<Integer, AddNostrEvent<T>> kindsPredicate = (t, u) -> t.equals(u.event().getKind());
+  BiPredicate<GenericEvent, AddNostrEvent<T>> referencedEventsPredicate = (t, u) -> t.getTags().equals(u.event().getTags());
+  BiPredicate<PublicKey, AddNostrEvent<T>> referencedPubKeysPredicate = (t, u) -> t.toString().equals(u.event().getPubKey().toString());
+
+  public List<AddNostrEvent<T>> intersectFilterMatches(Filters subscriberFilters, AddNostrEvent<T> eventToCheck) {
     List<Combo<T>> combos = new ArrayList<>();
 
     combos.add(new Combo<>(Optional.ofNullable(
@@ -79,11 +85,6 @@ public class FilterMatcher<T extends GenericEvent> {
             testable -> biPredicate.test(testable, eventToCheck));
   }
 
-  BiPredicate<GenericEvent, AddNostrEvent<T>> eventsPredicate = (t, u) -> t.getId().equals(u.event().getId());
-  BiPredicate<PublicKey, AddNostrEvent<T>> authorsPredicate = (t, u) -> t.toString().equals(u.event().getPubKey().toString());
-  BiPredicate<Integer, AddNostrEvent<T>> kindsPredicate = (t, u) -> t.equals(u.event().getKind());
-  BiPredicate<GenericEvent, AddNostrEvent<T>> referencedEventsPredicate = (t, u) -> t.getTags().equals(u.event().getTags());
-  BiPredicate<PublicKey, AddNostrEvent<T>> referencedPubKeysPredicate = (t, u) -> t.toString().equals(u.event().getPubKey().toString());
 }
 
 @Getter

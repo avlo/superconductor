@@ -30,7 +30,7 @@ public class SubscriberService {
     this.publisher = publisher;
   }
 
-  public void save(Subscriber subscriber, FiltersList filtersList) {
+  public Long save(Subscriber subscriber, FiltersList filtersList) {
     try {
       removeSubscriberBySubscriberId(subscriber.getSubscriberId());
       log.info("removing matched subscriberId [{}], session [{}]", subscriber.getSubscriberId(), subscriber.getSessionId());
@@ -40,6 +40,7 @@ public class SubscriberService {
     log.info("saving subscriberId [{}], session [{}]", subscriber.getSubscriberId(), subscriber.getSessionId());
     Subscriber savedSubscriber = subscriberManager.save(subscriber);
     subscriberFiltersService.save(savedSubscriber.getId(), filtersList);
+    return savedSubscriber.getId();
   }
 
   /**
@@ -71,6 +72,10 @@ public class SubscriberService {
 //    s.setActive(false);
 //    return subscriberManager.save(s).getSubscriberId();
 //  }
+
+  public FiltersList getFiltersList(Long subscriberId) {
+    return subscriberFiltersService.getFiltersList(subscriberId);
+  }
 
   public Map<Long, FiltersList> getCrazinessAllSubscribersFilterMap() {
     return subscriberFiltersService.getYouBetterRefactorEntireSubscriberFiltersMap();

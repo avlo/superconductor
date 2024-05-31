@@ -23,6 +23,9 @@ public class NotifierService<T extends GenericEvent> {
     subscriberNotifierService.nostrEventHandler(addNostrEvent);
   }
 
+  /**
+   * gets all events, redis?
+   */
   public void subscriptionEventHandler(Long subscriberId) {
     eventNotifierService.getKindEventMap().forEach((kind, eventMap) ->
         eventMap.forEach((eventId, event) ->

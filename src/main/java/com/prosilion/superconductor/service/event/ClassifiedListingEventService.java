@@ -48,7 +48,7 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
   @Async
   public void processIncoming(T eventMessage) {
     log.info("processing incoming CLASSIFIED_LISTING: [{}]", eventMessage);
-    GenericEvent event = (GenericEvent) eventMessage.getEvent();
+    ClassifiedListingEvent event = (ClassifiedListingEvent) eventMessage.getEvent();
     event.setNip(99);
     Long savedEventId = eventService.saveEventEntity(event);
 

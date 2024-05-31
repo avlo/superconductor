@@ -46,7 +46,7 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
   @Async
   public void processIncoming(T eventMessage) {
     log.info("processing incoming ZAP_REQUEST: [{}]", eventMessage);
-    GenericEvent event = (GenericEvent) eventMessage.getEvent();
+    ZapRequestEvent event = (ZapRequestEvent) eventMessage.getEvent();
     event.setNip(57);
     event.setKind(Kind.ZAP_REQUEST.getValue());
     Long savedEventId = eventService.saveEventEntity(event);

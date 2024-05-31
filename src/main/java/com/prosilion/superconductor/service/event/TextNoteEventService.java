@@ -24,7 +24,7 @@ public class TextNoteEventService<T extends EventMessage> implements EventServic
   @Async
   public void processIncoming(T eventMessage) {
     log.info("processing incoming TEXT_NOTE: [{}]", eventMessage);
-    GenericEvent event = (GenericEvent) eventMessage.getEvent();
+    TextNoteEvent event = (TextNoteEvent) eventMessage.getEvent();
     event.setNip(1);
     event.setKind(Kind.TEXT_NOTE.getValue());
     Long id = eventService.saveEventEntity(event);

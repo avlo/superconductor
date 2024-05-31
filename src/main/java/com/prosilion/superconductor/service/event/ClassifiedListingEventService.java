@@ -48,16 +48,10 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
   @Async
   public void processIncoming(T eventMessage) {
     log.info("processing incoming CLASSIFIED_LISTING: [{}]", eventMessage);
-    ClassifiedListingEvent event = (ClassifiedListingEvent) eventMessage.getEvent();
+    GenericEvent event = (GenericEvent) eventMessage.getEvent();
     event.setNip(99);
-    Long savedEventId = eventService.saveEventEntity(event);
 
     ClassifiedListingDto classifiedListingDto = createClassifiedListingDto(event);
-    ClassifiedListingEventEntity classifiedListingEventEntity = saveClassifiedListing(classifiedListingDto);
-
-    joinService.save(savedEventId, classifiedListingEventEntity.getId());
-    priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
-
     ClassifiedListingEvent classifiedListingEvent = new ClassifiedListingEvent(
         event.getPubKey(),
         Kind.valueOf(event.getKind()),
@@ -66,6 +60,13 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
         classifiedListingDto);
     classifiedListingEvent.setId(event.getId());
     classifiedListingEvent.setCreatedAt(event.getCreatedAt());
+    classifiedListingEvent.setSignature(event.getSignature());
+
+    Long savedEventId = eventService.saveEventEntity(classifiedListingEvent);
+    ClassifiedListingEventEntity classifiedListingEventEntity = saveClassifiedListing(classifiedListingDto);
+
+    joinService.save(savedEventId, classifiedListingEventEntity.getId());
+    priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
 
     eventService.publishEvent(savedEventId, classifiedListingEvent);
   }

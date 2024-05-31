@@ -46,16 +46,11 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
   @Async
   public void processIncoming(T eventMessage) {
     log.info("processing incoming ZAP_REQUEST: [{}]", eventMessage);
-    ZapRequestEvent event = (ZapRequestEvent) eventMessage.getEvent();
+    GenericEvent event = (GenericEvent) eventMessage.getEvent();
     event.setNip(57);
     event.setKind(Kind.ZAP_REQUEST.getValue());
-    Long savedEventId = eventService.saveEventEntity(event);
 
     ZapRequestDto zapRequestEventDto = createZapRequestDto(event);
-    ZapRequestEventEntity zapRequestEventEntity = saveZapRequestEvent(zapRequestEventDto);
-
-    joinService.save(savedEventId, zapRequestEventEntity.getId());
-
     ZapRequestEvent zapRequestEvent = new ZapRequestEvent(
         event.getPubKey(),
         new PubKeyTag(new PublicKey(zapRequestEventDto.getRecipientPubKey())),
@@ -65,6 +60,12 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
     );
     zapRequestEvent.setId(event.getId());
     zapRequestEvent.setCreatedAt(event.getCreatedAt());
+    zapRequestEvent.setSignature(event.getSignature());
+
+    Long savedEventId = eventService.saveEventEntity(zapRequestEvent);
+    ZapRequestEventEntity zapRequestEventEntity = saveZapRequestEvent(zapRequestEventDto);
+
+    joinService.save(savedEventId, zapRequestEventEntity.getId());
     eventService.publishEvent(savedEventId, zapRequestEvent);
   }
 

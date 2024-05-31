@@ -24,10 +24,9 @@ public class TextNoteEventService<T extends EventMessage> implements EventServic
   @Async
   public void processIncoming(T eventMessage) {
     log.info("processing incoming TEXT_NOTE: [{}]", eventMessage);
-    TextNoteEvent event = (TextNoteEvent) eventMessage.getEvent();
+    GenericEvent event = (GenericEvent) eventMessage.getEvent();
     event.setNip(1);
     event.setKind(Kind.TEXT_NOTE.getValue());
-    Long id = eventService.saveEventEntity(event);
 
     TextNoteEvent textNoteEvent = new TextNoteEvent(
         event.getPubKey(),
@@ -36,6 +35,9 @@ public class TextNoteEventService<T extends EventMessage> implements EventServic
     );
     textNoteEvent.setId(event.getId());
     textNoteEvent.setCreatedAt(event.getCreatedAt());
+    textNoteEvent.setSignature(event.getSignature());
+
+    Long id = eventService.saveEventEntity(textNoteEvent);
     eventService.publishEvent(id, textNoteEvent);
   }
 }

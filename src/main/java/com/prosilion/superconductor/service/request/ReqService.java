@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.request;
 
 import com.prosilion.superconductor.entity.Subscriber;
-import com.prosilion.superconductor.service.NotifierService;
+import com.prosilion.superconductor.service.event.EventService;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import nostr.event.message.ReqMessage;
@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReqService<T extends ReqMessage> {
   private final SubscriberService subscriberService;
-  private final NotifierService notifierService;
+  private final EventService eventService;
 
-  public ReqService(SubscriberService subscriberService, NotifierService notifierService) {
+  public ReqService(SubscriberService subscriberService, EventService eventService) {
     this.subscriberService = subscriberService;
-    this.notifierService = notifierService;
+    this.eventService = eventService;
   }
 
   public void processIncoming(@NotNull T reqMessage, String sessionId) {
@@ -26,6 +26,6 @@ public class ReqService<T extends ReqMessage> {
             true),
         reqMessage.getFiltersList()
     );
-    notifierService.subscriptionEventHandler(savedSubscriberId);
+    eventService.subscriptionEventHandler(savedSubscriberId);
   }
 }

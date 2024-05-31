@@ -9,26 +9,18 @@ import org.springframework.stereotype.Service;
 @Getter
 @Service
 public class NotifierService<T extends GenericEvent> {
-  private final EventNotifierService<T> eventNotifierService;
   private final SubscriberNotifierService<T> subscriberNotifierService;
 
   @Autowired
-  public NotifierService(SubscriberNotifierService<T> subscriberNotifierService, EventNotifierService<T> eventNotifierService) {
+  public NotifierService(SubscriberNotifierService<T> subscriberNotifierService) {
     this.subscriberNotifierService = subscriberNotifierService;
-    this.eventNotifierService = eventNotifierService;
   }
 
   public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
-    eventNotifierService.updateEventMap(addNostrEvent);
     subscriberNotifierService.nostrEventHandler(addNostrEvent);
   }
 
-  /**
-   * gets all events, redis?
-   */
-  public void subscriptionEventHandler(Long subscriberId) {
-    eventNotifierService.getKindEventMap().forEach((kind, eventMap) ->
-        eventMap.forEach((eventId, event) ->
-            subscriberNotifierService.subscriptionEventHandler(subscriberId, new AddNostrEvent<>(kind, eventId, event))));
+  public void subscriptionEventHandler(Long subscriberId, AddNostrEvent<T> addNostrEvent) {
+    subscriberNotifierService.subscriptionEventHandler(subscriberId, addNostrEvent);
   }
 }

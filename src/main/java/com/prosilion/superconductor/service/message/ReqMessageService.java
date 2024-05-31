@@ -3,6 +3,7 @@ package com.prosilion.superconductor.service.message;
 import com.prosilion.superconductor.service.request.ReqService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import nostr.event.impl.GenericEvent;
 import nostr.event.message.ReqMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,10 +13,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReqMessageService<T extends ReqMessage> implements MessageService<T> {
   public final String command = "REQ";
-  private final ReqService<T> reqService;
+  private final ReqService<T, GenericEvent> reqService;
 
   @Autowired
-  public ReqMessageService(ReqService<T> reqService) {
+  public ReqMessageService(ReqService<T, GenericEvent> reqService) {
     this.reqService = reqService;
   }
 

@@ -67,7 +67,8 @@ public class SubscriberFiltersManager {
   }
 
   private List<Long> getFilterIds(Long subscriberId) {
-    List<Long> list = subscriberFilterRepository.findAllBySubscriberId(subscriberId).orElseThrow().stream().map(SubscriberFilter::getId).toList();
+    Optional<List<SubscriberFilter>> allBySubscriberId = subscriberFilterRepository.findAllBySubscriberId(subscriberId);
+    List<Long> list = allBySubscriberId.orElseThrow().stream().map(SubscriberFilter::getId).toList();
     return list;
   }
 

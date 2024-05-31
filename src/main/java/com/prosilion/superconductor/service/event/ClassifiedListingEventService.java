@@ -52,6 +52,8 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
     event.setNip(99);
 
     ClassifiedListingDto classifiedListingDto = createClassifiedListingDto(event);
+    ClassifiedListingEventEntity classifiedListingEventEntity = saveClassifiedListing(classifiedListingDto);
+
     ClassifiedListingEvent classifiedListingEvent = new ClassifiedListingEvent(
         event.getPubKey(),
         Kind.valueOf(event.getKind()),
@@ -63,7 +65,6 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
     classifiedListingEvent.setSignature(event.getSignature());
 
     Long savedEventId = eventService.saveEventEntity(classifiedListingEvent);
-    ClassifiedListingEventEntity classifiedListingEventEntity = saveClassifiedListing(classifiedListingDto);
 
     joinService.save(savedEventId, classifiedListingEventEntity.getId());
     priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());

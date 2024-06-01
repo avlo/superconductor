@@ -4,10 +4,11 @@ import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.service.request.SubscriberService;
 import com.prosilion.superconductor.util.FilterMatcher;
+import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
-import nostr.event.list.FiltersList;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -25,13 +26,13 @@ public class SubscriberNotifierService<T extends GenericEvent> {
   }
 
   public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
-    Map<Long, FiltersList> allFiltersOfAllSubscribers = subscriberService.getAllFiltersOfAllSubscribers();
+    Map<Long, List<Filters>> allFiltersOfAllSubscribers = subscriberService.getAllFiltersOfAllSubscribers();
     allFiltersOfAllSubscribers.forEach((subscriberId, filtersList) ->
         subscriptionEventHandler(subscriberId, addNostrEvent));
   }
 
-  private void broadcastMatch(AddNostrEvent<T> addNostrEvent, Long subscriberId, FiltersList filtersList) {
-    filtersList.getList().forEach(filters ->
+  private void broadcastMatch(AddNostrEvent<T> addNostrEvent, Long subscriberId, List<Filters> filtersList) {
+    filtersList.forEach(filters ->
         filterMatcher.intersectFilterMatches(filters, addNostrEvent).forEach(event ->
             subscriberService.broadcastToClients(new FireNostrEvent<>(subscriberId, event.event()))));
   }

@@ -6,9 +6,6 @@ import lombok.NoArgsConstructor;
 import nostr.base.PublicKey;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
-import nostr.event.list.EventList;
-import nostr.event.list.KindList;
-import nostr.event.list.PublicKeyList;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -33,29 +30,24 @@ public class FilterMatcher<T extends GenericEvent> {
     List<Combo<T>> combos = new ArrayList<>();
 
     combos.add(new Combo<>(Optional.ofNullable(
-        subscriberFilters.getEvents()).orElseGet(
-        () -> EventList.builder().build()
-    ).getList(), eventsPredicate));
+        subscriberFilters.getEvents()).orElseGet(ArrayList::new
+    ), eventsPredicate));
 
     combos.add(new Combo<>(Optional.ofNullable(
-        subscriberFilters.getAuthors()).orElseGet(
-        () -> PublicKeyList.builder().build()
-    ).getList(), authorsPredicate));
+        subscriberFilters.getAuthors()).orElseGet(ArrayList::new
+    ), authorsPredicate));
 
     combos.add(new Combo<>(Optional.ofNullable(
-        subscriberFilters.getKinds()).orElseGet(
-        () -> KindList.builder().build()
-    ).getList(), kindsPredicate));
+        subscriberFilters.getKinds()).orElseGet(ArrayList::new
+    ), kindsPredicate));
 
     combos.add(new Combo<>(Optional.ofNullable(
-        subscriberFilters.getReferencedEvents()).orElseGet(
-        () -> EventList.builder().build()
-    ).getList(), referencedEventsPredicate));
+        subscriberFilters.getReferencedEvents()).orElseGet(ArrayList::new
+    ), referencedEventsPredicate));
 
     combos.add(new Combo<>(Optional.ofNullable(
-        subscriberFilters.getReferencePubKeys()).orElseGet(
-        () -> PublicKeyList.builder().build()
-    ).getList(), referencedPubKeysPredicate));
+        subscriberFilters.getReferencePubKeys()).orElseGet(ArrayList::new
+    ), referencedPubKeysPredicate));
 
 
     Set<AddNostrEvent<T>> nostrEvents = getCollect(combos, eventToCheck);

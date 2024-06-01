@@ -13,18 +13,15 @@ import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterR
 import jakarta.transaction.Transactional;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
+import nostr.event.Kind;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
-import nostr.event.list.EventList;
-import nostr.event.list.FiltersList;
-import nostr.event.list.KindList;
-import nostr.event.list.PublicKeyList;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -59,16 +56,16 @@ public class SubscriberFiltersManager {
    * SELECTS
    */
 
-  public FiltersList getSubscriberFilters(Long subscriberId) {
-    FiltersList filtersList = new FiltersList();
+  public List<Filters> getSubscriberFilters(Long subscriberId) {
+    List<Filters> filtersList = new ArrayList<>();
 
     List<Long> filterIds = getFilterIds(subscriberId);
     filterIds.forEach(subscriberFilterId -> {
-      EventList<GenericEvent> filterEvents = getFilterEvents(subscriberFilterId);
+      List<GenericEvent> filterEvents = getFilterEvents(subscriberFilterId);
       boolean empty = filterEvents.isEmpty();
       int size = filterEvents.size();  // ide says size > 0 is always false
       boolean is = size > 0;
-      int size1 = filterEvents.getList().size();
+      int size1 = filterEvents.size();
       if (!empty || (is) ||(size1 > 0)) {
         Filters filters = new Filters();
         filters.setEvents(filterEvents);
@@ -83,7 +80,7 @@ public class SubscriberFiltersManager {
     return subscriberFilterRepository.findAllBySubscriberId(subscriberId).stream().map(SubscriberFilter::getId).toList();
   }
 
-  private EventList<GenericEvent> getFilterEvents(Long filterIds) {
+  private List<GenericEvent> getFilterEvents(Long filterIds) {
     List<GenericEvent> list = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds)
         .stream().flatMap(subscriberFilterEvent ->
             getEventEntities(subscriberFilterEvent).stream().map(EventEntity::convertEntityToDto).toList().stream()
@@ -95,7 +92,7 @@ public class SubscriberFiltersManager {
 //                .filter(Objects::nonNull).map(GenericEvent.class::cast));
 
 
-    EventList<GenericEvent> genericEvents = new EventList<>(list);
+    List<GenericEvent> genericEvents = new ArrayList<>(list);
     return genericEvents;
   }
 
@@ -118,14 +115,14 @@ public class SubscriberFiltersManager {
    * SAVES
    */
 
-  public void saveFilters(Long subscriberId, FiltersList filtersList) {
-    for (Filters filters : filtersList.getList()) {
+  public void saveFilters(Long subscriberId, List<Filters> filtersList) {
+    for (Filters filters : filtersList) {
       Long filterId = saveSubscriberFilter(subscriberId, filters);
-      saveEvents(filterId, Optional.ofNullable(filters.getEvents()).orElseGet(() -> EventList.builder().build()));
-      saveAuthors(filterId, Optional.ofNullable(filters.getAuthors()).orElseGet(() -> PublicKeyList.builder().build()));
-      saveKinds(filterId, Optional.ofNullable(filters.getKinds()).orElseGet(() -> KindList.builder().build()));
-      saveReferencedEvents(filterId, Optional.ofNullable(filters.getReferencedEvents()).orElseGet(() -> EventList.builder().build()));
-      saveReferencedPubkeys(filterId, Optional.ofNullable(filters.getReferencePubKeys()).orElseGet(() -> PublicKeyList.builder().build()));
+      saveEvents(filterId, Optional.ofNullable(filters.getEvents()).orElseGet(ArrayList::new));
+      saveAuthors(filterId, Optional.ofNullable(filters.getAuthors()).orElseGet(ArrayList::new));
+      saveKinds(filterId, Optional.ofNullable(filters.getKinds()).orElseGet(ArrayList::new));
+      saveReferencedEvents(filterId, Optional.ofNullable(filters.getReferencedEvents()).orElseGet(ArrayList::new));
+      saveReferencedPubkeys(filterId, Optional.ofNullable(filters.getReferencePubKeys()).orElseGet(ArrayList::new));
       //      GenericTagQueryList genericTagQueryList = filters.getGenericTagQueryList();
     }
   }
@@ -134,24 +131,24 @@ public class SubscriberFiltersManager {
     return subscriberFilterRepository.save(new SubscriberFilter(subscriberId, filters.getSince(), filters.getUntil(), filters.getLimit())).getId();
   }
 
-  private void saveEvents(Long filterId, EventList<GenericEvent> incomingEvents) {
-    incomingEvents.getList().forEach(event -> subscriberFilterEventRepository.save(filterId, event.getId()));
+  private void saveEvents(Long filterId, List<GenericEvent> incomingEvents) {
+    incomingEvents.forEach(event -> subscriberFilterEventRepository.save(filterId, event.getId()));
   }
 
-  private void saveAuthors(Long filterId, PublicKeyList<PublicKey> incomingAuthors) {
-    incomingAuthors.getList().forEach(author -> subscriberFilterAuthorRepository.save(filterId, author));
+  private void saveAuthors(Long filterId, List<PublicKey> incomingAuthors) {
+    incomingAuthors.forEach(author -> subscriberFilterAuthorRepository.save(filterId, author));
   }
 
-  private void saveKinds(Long filterId, KindList incomingKinds) {
-    incomingKinds.getList().forEach(kind -> subscriberFilterKindRepository.save(filterId, kind));
+  private void saveKinds(Long filterId, List<Kind> incomingKinds) {
+    incomingKinds.forEach(kind -> subscriberFilterKindRepository.save(filterId, kind));
   }
 
-  private void saveReferencedEvents(Long filterId, EventList<GenericEvent> incomingReferencedEvents) {
-    incomingReferencedEvents.getList().forEach(referencedEvent -> subscriberFilterReferencedEventRepository.save(filterId, referencedEvent));
+  private void saveReferencedEvents(Long filterId, List<GenericEvent> incomingReferencedEvents) {
+    incomingReferencedEvents.forEach(referencedEvent -> subscriberFilterReferencedEventRepository.save(filterId, referencedEvent));
   }
 
-  private void saveReferencedPubkeys(Long filterId, PublicKeyList<PublicKey> incomingReferencedPubKeys) {
-    incomingReferencedPubKeys.getList().forEach(referencedPubKey -> subscriberFilterReferencedPubkeyRepository.save(filterId, referencedPubKey));
+  private void saveReferencedPubkeys(Long filterId, List<PublicKey> incomingReferencedPubKeys) {
+    incomingReferencedPubKeys.forEach(referencedPubKey -> subscriberFilterReferencedPubkeyRepository.save(filterId, referencedPubKey));
   }
 
   /**

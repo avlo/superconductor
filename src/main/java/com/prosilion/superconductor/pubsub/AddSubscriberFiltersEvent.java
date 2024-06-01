@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.pubsub;
 
-import nostr.event.list.FiltersList;
+import nostr.event.impl.Filters;
 
-public record AddSubscriberFiltersEvent(Long subscriberId, FiltersList filtersList) {
+import java.util.List;
+
+public record AddSubscriberFiltersEvent(Long subscriberId, List<Filters> filtersList) {
 }

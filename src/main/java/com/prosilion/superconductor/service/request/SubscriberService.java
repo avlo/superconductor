@@ -5,8 +5,8 @@ import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.pubsub.FireNostrEvent;
 import lombok.extern.slf4j.Slf4j;
 import nostr.api.NIP01;
+import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
-import nostr.event.list.FiltersList;
 import nostr.event.message.EventMessage;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class SubscriberService {
     this.publisher = publisher;
   }
 
-  public Long save(Subscriber subscriber, FiltersList filtersList) {
+  public Long save(Subscriber subscriber, List<Filters> filtersList) {
     try {
       removeSubscriberBySubscriberId(subscriber.getSubscriberId());
       log.info("removing matched subscriberId [{}], session [{}]", subscriber.getSubscriberId(), subscriber.getSessionId());
@@ -71,12 +71,12 @@ public class SubscriberService {
 //    return subscriberManager.save(s).getSubscriberId();
 //  }
 
-  public FiltersList getFiltersList(Long subscriberId) {
+  public List<Filters> getFiltersList(Long subscriberId) {
     return subscriberFiltersService.getFiltersList(subscriberId);
   }
 
-  public Map<Long, FiltersList> getAllFiltersOfAllSubscribers() {
-    Map<Long, FiltersList> allFiltersOfAllSubscribers = subscriberFiltersService.getAllFiltersOfAllSubscribers();
+  public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
+    Map<Long, List<Filters>> allFiltersOfAllSubscribers = subscriberFiltersService.getAllFiltersOfAllSubscribers();
     return allFiltersOfAllSubscribers;
   }
 

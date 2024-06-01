@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface SubscriberRepository extends JpaRepository<Subscriber, Long> {
   Optional<Subscriber> findBySubscriberId(String subscriberId);
-  Optional<List<Subscriber>> findAllBySessionId(String sessionId);
+  List<Subscriber> findAllBySessionId(String sessionId);
 }

@@ -49,7 +49,7 @@ public class KindEventMapService<T extends GenericEvent> {
    * }
    */
 
-  public Map<Kind, Map<Long, T>> getGottaRemoveThisKindEventMap() {
+  public Map<Kind, Map<Long, T>> getGottaProperlyDAOImplThisKindEventMap() {
     return kindEventMap;
   }
 

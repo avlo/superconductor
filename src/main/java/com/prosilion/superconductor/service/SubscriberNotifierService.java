@@ -8,6 +8,8 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.list.FiltersList;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class SubscriberNotifierService<T extends GenericEvent> {
   private final SubscriberService subscriberService;
@@ -23,8 +25,9 @@ public class SubscriberNotifierService<T extends GenericEvent> {
   }
 
   public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
-    subscriberService.getCrazinessAllSubscribersFilterMap().forEach((subscriberId, filtersList) ->
-        broadcastMatch(addNostrEvent, subscriberId, filtersList));
+    Map<Long, FiltersList> allFiltersOfAllSubscribers = subscriberService.getAllFiltersOfAllSubscribers();
+    allFiltersOfAllSubscribers.forEach((subscriberId, filtersList) ->
+        subscriptionEventHandler(subscriberId, addNostrEvent));
   }
 
   private void broadcastMatch(AddNostrEvent<T> addNostrEvent, Long subscriberId, FiltersList filtersList) {

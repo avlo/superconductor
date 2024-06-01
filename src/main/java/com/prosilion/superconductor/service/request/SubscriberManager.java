@@ -4,7 +4,6 @@ import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.repository.SubscriberRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +27,12 @@ public class SubscriberManager {
     return Optional.of(subscriberRepository.findBySubscriberId(subscriberId)).orElse(Optional.empty());
   }
 
-  public Optional<List<Subscriber>> getBySessionId(String sessionId) {
-    return Optional.of(subscriberRepository.findAllBySessionId(sessionId)).orElse(Optional.empty());
+  public List<Subscriber> getBySessionId(String sessionId) {
+    return subscriberRepository.findAllBySessionId(sessionId).stream().toList();
   }
 
   public List<Long> removeBySessionId(String sessionId) {
-    List<Subscriber> subscribers = getBySessionId(sessionId).orElse(Collections.emptyList());
+    List<Subscriber> subscribers = getBySessionId(sessionId);
     subscribers.forEach(s -> subscriberRepository.deleteById(s.getId()));
     return subscribers.stream().map(Subscriber::getId).toList();
   }

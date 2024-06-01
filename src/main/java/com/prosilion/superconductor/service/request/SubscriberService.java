@@ -47,10 +47,8 @@ public class SubscriberService {
    * For a given subscriber, removes all their active sessions.  Typically/Expected to occur on WebSocketSession close
    */
   public List<Long> removeSubscriberBySessionId(String sessionId) {
-    subscriberManager.getBySessionId(sessionId)
-        .ifPresent(
-            subscribers -> subscribers.forEach(
-                s -> subscriberFiltersService.deleteBySubscriberId(s.getId())));
+    subscriberManager.getBySessionId(sessionId).forEach(
+        s -> subscriberFiltersService.deleteBySubscriberId(s.getId()));
     return subscriberManager.removeBySessionId(sessionId);
   }
 
@@ -77,8 +75,9 @@ public class SubscriberService {
     return subscriberFiltersService.getFiltersList(subscriberId);
   }
 
-  public Map<Long, FiltersList> getCrazinessAllSubscribersFilterMap() {
-    return subscriberFiltersService.getYouBetterRefactorEntireSubscriberFiltersMap();
+  public Map<Long, FiltersList> getAllFiltersOfAllSubscribers() {
+    Map<Long, FiltersList> allFiltersOfAllSubscribers = subscriberFiltersService.getAllFiltersOfAllSubscribers();
+    return allFiltersOfAllSubscribers;
   }
 
   public <T extends GenericEvent> void broadcastToClients(FireNostrEvent<T> fireNostrEvent) {

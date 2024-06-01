@@ -25,7 +25,7 @@ public class NotifierService<T extends GenericEvent> {
   }
 
   public void subscriptionEventHandler(Long subscriberId) {
-    kindEventMapService.getGottaRemoveThisKindEventMap().forEach((kind, eventMap) ->
+    kindEventMapService.getGottaProperlyDAOImplThisKindEventMap().forEach((kind, eventMap) ->
         eventMap.forEach((eventId, event) ->
             subscriberNotifierService.subscriptionEventHandler(subscriberId, new AddNostrEvent<>(kind, eventId, event))));
   }

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -50,6 +51,10 @@ public class SubscriberFiltersManager {
     this.subscriberFilterReferencedPubkeyRepository = subscriberFilterReferencedPubkeyRepository;
   }
 
+  public List<SubscriberFilter> getEntireSubscribersFilters() {
+    return subscriberFilterRepository.findAll();
+  }
+
   /**
    * SELECTS
    */
@@ -57,39 +62,52 @@ public class SubscriberFiltersManager {
   public FiltersList getSubscriberFilters(Long subscriberId) {
     FiltersList filtersList = new FiltersList();
 
-    getFilterIds(subscriberId).forEach(subscriberFilterId -> {
-      Filters filters = new Filters();
-      filters.setEvents(getFilterEvents(subscriberFilterId));
-      filtersList.add(filters);
+    List<Long> filterIds = getFilterIds(subscriberId);
+    filterIds.forEach(subscriberFilterId -> {
+      EventList<GenericEvent> filterEvents = getFilterEvents(subscriberFilterId);
+      boolean empty = filterEvents.isEmpty();
+      int size = filterEvents.size();  // ide says size > 0 is always false
+      boolean is = size > 0;
+      int size1 = filterEvents.getList().size();
+      if (!empty || (is) ||(size1 > 0)) {
+        Filters filters = new Filters();
+        filters.setEvents(filterEvents);
+        filtersList.add(filters);
+      }
     });
 
     return filtersList;
   }
 
   private List<Long> getFilterIds(Long subscriberId) {
-    Optional<List<SubscriberFilter>> allBySubscriberId = subscriberFilterRepository.findAllBySubscriberId(subscriberId);
-    List<Long> list = allBySubscriberId.orElseThrow().stream().map(SubscriberFilter::getId).toList();
-    return list;
+    return subscriberFilterRepository.findAllBySubscriberId(subscriberId).stream().map(SubscriberFilter::getId).toList();
   }
 
   private EventList<GenericEvent> getFilterEvents(Long filterIds) {
-    List<GenericEvent> list = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds).orElseThrow()
+    List<GenericEvent> list = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds)
         .stream().flatMap(subscriberFilterEvent ->
             getEventEntities(subscriberFilterEvent).stream().map(EventEntity::convertEntityToDto).toList().stream()
                 .filter(Objects::nonNull).map(GenericEvent.class::cast)).toList();
-    return new EventList<>(list);
+
+//    Stream<Stream<GenericEvent>> streamStream = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds)
+//        .stream().map(subscriberFilterEvent ->
+//            getEventEntities(subscriberFilterEvent).stream().map(EventEntity::convertEntityToDto).toList().stream()
+//                .filter(Objects::nonNull).map(GenericEvent.class::cast));
+
+
+    EventList<GenericEvent> genericEvents = new EventList<>(list);
+    return genericEvents;
   }
 
   private List<EventEntity> getEventEntities(SubscriberFilterEvent s) {
     List<EventEntity> list = subscriberFilterEventRepository.findEventsBySubscriberFilterEventString(s.getEventId())
-        .orElseThrow()
         .stream().toList();
     list.forEach(entity -> entity.setTags(getBaseTags(entity.getId())));
     return list;
   }
 
   private List<BaseTag> getBaseTags(Long eventEntityId) {
-    List<BaseTag> list = subscriberFilterEventRepository.findBaseTagsByEventEntityId(eventEntityId).orElseThrow()
+    List<BaseTag> list = subscriberFilterEventRepository.findBaseTagsByEventEntityId(eventEntityId)
         .stream().map(BaseTagEntity::convertEntityToDto).toList().stream().filter(Objects::nonNull)
         .map(BaseTag.class::cast)
         .toList();

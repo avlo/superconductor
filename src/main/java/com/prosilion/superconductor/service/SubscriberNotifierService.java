@@ -4,6 +4,7 @@ import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.service.request.SubscriberService;
 import com.prosilion.superconductor.util.FilterMatcher;
+import lombok.SneakyThrows;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,11 @@ public class SubscriberNotifierService<T extends GenericEvent> {
   private void broadcastMatch(AddNostrEvent<T> addNostrEvent, Long subscriberId, List<Filters> filtersList) {
     filtersList.forEach(filters ->
         filterMatcher.intersectFilterMatches(filters, addNostrEvent).forEach(event ->
-            subscriberService.broadcastToClients(new FireNostrEvent<>(subscriberId, event.event()))));
+            broadcastToClients(new FireNostrEvent<>(subscriberId, event.event()))));
+  }
+
+  @SneakyThrows
+  private void broadcastToClients(FireNostrEvent<T> fireNostrEvent) {
+    subscriberService.broadcastToClients(fireNostrEvent);
   }
 }

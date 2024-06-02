@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.request;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.pubsub.FireNostrEvent;
@@ -80,7 +81,7 @@ public class SubscriberService {
     return allFiltersOfAllSubscribers;
   }
 
-  public <T extends GenericEvent> void broadcastToClients(FireNostrEvent<T> fireNostrEvent) {
+  public <T extends GenericEvent> void broadcastToClients(FireNostrEvent<T> fireNostrEvent) throws JsonProcessingException {
     EventMessage message = NIP01.createEventMessage(fireNostrEvent.event(), String.valueOf(fireNostrEvent.subscriberId()));
     BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(get(fireNostrEvent.subscriberId()).getSessionId(), message);
     publisher.publishEvent(event);

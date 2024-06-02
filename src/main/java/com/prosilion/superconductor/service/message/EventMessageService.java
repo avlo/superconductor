@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.service.message;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.okresponse.ClientOkResponseService;
-import com.prosilion.superconductor.service.okresponse.FailedOkResponseException;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
     try {
       processOkClientResponse(sessionId, eventMessage);
       createEventService(Kind.valueOf(kind), eventMessage);
-    } catch (FailedOkResponseException e) {
+    } catch (JsonProcessingException e) {
       log.info("FAILED event message: {}", e.getMessage());
     }
   }
@@ -49,7 +49,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
     kindEventServiceMap.get(kind).processIncoming(eventMessage);
   }
 
-  private void processOkClientResponse(String sessionId, T eventMessage) throws FailedOkResponseException {
+  private void processOkClientResponse(String sessionId, T eventMessage) throws JsonProcessingException {
     okResponseService.processOkClientResponse(sessionId, eventMessage);
   }
 }

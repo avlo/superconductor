@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.okresponse;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
@@ -14,7 +15,7 @@ public class ClientOkResponseService<T extends EventMessage> {
     this.publisher = publisher;
   }
 
-  public void processOkClientResponse(String sessionId, T eventMessage) {
+  public void processOkClientResponse(String sessionId, T eventMessage) throws JsonProcessingException {
     log.info("Processing event message: {}", eventMessage.getEvent());
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
     publisher.publishEvent(new OkClientResponse(sessionId, event));

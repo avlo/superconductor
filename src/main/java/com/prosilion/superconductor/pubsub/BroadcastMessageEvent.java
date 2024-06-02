@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.pubsub;
 
-import com.prosilion.superconductor.util.MessageEncoder;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Getter;
 import lombok.Setter;
 import nostr.event.BaseMessage;
@@ -12,8 +12,8 @@ public class BroadcastMessageEvent<T extends BaseMessage> {
   private final TextMessage message;
   private final String sessionId;
 
-  public BroadcastMessageEvent(String sessionId, T incoming) {
+  public BroadcastMessageEvent(String sessionId, T incoming) throws JsonProcessingException {
     this.sessionId = sessionId;
-    this.message = new TextMessage(new MessageEncoder().encode(incoming));
+    this.message = new TextMessage((incoming).encode());
   }
 }

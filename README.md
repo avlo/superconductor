@@ -23,14 +23,14 @@
   #### Supported
   - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol)
   - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
-  - [NIP-14](https://nostr-nips.com/nip-14) (Subject Tag)
+  - [NIP-14](https://nostr-nips.com/nip-14) (Subjects)
+  - [NIP-57](https://nostr-nips.com/nip-57) (Lightning Zaps)
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
-    - [ScdMatrix](https://github.com/avlo/scdecisionmatrix) client implementation (in progress)
+    - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
 
   #### In-Progress
   - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
-    - [ScdMatrix](https://github.com/avlo/scdecisionmatrix) server implementation
-  - [NIP-75](https://nostr-nips.com/nip-75) (Zap Goals / Lightning Network Payments)
+    - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
 
 ## Requirements
 
@@ -88,10 +88,19 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 	select id, event_id, kind, nip, content, created_at, pub_key, signature from event;
 	select id, "key" as "key", "value" as "value", marker, recommended_relay_url from base_tag;
 	select id, base_tag_id, event_id from "event-base_tag-join";
-	select id, title, summary, published_at, location from classified_listing;
+	select id, uri from relays_tag;
+	select id, amount, ln_url, recipient_pub_key from zaprequest;
+	select id, event_id, zap_request_event_id from "zaprequest_event-event-join";
+	select id, event_id, subject_tag_id from "event-subject_tag-join";
+	select id, geohash_tag_id, event_id from "event-geohash_tag-join";
+	select id, hash_tag_id, event_id from "event-hashtag_tag-join";
+	select id, subject from subject_tag;
+	select id, code, location from geohash_tag;
+	select id, code, hash_tag from hashtag_tag;
 	select id, classified_listing_id, event_id from "classified_listing-event-join";
-	select id, number, currency, frequency from price_tag;
+	select id, title, summary, published_at, location from classified_listing;
 	select id, price_tag_id, event_id from "event-price_tag-join";
+	select id, number, currency, frequency from price_tag;
 	select id, active, subscriber_id, session_id from subscriber;
 	select id, subscriber_id, "since", "until", "limit" from "subscriber-filter-join";
 	select id, filter_id, event_id from "subscriber-filter_event-join";
@@ -99,7 +108,7 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 	select id, filter_id, kind_id from "subscriber-filter_kind-join";
 	select id, filter_id, referenced_event_id from "subscriber-filter_referenced_event-join";
 	select id, filter_id, referenced_pubkey from "subscriber-filter_referenced_pubkey-join";
-
+ 
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 
   http://localhost:5555/NIP01.html

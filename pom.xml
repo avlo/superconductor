@@ -26,6 +26,7 @@
     <lombok.version>1.18.30</lombok.version>
     <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
     <versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
+    <mysql-connector-j.version>8.4.0</mysql-connector-j.version>
   </properties>
 
   <dependencies>
@@ -90,6 +91,11 @@
       <artifactId>h2</artifactId>
       <version>${h2.version}</version>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.mysql</groupId>-->
+<!--      <artifactId>mysql-connector-j</artifactId>-->
+<!--      <version>${mysql-connector-j.version}</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>

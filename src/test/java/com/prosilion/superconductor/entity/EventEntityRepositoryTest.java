@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest(
-    showSql = true  // on by default
+    showSql = false  // on by default
     , includeFilters = @ComponentScan.Filter( // quicker tests, allegedly
     type = FilterType.ASSIGNABLE_TYPE,
     classes = EventEntityRepository.class)
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 //    scripts = {"/data.sql"},
 //    executionPhase = ExecutionPhase.BEFORE_TEST_CLASS
 //) // class level @Sql
+@DirtiesContext
 class EventEntityRepositoryTest {
   public static final String SIGNATURE = "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546";
   public static final String EVENT_ID = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";

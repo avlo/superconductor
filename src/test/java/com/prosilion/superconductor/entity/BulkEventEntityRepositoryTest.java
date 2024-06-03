@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
@@ -32,8 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         type = FilterType.ASSIGNABLE_TYPE,
         classes = EventEntityRepository.class)
 )
-
 @Sql(scripts = {"/bulk_data.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
+@DirtiesContext
 class BulkEventEntityRepositoryTest {
   @Autowired
   EventEntityRepository eventEntityRepository;

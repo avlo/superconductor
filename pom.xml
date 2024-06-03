@@ -146,11 +146,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <includes>
-            <include>**/*Test.java</include>
-          </includes>
-        </configuration>    
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -158,13 +153,13 @@
         <version>${jacoco-maven-plugin.version}</version>
         <executions>
           <execution>
-            <id>one</id>
+            <id>prepare</id>
             <goals>
               <goal>prepare-agent</goal>
             </goals>
           </execution>
           <execution>
-            <id>two</id>
+            <id>report</id>
             <phase>verify</phase>
             <goals>
               <goal>report</goal>

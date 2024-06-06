@@ -22,6 +22,6 @@ public class GeohashTagEntity extends GenericTagEntity {
   }
 
   public GenericTagDto convertEntityToDto() {
-    return convertEntityToDto(new GeohashTagDto(location));
+    return new GeohashTagDto(location);
   }
 }

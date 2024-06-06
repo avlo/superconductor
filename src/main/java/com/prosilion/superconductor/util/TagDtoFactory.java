@@ -9,38 +9,41 @@ import com.prosilion.superconductor.entity.join.generic.EventEntityHashtagTagEnt
 import org.springframework.stereotype.Component;
 
 @Component
-public class TagDtoFactory {
-  public static GenericTagDto createDto(Character code, String value) {
-    switch (code) {
+public class TagDtoFactory<T extends EventEntityGenericTagEntity> {
+  public GenericTagDto createDto(Character code, String value) {
+    return switch (code) {
 //      case "d":
 //        // identity
-      case 'g':
-        return new GeohashTagDto(value);
+      case 'g' -> new GeohashTagDto(value);
 //      case "r":
 //        // code block
-      case 't':
-        return new HashtagTagDto(value);
+      case 't' -> new HashtagTagDto(value);
 //      case "u":
 //        // code block
-      default:
-        return new GeohashTagDto("NULL");
-    }
+      default -> new GeohashTagDto("NULL");
+    };
   }
 
-  public static EventEntityGenericTagEntity createEntity(Character code, Long eventId, Long tagId) {
-    switch (code) {
+  public T createEntity(Character code, Long eventId, Long tagId) {
+    return switch (code) {
 //      case "d":
 //        // identity
-      case 'g':
-        return new EventEntityGeohashTagEntity(eventId, tagId);
+      case 'g' -> {
+        EventEntityGeohashTagEntity eventEntityGeohashTagEntity = new EventEntityGeohashTagEntity(eventId, tagId);
+        yield (T) eventEntityGeohashTagEntity;
+      }
 //      case "r":
 //        // code block
-      case 't':
-        return new EventEntityHashtagTagEntity(eventId, tagId);
+      case 't' -> {
+        EventEntityHashtagTagEntity eventEntityHashtagTagEntity = new EventEntityHashtagTagEntity(eventId, tagId);
+        yield (T) eventEntityHashtagTagEntity;
+      }
 //      case "u":
 //        // code block
-      default:
-        return new EventEntityGeohashTagEntity(eventId, tagId);
-    }
+      default -> {
+        EventEntityGeohashTagEntity eventEntityGeohashTagEntity = new EventEntityGeohashTagEntity(eventId, tagId);
+        yield (T) eventEntityGeohashTagEntity;
+      }
+    };
   }
 }

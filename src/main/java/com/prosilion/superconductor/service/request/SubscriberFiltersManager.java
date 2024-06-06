@@ -59,6 +59,7 @@ public class SubscriberFiltersManager {
   public List<Filters> getSubscriberFilters(Long subscriberId) {
     List<Filters> filtersList = new ArrayList<>();
 
+    // TODO: refactor proper w/ stream
     List<Long> filterIds = getFilterIds(subscriberId);
     filterIds.forEach(subscriberFilterId -> {
       List<GenericEvent> filterEvents = getFilterEvents(subscriberFilterId);

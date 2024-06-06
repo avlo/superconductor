@@ -22,6 +22,6 @@ public class HashtagTagEntity extends GenericTagEntity {
   }
 
   public GenericTagDto convertEntityToDto() {
-    return convertEntityToDto(new HashtagTagDto(hashTag));
+    return new HashtagTagDto(hashTag);
   }
 }

@@ -16,4 +16,8 @@ public class EventEntityHashtagTagEntity extends EventEntityGenericTagEntity {
     this.eventId = eventId;
     this.hashTagId = hashTagId;
   }
+  @Override
+  public Long getLookupId() {
+    return hashTagId;
+  }
 }

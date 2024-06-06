@@ -7,21 +7,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 
 @Setter
 @Getter
 @MappedSuperclass
-public class GenericTagEntity implements Serializable {
+public abstract class GenericTagEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private Character code;
 
-  public GenericTagDto convertEntityToDto(GenericTagDto genericTagDto) {
-    BeanUtils.copyProperties(this, genericTagDto, "code");
-    return genericTagDto;
-  }
+  public abstract GenericTagDto convertEntityToDto();
 }

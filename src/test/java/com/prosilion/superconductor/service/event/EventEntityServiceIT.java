@@ -85,7 +85,7 @@ class EventEntityServiceIT {
 //  }
 
 //  @Test
-//  void getEventEntityTagEntityService() {
+//  void getEventEntityTagEntitiesService() {
 //  }
 //  @Test
 //  void getEventEntityRepository() {

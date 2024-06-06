@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.superconductor.dto.BaseTagDto;
+import com.prosilion.superconductor.dto.EventTagDto;
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.dto.GenericTagDto;
-import com.prosilion.superconductor.entity.BaseTagEntity;
+import com.prosilion.superconductor.entity.EventStandardTagEntity;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.repository.EventEntityRepository;
@@ -26,14 +26,14 @@ import java.util.stream.Stream;
 @Getter
 @Service
 public class EventEntityService {
-  private final EventEntityTagEntityService eventEntityTagEntityService;
+  private final EventEntityTagEntitiesService eventEntityTagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
   @Autowired
   public EventEntityService(
-      EventEntityTagEntityService eventEntityTagEntityService,
+      EventEntityTagEntitiesService eventEntityTagEntitiesService,
       EventEntityRepository eventEntityRepository) {
-    this.eventEntityTagEntityService = eventEntityTagEntityService;
+    this.eventEntityTagEntitiesService = eventEntityTagEntitiesService;
     this.eventEntityRepository = eventEntityRepository;
   }
 
@@ -50,7 +50,7 @@ public class EventEntityService {
     );
 
     EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
-    eventEntityTagEntityService.saveTags(event, savedEntity.getId());
+    eventEntityTagEntitiesService.saveTags(event, savedEntity.getId());
     return savedEntity.getId();
   }
 
@@ -65,15 +65,15 @@ public class EventEntityService {
   }
 
   private @NotNull EventDto getEventByEventId(EventEntity byEventId) {
-    List<BaseTagEntity> eventBaseTags = eventEntityTagEntityService.getEventBaseTags(byEventId.getId());
-    List<GenericTagEntity> eventGenericTags = eventEntityTagEntityService.getEventGenericTags(byEventId.getId());
+    List<EventStandardTagEntity> eventTags = eventEntityTagEntitiesService.getEventStandardTags(byEventId.getId());
+    List<GenericTagEntity> eventGenericTags = eventEntityTagEntitiesService.getEventGenericTags(byEventId.getId());
 //    Optional<SubjectTagEntity> eventSubjectTags = eventEntityTagEntityService.getEventSubjectTags(byEventId.getId());
 
-    List<BaseTagDto> baseTagDtoList = eventBaseTags.stream().map(BaseTagEntity::convertEntityToDto).toList();
+    List<EventTagDto> eventTagDtoList = eventTags.stream().map(EventStandardTagEntity::convertEntityToDto).toList();
     List<GenericTagDto> genericTagDtoList = eventGenericTags.stream().map(GenericTagEntity::convertEntityToDto).toList();
 //    List<SubjectTagDto> subjectTagDtoList = eventSubjectTags.stream().map(SubjectTagEntity::convertEntityToDto).toList();
 
-    List<BaseTag> baseTagsCast = baseTagDtoList.stream().map(BaseTag.class::cast).toList();
+    List<BaseTag> baseTagsCast = eventTagDtoList.stream().map(BaseTag.class::cast).toList();
     List<BaseTag> genericTagCast = genericTagDtoList.stream().map(BaseTag.class::cast).toList();
 //    List<BaseTag> subjectTagCast = subjectTagDtoList.stream().map(BaseTag.class::cast).toList();
 

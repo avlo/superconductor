@@ -1,13 +1,12 @@
 package com.prosilion.superconductor.entity;
 
-import com.prosilion.superconductor.dto.BaseTagDto;
+import com.prosilion.superconductor.dto.EventTagDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -19,8 +18,8 @@ import org.springframework.beans.BeanUtils;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "base_tag")
-public class BaseTagEntity {
+@Table(name = "event_standard_tag")
+public class EventStandardTagEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -34,15 +33,15 @@ public class BaseTagEntity {
   private Marker marker;
   private String recommendedRelayUrl;
 
-  public BaseTagEntity(@NonNull String idEvent, @NonNull String key, @NonNull Marker marker) {
+  public EventStandardTagEntity(@NonNull String idEvent, @NonNull String key, @NonNull Marker marker) {
     this.idEvent = idEvent;
     this.key = key;
     this.marker = marker;
   }
 
-  public BaseTagDto convertEntityToDto() {
-    BaseTagDto baseTagDto = new BaseTagDto(idEvent);
-    BeanUtils.copyProperties(this, baseTagDto);
-    return baseTagDto;
+  public EventTagDto convertEntityToDto() {
+    EventTagDto eventTagDto = new EventTagDto(idEvent);
+    BeanUtils.copyProperties(this, eventTagDto);
+    return eventTagDto;
   }
 }

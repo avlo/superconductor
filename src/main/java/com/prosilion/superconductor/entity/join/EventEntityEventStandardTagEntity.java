@@ -10,17 +10,17 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "event-base_tag-join")
-public class EventEntityBaseTagEntity implements Serializable {
+@Table(name = "event-event_standard_tag-join")
+public class EventEntityEventStandardTagEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Long eventId;
-  private Long baseTagId;
+  private Long eventStandardTagId;
 
-  public EventEntityBaseTagEntity(Long eventId, Long baseTagId) {
+  public EventEntityEventStandardTagEntity(Long eventId, Long eventStandardTagId) {
     this.eventId = eventId;
-    this.baseTagId = baseTagId;
+    this.eventStandardTagId = eventStandardTagId;
   }
 }

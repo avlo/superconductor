@@ -9,6 +9,7 @@ import com.prosilion.superconductor.util.TagDtoFactory;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
@@ -29,6 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 @Transactional
 public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagEntity, U extends GenericTagEntity> {
@@ -66,6 +68,7 @@ public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagE
   }
 
   public void saveGenericTags(GenericEvent event) {
+    log.info("saving generic tags for event: [{}]", event.getId());
     List<BaseTag> singleLetterGenericTags = getRelevantTags(event);
     List<Map<Character, String>> list = selectReposByRelevantTags(singleLetterGenericTags);
     List<GenericTagDto> dtos = createDtos(list);
@@ -79,7 +82,6 @@ public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagE
       List<T> allByEventId = getAllByEventId(eventId, combo);
       List<T> list = allByEventId.stream().filter(Objects::nonNull).toList();
       List<T> put = joinMatches.put(character, list);
-      System.out.println(put);
     });
 
     Stream<List<U>> listStream = joinMatches.entrySet().stream().map(this::getAllById);

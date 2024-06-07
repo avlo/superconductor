@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import nostr.event.BaseTag;
 import nostr.event.Marker;
 import nostr.event.tag.EventTag;
 
@@ -43,6 +44,12 @@ public class EventTagEntity extends StandardTagEntity {
   public Character getCode() {
     return 'e';
   }
+
+  @Override
+  public BaseTag getAsBaseTag() {
+    return new EventTag(idEvent, recommendedRelayUrl, marker);
+  }
+
   public EventTagDto convertEntityToDto() {
     return new EventTagDto(new EventTag(idEvent, recommendedRelayUrl, marker));
   }

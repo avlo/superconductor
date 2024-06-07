@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import com.prosilion.superconductor.entity.SubjectTagEntity;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
-import com.prosilion.superconductor.service.event.join.EventEntityStandardTagEntityService;
+import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import com.prosilion.superconductor.service.event.join.EventEntityGenericTagEntityService;
+import com.prosilion.superconductor.service.event.join.EventEntityStandardTagEntityService;
 import com.prosilion.superconductor.service.event.join.EventEntitySubjectTagEntityService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class EventEntityTagEntitiesService {
 //    TODO: relay tags?  amount tags?  etc?
   }
 
-  public List<EventTagEntity> getEventStandardTags(Long eventId) {
+  public <T extends StandardTagEntity> List<T> getEventStandardTags(Long eventId) {
     return eventEntityStandardTagEntityService.getTags(eventId);
   }
 

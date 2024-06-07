@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+import nostr.event.BaseTag;
 
 import java.io.Serializable;
 
@@ -20,4 +21,5 @@ public abstract class StandardTagEntity implements Serializable {
 
   public abstract Character getCode();
   public abstract StandardTagDto convertEntityToDto();
+  public abstract BaseTag getAsBaseTag();
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+import nostr.event.BaseTag;
 
 import java.io.Serializable;
 
@@ -19,5 +20,6 @@ public abstract class GenericTagEntity implements Serializable {
   private Long id;
   private Character code;
 
+  public abstract BaseTag getAsBaseTag();
   public abstract GenericTagDto convertEntityToDto();
 }

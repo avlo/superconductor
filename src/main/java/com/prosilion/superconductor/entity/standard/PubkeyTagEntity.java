@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import nostr.base.PublicKey;
+import nostr.event.BaseTag;
 import nostr.event.tag.PubKeyTag;
 
 @Setter
@@ -38,6 +39,12 @@ public class PubkeyTagEntity extends StandardTagEntity {
   public Character getCode() {
     return 'p';
   }
+
+  @Override
+  public BaseTag getAsBaseTag() {
+    return new PubKeyTag(new PublicKey(publicKey), mainRelayUrl, petName);
+  }
+
   @Override
   public StandardTagDto convertEntityToDto() {
     return new PubkeyTagDto(new PubKeyTag(new PublicKey(publicKey), mainRelayUrl, petName));

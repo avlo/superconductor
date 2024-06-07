@@ -33,6 +33,12 @@ public class EventTagEntity extends StandardTagEntity {
     this.recommendedRelayUrl = eventTag.getRecommendedRelayUrl();
   }
 
+  public EventTagEntity(@NonNull String idEvent, @NonNull Marker marker, @NonNull String recommendedRelayUrl) {
+    this.idEvent = idEvent;
+    this.marker = marker;
+    this.recommendedRelayUrl = recommendedRelayUrl;
+  }
+
   @Override
   public Character getCode() {
     return 'e';

@@ -4,6 +4,7 @@ import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterEvent;
+import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterAuthorRepository;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterEventRepository;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterKindRepository;
@@ -105,8 +106,8 @@ public class SubscriberFiltersManager {
   }
 
   private List<BaseTag> getBaseTags(Long eventEntityId) {
-    List<BaseTag> list = subscriberFilterEventRepository.findBaseTagsByEventEntityId(eventEntityId)
-        .stream().map(EventTagEntity::convertEntityToDto).toList().stream().filter(Objects::nonNull)
+    List<BaseTag> list = subscriberFilterEventRepository.findStandardTagsByEventEntityId(eventEntityId)
+        .stream().map(StandardTagEntity::convertEntityToDto).toList().stream().filter(Objects::nonNull)
         .map(BaseTag.class::cast)
         .toList();
     return list;

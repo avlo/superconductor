@@ -1,23 +1,26 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.entity.EventStandardTagEntity;
-import lombok.Getter;
+import com.prosilion.superconductor.entity.standard.EventTagEntity;
+import com.prosilion.superconductor.entity.standard.StandardTagEntity;
+import lombok.NonNull;
 import lombok.Setter;
 import nostr.event.tag.EventTag;
-import org.springframework.beans.BeanUtils;
 
 @Setter
-@Getter
-public class EventTagDto extends EventTag {
-  private String key;
+public class EventTagDto extends StandardTagDto implements StandardTagDtoIF {
+  private final EventTag eventTag;
 
-  public EventTagDto(String id) {
-    super(id);
+  public EventTagDto(@NonNull EventTag eventTag) {
+    this.eventTag = eventTag;
   }
 
-  public EventStandardTagEntity convertDtoToEntity() {
-    EventStandardTagEntity eventStandardTagEntity = new EventStandardTagEntity();
-    BeanUtils.copyProperties(this, eventStandardTagEntity);
-    return eventStandardTagEntity;
+  @Override
+  public Character getCode() {
+    return eventTag.getCode().charAt(0);
+  }
+
+  @Override
+  public <T extends StandardTagEntity> T convertDtoToEntity() {
+    return (T) new EventTagEntity(eventTag);
   }
 }

@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.entity.join.generic;
+package com.prosilion.superconductor.entity.join.standard;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 @Data
 @MappedSuperclass
-public abstract class EventEntityGenericTagEntity implements Serializable {
+public abstract class EventEntityStandardTagEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

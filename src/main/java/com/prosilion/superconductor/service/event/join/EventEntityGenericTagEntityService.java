@@ -5,7 +5,7 @@ import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.join.generic.EventEntityGenericTagEntity;
 import com.prosilion.superconductor.repository.generic.GenericTagEntityRepository;
 import com.prosilion.superconductor.repository.join.generic.EventEntityGenericTagEntityRepository;
-import com.prosilion.superconductor.util.TagDtoFactory;
+import com.prosilion.superconductor.util.GenericTagDtoFactory;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,15 +36,17 @@ import java.util.stream.Stream;
 public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagEntity, U extends GenericTagEntity> {
   private final Map<Character, GenericTagEntityRepository<U>> genericTagEntityRepositoryMap;
   private final Map<Character, EventEntityGenericTagEntityRepository<T>> joins;
-  private final TagDtoFactory<T> tagDtoFactory;
+  private final GenericTagDtoFactory<T> genericTagDtoFactory;
   private final Map<Character, ComboMap> fullMap;
 
   @Autowired
   public EventEntityGenericTagEntityService(
       List<GenericTagEntityRepository<U>> repositoriesList,
       List<EventEntityGenericTagEntityRepository<T>> joinList,
-      TagDtoFactory<T> tagDtoFactory) {
-    this.tagDtoFactory = tagDtoFactory;
+      GenericTagDtoFactory<T> genericTagDtoFactory) {
+
+    this.genericTagDtoFactory = genericTagDtoFactory;
+
     this.genericTagEntityRepositoryMap = repositoriesList.stream().collect(
         Collectors.toMap(
             GenericTagEntityRepository<U>::getCode,
@@ -65,14 +67,6 @@ public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagE
     });
 
     joinList.forEach(join -> fullMap.get(join.getCode()).setJoinMap(join));
-  }
-
-  public void saveGenericTags(GenericEvent event) {
-    log.info("saving generic tags for event: [{}]", event.getId());
-    List<BaseTag> singleLetterGenericTags = getRelevantTags(event);
-    List<Map<Character, String>> list = selectReposByRelevantTags(singleLetterGenericTags);
-    List<GenericTagDto> dtos = createDtos(list);
-    saveTags(dtos);
   }
 
   public List<U> getTags(Long eventId) {
@@ -122,6 +116,14 @@ public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagE
     return value.stream().map(getLookupId).toList();
   }
 
+  public void saveGenericTags(GenericEvent event) {
+    log.info("saving generic tags for event: [{}]", event.getId());
+    List<BaseTag> singleLetterGenericTags = getRelevantTags(event);
+    List<Map<Character, String>> list = selectReposByRelevantTags(singleLetterGenericTags);
+    List<GenericTagDto> dtos = createDtos(list);
+    saveTags(dtos);
+  }
+
   private List<BaseTag> getRelevantTags(GenericEvent event) {
     List<BaseTag> list = Optional.of(event.getTags().stream()).orElse(Stream.empty())
         .filter(baseTag -> (baseTag.getCode().length() == 1))
@@ -142,8 +144,8 @@ public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagE
     return list;
   }
 
-  private boolean containsKey(GenericTag tags) {
-    char key = tags.getCode().charAt(0);
+  private boolean containsKey(GenericTag tag) {
+    char key = tag.getCode().charAt(0);
     return genericTagEntityRepositoryMap.containsKey(key);
   }
 
@@ -156,7 +158,7 @@ public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagE
   }
 
   private GenericTagDto createDto(Map.Entry<Character, String> s) {
-    return tagDtoFactory.createDto(s.getKey(), s.getValue());
+    return genericTagDtoFactory.createDto(s.getKey(), s.getValue());
   }
 
   private void saveTags(List<GenericTagDto> tags) {
@@ -174,7 +176,7 @@ public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagE
     joins.get(
             tag.getCode())
         .save(
-            tagDtoFactory.createEntity(tag.getCode(), tag.getId(), tag.getId()));
+            genericTagDtoFactory.createEntity(tag.getCode(), tag.getId(), tag.getId()));
   }
 
   @Setter

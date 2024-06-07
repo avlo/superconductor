@@ -3,7 +3,7 @@ package com.prosilion.superconductor.service.event;
 import com.prosilion.superconductor.dto.EventTagDto;
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.dto.GenericTagDto;
-import com.prosilion.superconductor.entity.EventStandardTagEntity;
+import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.repository.EventEntityRepository;
@@ -65,11 +65,11 @@ public class EventEntityService {
   }
 
   private @NotNull EventDto getEventByEventId(EventEntity byEventId) {
-    List<EventStandardTagEntity> eventTags = eventEntityTagEntitiesService.getEventStandardTags(byEventId.getId());
+    List<EventTagEntity> eventStandardTags = eventEntityTagEntitiesService.getEventStandardTags(byEventId.getId());
     List<GenericTagEntity> eventGenericTags = eventEntityTagEntitiesService.getEventGenericTags(byEventId.getId());
 //    Optional<SubjectTagEntity> eventSubjectTags = eventEntityTagEntityService.getEventSubjectTags(byEventId.getId());
 
-    List<EventTagDto> eventTagDtoList = eventTags.stream().map(EventStandardTagEntity::convertEntityToDto).toList();
+    List<EventTagDto> eventTagDtoList = eventStandardTags.stream().map(EventTagEntity::convertEntityToDto).toList();
     List<GenericTagDto> genericTagDtoList = eventGenericTags.stream().map(GenericTagEntity::convertEntityToDto).toList();
 //    List<SubjectTagDto> subjectTagDtoList = eventSubjectTags.stream().map(SubjectTagEntity::convertEntityToDto).toList();
 

@@ -2,6 +2,7 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.entity.EventEntity;
+import com.prosilion.superconductor.entity.SubjectTagEntity;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import com.prosilion.superconductor.repository.EventEntityRepository;
@@ -65,21 +66,13 @@ public class EventEntityService {
   private @NotNull EventDto getEventByEventId(EventEntity byEventId) {
     List<StandardTagEntity> eventStandardTags = eventEntityTagEntitiesService.getEventStandardTags(byEventId.getId());
     List<GenericTagEntity> eventGenericTags = eventEntityTagEntitiesService.getEventGenericTags(byEventId.getId());
-//    Optional<SubjectTagEntity> eventSubjectTags = eventEntityTagEntityService.getEventSubjectTags(byEventId.getId());
-
-//    List<StandardTagDto> standardTagDtoList = eventStandardTags.stream().map(StandardTagEntity::convertEntityToDto).toList();
-//    List<GenericTagDto> genericTagDtoList = eventGenericTags.stream().map(GenericTagEntity::convertEntityToDto).toList();
-//    List<SubjectTagDto> subjectTagDtoList = eventSubjectTags.stream().map(SubjectTagEntity::convertEntityToDto).toList();
+    Optional<SubjectTagEntity> eventSubjectTags = eventEntityTagEntitiesService.getEventSubjectTag(byEventId.getId());
 
     List<BaseTag> baseTagsCast = eventStandardTags.stream().map(StandardTagEntity::getAsBaseTag).toList();
-    List<BaseTag> genericTagCast = eventGenericTags.stream().map(BaseTag.class::cast).toList();
-//    List<BaseTag> subjectTagCast = subjectTagDtoList.stream().map(BaseTag.class::cast).toList();
+    List<BaseTag> genericTagCast = eventGenericTags.stream().map(GenericTagEntity::getAsBaseTag).toList();
+    List<BaseTag> subjectTagCast = eventSubjectTags.stream().map(SubjectTagEntity::getAsBaseTag).toList();
 
-    List<BaseTag> list = Stream.of(
-        baseTagsCast,
-        genericTagCast
-//        ,subjectTagCast
-    ).flatMap(Collection::stream).toList();
+    List<BaseTag> list = Stream.of(baseTagsCast, genericTagCast, subjectTagCast).flatMap(Collection::stream).toList();
 
     byEventId.setTags(list);
 

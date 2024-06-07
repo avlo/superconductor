@@ -19,6 +19,7 @@ import nostr.event.tag.GeohashTag;
 @Entity
 @Table(name = "geohash_tag")
 public class GeohashTagEntity extends GenericTagEntity {
+//  TODO: below annotations and id necessary for compilation even thuogh same is defined in GenericTagEntity
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

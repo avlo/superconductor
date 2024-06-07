@@ -19,6 +19,7 @@ import nostr.event.tag.HashtagTag;
 @Entity
 @Table(name = "hashtag_tag")
 public class HashtagTagEntity extends GenericTagEntity {
+//  TODO: below annotations and id necessary for compilation even thuogh same is defined in GenericTagEntity
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.event;
 
+import com.prosilion.superconductor.dto.EventDto;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericEvent;
@@ -70,7 +71,8 @@ class EventEntityServiceIT {
 //    String newContent = "2222";
 //    textNoteEvent.setContent(newContent);
     Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
-    assertEquals(CONTENT, eventEntityService.getEventById(savedEventId).getContent());
+    EventDto eventById = eventEntityService.getEventById(savedEventId);
+    assertEquals(CONTENT, eventById.getContent());
   }
 
 //  @Test

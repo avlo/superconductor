@@ -1,10 +1,8 @@
 package com.prosilion.superconductor.dto;
 
 import com.prosilion.superconductor.entity.SubjectTagEntity;
-import lombok.Getter;
 import nostr.event.tag.SubjectTag;
 
-@Getter
 public class SubjectTagDto {
   private final SubjectTag subjectTag;
 

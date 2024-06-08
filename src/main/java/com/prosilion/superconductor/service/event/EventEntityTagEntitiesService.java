@@ -6,7 +6,6 @@ import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import com.prosilion.superconductor.service.event.join.EventEntityGenericTagEntityService;
 import com.prosilion.superconductor.service.event.join.EventEntityStandardTagEntityService;
 import com.prosilion.superconductor.service.event.join.EventEntitySubjectTagEntityService;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Getter
 @Service
 public class EventEntityTagEntitiesService {
   private final EventEntityStandardTagEntityService eventEntityStandardTagEntityService;

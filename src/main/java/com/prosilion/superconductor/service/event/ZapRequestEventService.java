@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Getter
 @Service
 public class ZapRequestEventService<T extends EventMessage> implements EventServiceIF<T> {
   public final Kind kind = Kind.ZAP_REQUEST;
@@ -110,5 +109,10 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
   }
 
   private record DiscoveredZapRequestTag(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> zapRequestDto) {
+  }
+
+  @Override
+  public Kind getKind() {
+    return kind;
   }
 }

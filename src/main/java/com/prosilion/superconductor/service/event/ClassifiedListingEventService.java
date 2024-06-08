@@ -7,7 +7,6 @@ import com.prosilion.superconductor.repository.classified.ClassifiedListingEntit
 import com.prosilion.superconductor.service.event.join.ClassifiedListingEntityEventEntityService;
 import com.prosilion.superconductor.service.event.join.PriceTagEntityService;
 import jakarta.persistence.NoResultException;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.ElementAttribute;
 import nostr.event.Kind;
@@ -24,7 +23,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Getter
 @Service
 public class ClassifiedListingEventService<T extends EventMessage> implements EventServiceIF<T> {
   public final Kind kind = Kind.CLASSIFIED_LISTING;
@@ -70,6 +68,11 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
     priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
 
     eventService.publishEvent(savedEventId, classifiedListingEvent);
+  }
+
+  @Override
+  public Kind getKind() {
+    return kind;
   }
 
   private ClassifiedListingDto createClassifiedListingDto(GenericEvent event) {

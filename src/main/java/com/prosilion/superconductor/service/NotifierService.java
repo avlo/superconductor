@@ -23,7 +23,6 @@ public class NotifierService<T extends GenericEvent> {
     subscriberNotifierService.nostrEventHandler(addNostrEvent);
   }
 
-  // TODO: parallel && || non-Kind improvement possible here
   public void subscriptionEventHandler(Long subscriberId) {
     redisEventEntityService.getAll().forEach((kind, eventMap) ->
         eventMap.forEach((eventId, event) ->

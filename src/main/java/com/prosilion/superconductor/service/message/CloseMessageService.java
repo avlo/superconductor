@@ -3,7 +3,6 @@ package com.prosilion.superconductor.service.message;
 import com.prosilion.superconductor.pubsub.RemoveSubscriberFilterEvent;
 import com.prosilion.superconductor.service.request.NoExistingUserException;
 import com.prosilion.superconductor.service.request.SubscriberService;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.message.CloseMessage;
 import org.springframework.context.ApplicationEventPublisher;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Slf4j
-@Getter
 @Service
 public class CloseMessageService<T extends CloseMessage> implements MessageService<T> {
   private final ApplicationEventPublisher publisher;
@@ -48,6 +46,10 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
     }
   }
 
+  @Override
+  public String getCommand() {
+    return command;
+  }
 //  public void deactivateSubscriberBySessionId(String sessionId) throws NoResultException {
 //    subscriberService.deactivateSubscriberBySessionId(sessionId);
 //  }

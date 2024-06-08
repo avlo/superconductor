@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PriceTagEntityService {
-
   private final PriceTagEntityRepository priceTagEntityRepository;
   private final EventEntityPriceTagEntityRepository join;
 

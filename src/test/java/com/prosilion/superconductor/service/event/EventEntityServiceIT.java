@@ -71,15 +71,10 @@ class EventEntityServiceIT {
 //    String newContent = "2222";
 //    textNoteEvent.setContent(newContent);
     Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
-    EventDto eventById = eventEntityService.getEventById(savedEventId);
-    assertEquals(CONTENT, eventById.getContent());
+    EventDto eventDto = eventEntityService.getEventById(savedEventId);
+    assertEquals(CONTENT, eventDto.getContent());
+    assertEquals(3, eventDto.getTags().size());
   }
-
-//  @Test
-//  void testRetrievedProperlyPopulatedTags() {
-//    Long savedEventId = eventEntityService.saveEventEntity(event.convertEntityToDto());
-////    assertEquals(1, eventEntityService.getEvent(savedEventId).getTags().size());
-//  }
 
 //  @Test
 //  void testPopulatedEvent() {

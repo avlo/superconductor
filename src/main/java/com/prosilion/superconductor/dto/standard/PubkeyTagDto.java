@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.dto.standard;
 
 import com.prosilion.superconductor.entity.standard.PubkeyTagEntity;
-import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import lombok.NonNull;
 import nostr.event.tag.PubKeyTag;
 
@@ -18,7 +17,7 @@ public class PubkeyTagDto extends StandardTagDto implements StandardTagDtoIF {
   }
 
   @Override
-  public <T extends StandardTagEntity> T convertDtoToEntity() {
-    return (T) new PubkeyTagEntity(pubKeyTag);
+  public PubkeyTagEntity convertDtoToEntity() {
+    return new PubkeyTagEntity(pubKeyTag);
   }
 }

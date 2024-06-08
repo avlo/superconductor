@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.dto.standard;
 
 import com.prosilion.superconductor.entity.standard.EventTagEntity;
-import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import lombok.NonNull;
 import nostr.event.tag.EventTag;
 
@@ -18,7 +17,7 @@ public class EventTagDto extends StandardTagDto implements StandardTagDtoIF {
   }
 
   @Override
-  public <T extends StandardTagEntity> T convertDtoToEntity() {
-    return (T) new EventTagEntity(eventTag);
+  public EventTagEntity convertDtoToEntity() {
+    return new EventTagEntity(eventTag);
   }
 }

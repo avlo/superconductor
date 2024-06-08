@@ -1,11 +1,11 @@
 package com.prosilion.superconductor.service.event.join.standard;
 
 import com.prosilion.superconductor.dto.standard.StandardTagDto;
+import com.prosilion.superconductor.dto.standard.StandardTagDtoFactory;
 import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntity;
 import com.prosilion.superconductor.entity.standard.StandardTagEntity;
-import com.prosilion.superconductor.repository.standard.StandardTagEntityRepository;
 import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepository;
-import com.prosilion.superconductor.dto.standard.StandardTagDtoFactory;
+import com.prosilion.superconductor.repository.standard.StandardTagEntityRepository;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,54 +72,38 @@ public class EventEntityStandardTagEntityService<T extends EventEntityStandardTa
   public List<U> getTags(Long eventId) {
     Map<Character, List<T>> joinMatches = new HashMap<>();
 
-    fullMap.forEach((character, combo) -> {
-      List<T> allByEventId = getAllByEventId(eventId, combo);
-      List<T> list = allByEventId.stream().filter(Objects::nonNull).toList();
-      List<T> put = joinMatches.put(character, list);
-    });
+    fullMap.forEach((character, combo) ->
+        joinMatches.put(character, getAllByEventId(eventId, combo).stream().filter(Objects::nonNull).toList()));
 
-    Stream<List<U>> listStream = joinMatches.entrySet().stream().map(this::getAllById);
-    List<U> list = listStream.flatMap(Collection::stream).toList();
-    return list;
+    return joinMatches.entrySet().stream().map(
+        this::getAllById).flatMap(Collection::stream).toList();
   }
 
   private List<T> getAllByEventId(Long eventId, ComboMap combo) {
-    EventEntityStandardTagEntityRepository<T> joinMap = combo.getJoinMap();
-    Character code = joinMap.getCode();
-
-    Set<Long> singleton = Collections.singleton(eventId);
-    List<T> all = joinMap.findAll();
-    List<T> findAllByEventId = joinMap.findAllById(singleton);
-    List<T> getAllByEventId = joinMap.getAllByEventId(eventId);
-    T referenceById = joinMap.getReferenceById(eventId);
-
-    return getAllByEventId;
+    return combo.getJoinMap().findAllById(
+        Collections.singleton(eventId));
   }
 
   private @NotNull List<U> getAllById(Entry<Character, List<T>> joinEntry) {
-    List<Long> lookupIds = getLookupIds(joinEntry);
-    StandardTagEntityRepository<U> repoMap = getRepoMap(joinEntry);
-    List<U> allById = repoMap.findAllById(lookupIds);
-    return allById;
+    return getRepoMap(joinEntry)
+        .findAllById(
+            getLookupIds(joinEntry));
   }
 
   private List<Long> getLookupIds(Entry<Character, List<T>> joinEntry) {
-    Function<T, Long> getLookupId = T::getLookupId;
-    List<T> value = joinEntry.getValue();
-    return value.stream().map(getLookupId).toList();
+    return joinEntry.getValue().stream().map(T::getLookupId).toList();
   }
 
   private StandardTagEntityRepository<U> getRepoMap(Entry<Character, List<T>> joinEntry) {
-    Character key = joinEntry.getKey();
-    ComboMap comboMap = fullMap.get(key);
-    StandardTagEntityRepository<U> repoMap = comboMap.getRepoMap();
-    return repoMap;
+    return fullMap.get(
+            joinEntry.getKey())
+        .getRepoMap();
   }
 
   public void saveStandardTags(GenericEvent event, Long id) {
-    List<BaseTag> eventStandardTags = getRelevantTags(event);
-    List<StandardTagDto> dtos = createDtos(eventStandardTags);
-    saveTags(dtos, id);
+    saveTags(
+        createDtos(
+            getRelevantTags(event)), id);
   }
 
   public List<BaseTag> getRelevantTags(GenericEvent event) {
@@ -137,15 +120,14 @@ public class EventEntityStandardTagEntityService<T extends EventEntityStandardTa
   }
 
   private U saveTag(StandardTagDto tag) {
-    return standardTagEntityRepositoryMap.get(tag.getCode()).save(tag.convertDtoToEntity());
+    return standardTagEntityRepositoryMap
+        .get(tag.getCode())
+        .save(tag.convertDtoToEntity());
   }
 
-  //  T extends EventEntityStandardTagEntity, U extends StandardTagEntity
   private void saveJoins(U tag, Long id) {
-    T entity = standardTagDtoFactory.createEntity(tag, id);
-    Character code = tag.getCode();
-    EventEntityStandardTagEntityRepository<T> repo = joins.get(code);
-    repo.save(entity);
+    joins.get(tag.getCode())
+        .save(standardTagDtoFactory.createEntity(tag, id));
   }
 
   private List<StandardTagDto> createDtos(List<BaseTag> characterBaseTagListMap) {

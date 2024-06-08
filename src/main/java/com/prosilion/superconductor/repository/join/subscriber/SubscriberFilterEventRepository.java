@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.repository.join.subscriber;
 
-import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterEvent;
 import com.prosilion.superconductor.entity.standard.StandardTagEntity;

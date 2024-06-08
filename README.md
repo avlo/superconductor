@@ -85,29 +85,31 @@ or full/debug console logging
 
 Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
-	select id, event_id, kind, nip, content, created_at, pub_key, signature from event;
-	select id, "key" as "key", "value" as "value", marker, recommended_relay_url from base_tag;
-	select id, base_tag_id, event_id from "event-base_tag-join";
-	select id, uri from relays_tag;
-	select id, amount, ln_url, recipient_pub_key from zaprequest;
-	select id, event_id, zap_request_event_id from "zaprequest_event-event-join";
+	select id, event_id, kind, nip, created_at, pub_key, signature, content from event;
+	select id, id_event, recommended_relay_url, marker from event_tag;
+	select id, public_key, main_relay_url, pet_name from pubkey_tag;
+	select id, event_id, event_tag_id from "event-event_tag-join";
+	select id, event_id, pubkey_id from "event-pubkey_tag-join";
 	select id, event_id, subject_tag_id from "event-subject_tag-join";
-	select id, geohash_tag_id, event_id from "event-geohash_tag-join";
-	select id, hash_tag_id, event_id from "event-hashtag_tag-join";
 	select id, subject from subject_tag;
-	select id, code, location from geohash_tag;
 	select id, code, hash_tag from hashtag_tag;
-	select id, classified_listing_id, event_id from "classified_listing-event-join";
-	select id, title, summary, published_at, location from classified_listing;
-	select id, price_tag_id, event_id from "event-price_tag-join";
-	select id, number, currency, frequency from price_tag;
-	select id, active, subscriber_id, session_id from subscriber;
+	select id, code, location from geohash_tag;
+	select id, event_id, geohash_tag_id from "event-geohash_tag-join";
+	select id, event_id, hash_tag_id from "event-hashtag_tag-join";
+	select id, subscriber_id, session_id, active from subscriber;
 	select id, subscriber_id, "since", "until", "limit" from "subscriber-filter-join";
+	select id, referenced_event_id, filter_id from "subscriber-filter_referenced_event-join";
+	select id, referenced_pubkey, filter_id from "subscriber-filter_referenced_pubkey-join";
+	select id, filter_id, kind_id from "subscriber-filter_kind-join";
 	select id, filter_id, event_id from "subscriber-filter_event-join";
 	select id, filter_id, author from "subscriber-filter_author-join";
-	select id, filter_id, kind_id from "subscriber-filter_kind-join";
-	select id, filter_id, referenced_event_id from "subscriber-filter_referenced_event-join";
-	select id, filter_id, referenced_pubkey from "subscriber-filter_referenced_pubkey-join";
+	select id, recipient_pub_key, amount, ln_url from zaprequest;
+	select id, event_id, classified_listing_id from "classified_listing-event-join";
+	select id, event_id, price_tag_id from "event-price_tag-join";
+	select id, event_id, zap_request_event_id from "zaprequest_event-event-join";
+	select id, title, published_at, location, summary from classified_listing;
+	select id, uri from relays_tag;
+	select id, number, currency, frequency from price_tag;
  
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 

@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "zap")
+@Table(name = "zaprequest")
 public class ZapRequestEventEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -18,13 +18,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
 @Getter
 @Service
-public class EventEntityService {
+public class EventEntityService<T extends GenericEvent> {
   private final EventEntityTagEntitiesService eventEntityTagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
@@ -54,28 +56,28 @@ public class EventEntityService {
   }
 
   public EventDto getEventById(Long id) {
-    Optional<EventEntity> byEventId = eventEntityRepository.findById(id);
-    return getEventByEventId(byEventId.orElseThrow());
+    return populateEventEntity(
+        eventEntityRepository.findById(id).orElseThrow())
+        .convertEntityToDto();
   }
 
-  private @NotNull EventDto getEventByEventId(EventEntity eventEntity) {
-    return populateEventEntity(eventEntity).convertEntityToDto();
-  }
-
-  public GenericEvent getEventByEventIdString(String eventId) {
-    Optional<EventEntity> byEventId = eventEntityRepository.findByEventId(eventId);
-    return getEventByEventId(byEventId.orElseThrow());
-  }
+//  public GenericEvent getEventByEventIdString(String eventId) {
+//    Optional<EventEntity> byEventId = eventEntityRepository.findByEventId(eventId);
+//    return getEventByEventId(byEventId.get());
+//  }
 
   private @NotNull EventEntity populateEventEntity(EventEntity eventEntity) {
-    List<BaseTag> baseTagsCast = eventEntityTagEntitiesService.getEventStandardTags(eventEntity.getId()).stream().map(StandardTagEntity::getAsBaseTag).toList();
-    List<BaseTag> genericTagCast = eventEntityTagEntitiesService.getEventGenericTags(eventEntity.getId()).stream().map(GenericTagEntity::getAsBaseTag).toList();
+    List<BaseTag> baseTagsCast = eventEntityTagEntitiesService.getEventStandardTags(eventEntity.getId()).parallelStream().map(StandardTagEntity::getAsBaseTag).toList();
+    List<BaseTag> genericTagCast = eventEntityTagEntitiesService.getEventGenericTags(eventEntity.getId()).parallelStream().map(GenericTagEntity::getAsBaseTag).toList();
     List<BaseTag> subjectTagCast = eventEntityTagEntitiesService.getEventSubjectTag(eventEntity.getId()).stream().map(SubjectTagEntity::getAsBaseTag).toList();
     eventEntity.setTags(Stream.of(baseTagsCast, genericTagCast, subjectTagCast).flatMap(Collection::stream).toList());
     return eventEntity;
   }
 
-  public List<EventEntity> getAll() {
-    return eventEntityRepository.findAll().stream().map(this::populateEventEntity).toList();
+  public Map<Kind, Map<Long, T>> getAll() {
+    return eventEntityRepository.findAll().parallelStream()
+        .map(this::populateEventEntity)
+        .collect(Collectors.groupingBy(eventEntity -> Kind.valueOf(eventEntity.getKind()),
+            Collectors.toMap(EventEntity::getId, eventEntity -> (T) eventEntity.convertEntityToDto())));
   }
 }

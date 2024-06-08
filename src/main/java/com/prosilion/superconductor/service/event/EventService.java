@@ -13,23 +13,23 @@ import org.springframework.stereotype.Service;
 @Getter
 @Service
 public class EventService<T extends GenericEvent> {
-  private final EventEntityService eventEntityService;
+  private final EventEntityService<T> eventEntityService;
   private final NotifierService<T> notifierService;
   private final RedisEventEntityService<T> redisEventEntityService;
 
   @Autowired
-  public EventService(EventEntityService eventEntityService, NotifierService<T> notifierService, RedisEventEntityService<T> redisEventEntityService) {
+  public EventService(EventEntityService<T> eventEntityService, NotifierService<T> notifierService, RedisEventEntityService<T> redisEventEntityService) {
     this.eventEntityService = eventEntityService;
     this.notifierService = notifierService;
     this.redisEventEntityService = redisEventEntityService;
   }
 
   protected Long saveEventEntity(T event) {
-    return eventEntityService.saveEventEntity(event);
+    return redisEventEntityService.saveEventEntity(event);
   }
 
   protected void publishEvent(Long id, T event) {
-    AddNostrEvent<T> addNostrEvent = new AddNostrEvent<>(Kind.valueOf(event.getKind()), id, event);
-    notifierService.nostrEventHandler(addNostrEvent);
+    notifierService.nostrEventHandler(
+        new AddNostrEvent<>(Kind.valueOf(event.getKind()), id, event));
   }
 }

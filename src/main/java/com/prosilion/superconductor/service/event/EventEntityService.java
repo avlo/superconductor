@@ -58,29 +58,24 @@ public class EventEntityService {
     return getEventByEventId(byEventId.orElseThrow());
   }
 
+  private @NotNull EventDto getEventByEventId(EventEntity eventEntity) {
+    return populateEventEntity(eventEntity).convertEntityToDto();
+  }
+
   public GenericEvent getEventByEventIdString(String eventId) {
     Optional<EventEntity> byEventId = eventEntityRepository.findByEventId(eventId);
     return getEventByEventId(byEventId.orElseThrow());
   }
 
-  private @NotNull EventDto getEventByEventId(EventEntity byEventId) {
-    List<StandardTagEntity> eventStandardTags = eventEntityTagEntitiesService.getEventStandardTags(byEventId.getId());
-    List<GenericTagEntity> eventGenericTags = eventEntityTagEntitiesService.getEventGenericTags(byEventId.getId());
-    Optional<SubjectTagEntity> eventSubjectTags = eventEntityTagEntitiesService.getEventSubjectTag(byEventId.getId());
-
-    List<BaseTag> baseTagsCast = eventStandardTags.stream().map(StandardTagEntity::getAsBaseTag).toList();
-    List<BaseTag> genericTagCast = eventGenericTags.stream().map(GenericTagEntity::getAsBaseTag).toList();
-    List<BaseTag> subjectTagCast = eventSubjectTags.stream().map(SubjectTagEntity::getAsBaseTag).toList();
-
-    List<BaseTag> list = Stream.of(baseTagsCast, genericTagCast, subjectTagCast).flatMap(Collection::stream).toList();
-
-    byEventId.setTags(list);
-
-    EventDto eventDto = byEventId.convertEntityToDto();
-    return eventDto;
+  private @NotNull EventEntity populateEventEntity(EventEntity eventEntity) {
+    List<BaseTag> baseTagsCast = eventEntityTagEntitiesService.getEventStandardTags(eventEntity.getId()).stream().map(StandardTagEntity::getAsBaseTag).toList();
+    List<BaseTag> genericTagCast = eventEntityTagEntitiesService.getEventGenericTags(eventEntity.getId()).stream().map(GenericTagEntity::getAsBaseTag).toList();
+    List<BaseTag> subjectTagCast = eventEntityTagEntitiesService.getEventSubjectTag(eventEntity.getId()).stream().map(SubjectTagEntity::getAsBaseTag).toList();
+    eventEntity.setTags(Stream.of(baseTagsCast, genericTagCast, subjectTagCast).flatMap(Collection::stream).toList());
+    return eventEntity;
   }
 
   public List<EventEntity> getAll() {
-    return eventEntityRepository.findAll();
+    return eventEntityRepository.findAll().stream().map(this::populateEventEntity).toList();
   }
 }

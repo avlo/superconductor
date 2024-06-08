@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class KindEventMapService<T extends GenericEvent> {
+public class RedisEventEntityService<T extends GenericEvent> {
 
   // TODO: below map currently stores:
 //
@@ -27,27 +27,9 @@ public class KindEventMapService<T extends GenericEvent> {
 //  upon which a service lookup and event object population occurs
   private final Map<Kind, Map<Long, T>> kindEventMap;
 
-  public KindEventMapService() {
+  public RedisEventEntityService() {
     this.kindEventMap = new EnumMap<>(Kind.class);
   }
-
-  /**
-   * public Map<Long, T> getEvents() {
-   * return kindEventMap.entrySet().stream().flatMap(entry ->
-   * entry.getValue().entrySet().stream()).collect(
-   * Collectors.toMap(
-   * Map.Entry::getKey,
-   * Map.Entry::getValue
-   * ));
-   * }
-   * <p>
-   * public List<AddNostrEvent<T>> getAddNostrEvents() {
-   * return kindEventMap.entrySet().stream().flatMap(kindMapEntry ->
-   * kindMapEntry.getValue().entrySet().stream().map(longTEntry ->
-   * new AddNostrEvent<T>(kindMapEntry.getKey(), longTEntry.getKey(), longTEntry.getValue())))
-   * .toList();
-   * }
-   */
 
   public Map<Kind, Map<Long, T>> getGottaProperlyDAOImplThisKindEventMap() {
     return kindEventMap;

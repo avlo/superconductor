@@ -2,11 +2,18 @@ package com.prosilion.superconductor.entity.zap;
 
 import com.prosilion.superconductor.dto.classified.RelaysTagDto;
 import com.prosilion.superconductor.dto.zap.ZapRequestDto;
-import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "zap")

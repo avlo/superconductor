@@ -1,9 +1,16 @@
 package com.prosilion.superconductor.entity;
 
 import com.prosilion.superconductor.dto.EventDto;
-import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import nostr.base.PublicKey;
 import nostr.base.Signature;
 import nostr.event.BaseTag;
@@ -12,7 +19,8 @@ import nostr.util.NostrUtil;
 
 import java.util.List;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "event")

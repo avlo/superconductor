@@ -58,12 +58,12 @@ public class FilterMatcher<T extends GenericEvent> {
     if (nonNull(subscriberFilters.getUntil()) && subscriberFilters.getUntil() <= eventToCheck.event().getCreatedAt())
       nostrEvents.add(eventToCheck);
 
-    return nostrEvents.stream().limit(Optional.ofNullable(subscriberFilters.getLimit()).orElse(100)).toList();
+    return nostrEvents.parallelStream().limit(Optional.ofNullable(subscriberFilters.getLimit()).orElse(100)).toList();
   }
 
   private Set<AddNostrEvent<T>> getCollect(List<Combo<T>> combos, AddNostrEvent<T> eventToCheck) {
     return combos
-        .stream()
+        .parallelStream()
         .map(combo -> getCollect(combo.getSubscriberFilters(), combo.getBiPredicate(), eventToCheck))
         .takeWhile(aBoolean -> aBoolean.equals(true))
         .map(result -> eventToCheck)
@@ -72,7 +72,7 @@ public class FilterMatcher<T extends GenericEvent> {
 
   private boolean getCollect(List<?> subscriberFilters, BiPredicate biPredicate, AddNostrEvent<T> eventToCheck) {
     return subscriberFilters
-        .stream()
+        .parallelStream()
         .allMatch(
             testable -> biPredicate.test(testable, eventToCheck));
   }

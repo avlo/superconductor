@@ -13,7 +13,11 @@ public class EventEntityHashtagTagEntity extends EventEntityGenericTagEntity {
   private Long hashTagId;
 
   public <T extends EventEntityGenericTagEntity> EventEntityHashtagTagEntity(Long eventId, Long hashTagId) {
-    this.eventId = eventId;
+    super.setEventId(eventId);
     this.hashTagId = hashTagId;
+  }
+  @Override
+  public Long getLookupId() {
+    return hashTagId;
   }
 }

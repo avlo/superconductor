@@ -9,38 +9,32 @@ import com.prosilion.superconductor.entity.join.generic.EventEntityHashtagTagEnt
 import org.springframework.stereotype.Component;
 
 @Component
-public class TagDtoFactory {
-  public static GenericTagDto createDto(Character code, String value) {
-    switch (code) {
+public class GenericTagDtoFactory<T extends EventEntityGenericTagEntity> {
+  public GenericTagDto createDto(Character code, String value) {
+    return switch (code) {
+      case 'g' -> new GeohashTagDto(value);
+      case 't' -> new HashtagTagDto(value);
 //      case "d":
 //        // identity
-      case 'g':
-        return new GeohashTagDto(value);
 //      case "r":
 //        // code block
-      case 't':
-        return new HashtagTagDto(value);
 //      case "u":
 //        // code block
-      default:
-        return new GeohashTagDto("NULL");
-    }
+      default -> throw new IllegalArgumentException(String.format("Cannot create GenericTagDto, unrecognized code [%s]", code));
+    };
   }
 
-  public static EventEntityGenericTagEntity createEntity(Character code, Long eventId, Long tagId) {
-    switch (code) {
+  public T createEntity(Character code, Long eventId, Long tagId) {
+    return switch (code) {
+      case 'g' -> (T) new EventEntityGeohashTagEntity(eventId, tagId);
+      case 't' -> (T) new EventEntityHashtagTagEntity(eventId, tagId);
 //      case "d":
 //        // identity
-      case 'g':
-        return new EventEntityGeohashTagEntity(eventId, tagId);
 //      case "r":
 //        // code block
-      case 't':
-        return new EventEntityHashtagTagEntity(eventId, tagId);
 //      case "u":
 //        // code block
-      default:
-        return new EventEntityGeohashTagEntity(eventId, tagId);
-    }
+      default -> throw new IllegalArgumentException(String.format("Cannot create GenericTagEntity, unrecognized code [%s]", code));
+    };
   }
 }

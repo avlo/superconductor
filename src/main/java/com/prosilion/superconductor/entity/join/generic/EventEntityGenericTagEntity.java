@@ -10,9 +10,11 @@ import java.io.Serializable;
 
 @Data
 @MappedSuperclass
-public class EventEntityGenericTagEntity implements Serializable {
+public abstract class EventEntityGenericTagEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
-  Long eventId;
+  private Long id;
+  private Long eventId;
+
+  public abstract Long getLookupId();
 }

@@ -94,7 +94,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   @Override
   public void handleTextMessage(@NotNull WebSocketSession session, TextMessage baseMessage) {
     log.info("Message from session [{}]", session.getId());
-    T message = (T) new BaseMessageDecoder(baseMessage.getPayload()).decode();
+    T message = (T) new BaseMessageDecoder<>().decode(baseMessage.getPayload());
     messageServiceMap.get(message.getCommand()).processIncoming(message, session.getId());
   }
 

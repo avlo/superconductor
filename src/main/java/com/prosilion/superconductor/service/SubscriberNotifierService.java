@@ -22,14 +22,14 @@ public class SubscriberNotifierService<T extends GenericEvent> {
     this.filterMatcher = filterMatcher;
   }
 
-  public void subscriptionEventHandler(Long subscriberId, AddNostrEvent<T> addNostrEvent) {
-    broadcastMatch(addNostrEvent, subscriberId, subscriberService.getFiltersList(subscriberId));
-  }
-
   public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
     Map<Long, List<Filters>> allFiltersOfAllSubscribers = subscriberService.getAllFiltersOfAllSubscribers();
     allFiltersOfAllSubscribers.forEach((subscriberId, filtersList) ->
         subscriptionEventHandler(subscriberId, addNostrEvent));
+  }
+
+  public void subscriptionEventHandler(Long subscriberId, AddNostrEvent<T> addNostrEvent) {
+    broadcastMatch(addNostrEvent, subscriberId, subscriberService.getFiltersList(subscriberId));
   }
 
   private void broadcastMatch(AddNostrEvent<T> addNostrEvent, Long subscriberId, List<Filters> filtersList) {

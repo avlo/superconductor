@@ -8,6 +8,7 @@ import nostr.event.tag.GeohashTag;
 @Getter
 public class GeohashTagDto extends GenericTagDto implements GenericTagDtoIF {
   private final GeohashTag geohashTag;
+
   public GeohashTagDto(String location) {
     super(location);
     geohashTag = GeohashTag.builder().location(location).build();
@@ -15,10 +16,10 @@ public class GeohashTagDto extends GenericTagDto implements GenericTagDtoIF {
 
   @Override
   public Character getCode() {
-    return getGeohashTag().getCode().charAt(0);
+    return 'g';
   }
   @Override
   public <T extends GenericTagEntity> T convertDtoToEntity() {
-    return (T) convertDtoToEntity(new GeohashTagEntity(getCode(), getValue()), getCode());
+    return (T) new GeohashTagEntity(getCode(), getValue());
   }
 }

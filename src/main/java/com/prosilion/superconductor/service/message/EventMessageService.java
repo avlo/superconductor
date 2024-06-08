@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.okresponse.ClientOkResponseService;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
@@ -19,7 +18,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Getter
 @Service
 public class EventMessageService<T extends EventMessage> implements MessageService<T> {
   public final String command = "EVENT";
@@ -51,5 +49,10 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
 
   private void processOkClientResponse(String sessionId, T eventMessage) throws JsonProcessingException {
     okResponseService.processOkClientResponse(sessionId, eventMessage);
+  }
+
+  @Override
+  public String getCommand() {
+    return command;
   }
 }

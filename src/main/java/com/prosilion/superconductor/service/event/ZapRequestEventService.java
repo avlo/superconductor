@@ -1,13 +1,12 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.superconductor.dto.RelaysTagDto;
-import com.prosilion.superconductor.dto.ZapRequestDto;
-import com.prosilion.superconductor.entity.ZapRequestEventEntity;
-import com.prosilion.superconductor.repository.classified.ZapRequestEventEntityRepository;
-import com.prosilion.superconductor.service.event.join.ZapRequestEventEntityEventEntityService;
+import com.prosilion.superconductor.dto.classified.RelaysTagDto;
+import com.prosilion.superconductor.dto.zap.ZapRequestDto;
+import com.prosilion.superconductor.entity.zap.ZapRequestEventEntity;
+import com.prosilion.superconductor.repository.zap.ZapRequestEventEntityRepository;
+import com.prosilion.superconductor.service.event.join.zap.ZapRequestEventEntityEventEntityService;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.ElementAttribute;

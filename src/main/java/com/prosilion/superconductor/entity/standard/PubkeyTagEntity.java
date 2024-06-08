@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.entity.standard;
 
-import com.prosilion.superconductor.dto.PubkeyTagDto;
-import com.prosilion.superconductor.dto.StandardTagDto;
+import com.prosilion.superconductor.dto.standard.PubkeyTagDto;
+import com.prosilion.superconductor.dto.standard.StandardTagDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

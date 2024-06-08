@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.entity.classified;
 
-import com.prosilion.superconductor.dto.PriceTagDto;
+import com.prosilion.superconductor.dto.classified.PriceTagDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

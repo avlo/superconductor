@@ -1,11 +1,11 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.superconductor.dto.ClassifiedListingDto;
-import com.prosilion.superconductor.dto.PriceTagDto;
+import com.prosilion.superconductor.dto.classified.ClassifiedListingDto;
+import com.prosilion.superconductor.dto.classified.PriceTagDto;
 import com.prosilion.superconductor.entity.classified.ClassifiedListingEventEntity;
 import com.prosilion.superconductor.repository.classified.ClassifiedListingEntityRepository;
-import com.prosilion.superconductor.service.event.join.ClassifiedListingEntityEventEntityService;
-import com.prosilion.superconductor.service.event.join.PriceTagEntityService;
+import com.prosilion.superconductor.service.event.join.classified.ClassifiedListingEntityEventEntityService;
+import com.prosilion.superconductor.service.event.join.classified.PriceTagEntityService;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.ElementAttribute;

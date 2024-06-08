@@ -2,12 +2,10 @@ package com.prosilion.superconductor.service;
 
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.service.event.RedisEventEntityService;
-import lombok.Getter;
 import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Getter
 @Service
 public class NotifierService<T extends GenericEvent> {
   private final SubscriberNotifierService<T> subscriberNotifierService;

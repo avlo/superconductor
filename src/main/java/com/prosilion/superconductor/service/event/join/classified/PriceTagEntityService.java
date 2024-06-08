@@ -4,9 +4,11 @@ import com.prosilion.superconductor.dto.classified.PriceTagDto;
 import com.prosilion.superconductor.entity.join.classified.EventEntityPriceTagEntity;
 import com.prosilion.superconductor.repository.classified.PriceTagEntityRepository;
 import com.prosilion.superconductor.repository.join.classified.EventEntityPriceTagEntityRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class PriceTagEntityService {
   private final PriceTagEntityRepository priceTagEntityRepository;
   private final EventEntityPriceTagEntityRepository join;

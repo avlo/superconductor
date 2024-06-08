@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.service.request;
 
-import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterEvent;
@@ -68,7 +67,7 @@ public class SubscriberFiltersManager {
       int size = filterEvents.size();  // ide says size > 0 is always false
       boolean is = size > 0;
       int size1 = filterEvents.size();
-      if (!empty || (is) ||(size1 > 0)) {
+      if (!empty || (is) || (size1 > 0)) {
         Filters filters = new Filters();
         filters.setEvents(filterEvents);
         filtersList.add(filters);
@@ -107,8 +106,9 @@ public class SubscriberFiltersManager {
 
   private List<BaseTag> getBaseTags(Long eventEntityId) {
     List<BaseTag> list = subscriberFilterEventRepository.findStandardTagsByEventEntityId(eventEntityId)
-        .stream().map(StandardTagEntity::convertEntityToDto).toList().stream().filter(Objects::nonNull)
-        .map(BaseTag.class::cast)
+        .stream()
+        .filter(Objects::nonNull)
+        .map(StandardTagEntity::getAsBaseTag)
         .toList();
     return list;
   }

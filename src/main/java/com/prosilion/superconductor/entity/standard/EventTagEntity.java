@@ -20,7 +20,7 @@ import nostr.event.tag.EventTag;
 @Entity
 @Table(name = "event_tag")
 public class EventTagEntity extends StandardTagEntity {
-//  TODO: below annotations and id necessary for compilation even thuogh same is defined in StandardTagEntity
+  //  TODO: below annotations and id necessary for compilation even thuogh same is defined in StandardTagEntity
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -35,7 +35,7 @@ public class EventTagEntity extends StandardTagEntity {
     this.recommendedRelayUrl = eventTag.getRecommendedRelayUrl();
   }
 
-  public EventTagEntity(@NonNull String idEvent, @NonNull Marker marker, @NonNull String recommendedRelayUrl) {
+  public EventTagEntity(@NonNull String idEvent, Marker marker, String recommendedRelayUrl) {
     this.idEvent = idEvent;
     this.marker = marker;
     this.recommendedRelayUrl = recommendedRelayUrl;

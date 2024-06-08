@@ -15,6 +15,7 @@ import nostr.base.PublicKey;
 import nostr.base.Signature;
 import nostr.event.BaseTag;
 import nostr.event.Kind;
+import nostr.event.impl.GenericEvent;
 import nostr.util.NostrUtil;
 
 import java.util.List;
@@ -57,10 +58,10 @@ public class EventEntity {
     this.id = id;
   }
 
-  public EventDto convertEntityToDto() {
+  public <T extends GenericEvent> T convertEntityToDto() {
     byte[] rawData = NostrUtil.hexToBytes(signature);
     Signature signature = new Signature();
     signature.setRawData(rawData);
-    return new EventDto(new PublicKey(pubKey), eventId, Kind.valueOf(kind), nip, createdAt, signature, tags, content);
+    return (T) new EventDto(new PublicKey(pubKey), eventId, Kind.valueOf(kind), nip, createdAt, signature, tags, content);
   }
 }

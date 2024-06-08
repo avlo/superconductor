@@ -53,7 +53,7 @@ public class EventEntityService<T extends GenericEvent> {
     return savedEntity.getId();
   }
 
-  public EventDto getEventById(Long id) {
+  public T getEventById(Long id) {
     return populateEventEntity(
         eventEntityRepository.findById(id).orElseThrow())
         .convertEntityToDto();
@@ -76,6 +76,6 @@ public class EventEntityService<T extends GenericEvent> {
     return eventEntityRepository.findAll().parallelStream()
         .map(this::populateEventEntity)
         .collect(Collectors.groupingBy(eventEntity -> Kind.valueOf(eventEntity.getKind()),
-            Collectors.toMap(EventEntity::getId, eventEntity -> (T) eventEntity.convertEntityToDto())));
+            Collectors.toMap(EventEntity::getId, EventEntity::convertEntityToDto)));
   }
 }

@@ -3,10 +3,8 @@ package com.prosilion.superconductor.dto.standard;
 import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import lombok.NonNull;
-import lombok.Setter;
 import nostr.event.tag.EventTag;
 
-@Setter
 public class EventTagDto extends StandardTagDto implements StandardTagDtoIF {
   private final EventTag eventTag;
 

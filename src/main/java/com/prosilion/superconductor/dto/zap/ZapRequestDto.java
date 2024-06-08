@@ -3,10 +3,8 @@ package com.prosilion.superconductor.dto.zap;
 import com.prosilion.superconductor.dto.classified.RelaysTagDto;
 import com.prosilion.superconductor.entity.zap.ZapRequestEventEntity;
 import lombok.Getter;
-import lombok.Setter;
 import nostr.event.impl.ZapRequest;
 
-@Setter
 @Getter
 public class ZapRequestDto extends ZapRequest {
   private final RelaysTagDto relaysTagDto;

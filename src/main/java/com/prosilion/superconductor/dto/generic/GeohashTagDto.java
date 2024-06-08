@@ -2,10 +2,8 @@ package com.prosilion.superconductor.dto.generic;
 
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.generic.GeohashTagEntity;
-import lombok.Getter;
 import nostr.event.tag.GeohashTag;
 
-@Getter
 public class GeohashTagDto extends GenericTagDto implements GenericTagDtoIF {
   private final GeohashTag geohashTag;
 

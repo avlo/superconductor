@@ -2,10 +2,8 @@ package com.prosilion.superconductor.dto.generic;
 
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.generic.HashtagTagEntity;
-import lombok.Getter;
 import nostr.event.tag.HashtagTag;
 
-@Getter
 public class HashtagTagDto extends GenericTagDto implements GenericTagDtoIF {
   private final HashtagTag hashtagTag;
   public HashtagTagDto(String hashTag) {

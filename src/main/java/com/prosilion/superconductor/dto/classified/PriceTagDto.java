@@ -1,8 +1,6 @@
 package com.prosilion.superconductor.dto.classified;
 
 import com.prosilion.superconductor.entity.classified.PriceTagEntity;
-import lombok.Getter;
-import lombok.Setter;
 import nostr.base.ElementAttribute;
 import nostr.event.tag.PriceTag;
 import org.springframework.beans.BeanUtils;
@@ -10,8 +8,6 @@ import org.springframework.beans.BeanUtils;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Setter
-@Getter
 public class PriceTagDto extends PriceTag {
 
   public PriceTagDto(BigDecimal number, String currency, String frequency) {

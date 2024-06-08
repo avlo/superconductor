@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.prosilion.superconductor.entity.classified.ClassifiedListingEventEntity;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import nostr.event.impl.ClassifiedListing;
 
-@Setter
 @Getter
 public class ClassifiedListingDto extends ClassifiedListing {
   @JsonIgnore

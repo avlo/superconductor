@@ -31,7 +31,7 @@ public class EventEntity {
   private long id;
 
   private String signature;
-  private String eventId;
+  private String eventIdString;
   private String pubKey;
   private Integer kind;
   private Integer nip;
@@ -43,8 +43,8 @@ public class EventEntity {
   @Transient
   private List<BaseTag> tags;
 
-  public EventEntity(String eventId, Integer kind, Integer nip, String pubKey, Long createdAt, String signature, String content) {
-    this.eventId = eventId;
+  public EventEntity(String eventIdString, Integer kind, Integer nip, String pubKey, Long createdAt, String signature, String content) {
+    this.eventIdString = eventIdString;
     this.kind = kind;
     this.nip = nip;
     this.pubKey = pubKey;
@@ -53,8 +53,8 @@ public class EventEntity {
     this.content = content;
   }
 
-  public EventEntity(long id, String eventId, Integer kind, Integer nip, String pubKey, Long createdAt, String signature, String content) {
-    this(eventId, kind, nip, pubKey, createdAt, signature, content);
+  public EventEntity(long id, String eventIdString, Integer kind, Integer nip, String pubKey, Long createdAt, String signature, String content) {
+    this(eventIdString, kind, nip, pubKey, createdAt, signature, content);
     this.id = id;
   }
 
@@ -62,6 +62,6 @@ public class EventEntity {
     byte[] rawData = NostrUtil.hexToBytes(signature);
     Signature signature = new Signature();
     signature.setRawData(rawData);
-    return (T) new EventDto(new PublicKey(pubKey), eventId, Kind.valueOf(kind), nip, createdAt, signature, tags, content);
+    return (T) new EventDto(new PublicKey(pubKey), eventIdString, Kind.valueOf(kind), nip, createdAt, signature, tags, content);
   }
 }

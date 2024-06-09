@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface EventEntityRepository extends JpaRepository<EventEntity, Long> {
   List<EventEntity> findByContent(String content);
-  Optional<EventEntity> findByEventId(String eventId);
+  Optional<EventEntity> findByEventIdString(String eventIdString);
 }

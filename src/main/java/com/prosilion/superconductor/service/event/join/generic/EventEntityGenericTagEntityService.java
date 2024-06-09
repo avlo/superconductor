@@ -1,11 +1,11 @@
 package com.prosilion.superconductor.service.event.join.generic;
 
 import com.prosilion.superconductor.dto.generic.GenericTagDto;
+import com.prosilion.superconductor.dto.generic.GenericTagDtoFactory;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.join.generic.EventEntityGenericTagEntity;
 import com.prosilion.superconductor.repository.generic.GenericTagEntityRepository;
 import com.prosilion.superconductor.repository.join.generic.EventEntityGenericTagEntityRepository;
-import com.prosilion.superconductor.dto.generic.GenericTagDtoFactory;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,56 +71,40 @@ public class EventEntityGenericTagEntityService<T extends EventEntityGenericTagE
   public List<U> getTags(Long eventId) {
     Map<Character, List<T>> joinMatches = new HashMap<>();
 
-    fullMap.forEach((character, combo) -> {
-      List<T> allByEventId = getAllByEventId(eventId, combo);
-      List<T> list = allByEventId.stream().filter(Objects::nonNull).toList();
-      List<T> put = joinMatches.put(character, list);
-    });
+    fullMap.forEach((character, combo) ->
+        joinMatches.put(character, getAllByEventId(eventId, combo).stream().filter(Objects::nonNull).toList()));
 
-    Stream<List<U>> listStream = joinMatches.entrySet().stream().map(this::getAllById);
-    List<U> list = listStream.flatMap(Collection::stream).toList();
-    return list;
-  }
-
-  private @NotNull List<U> getAllById(Entry<Character, List<T>> joinEntry) {
-    List<Long> lookupIds = getLookupIds(joinEntry);
-    GenericTagEntityRepository<U> repoMap = getRepoMap(joinEntry);
-    List<U> allById = repoMap.findAllById(lookupIds);
-    return allById;
-  }
-
-  private GenericTagEntityRepository<U> getRepoMap(Entry<Character, List<T>> joinEntry) {
-    Character key = joinEntry.getKey();
-    ComboMap comboMap = fullMap.get(key);
-    GenericTagEntityRepository<U> repoMap = comboMap.getRepoMap();
-    return repoMap;
+    return joinMatches.entrySet().stream().map(
+        this::getAllById).flatMap(Collection::stream).toList();
   }
 
   private List<T> getAllByEventId(Long eventId, ComboMap combo) {
-    EventEntityGenericTagEntityRepository<T> joinMap = combo.getJoinMap();
-    Character code = joinMap.getCode();
+    return combo.getJoinMap().findAllById(
+        Collections.singleton(eventId));
+  }
 
-    Set<Long> singleton = Collections.singleton(eventId);
-    List<T> all = joinMap.findAll();
-    List<T> findAllByEventId = joinMap.findAllById(singleton);
-    List<T> getAllByEventId = joinMap.getAllByEventId(eventId);
-    T referenceById = joinMap.getReferenceById(eventId);
-
-    return getAllByEventId;
+  private @NotNull List<U> getAllById(Entry<Character, List<T>> joinEntry) {
+    return getRepoMap(joinEntry)
+        .findAllById(
+            getLookupIds(joinEntry));
   }
 
   private List<Long> getLookupIds(Entry<Character, List<T>> joinEntry) {
-    Function<T, Long> getLookupId = T::getLookupId;
-    List<T> value = joinEntry.getValue();
-    return value.stream().map(getLookupId).toList();
+    return joinEntry.getValue().stream().map(T::getLookupId).toList();
+  }
+
+  private GenericTagEntityRepository<U> getRepoMap(Entry<Character, List<T>> joinEntry) {
+    return fullMap.get(
+            joinEntry.getKey())
+        .getRepoMap();
   }
 
   public void saveGenericTags(GenericEvent event) {
     log.info("saving generic tags for event: [{}]", event.getId());
-    List<BaseTag> singleLetterGenericTags = getRelevantTags(event);
-    List<Map<Character, String>> list = selectReposByRelevantTags(singleLetterGenericTags);
-    List<GenericTagDto> dtos = createDtos(list);
-    saveTags(dtos);
+    saveTags(
+        createDtos(
+            selectReposByRelevantTags(
+                getRelevantTags(event))));
   }
 
   private List<BaseTag> getRelevantTags(GenericEvent event) {

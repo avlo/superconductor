@@ -6,6 +6,7 @@ import com.prosilion.superconductor.entity.join.EventEntitySubjectTagEntity;
 import com.prosilion.superconductor.repository.SubjectTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntitySubjectTagEntityRepository;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.SubjectTag;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@Getter
 @Service
 @Transactional
 public class EventEntitySubjectTagEntityService {
@@ -44,7 +46,7 @@ public class EventEntitySubjectTagEntityService {
         .ifPresent(subjectTag -> saveSubjectTag(new SubjectTagDto(((SubjectTag) subjectTag).getSubject()), id));
   }
 
-  public List<BaseTag> getRelevantTags(GenericEvent event) {
+  private List<BaseTag> getRelevantTags(GenericEvent event) {
     return Optional.of(event.getTags().stream()).orElse(Stream.empty())
         .filter(baseTag -> "subject".equals(baseTag.getCode()))
         .toList();

@@ -3,7 +3,6 @@ package com.prosilion.superconductor.dto.classified;
 import com.prosilion.superconductor.entity.classified.PriceTagEntity;
 import nostr.base.ElementAttribute;
 import nostr.event.tag.PriceTag;
-import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,9 +14,7 @@ public class PriceTagDto extends PriceTag {
   }
 
   public PriceTagEntity convertDtoToEntity() {
-    PriceTagEntity priceTagEntity = new PriceTagEntity();
-    BeanUtils.copyProperties(this, priceTagEntity);
-    return priceTagEntity;
+    return new PriceTagEntity(getNumber(), getCurrency(), getFrequency());
   }
 
   public static PriceTagDto createPriceTagDtoFromAttributes(List<ElementAttribute> atts) {

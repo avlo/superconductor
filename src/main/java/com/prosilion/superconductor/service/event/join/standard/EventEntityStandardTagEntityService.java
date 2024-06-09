@@ -106,7 +106,7 @@ public class EventEntityStandardTagEntityService<T extends EventEntityStandardTa
             getRelevantTags(event)), id);
   }
 
-  public List<BaseTag> getRelevantTags(GenericEvent event) {
+  private List<BaseTag> getRelevantTags(GenericEvent event) {
     return Optional.of(event.getTags().stream()).orElse(Stream.empty())
         .filter(Objects::nonNull)
         .filter(baseTag -> List.of("a", "p", "e").contains(baseTag.getCode()))

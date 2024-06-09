@@ -36,6 +36,7 @@ public class GeohashTagEntity extends GenericTagEntity {
     return new GeohashTag(location);
   }
 
+  @Override
   public GenericTagDto convertEntityToDto() {
     return new GeohashTagDto(location);
   }

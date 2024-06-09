@@ -17,7 +17,7 @@ class EventEntityTest {
   @Test
   void testSettersGetters() {
     event.setSignature(SIGNATURE);
-    event.setEventId(EVENT_ID);
+    event.setEventIdString(EVENT_ID);
     event.setPubKey(PUB_KEY);
     event.setKind(KIND);
     event.setNip(NIP);
@@ -25,7 +25,7 @@ class EventEntityTest {
     event.setContent(CONTENT);
 
     assertEquals(SIGNATURE, event.getSignature());
-    assertEquals(EVENT_ID, event.getEventId());
+    assertEquals(EVENT_ID, event.getEventIdString());
     assertEquals(PUB_KEY, event.getPubKey());
     assertEquals(KIND, event.getKind());
     assertEquals(NIP, event.getNip());

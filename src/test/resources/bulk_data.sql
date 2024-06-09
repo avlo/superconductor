@@ -2,7 +2,7 @@ INSERT INTO event
 (
 -- id,
   signature
-, event_id
+, event_id_string
 , pub_key
 , kind
 , nip

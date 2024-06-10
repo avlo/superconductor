@@ -5,7 +5,6 @@ import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagE
 import com.prosilion.superconductor.entity.standard.StandardTagEntityRxR;
 import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepositoryRxR;
 import com.prosilion.superconductor.repository.standard.StandardTagEntityRepositoryRxR;
-import com.prosilion.superconductor.service.event.join.standard.EventEntityStandardTagEntityServiceIFRxR;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +20,11 @@ public class EventEntityTagEntitiesServiceRxR<
     Q extends StandardTagEntityRepositoryRxR<R>,
     R extends StandardTagEntityRxR,
     S extends EventEntityStandardTagEntityRxR,
-    T extends EventEntityStandardTagEntityServiceIFRxR<R, S>,
     U extends EventEntityStandardTagEntityRepositoryRxR<S>> {
-  private final List<TagModule<P, Q, R, S, T, U>> tagModules;
+  private final List<TagModule<P, Q, R, S, U>> tagModules;
 
   @Autowired
-  public EventEntityTagEntitiesServiceRxR(List<TagModule<P, Q, R, S, T, U>> tagModules) {
+  public EventEntityTagEntitiesServiceRxR(List<TagModule<P, Q, R, S, U>> tagModules) {
     this.tagModules = tagModules;
   }
 

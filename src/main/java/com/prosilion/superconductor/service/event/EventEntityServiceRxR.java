@@ -7,7 +7,6 @@ import com.prosilion.superconductor.entity.standard.StandardTagEntityRxR;
 import com.prosilion.superconductor.repository.EventEntityRepository;
 import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepositoryRxR;
 import com.prosilion.superconductor.repository.standard.StandardTagEntityRepositoryRxR;
-import com.prosilion.superconductor.service.event.join.standard.EventEntityStandardTagEntityServiceIFRxR;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
@@ -29,8 +28,8 @@ public class EventEntityServiceRxR<T extends GenericEvent> {
       StandardTagEntityRepositoryRxR<StandardTagEntityRxR>,
       StandardTagEntityRxR,
       EventEntityStandardTagEntityRxR,
-      EventEntityStandardTagEntityServiceIFRxR<StandardTagEntityRxR, EventEntityStandardTagEntityRxR>,
-      EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>> eventEntityTagEntitiesServiceRxR;
+      EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>>
+      eventEntityTagEntitiesServiceRxR;
   private final EventEntityRepository eventEntityRepository;
 
   @Autowired
@@ -40,8 +39,8 @@ public class EventEntityServiceRxR<T extends GenericEvent> {
           StandardTagEntityRepositoryRxR<StandardTagEntityRxR>,
           StandardTagEntityRxR,
           EventEntityStandardTagEntityRxR,
-          EventEntityStandardTagEntityServiceIFRxR<StandardTagEntityRxR, EventEntityStandardTagEntityRxR>,
-          EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>> eventEntityTagEntitiesServiceRxR,
+          EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>>
+          eventEntityTagEntitiesServiceRxR,
       EventEntityRepository eventEntityRepository) {
 
     this.eventEntityTagEntitiesServiceRxR = eventEntityTagEntitiesServiceRxR;

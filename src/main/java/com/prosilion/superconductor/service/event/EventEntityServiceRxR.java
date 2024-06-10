@@ -74,8 +74,13 @@ public class EventEntityServiceRxR<T extends GenericEvent> {
 
   public T getEventById(Long id) {
     return populateEventEntity(
-        eventEntityRepository.findById(id).orElseThrow())
+        getById(id).orElseThrow())
         .convertEntityToDto();
+  }
+
+  private @NotNull Optional<EventEntity> getById(Long id) {
+    Optional<EventEntity> byId = eventEntityRepository.findById(id);
+    return byId;
   }
 
   private @NotNull EventEntity populateEventEntity(EventEntity eventEntity) {

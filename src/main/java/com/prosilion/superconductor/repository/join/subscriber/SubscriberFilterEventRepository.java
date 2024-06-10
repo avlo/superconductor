@@ -14,7 +14,7 @@ public interface SubscriberFilterEventRepository extends JpaRepository<Subscribe
   @Query("SELECT new com.prosilion.superconductor.entity.EventEntity(e.id, e.eventIdString, e.kind, e.nip, e.pubKey, e.createdAt, e.signature, e.content) from EventEntity e where e.eventIdString = :eventId")
   List<EventEntity> findEventsBySubscriberFilterEventString(String eventId);
 
-  @Query("SELECT new com.prosilion.superconductor.entity.standard.EventTagEntity(b.idEvent, b.marker, b.recommendedRelayUrl) from EventTagEntity b where b.id = :eventEntityId")
+  @Query("SELECT new com.prosilion.superconductor.entity.standard.EventTagEntity(b.eventIdString, b.marker, b.recommendedRelayUrl) from EventTagEntity b where b.id = :eventEntityId")
   List<StandardTagEntityRxR> findStandardTagsByEventEntityId(Long eventEntityId);
 
   List<SubscriberFilterEvent> findSubscriberFilterEventsByFilterId(Long filterId);

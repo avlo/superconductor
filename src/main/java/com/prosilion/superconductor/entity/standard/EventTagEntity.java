@@ -25,18 +25,18 @@ public class EventTagEntity extends StandardTagEntityRxR {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String idEvent;
+  private String eventIdString;
   private Marker marker;
   private String recommendedRelayUrl;
 
   public EventTagEntity(@NonNull EventTag eventTag) {
-    this.idEvent = eventTag.getIdEvent();
+    this.eventIdString = eventTag.getIdEvent();
     this.marker = eventTag.getMarker();
     this.recommendedRelayUrl = eventTag.getRecommendedRelayUrl();
   }
 
-  public EventTagEntity(@NonNull String idEvent, Marker marker, String recommendedRelayUrl) {
-    this.idEvent = idEvent;
+  public EventTagEntity(@NonNull String eventIdString, Marker marker, String recommendedRelayUrl) {
+    this.eventIdString = eventIdString;
     this.marker = marker;
     this.recommendedRelayUrl = recommendedRelayUrl;
   }
@@ -48,11 +48,11 @@ public class EventTagEntity extends StandardTagEntityRxR {
 
   @Override
   public BaseTag getAsBaseTag() {
-    return new EventTag(idEvent, recommendedRelayUrl, marker);
+    return new EventTag(eventIdString, recommendedRelayUrl, marker);
   }
 
   @Override
   public EventTagDto convertEntityToDto() {
-    return new EventTagDto(new EventTag(idEvent, recommendedRelayUrl, marker));
+    return new EventTagDto(new EventTag(eventIdString, recommendedRelayUrl, marker));
   }
 }

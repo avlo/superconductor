@@ -7,7 +7,10 @@ import com.prosilion.superconductor.repository.join.standard.EventEntityStandard
 import com.prosilion.superconductor.repository.standard.StandardTagEntityRepositoryRxR;
 import nostr.event.BaseTag;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface TagModule<
     P extends BaseTag,
@@ -31,9 +34,15 @@ public interface TagModule<
   Q getStandardTagEntityRepositoryRxR();
 
   default List<R> getTags(Long eventId) {
-    return getEventEntityStandardTagEntityRepositoryJoin().getAllByEventId(eventId).parallelStream().map(joinId -> getStandardTagEntityRepositoryRxR().getReferenceById(eventId))
-        .map(getClazz()::cast)
-        .toList();
+    Stream<List<R>> listStream = getEventEntityStandardTagEntityRepositoryJoin()
+        .getAllByEventId(eventId)
+        .stream()
+        .map(event -> Optional.of(
+                getStandardTagEntityRepositoryRxR().findById(
+                    event.getEventId()))
+            .orElse(Optional.empty()).stream().toList());
+    List<R> list = listStream.flatMap(Collection::stream).toList();
+    return list;
   }
 
   default void saveTag(Long eventId, P baseTag) {

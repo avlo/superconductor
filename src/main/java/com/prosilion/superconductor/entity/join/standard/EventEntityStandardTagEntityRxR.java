@@ -5,12 +5,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @MappedSuperclass
 public abstract class EventEntityStandardTagEntityRxR implements Serializable {
   @Id

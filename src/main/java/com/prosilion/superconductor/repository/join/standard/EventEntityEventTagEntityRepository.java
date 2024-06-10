@@ -4,8 +4,8 @@ import com.prosilion.superconductor.entity.join.standard.EventEntityEventTagEnti
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EventEntityEventTagEntityRepository<T extends EventEntityEventTagEntity> extends EventEntityStandardTagEntityRepository<T> {
-  default Character getCode() {
-    return 'e';
+public interface EventEntityEventTagEntityRepository<T extends EventEntityEventTagEntity> extends EventEntityStandardTagEntityRepositoryRxR<T> {
+  default String getCode() {
+    return "e";
   }
 }

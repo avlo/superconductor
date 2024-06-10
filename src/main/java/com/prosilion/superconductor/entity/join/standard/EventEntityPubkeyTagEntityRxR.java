@@ -11,10 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "event-pubkey_tag-join")
-public class EventEntityPubkeyTagEntityRxR extends EventEntityStandardTagEntity {
+public class EventEntityPubkeyTagEntityRxR extends EventEntityStandardTagEntityRxR {
   private Long pubkeyId;
 
-  public <T extends EventEntityStandardTagEntity> EventEntityPubkeyTagEntityRxR(Long eventId, Long pubkeyId) {
+  public <T extends EventEntityStandardTagEntityRxR> EventEntityPubkeyTagEntityRxR(Long eventId, Long pubkeyId) {
     super.setEventId(eventId);
     this.pubkeyId = pubkeyId;
   }

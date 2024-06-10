@@ -33,7 +33,7 @@ class SubscriberEventIT {
   public static final long CREATED_AT = 1717633851743L;
 
   @Autowired
-  EventEntityService<GenericEvent> eventEntityService;
+  EventEntityServiceRxR<GenericEvent> eventEntityService;
   ClassifiedListingEvent classifiedListingEvent;
 
   @BeforeAll

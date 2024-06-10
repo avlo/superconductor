@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.entity.standard;
 
-import com.prosilion.superconductor.dto.standard.StandardTagDto;
 import com.prosilion.superconductor.dto.standard.StandardTagDtoRxR;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

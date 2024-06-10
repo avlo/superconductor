@@ -4,7 +4,7 @@ import com.prosilion.superconductor.entity.standard.PubkeyTagEntity;
 import lombok.NonNull;
 import nostr.event.tag.PubKeyTag;
 
-public class PubkeyTagDto extends StandardTagDto implements StandardTagDtoIF {
+public class PubkeyTagDto extends StandardTagDtoRxR {
   private final PubKeyTag pubKeyTag;
 
   public PubkeyTagDto(@NonNull PubKeyTag pubKeyTag) {
@@ -12,8 +12,8 @@ public class PubkeyTagDto extends StandardTagDto implements StandardTagDtoIF {
   }
 
   @Override
-  public Character getCode() {
-    return pubKeyTag.getCode().charAt(0);
+  public String getCode() {
+    return pubKeyTag.getCode();
   }
 
   @Override

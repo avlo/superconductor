@@ -4,7 +4,7 @@ import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import lombok.NonNull;
 import nostr.event.tag.EventTag;
 
-public class EventTagDto extends StandardTagDto implements StandardTagDtoIF {
+public class EventTagDto extends StandardTagDtoRxR {
   private final EventTag eventTag;
 
   public EventTagDto(@NonNull EventTag eventTag) {
@@ -12,8 +12,8 @@ public class EventTagDto extends StandardTagDto implements StandardTagDtoIF {
   }
 
   @Override
-  public Character getCode() {
-    return eventTag.getCode().charAt(0);
+  public String getCode() {
+    return eventTag.getCode();
   }
 
   @Override

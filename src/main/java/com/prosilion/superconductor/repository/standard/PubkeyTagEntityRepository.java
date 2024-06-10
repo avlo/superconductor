@@ -4,8 +4,8 @@ import com.prosilion.superconductor.entity.standard.PubkeyTagEntity;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PubkeyTagEntityRepository<T extends PubkeyTagEntity> extends StandardTagEntityRepository<T> {
-  default Character getCode() {
-    return 'p';
+public interface PubkeyTagEntityRepository<T extends PubkeyTagEntity> extends StandardTagEntityRepositoryRxR<T> {
+  default String getCode() {
+    return "p";
   }
 }

@@ -1,10 +1,9 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.dto.standard.StandardTagDto;
-import com.prosilion.superconductor.entity.join.standard.EventEntityAbstractTagEntity;
-import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
-import com.prosilion.superconductor.repository.join.standard.EventEntityAbstractTagEntityRepository;
-import com.prosilion.superconductor.repository.standard.AbstractTagEntityRepository;
+import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.AbstractTagEntity;
+import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import nostr.event.BaseTag;
 
 import java.util.Collection;
@@ -26,7 +25,7 @@ public interface TagModule<
 
   R convertDtoToEntity(P tag);
 
-  StandardTagDto getTagDto(P baseTag);
+  AbstractTagDto getTagDto(P baseTag);
 
   S getEventEntityTagEntity(Long eventId, Long tagId);
 

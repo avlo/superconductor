@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.entity.classified;
 
 import com.prosilion.superconductor.dto.classified.PriceTagDto;
-import com.prosilion.superconductor.dto.standard.StandardTagDto;
-import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
+import com.prosilion.superconductor.dto.AbstractTagDto;
+import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -48,7 +48,7 @@ public class PriceTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  public StandardTagDto convertEntityToDto() {
+  public AbstractTagDto convertEntityToDto() {
     return new PriceTagDto(new PriceTag(number, currency, frequency));
   }
 }

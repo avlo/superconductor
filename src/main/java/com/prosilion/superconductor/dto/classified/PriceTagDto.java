@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.dto.classified;
 
-import com.prosilion.superconductor.dto.standard.StandardTagDto;
+import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.classified.PriceTagEntity;
 import lombok.Getter;
 import nostr.base.ElementAttribute;
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
-public class PriceTagDto implements StandardTagDto {
+public class PriceTagDto implements AbstractTagDto {
   private final PriceTag priceTag;
 
   public PriceTagDto(PriceTag priceTag) {

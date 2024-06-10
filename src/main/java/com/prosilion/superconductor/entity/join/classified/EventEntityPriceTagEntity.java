@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.entity.join.classified;
 
-import com.prosilion.superconductor.entity.join.standard.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;

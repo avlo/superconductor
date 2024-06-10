@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.repository.generic;
 
 import com.prosilion.superconductor.entity.generic.GeohashTagEntity;
-import com.prosilion.superconductor.repository.standard.AbstractTagEntityRepository;
+import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

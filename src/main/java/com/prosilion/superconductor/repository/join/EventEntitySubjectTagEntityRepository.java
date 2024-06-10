@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.repository.join;
 
 import com.prosilion.superconductor.entity.join.EventEntitySubjectTagEntity;
-import com.prosilion.superconductor.repository.join.standard.EventEntityAbstractTagEntityRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

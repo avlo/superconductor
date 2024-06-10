@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.entity.generic;
 
 import com.prosilion.superconductor.dto.generic.GeohashTagDto;
-import com.prosilion.superconductor.dto.standard.StandardTagDto;
-import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
+import com.prosilion.superconductor.dto.AbstractTagDto;
+import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,17 +33,17 @@ public class GeohashTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  public BaseTag getAsBaseTag() {
-    return new GeohashTag(location);
-  }
-
-  @Override
   public String getCode() {
     return "g";
   }
 
   @Override
-  public StandardTagDto convertEntityToDto() {
+  public BaseTag getAsBaseTag() {
+    return new GeohashTag(location);
+  }
+
+  @Override
+  public AbstractTagDto convertEntityToDto() {
     return new GeohashTagDto(new GeohashTag(location));
   }
 }

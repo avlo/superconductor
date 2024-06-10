@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.repository.join.classified;
 
 import com.prosilion.superconductor.entity.join.classified.EventEntityPriceTagEntity;
-import com.prosilion.superconductor.repository.join.standard.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

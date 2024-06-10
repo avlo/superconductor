@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.TagModule;
-import com.prosilion.superconductor.entity.join.standard.EventEntityAbstractTagEntity;
-import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
-import com.prosilion.superconductor.repository.join.standard.EventEntityAbstractTagEntityRepository;
-import com.prosilion.superconductor.repository.standard.AbstractTagEntityRepository;
+import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.AbstractTagEntity;
+import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
 import org.springframework.beans.factory.annotation.Autowired;

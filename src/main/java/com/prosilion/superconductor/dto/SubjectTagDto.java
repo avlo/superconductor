@@ -1,11 +1,10 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.dto.standard.StandardTagDto;
 import com.prosilion.superconductor.entity.SubjectTagEntity;
 import lombok.NonNull;
 import nostr.event.tag.SubjectTag;
 
-public class SubjectTagDto implements StandardTagDto {
+public class SubjectTagDto implements AbstractTagDto {
   private final SubjectTag subjectTag;
 
   public SubjectTagDto(@NonNull SubjectTag subjectTag) {

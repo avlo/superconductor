@@ -3,7 +3,7 @@ package com.prosilion.superconductor.service.request;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterEvent;
-import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
+import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterAuthorRepository;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterEventRepository;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterKindRepository;

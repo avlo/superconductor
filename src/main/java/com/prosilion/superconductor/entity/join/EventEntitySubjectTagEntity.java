@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.entity.join;
 
-import com.prosilion.superconductor.entity.join.standard.EventEntityAbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

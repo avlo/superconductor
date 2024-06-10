@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.entity;
 
 import com.prosilion.superconductor.dto.SubjectTagDto;
-import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

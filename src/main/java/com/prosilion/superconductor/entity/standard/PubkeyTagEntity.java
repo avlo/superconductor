@@ -1,7 +1,8 @@
 package com.prosilion.superconductor.entity.standard;
 
 import com.prosilion.superconductor.dto.standard.PubkeyTagDto;
-import com.prosilion.superconductor.dto.standard.StandardTagDto;
+import com.prosilion.superconductor.dto.AbstractTagDto;
+import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -47,7 +48,7 @@ public class PubkeyTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  public StandardTagDto convertEntityToDto() {
+  public AbstractTagDto convertEntityToDto() {
     return new PubkeyTagDto(
         new PubKeyTag(
             new PublicKey(publicKey), mainRelayUrl, petName));

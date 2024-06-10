@@ -1,6 +1,6 @@
-package com.prosilion.superconductor.repository.standard;
+package com.prosilion.superconductor.repository;
 
-import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
+import com.prosilion.superconductor.entity.AbstractTagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 

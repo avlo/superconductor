@@ -1,5 +1,6 @@
-package com.prosilion.superconductor.entity.standard;
+package com.prosilion.superconductor.entity;
 
+import com.prosilion.superconductor.entity.standard.Local;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;

@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.entity.generic;
 
 import com.prosilion.superconductor.dto.generic.HashtagTagDto;
-import com.prosilion.superconductor.dto.standard.StandardTagDto;
-import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
+import com.prosilion.superconductor.dto.AbstractTagDto;
+import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,7 +43,7 @@ public class HashtagTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  public StandardTagDto convertEntityToDto() {
+  public AbstractTagDto convertEntityToDto() {
     return new HashtagTagDto(new HashtagTag(hashtagTag));
   }
 }

@@ -8,18 +8,19 @@ import com.prosilion.superconductor.repository.standard.StandardTagEntityReposit
 import com.prosilion.superconductor.service.event.join.standard.EventEntityStandardTagEntityServiceIFRxR;
 import nostr.event.BaseTag;
 
+import java.util.List;
+
 public interface TagModule<
     P extends BaseTag,
-    Q extends StandardTagEntityRepositoryRxR<R>,
-    R extends StandardTagEntityRxR,
-    S extends EventEntityStandardTagEntityRxR,
-    T extends EventEntityStandardTagEntityServiceIFRxR<R, S>,
-    U extends EventEntityStandardTagEntityRepositoryRxR<S>> {
+    Q extends StandardTagEntityRepositoryRxR<R>, // tag table
+    R extends StandardTagEntityRxR, // tag to return
+    S extends EventEntityStandardTagEntityRxR, // event -> tag join table
+    T extends EventEntityStandardTagEntityServiceIFRxR<R, S>, // event -> tag join service
+    U extends EventEntityStandardTagEntityRepositoryRxR<S>> // join table within service
+{
   String getCode();
 
   void setBaseTag(P baseTag);
-
-  BaseTag getBaseTag();
 
   R convertDtoToEntity();
 
@@ -32,4 +33,14 @@ public interface TagModule<
   T getEventEntityStandardTagEntityServiceRxR();
 
   Q getStandardTagEntityRepositoryRxR();
+
+  default List<R> getTags(Long eventId) {
+    return getEventEntityStandardTagEntityRepositoryJoin().getAllByEventId(eventId).parallelStream().map(joinId -> getEventEntityStandardTagEntityServiceRxR().getJoin().getAllByEventId(eventId))
+        .map(getEventEntityStandardTagEntityServiceRxR().getClazz()::cast)
+        .toList();
+  }
+
+  default void saveTags(Long eventId, P baseTag) {
+
+  }
 }

@@ -30,7 +30,7 @@ class EventEntityServiceIT {
   public static final long CREATED_AT = 1717633851743L;
 
   @Autowired
-  EventEntityService eventEntityService;
+  EventEntityServiceRxR<GenericEvent> eventEntityService;
 
   TextNoteEvent textNoteEvent;
 

@@ -11,10 +11,10 @@ import java.util.Map;
 @Slf4j
 @Service
 public class RedisEventEntityService<T extends GenericEvent> {
-  EventEntityService<T> eventEntityService;
+  EventEntityServiceRxR<T> eventEntityService;
 
   @Autowired
-  public RedisEventEntityService(EventEntityService<T> eventEntityService) {
+  public RedisEventEntityService(EventEntityServiceRxR<T> eventEntityService) {
     this.eventEntityService = eventEntityService;
   }
 

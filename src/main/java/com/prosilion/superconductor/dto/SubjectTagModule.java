@@ -11,6 +11,8 @@ import nostr.event.tag.SubjectTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class SubjectTagModule<
     P extends SubjectTag,
@@ -38,11 +40,6 @@ public class SubjectTagModule<
   @Override
   public void setBaseTag(P subjectTag) {
     this.subjectTag = subjectTag;
-  }
-
-  @Override
-  public BaseTag getBaseTag() {
-    return subjectTag;
   }
 
   @Override

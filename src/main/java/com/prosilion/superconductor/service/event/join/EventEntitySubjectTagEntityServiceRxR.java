@@ -33,15 +33,6 @@ public class EventEntitySubjectTagEntityServiceRxR<T extends SubjectTagEntityRxR
     this.clazz = (Class<T>) SubjectTagEntityRxR.class;
   }
 
-  public List<T> getTags(Long eventId) {
-    List<U> eventEntitySubjectTagEntities = join.getAllByEventId(eventId);
-    return eventEntitySubjectTagEntities.parallelStream().map(joinId -> subjectTagEntityRepository.findFirstById(joinId.getSubjectTagId()))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .map(clazz::cast)
-        .toList();
-  }
-
   public void saveTags(GenericEvent event, Long id) {
     List<BaseTag> baseTags = getRelevantTags(event);
     baseTags.stream().filter(baseTag -> "subject".equals(baseTag.getCode()))

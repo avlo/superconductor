@@ -5,12 +5,16 @@ import nostr.event.BaseTag;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.tag.EventTag;
+import nostr.event.tag.GeohashTag;
 import nostr.event.tag.PubKeyTag;
 import nostr.event.tag.SubjectTag;
 import nostr.id.Identity;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,8 +23,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 class EventEntityServiceIT {
   public static final String EVENT_ID = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
   public static final PublicKey EVENT_PUBKEY = new PublicKey("bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984");
@@ -66,13 +71,24 @@ class EventEntityServiceIT {
   }
 
   @Test
+  @Order(1)
   void saveAndGetEvent() {
-//    String newContent = "2222";
-//    textNoteEvent.setContent(newContent);
     Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
     GenericEvent eventDto = eventEntityService.getEventById(savedEventId);
     assertEquals(CONTENT, eventDto.getContent());
     assertEquals(3, eventDto.getTags().size());
+  }
+
+  @Test
+  @Order(2)
+  void saveAndGetEventWithGeohash() {
+    String newContent = "2222";
+    textNoteEvent.setContent(newContent);
+    textNoteEvent.addTag(new GeohashTag("prosilion 22222"));
+    Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
+    GenericEvent eventDto = eventEntityService.getEventById(savedEventId);
+    assertEquals(newContent, eventDto.getContent());
+    assertEquals(4, eventDto.getTags().size());
   }
 
 //  @Test

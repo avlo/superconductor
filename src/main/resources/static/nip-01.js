@@ -5,6 +5,7 @@ function hashThenSend() {
         $("#kind").val(),
         $("#e_tag").val(),
         $("#p_tag").val(),
+        $("#g_tag").val(),
         $("#content").val()
     ].join(",");
 
@@ -27,7 +28,8 @@ function replaceHash(id_hash) {
                 'content': $("#content").val(),
                 'tags': [
                     ['e', $("#e_tag").val()],
-                    ['p', $("#p_tag").val()]
+                    ['p', $("#p_tag").val()],
+                    ['g', $("#g_tag").val()]
                 ],
                 'pubkey': $("#pubkey").val(),
                 'created_at': Date.now(),

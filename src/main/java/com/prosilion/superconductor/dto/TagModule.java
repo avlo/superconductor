@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.dto;
 
 import com.prosilion.superconductor.dto.standard.StandardTagDto;
-import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntity;
-import com.prosilion.superconductor.entity.standard.StandardTagEntity;
-import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepository;
-import com.prosilion.superconductor.repository.standard.StandardTagEntityRepository;
+import com.prosilion.superconductor.entity.join.standard.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
+import com.prosilion.superconductor.repository.join.standard.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.repository.standard.AbstractTagEntityRepository;
 import nostr.event.BaseTag;
 
 import java.util.Collection;
@@ -14,10 +14,11 @@ import java.util.stream.Stream;
 
 public interface TagModule<
     P extends BaseTag,
-    Q extends StandardTagEntityRepository<R>, // tag table
-    R extends StandardTagEntity, // tag to return
-    S extends EventEntityStandardTagEntity, // event -> tag join table
-    U extends EventEntityStandardTagEntityRepository<S>> // join table within service
+    Q extends AbstractTagEntityRepository<R>, // tag table
+    R extends AbstractTagEntity, // tag to return
+    // TODO: below superfluous?
+    S extends EventEntityAbstractTagEntity, // @MappedSuperclass for below
+    U extends EventEntityAbstractTagEntityRepository<S>> // event -> tag join table
 {
   String getCode();
 

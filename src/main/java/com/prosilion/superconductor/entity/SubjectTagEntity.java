@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.entity;
 
 import com.prosilion.superconductor.dto.SubjectTagDto;
-import com.prosilion.superconductor.entity.standard.StandardTagEntity;
+import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +19,7 @@ import nostr.event.tag.SubjectTag;
 @NoArgsConstructor
 @Entity
 @Table(name = "subject_tag")
-public class SubjectTagEntity extends StandardTagEntity {
+public class SubjectTagEntity extends AbstractTagEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

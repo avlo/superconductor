@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.TagModule;
-import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntity;
-import com.prosilion.superconductor.entity.standard.StandardTagEntity;
-import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepository;
-import com.prosilion.superconductor.repository.standard.StandardTagEntityRepository;
+import com.prosilion.superconductor.entity.join.standard.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
+import com.prosilion.superconductor.repository.join.standard.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.repository.standard.AbstractTagEntityRepository;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 @Service
 public class TagEntitiesService<
     P extends BaseTag,
-    Q extends StandardTagEntityRepository<R>,
-    R extends StandardTagEntity,
-    S extends EventEntityStandardTagEntity,
-    U extends EventEntityStandardTagEntityRepository<S>> {
+    Q extends AbstractTagEntityRepository<R>,
+    R extends AbstractTagEntity,
+    S extends EventEntityAbstractTagEntity,
+    U extends EventEntityAbstractTagEntityRepository<S>> {
   private final List<TagModule<P, Q, R, S, U>> tagModules;
 
   @Autowired
@@ -28,7 +28,7 @@ public class TagEntitiesService<
     this.tagModules = tagModules;
   }
 
-  public List<StandardTagEntity> getTags(Long eventId) {
+  public List<AbstractTagEntity> getTags(Long eventId) {
     return tagModules.parallelStream().map(tagModule ->
             tagModule.getTags(eventId))
         .flatMap(List::stream).collect(Collectors.toList());

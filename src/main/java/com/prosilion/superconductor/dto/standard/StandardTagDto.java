@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.dto.standard;
 
-import com.prosilion.superconductor.entity.standard.StandardTagEntity;
+import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
 
 public interface StandardTagDto {
   String getCode();
-  StandardTagEntity convertDtoToEntity();
+  AbstractTagEntity convertDtoToEntity();
 }

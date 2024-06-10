@@ -19,7 +19,7 @@ import nostr.event.tag.EventTag;
 @NoArgsConstructor
 @Entity
 @Table(name = "event_tag")
-public class EventTagEntity extends StandardTagEntity {
+public class EventTagEntity extends AbstractTagEntity {
   //  TODO: below annotations and id necessary for compilation even thuogh same is defined in StandardTagEntity
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

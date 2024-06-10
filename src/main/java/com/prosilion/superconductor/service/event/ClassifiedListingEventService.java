@@ -5,7 +5,6 @@ import com.prosilion.superconductor.dto.classified.PriceTagDto;
 import com.prosilion.superconductor.entity.classified.ClassifiedListingEventEntity;
 import com.prosilion.superconductor.repository.classified.ClassifiedListingEntityRepository;
 import com.prosilion.superconductor.service.event.join.classified.ClassifiedListingEntityEventEntityService;
-import com.prosilion.superconductor.service.event.join.classified.PriceTagEntityService;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.ElementAttribute;
@@ -28,18 +27,15 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
   public final Kind kind = Kind.CLASSIFIED_LISTING;
   private final ClassifiedListingEntityRepository classifiedListingEntityRepository;
   private final ClassifiedListingEntityEventEntityService joinService;
-  private final PriceTagEntityService priceTagEntityService;
   private final EventService<ClassifiedListingEvent> eventService;
 
   public ClassifiedListingEventService(
       EventService<ClassifiedListingEvent> eventService,
       ClassifiedListingEntityRepository classifiedListingEntityRepository,
-      ClassifiedListingEntityEventEntityService joinService,
-      PriceTagEntityService priceTagEntityService) {
+      ClassifiedListingEntityEventEntityService joinService) {
     this.eventService = eventService;
     this.classifiedListingEntityRepository = classifiedListingEntityRepository;
     this.joinService = joinService;
-    this.priceTagEntityService = priceTagEntityService;
   }
 
   @Override
@@ -65,8 +61,6 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
     Long savedEventId = eventService.saveEventEntity(classifiedListingEvent);
 
     joinService.save(savedEventId, classifiedListingEventEntity.getId());
-    priceTagEntityService.savePriceTag(savedEventId, classifiedListingDto.getPriceTag());
-
     eventService.publishEvent(savedEventId, classifiedListingEvent);
   }
 

@@ -20,7 +20,7 @@ import nostr.event.tag.PubKeyTag;
 @NoArgsConstructor
 @Entity
 @Table(name = "pubkey_tag")
-public class PubkeyTagEntity extends StandardTagEntity {
+public class PubkeyTagEntity extends AbstractTagEntity {
   //  TODO: below annotations and id necessary for compilation even thuogh same is defined in StandardTagEntity
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,11 +2,11 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.entity.EventEntity;
-import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntity;
-import com.prosilion.superconductor.entity.standard.StandardTagEntity;
+import com.prosilion.superconductor.entity.join.standard.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
 import com.prosilion.superconductor.repository.EventEntityRepository;
-import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepository;
-import com.prosilion.superconductor.repository.standard.StandardTagEntityRepository;
+import com.prosilion.superconductor.repository.join.standard.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.repository.standard.AbstractTagEntityRepository;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
@@ -25,22 +25,22 @@ import java.util.stream.Collectors;
 @Service
 public class EventEntityService<T extends GenericEvent> {
   private final TagEntitiesService<
-        BaseTag,
-      StandardTagEntityRepository<StandardTagEntity>,
-      StandardTagEntity,
-      EventEntityStandardTagEntity,
-      EventEntityStandardTagEntityRepository<EventEntityStandardTagEntity>>
+      BaseTag,
+      AbstractTagEntityRepository<AbstractTagEntity>,
+      AbstractTagEntity,
+      EventEntityAbstractTagEntity,
+      EventEntityAbstractTagEntityRepository<EventEntityAbstractTagEntity>>
       tagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
   @Autowired
   public EventEntityService(
       TagEntitiesService<
-                BaseTag,
-          StandardTagEntityRepository<StandardTagEntity>,
-          StandardTagEntity,
-          EventEntityStandardTagEntity,
-          EventEntityStandardTagEntityRepository<EventEntityStandardTagEntity>>
+          BaseTag,
+          AbstractTagEntityRepository<AbstractTagEntity>,
+          AbstractTagEntity,
+          EventEntityAbstractTagEntity,
+          EventEntityAbstractTagEntityRepository<EventEntityAbstractTagEntity>>
           tagEntitiesService,
       EventEntityRepository eventEntityRepository) {
 
@@ -84,7 +84,7 @@ public class EventEntityService<T extends GenericEvent> {
   }
 
   private @NotNull EventEntity populateEventEntity(EventEntity eventEntity) {
-    List<BaseTag> baseTags = tagEntitiesService.getTags(eventEntity.getId()).parallelStream().map(StandardTagEntity::getAsBaseTag).toList();
+    List<BaseTag> baseTags = tagEntitiesService.getTags(eventEntity.getId()).parallelStream().map(AbstractTagEntity::getAsBaseTag).toList();
     eventEntity.setTags(baseTags);
     return eventEntity;
   }

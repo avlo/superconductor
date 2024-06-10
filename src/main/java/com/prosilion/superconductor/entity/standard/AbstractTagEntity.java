@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @MappedSuperclass
-public abstract class StandardTagEntity implements Local {
+public abstract class AbstractTagEntity implements Local {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

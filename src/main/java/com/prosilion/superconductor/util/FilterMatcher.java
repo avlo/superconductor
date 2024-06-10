@@ -70,6 +70,7 @@ public class FilterMatcher<T extends GenericEvent> {
         .collect(Collectors.toSet());
   }
 
+//  TOOD: refactor
   private boolean getCollect(List<?> subscriberFilters, BiPredicate biPredicate, AddNostrEvent<T> eventToCheck) {
     return subscriberFilters
         .parallelStream()

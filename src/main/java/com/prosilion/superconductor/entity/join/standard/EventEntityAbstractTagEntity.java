@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class EventEntityStandardTagEntity implements Serializable {
+public abstract class EventEntityAbstractTagEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

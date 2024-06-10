@@ -1,14 +1,18 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.dto.standard.StandardTagDtoRxR;
 import com.prosilion.superconductor.entity.SubjectTagEntityRxR;
 import com.prosilion.superconductor.entity.join.EventEntitySubjectTagEntityRxR;
 import com.prosilion.superconductor.repository.SubjectTagEntityRepositoryRxR;
 import com.prosilion.superconductor.repository.join.EventEntitySubjectTagEntityRepositoryRxR;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import nostr.event.tag.SubjectTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Setter
+@Getter
 @Component
 public class SubjectTagModule<
     P extends SubjectTag,
@@ -16,15 +20,13 @@ public class SubjectTagModule<
     R extends SubjectTagEntityRxR,
     S extends EventEntitySubjectTagEntityRxR,
     U extends EventEntitySubjectTagEntityRepositoryRxR<S>>
-
     implements TagModule<P, Q, R, S, U> {
 
-  SubjectTagEntityRepositoryRxR<R> subjectTagEntityRepository;
-  EventEntitySubjectTagEntityRepositoryRxR<S> join;
-  private P subjectTag;
+  private final SubjectTagEntityRepositoryRxR<R> subjectTagEntityRepository;
+  private final EventEntitySubjectTagEntityRepositoryRxR<S> join;
 
   @Autowired
-  public SubjectTagModule(SubjectTagEntityRepositoryRxR<R> subjectTagEntityRepository, EventEntitySubjectTagEntityRepositoryRxR<S> join) {
+  public SubjectTagModule(@NonNull SubjectTagEntityRepositoryRxR<R> subjectTagEntityRepository, @NonNull EventEntitySubjectTagEntityRepositoryRxR<S> join) {
     this.subjectTagEntityRepository = subjectTagEntityRepository;
     this.join = join;
   }
@@ -40,18 +42,13 @@ public class SubjectTagModule<
   }
 
   @Override
-  public void setBaseTag(P subjectTag) {
-    this.subjectTag = subjectTag;
+  public R convertDtoToEntity(P subjectTag) {
+    return (R) getTagDto(subjectTag).convertDtoToEntity();
   }
 
   @Override
-  public R convertDtoToEntity() {
-    return getTagDto().convertDtoToEntity();
-  }
-
-  @Override
-  public StandardTagDtoRxR getTagDto() {
-    return new SubjectTagDtoRxR(subjectTag.getSubject());
+  public SubjectTagDtoRxR getTagDto(P subjectTag) {
+    return new SubjectTagDtoRxR(subjectTag);
   }
 
   @Override

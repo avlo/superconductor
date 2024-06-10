@@ -14,12 +14,14 @@ import java.io.Serializable;
 @Setter
 @Getter
 @MappedSuperclass
-public abstract class StandardTagEntityRxR implements Serializable {
+public abstract class StandardTagEntityRxR implements Local {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+}
 
-  public abstract String getCode();
-  public abstract StandardTagDtoRxR convertEntityToDto();
-  public abstract BaseTag getAsBaseTag();
+interface Local extends Serializable {
+  String getCode();
+  StandardTagDtoRxR convertEntityToDto();
+  BaseTag getAsBaseTag();
 }

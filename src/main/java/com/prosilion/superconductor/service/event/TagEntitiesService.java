@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class EventEntityTagEntitiesServiceRxR<
+public class TagEntitiesService<
     P extends BaseTag,
     Q extends StandardTagEntityRepositoryRxR<R>,
     R extends StandardTagEntityRxR,
@@ -24,7 +24,7 @@ public class EventEntityTagEntitiesServiceRxR<
   private final List<TagModule<P, Q, R, S, U>> tagModules;
 
   @Autowired
-  public EventEntityTagEntitiesServiceRxR(List<TagModule<P, Q, R, S, U>> tagModules) {
+  public TagEntitiesService(List<TagModule<P, Q, R, S, U>> tagModules) {
     this.tagModules = tagModules;
   }
 
@@ -39,6 +39,6 @@ public class EventEntityTagEntitiesServiceRxR<
         baseTags.stream().filter(tags ->
                 tags.getCode().equalsIgnoreCase(module.getCode()))
             .forEach(tag ->
-                module.saveTags(eventId, tag)));
+                module.saveTag(eventId, tag)));
   }
 }

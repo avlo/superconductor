@@ -1,15 +1,20 @@
 package com.prosilion.superconductor.dto;
 
 import com.prosilion.superconductor.dto.standard.PubkeyTagDto;
-import com.prosilion.superconductor.dto.standard.StandardTagDtoRxR;
 import com.prosilion.superconductor.entity.join.standard.EventEntityPubkeyTagEntityRxR;
 import com.prosilion.superconductor.entity.standard.PubkeyTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityPubkeyTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.PubkeyTagEntityRepository;
+import jakarta.annotation.Nonnull;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import nostr.event.tag.PubKeyTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Setter
+@Getter
 @Component
 public class PubkeyTagModule<
     P extends PubKeyTag,
@@ -19,12 +24,11 @@ public class PubkeyTagModule<
     U extends EventEntityPubkeyTagEntityRepository<S>>
     implements TagModule<P, Q, R, S, U> {
 
-  PubkeyTagEntityRepository<R> pubkeyTagEntityRepository;
-  EventEntityPubkeyTagEntityRepository<S> join;
-  private P pubkeyTag;
+  private final PubkeyTagEntityRepository<R> pubkeyTagEntityRepository;
+  private final EventEntityPubkeyTagEntityRepository<S> join;
 
   @Autowired
-  public PubkeyTagModule(PubkeyTagEntityRepository<R> pubkeyTagEntityRepository, EventEntityPubkeyTagEntityRepository<S> join) {
+  public PubkeyTagModule(@Nonnull PubkeyTagEntityRepository<R> pubkeyTagEntityRepository, @NonNull EventEntityPubkeyTagEntityRepository<S> join) {
     this.pubkeyTagEntityRepository = pubkeyTagEntityRepository;
     this.join = join;
   }
@@ -40,17 +44,12 @@ public class PubkeyTagModule<
   }
 
   @Override
-  public void setBaseTag(P pubkeyTag) {
-    this.pubkeyTag = pubkeyTag;
+  public R convertDtoToEntity(P pubkeyTag) {
+    return (R) getTagDto(pubkeyTag).convertDtoToEntity();
   }
 
   @Override
-  public R convertDtoToEntity() {
-    return getTagDto().convertDtoToEntity();
-  }
-
-  @Override
-  public StandardTagDtoRxR getTagDto() {
+  public PubkeyTagDto getTagDto(P pubkeyTag) {
     return new PubkeyTagDto(pubkeyTag);
   }
 

@@ -51,6 +51,7 @@ public class EventTagEntity extends StandardTagEntityRxR {
     return new EventTag(idEvent, recommendedRelayUrl, marker);
   }
 
+  @Override
   public EventTagDto convertEntityToDto() {
     return new EventTagDto(new EventTag(idEvent, recommendedRelayUrl, marker));
   }

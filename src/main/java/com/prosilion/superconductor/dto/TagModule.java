@@ -17,13 +17,12 @@ public interface TagModule<
     U extends EventEntityStandardTagEntityRepositoryRxR<S>> // join table within service
 {
   String getCode();
+
   Class<R> getClazz();
 
-  void setBaseTag(P baseTag);
+  R convertDtoToEntity(P tag);
 
-  R convertDtoToEntity();
-
-  StandardTagDtoRxR getTagDto();
+  StandardTagDtoRxR getTagDto(P baseTag);
 
   S getEventEntityTagEntity(Long eventId, Long tagId);
 
@@ -37,7 +36,9 @@ public interface TagModule<
         .toList();
   }
 
-  default void saveTags(Long eventId, P baseTag) {
-
+  default void saveTag(Long eventId, P baseTag) {
+    R savedRepoTag = getStandardTagEntityRepositoryRxR().save(convertDtoToEntity(baseTag));
+    S savedJoinTag = getEventEntityStandardTagEntityRepositoryJoin().save(getEventEntityTagEntity(eventId, savedRepoTag.getId()));
+//    savedJoinTag.
   }
 }

@@ -1,15 +1,19 @@
 package com.prosilion.superconductor.dto;
 
 import com.prosilion.superconductor.dto.standard.EventTagDto;
-import com.prosilion.superconductor.dto.standard.StandardTagDtoRxR;
 import com.prosilion.superconductor.entity.join.standard.EventEntityEventTagEntity;
 import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityEventTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.EventTagEntityRepository;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import nostr.event.tag.EventTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Setter
+@Getter
 @Component
 public class EventTagModule<
     P extends EventTag,
@@ -19,19 +23,18 @@ public class EventTagModule<
     U extends EventEntityEventTagEntityRepository<S>>
     implements TagModule<P, Q, R, S, U> {
 
-  EventTagEntityRepository<R> eventTagEntityRepository;
-  EventEntityEventTagEntityRepository<S> join;
-  private P eventTag;
+  private final EventTagEntityRepository<R> eventTagEntityRepository;
+  private final EventEntityEventTagEntityRepository<S> join;
 
   @Autowired
-  public EventTagModule(EventTagEntityRepository<R> eventTagEntityRepository, EventEntityEventTagEntityRepository<S> join) {
+  public EventTagModule(@NonNull EventTagEntityRepository<R> eventTagEntityRepository, @NonNull EventEntityEventTagEntityRepository<S> join) {
     this.eventTagEntityRepository = eventTagEntityRepository;
     this.join = join;
   }
 
   @Override
   public String getCode() {
-    return "subject";
+    return "e";
   }
 
   @Override
@@ -40,23 +43,18 @@ public class EventTagModule<
   }
 
   @Override
-  public void setBaseTag(P eventTag) {
-    this.eventTag = eventTag;
+  public R convertDtoToEntity(P eventTag) {
+    return (R) getTagDto(eventTag).convertDtoToEntity();
   }
 
   @Override
-  public R convertDtoToEntity() {
-    return getTagDto().convertDtoToEntity();
-  }
-
-  @Override
-  public StandardTagDtoRxR getTagDto() {
+  public EventTagDto getTagDto(P eventTag) {
     return new EventTagDto(eventTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
-    return (S) new EventEntityEventTagEntity(eventId, subjectTagId);
+  public S getEventEntityTagEntity(Long eventId, Long eventTagId) {
+    return (S) new EventEntityEventTagEntity(eventId, eventTagId);
   }
 
   @Override

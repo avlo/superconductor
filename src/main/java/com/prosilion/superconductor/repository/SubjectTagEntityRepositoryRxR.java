@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubjectTagEntityRepositoryRxR <T extends SubjectTagEntityRxR> extends StandardTagEntityRepositoryRxR<T> {
+  default String getCode() {
+    return "subject";
+  }
 }

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,27 +24,27 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class EventEntityServiceRxR<T extends GenericEvent> {
-  private final EventEntityTagEntitiesServiceRxR<
-      BaseTag,
-      StandardTagEntityRepositoryRxR<StandardTagEntityRxR>,
-      StandardTagEntityRxR,
-      EventEntityStandardTagEntityRxR,
-      EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>>
-      eventEntityTagEntitiesServiceRxR;
+  private final TagEntitiesService<
+        BaseTag,
+        StandardTagEntityRepositoryRxR<StandardTagEntityRxR>,
+        StandardTagEntityRxR,
+        EventEntityStandardTagEntityRxR,
+        EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>>
+      tagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
   @Autowired
   public EventEntityServiceRxR(
-      EventEntityTagEntitiesServiceRxR<
-          BaseTag,
-          StandardTagEntityRepositoryRxR<StandardTagEntityRxR>,
-          StandardTagEntityRxR,
-          EventEntityStandardTagEntityRxR,
-          EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>>
-          eventEntityTagEntitiesServiceRxR,
+      TagEntitiesService<
+                BaseTag,
+                StandardTagEntityRepositoryRxR<StandardTagEntityRxR>,
+                StandardTagEntityRxR,
+                EventEntityStandardTagEntityRxR,
+                EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>>
+          tagEntitiesService,
       EventEntityRepository eventEntityRepository) {
 
-    this.eventEntityTagEntitiesServiceRxR = eventEntityTagEntitiesServiceRxR;
+    this.tagEntitiesService = tagEntitiesService;
     this.eventEntityRepository = eventEntityRepository;
   }
 
@@ -60,7 +61,7 @@ public class EventEntityServiceRxR<T extends GenericEvent> {
     );
 
     EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
-    eventEntityTagEntitiesServiceRxR.saveTags(savedEntity.getId(), event.getTags());
+    tagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
     return savedEntity.getId();
   }
 
@@ -77,13 +78,13 @@ public class EventEntityServiceRxR<T extends GenericEvent> {
         .convertEntityToDto();
   }
 
+  private @NotNull EventEntity populateEventEntity(EventEntity eventEntity) {
+    List<BaseTag> baseTags = tagEntitiesService.getTags(eventEntity.getId()).parallelStream().map(StandardTagEntityRxR::getAsBaseTag).toList();
+    eventEntity.setTags(baseTags);
+    return eventEntity;
+  }
   //  public GenericEvent getEventByEventIdString(String eventId) {
 //    Optional<EventEntity> byEventId = eventEntityRepository.findByEventId(eventId);
 //    return getEventByEventId(byEventId.get());
 //  }
-
-  private @NotNull EventEntity populateEventEntity(EventEntity eventEntity) {
-    eventEntity.setTags(eventEntityTagEntitiesServiceRxR.getTags(eventEntity.getId()).parallelStream().map(StandardTagEntityRxR::getAsBaseTag).toList());
-    return eventEntity;
-  }
 }

@@ -1,4 +1,8 @@
 package com.prosilion.superconductor.dto.standard;
 
-public abstract class StandardTagDtoRxR implements StandardTagDtoIFRxR {
+import com.prosilion.superconductor.entity.standard.StandardTagEntityRxR;
+
+public interface StandardTagDtoRxR {
+  String getCode();
+  StandardTagEntityRxR convertDtoToEntity();
 }

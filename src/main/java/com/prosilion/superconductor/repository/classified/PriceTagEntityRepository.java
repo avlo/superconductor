@@ -1,8 +1,12 @@
 package com.prosilion.superconductor.repository.classified;
 
 import com.prosilion.superconductor.entity.classified.PriceTagEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.prosilion.superconductor.repository.standard.AbstractTagEntityRepository;
 import org.springframework.stereotype.Repository;
+
 @Repository
-public interface PriceTagEntityRepository extends JpaRepository<PriceTagEntity, Long> {
+public interface PriceTagEntityRepository<T extends PriceTagEntity> extends AbstractTagEntityRepository<T> {
+  default String getCode() {
+    return "price";
+  }
 }

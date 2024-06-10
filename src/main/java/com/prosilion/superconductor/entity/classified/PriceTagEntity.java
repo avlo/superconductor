@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.entity.classified;
 
 import com.prosilion.superconductor.dto.classified.PriceTagDto;
+import com.prosilion.superconductor.dto.standard.StandardTagDto;
+import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.PriceTag;
@@ -19,7 +22,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(name = "price_tag")
-public class PriceTagEntity {
+public class PriceTagEntity extends AbstractTagEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -28,17 +31,24 @@ public class PriceTagEntity {
   private String currency;
   private String frequency;
 
-  public PriceTagEntity(BigDecimal number, String currency, String frequency) {
-    this.number = number;
-    this.currency = currency;
-    this.frequency = frequency;
+  public PriceTagEntity(@NonNull PriceTag priceTag) {
+    this.number = priceTag.getNumber();
+    this.currency = priceTag.getCurrency();
+    this.frequency = priceTag.getFrequency();
   }
 
+  @Override
+  public String getCode() {
+    return "price";
+  }
+
+  @Override
   public BaseTag getAsBaseTag() {
     return new PriceTag(number, currency, frequency);
   }
 
-  public PriceTagDto convertEntityToDto() {
-    return new PriceTagDto(number, currency, frequency);
+  @Override
+  public StandardTagDto convertEntityToDto() {
+    return new PriceTagDto(new PriceTag(number, currency, frequency));
   }
 }

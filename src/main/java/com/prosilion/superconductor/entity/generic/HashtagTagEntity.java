@@ -1,7 +1,8 @@
 package com.prosilion.superconductor.entity.generic;
 
-import com.prosilion.superconductor.dto.generic.GenericTagDto;
 import com.prosilion.superconductor.dto.generic.HashtagTagDto;
+import com.prosilion.superconductor.dto.standard.StandardTagDto;
+import com.prosilion.superconductor.entity.standard.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.HashtagTag;
@@ -18,25 +20,30 @@ import nostr.event.tag.HashtagTag;
 @NoArgsConstructor
 @Entity
 @Table(name = "hashtag_tag")
-public class HashtagTagEntity extends GenericTagEntity {
-//  TODO: below annotations and id necessary for compilation even thuogh same is defined in GenericTagEntity
+public class HashtagTagEntity extends AbstractTagEntity {
+  //  TODO: below annotations and id necessary for compilation even thuogh same is defined in GenericTagEntity
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String hashTag;
+  private String hashtagTag;
 
-  public HashtagTagEntity(Character code, String hashTag) {
-    super.setCode(code);
-    this.hashTag = hashTag;
+  public HashtagTagEntity(@NonNull HashtagTag hashtagTag) {
+    this.hashtagTag = hashtagTag.getHashTag();
   }
 
   @Override
   public BaseTag getAsBaseTag() {
-    return new HashtagTag(hashTag);
+    return new HashtagTag(hashtagTag);
   }
 
-  public GenericTagDto convertEntityToDto() {
-    return new HashtagTagDto(hashTag);
+  @Override
+  public String getCode() {
+    return "t";
+  }
+
+  @Override
+  public StandardTagDto convertEntityToDto() {
+    return new HashtagTagDto(new HashtagTag(hashtagTag));
   }
 }

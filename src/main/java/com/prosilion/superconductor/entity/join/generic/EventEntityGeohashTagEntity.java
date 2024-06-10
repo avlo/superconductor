@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.entity.join.generic;
 
+import com.prosilion.superconductor.entity.join.standard.EventEntityAbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -11,10 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "event-geohash_tag-join")
-public class EventEntityGeohashTagEntity extends EventEntityGenericTagEntity {
+public class EventEntityGeohashTagEntity extends EventEntityAbstractTagEntity {
   private Long geohashTagId;
 
-  public <T extends EventEntityGenericTagEntity> EventEntityGeohashTagEntity(Long eventId, Long geohashTagId) {
+  public <T extends EventEntityAbstractTagEntity> EventEntityGeohashTagEntity(Long eventId, Long geohashTagId) {
     super.setEventId(eventId);
     this.geohashTagId = geohashTagId;
   }

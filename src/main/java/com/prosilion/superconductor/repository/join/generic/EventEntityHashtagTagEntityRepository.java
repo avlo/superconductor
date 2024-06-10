@@ -1,11 +1,12 @@
 package com.prosilion.superconductor.repository.join.generic;
 
 import com.prosilion.superconductor.entity.join.generic.EventEntityHashtagTagEntity;
+import com.prosilion.superconductor.repository.join.standard.EventEntityAbstractTagEntityRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EventEntityHashtagTagEntityRepository<T extends EventEntityHashtagTagEntity> extends EventEntityGenericTagEntityRepository<T> {
-  default Character getCode() {
-    return 't';
+public interface EventEntityHashtagTagEntityRepository<T extends EventEntityHashtagTagEntity> extends EventEntityAbstractTagEntityRepository<T> {
+  default String getCode() {
+    return "t";
   }
 }

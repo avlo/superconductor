@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import nostr.event.impl.ClassifiedListing;
 
 @Setter
 @Getter
@@ -30,11 +31,11 @@ public class ClassifiedListingEventEntity {
   @Column(name = "published_at")
   private Long publishedAt;
 
-  public ClassifiedListingEventEntity(@NonNull String title, @NonNull String summary, String location, Long publishedAt) {
-    this.title = title;
-    this.summary = summary;
-    this.location = location;
-    this.publishedAt = publishedAt;
+  public ClassifiedListingEventEntity(@NonNull ClassifiedListing classifiedListing) {
+    this.title = classifiedListing.getTitle();
+    this.summary = classifiedListing.getSummary();
+    this.location = classifiedListing.getLocation();
+    this.publishedAt = classifiedListing.getPublishedAt();
   }
 
   public ClassifiedListingDto convertEntityToDto(PriceTagDto priceTagDto) {

@@ -1,23 +1,23 @@
 package com.prosilion.superconductor.dto.generic;
 
-import com.prosilion.superconductor.entity.generic.GenericTagEntity;
+import com.prosilion.superconductor.dto.standard.StandardTagDto;
 import com.prosilion.superconductor.entity.generic.GeohashTagEntity;
 import nostr.event.tag.GeohashTag;
 
-public class GeohashTagDto extends GenericTagDto implements GenericTagDtoIF {
+public class GeohashTagDto implements StandardTagDto {
   private final GeohashTag geohashTag;
 
-  public GeohashTagDto(String location) {
-    super(location);
-    geohashTag = GeohashTag.builder().location(location).build();
+  public GeohashTagDto(GeohashTag geohashTag) {
+    this.geohashTag = geohashTag;
   }
 
   @Override
-  public Character getCode() {
-    return 'g';
+  public String getCode() {
+    return geohashTag.getCode();
   }
+
   @Override
-  public <T extends GenericTagEntity> T convertDtoToEntity() {
-    return (T) new GeohashTagEntity(getCode(), getValue());
+  public GeohashTagEntity convertDtoToEntity() {
+    return new GeohashTagEntity(geohashTag);
   }
 }

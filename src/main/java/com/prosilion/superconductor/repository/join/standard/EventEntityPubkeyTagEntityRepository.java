@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.repository.join.standard;
 
-import com.prosilion.superconductor.entity.join.standard.EventEntityPubkeyTagEntityRxR;
+import com.prosilion.superconductor.entity.join.standard.EventEntityPubkeyTagEntity;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EventEntityPubkeyTagEntityRepository<T extends EventEntityPubkeyTagEntityRxR> extends EventEntityStandardTagEntityRepositoryRxR<T> {
+public interface EventEntityPubkeyTagEntityRepository<T extends EventEntityPubkeyTagEntity> extends EventEntityStandardTagEntityRepository<T> {
   default String getCode() {
     return "p";
   }

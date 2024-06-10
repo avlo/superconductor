@@ -3,7 +3,7 @@ package com.prosilion.superconductor.service.request;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterEvent;
-import com.prosilion.superconductor.entity.standard.StandardTagEntityRxR;
+import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterAuthorRepository;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterEventRepository;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterKindRepository;
@@ -108,7 +108,7 @@ public class SubscriberFiltersManager {
     List<BaseTag> list = subscriberFilterEventRepository.findStandardTagsByEventEntityId(eventEntityId)
         .parallelStream()
         .filter(Objects::nonNull)
-        .map(StandardTagEntityRxR::getAsBaseTag)
+        .map(StandardTagEntity::getAsBaseTag)
         .toList();
     return list;
   }

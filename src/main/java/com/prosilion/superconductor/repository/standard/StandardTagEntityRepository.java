@@ -1,13 +1,11 @@
 package com.prosilion.superconductor.repository.standard;
 
-import com.prosilion.superconductor.entity.standard.StandardTagEntityRxR;
+import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
-import java.util.List;
-
 @NoRepositoryBean
-public interface StandardTagEntityRepositoryRxR<T extends StandardTagEntityRxR> extends JpaRepository<T, Long> {
+public interface StandardTagEntityRepository<T extends StandardTagEntity> extends JpaRepository<T, Long> {
   String getCode();
 //  List<T> findAllByEventId(Long eventId);
 }

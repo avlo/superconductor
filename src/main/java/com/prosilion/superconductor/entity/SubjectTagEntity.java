@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.entity;
 
-import com.prosilion.superconductor.dto.SubjectTagDtoRxR;
-import com.prosilion.superconductor.entity.standard.StandardTagEntityRxR;
+import com.prosilion.superconductor.dto.SubjectTagDto;
+import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,13 +19,13 @@ import nostr.event.tag.SubjectTag;
 @NoArgsConstructor
 @Entity
 @Table(name = "subject_tag")
-public class SubjectTagEntityRxR extends StandardTagEntityRxR {
+public class SubjectTagEntity extends StandardTagEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String subject;
 
-  public SubjectTagEntityRxR(@NonNull String subject) {
+  public SubjectTagEntity(@NonNull String subject) {
     this.subject = subject;
   }
 
@@ -39,7 +39,7 @@ public class SubjectTagEntityRxR extends StandardTagEntityRxR {
   }
 
   @Override
-  public SubjectTagDtoRxR convertEntityToDto() {
-    return new SubjectTagDtoRxR(new SubjectTag(subject));
+  public SubjectTagDto convertEntityToDto() {
+    return new SubjectTagDto(new SubjectTag(subject));
   }
 }

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.dto;
 
 import com.prosilion.superconductor.dto.standard.PubkeyTagDto;
-import com.prosilion.superconductor.entity.join.standard.EventEntityPubkeyTagEntityRxR;
+import com.prosilion.superconductor.entity.join.standard.EventEntityPubkeyTagEntity;
 import com.prosilion.superconductor.entity.standard.PubkeyTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityPubkeyTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.PubkeyTagEntityRepository;
@@ -20,7 +20,7 @@ public class PubkeyTagModule<
     P extends PubKeyTag,
     Q extends PubkeyTagEntityRepository<R>,
     R extends PubkeyTagEntity,
-    S extends EventEntityPubkeyTagEntityRxR,
+    S extends EventEntityPubkeyTagEntity,
     U extends EventEntityPubkeyTagEntityRepository<S>>
     implements TagModule<P, Q, R, S, U> {
 
@@ -55,7 +55,7 @@ public class PubkeyTagModule<
 
   @Override
   public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
-    return (S) new EventEntityPubkeyTagEntityRxR(eventId, subjectTagId);
+    return (S) new EventEntityPubkeyTagEntity(eventId, subjectTagId);
   }
 
   @Override

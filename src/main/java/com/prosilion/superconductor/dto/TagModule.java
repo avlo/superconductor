@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.dto.standard.StandardTagDtoRxR;
-import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntityRxR;
-import com.prosilion.superconductor.entity.standard.StandardTagEntityRxR;
-import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepositoryRxR;
-import com.prosilion.superconductor.repository.standard.StandardTagEntityRepositoryRxR;
+import com.prosilion.superconductor.dto.standard.StandardTagDto;
+import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntity;
+import com.prosilion.superconductor.entity.standard.StandardTagEntity;
+import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepository;
+import com.prosilion.superconductor.repository.standard.StandardTagEntityRepository;
 import nostr.event.BaseTag;
 
 import java.util.Collection;
@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 
 public interface TagModule<
     P extends BaseTag,
-    Q extends StandardTagEntityRepositoryRxR<R>, // tag table
-    R extends StandardTagEntityRxR, // tag to return
-    S extends EventEntityStandardTagEntityRxR, // event -> tag join table
-    U extends EventEntityStandardTagEntityRepositoryRxR<S>> // join table within service
+    Q extends StandardTagEntityRepository<R>, // tag table
+    R extends StandardTagEntity, // tag to return
+    S extends EventEntityStandardTagEntity, // event -> tag join table
+    U extends EventEntityStandardTagEntityRepository<S>> // join table within service
 {
   String getCode();
 
@@ -25,7 +25,7 @@ public interface TagModule<
 
   R convertDtoToEntity(P tag);
 
-  StandardTagDtoRxR getTagDto(P baseTag);
+  StandardTagDto getTagDto(P baseTag);
 
   S getEventEntityTagEntity(Long eventId, Long tagId);
 

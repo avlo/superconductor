@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.entity.SubjectTagEntityRxR;
-import com.prosilion.superconductor.entity.join.EventEntitySubjectTagEntityRxR;
-import com.prosilion.superconductor.repository.SubjectTagEntityRepositoryRxR;
-import com.prosilion.superconductor.repository.join.EventEntitySubjectTagEntityRepositoryRxR;
+import com.prosilion.superconductor.entity.SubjectTagEntity;
+import com.prosilion.superconductor.entity.join.EventEntitySubjectTagEntity;
+import com.prosilion.superconductor.repository.SubjectTagEntityRepository;
+import com.prosilion.superconductor.repository.join.EventEntitySubjectTagEntityRepository;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -16,17 +16,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class SubjectTagModule<
     P extends SubjectTag,
-    Q extends SubjectTagEntityRepositoryRxR<R>,
-    R extends SubjectTagEntityRxR,
-    S extends EventEntitySubjectTagEntityRxR,
-    U extends EventEntitySubjectTagEntityRepositoryRxR<S>>
+    Q extends SubjectTagEntityRepository<R>,
+    R extends SubjectTagEntity,
+    S extends EventEntitySubjectTagEntity,
+    U extends EventEntitySubjectTagEntityRepository<S>>
     implements TagModule<P, Q, R, S, U> {
 
-  private final SubjectTagEntityRepositoryRxR<R> subjectTagEntityRepository;
-  private final EventEntitySubjectTagEntityRepositoryRxR<S> join;
+  private final SubjectTagEntityRepository<R> subjectTagEntityRepository;
+  private final EventEntitySubjectTagEntityRepository<S> join;
 
   @Autowired
-  public SubjectTagModule(@NonNull SubjectTagEntityRepositoryRxR<R> subjectTagEntityRepository, @NonNull EventEntitySubjectTagEntityRepositoryRxR<S> join) {
+  public SubjectTagModule(@NonNull SubjectTagEntityRepository<R> subjectTagEntityRepository, @NonNull EventEntitySubjectTagEntityRepository<S> join) {
     this.subjectTagEntityRepository = subjectTagEntityRepository;
     this.join = join;
   }
@@ -38,7 +38,7 @@ public class SubjectTagModule<
 
   @Override
   public Class<R> getClazz() {
-    return (Class<R>) SubjectTagEntityRxR.class;
+    return (Class<R>) SubjectTagEntity.class;
   }
 
   @Override
@@ -47,13 +47,13 @@ public class SubjectTagModule<
   }
 
   @Override
-  public SubjectTagDtoRxR getTagDto(P subjectTag) {
-    return new SubjectTagDtoRxR(subjectTag);
+  public SubjectTagDto getTagDto(P subjectTag) {
+    return new SubjectTagDto(subjectTag);
   }
 
   @Override
   public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
-    return (S) new EventEntitySubjectTagEntityRxR(eventId, subjectTagId);
+    return (S) new EventEntitySubjectTagEntity(eventId, subjectTagId);
   }
 
   @Override

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.entity.standard;
 
 import com.prosilion.superconductor.dto.standard.PubkeyTagDto;
-import com.prosilion.superconductor.dto.standard.StandardTagDtoRxR;
+import com.prosilion.superconductor.dto.standard.StandardTagDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,7 +20,7 @@ import nostr.event.tag.PubKeyTag;
 @NoArgsConstructor
 @Entity
 @Table(name = "pubkey_tag")
-public class PubkeyTagEntity extends StandardTagEntityRxR {
+public class PubkeyTagEntity extends StandardTagEntity {
   //  TODO: below annotations and id necessary for compilation even thuogh same is defined in StandardTagEntity
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +47,7 @@ public class PubkeyTagEntity extends StandardTagEntityRxR {
   }
 
   @Override
-  public StandardTagDtoRxR convertEntityToDto() {
+  public StandardTagDto convertEntityToDto() {
     return new PubkeyTagDto(
         new PubKeyTag(
             new PublicKey(publicKey), mainRelayUrl, petName));

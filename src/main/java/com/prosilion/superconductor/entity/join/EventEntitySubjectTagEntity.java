@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.entity.join;
 
-import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntityRxR;
+import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,14 +10,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
-
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "event-subject_tag-join")
-public class EventEntitySubjectTagEntityRxR extends EventEntityStandardTagEntityRxR {
+public class EventEntitySubjectTagEntity extends EventEntityStandardTagEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -25,7 +23,7 @@ public class EventEntitySubjectTagEntityRxR extends EventEntityStandardTagEntity
   private Long eventId;
   private Long subjectTagId;
 
-  public EventEntitySubjectTagEntityRxR(Long eventId, Long subjectTagId) {
+  public EventEntitySubjectTagEntity(Long eventId, Long subjectTagId) {
     this.eventId = eventId;
     this.subjectTagId = subjectTagId;
   }

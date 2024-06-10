@@ -1,14 +1,14 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.dto.standard.StandardTagDtoRxR;
-import com.prosilion.superconductor.entity.SubjectTagEntityRxR;
+import com.prosilion.superconductor.dto.standard.StandardTagDto;
+import com.prosilion.superconductor.entity.SubjectTagEntity;
 import lombok.NonNull;
 import nostr.event.tag.SubjectTag;
 
-public class SubjectTagDtoRxR implements StandardTagDtoRxR {
+public class SubjectTagDto implements StandardTagDto {
   private final SubjectTag subjectTag;
 
-  public SubjectTagDtoRxR(@NonNull SubjectTag subjectTag) {
+  public SubjectTagDto(@NonNull SubjectTag subjectTag) {
     this.subjectTag = subjectTag;
   }
 
@@ -18,8 +18,8 @@ public class SubjectTagDtoRxR implements StandardTagDtoRxR {
   }
 
   @Override
-  public SubjectTagEntityRxR convertDtoToEntity() {
-    return new SubjectTagEntityRxR(limit80(subjectTag.getSubject()));
+  public SubjectTagEntity convertDtoToEntity() {
+    return new SubjectTagEntity(limit80(subjectTag.getSubject()));
   }
 
   private String limit80(String string) {

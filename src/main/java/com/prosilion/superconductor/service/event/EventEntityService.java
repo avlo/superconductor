@@ -2,11 +2,11 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.entity.EventEntity;
-import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntityRxR;
-import com.prosilion.superconductor.entity.standard.StandardTagEntityRxR;
+import com.prosilion.superconductor.entity.join.standard.EventEntityStandardTagEntity;
+import com.prosilion.superconductor.entity.standard.StandardTagEntity;
 import com.prosilion.superconductor.repository.EventEntityRepository;
-import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepositoryRxR;
-import com.prosilion.superconductor.repository.standard.StandardTagEntityRepositoryRxR;
+import com.prosilion.superconductor.repository.join.standard.EventEntityStandardTagEntityRepository;
+import com.prosilion.superconductor.repository.standard.StandardTagEntityRepository;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
@@ -23,24 +23,24 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class EventEntityServiceRxR<T extends GenericEvent> {
+public class EventEntityService<T extends GenericEvent> {
   private final TagEntitiesService<
         BaseTag,
-        StandardTagEntityRepositoryRxR<StandardTagEntityRxR>,
-        StandardTagEntityRxR,
-        EventEntityStandardTagEntityRxR,
-        EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>>
+      StandardTagEntityRepository<StandardTagEntity>,
+      StandardTagEntity,
+      EventEntityStandardTagEntity,
+      EventEntityStandardTagEntityRepository<EventEntityStandardTagEntity>>
       tagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
   @Autowired
-  public EventEntityServiceRxR(
+  public EventEntityService(
       TagEntitiesService<
                 BaseTag,
-                StandardTagEntityRepositoryRxR<StandardTagEntityRxR>,
-                StandardTagEntityRxR,
-                EventEntityStandardTagEntityRxR,
-                EventEntityStandardTagEntityRepositoryRxR<EventEntityStandardTagEntityRxR>>
+          StandardTagEntityRepository<StandardTagEntity>,
+          StandardTagEntity,
+          EventEntityStandardTagEntity,
+          EventEntityStandardTagEntityRepository<EventEntityStandardTagEntity>>
           tagEntitiesService,
       EventEntityRepository eventEntityRepository) {
 
@@ -84,7 +84,7 @@ public class EventEntityServiceRxR<T extends GenericEvent> {
   }
 
   private @NotNull EventEntity populateEventEntity(EventEntity eventEntity) {
-    List<BaseTag> baseTags = tagEntitiesService.getTags(eventEntity.getId()).parallelStream().map(StandardTagEntityRxR::getAsBaseTag).toList();
+    List<BaseTag> baseTags = tagEntitiesService.getTags(eventEntity.getId()).parallelStream().map(StandardTagEntity::getAsBaseTag).toList();
     eventEntity.setTags(baseTags);
     return eventEntity;
   }

@@ -1,24 +1,18 @@
-package com.prosilion.superconductor.entity.join.standard;
+package com.prosilion.superconductor.entity.standard;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
 
 @Setter
 @Getter
-@NoArgsConstructor
 @MappedSuperclass
-public abstract class EventEntityStandardTagEntityRxR implements Serializable {
+public abstract class StandardTagEntity implements Local {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private Long eventId;
-
-  public abstract Long getLookupId();
+//  public abstract BaseTag getAsBaseTag();
 }

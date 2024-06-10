@@ -35,7 +35,7 @@ public class PubkeyTagModule<
 
   @Override
   public String getCode() {
-    return "pubkey";
+    return "p";
   }
 
   @Override

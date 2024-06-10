@@ -6,6 +6,7 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.GeohashTag;
+import nostr.event.tag.HashtagTag;
 import nostr.event.tag.PubKeyTag;
 import nostr.event.tag.SubjectTag;
 import nostr.id.Identity;
@@ -38,6 +39,7 @@ class EventEntityServiceIT {
   EventEntityService<GenericEvent> eventEntityService;
 
   TextNoteEvent textNoteEvent;
+  TextNoteEvent textNoteEvent2;
 
   @BeforeAll
   void setUp() {
@@ -52,7 +54,7 @@ class EventEntityServiceIT {
     List<BaseTag> tags = new ArrayList<>();
     tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"));
     tags.add(new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")));
-    tags.add(new SubjectTag("SUBJECT"));
+//    tags.add(new SubjectTag("SUBJECT"));
     genericEvent.setTags(tags);
 
     genericEvent.setPubKey(EVENT_PUBKEY);
@@ -73,6 +75,7 @@ class EventEntityServiceIT {
   @Test
   @Order(1)
   void saveAndGetEvent() {
+    textNoteEvent.addTag(new SubjectTag("SUBJECT"));
     Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
     GenericEvent eventDto = eventEntityService.getEventById(savedEventId);
     assertEquals(CONTENT, eventDto.getContent());
@@ -82,13 +85,45 @@ class EventEntityServiceIT {
   @Test
   @Order(2)
   void saveAndGetEventWithGeohash() {
+    setupSecond();
     String newContent = "2222";
-    textNoteEvent.setContent(newContent);
-    textNoteEvent.addTag(new GeohashTag("prosilion 22222"));
-    Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
+    textNoteEvent2.setContent(newContent);
+    Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent2);
     GenericEvent eventDto = eventEntityService.getEventById(savedEventId);
     assertEquals(newContent, eventDto.getContent());
-    assertEquals(4, eventDto.getTags().size());
+    assertEquals(5, eventDto.getTags().size());
+  }
+
+  void setupSecond() {
+    GenericEvent genericEvent = new GenericEvent();
+
+    genericEvent.setNip(NIP); // superfluous?
+
+    genericEvent.setId(EVENT_ID);
+    genericEvent.setKind(KIND);
+    genericEvent.setContent(CONTENT);
+
+    List<BaseTag> tags = new ArrayList<>();
+    tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"));
+    tags.add(new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")));
+    tags.add(new SubjectTag("SUBJECT 22222"));
+    tags.add(new GeohashTag("prosilion 22222"));
+    tags.add(new HashtagTag("hashtag tag 22222"));
+    genericEvent.setTags(tags);
+
+    genericEvent.setPubKey(EVENT_PUBKEY);
+    genericEvent.setCreatedAt(CREATED_AT);
+
+    genericEvent.setSignature(Identity.generateRandomIdentity().sign(genericEvent));
+
+    textNoteEvent2 = new TextNoteEvent(
+        genericEvent.getPubKey(),
+        genericEvent.getTags(),
+        genericEvent.getContent()
+    );
+    textNoteEvent2.setId(genericEvent.getId());
+    textNoteEvent2.setCreatedAt(genericEvent.getCreatedAt());
+    textNoteEvent2.setSignature(genericEvent.getSignature());
   }
 
 //  @Test

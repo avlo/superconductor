@@ -1,20 +1,27 @@
 package com.prosilion.superconductor.dto.classified;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.prosilion.superconductor.entity.classified.ClassifiedListingEventEntity;
+import com.prosilion.superconductor.entity.classified.ClassifiedListingEntity;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import nostr.event.impl.ClassifiedListing;
 
+@Setter
+@Getter
 public class ClassifiedListingDto extends ClassifiedListing {
-  @JsonIgnore
-  private final PriceTagDto priceTag;
+  private final String title;
+  private final String summary;
+  private final String location;
+  private Long publishedAt;
 
-  public ClassifiedListingDto(@NonNull String title, @NonNull String summary, @NonNull PriceTagDto priceTagDto) {
+  public ClassifiedListingDto(@NonNull String title, @NonNull String summary, @NonNull String location, @NonNull PriceTagDto priceTagDto) {
     super(title, summary, priceTagDto.getPriceTag());
-    this.priceTag = priceTagDto;
+    this.title = title;
+    this.summary = summary;
+    this.location = location;
   }
 
-  public ClassifiedListingEventEntity convertDtoToEntity() {
-    return new ClassifiedListingEventEntity(this);
+  public ClassifiedListingEntity convertDtoToEntity() {
+    return new ClassifiedListingEntity(title, summary, location, new PriceTagDto(getPriceTag()));
   }
 }

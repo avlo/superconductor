@@ -7,6 +7,7 @@ import com.prosilion.superconductor.repository.zap.ZapRequestEventEntityReposito
 import com.prosilion.superconductor.service.event.join.zap.ZapRequestEventEntityEventEntityService;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.ElementAttribute;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class ZapRequestEventService<T extends EventMessage> implements EventServiceIF<T> {
+  @Getter
   public final Kind kind = Kind.ZAP_REQUEST;
   private final EventService<ZapRequestEvent> eventService;
   private final ZapRequestEventEntityRepository zapRequestEventEntityRepository;
@@ -108,10 +110,5 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
   }
 
   private record DiscoveredZapRequestTag(List<GenericTag> genericTagsOnly, List<List<ElementAttribute>> zapRequestDto) {
-  }
-
-  @Override
-  public Kind getKind() {
-    return kind;
   }
 }

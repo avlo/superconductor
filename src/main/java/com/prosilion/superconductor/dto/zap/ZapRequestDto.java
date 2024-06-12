@@ -5,9 +5,9 @@ import com.prosilion.superconductor.entity.zap.ZapRequestEventEntity;
 import lombok.Getter;
 import nostr.event.impl.ZapRequest;
 
-@Getter
 public class ZapRequestDto extends ZapRequest {
   private final RelaysTagDto relaysTagDto;
+  @Getter
   private final String recipientPubKey;
   private final Long amount;
   private final String lnUrl;

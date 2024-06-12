@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.event;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class TextNoteEventService<T extends EventMessage> implements EventServiceIF<T> {
+  @Getter
   public final Kind kind = Kind.TEXT_NOTE;
   private final EventService<TextNoteEvent> eventService;
 
@@ -37,10 +39,5 @@ public class TextNoteEventService<T extends EventMessage> implements EventServic
 
     Long id = eventService.saveEventEntity(textNoteEvent);
     eventService.publishEvent(id, textNoteEvent);
-  }
-
-  @Override
-  public Kind getKind() {
-    return kind;
   }
 }

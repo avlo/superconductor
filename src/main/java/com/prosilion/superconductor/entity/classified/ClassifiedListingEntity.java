@@ -8,18 +8,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import nostr.event.impl.ClassifiedListing;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "classified_listing")
-public class ClassifiedListingEventEntity {
+public class ClassifiedListingEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -31,14 +31,17 @@ public class ClassifiedListingEventEntity {
   @Column(name = "published_at")
   private Long publishedAt;
 
-  public ClassifiedListingEventEntity(@NonNull ClassifiedListing classifiedListing) {
-    this.title = classifiedListing.getTitle();
-    this.summary = classifiedListing.getSummary();
-    this.location = classifiedListing.getLocation();
-    this.publishedAt = classifiedListing.getPublishedAt();
+  @Transient
+  private PriceTagDto priceTagDto;
+
+  public ClassifiedListingEntity(@NonNull String title, @NonNull String summary, @NonNull String location, @NonNull PriceTagDto priceTagDto) {
+    this.title = title;
+    this.summary = summary;
+    this.location = location;
+    this.priceTagDto = priceTagDto;
   }
 
-  public ClassifiedListingDto convertEntityToDto(PriceTagDto priceTagDto) {
-    return new ClassifiedListingDto(title, summary, priceTagDto);
+  public ClassifiedListingDto convertEntityToDto() {
+    return new ClassifiedListingDto(title, summary, location, priceTagDto);
   }
 }

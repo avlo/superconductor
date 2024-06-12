@@ -7,59 +7,66 @@ import nostr.event.impl.TextNoteEvent;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.GeohashTag;
 import nostr.event.tag.HashtagTag;
+import nostr.event.tag.PriceTag;
 import nostr.event.tag.PubKeyTag;
 import nostr.event.tag.SubjectTag;
 import nostr.id.Identity;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(OrderAnnotation.class)
+@DirtiesContext
 class EventEntityServiceIT {
-  public static final String EVENT_ID = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
   public static final PublicKey EVENT_PUBKEY = new PublicKey("bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984");
-  public static final String CONTENT = "1111111111";
+  public static final PubKeyTag P_TAG = new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76985"));
+  public static final EventTag E_TAG = new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4347");
+
+  public static final SubjectTag SUBJECT_TAG = new SubjectTag("Test Subject Tag");
+  public static final GeohashTag G_TAG = new GeohashTag("Test Geohash Tag");
+  public static final HashtagTag T_TAG = new HashtagTag("Test Hashtag Tag");
+
+  public static final BigDecimal NUMBER = new BigDecimal("2112.00");
+  public static final String CURRENCY = "BTC";
+  public static final String FREQUENCY = "NANOSECOND";
+  public static final PriceTag PRICE_TAG = new PriceTag(NUMBER, CURRENCY, FREQUENCY);
+
+  public static final String CONTENT = "Test Content";
   public static final Integer KIND = 1;
-  public static final Integer NIP = 1;
-  public static final long CREATED_AT = 1717633851743L;
 
   @Autowired
-  EventEntityService<GenericEvent> eventEntityService;
+  EventEntityService<TextNoteEvent> eventEntityService;
 
   TextNoteEvent textNoteEvent;
-  TextNoteEvent textNoteEvent2;
 
   @BeforeAll
   void setUp() {
     GenericEvent genericEvent = new GenericEvent();
 
-    genericEvent.setNip(NIP); // superfluous?
-
-    genericEvent.setId(EVENT_ID);
     genericEvent.setKind(KIND);
     genericEvent.setContent(CONTENT);
 
-    List<BaseTag> tags = new ArrayList<>();
-    tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"));
-    tags.add(new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")));
-//    tags.add(new SubjectTag("SUBJECT"));
-    genericEvent.setTags(tags);
+    List<BaseTag> tags2 = new ArrayList<>();
+    tags2.add(E_TAG);
+    tags2.add(P_TAG);
+    tags2.add(SUBJECT_TAG);
+    tags2.add(G_TAG);
+    tags2.add(T_TAG);
+    tags2.add(PRICE_TAG);
+    genericEvent.setTags(tags2);
 
     genericEvent.setPubKey(EVENT_PUBKEY);
-    genericEvent.setCreatedAt(CREATED_AT);
-
     genericEvent.setSignature(Identity.generateRandomIdentity().sign(genericEvent));
 
     textNoteEvent = new TextNoteEvent(
@@ -73,68 +80,67 @@ class EventEntityServiceIT {
   }
 
   @Test
-  @Order(1)
-  void saveAndGetEvent() {
-    textNoteEvent.addTag(new SubjectTag("SUBJECT"));
-    Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
-    GenericEvent eventDto = eventEntityService.getEventById(savedEventId);
-    assertEquals(CONTENT, eventDto.getContent());
-    assertEquals(3, eventDto.getTags().size());
-  }
-
-  @Test
-  @Order(2)
   void saveAndGetEventWithGeohash() {
-    setupSecond();
-    String newContent = "2222";
-    textNoteEvent2.setContent(newContent);
-    Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent2);
-    GenericEvent eventDto = eventEntityService.getEventById(savedEventId);
-    assertEquals(newContent, eventDto.getContent());
-    assertEquals(5, eventDto.getTags().size());
+    Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
+    GenericEvent savedEvent = eventEntityService.getEventById(savedEventId);
+
+    assertEquals(CONTENT, savedEvent.getContent());
+    assertEquals(KIND, savedEvent.getKind());
+    assertEquals(EVENT_PUBKEY.toString(), savedEvent.getPubKey().toString());
+    assertEquals(EVENT_PUBKEY.toBech32String(), savedEvent.getPubKey().toBech32String());
+    assertEquals(EVENT_PUBKEY.toHexString(), savedEvent.getPubKey().toHexString());
+
+    List<BaseTag> savedEventTags = savedEvent.getTags();
+    assertEquals(6, savedEventTags.size());
+
+    assertTrue(savedEventTags.stream().map(BaseTag::getCode).toList()
+        .containsAll(
+            List.of("e", "g", "p", "t", "price", "subject")));
+
+    assertEquals(E_TAG.getIdEvent(), savedEventTags.stream().filter(baseTag ->
+            baseTag.getCode().equalsIgnoreCase("e"))
+        .filter(EventTag.class::isInstance)
+        .map(EventTag.class::cast)
+        .map(EventTag::getIdEvent).findFirst().orElseThrow());
+
+    assertEquals(G_TAG.toString(), savedEventTags.stream().filter(baseTag ->
+            baseTag.getCode().equalsIgnoreCase("g"))
+        .filter(GeohashTag.class::isInstance)
+        .map(GeohashTag.class::cast)
+        .map(GeohashTag::toString).findFirst().orElseThrow());
+
+    assertEquals(P_TAG.toString(), savedEventTags.stream().filter(baseTag ->
+            baseTag.getCode().equalsIgnoreCase("p"))
+        .filter(PubKeyTag.class::isInstance)
+        .map(PubKeyTag.class::cast)
+        .map(PubKeyTag::toString).findFirst().orElseThrow());
+
+    assertEquals(T_TAG.toString(), savedEventTags.stream().filter(baseTag ->
+            baseTag.getCode().equalsIgnoreCase("t"))
+        .filter(HashtagTag.class::isInstance)
+        .map(HashtagTag.class::cast)
+        .map(HashtagTag::toString).findFirst().orElseThrow());
+
+    assertEquals(NUMBER, PRICE_TAG.getNumber());
+    assertEquals(CURRENCY, PRICE_TAG.getCurrency());
+    assertEquals(FREQUENCY, PRICE_TAG.getFrequency());
+
+    assertEquals(NUMBER, savedEventTags.stream().filter(baseTag ->
+            baseTag.getCode().equalsIgnoreCase("price"))
+        .filter(PriceTag.class::isInstance)
+        .map(PriceTag.class::cast)
+        .map(PriceTag::getNumber).findFirst().orElseThrow());
+
+    assertEquals(CURRENCY, savedEventTags.stream().filter(baseTag ->
+            baseTag.getCode().equalsIgnoreCase("price"))
+        .filter(PriceTag.class::isInstance)
+        .map(PriceTag.class::cast)
+        .map(PriceTag::getCurrency).findFirst().orElseThrow());
+
+    assertEquals(FREQUENCY, savedEventTags.stream().filter(baseTag ->
+            baseTag.getCode().equalsIgnoreCase("price"))
+        .filter(PriceTag.class::isInstance)
+        .map(PriceTag.class::cast)
+        .map(PriceTag::getFrequency).findFirst().orElseThrow());
   }
-
-  void setupSecond() {
-    GenericEvent genericEvent = new GenericEvent();
-
-    genericEvent.setNip(NIP); // superfluous?
-
-    genericEvent.setId(EVENT_ID);
-    genericEvent.setKind(KIND);
-    genericEvent.setContent(CONTENT);
-
-    List<BaseTag> tags = new ArrayList<>();
-    tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"));
-    tags.add(new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")));
-    tags.add(new SubjectTag("SUBJECT 22222"));
-    tags.add(new GeohashTag("prosilion 22222"));
-    tags.add(new HashtagTag("hashtag tag 22222"));
-    genericEvent.setTags(tags);
-
-    genericEvent.setPubKey(EVENT_PUBKEY);
-    genericEvent.setCreatedAt(CREATED_AT);
-
-    genericEvent.setSignature(Identity.generateRandomIdentity().sign(genericEvent));
-
-    textNoteEvent2 = new TextNoteEvent(
-        genericEvent.getPubKey(),
-        genericEvent.getTags(),
-        genericEvent.getContent()
-    );
-    textNoteEvent2.setId(genericEvent.getId());
-    textNoteEvent2.setCreatedAt(genericEvent.getCreatedAt());
-    textNoteEvent2.setSignature(genericEvent.getSignature());
-  }
-
-//  @Test
-//  void testPopulatedEvent() {
-//    assertDoesNotThrow(() -> eventEntityService.getAll());
-//  }
-
-//  @Test
-//  void getEventEntityTagEntitiesService() {
-//  }
-//  @Test
-//  void getEventEntityRepository() {
-//  }
 }

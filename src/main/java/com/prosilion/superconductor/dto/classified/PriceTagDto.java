@@ -3,17 +3,14 @@ package com.prosilion.superconductor.dto.classified;
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.classified.PriceTagEntity;
 import lombok.Getter;
-import nostr.base.ElementAttribute;
+import lombok.NonNull;
 import nostr.event.tag.PriceTag;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-@Getter
 public class PriceTagDto implements AbstractTagDto {
+  @Getter
   private final PriceTag priceTag;
 
-  public PriceTagDto(PriceTag priceTag) {
+  public PriceTagDto(@NonNull PriceTag priceTag) {
     this.priceTag = priceTag;
   }
 
@@ -26,12 +23,5 @@ public class PriceTagDto implements AbstractTagDto {
   public PriceTagEntity convertDtoToEntity() {
     return new PriceTagEntity(priceTag);
   }
-
-  public static PriceTagDto createPriceTagDtoFromAttributes(List<ElementAttribute> atts) {
-//    TODO: refactor
-    BigDecimal one = new BigDecimal(atts.get(0).getValue().toString());
-    String two = atts.get(1).getValue().toString();
-    String three = atts.get(2).getValue().toString();
-    return new PriceTagDto(new PriceTag(one, two, three));
-  }
 }
+

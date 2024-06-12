@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.entity.generic;
 
 import com.prosilion.superconductor.dto.standard.ElementAttributeDto;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +24,8 @@ public class ElementAttributeEntity implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String name;
+
+  @Column(name = "\"value\"")
   private String value;
 
   public ElementAttributeDto convertToDto() {

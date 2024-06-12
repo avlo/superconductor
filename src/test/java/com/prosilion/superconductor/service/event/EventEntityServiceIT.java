@@ -46,7 +46,7 @@ class EventEntityServiceIT {
   public static final Integer KIND = 1;
 
   @Autowired
-  EventEntityService<TextNoteEvent> eventEntityService;
+  EventEntityService<GenericEvent> eventEntityService;
 
   TextNoteEvent textNoteEvent;
 
@@ -57,14 +57,14 @@ class EventEntityServiceIT {
     genericEvent.setKind(KIND);
     genericEvent.setContent(CONTENT);
 
-    List<BaseTag> tags2 = new ArrayList<>();
-    tags2.add(E_TAG);
-    tags2.add(P_TAG);
-    tags2.add(SUBJECT_TAG);
-    tags2.add(G_TAG);
-    tags2.add(T_TAG);
-    tags2.add(PRICE_TAG);
-    genericEvent.setTags(tags2);
+    List<BaseTag> tags = new ArrayList<>();
+    tags.add(E_TAG);
+    tags.add(P_TAG);
+    tags.add(SUBJECT_TAG);
+    tags.add(G_TAG);
+    tags.add(T_TAG);
+    tags.add(PRICE_TAG);
+    genericEvent.setTags(tags);
 
     genericEvent.setPubKey(EVENT_PUBKEY);
     genericEvent.setSignature(Identity.generateRandomIdentity().sign(genericEvent));

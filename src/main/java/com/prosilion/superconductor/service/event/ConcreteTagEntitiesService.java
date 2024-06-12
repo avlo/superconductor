@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class TagEntitiesService<
+public class ConcreteTagEntitiesService<
     P extends BaseTag,
     Q extends AbstractTagEntityRepository<R>,
     R extends AbstractTagEntity,
@@ -24,7 +24,7 @@ public class TagEntitiesService<
   private final List<TagModule<P, Q, R, S, U>> tagModules;
 
   @Autowired
-  public TagEntitiesService(List<TagModule<P, Q, R, S, U>> tagModules) {
+  public ConcreteTagEntitiesService(List<TagModule<P, Q, R, S, U>> tagModules) {
     this.tagModules = tagModules;
   }
 

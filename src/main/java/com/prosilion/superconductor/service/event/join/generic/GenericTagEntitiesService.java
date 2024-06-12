@@ -46,7 +46,7 @@ public class GenericTagEntitiesService {
 
   public void saveGenericTags(Long eventId, @NonNull List<BaseTag> tags) {
     tags.stream()
-        .map(GenericTag.class::isInstance)
+        .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast)
         .map(tag -> new GenericTagDto(tag.getCode(),
             tag.getAttributes().stream().map(ElementAttributeDto::new).toList()

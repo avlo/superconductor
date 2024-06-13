@@ -2,10 +2,6 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.standard.RelaysTagDto;
 import com.prosilion.superconductor.dto.zap.ZapRequestDto;
-import com.prosilion.superconductor.entity.zap.ZapRequestEventEntity;
-import com.prosilion.superconductor.repository.zap.ZapRequestEventEntityRepository;
-import com.prosilion.superconductor.service.event.join.zap.ZapRequestEventEntityEventEntityService;
-import jakarta.persistence.NoResultException;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -18,28 +14,25 @@ import nostr.event.impl.GenericTag;
 import nostr.event.impl.ZapRequestEvent;
 import nostr.event.message.EventMessage;
 import nostr.event.tag.PubKeyTag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
 public class ZapRequestEventService<T extends EventMessage> implements EventServiceIF<T> {
+  public static final String RELAYS = "relays";
+  public static final String AMOUNT = "amount";
+  public static final String LNURL = "lnurl";
   @Getter
   public final Kind kind = Kind.ZAP_REQUEST;
   private final EventService<ZapRequestEvent> eventService;
-  private final ZapRequestEventEntityRepository zapRequestEventEntityRepository;
-  private final ZapRequestEventEntityEventEntityService joinService;
 
-  public ZapRequestEventService(
-      EventService<ZapRequestEvent> eventService,
-      ZapRequestEventEntityRepository zapRequestEventEntityRepository,
-      ZapRequestEventEntityEventEntityService joinService) {
+  @Autowired
+  public ZapRequestEventService(EventService<ZapRequestEvent> eventService) {
     this.eventService = eventService;
-    this.zapRequestEventEntityRepository = zapRequestEventEntityRepository;
-    this.joinService = joinService;
   }
 
   @Override
@@ -63,10 +56,18 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
     zapRequestEvent.setSignature(event.getSignature());
 
     Long savedEventId = eventService.saveEventEntity(zapRequestEvent);
-    ZapRequestEventEntity zapRequestEventEntity = saveZapRequestEvent(zapRequestEventDto);
-
-    joinService.save(savedEventId, zapRequestEventEntity.getId());
     eventService.publishEvent(savedEventId, zapRequestEvent);
+  }
+
+  @NotNull
+  private ZapRequestDto createZapRequestDto(GenericEvent event) {
+    DiscoveredZapRequestTag discoveredZapRequestTag = getZapRequestTag(event);
+
+    return new ZapRequestDto(
+        event.getPubKey().toString(),
+        Long.valueOf(getReturnVal(discoveredZapRequestTag.genericTagsOnly(), AMOUNT)),
+        getReturnVal(discoveredZapRequestTag.genericTagsOnly(), LNURL),
+        new RelaysTagDto(getReturnVal(discoveredZapRequestTag.genericTagsOnly(), RELAYS)));
   }
 
   @SneakyThrows
@@ -82,24 +83,7 @@ public class ZapRequestEventService<T extends EventMessage> implements EventServ
   }
 
   private static boolean isZapRequestTag(GenericTag tag) {
-    return tag.getCode().equalsIgnoreCase("relays")
-        || tag.getCode().equalsIgnoreCase("amount")
-        || tag.getCode().equalsIgnoreCase("lnurl");
-  }
-
-  @NotNull
-  private ZapRequestDto createZapRequestDto(GenericEvent event) {
-    DiscoveredZapRequestTag discoveredZapRequestTag = getZapRequestTag(event);
-
-    return new ZapRequestDto(
-        event.getPubKey().toString(),
-        Long.valueOf(getReturnVal(discoveredZapRequestTag.genericTagsOnly(), "amount")),
-        getReturnVal(discoveredZapRequestTag.genericTagsOnly(), "lnurl"),
-        new RelaysTagDto(getReturnVal(discoveredZapRequestTag.genericTagsOnly(), "relays")));
-  }
-
-  private ZapRequestEventEntity saveZapRequestEvent(ZapRequestDto zapRequestEventDto) {
-    return Optional.of(zapRequestEventEntityRepository.save(zapRequestEventDto.convertDtoToEntity())).orElseThrow(NoResultException::new);
+    return List.of(RELAYS, AMOUNT, LNURL).contains(tag.getCode());
   }
 
   private static String getReturnVal(List<GenericTag> genericTags, String val) {

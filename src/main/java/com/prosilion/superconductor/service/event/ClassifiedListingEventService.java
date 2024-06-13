@@ -10,6 +10,7 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
 import nostr.event.message.EventMessage;
 import nostr.event.tag.PriceTag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
 
   private final EventService<ClassifiedListingEvent> eventService;
 
+  @Autowired
   public ClassifiedListingEventService(EventService<ClassifiedListingEvent> eventService) {
     this.eventService = eventService;
   }
@@ -78,7 +80,8 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
         .collect(
             Collectors.toMap(GenericTag::getCode, tag ->
                 tag.getAttributes().stream()
-                    .findFirst().map(attr -> attr.getValue().toString()).orElseThrow())));
+                    .findAny()
+                    .map(attr -> attr.getValue().toString()).orElseThrow())));
   }
 
   private boolean isClassifiedListingTag(GenericTag tag) {

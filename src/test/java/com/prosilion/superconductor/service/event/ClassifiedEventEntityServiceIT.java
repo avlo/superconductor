@@ -2,9 +2,10 @@ package com.prosilion.superconductor.service.event;
 
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
+import nostr.event.impl.ClassifiedListing;
+import nostr.event.impl.ClassifiedListingEvent;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
-import nostr.event.impl.TextNoteEvent;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.GeohashTag;
 import nostr.event.tag.HashtagTag;
@@ -44,7 +45,7 @@ class ClassifiedEventEntityServiceIT {
   public static final PriceTag PRICE_TAG = new PriceTag(NUMBER, CURRENCY, FREQUENCY);
 
   public static final String CONTENT = "Test Content";
-  public static final Integer KIND = 1;
+  public static final Integer CLASSIFIED_LISTING_KIND = 30402;
   public static final String CLASSIFIED_LISTING_TITLE = "classified listing title";
   public static final String CLASSIFIED_LISTING_SUMMARY = "classified listing summary";
   public static final String CLASSIFIED_LISTING_PUBLISHED_AT = "1687765220";
@@ -55,15 +56,15 @@ class ClassifiedEventEntityServiceIT {
   public static final String LOCATION_CODE = "location";
 
   @Autowired
-  EventEntityService<GenericEvent> eventEntityService;
+  EventEntityService<ClassifiedListingEvent> eventEntityService;
 
-  TextNoteEvent textNoteEvent;
+  ClassifiedListingEvent classifiedListingEvent;
 
   @BeforeAll
   void setUp() {
     GenericEvent genericEvent = new GenericEvent();
 
-    genericEvent.setKind(KIND);
+    genericEvent.setKind(CLASSIFIED_LISTING_KIND);
     genericEvent.setContent(CONTENT);
 
     List<BaseTag> tags = new ArrayList<>();
@@ -82,29 +83,32 @@ class ClassifiedEventEntityServiceIT {
     genericEvent.setPubKey(EVENT_PUBKEY);
     genericEvent.setSignature(Identity.generateRandomIdentity().sign(genericEvent));
 
-    textNoteEvent = new TextNoteEvent(
+    classifiedListingEvent = new ClassifiedListingEvent(
         genericEvent.getPubKey(),
         genericEvent.getTags(),
-        genericEvent.getContent()
+        genericEvent.getContent(),
+        new ClassifiedListing(CLASSIFIED_LISTING_TITLE, CLASSIFIED_LISTING_SUMMARY, PRICE_TAG)
     );
-    textNoteEvent.setId(genericEvent.getId());
-    textNoteEvent.setCreatedAt(genericEvent.getCreatedAt());
-    textNoteEvent.setSignature(genericEvent.getSignature());
+    classifiedListingEvent.setId(genericEvent.getId());
+    classifiedListingEvent.setCreatedAt(genericEvent.getCreatedAt());
+    classifiedListingEvent.setSignature(genericEvent.getSignature());
   }
 
   private void testGenericTags(List<BaseTag> savedEventTags) {
     assertTrue(savedEventTags.stream().map(BaseTag::getCode).toList()
         .containsAll(
-            List.of("title")));
+            List.of(TITLE_CODE
+//                , SUMMARY_CODE, PUBLISHED_AT_CODE, LOCATION_CODE
+            )));
   }
 
   @Test
   void saveAndGetEventWithGeohash() {
-    Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
+    Long savedEventId = eventEntityService.saveEventEntity(classifiedListingEvent);
     GenericEvent savedEvent = eventEntityService.getEventById(savedEventId);
 
     assertEquals(CONTENT, savedEvent.getContent());
-    assertEquals(KIND, savedEvent.getKind());
+    assertEquals(CLASSIFIED_LISTING_KIND, savedEvent.getKind());
     assertEquals(EVENT_PUBKEY.toString(), savedEvent.getPubKey().toString());
     assertEquals(EVENT_PUBKEY.toBech32String(), savedEvent.getPubKey().toBech32String());
     assertEquals(EVENT_PUBKEY.toHexString(), savedEvent.getPubKey().toHexString());

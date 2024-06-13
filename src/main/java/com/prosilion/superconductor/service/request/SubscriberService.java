@@ -53,6 +53,7 @@ public class SubscriberService {
   public List<Long> removeSubscriberBySessionId(@NonNull String sessionId) {
     subscriberManager.getBySessionId(sessionId).forEach(
         s -> subscriberFiltersService.deleteBySubscriberId(s.getId()));
+
     return subscriberManager.removeBySessionId(sessionId);
   }
 

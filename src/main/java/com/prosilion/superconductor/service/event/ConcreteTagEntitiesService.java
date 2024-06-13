@@ -1,10 +1,11 @@
 package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.dto.TagPlugin;
-import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
-import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
+import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,13 @@ public class ConcreteTagEntitiesService<
     this.tagPlugins = tagPlugins;
   }
 
-  public List<AbstractTagEntity> getTags(Long eventId) {
+  public List<AbstractTagEntity> getTags(@NonNull Long eventId) {
     return tagPlugins.parallelStream().map(tagModule ->
             tagModule.getTags(eventId))
         .flatMap(List::stream).collect(Collectors.toList());
   }
 
-  public void saveTags(Long eventId, List<P> baseTags) {
+  public void saveTags(@NonNull Long eventId, @NonNull List<P> baseTags) {
     tagPlugins.parallelStream().forEach(module ->
         baseTags.stream().filter(tags ->
                 tags.getCode().equalsIgnoreCase(module.getCode()))

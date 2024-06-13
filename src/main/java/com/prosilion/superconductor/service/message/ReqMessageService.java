@@ -21,7 +21,7 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<T
 
   @Override
   public void processIncoming(@NonNull T reqMessage, @NonNull String sessionId) {
-    log.info("REQ decoded, contents: {}", reqMessage.toString());
+    log.info("REQ decoded, contents: {}", reqMessage);
     reqService.processIncoming(reqMessage, sessionId);
   }
 

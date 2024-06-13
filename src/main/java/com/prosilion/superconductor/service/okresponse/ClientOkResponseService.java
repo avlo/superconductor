@@ -21,7 +21,7 @@ public class ClientOkResponseService<T extends EventMessage> {
 
   public void processOkClientResponse(@NonNull String sessionId, @NonNull T eventMessage) throws JsonProcessingException {
     log.info("Processing event message: {}", eventMessage.getEvent());
-    GenericEvent event = (GenericEvent) eventMessage.getEvent();
-    publisher.publishEvent(new OkClientResponse(sessionId, event));
+    publisher.publishEvent(
+        new OkClientResponse(sessionId, (GenericEvent) eventMessage.getEvent()));
   }
 }

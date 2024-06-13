@@ -1,11 +1,6 @@
 package com.prosilion.superconductor.pubsub;
 
-import nostr.event.Kind;
+import lombok.NonNull;
 import nostr.event.impl.GenericEvent;
 
-public record AddNostrEvent<T extends GenericEvent>(
-//    TODO: IDE notes no usages of kind and id, investigate
-    Kind kind,
-    Long id,
-    T event
-) {}
+public record AddNostrEvent<T extends GenericEvent>(@NonNull T event) {}

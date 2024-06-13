@@ -3,6 +3,7 @@ package com.prosilion.superconductor.service.event;
 import com.prosilion.superconductor.dto.classified.ClassifiedListingDto;
 import com.prosilion.superconductor.dto.classified.PriceTagDto;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
 import nostr.event.impl.ClassifiedListingEvent;
@@ -38,7 +39,7 @@ public class ClassifiedListingEventService<T extends EventMessage> implements Ev
 
   @Override
   @Async
-  public void processIncoming(T eventMessage) {
+  public void processIncoming(@NonNull T eventMessage) {
     log.info("processing incoming CLASSIFIED_LISTING: [{}]", eventMessage);
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
     event.setNip(99);

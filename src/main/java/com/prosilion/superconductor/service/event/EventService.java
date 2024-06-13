@@ -2,8 +2,8 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.service.NotifierService;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +20,12 @@ public class EventService<T extends GenericEvent> {
     this.redisEventEntityService = redisEventEntityService;
   }
 
-  protected Long saveEventEntity(T event) {
+  protected Long saveEventEntity(@NonNull T event) {
     return redisEventEntityService.saveEventEntity(event);
   }
 
-  protected void publishEvent(Long id, T event) {
+  protected void publishEvent(@NonNull Long id, @NonNull T event) {
     notifierService.nostrEventHandler(
-        new AddNostrEvent<>(Kind.valueOf(event.getKind()), id, event));
+        new AddNostrEvent<>(event));
   }
 }

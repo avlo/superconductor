@@ -21,13 +21,13 @@ public class ReqService<T extends ReqMessage, U extends GenericEvent> {
   }
 
   public void processIncoming(@NotNull T reqMessage, @NonNull String sessionId) {
-    Long savedSubscriberId = subscriberService.save(
-        new Subscriber(
-            reqMessage.getSubscriptionId(),
-            sessionId,
-            true),
-        reqMessage.getFiltersList()
-    );
-    notifierService.subscriptionEventHandler(savedSubscriberId);
+    notifierService.subscriptionEventHandler(
+        subscriberService.save(
+            new Subscriber(
+                reqMessage.getSubscriptionId(),
+                sessionId,
+                true),
+            reqMessage.getFiltersList()
+        ));
   }
 }

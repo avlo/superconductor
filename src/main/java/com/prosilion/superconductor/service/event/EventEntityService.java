@@ -10,6 +10,7 @@ import com.prosilion.superconductor.repository.EventEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
 import com.prosilion.superconductor.service.event.join.generic.GenericTagEntitiesService;
 import jakarta.persistence.NoResultException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
 import nostr.event.Kind;
@@ -55,7 +56,7 @@ public class EventEntityService<T extends GenericEvent> {
     this.eventEntityRepository = eventEntityRepository;
   }
 
-  protected Long saveEventEntity(GenericEvent event) {
+  protected Long saveEventEntity(@NonNull GenericEvent event) {
     EventDto eventToSave = new EventDto(
         event.getPubKey(),
         event.getId(),
@@ -80,7 +81,7 @@ public class EventEntityService<T extends GenericEvent> {
             Collectors.toMap(EventEntity::getId, EventEntity::convertEntityToDto)));
   }
 
-  public T getEventById(Long id) {
+  public T getEventById(@NonNull Long id) {
     return populateEventEntity(
         getById(id)
             .orElseThrow())

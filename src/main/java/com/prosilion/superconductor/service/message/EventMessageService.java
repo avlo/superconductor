@@ -44,7 +44,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
     }
   }
 
-  private void createEventService(@NotNull Kind kind, T eventMessage) {
+  private void createEventService(Kind kind, T eventMessage) {
     kindEventServiceMap.get(kind).processIncoming(eventMessage);
   }
 

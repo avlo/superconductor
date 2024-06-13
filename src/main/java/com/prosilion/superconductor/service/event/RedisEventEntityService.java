@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.event;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
@@ -11,7 +12,7 @@ import java.util.Map;
 @Slf4j
 @Service
 public class RedisEventEntityService<T extends GenericEvent> {
-  EventEntityService<T> eventEntityService;
+  private final EventEntityService<T> eventEntityService;
 
   @Autowired
   public RedisEventEntityService(EventEntityService<T> eventEntityService) {
@@ -22,7 +23,7 @@ public class RedisEventEntityService<T extends GenericEvent> {
     return eventEntityService.getAll();
   }
 
-  protected Long saveEventEntity(GenericEvent event) {
+  protected Long saveEventEntity(@NonNull GenericEvent event) {
     return eventEntityService.saveEventEntity(event);
   }
 }

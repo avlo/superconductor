@@ -1,11 +1,13 @@
 package com.prosilion.superconductor.service.event;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.message.EventMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +18,14 @@ public class TextNoteEventService<T extends EventMessage> implements EventServic
   public final Kind kind = Kind.TEXT_NOTE;
   private final EventService<TextNoteEvent> eventService;
 
+  @Autowired
   public TextNoteEventService(EventService<TextNoteEvent> eventService) {
     this.eventService = eventService;
   }
 
   @Override
   @Async
-  public void processIncoming(T eventMessage) {
+  public void processIncoming(@NonNull T eventMessage) {
     log.info("processing incoming TEXT_NOTE: [{}]", eventMessage);
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
     event.setNip(1);

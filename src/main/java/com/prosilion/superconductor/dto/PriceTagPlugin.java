@@ -8,12 +8,10 @@ import com.prosilion.superconductor.repository.join.classified.EventEntityPriceT
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import nostr.event.tag.PriceTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Setter
 @Getter
 @Component
 public class PriceTagPlugin<
@@ -36,11 +34,6 @@ public class PriceTagPlugin<
   @Override
   public String getCode() {
     return "price";
-  }
-
-  @Override
-  public Class<R> getClazz() {
-    return (Class<R>) PriceTagEntity.class;
   }
 
   @Override

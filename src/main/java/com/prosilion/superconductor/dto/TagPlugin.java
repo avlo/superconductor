@@ -19,8 +19,6 @@ public interface TagPlugin<
 {
   String getCode();
 
-  Class<R> getClazz();
-
   R convertDtoToEntity(P tag);
 
   AbstractTagDto getTagDto(P baseTag);

@@ -1,19 +1,17 @@
 package com.prosilion.superconductor.dto;
 
 import com.prosilion.superconductor.dto.standard.HashtagTagDto;
-import com.prosilion.superconductor.entity.standard.HashtagTagEntity;
 import com.prosilion.superconductor.entity.join.standard.EventEntityHashtagTagEntity;
-import com.prosilion.superconductor.repository.standard.HashtagTagEntityRepository;
+import com.prosilion.superconductor.entity.standard.HashtagTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityHashtagTagEntityRepository;
+import com.prosilion.superconductor.repository.standard.HashtagTagEntityRepository;
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import nostr.event.tag.HashtagTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Setter
 @Getter
 @Component
 public class HashtagTagPlugin<
@@ -36,11 +34,6 @@ public class HashtagTagPlugin<
   @Override
   public String getCode() {
     return "t";
-  }
-
-  @Override
-  public Class<R> getClazz() {
-    return (Class<R>) HashtagTagEntity.class;
   }
 
   @Override

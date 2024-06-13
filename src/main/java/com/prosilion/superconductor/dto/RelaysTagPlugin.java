@@ -8,12 +8,10 @@ import com.prosilion.superconductor.repository.standard.RelaysTagEntityRepositor
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import nostr.event.tag.RelaysTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Setter
 @Getter
 @Component
 public class RelaysTagPlugin<
@@ -36,11 +34,6 @@ public class RelaysTagPlugin<
   @Override
   public String getCode() {
     return "relays";
-  }
-
-  @Override
-  public Class<R> getClazz() {
-    return (Class<R>) RelaysTagEntity.class;
   }
 
   @Override

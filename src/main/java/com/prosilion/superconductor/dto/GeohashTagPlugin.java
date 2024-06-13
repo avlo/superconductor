@@ -8,12 +8,10 @@ import com.prosilion.superconductor.repository.standard.GeohashTagEntityReposito
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import nostr.event.tag.GeohashTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Setter
 @Getter
 @Component
 public class GeohashTagPlugin<
@@ -36,11 +34,6 @@ public class GeohashTagPlugin<
   @Override
   public String getCode() {
     return "g";
-  }
-
-  @Override
-  public Class<R> getClazz() {
-    return (Class<R>) GeohashTagEntity.class;
   }
 
   @Override

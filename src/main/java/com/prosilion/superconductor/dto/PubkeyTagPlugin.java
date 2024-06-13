@@ -8,12 +8,10 @@ import com.prosilion.superconductor.repository.standard.PubkeyTagEntityRepositor
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import nostr.event.tag.PubKeyTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Setter
 @Getter
 @Component
 public class PubkeyTagPlugin<
@@ -36,11 +34,6 @@ public class PubkeyTagPlugin<
   @Override
   public String getCode() {
     return "p";
-  }
-
-  @Override
-  public Class<R> getClazz() {
-    return (Class<R>) PubkeyTagEntity.class;
   }
 
   @Override

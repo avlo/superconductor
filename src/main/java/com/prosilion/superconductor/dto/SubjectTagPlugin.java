@@ -7,12 +7,10 @@ import com.prosilion.superconductor.repository.join.standard.EventEntitySubjectT
 import com.prosilion.superconductor.repository.standard.SubjectTagEntityRepository;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import nostr.event.tag.SubjectTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Setter
 @Getter
 @Component
 public class SubjectTagPlugin<
@@ -35,11 +33,6 @@ public class SubjectTagPlugin<
   @Override
   public String getCode() {
     return "subject";
-  }
-
-  @Override
-  public Class<R> getClazz() {
-    return (Class<R>) SubjectTagEntity.class;
   }
 
   @Override

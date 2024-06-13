@@ -7,12 +7,10 @@ import com.prosilion.superconductor.repository.join.standard.EventEntityEventTag
 import com.prosilion.superconductor.repository.standard.EventTagEntityRepository;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import nostr.event.tag.EventTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Setter
 @Getter
 @Component
 public class EventTagPlugin<
@@ -35,11 +33,6 @@ public class EventTagPlugin<
   @Override
   public String getCode() {
     return "e";
-  }
-
-  @Override
-  public Class<R> getClazz() {
-    return (Class<R>) EventTagEntity.class;
   }
 
   @Override

@@ -19,8 +19,4 @@ public class EventEntityHashtagTagEntity extends EventEntityAbstractTagEntity {
     super.setEventId(eventId);
     this.hashTagId = hashTagId;
   }
-  @Override
-  public Long getLookupId() {
-    return hashTagId;
-  }
 }

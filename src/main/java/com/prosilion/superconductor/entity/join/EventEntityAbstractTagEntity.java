@@ -19,6 +19,4 @@ public abstract class EventEntityAbstractTagEntity implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private Long eventId;
-
-  public abstract Long getLookupId();
 }

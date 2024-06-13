@@ -19,8 +19,4 @@ public class EventEntityGeohashTagEntity extends EventEntityAbstractTagEntity {
     super.setEventId(eventId);
     this.geohashTagId = geohashTagId;
   }
-  @Override
-  public Long getLookupId() {
-    return geohashTagId;
-  }
 }

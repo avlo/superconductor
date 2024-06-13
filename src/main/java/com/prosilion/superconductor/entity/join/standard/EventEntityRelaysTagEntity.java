@@ -19,10 +19,4 @@ public class EventEntityRelaysTagEntity extends EventEntityAbstractTagEntity {
     super.setEventId(eventId);
     this.relaysId = relaysId;
   }
-
-// TODO: possibly remove
-  @Override
-  public Long getLookupId() {
-    return relaysId;
-  }
 }

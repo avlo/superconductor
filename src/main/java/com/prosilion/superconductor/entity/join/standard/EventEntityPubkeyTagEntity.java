@@ -19,9 +19,4 @@ public class EventEntityPubkeyTagEntity extends EventEntityAbstractTagEntity {
     super.setEventId(eventId);
     this.pubkeyId = pubkeyId;
   }
-
-  @Override
-  public Long getLookupId() {
-    return pubkeyId;
-  }
 }

@@ -19,9 +19,4 @@ public class EventEntityPriceTagEntity extends EventEntityAbstractTagEntity {
     super.setEventId(eventId);
     this.priceTagId = priceTagId;
   }
-
-  @Override
-  public Long getLookupId() {
-    return priceTagId;
-  }
 }

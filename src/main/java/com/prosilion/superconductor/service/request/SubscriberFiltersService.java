@@ -2,6 +2,7 @@ package com.prosilion.superconductor.service.request;
 
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
 import jakarta.persistence.NoResultException;
+import lombok.NonNull;
 import nostr.event.impl.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -20,29 +21,27 @@ public class SubscriberFiltersService {
     this.subscriberFiltersManager = subscriberFiltersManager;
   }
 
-  public List<Filters> getFiltersList(Long subscriberId) throws NoResultException {
+  public List<Filters> getFiltersList(@NonNull Long subscriberId) throws NoResultException {
     return getSubscriberFilters(subscriberId);
   }
 
   public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
-    List<SubscriberFilter> entireSubscribersFilters = subscriberFiltersManager.getEntireSubscribersFilters();
-    return entireSubscribersFilters.stream().collect(
+    return subscriberFiltersManager.getEntireSubscribersFilters().stream().collect(
         Collectors.toMap(SubscriberFilter::getSubscriberId, subscriberFilter ->
             getSubscriberFilters(subscriberFilter.getSubscriberId())));
   }
 
-  private List<Filters> getSubscriberFilters(Long subscriberFilter) {
-    List<Filters> subscriberFilters = subscriberFiltersManager.getSubscriberFilters(subscriberFilter);
-    return subscriberFilters;
+  private List<Filters> getSubscriberFilters(@NonNull Long subscriberFilter) {
+    return subscriberFiltersManager.getSubscriberFilters(subscriberFilter);
   }
 
   @Async
-  public void save(Long subscriberId, List<Filters> filtersList) {
+  public void save(@NonNull Long subscriberId, @NonNull List<Filters> filtersList) {
     subscriberFiltersManager.saveFilters(subscriberId, filtersList);
   }
 
   @Async
-  public void deleteBySubscriberId(Long subscriberId) {
+  public void deleteBySubscriberId(@NonNull Long subscriberId) {
     subscriberFiltersManager.removeAllFilters(subscriberId);
   }
 }

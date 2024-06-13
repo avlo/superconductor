@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.service.request.ReqService;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.ReqMessage;
@@ -19,7 +20,7 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<T
   }
 
   @Override
-  public void processIncoming(T reqMessage, String sessionId) {
+  public void processIncoming(@NonNull T reqMessage, @NonNull String sessionId) {
     log.info("REQ decoded, contents: {}", reqMessage.toString());
     reqService.processIncoming(reqMessage, sessionId);
   }

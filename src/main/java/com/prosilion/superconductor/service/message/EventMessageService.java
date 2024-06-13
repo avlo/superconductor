@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.okresponse.ClientOkResponseService;
 import jakarta.validation.constraints.NotNull;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
@@ -31,7 +32,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
   }
 
   @Override
-  public void processIncoming(@NotNull T eventMessage, String sessionId) {
+  public void processIncoming(@NotNull T eventMessage, @NonNull String sessionId) {
     log.info("EVENT message NIP: {}", eventMessage.getNip());
     var kind = ((GenericEvent) eventMessage.getEvent()).getKind();
     log.info("EVENT message type: {}", eventMessage.getEvent());

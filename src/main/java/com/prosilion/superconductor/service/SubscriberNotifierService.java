@@ -4,31 +4,32 @@ import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.service.request.SubscriberService;
 import com.prosilion.superconductor.util.FilterMatcher;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class SubscriberNotifierService<T extends GenericEvent> {
   private final SubscriberService subscriberService;
   private final FilterMatcher<T> filterMatcher;
 
+  @Autowired
   public SubscriberNotifierService(SubscriberService subscriberService, FilterMatcher<T> filterMatcher) {
     this.subscriberService = subscriberService;
     this.filterMatcher = filterMatcher;
   }
 
-  public void nostrEventHandler(AddNostrEvent<T> addNostrEvent) {
-    Map<Long, List<Filters>> allFiltersOfAllSubscribers = subscriberService.getAllFiltersOfAllSubscribers();
-    allFiltersOfAllSubscribers.forEach((subscriberId, filtersList) ->
+  public void nostrEventHandler(@NonNull AddNostrEvent<T> addNostrEvent) {
+    subscriberService.getAllFiltersOfAllSubscribers().forEach((subscriberId, filtersList) ->
         subscriptionEventHandler(subscriberId, addNostrEvent));
   }
 
-  public void subscriptionEventHandler(Long subscriberId, AddNostrEvent<T> addNostrEvent) {
+  public void subscriptionEventHandler(@NonNull Long subscriberId, @NonNull AddNostrEvent<T> addNostrEvent) {
     broadcastMatch(addNostrEvent, subscriberId, subscriberService.getFiltersList(subscriberId));
   }
 
@@ -39,7 +40,7 @@ public class SubscriberNotifierService<T extends GenericEvent> {
   }
 
   @SneakyThrows
-  private void broadcastToClients(FireNostrEvent<T> fireNostrEvent) {
+  private void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) {
     subscriberService.broadcastToClients(fireNostrEvent);
   }
 }

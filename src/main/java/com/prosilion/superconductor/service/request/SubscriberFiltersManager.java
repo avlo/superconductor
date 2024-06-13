@@ -1,21 +1,18 @@
 package com.prosilion.superconductor.service.request;
 
+import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterEvent;
-import com.prosilion.superconductor.entity.AbstractTagEntity;
-import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterAuthorRepository;
-import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterEventRepository;
-import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterKindRepository;
-import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterReferencedEventRepository;
-import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterReferencedPubkeyRepository;
-import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterRepository;
+import com.prosilion.superconductor.repository.join.subscriber.*;
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.Kind;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,6 +30,7 @@ public class SubscriberFiltersManager {
   private final SubscriberFilterReferencedEventRepository subscriberFilterReferencedEventRepository;
   private final SubscriberFilterReferencedPubkeyRepository subscriberFilterReferencedPubkeyRepository;
 
+  @Autowired
   public SubscriberFiltersManager(
       SubscriberFilterRepository subscriberFilterRepository,
       SubscriberFilterEventRepository subscriberFilterEventRepository,
@@ -56,7 +54,7 @@ public class SubscriberFiltersManager {
    * SELECTS
    */
 
-  public List<Filters> getSubscriberFilters(Long subscriberId) {
+  public List<Filters> getSubscriberFilters(@NonNull Long subscriberId) {
     List<Filters> filtersList = new ArrayList<>();
 
     // TODO: refactor proper w/ stream
@@ -82,19 +80,10 @@ public class SubscriberFiltersManager {
   }
 
   private List<GenericEvent> getFilterEvents(Long filterIds) {
-    List<GenericEvent> list = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds)
+    return subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds)
         .parallelStream().flatMap(subscriberFilterEvent ->
             getEventEntities(subscriberFilterEvent).parallelStream().map(EventEntity::convertEntityToDto).toList().parallelStream()
                 .filter(Objects::nonNull).map(GenericEvent.class::cast)).toList();
-
-//    Stream<Stream<GenericEvent>> streamStream = subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds)
-//        .parallelStream().map(subscriberFilterEvent ->
-//            getEventEntities(subscriberFilterEvent).parallelStream().map(EventEntity::convertEntityToDto).toList().parallelStream()
-//                .filter(Objects::nonNull).map(GenericEvent.class::cast));
-
-
-    List<GenericEvent> genericEvents = new ArrayList<>(list);
-    return genericEvents;
   }
 
   private List<EventEntity> getEventEntities(SubscriberFilterEvent s) {
@@ -117,7 +106,7 @@ public class SubscriberFiltersManager {
    * SAVES
    */
 
-  public void saveFilters(Long subscriberId, List<Filters> filtersList) {
+  public void saveFilters(@NonNull Long subscriberId, @NonNull List<Filters> filtersList) {
     for (Filters filters : filtersList) {
       Long filterId = saveSubscriberFilter(subscriberId, filters);
       saveEvents(filterId, Optional.ofNullable(filters.getEvents()).orElseGet(ArrayList::new));

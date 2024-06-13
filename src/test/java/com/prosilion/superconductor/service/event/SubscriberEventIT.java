@@ -59,7 +59,7 @@ class SubscriberEventIT {
     ClassifiedListing classifiedListing = new ClassifiedListing(
         "classified title",
         "classified summary",
-        new PriceTag(new BigDecimal(666), "BTC", "frequency")
+        new PriceTag(new BigDecimal(2.71), "BTC", "frequency")
     );
 
     classifiedListingEvent = new ClassifiedListingEvent(

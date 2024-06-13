@@ -37,7 +37,7 @@ class EventEntityServiceIT {
   public static final GeohashTag G_TAG = new GeohashTag("Test Geohash Tag");
   public static final HashtagTag T_TAG = new HashtagTag("Test Hashtag Tag");
 
-  public static final BigDecimal NUMBER = new BigDecimal("2112.00");
+  public static final BigDecimal NUMBER = new BigDecimal("2.71");
   public static final String CURRENCY = "BTC";
   public static final String FREQUENCY = "NANOSECOND";
   public static final PriceTag PRICE_TAG = new PriceTag(NUMBER, CURRENCY, FREQUENCY);

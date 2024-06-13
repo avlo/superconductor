@@ -23,11 +23,12 @@ import java.util.List;
 @Slf4j
 @Service
 public class ZapRequestEventService<T extends EventMessage> implements EventServiceIF<T> {
+  @Getter
+  public final Kind kind = Kind.ZAP_REQUEST;
   public static final String RELAYS = "relays";
   public static final String AMOUNT = "amount";
   public static final String LNURL = "lnurl";
-  @Getter
-  public final Kind kind = Kind.ZAP_REQUEST;
+
   private final EventService<ZapRequestEvent> eventService;
 
   @Autowired

@@ -7,9 +7,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Setter
@@ -26,17 +26,13 @@ public class ZapRequestEventEntity {
   private String lnUrl;
   private String recipientPubKey;
 
-  @Transient
-  private RelaysTagDto relaysTagDto;
-
-  public ZapRequestEventEntity(String recipientPubKey, Long amount, String lnUrl, RelaysTagDto relaysTagDto) {
+  public ZapRequestEventEntity(@NonNull String recipientPubKey, @NonNull Long amount, @NonNull String lnUrl) {
     this.recipientPubKey = recipientPubKey;
     this.amount = amount;
     this.lnUrl = lnUrl;
-    this.relaysTagDto = relaysTagDto;
   }
 
-  public ZapRequestDto convertEntityToDto() {
+  public ZapRequestDto convertEntityToDto(@NonNull RelaysTagDto relaysTagDto) {
     return new ZapRequestDto(recipientPubKey, amount, lnUrl, relaysTagDto);
   }
 }

@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -31,17 +30,13 @@ public class ClassifiedListingEntity {
   @Column(name = "published_at")
   private Long publishedAt;
 
-  @Transient
-  private PriceTagDto priceTagDto;
-
-  public ClassifiedListingEntity(@NonNull String title, @NonNull String summary, @NonNull String location, @NonNull PriceTagDto priceTagDto) {
+  public ClassifiedListingEntity(@NonNull String title, @NonNull String summary, @NonNull String location) {
     this.title = title;
     this.summary = summary;
     this.location = location;
-    this.priceTagDto = priceTagDto;
   }
 
-  public ClassifiedListingDto convertEntityToDto() {
+  public ClassifiedListingDto convertEntityToDto(@NonNull PriceTagDto priceTagDto) {
     return new ClassifiedListingDto(title, summary, location, priceTagDto);
   }
 }

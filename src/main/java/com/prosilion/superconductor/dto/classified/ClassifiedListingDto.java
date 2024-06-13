@@ -22,6 +22,6 @@ public class ClassifiedListingDto extends ClassifiedListing {
   }
 
   public ClassifiedListingEntity convertDtoToEntity() {
-    return new ClassifiedListingEntity(title, summary, location, new PriceTagDto(getPriceTag()));
+    return new ClassifiedListingEntity(title, summary, location);
   }
 }

@@ -1,23 +1,21 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
-import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
+import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
 import nostr.event.BaseTag;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface TagPlugin<
     P extends BaseTag,
     Q extends AbstractTagEntityRepository<R>, // tag table
     R extends AbstractTagEntity, // tag to return
-    // TODO: below superfluous?
     S extends EventEntityAbstractTagEntity, // @MappedSuperclass for below
-    U extends EventEntityAbstractTagEntityRepository<S>> // event -> tag join table
+    T extends EventEntityAbstractTagEntityRepository<S>> // event -> tag join table
 {
   String getCode();
 
@@ -29,25 +27,26 @@ public interface TagPlugin<
 
   S getEventEntityTagEntity(Long eventId, Long tagId);
 
-  U getEventEntityStandardTagEntityRepositoryJoin();
+  T getEventEntityStandardTagEntityRepositoryJoin();
 
   Q getStandardTagEntityRepositoryRxR();
 
   default List<R> getTags(Long eventId) {
-    Stream<List<R>> listStream = getEventEntityStandardTagEntityRepositoryJoin()
+    return getEventEntityStandardTagEntityRepositoryJoin()
         .getAllByEventId(eventId)
         .stream()
         .map(event -> Optional.of(
                 getStandardTagEntityRepositoryRxR().findById(
                     event.getEventId()))
-            .orElse(Optional.empty()).stream().toList());
-    List<R> list = listStream.flatMap(Collection::stream).toList();
-    return list;
+            .orElse(Optional.empty()).stream().toList())
+        .flatMap(Collection::stream).toList();
   }
 
   default void saveTag(Long eventId, P baseTag) {
-    R savedRepoTag = getStandardTagEntityRepositoryRxR().save(convertDtoToEntity(baseTag));
-    S savedJoinTag = getEventEntityStandardTagEntityRepositoryJoin().save(getEventEntityTagEntity(eventId, savedRepoTag.getId()));
-//    savedJoinTag.
+    getEventEntityStandardTagEntityRepositoryJoin().save(
+        getEventEntityTagEntity(
+            eventId,
+            getStandardTagEntityRepositoryRxR().save(
+                convertDtoToEntity(baseTag)).getId()));
   }
 }

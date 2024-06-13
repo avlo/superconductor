@@ -1,30 +1,26 @@
 package com.prosilion.superconductor.dto.standard;
 
+import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.standard.RelaysTagEntity;
-import nostr.base.ElementAttribute;
-import nostr.base.Relay;
+import lombok.Getter;
+import lombok.NonNull;
 import nostr.event.tag.RelaysTag;
-import org.springframework.beans.BeanUtils;
 
-import java.util.Arrays;
-import java.util.List;
+public class RelaysTagDto implements AbstractTagDto {
+  @Getter
+  private final RelaysTag relaysTag;
 
-public class RelaysTagDto extends RelaysTag {
-  public RelaysTagDto(List<Relay> relayUris) {
-    super(relayUris);
+  public RelaysTagDto(@NonNull RelaysTag relaysTag) {
+    this.relaysTag = relaysTag;
   }
 
-  public RelaysTagDto(String... relayUris) {
-    this(Arrays.stream(relayUris).map(Relay::new).toList());
+  @Override
+  public String getCode() {
+    return relaysTag.getCode();
   }
 
+  @Override
   public RelaysTagEntity convertDtoToEntity() {
-    RelaysTagEntity relaysTagEntity = new RelaysTagEntity();
-    BeanUtils.copyProperties(this, relaysTagEntity);
-    return relaysTagEntity;
-  }
-
-  public static RelaysTagDto createRelaysTagDtoFromAttributes(List<ElementAttribute> atts) {
-    return new RelaysTagDto(atts.stream().map(a -> new Relay(a.toString())).toList());
+    return new RelaysTagEntity(relaysTag);
   }
 }

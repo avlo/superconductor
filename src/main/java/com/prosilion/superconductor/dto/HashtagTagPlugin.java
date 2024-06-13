@@ -21,8 +21,8 @@ public class HashtagTagPlugin<
     Q extends HashtagTagEntityRepository<R>,
     R extends HashtagTagEntity,
     S extends EventEntityHashtagTagEntity,
-    U extends EventEntityHashtagTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, U> {
+    T extends EventEntityHashtagTagEntityRepository<S>>
+    implements TagPlugin<P, Q, R, S, T> {
 
   private final HashtagTagEntityRepository<R> hashtagTagEntityRepository;
   private final EventEntityHashtagTagEntityRepository<S> join;
@@ -59,8 +59,8 @@ public class HashtagTagPlugin<
   }
 
   @Override
-  public U getEventEntityStandardTagEntityRepositoryJoin() {
-    return (U) join;
+  public T getEventEntityStandardTagEntityRepositoryJoin() {
+    return (T) join;
   }
 
   @Override

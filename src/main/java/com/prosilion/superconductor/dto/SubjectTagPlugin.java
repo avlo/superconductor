@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.dto;
 
 import com.prosilion.superconductor.dto.standard.SubjectTagDto;
-import com.prosilion.superconductor.entity.standard.SubjectTagEntity;
 import com.prosilion.superconductor.entity.join.standard.EventEntitySubjectTagEntity;
-import com.prosilion.superconductor.repository.standard.SubjectTagEntityRepository;
+import com.prosilion.superconductor.entity.standard.SubjectTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntitySubjectTagEntityRepository;
+import com.prosilion.superconductor.repository.standard.SubjectTagEntityRepository;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -20,8 +20,8 @@ public class SubjectTagPlugin<
     Q extends SubjectTagEntityRepository<R>,
     R extends SubjectTagEntity,
     S extends EventEntitySubjectTagEntity,
-    U extends EventEntitySubjectTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, U> {
+    T extends EventEntitySubjectTagEntityRepository<S>>
+    implements TagPlugin<P, Q, R, S, T> {
 
   private final SubjectTagEntityRepository<R> subjectTagEntityRepository;
   private final EventEntitySubjectTagEntityRepository<S> join;
@@ -58,8 +58,8 @@ public class SubjectTagPlugin<
   }
 
   @Override
-  public U getEventEntityStandardTagEntityRepositoryJoin() {
-    return (U) join;
+  public T getEventEntityStandardTagEntityRepositoryJoin() {
+    return (T) join;
   }
 
   @Override

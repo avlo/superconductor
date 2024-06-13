@@ -21,8 +21,8 @@ public class PriceTagPlugin<
     Q extends PriceTagEntityRepository<R>,
     R extends PriceTagEntity,
     S extends EventEntityPriceTagEntity,
-    U extends EventEntityPriceTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, U> {
+    T extends EventEntityPriceTagEntityRepository<S>>
+    implements TagPlugin<P, Q, R, S, T> {
 
   private final PriceTagEntityRepository<R> priceTagEntityRepository;
   private final EventEntityPriceTagEntityRepository<S> join;
@@ -59,8 +59,8 @@ public class PriceTagPlugin<
   }
 
   @Override
-  public U getEventEntityStandardTagEntityRepositoryJoin() {
-    return (U) join;
+  public T getEventEntityStandardTagEntityRepositoryJoin() {
+    return (T) join;
   }
 
   @Override

@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.dto;
 
 import com.prosilion.superconductor.dto.standard.GeohashTagDto;
-import com.prosilion.superconductor.entity.standard.GeohashTagEntity;
 import com.prosilion.superconductor.entity.join.standard.EventEntityGeohashTagEntity;
-import com.prosilion.superconductor.repository.standard.GeohashTagEntityRepository;
+import com.prosilion.superconductor.entity.standard.GeohashTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityGeohashTagEntityRepository;
+import com.prosilion.superconductor.repository.standard.GeohashTagEntityRepository;
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.NonNull;
@@ -21,8 +21,8 @@ public class GeohashTagPlugin<
     Q extends GeohashTagEntityRepository<R>,
     R extends GeohashTagEntity,
     S extends EventEntityGeohashTagEntity,
-    U extends EventEntityGeohashTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, U> {
+    T extends EventEntityGeohashTagEntityRepository<S>>
+    implements TagPlugin<P, Q, R, S, T> {
 
   private final GeohashTagEntityRepository<R> geohashTagEntityRepository;
   private final EventEntityGeohashTagEntityRepository<S> join;
@@ -59,8 +59,8 @@ public class GeohashTagPlugin<
   }
 
   @Override
-  public U getEventEntityStandardTagEntityRepositoryJoin() {
-    return (U) join;
+  public T getEventEntityStandardTagEntityRepositoryJoin() {
+    return (T) join;
   }
 
   @Override

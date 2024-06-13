@@ -15,7 +15,7 @@ public class ZapRequestDto extends ZapRequest {
   private final String lnUrl;
 
   public ZapRequestDto(@NonNull String recipientPubKey, @NonNull Long amount, @NonNull String lnUrl, @NonNull RelaysTagDto relaysTagDto) {
-    super(relaysTagDto, amount, lnUrl);
+    super(relaysTagDto.getRelaysTag(), amount, lnUrl);
     this.recipientPubKey = recipientPubKey;
     this.amount = amount;
     this.lnUrl = lnUrl;

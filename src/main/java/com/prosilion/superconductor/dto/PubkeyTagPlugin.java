@@ -21,8 +21,8 @@ public class PubkeyTagPlugin<
     Q extends PubkeyTagEntityRepository<R>,
     R extends PubkeyTagEntity,
     S extends EventEntityPubkeyTagEntity,
-    U extends EventEntityPubkeyTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, U> {
+    T extends EventEntityPubkeyTagEntityRepository<S>>
+    implements TagPlugin<P, Q, R, S, T> {
 
   private final PubkeyTagEntityRepository<R> pubkeyTagEntityRepository;
   private final EventEntityPubkeyTagEntityRepository<S> join;
@@ -59,8 +59,8 @@ public class PubkeyTagPlugin<
   }
 
   @Override
-  public U getEventEntityStandardTagEntityRepositoryJoin() {
-    return (U) join;
+  public T getEventEntityStandardTagEntityRepositoryJoin() {
+    return (T) join;
   }
 
   @Override

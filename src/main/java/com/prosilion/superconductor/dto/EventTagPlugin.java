@@ -20,8 +20,8 @@ public class EventTagPlugin<
     Q extends EventTagEntityRepository<R>,
     R extends EventTagEntity,
     S extends EventEntityEventTagEntity,
-    U extends EventEntityEventTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, U> {
+    T extends EventEntityEventTagEntityRepository<S>>
+    implements TagPlugin<P, Q, R, S, T> {
 
   private final EventTagEntityRepository<R> eventTagEntityRepository;
   private final EventEntityEventTagEntityRepository<S> join;
@@ -58,8 +58,8 @@ public class EventTagPlugin<
   }
 
   @Override
-  public U getEventEntityStandardTagEntityRepositoryJoin() {
-    return (U) join;
+  public T getEventEntityStandardTagEntityRepositoryJoin() {
+    return (T) join;
   }
 
   @Override

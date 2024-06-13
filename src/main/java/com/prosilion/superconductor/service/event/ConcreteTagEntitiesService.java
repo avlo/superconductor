@@ -20,11 +20,11 @@ public class ConcreteTagEntitiesService<
     Q extends AbstractTagEntityRepository<R>,
     R extends AbstractTagEntity,
     S extends EventEntityAbstractTagEntity,
-    U extends EventEntityAbstractTagEntityRepository<S>> {
-  private final List<TagPlugin<P, Q, R, S, U>> tagPlugins;
+    T extends EventEntityAbstractTagEntityRepository<S>> {
+  private final List<TagPlugin<P, Q, R, S, T>> tagPlugins;
 
   @Autowired
-  public ConcreteTagEntitiesService(List<TagPlugin<P, Q, R, S, U>> tagPlugins) {
+  public ConcreteTagEntitiesService(List<TagPlugin<P, Q, R, S, T>> tagPlugins) {
     this.tagPlugins = tagPlugins;
   }
 

@@ -6,6 +6,4 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
 public interface AbstractTagEntityRepository<T extends AbstractTagEntity> extends JpaRepository<T, Long> {
-  String getCode();
-//  List<T> findAllByEventId(Long eventId);
 }

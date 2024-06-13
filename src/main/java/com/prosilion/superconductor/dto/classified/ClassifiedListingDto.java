@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.dto.classified;
 
-import com.prosilion.superconductor.entity.classified.ClassifiedListingEntity;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -19,9 +18,5 @@ public class ClassifiedListingDto extends ClassifiedListing {
     this.title = title;
     this.summary = summary;
     this.location = location;
-  }
-
-  public ClassifiedListingEntity convertDtoToEntity() {
-    return new ClassifiedListingEntity(title, summary, location);
   }
 }

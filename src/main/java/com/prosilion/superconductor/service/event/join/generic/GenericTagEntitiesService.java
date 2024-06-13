@@ -34,7 +34,7 @@ public class GenericTagEntitiesService {
     this.join = join;
   }
 
-  public List<GenericTagDto> getGenericTags(Long eventId) {
+  public List<GenericTagDto> getGenericTags(@NonNull Long eventId) {
     return repo.findAllById(
             join.getAllByEventId(eventId).stream()
                 .map(EventEntityGenericTagEntity::getGenericTagId).toList())
@@ -44,7 +44,7 @@ public class GenericTagEntitiesService {
         .toList();
   }
 
-  public void saveGenericTags(Long eventId, @NonNull List<BaseTag> tags) {
+  public void saveGenericTags(@NonNull Long eventId, @NonNull List<BaseTag> tags) {
     tags.stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast)

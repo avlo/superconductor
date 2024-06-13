@@ -6,7 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RelaysTagEntityRepository<T extends RelaysTagEntity> extends AbstractTagEntityRepository<T> {
-  default String getCode() {
-    return "relays";
-  }
 }

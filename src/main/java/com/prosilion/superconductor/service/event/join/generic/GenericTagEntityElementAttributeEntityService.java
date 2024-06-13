@@ -6,6 +6,7 @@ import com.prosilion.superconductor.entity.join.generic.GenericTagEntityElementA
 import com.prosilion.superconductor.repository.generic.ElementAttributeEntityRepository;
 import com.prosilion.superconductor.repository.join.generic.GenericTagEntityElementAttributeEntityRepository;
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,14 +28,14 @@ public class GenericTagEntityElementAttributeEntityService {
     this.join = join;
   }
 
-  public List<ElementAttributeDto> getElementAttributeList(Long genericTagId) {
+  public List<ElementAttributeDto> getElementAttributeList(@NonNull Long genericTagId) {
     return repo.findAllById(
             join.getAllByGenericTagId(genericTagId).stream()
                 .map(GenericTagEntityElementAttributeEntity::getElementAttributeId).toList())
         .stream().map(ElementAttributeEntity::convertToDto).toList();
   }
 
-  public void saveElementAttributeList(Long genericTagId, List<ElementAttributeDto> entities) {
+  public void saveElementAttributeList(@NonNull Long genericTagId, @NonNull List<ElementAttributeDto> entities) {
     entities.stream().map(
             this::saveElementAttribute)
         .forEach(elementAttributeId ->

@@ -15,5 +15,4 @@ public abstract class AbstractTagEntity implements Local {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-//  public abstract BaseTag getAsBaseTag();
 }

@@ -11,6 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter-join")
+// TODO: likely all subscriber filter implementation classes can be refactored/genericized
 public class SubscriberFilter implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

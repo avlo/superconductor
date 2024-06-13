@@ -94,14 +94,6 @@ class ClassifiedEventEntityServiceIT {
     classifiedListingEvent.setSignature(genericEvent.getSignature());
   }
 
-  private void testGenericTags(List<BaseTag> savedEventTags) {
-    assertTrue(savedEventTags.stream().map(BaseTag::getCode).toList()
-        .containsAll(
-            List.of(TITLE_CODE
-//                , SUMMARY_CODE, PUBLISHED_AT_CODE, LOCATION_CODE
-            )));
-  }
-
   @Test
   void saveAndGetEventWithGeohash() {
     Long savedEventId = eventEntityService.saveEventEntity(classifiedListingEvent);
@@ -114,9 +106,11 @@ class ClassifiedEventEntityServiceIT {
     assertEquals(EVENT_PUBKEY.toHexString(), savedEvent.getPubKey().toHexString());
 
     List<BaseTag> savedEventTags = savedEvent.getTags();
-    assertEquals(7, savedEventTags.size());
+    assertEquals(10, savedEventTags.size());
 
-    testGenericTags(savedEventTags);
+    assertTrue(savedEventTags.stream().map(BaseTag::getCode).toList()
+        .containsAll(
+            List.of(TITLE_CODE, SUMMARY_CODE, PUBLISHED_AT_CODE, LOCATION_CODE)));
 
     assertTrue(savedEventTags.stream().map(BaseTag::getCode).toList()
         .containsAll(

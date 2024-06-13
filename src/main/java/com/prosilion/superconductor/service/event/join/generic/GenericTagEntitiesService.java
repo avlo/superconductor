@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.event.join.generic;
 
-import com.prosilion.superconductor.dto.generic.GenericTagDto;
 import com.prosilion.superconductor.dto.generic.ElementAttributeDto;
+import com.prosilion.superconductor.dto.generic.GenericTagDto;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.join.generic.EventEntityGenericTagEntity;
 import com.prosilion.superconductor.repository.generic.GenericTagEntityRepository;
@@ -37,7 +37,7 @@ public class GenericTagEntitiesService {
   public List<GenericTagDto> getGenericTags(Long eventId) {
     return repo.findAllById(
             join.getAllByEventId(eventId).stream()
-                .map(EventEntityGenericTagEntity::getEventId).toList())
+                .map(EventEntityGenericTagEntity::getGenericTagId).toList())
         .stream().map(genericTagEntity ->
             genericTagEntity.convertEntityToDto(
                 service.getElementAttributeList(genericTagEntity.getId()).stream().toList()))
@@ -48,9 +48,9 @@ public class GenericTagEntitiesService {
     tags.stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast)
-        .map(tag -> new GenericTagDto(tag.getCode(),
-            tag.getAttributes().stream().map(ElementAttributeDto::new).toList()
-        ))
+        .map(tag ->
+            new GenericTagDto(tag.getCode(),
+                tag.getAttributes().stream().map(ElementAttributeDto::new).toList()))
         .map(
             this::saveTag)
         .forEach(tag -> saveJoins(eventId, tag));

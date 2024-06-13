@@ -85,17 +85,21 @@ or full/debug console logging
 
 Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
-	select id, event_id, kind, nip, created_at, pub_key, signature, content from event;
-	select id, id_event, recommended_relay_url, marker from event_tag;
-	select id, public_key, main_relay_url, pet_name from pubkey_tag;
+	select id, event_id_string, kind, nip, created_at, pub_key, content from event;
 	select id, event_id, event_tag_id from "event-event_tag-join";
+	select id, event_id_string, recommended_relay_url, marker from event_tag;
 	select id, event_id, pubkey_id from "event-pubkey_tag-join";
+	select id, public_key, main_relay_url, pet_name from pubkey_tag;
 	select id, event_id, subject_tag_id from "event-subject_tag-join";
 	select id, subject from subject_tag;
-	select id, code, hash_tag from hashtag_tag;
-	select id, code, location from geohash_tag;
+	select id, hashtag_tag from hashtag_tag;
+	select id, location from geohash_tag;
 	select id, event_id, geohash_tag_id from "event-geohash_tag-join";
 	select id, event_id, hash_tag_id from "event-hashtag_tag-join";
+	select id, event_id, generic_tag_id  FROM "event-generic_tag-join";
+	select id, code from generic_tag;
+	select id, generic_tag_id, element_attribute_id from "generic_tag-element_attribute-join";
+	select id, name, "value" from element_attribute;
 	select id, subscriber_id, session_id, active from subscriber;
 	select id, subscriber_id, "since", "until", "limit" from "subscriber-filter-join";
 	select id, referenced_event_id, filter_id from "subscriber-filter_referenced_event-join";

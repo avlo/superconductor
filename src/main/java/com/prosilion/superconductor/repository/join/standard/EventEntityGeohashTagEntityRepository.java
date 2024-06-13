@@ -1,6 +1,6 @@
-package com.prosilion.superconductor.repository.join.generic;
+package com.prosilion.superconductor.repository.join.standard;
 
-import com.prosilion.superconductor.entity.join.generic.EventEntityGeohashTagEntity;
+import com.prosilion.superconductor.entity.join.standard.EventEntityGeohashTagEntity;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
 import org.springframework.stereotype.Repository;
 

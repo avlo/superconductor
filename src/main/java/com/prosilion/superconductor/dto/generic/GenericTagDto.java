@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.dto.generic;
 
-import com.prosilion.superconductor.dto.standard.ElementAttributeDto;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.dto.zap;
 
-import com.prosilion.superconductor.dto.classified.RelaysTagDto;
+import com.prosilion.superconductor.dto.standard.RelaysTagDto;
 import com.prosilion.superconductor.entity.zap.ZapRequestEventEntity;
 import lombok.Getter;
 import nostr.event.impl.ZapRequest;

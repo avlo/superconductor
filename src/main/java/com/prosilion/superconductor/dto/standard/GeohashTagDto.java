@@ -1,7 +1,7 @@
-package com.prosilion.superconductor.dto.generic;
+package com.prosilion.superconductor.dto.standard;
 
 import com.prosilion.superconductor.dto.AbstractTagDto;
-import com.prosilion.superconductor.entity.generic.GeohashTagEntity;
+import com.prosilion.superconductor.entity.standard.GeohashTagEntity;
 import lombok.NonNull;
 import nostr.event.tag.GeohashTag;
 

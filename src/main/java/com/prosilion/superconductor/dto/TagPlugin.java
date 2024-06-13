@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface TagModule<
+public interface TagPlugin<
     P extends BaseTag,
     Q extends AbstractTagEntityRepository<R>, // tag table
     R extends AbstractTagEntity, // tag to return

@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.entity.join.generic;
+package com.prosilion.superconductor.entity.join.standard;
 
 import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import jakarta.persistence.Entity;

@@ -1,6 +1,6 @@
-package com.prosilion.superconductor.entity.generic;
+package com.prosilion.superconductor.entity.standard;
 
-import com.prosilion.superconductor.dto.generic.GeohashTagDto;
+import com.prosilion.superconductor.dto.standard.HashtagTagDto;
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
@@ -13,37 +13,37 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import nostr.event.BaseTag;
-import nostr.event.tag.GeohashTag;
+import nostr.event.tag.HashtagTag;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "geohash_tag")
-public class GeohashTagEntity extends AbstractTagEntity {
+@Table(name = "hashtag_tag")
+public class HashtagTagEntity extends AbstractTagEntity {
   //  TODO: below annotations and id necessary for compilation even thuogh same is defined in GenericTagEntity
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String location;
+  private String hashtagTag;
 
-  public GeohashTagEntity(@NonNull GeohashTag geohashTag) {
-    this.location = geohashTag.getLocation();
-  }
-
-  @Override
-  public String getCode() {
-    return "g";
+  public HashtagTagEntity(@NonNull HashtagTag hashtagTag) {
+    this.hashtagTag = hashtagTag.getHashTag();
   }
 
   @Override
   public BaseTag getAsBaseTag() {
-    return new GeohashTag(location);
+    return new HashtagTag(hashtagTag);
+  }
+
+  @Override
+  public String getCode() {
+    return "t";
   }
 
   @Override
   public AbstractTagDto convertEntityToDto() {
-    return new GeohashTagDto(new GeohashTag(location));
+    return new HashtagTagDto(new HashtagTag(hashtagTag));
   }
 }

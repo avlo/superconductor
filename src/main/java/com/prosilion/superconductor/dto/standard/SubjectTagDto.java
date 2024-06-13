@@ -1,6 +1,7 @@
-package com.prosilion.superconductor.dto;
+package com.prosilion.superconductor.dto.standard;
 
-import com.prosilion.superconductor.entity.SubjectTagEntity;
+import com.prosilion.superconductor.dto.AbstractTagDto;
+import com.prosilion.superconductor.entity.standard.SubjectTagEntity;
 import lombok.NonNull;
 import nostr.event.tag.SubjectTag;
 

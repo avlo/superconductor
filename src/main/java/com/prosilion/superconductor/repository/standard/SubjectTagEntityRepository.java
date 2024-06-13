@@ -1,6 +1,7 @@
-package com.prosilion.superconductor.repository;
+package com.prosilion.superconductor.repository.standard;
 
-import com.prosilion.superconductor.entity.SubjectTagEntity;
+import com.prosilion.superconductor.entity.standard.SubjectTagEntity;
+import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

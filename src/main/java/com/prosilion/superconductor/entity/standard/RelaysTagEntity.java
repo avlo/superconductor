@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.entity.classified;
+package com.prosilion.superconductor.entity.standard;
 
 import jakarta.persistence.*;
 import lombok.Getter;

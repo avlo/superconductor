@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.dto.standard;
+package com.prosilion.superconductor.dto.generic;
 
 import com.prosilion.superconductor.entity.generic.ElementAttributeEntity;
 import lombok.Getter;

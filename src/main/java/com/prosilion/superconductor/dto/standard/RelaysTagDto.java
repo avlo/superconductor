@@ -1,6 +1,6 @@
-package com.prosilion.superconductor.dto.classified;
+package com.prosilion.superconductor.dto.standard;
 
-import com.prosilion.superconductor.entity.classified.RelaysTagEntity;
+import com.prosilion.superconductor.entity.standard.RelaysTagEntity;
 import nostr.base.ElementAttribute;
 import nostr.base.Relay;
 import nostr.event.tag.RelaysTag;

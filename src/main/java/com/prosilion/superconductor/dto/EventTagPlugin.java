@@ -15,19 +15,19 @@ import org.springframework.stereotype.Component;
 @Setter
 @Getter
 @Component
-public class EventTagModule<
+public class EventTagPlugin<
     P extends EventTag,
     Q extends EventTagEntityRepository<R>,
     R extends EventTagEntity,
     S extends EventEntityEventTagEntity,
     U extends EventEntityEventTagEntityRepository<S>>
-    implements TagModule<P, Q, R, S, U> {
+    implements TagPlugin<P, Q, R, S, U> {
 
   private final EventTagEntityRepository<R> eventTagEntityRepository;
   private final EventEntityEventTagEntityRepository<S> join;
 
   @Autowired
-  public EventTagModule(@NonNull EventTagEntityRepository<R> eventTagEntityRepository, @NonNull EventEntityEventTagEntityRepository<S> join) {
+  public EventTagPlugin(@NonNull EventTagEntityRepository<R> eventTagEntityRepository, @NonNull EventEntityEventTagEntityRepository<S> join) {
     this.eventTagEntityRepository = eventTagEntityRepository;
     this.join = join;
   }

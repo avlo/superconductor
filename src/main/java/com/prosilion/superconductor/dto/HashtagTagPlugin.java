@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.dto.generic.HashtagTagDto;
-import com.prosilion.superconductor.entity.generic.HashtagTagEntity;
-import com.prosilion.superconductor.entity.join.generic.EventEntityHashtagTagEntity;
-import com.prosilion.superconductor.repository.generic.HashtagTagEntityRepository;
-import com.prosilion.superconductor.repository.join.generic.EventEntityHashtagTagEntityRepository;
+import com.prosilion.superconductor.dto.standard.HashtagTagDto;
+import com.prosilion.superconductor.entity.standard.HashtagTagEntity;
+import com.prosilion.superconductor.entity.join.standard.EventEntityHashtagTagEntity;
+import com.prosilion.superconductor.repository.standard.HashtagTagEntityRepository;
+import com.prosilion.superconductor.repository.join.standard.EventEntityHashtagTagEntityRepository;
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.NonNull;
@@ -16,19 +16,19 @@ import org.springframework.stereotype.Component;
 @Setter
 @Getter
 @Component
-public class HashtagTagModule<
+public class HashtagTagPlugin<
     P extends HashtagTag,
     Q extends HashtagTagEntityRepository<R>,
     R extends HashtagTagEntity,
     S extends EventEntityHashtagTagEntity,
     U extends EventEntityHashtagTagEntityRepository<S>>
-    implements TagModule<P, Q, R, S, U> {
+    implements TagPlugin<P, Q, R, S, U> {
 
   private final HashtagTagEntityRepository<R> hashtagTagEntityRepository;
   private final EventEntityHashtagTagEntityRepository<S> join;
 
   @Autowired
-  public HashtagTagModule(@Nonnull HashtagTagEntityRepository<R> hashtagTagEntityRepository, @NonNull EventEntityHashtagTagEntityRepository<S> join) {
+  public HashtagTagPlugin(@Nonnull HashtagTagEntityRepository<R> hashtagTagEntityRepository, @NonNull EventEntityHashtagTagEntityRepository<S> join) {
     this.hashtagTagEntityRepository = hashtagTagEntityRepository;
     this.join = join;
   }

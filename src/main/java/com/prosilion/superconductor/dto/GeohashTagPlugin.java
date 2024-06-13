@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.dto.generic.GeohashTagDto;
-import com.prosilion.superconductor.entity.generic.GeohashTagEntity;
-import com.prosilion.superconductor.entity.join.generic.EventEntityGeohashTagEntity;
-import com.prosilion.superconductor.repository.generic.GeohashTagEntityRepository;
-import com.prosilion.superconductor.repository.join.generic.EventEntityGeohashTagEntityRepository;
+import com.prosilion.superconductor.dto.standard.GeohashTagDto;
+import com.prosilion.superconductor.entity.standard.GeohashTagEntity;
+import com.prosilion.superconductor.entity.join.standard.EventEntityGeohashTagEntity;
+import com.prosilion.superconductor.repository.standard.GeohashTagEntityRepository;
+import com.prosilion.superconductor.repository.join.standard.EventEntityGeohashTagEntityRepository;
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.NonNull;
@@ -16,19 +16,19 @@ import org.springframework.stereotype.Component;
 @Setter
 @Getter
 @Component
-public class GeohashTagModule<
+public class GeohashTagPlugin<
     P extends GeohashTag,
     Q extends GeohashTagEntityRepository<R>,
     R extends GeohashTagEntity,
     S extends EventEntityGeohashTagEntity,
     U extends EventEntityGeohashTagEntityRepository<S>>
-    implements TagModule<P, Q, R, S, U> {
+    implements TagPlugin<P, Q, R, S, U> {
 
   private final GeohashTagEntityRepository<R> geohashTagEntityRepository;
   private final EventEntityGeohashTagEntityRepository<S> join;
 
   @Autowired
-  public GeohashTagModule(@Nonnull GeohashTagEntityRepository<R> geohashTagEntityRepository, @NonNull EventEntityGeohashTagEntityRepository<S> join) {
+  public GeohashTagPlugin(@Nonnull GeohashTagEntityRepository<R> geohashTagEntityRepository, @NonNull EventEntityGeohashTagEntityRepository<S> join) {
     this.geohashTagEntityRepository = geohashTagEntityRepository;
     this.join = join;
   }

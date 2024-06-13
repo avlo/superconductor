@@ -16,19 +16,19 @@ import org.springframework.stereotype.Component;
 @Setter
 @Getter
 @Component
-public class PriceTagModule<
+public class PriceTagPlugin<
     P extends PriceTag,
     Q extends PriceTagEntityRepository<R>,
     R extends PriceTagEntity,
     S extends EventEntityPriceTagEntity,
     U extends EventEntityPriceTagEntityRepository<S>>
-    implements TagModule<P, Q, R, S, U> {
+    implements TagPlugin<P, Q, R, S, U> {
 
   private final PriceTagEntityRepository<R> priceTagEntityRepository;
   private final EventEntityPriceTagEntityRepository<S> join;
 
   @Autowired
-  public PriceTagModule(@Nonnull PriceTagEntityRepository<R> priceTagEntityRepository, @NonNull EventEntityPriceTagEntityRepository<S> join) {
+  public PriceTagPlugin(@Nonnull PriceTagEntityRepository<R> priceTagEntityRepository, @NonNull EventEntityPriceTagEntityRepository<S> join) {
     this.priceTagEntityRepository = priceTagEntityRepository;
     this.join = join;
   }

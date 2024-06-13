@@ -1,6 +1,6 @@
-package com.prosilion.superconductor.repository.generic;
+package com.prosilion.superconductor.repository.standard;
 
-import com.prosilion.superconductor.entity.generic.HashtagTagEntity;
+import com.prosilion.superconductor.entity.standard.HashtagTagEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import org.springframework.stereotype.Repository;
 

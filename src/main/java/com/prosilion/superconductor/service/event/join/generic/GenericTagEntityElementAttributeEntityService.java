@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.event.join.generic;
 
-import com.prosilion.superconductor.dto.standard.ElementAttributeDto;
+import com.prosilion.superconductor.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.entity.generic.ElementAttributeEntity;
 import com.prosilion.superconductor.entity.join.generic.GenericTagEntityElementAttributeEntity;
 import com.prosilion.superconductor.repository.generic.ElementAttributeEntityRepository;
@@ -51,16 +51,4 @@ public class GenericTagEntityElementAttributeEntityService {
             genericTagId,
             elementAttributeEntity.getId()));
   }
-
-  //  private Map<Character, String> mapAtts(GenericTag gTag) {
-//    return Map.of(gTag.getCode().charAt(0), gTag.getAttributes().get(0).getValue().toString());
-//  }
-//
-//  private List<GenericTagDto> createDtos(List<Map<Character, String>> list) {
-//    return list.stream().flatMap(tag -> tag.entrySet().stream()).map(this::createDto).toList();
-//  }
-//
-//  private GenericTagDto createDto(Map.Entry<Character, String> s) {
-//    return genericTagDtoFactory.createDto(s.getKey(), s.getValue());
-//  }
 }

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.superconductor.dto.TagModule;
+import com.prosilion.superconductor.dto.TagPlugin;
 import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
@@ -21,21 +21,21 @@ public class ConcreteTagEntitiesService<
     R extends AbstractTagEntity,
     S extends EventEntityAbstractTagEntity,
     U extends EventEntityAbstractTagEntityRepository<S>> {
-  private final List<TagModule<P, Q, R, S, U>> tagModules;
+  private final List<TagPlugin<P, Q, R, S, U>> tagPlugins;
 
   @Autowired
-  public ConcreteTagEntitiesService(List<TagModule<P, Q, R, S, U>> tagModules) {
-    this.tagModules = tagModules;
+  public ConcreteTagEntitiesService(List<TagPlugin<P, Q, R, S, U>> tagPlugins) {
+    this.tagPlugins = tagPlugins;
   }
 
   public List<AbstractTagEntity> getTags(Long eventId) {
-    return tagModules.parallelStream().map(tagModule ->
+    return tagPlugins.parallelStream().map(tagModule ->
             tagModule.getTags(eventId))
         .flatMap(List::stream).collect(Collectors.toList());
   }
 
   public void saveTags(Long eventId, List<P> baseTags) {
-    tagModules.parallelStream().forEach(module ->
+    tagPlugins.parallelStream().forEach(module ->
         baseTags.stream().filter(tags ->
                 tags.getCode().equalsIgnoreCase(module.getCode()))
             .forEach(tag ->

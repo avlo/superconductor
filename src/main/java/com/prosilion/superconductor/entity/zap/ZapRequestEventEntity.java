@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.entity.zap;
 
-import com.prosilion.superconductor.dto.classified.RelaysTagDto;
+import com.prosilion.superconductor.dto.standard.RelaysTagDto;
 import com.prosilion.superconductor.dto.zap.ZapRequestDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

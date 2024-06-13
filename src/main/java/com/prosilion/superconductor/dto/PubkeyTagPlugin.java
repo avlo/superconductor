@@ -16,19 +16,19 @@ import org.springframework.stereotype.Component;
 @Setter
 @Getter
 @Component
-public class PubkeyTagModule<
+public class PubkeyTagPlugin<
     P extends PubKeyTag,
     Q extends PubkeyTagEntityRepository<R>,
     R extends PubkeyTagEntity,
     S extends EventEntityPubkeyTagEntity,
     U extends EventEntityPubkeyTagEntityRepository<S>>
-    implements TagModule<P, Q, R, S, U> {
+    implements TagPlugin<P, Q, R, S, U> {
 
   private final PubkeyTagEntityRepository<R> pubkeyTagEntityRepository;
   private final EventEntityPubkeyTagEntityRepository<S> join;
 
   @Autowired
-  public PubkeyTagModule(@Nonnull PubkeyTagEntityRepository<R> pubkeyTagEntityRepository, @NonNull EventEntityPubkeyTagEntityRepository<S> join) {
+  public PubkeyTagPlugin(@Nonnull PubkeyTagEntityRepository<R> pubkeyTagEntityRepository, @NonNull EventEntityPubkeyTagEntityRepository<S> join) {
     this.pubkeyTagEntityRepository = pubkeyTagEntityRepository;
     this.join = join;
   }

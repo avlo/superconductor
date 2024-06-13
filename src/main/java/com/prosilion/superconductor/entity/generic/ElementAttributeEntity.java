@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.entity.generic;
 
-import com.prosilion.superconductor.dto.standard.ElementAttributeDto;
+import com.prosilion.superconductor.dto.generic.ElementAttributeDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

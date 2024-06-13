@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.event.join.generic;
 
 import com.prosilion.superconductor.dto.generic.GenericTagDto;
-import com.prosilion.superconductor.dto.standard.ElementAttributeDto;
+import com.prosilion.superconductor.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.entity.join.generic.EventEntityGenericTagEntity;
 import com.prosilion.superconductor.repository.generic.GenericTagEntityRepository;

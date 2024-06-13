@@ -1,7 +1,7 @@
-package com.prosilion.superconductor.dto.generic;
+package com.prosilion.superconductor.dto.standard;
 
 import com.prosilion.superconductor.dto.AbstractTagDto;
-import com.prosilion.superconductor.entity.generic.HashtagTagEntity;
+import com.prosilion.superconductor.entity.standard.HashtagTagEntity;
 import nostr.event.tag.HashtagTag;
 
 public class HashtagTagDto implements AbstractTagDto {

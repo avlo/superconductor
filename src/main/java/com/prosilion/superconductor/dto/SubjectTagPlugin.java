@@ -1,9 +1,10 @@
 package com.prosilion.superconductor.dto;
 
-import com.prosilion.superconductor.entity.SubjectTagEntity;
-import com.prosilion.superconductor.entity.join.EventEntitySubjectTagEntity;
-import com.prosilion.superconductor.repository.SubjectTagEntityRepository;
-import com.prosilion.superconductor.repository.join.EventEntitySubjectTagEntityRepository;
+import com.prosilion.superconductor.dto.standard.SubjectTagDto;
+import com.prosilion.superconductor.entity.standard.SubjectTagEntity;
+import com.prosilion.superconductor.entity.join.standard.EventEntitySubjectTagEntity;
+import com.prosilion.superconductor.repository.standard.SubjectTagEntityRepository;
+import com.prosilion.superconductor.repository.join.standard.EventEntitySubjectTagEntityRepository;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -14,19 +15,19 @@ import org.springframework.stereotype.Component;
 @Setter
 @Getter
 @Component
-public class SubjectTagModule<
+public class SubjectTagPlugin<
     P extends SubjectTag,
     Q extends SubjectTagEntityRepository<R>,
     R extends SubjectTagEntity,
     S extends EventEntitySubjectTagEntity,
     U extends EventEntitySubjectTagEntityRepository<S>>
-    implements TagModule<P, Q, R, S, U> {
+    implements TagPlugin<P, Q, R, S, U> {
 
   private final SubjectTagEntityRepository<R> subjectTagEntityRepository;
   private final EventEntitySubjectTagEntityRepository<S> join;
 
   @Autowired
-  public SubjectTagModule(@NonNull SubjectTagEntityRepository<R> subjectTagEntityRepository, @NonNull EventEntitySubjectTagEntityRepository<S> join) {
+  public SubjectTagPlugin(@NonNull SubjectTagEntityRepository<R> subjectTagEntityRepository, @NonNull EventEntitySubjectTagEntityRepository<S> join) {
     this.subjectTagEntityRepository = subjectTagEntityRepository;
     this.join = join;
   }

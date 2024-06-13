@@ -31,21 +31,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext
 class ClassifiedEventEntityServiceIT {
-  public static final PublicKey EVENT_PUBKEY = new PublicKey("bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984");
-  public static final PubKeyTag P_TAG = new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76985"));
-  public static final EventTag E_TAG = new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4347");
+  public static final String EVENT_HEX = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+  public static final String PTAG_HEX = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76985";
+  public static final String ETAG_HEX = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4347";
+
+  public static final PublicKey EVENT_PUBKEY = new PublicKey(EVENT_HEX);
+  public static final PubKeyTag P_TAG = new PubKeyTag(new PublicKey(PTAG_HEX));
+  public static final EventTag E_TAG = new EventTag(ETAG_HEX);
 
   public static final SubjectTag SUBJECT_TAG = new SubjectTag("Test Subject Tag");
   public static final GeohashTag G_TAG = new GeohashTag("Test Geohash Tag");
   public static final HashtagTag T_TAG = new HashtagTag("Test Hashtag Tag");
 
   public static final BigDecimal NUMBER = new BigDecimal("2.71");
-  public static final String CURRENCY = "BTC";
   public static final String FREQUENCY = "NANOSECOND";
+  public static final String CURRENCY = "BTC";
   public static final PriceTag PRICE_TAG = new PriceTag(NUMBER, CURRENCY, FREQUENCY);
 
-  public static final String CONTENT = "Test Content";
   public static final Integer CLASSIFIED_LISTING_KIND = 30402;
+  public static final String CONTENT = "Test Content";
   public static final String CLASSIFIED_LISTING_TITLE = "classified listing title";
   public static final String CLASSIFIED_LISTING_SUMMARY = "classified listing summary";
   public static final String CLASSIFIED_LISTING_PUBLISHED_AT = "1687765220";

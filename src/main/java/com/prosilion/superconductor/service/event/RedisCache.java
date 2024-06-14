@@ -11,6 +11,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
+// TODO: caching currently non-critical although ready for implementation anytime
 public class RedisCache<T extends GenericEvent> {
   private final EventEntityService<T> eventEntityService;
 

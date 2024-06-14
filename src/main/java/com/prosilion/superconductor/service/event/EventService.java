@@ -12,16 +12,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class EventService<T extends GenericEvent> {
   private final NotifierService<T> notifierService;
-  private final RedisEventEntityService<T> redisEventEntityService;
+  private final RedisCache<T> redisCache;
 
   @Autowired
-  public EventService(NotifierService<T> notifierService, RedisEventEntityService<T> redisEventEntityService) {
+  public EventService(NotifierService<T> notifierService, RedisCache<T> redisCache) {
     this.notifierService = notifierService;
-    this.redisEventEntityService = redisEventEntityService;
+    this.redisCache = redisCache;
   }
 
   protected Long saveEventEntity(@NonNull T event) {
-    return redisEventEntityService.saveEventEntity(event);
+    return redisCache.saveEventEntity(event);
   }
 
   protected void publishEvent(@NonNull Long id, @NonNull T event) {

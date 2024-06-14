@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service;
 
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
-import com.prosilion.superconductor.service.event.RedisEventEntityService;
+import com.prosilion.superconductor.service.event.RedisCache;
 import lombok.NonNull;
 import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotifierService<T extends GenericEvent> {
   private final SubscriberNotifierService<T> subscriberNotifierService;
-  private final RedisEventEntityService<T> redisEventEntityService;
+  private final RedisCache<T> redisCache;
 
   @Autowired
-  public NotifierService(SubscriberNotifierService<T> subscriberNotifierService, RedisEventEntityService<T> redisEventEntityService) {
+  public NotifierService(SubscriberNotifierService<T> subscriberNotifierService, RedisCache<T> redisCache) {
     this.subscriberNotifierService = subscriberNotifierService;
-    this.redisEventEntityService = redisEventEntityService;
+    this.redisCache = redisCache;
   }
 
   public void nostrEventHandler(@NonNull AddNostrEvent<T> addNostrEvent) {
@@ -23,7 +23,7 @@ public class NotifierService<T extends GenericEvent> {
   }
 
   public void subscriptionEventHandler(@NonNull Long subscriberId) {
-    redisEventEntityService.getAll().forEach((kind, eventMap) ->
+    redisCache.getAll().forEach((kind, eventMap) ->
         eventMap.forEach((eventId, event) ->
             subscriberNotifierService.subscriptionEventHandler(subscriberId, new AddNostrEvent<>(event))));
   }

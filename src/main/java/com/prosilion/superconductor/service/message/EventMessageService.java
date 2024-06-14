@@ -37,18 +37,19 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
     var kind = ((GenericEvent) eventMessage.getEvent()).getKind();
     log.info("EVENT message type: {}", eventMessage.getEvent());
     try {
-      processOkClientResponse(sessionId, eventMessage);
-      createEventService(Kind.valueOf(kind), eventMessage);
+      determineOkClientResponse(sessionId, eventMessage);
+      processIncomingMessage(Kind.valueOf(kind), eventMessage);
     } catch (JsonProcessingException e) {
       log.info("FAILED event message: {}", e.getMessage());
     }
   }
 
-  private void createEventService(Kind kind, T eventMessage) {
+  private void processIncomingMessage(Kind kind, T eventMessage) {
     kindEventServiceMap.get(kind).processIncoming(eventMessage);
   }
 
-  private void processOkClientResponse(String sessionId, T eventMessage) throws JsonProcessingException {
+  private void determineOkClientResponse(String sessionId, T eventMessage) throws JsonProcessingException {
+    // TODO: should probably have message validation stuff here
     okResponseService.processOkClientResponse(sessionId, eventMessage);
   }
 

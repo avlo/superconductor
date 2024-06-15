@@ -21,9 +21,17 @@
 
 ## NIPS
   #### Supported
-  - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol)
+  - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol & Standard Tags)
+  - [NIP-10](https://nostr-nips.com/nip-10) (Marked "e" tags)
   - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
-  - [NIP-14](https://nostr-nips.com/nip-14) (Subjects)
+  - [NIP-11](https://nostr-nips.com/nip-12) (Generic Tag Queries)
+  - [NIP-14](https://nostr-nips.com/nip-14) (Subject tag in Text events)
+  - [NIP-16](https://nostr-nips.com/nip-16) (Event treatment)
+  - [NIP-19](https://nostr-nips.com/nip-19) (Bech-32 encoded entities)
+  - [NIP-19](https://nostr-nips.com/nip-20) (Command Results)
+  - [NIP-21](https://nostr-nips.com/nip-21) (URI scheme)
+  - [NIP-31](https://nostr-nips.com/nip-31) (Unknown event kinds)
+  - [NIP-22](https://nostr-nips.com/nip-22) (Event "created_at" limits)
   - [NIP-57](https://nostr-nips.com/nip-57) (Lightning Zaps)
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
     - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
@@ -125,77 +133,6 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 <br>
 <hr style="border:2px solid grey">
 
-# Creating relay event-handlers
+# Hooking new/additional/custom event types into to SuperConductor
 
-The SuperConductor framework handles Nostr events via _**event services**_ for related _**event types**_.  These event types are structured (and extended) as defined in tcheeric's [nostr-java API](https://github.com/tcheeric/nostr-java).  After implementing the below two considerations, SuperConductor will handle the rest.
-
-## Step 1 of 2: Create a new event type: _(the Object Oriented way)_
-_(note: It is highly recommended to check tcheeric's [nostr-java-event](https://github.com/tcheeric/nostr-java/tree/main/nostr-java-event) module for an already-existing-and-pertinent event type for your needs **before** creating your own event type.  If you find what you need there, you can skip this section and jump directly to _**[Create a new event-handler](step-1-of-2:-create-a-new-event-handler/service:-_(the-polymorphic-way)_)**_)_
-
-Define a new class for your event, minimally as follows:
-
-```java
-import nostr.base.PublicKey;
-import nostr.event.BaseTag;
-import nostr.event.Kind;
-import nostr.event.impl.GenericEvent;
-
-public class YourNewEvent extends GenericEvent {                                  <--- extend GenericEvent
-  public YourNewEvent(PublicKey pubKey, List<BaseTag> tags, String content) {     <--- provide minimal args constructor
-    super(pubKey, Kind.YOUR_NEW_EVENT_KIND, tags, content);                       <--- call parent constructor passing YOUR_NEW_EVENT_KIND
-  }
-}
-```
-## Step 2 of 2: Create a new event handler/service: _(the Polymorphic way)_
-
-Define a new class for your service which implements _[EventServiceIF\<T>](src/main/java/com/prosilion/superconductor/service/event/EventServiceIF.java)_ interface:
-
-```java
-public interface EventServiceIF<T extends EventMessage> {
-  void processIncoming(T eventMessage);
-  Kind getKind();
-}
-```
-
-for example (_leveraging [decorator pattern](https://www.digitalocean.com/community/tutorials/decorator-design-pattern-in-java-example)_):
-
-```java
-import org.springframework.stereotype.Service;
-
-@Service                                                                                 <--- SpringWebMVC managed bean
-public class YourNewEventService<T extends EventMessage> implements EventServiceIF<T> {  <--- implement EventServiceIF<T> interface
-  public final Kind kind = Kind.YOUR_NEW_EVENT_KIND;                                     <--- define YOUR_NEW_EVENT_KIND
-  private final EventService<YourNewEvent> eventService;
-
-  @Autowired
-  public YourNewEventService(EventService<YourNewEvent> eventService) {       <--- constructor EventService<YourNewEvent> bean parameter
-    this.eventService = eventService;                                              provides decorator behavior
-  }
-
-  @Override
-  public void processIncoming(T eventMessage) {                               <--- implement EventServiceIF<T> interface method
-    GenericEvent event = (GenericEvent) eventMessage.getEvent();              <--- example business logic ┐
-    event.setNip(YOUR_NIP_VALUE);                                                                         |
-    event.setKind(Kind.YOUR_NEW_EVENT_KIND.getValue());                                                   |
-    YourNewEvent yourNewEvent = new YourNewEvent(                                                         |
-        event.getPubKey(),                                                                                |
-        event.getTags(),                                                                                  |
-        event.getContent()                                                   <----------------------------┘
-    );
-    Long id = eventService.saveEventEntity(event);                           <--- save to DB
-    yourNewEvent.setId(event.getId());                                       <--- update event id
-    eventService.publishEvent(id, yourNewEvent);                             <--- publish event to service
-  }
-}
-```
-After recompiling and redeploying SuperConductor, your service should now be available and active.
-<br>
-<hr style="border:2px solid grey">
-
-# Hooking event types into to SuperConductor DB
-
-For most/canonical Nostr events (as per [NIP01 spec: Basic protocol flow description, Events, Signatures and Tags](https://nostr-nips.com/nip-01)), SuperConductor will likely already handle all necessary event storage and retrieval considerations.  Otherwise, the following is a HOW-TO for new/exceptional cases:
-
-Under Construction
-
-<img src="https://media.tenor.com/MRCIli40TYoAAAAi/under-construction90s-90s.gif" width="30"/>
+For most/canonical Nostr events (as per [NIP01 spec: Basic protocol flow description, Events, Signatures and Tags](https://nostr-nips.com/nip-01)), SuperConductor will likely already handle all necessary event storage and retrieval considerations.  

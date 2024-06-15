@@ -30,13 +30,13 @@ public class ConcreteTagEntitiesService<
   }
 
   public List<AbstractTagEntity> getTags(@NonNull Long eventId) {
-    return tagPlugins.parallelStream().map(tagModule ->
+    return tagPlugins.stream().map(tagModule ->
             tagModule.getTags(eventId))
         .flatMap(List::stream).collect(Collectors.toList());
   }
 
   public void saveTags(@NonNull Long eventId, @NonNull List<P> baseTags) {
-    tagPlugins.parallelStream().forEach(module ->
+    tagPlugins.forEach(module ->
         baseTags.stream().filter(tags ->
                 tags.getCode().equalsIgnoreCase(module.getCode()))
             .forEach(tag ->

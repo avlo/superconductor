@@ -75,7 +75,7 @@ public class EventEntityService<T extends GenericEvent> {
   }
 
   public Map<Kind, Map<Long, T>> getAll() {
-    return eventEntityRepository.findAll().parallelStream()
+    return eventEntityRepository.findAll().stream()
         .map(this::populateEventEntity)
         .collect(Collectors.groupingBy(eventEntity -> Kind.valueOf(eventEntity.getKind()),
             Collectors.toMap(EventEntity::getId, EventEntity::convertEntityToDto)));
@@ -94,7 +94,7 @@ public class EventEntityService<T extends GenericEvent> {
 
   private @NotNull EventEntity populateEventEntity(EventEntity eventEntity) {
     List<BaseTag> concreteTags = concreteTagEntitiesService.getTags(
-            eventEntity.getId()).parallelStream()
+            eventEntity.getId()).stream()
         .map(AbstractTagEntity::getAsBaseTag).toList();
 
     List<BaseTag> genericTags = genericTagEntitiesService.getGenericTags(

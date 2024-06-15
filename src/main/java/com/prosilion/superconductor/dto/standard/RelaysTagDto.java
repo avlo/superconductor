@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import nostr.event.tag.RelaysTag;
 
+@Getter
 public class RelaysTagDto implements AbstractTagDto {
-  @Getter
   private final RelaysTag relaysTag;
 
   public RelaysTagDto(@NonNull RelaysTag relaysTag) {

@@ -24,7 +24,7 @@ public class RedisCache<T extends GenericEvent> {
     return eventEntityService.getAll();
   }
 
-  protected Long saveEventEntity(@NonNull GenericEvent event) {
-    return eventEntityService.saveEventEntity(event);
+  protected void saveEventEntity(@NonNull GenericEvent event) {
+    eventEntityService.saveEventEntity(event);
   }
 }

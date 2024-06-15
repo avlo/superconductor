@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import nostr.event.tag.PriceTag;
 
+@Getter
 public class PriceTagDto implements AbstractTagDto {
-  @Getter
   private final PriceTag priceTag;
 
   public PriceTagDto(@NonNull PriceTag priceTag) {

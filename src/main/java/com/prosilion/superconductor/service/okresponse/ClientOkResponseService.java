@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class ClientOkResponseService<T extends EventMessage> {
+public class ClientOkResponseService {
   private final ApplicationEventPublisher publisher;
 
   @Autowired
@@ -19,7 +19,7 @@ public class ClientOkResponseService<T extends EventMessage> {
     this.publisher = publisher;
   }
 
-  public void processOkClientResponse(@NonNull String sessionId, @NonNull T eventMessage) throws JsonProcessingException {
+  public void processOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage) throws JsonProcessingException {
     log.info("Processing event message: {}", eventMessage.getEvent());
     publisher.publishEvent(
         new OkClientResponse(sessionId, (GenericEvent) eventMessage.getEvent()));

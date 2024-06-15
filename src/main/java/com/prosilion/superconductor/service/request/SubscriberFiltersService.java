@@ -5,7 +5,6 @@ import jakarta.persistence.NoResultException;
 import lombok.NonNull;
 import nostr.event.impl.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,12 +34,12 @@ public class SubscriberFiltersService {
     return subscriberFiltersManager.getSubscriberFilters(subscriberFilter);
   }
 
-  @Async
+  //  @Async
   public void save(@NonNull Long subscriberId, @NonNull List<Filters> filtersList) {
     subscriberFiltersManager.saveFilters(subscriberId, filtersList);
   }
 
-  @Async
+  //  @Async
   public void deleteBySubscriberId(@NonNull Long subscriberId) {
     subscriberFiltersManager.removeAllFilters(subscriberId);
   }

@@ -131,12 +131,12 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 <br>
 <hr style="border:2px solid grey">
 
-# Adding new event/custom types to SuperConductor
+# Adding new/custom events to SuperConductor
 
 For Nostr clients generating canonical Nostr JSON (as defined in [NIP01 spec: Basic protocol flow description, Events, Signatures and Tags](https://nostr-nips.com/nip-01)), SuperConductor will automatically recognize those JSON events- including their database storage, retrieval and subscriber notification.  No additional work or customization is necessary.
 <br>
 <hr style="border:2px solid grey">
 
-# Adding new/custom event tags to SuperConductor
+# Adding new/custom tags to SuperConductor
 
 SuperConductor supports any _**generic**_ tags automatically.  Otherwise, if custom tag structure is required, simply implement the [`TagPlugin`](https://github.com/avlo/superconductor/blob/master/src/main/java/com/prosilion/superconductor/dto/TagPlugin.java) interface and your custom tag implementation will automatically get included by SuperConductor after rebuilding and redeploying it.

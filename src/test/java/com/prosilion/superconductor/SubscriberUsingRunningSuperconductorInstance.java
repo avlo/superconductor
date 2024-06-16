@@ -13,6 +13,8 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.util.Scanner;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 @Slf4j
 /**
  * two modes:
@@ -39,29 +41,30 @@ import java.util.Scanner;
  */
 //@SpringBootTest
 class SubscriberUsingRunningSuperconductorInstance {
+  private final static String requestJson = "[\"REQ\",\"16b8772f38bbdee735445862065f34adad5d1522b08203d02b1d1b207a798c9a\",{\"ids\":[\"ba748cd29396fbbe613e6bc0e2472cd60e6815c62bc2b4db8d39e4b27f75f1a6\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
+
   private final static String SCHEME_WS = "ws";
   private final static String HOST = "localhost";
   private final static String PORT = "5555";
   private final static String WEBSOCKET_URL = SCHEME_WS + "://" + HOST + ":" + PORT;
 
-  private final static String requestJson = "[\"REQ\",\"16b8772f38bbdee735445862065f34adad5d1522b08203d02b1d1b207a798c9a\",{\"ids\":[\"ba748cd29396fbbe613e6bc0e2472cd60e6815c62bc2b4db8d39e4b27f75f1a6\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
+  WebSocketStompClient stompClient;
+  TextWebSocketHandler sessionHandler;
 
   @BeforeEach
   public void setup() {
+    WebSocketClient webSocketClient = new StandardWebSocketClient();
+    stompClient = new WebSocketStompClient(webSocketClient);
+    stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+    sessionHandler = new LocalWebSocketHandler();
   }
 
   @Test
   void shouldReceiveAMessageFromTheServer() {
-
-    WebSocketClient webSocketClient = new StandardWebSocketClient();
-
-    WebSocketStompClient stompClient = new WebSocketStompClient(webSocketClient);
-    stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
-    TextWebSocketHandler sessionHandler = new LocalWebSocketHandler();
-    stompClient.getWebSocketClient().execute(sessionHandler, WEBSOCKET_URL, requestJson);
-    stompClient.start();
-
+    assertDoesNotThrow(() -> {
+      stompClient.getWebSocketClient().execute(sessionHandler, WEBSOCKET_URL, requestJson);
+      stompClient.start();
+    });
     new Scanner(System.in).nextLine(); // Don't close immediately.
   }
 

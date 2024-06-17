@@ -14,13 +14,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static com.prosilion.superconductor.entity.EventEntityRepositoryIT.CONTENT;
-import static com.prosilion.superconductor.entity.EventEntityRepositoryIT.CREATED_AT;
-import static com.prosilion.superconductor.entity.EventEntityRepositoryIT.EVENT_ID;
-import static com.prosilion.superconductor.entity.EventEntityRepositoryIT.KIND;
-import static com.prosilion.superconductor.entity.EventEntityRepositoryIT.NIP;
-import static com.prosilion.superconductor.entity.EventEntityRepositoryIT.PUB_KEY;
-import static com.prosilion.superconductor.entity.EventEntityRepositoryIT.SIGNATURE;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,9 +26,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         type = FilterType.ASSIGNABLE_TYPE,
         classes = EventEntityRepository.class)
 )
-@Sql(scripts = {"/bulk_data.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
+@Sql(scripts = {"/event.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
+//@Sql(scripts = {"/cleanup_event.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @DirtiesContext
 class BulkEventEntityRepositoryIT {
+  public static final String SIGNATURE = "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546";
+  public static final String EVENT_ID = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+  public static final String PUB_KEY = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+  public static final String CONTENT = "1111111111";
+  public static final Integer KIND = 1;
+  public static final Integer NIP = 1;
+  public static final long CREATED_AT = 1717357053050L;
   @Autowired
   EventEntityRepository eventEntityRepository;
 

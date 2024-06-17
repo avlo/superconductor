@@ -17,15 +17,16 @@
   </parent>
 
   <properties>
+    <java.version>22</java.version>
     <spring-boot.version>3.2.4</spring-boot.version>
     <nostr-java.version>0.6</nostr-java.version>
 
-    <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
+    <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
     <h2.version>2.2.224</h2.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     <junit-jupiter.version>5.10.2</junit-jupiter.version>
-    <lombok.version>1.18.30</lombok.version>
-    <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
+    <lombok.version>1.18.32</lombok.version>
+    <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
     <mysql-connector-j.version>8.4.0</mysql-connector-j.version>
   </properties>
 

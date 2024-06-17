@@ -16,7 +16,8 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
-import java.util.Scanner;
+import java.util.concurrent.Executors;
+
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
@@ -37,6 +38,7 @@ class ReqMessageITRxR {
   public void setup() {
     reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
     reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
+
     reqTextHandler = new ReqMessageSocketHandler();
   }
 
@@ -45,13 +47,16 @@ class ReqMessageITRxR {
     System.out.println("****************");
     System.out.println("****************");
 
-    reqStompClient.getWebSocketClient().execute(reqTextHandler, WEBSOCKET_URL, "");
-    reqStompClient.start();
+    try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
-    System.out.println("awaiting events....");
-    System.out.println("****************");
-    System.out.println("****************");
-    new Scanner(System.in).nextLine();
+      var future1 = executor.submit(() -> reqStompClient.getWebSocketClient().execute(reqTextHandler, WEBSOCKET_URL, ""));
+      var future2 = executor.submit(() -> reqStompClient.start());
+
+      System.out.println("awaiting events....");
+      System.out.println("****************");
+      System.out.println("****************");
+    }
+//    new Scanner(System.in).nextLine();
   }
 
   class ReqMessageSocketHandler extends TextWebSocketHandler {

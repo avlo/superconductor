@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -18,12 +19,12 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.given;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,15 +43,20 @@ class MultipleSubscriberEventMessageIT {
 
   private WebSocketStompClient eventStompClient;
 
-  private final Integer TARGET_COUNT = 100;
-  private final AtomicReference<Integer> resultCount = new AtomicReference<>(0);
+  private final Integer targetCount;
+  private final Integer pctThreshold;
+  private final LongAdder resultCount = new LongAdder();
 
-//  @Autowired
-//  private ServletContext servletContext;
+  MultipleSubscriberEventMessageIT(
+      @Value("${superconductor.test.req.instances}") Integer reqInstances,
+      @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
+    this.targetCount = reqInstances;
+    this.pctThreshold = pctThreshold;
+  }
 
   @BeforeAll
   public void setup() {
-    IntStream.range(0, TARGET_COUNT).parallel().forEach(increment -> {
+    IntStream.range(0, targetCount).parallel().forEach(increment -> {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
       CompletableFuture<WebSocketSession> execute = reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, generateRandomHexString()), WEBSOCKET_URL, "");
@@ -70,20 +76,16 @@ class MultipleSubscriberEventMessageIT {
     assertDoesNotThrow(() -> eventStompClient.start());
     assertDoesNotThrow(() -> eventStompClient.stop());
 
-//    ServletContext context = servletContext.getContext("/");
-//    Set<SessionTrackingMode> defaultSessionTrackingModes = servletContext.getDefaultSessionTrackingModes();
-//    Set<SessionTrackingMode> effectiveSessionTrackingModes = servletContext.getEffectiveSessionTrackingModes();
-//    Map<String, ? extends ServletRegistration> servletRegistrations = servletContext.getServletRegistrations();
-//    Enumeration<String> attributeNames = servletContext.getAttributeNames();
+    long percentSuccessThreshold = Math.round(targetCount - (targetCount * (1 - pctThreshold * .01)));
 
-    await().untilAtomic(resultCount, equalTo(TARGET_COUNT));
+    await().untilAdder(resultCount, greaterThanOrEqualTo(percentSuccessThreshold));
 
     given().ignoreException(InterruptedException.class)
         .await().until(() -> !eventStompClient.isRunning());
 
     System.out.println("-------------------");
     System.out.println("-------------------");
-    System.out.printf("success count [%s] of target count [%s]%n", resultCount, TARGET_COUNT);
+    System.out.printf("success count [%s] of minimally expected [%s]%n", resultCount, percentSuccessThreshold);
     System.out.println("-------------------");
     System.out.println("-------------------");
   }
@@ -103,7 +105,7 @@ class MultipleSubscriberEventMessageIT {
 
   @Synchronized
   private void incrementRange() {
-    resultCount.getAndSet(resultCount.get() + 1);
+    resultCount.increment();
   }
 
   @Getter

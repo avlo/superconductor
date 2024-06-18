@@ -1,7 +1,6 @@
 package com.prosilion.superconductor;
 
 import kotlin.jvm.Synchronized;
-import lombok.Getter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -16,13 +15,14 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
+import java.util.HexFormat;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,24 +45,24 @@ class MultipleSubscriberEventMessageIT {
   private final Integer TARGET_COUNT = 100;
   private final AtomicReference<Integer> resultCount = new AtomicReference<>(0);
 
-//  @Autowired
-//  private ServletContext servletContext;
 
   @BeforeAll
   public void setup() {
-    IntStream.range(1, TARGET_COUNT).parallel().forEach(increment -> {
-      final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-      reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-      CompletableFuture<WebSocketSession> execute = reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, generateRandomHexString()), WEBSOCKET_URL, "");
-      await().until(execute::isDone);
+    HexGenerator hexGenerator = new HexGenerator(32);
+    IntStream.range(0, TARGET_COUNT).parallel().forEach(_ -> {
+      final WebSocketStompClient reqStompClient = WebSocketStompClientFactory.getInstance();
+      CompletableFuture<WebSocketSession> reqExecute = reqStompClient
+          .getWebSocketClient().execute(
+              new ReqMessageSocketHandler(
+                  hexGenerator.generateRandomHexString()),
+              WEBSOCKET_URL, "");
+      await().until(reqExecute::isDone);
       reqStompClient.start();
     });
 
-    eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-    eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-    CompletableFuture<WebSocketSession> execute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), WEBSOCKET_URL, "");
-
-    await().until(execute::isDone);
+    eventStompClient = WebSocketStompClientFactory.getInstance();
+    CompletableFuture<WebSocketSession> eventExecute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), WEBSOCKET_URL, "");
+    await().until(eventExecute::isDone);
   }
 
   @Test
@@ -70,16 +70,7 @@ class MultipleSubscriberEventMessageIT {
     assertDoesNotThrow(() -> eventStompClient.start());
     assertDoesNotThrow(() -> eventStompClient.stop());
 
-//    ServletContext context = servletContext.getContext("/");
-//    Set<SessionTrackingMode> defaultSessionTrackingModes = servletContext.getDefaultSessionTrackingModes();
-//    Set<SessionTrackingMode> effectiveSessionTrackingModes = servletContext.getEffectiveSessionTrackingModes();
-//    Map<String, ? extends ServletRegistration> servletRegistrations = servletContext.getServletRegistrations();
-//    Enumeration<String> attributeNames = servletContext.getAttributeNames();
-
-    await().untilAtomic(resultCount, equalTo(TARGET_COUNT - 1));
-
-    given().ignoreException(InterruptedException.class)
-        .await().until(() -> !eventStompClient.isRunning());
+    await().untilAtomic(resultCount, equalTo(TARGET_COUNT));
 
     System.out.println("-------------------");
     System.out.println("-------------------");
@@ -88,7 +79,7 @@ class MultipleSubscriberEventMessageIT {
     System.out.println("-------------------");
   }
 
-  static class EventMessageSocketHandler extends TextWebSocketHandler {
+  private static class EventMessageSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
       session.sendMessage(new TextMessage(globalEventJson));
@@ -101,19 +92,10 @@ class MultipleSubscriberEventMessageIT {
     }
   }
 
-  @Synchronized
-  private void incrementRange() {
-    resultCount.getAndSet(resultCount.get() + 1);
-  }
-
-  @Getter
-  class ReqMessageSocketHandler extends TextWebSocketHandler {
-    private final Integer index;
-    private boolean value = false;
+  private class ReqMessageSocketHandler extends TextWebSocketHandler {
     private final String reqJson;
 
-    public ReqMessageSocketHandler(Integer index, String subId) {
-      this.index = index;
+    public ReqMessageSocketHandler(String subId) {
       reqJson = "[\"REQ\",\"" + subId + "\",{\"ids\":[\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
     }
 
@@ -125,20 +107,42 @@ class MultipleSubscriberEventMessageIT {
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
       assertEquals(globalEventJson, message.getPayload().toString());
-      value = true;
       incrementRange();
       session.close();
     }
   }
 
-  private static String generateRandomHexString() {
-    Random random = new Random();
-    StringBuilder hexString = new StringBuilder();
-    for (int i = 0; i < 32; i++) {
-      int randomNumber = random.nextInt(16); // Generate a random number between 0 and 15 (inclusive)
-      char hexDigit = (randomNumber < 10) ? (char) ('0' + randomNumber) : (char) ('a' + (randomNumber - 10));
-      hexString.append(hexDigit);
+  @Synchronized
+  private void incrementRange() {
+    resultCount.getAndSet(resultCount.get() + 1);
+  }
+
+  private static class HexGenerator {
+    private int hexSeed;
+
+    public HexGenerator(int size) {
+      StringBuilder hexStringBuilder = null;
+      for (int i = 0; i < size; i++) {
+//        below starts with all random digits
+        int randomNumber = new Random().nextInt(16);
+        char hexDigit = (randomNumber < 10) ? (char) ('0' + randomNumber) : (char) ('a' + (randomNumber - 10));
+        hexStringBuilder = new StringBuilder();
+        hexStringBuilder.append(hexDigit);
+      }
+      hexSeed = HexFormat.fromHexDigits(Objects.requireNonNull(hexStringBuilder));
     }
-    return hexString.toString();
+
+    public String generateRandomHexString() {
+      return Integer.toHexString(hexSeed++);
+    }
+  }
+
+  static class WebSocketStompClientFactory {
+    private static final MappingJackson2MessageConverter mappingJackson2MessageConverter = new MappingJackson2MessageConverter();
+    static WebSocketStompClient getInstance() {
+      WebSocketStompClient webSocketStompClient = new WebSocketStompClient(new StandardWebSocketClient());
+      webSocketStompClient.setMessageConverter(mappingJackson2MessageConverter);
+      return webSocketStompClient;
+    }
   }
 }

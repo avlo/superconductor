@@ -136,6 +136,11 @@
   <build>
     <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
+
+<!--      below:                                                      -->
+<!--          superconductor as a non-executable fatJar/dependency    -->
+<!--      if useful for you, simply uncomment below for inclusion     -->
+<!--                                                                  -->
 <!--      <plugin>-->
 <!--        <groupId>org.apache.maven.plugins</groupId>-->
 <!--        <artifactId>maven-assembly-plugin</artifactId>-->
@@ -154,6 +159,7 @@
 <!--          </execution>-->
 <!--        </executions>-->
 <!--      </plugin>-->
+
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>

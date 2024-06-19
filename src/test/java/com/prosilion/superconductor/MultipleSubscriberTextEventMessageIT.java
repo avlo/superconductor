@@ -42,11 +42,11 @@ class MultipleSubscriberTextEventMessageIT {
           [
             "EVENT",
               {
+                "content":"1111111111",
                 "id":"\{TARGET_TEXT_MESSAGE_EVENT_CONTENT}",
                 "kind":1,
-                "content":"1111111111",
-                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
                 "created_at":1717357053050,
+                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
                 "tags":
                   [],
                 "sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"

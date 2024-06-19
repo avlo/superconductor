@@ -6,13 +6,11 @@ import com.prosilion.superconductor.entity.standard.RelaysTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityRelaysTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.RelaysTagEntityRepository;
 import jakarta.annotation.Nonnull;
-import lombok.Getter;
 import lombok.NonNull;
 import nostr.event.tag.RelaysTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Getter
 @Component
 public class RelaysTagPlugin<
     P extends RelaysTag,

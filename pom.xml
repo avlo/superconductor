@@ -5,10 +5,10 @@
 
   <groupId>com.prosilion</groupId>
   <artifactId>superconductor</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
   <name>superconductor</name>
   <description>SuperConductor Java Nostr-Relay Framework and Web Application</description>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -17,15 +17,16 @@
   </parent>
 
   <properties>
+    <java.version>22</java.version>
     <spring-boot.version>3.2.4</spring-boot.version>
-    <nostr-java.version>0.6</nostr-java.version>
+    <nostr-java.version>0.6.1-SNAPSHOT</nostr-java.version>
 
-    <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
+    <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
     <h2.version>2.2.224</h2.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     <junit-jupiter.version>5.10.2</junit-jupiter.version>
-    <lombok.version>1.18.30</lombok.version>
-    <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
+    <lombok.version>1.18.32</lombok.version>
+    <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
     <mysql-connector-j.version>8.4.0</mysql-connector-j.version>
   </properties>
 
@@ -35,6 +36,18 @@
       <artifactId>spring-boot-starter-tomcat</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-websocket</artifactId>
+      <version>6.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-messaging</artifactId>
+      <version>6.1.5</version>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
@@ -113,9 +126,38 @@
       <version>${spring-boot.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>4.2.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
+    <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-assembly-plugin</artifactId>-->
+<!--        <configuration>-->
+<!--          <descriptorRefs>-->
+<!--            <descriptorRef>jar-with-dependencies</descriptorRef>-->
+<!--          </descriptorRefs>-->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>make-assembly</id>-->
+<!--            <phase>package</phase>-->
+<!--            <goals>-->
+<!--              <goal>single</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>

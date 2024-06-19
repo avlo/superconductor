@@ -35,14 +35,14 @@ public class SubscriberManager {
   }
 
   public List<Long> removeBySessionId(@NonNull String sessionId) {
-    List<Subscriber> subscribers = getBySessionId(sessionId);
-    subscribers.forEach(s -> subscriberRepository.deleteById(s.getId()));
-    return subscribers.stream().map(Subscriber::getId).toList();
+    List<Long> subscriberIdsToRemove = getBySessionId(sessionId).stream().map(Subscriber::getId).toList();
+    subscriberIdsToRemove.forEach(subscriberRepository::deleteById);
+    return subscriberIdsToRemove;
   }
 
   public Long removeBySubscriberId(@NonNull String subscriberId) throws NoExistingUserException {
-    Subscriber subscriber = getBySubscriberId(subscriberId).orElseThrow(NoExistingUserException::new);
-    subscriberRepository.deleteById(subscriber.getId());
-    return subscriber.getId();
+    Long subscriberIdToRemove = getBySubscriberId(subscriberId).orElseThrow(NoExistingUserException::new).getId();
+    subscriberRepository.deleteById(subscriberIdToRemove);
+    return subscriberIdToRemove;
   }
 }

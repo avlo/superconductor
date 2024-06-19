@@ -6,13 +6,11 @@ import com.prosilion.superconductor.entity.standard.HashtagTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityHashtagTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.HashtagTagEntityRepository;
 import jakarta.annotation.Nonnull;
-import lombok.Getter;
 import lombok.NonNull;
 import nostr.event.tag.HashtagTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Getter
 @Component
 public class HashtagTagPlugin<
     P extends HashtagTag,

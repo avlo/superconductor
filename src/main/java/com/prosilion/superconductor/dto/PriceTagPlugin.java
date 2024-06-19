@@ -6,13 +6,11 @@ import com.prosilion.superconductor.entity.join.classified.EventEntityPriceTagEn
 import com.prosilion.superconductor.repository.classified.PriceTagEntityRepository;
 import com.prosilion.superconductor.repository.join.classified.EventEntityPriceTagEntityRepository;
 import jakarta.annotation.Nonnull;
-import lombok.Getter;
 import lombok.NonNull;
 import nostr.event.tag.PriceTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Getter
 @Component
 public class PriceTagPlugin<
     P extends PriceTag,

@@ -99,14 +99,26 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   }
 
   @EventListener
-  public <U extends BaseMessage> void broadcast(BroadcastMessageEvent<U> message) throws IOException {
-    log.info("NostrEventController broadcast to\nsession:\n\t{}\nmessage:\n\t{}", message.getSessionId(), message.getMessage().getPayload());
-    mapSessions.get(message.getSessionId()).sendMessage(message.getMessage());
+  public <U extends BaseMessage> void broadcastMessageEvent(BroadcastMessageEvent<U> message) {
+    TextMessage textMessage = message.getMessage();
+    String sessionId = message.getSessionId();
+    log.info("NostrEventController broadcast to\nsession:\n\t{}\nmessage:\n\t{}", sessionId, textMessage.getPayload());
+    broadcast(sessionId, textMessage);
   }
 
   @EventListener
-  public void broadcast(OkClientResponse message) throws IOException {
-    log.info("NostrEventController OK response to\nclient:\n\t{}\nresponse:\n\t{}", message.getSessionId(), message.getOkResponseMessage().getPayload());
-    mapSessions.get(message.getSessionId()).sendMessage(message.getOkResponseMessage());
+  public void broadcastOkClientResponse(OkClientResponse message) {
+    final TextMessage okResponseMessage = message.getOkResponseMessage();
+    final String sessionId = message.getSessionId();
+    log.info("NostrEventController OK response to\nclient:\n\t{}\nresponse:\n\t{}", sessionId, okResponseMessage.getPayload());
+    broadcast(sessionId, okResponseMessage);
+  }
+
+  private void broadcast(String sessionId, TextMessage message) {
+    try {
+      mapSessions.get(sessionId).sendMessage(message);
+    } catch (IOException e) {
+      log.info("Orphaned client session [{}], message [{}] not sent", sessionId, message);
+    }
   }
 }

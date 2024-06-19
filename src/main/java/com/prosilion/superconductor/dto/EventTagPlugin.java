@@ -5,13 +5,11 @@ import com.prosilion.superconductor.entity.join.standard.EventEntityEventTagEnti
 import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityEventTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.EventTagEntityRepository;
-import lombok.Getter;
 import lombok.NonNull;
 import nostr.event.tag.EventTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Getter
 @Component
 public class EventTagPlugin<
     P extends EventTag,

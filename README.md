@@ -116,10 +116,9 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 	select id, filter_id, event_id from "subscriber-filter_event-join";
 	select id, filter_id, author from "subscriber-filter_author-join";
 	select id, recipient_pub_key, amount, ln_url from zaprequest;
-	select id, number, currency, frequency from price_tag;
 	select id, event_id, price_tag_id from "event-price_tag-join";
 	select id, uri from relays_tag;
-	select id, event_id, relays_id from "event-relays_tag-join";
+	select id, number, currency, frequency from price_tag;
  
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 

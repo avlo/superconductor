@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
-class MultipleSubscriberEventMessageIT {
+class MultipleSubscriberTextEventMessageIT {
   public final static String globalEventJson = "[\"EVENT\",{\"id\":\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",\"kind\":1,\"content\":\"1111111111\",\"pubkey\":\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\"created_at\":1717357053050,\"tags\":[],\"sig\":\"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
 
   private static final String TARGET_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
@@ -47,7 +47,10 @@ class MultipleSubscriberEventMessageIT {
   private final Integer pctThreshold;
   private final LongAdder resultCount = new LongAdder();
 
-  MultipleSubscriberEventMessageIT(
+  //  @Autowired
+  //  private ServletContext servletContext;
+
+  MultipleSubscriberTextEventMessageIT(
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
       @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
     this.targetCount = reqInstances;
@@ -69,6 +72,15 @@ class MultipleSubscriberEventMessageIT {
     CompletableFuture<WebSocketSession> execute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), WEBSOCKET_URL, "");
 
     await().until(execute::isDone);
+  }
+
+  @Test
+  void executors() {
+    //    ServletContext context = servletContext.getContext("/");
+    //    Set<SessionTrackingMode> defaultSessionTrackingModes = servletContext.getDefaultSessionTrackingModes();
+    //    Set<SessionTrackingMode> effectiveSessionTrackingModes = servletContext.getEffectiveSessionTrackingModes();
+    //    Map<String, ? extends ServletRegistration> servletRegistrations = servletContext.getServletRegistrations();
+    //    Enumeration<String> attributeNames = servletContext.getAttributeNames();
   }
 
   @Test

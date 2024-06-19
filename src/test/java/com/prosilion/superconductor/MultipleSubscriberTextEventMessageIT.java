@@ -97,7 +97,11 @@ class MultipleSubscriberTextEventMessageIT {
 
     System.out.println("-------------------");
     System.out.println("-------------------");
-    System.out.printf("success count [%s] of minimally expected [%s]%n", resultCount, percentSuccessThreshold);
+    System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
+        resultCount,
+        targetCount,
+        ((resultCount.intValue() / targetCount)*100),
+        pctThreshold);
     System.out.println("-------------------");
     System.out.println("-------------------");
   }

@@ -1,5 +1,6 @@
 package com.prosilion.superconductor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kotlin.jvm.Synchronized;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,14 +34,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 class MultipleSubscriberTextEventMessageIT {
-  public final static String globalEventJson = "[\"EVENT\",{\"id\":\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",\"kind\":1,\"content\":\"1111111111\",\"pubkey\":\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\"created_at\":1717357053050,\"tags\":[],\"sig\":\"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
+  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
-  private static final String TARGET_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+  public final static String textMessageEventJson =
+      "[\"EVENT\",{\"id\":\"" + TARGET_TEXT_MESSAGE_EVENT_CONTENT + "\",\"kind\":1,\"content\":\"1111111111\",\"pubkey\":\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\"created_at\":1717357053050,\"tags\":[],\"sig\":\"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
+
   private static final String SCHEME_WS = "ws";
   private static final String HOST = "localhost";
   private static final String PORT = "5555";
   private static final String WEBSOCKET_URL = SCHEME_WS + "://" + HOST + ":" + PORT;
 
+  private final ObjectMapper mapper = new ObjectMapper();
   private WebSocketStompClient eventStompClient;
 
   private final Integer targetCount;
@@ -99,20 +103,21 @@ class MultipleSubscriberTextEventMessageIT {
     System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
         resultCount,
         targetCount,
-        ((resultCount.intValue() / targetCount)*100),
+        ((resultCount.intValue() / targetCount) * 100),
         pctThreshold);
     System.out.println("-------------------");
   }
 
+
   static class EventMessageSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(globalEventJson));
+      session.sendMessage(new TextMessage(textMessageEventJson));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertTrue(message.getPayload().toString().contains(TARGET_CONTENT));
+      assertTrue(message.getPayload().toString().contains(TARGET_TEXT_MESSAGE_EVENT_CONTENT));
       session.close();
     }
   }
@@ -128,9 +133,9 @@ class MultipleSubscriberTextEventMessageIT {
     private boolean value = false;
     private final String reqJson;
 
-    public ReqMessageSocketHandler(Integer index, String subId) {
+    public ReqMessageSocketHandler(Integer index, String reqId) {
       this.index = index;
-      reqJson = "[\"REQ\",\"" + subId + "\",{\"ids\":[\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
+      reqJson = "[\"REQ\",\"" + reqId + "\",{\"ids\":[\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
     }
 
     @Override
@@ -140,7 +145,7 @@ class MultipleSubscriberTextEventMessageIT {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertEquals(globalEventJson, message.getPayload().toString());
+      assertEquals(mapper.readTree(textMessageEventJson), mapper.readTree(message.getPayload().toString()));
       value = true;
       incrementRange();
       session.close();

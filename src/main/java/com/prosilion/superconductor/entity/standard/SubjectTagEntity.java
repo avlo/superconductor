@@ -14,6 +14,8 @@ import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.SubjectTag;
 
+import java.util.Objects;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -41,5 +43,18 @@ public class SubjectTagEntity extends AbstractTagEntity {
   @Override
   public SubjectTagDto convertEntityToDto() {
     return new SubjectTagDto(new SubjectTag(subject));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SubjectTagEntity that = (SubjectTagEntity) o;
+    return Objects.equals(subject, that.subject);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(subject);
   }
 }

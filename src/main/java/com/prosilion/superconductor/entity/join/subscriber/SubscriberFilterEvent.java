@@ -10,22 +10,36 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "subscriber-filter_event-join")
+@Table(name = "subscriber-filter_event")
 public class SubscriberFilterEvent implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Long filterId;
-  private String eventId;
+  private String eventIdString;
 
-  public SubscriberFilterEvent(Long filterId, String eventId) {
+  public SubscriberFilterEvent(Long filterId, String eventIdString) {
     this.filterId = filterId;
-    this.eventId = eventId;
+    this.eventIdString = eventIdString;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SubscriberFilterEvent that = (SubscriberFilterEvent) o;
+    return Objects.equals(filterId, that.filterId) && Objects.equals(eventIdString, that.eventIdString);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(filterId, eventIdString);
   }
 }

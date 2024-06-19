@@ -15,6 +15,8 @@ import nostr.event.BaseTag;
 import nostr.event.Marker;
 import nostr.event.tag.EventTag;
 
+import java.util.Objects;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -55,5 +57,17 @@ public class EventTagEntity extends AbstractTagEntity {
   @Override
   public EventTagDto convertEntityToDto() {
     return new EventTagDto(new EventTag(eventIdString, recommendedRelayUrl, marker));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    EventTagEntity that = (EventTagEntity) o;
+    return Objects.equals(eventIdString, that.eventIdString) && marker == that.marker && Objects.equals(recommendedRelayUrl, that.recommendedRelayUrl);
+  }
+  @Override
+  public int hashCode() {
+    return Objects.hash(eventIdString, marker, recommendedRelayUrl);
   }
 }

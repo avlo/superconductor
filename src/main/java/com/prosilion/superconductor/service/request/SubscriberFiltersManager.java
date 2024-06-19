@@ -81,29 +81,30 @@ public class SubscriberFiltersManager {
   }
 
   private List<Long> getFilterIds(Long subscriberId) {
-    return subscriberFilterRepository.findAllBySubscriberId(subscriberId).stream().map(SubscriberFilter::getId).toList();
+    return subscriberFilterRepository.findAllBySubscriberId(subscriberId).stream().map(SubscriberFilter::getId).distinct().toList();
   }
 
-  private List<GenericEvent> getFilterEvents(Long filterIds) {
-    return subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterIds)
+  private List<GenericEvent> getFilterEvents(Long filterId) {
+    return subscriberFilterEventRepository.findSubscriberFilterEventsByFilterId(filterId)
         .stream().flatMap(subscriberFilterEvent ->
             getEventEntities(subscriberFilterEvent).stream().map(EventEntity::convertEntityToDto).toList().stream()
-                .filter(Objects::nonNull).map(GenericEvent.class::cast)).toList();
+                .filter(Objects::nonNull).map(GenericEvent.class::cast)).distinct().toList();
   }
 
   private List<EventEntity> getEventEntities(SubscriberFilterEvent s) {
-    List<EventEntity> list = subscriberFilterEventRepository.findEventsBySubscriberFilterEventString(s.getEventId())
+    List<EventEntity> list = subscriberFilterEventRepository.findEventsBySubscriberFilterEventString(s.getEventIdString())
         .stream().toList();
     list.forEach(entity -> entity.setTags(getBaseTags(entity.getId())));
     return list;
   }
 
   private List<BaseTag> getBaseTags(Long eventEntityId) {
-    return subscriberFilterEventRepository.findStandardTagsByEventEntityId(eventEntityId)
-        .stream()
-        .filter(Objects::nonNull)
-        .map(AbstractTagEntity::getAsBaseTag)
-        .toList();
+    return subscriberFilterEventRepository.findTagsByEventEntityId(eventEntityId).stream()
+        .filter(
+            Objects::nonNull)
+        .map(
+            AbstractTagEntity::getAsBaseTag)
+        .distinct().toList();
   }
 
   /**

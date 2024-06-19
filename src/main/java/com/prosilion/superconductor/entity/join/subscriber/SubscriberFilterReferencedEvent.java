@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "subscriber-filter_referenced_event-join")
+@Table(name = "subscriber-filter_referenced_event")
 public class SubscriberFilterReferencedEvent implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

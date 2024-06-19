@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "subscriber-filter_author-join")
+@Table(name = "subscriber-filter_author")
 public class SubscriberFilterAuthor implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

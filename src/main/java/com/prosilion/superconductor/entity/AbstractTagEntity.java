@@ -15,4 +15,10 @@ public abstract class AbstractTagEntity implements Local {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Override
+  public abstract boolean equals(Object o);
+
+  @Override
+  public abstract int hashCode();
 }

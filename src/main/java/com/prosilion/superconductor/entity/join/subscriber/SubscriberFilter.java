@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "subscriber-filter-join")
+@Table(name = "subscriber-filter")
 // TODO: likely all subscriber filter implementation classes can be refactored/genericized
 public class SubscriberFilter implements Serializable {
   @Id

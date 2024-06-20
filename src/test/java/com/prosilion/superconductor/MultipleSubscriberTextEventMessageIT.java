@@ -90,6 +90,11 @@ class MultipleSubscriberTextEventMessageIT {
 
   @BeforeAll
   public void setup() {
+    eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
+    eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
+    CompletableFuture<WebSocketSession> eventExecute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), WEBSOCKET_URL, "");
+    await().until(eventExecute::isDone);
+
     IntStream.range(0, targetCount).parallel().forEach(increment -> {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
@@ -97,12 +102,6 @@ class MultipleSubscriberTextEventMessageIT {
       await().until(execute::isDone);
       reqStompClient.start();
     });
-
-    eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-    eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-    CompletableFuture<WebSocketSession> execute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), WEBSOCKET_URL, "");
-
-    await().until(execute::isDone);
   }
 
   @Test
@@ -123,8 +122,8 @@ class MultipleSubscriberTextEventMessageIT {
 
     await().untilAdder(resultCount, greaterThanOrEqualTo(percentSuccessThreshold));
 
-    given().ignoreException(InterruptedException.class)
-        .await().until(() -> !eventStompClient.isRunning());
+//    given().ignoreException(InterruptedException.class)
+//        .await().until(() -> !eventStompClient.isRunning());
 
     System.out.println("-------------------");
     System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
@@ -152,6 +151,7 @@ class MultipleSubscriberTextEventMessageIT {
   @Synchronized
   private void incrementRange() {
     resultCount.increment();
+    System.out.println("CCCCCCCCCCCCCCCCCCCCC: " + resultCount);
   }
 
   @Getter
@@ -167,11 +167,13 @@ class MultipleSubscriberTextEventMessageIT {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+      System.out.println("\nAAAAAAAAAAAAAAAAAAAAAAAA: " + session.getId() + "\n");
       session.sendMessage(new TextMessage(reqJson));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+      System.out.println("\nBBBBBBBBBBBBBBBBBBBBBBBB: " + session.getId() + "\n");
       assertEquals(mapper.readTree(textMessageEventJson), mapper.readTree(message.getPayload().toString()));
       value = true;
       incrementRange();

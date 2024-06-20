@@ -1,6 +1,5 @@
 package com.prosilion.superconductor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kotlin.jvm.Synchronized;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,45 +32,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
-class MultipleSubscriberTextEventMessageIT {
-  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+class MultipleSubscriberClassifiedListingEventMessageIT {
+  private static final String TARGET_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
-  @SuppressWarnings("preview")
-  public final static String textMessageEventJson =
-      StringTemplate.STR."""
-          [
-            "EVENT",
-              {
-                "content":"1111111111",
-                "id":"\{TARGET_TEXT_MESSAGE_EVENT_CONTENT}",
-                "kind":1,
-                "created_at":1717357053050,
-                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-                "tags": [
-                  [
-                    "p",
-                    "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
-                  ],
-                  [
-                    "e",
-                    "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
-                  ],
-                  [
-                    "g",
-                    "textnote geo-tag-1"
-                  ]
-                ],
-              "sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
-            }
-          ]
-      """;
+  public final static String globalEventJson =
+      "[\"EVENT\",{\"id\":\"" + TARGET_CONTENT + "\",\"kind\":1,\"content\":\"1111111111\",\"pubkey\":\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\"created_at\":1717357053050,\"tags\":[],\"sig\":\"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
 
   private static final String SCHEME_WS = "ws";
   private static final String HOST = "localhost";
   private static final String PORT = "5555";
   private static final String WEBSOCKET_URL = SCHEME_WS + "://" + HOST + ":" + PORT;
 
-  private final ObjectMapper mapper = new ObjectMapper();
   private WebSocketStompClient eventStompClient;
 
   private final Integer targetCount;
@@ -81,7 +52,7 @@ class MultipleSubscriberTextEventMessageIT {
   //  @Autowired
   //  private ServletContext servletContext;
 
-  MultipleSubscriberTextEventMessageIT(
+  MultipleSubscriberClassifiedListingEventMessageIT(
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
       @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
     this.targetCount = reqInstances;
@@ -130,21 +101,30 @@ class MultipleSubscriberTextEventMessageIT {
     System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
         resultCount,
         targetCount,
-        ((resultCount.intValue() / targetCount) * 100),
+        ((resultCount.intValue() / targetCount)*100),
         pctThreshold);
     System.out.println("-------------------");
   }
 
 
+
+
+
+
+
+
+
+
+
   static class EventMessageSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(textMessageEventJson));
+      session.sendMessage(new TextMessage(globalEventJson));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertTrue(message.getPayload().toString().contains(TARGET_TEXT_MESSAGE_EVENT_CONTENT));
+      assertTrue(message.getPayload().toString().contains(TARGET_CONTENT));
       session.close();
     }
   }
@@ -172,7 +152,7 @@ class MultipleSubscriberTextEventMessageIT {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertEquals(mapper.readTree(textMessageEventJson), mapper.readTree(message.getPayload().toString()));
+      assertEquals(globalEventJson, message.getPayload().toString());
       value = true;
       incrementRange();
       session.close();

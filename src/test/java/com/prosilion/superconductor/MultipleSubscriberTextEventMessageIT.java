@@ -1,15 +1,14 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kotlin.jvm.Synchronized;
 import lombok.Getter;
+import lombok.Synchronized;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,17 +20,16 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.given;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -78,46 +76,56 @@ class MultipleSubscriberTextEventMessageIT {
   private static final String WEBSOCKET_URL = SCHEME_WS + "://" + HOST + ":" + PORT;
 
   private final ObjectMapper mapper = new ObjectMapper();
-  private WebSocketStompClient eventStompClient;
 
   private final Integer targetCount;
   private final Integer pctThreshold;
-//  private int resultCount = 0;
-  private final LongAdder resultCount = new LongAdder();
+  //  private final LongAdder resultCount = new LongAdder();
+  int resultCount;
+  private final ExecutorService executorService;
 
   MultipleSubscriberTextEventMessageIT(
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
       @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
     this.targetCount = reqInstances;
     this.pctThreshold = pctThreshold;
+    executorService = Executors.newFixedThreadPool(reqInstances);
   }
 
   @BeforeAll
-  public void setup() {
-    eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
+  public void setup() throws InterruptedException {
+    WebSocketStompClient eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
     eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
     CompletableFuture<WebSocketSession> eventExecute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), WEBSOCKET_URL, "");
     await().until(eventExecute::isDone);
 
+    List<Callable<CompletableFuture<WebSocketSession>>> reqClients = new ArrayList<>(targetCount);
     IntStream.range(0, targetCount).parallel().forEach(increment -> {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-      CompletableFuture<WebSocketSession> reqExecute = reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, generateRandomHexString()), WEBSOCKET_URL, "");
-      await().until(reqExecute::isDone);
-//      reqStompClient.start();
+
+      Callable<CompletableFuture<WebSocketSession>> callableTask = () -> {
+        CompletableFuture<WebSocketSession> reqExecute = reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, generateRandomHexString()), WEBSOCKET_URL, "");
+        await().until(reqExecute::isDone);
+        return reqExecute;
+      };
+      reqClients.add(callableTask);
     });
+    executorService.invokeAll(reqClients);
+//      reqStompClient.start();
   }
 
   @Test
   void testEventMessageThenReqMessage() {
 //    assertDoesNotThrow(() -> eventStompClient.start());
 //    assertDoesNotThrow(() -> eventStompClient.stop());
+    executorService.shutdown();
+    await().until(executorService::isTerminated);
 
     System.out.println("-------------------");
     System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
-        resultCount.toString(),
+        resultCount,
         targetCount,
-        ((resultCount.intValue() / targetCount) * 100),
+        ((resultCount / targetCount) * 100),
         pctThreshold);
     System.out.println("-------------------");
   }
@@ -139,7 +147,6 @@ class MultipleSubscriberTextEventMessageIT {
   @Getter
   class ReqMessageSocketHandler extends TextWebSocketHandler {
     private final Integer index;
-    private boolean value = false;
     private final String reqJson;
 
     public ReqMessageSocketHandler(Integer index, String reqId) {
@@ -157,7 +164,8 @@ class MultipleSubscriberTextEventMessageIT {
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
       System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], id: [%s]\n", index, session.getId());
       assertTrue(ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJson), mapper.readTree(message.getPayload().toString())));
-
+      increment();
+//      session.close();
       if (!(ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJson), mapper.readTree(message.getPayload().toString())))) {
         System.out.printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX[%02d]\n", index);
         System.out.printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX[%02d]\n", index);
@@ -168,11 +176,12 @@ class MultipleSubscriberTextEventMessageIT {
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         throw new RuntimeException();
       }
-
-      value = true;
-      resultCount.increment();
-//      session.close();
     }
+  }
+
+  @Synchronized
+  void increment() {
+    resultCount++;
   }
 
   private static String generateRandomHexString() {

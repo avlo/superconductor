@@ -164,13 +164,13 @@ class MultipleSubscriberTextEventMessageIT {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      System.out.printf("AAAAAAAAAAAAAAAAAAAAAAAA[%02d], id: [%s]\n", index, session.getId());
+      System.out.printf("AAAAAAAAAAAAAAAAAAAAAAAA[%03d], id: [%s]\n", index, session.getId());
       session.sendMessage(new TextMessage(reqJson));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], id: [%s]\n", index, session.getId());
+      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%03d], id: [%s]\n", index, session.getId());
       assertTrue(ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJson), mapper.readTree(message.getPayload().toString())));
       increment();
 //      session.close();

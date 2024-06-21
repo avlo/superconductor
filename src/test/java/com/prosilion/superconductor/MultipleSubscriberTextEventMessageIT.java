@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -59,6 +60,35 @@ class MultipleSubscriberTextEventMessageIT {
                   [
                     "e",
                     "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
+                  ],
+                  [
+                    "g",
+                    "textnote geo-tag-1"
+                  ]
+                ],
+              "sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
+            }
+          ]
+      """;
+
+  public final static String textMessageEventJsonReordered =
+      StringTemplate.STR."""
+          [
+            "EVENT",
+              {
+                "content":"1111111111",
+                "id":"\{TARGET_TEXT_MESSAGE_EVENT_CONTENT}",
+                "kind":1,
+                "created_at":1717357053050,
+                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+                "tags": [
+                  [
+                    "e",
+                    "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
+                  ],
+                  [
+                    "p",
+                    "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
                   ],
                   [
                     "g",
@@ -171,8 +201,9 @@ class MultipleSubscriberTextEventMessageIT {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-//      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], id: [%s]\n", index, session.getId());
-      assertTrue(ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJson), mapper.readTree(message.getPayload().toString())));
+      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), mapper.readTree(message.getPayload().toString()));
+      System.out.printf("CCCCCCCCCCCCCCCCCCCCCCCC[%02d], match: [%s]\n", index, condition);
+      assertTrue(condition);
       increment();
       session.close();
     }

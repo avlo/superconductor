@@ -6,11 +6,13 @@ import lombok.Synchronized;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -24,18 +26,19 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-//@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-//@DirtiesContext
-@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@DirtiesContext
+@ContextConfiguration
 @TestPropertySource("/application-test.properties")
 class MultipleSubscriberTextEventMessageIT {
-  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "1111111111111111111111111111111111111111111111111111111111111111";
+  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
   @SuppressWarnings("preview")
   public final static String textMessageEventJson =
@@ -69,64 +72,62 @@ class MultipleSubscriberTextEventMessageIT {
 
   private static final String SCHEME_WS = "ws";
   private static final String HOST = "localhost";
-  private static final String PORT = "5555";
-  private static final String WEBSOCKET_URL = SCHEME_WS + "://" + HOST + ":" + PORT;
+  private final String websocketUrl;
 
-  private final ObjectMapper mapper = new ObjectMapper();
-
-  public final String hexCounterSeed;
+  private final String hexCounterSeed;
   private final int hexStartNumber;
   private final Integer targetCount;
   private final Integer pctThreshold;
-
-  //  private final LongAdder resultCount = new LongAdder();
   int resultCount;
-  int hexCount = 0;
+
+  private final ObjectMapper mapper = new ObjectMapper();
   private final ExecutorService executorService;
 
+  List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
   MultipleSubscriberTextEventMessageIT(
+      @Value("${server.port}") String port,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
       @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
+    this.websocketUrl = SCHEME_WS + "://" + HOST + ":" + port;
     this.hexCounterSeed = hexCounterSeed;
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
     this.pctThreshold = pctThreshold;
-    executorService = Executors.newFixedThreadPool(reqInstances);
+//    this.executorService = Executors.newFixedThreadPool(reqInstances);
+    this.executorService = Executors.newSingleThreadExecutor();
   }
 
   @BeforeAll
   public void setup() throws InterruptedException {
     WebSocketStompClient eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
     eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-    CompletableFuture<WebSocketSession> eventExecute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), WEBSOCKET_URL, "");
+    CompletableFuture<WebSocketSession> eventExecute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), websocketUrl, "");
     await().until(eventExecute::isDone);
 
-    List<Callable<CompletableFuture<WebSocketSession>>> reqClients = new ArrayList<>(targetCount);
-    IntStream.range(1, targetCount + 1).parallel().forEach(increment -> {
+    reqClients = new ArrayList<>(targetCount);
+    IntStream.range(0, targetCount).sequential().forEach(increment -> {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
       Callable<CompletableFuture<WebSocketSession>> callableTask = () -> {
-        CompletableFuture<WebSocketSession> reqExecute = reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, getNextHex(increment)), WEBSOCKET_URL, "");
-//        await().until(reqExecute::isDone);
-//        System.out.println("++++++++++++++++++++");
-//        System.out.println(increment);
-//        System.out.println("++++++++++++++++++++");
-        return reqExecute;
+        return reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, getNextHex(increment)), websocketUrl, "");
       };
       reqClients.add(callableTask);
     });
-    executorService.invokeAll(reqClients);
-//      reqStompClient.start();
+//    System.out.println("reqClients count (1): " + reqClients.size());
+
+    executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
+        await().until(() -> future.get().isDone()));
   }
 
   @Test
   void testEventMessageThenReqMessage() {
-//    assertDoesNotThrow(() -> eventStompClient.start());
-//    assertDoesNotThrow(() -> eventStompClient.stop());
+//    System.out.println("reqClients count (2): " + reqClients.size());
+
     executorService.shutdown();
+    await().until(() -> executorService.awaitTermination(5000, TimeUnit.SECONDS));
     await().until(executorService::isTerminated);
 
     System.out.println("-------------------");
@@ -164,26 +165,16 @@ class MultipleSubscriberTextEventMessageIT {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      System.out.printf("AAAAAAAAAAAAAAAAAAAAAAAA[%03d], id: [%s]\n", index, session.getId());
+//      System.out.printf("AAAAAAAAAAAAAAAAAAAAAAAA[%02d], id: [%s]\n", index, session.getId());
       session.sendMessage(new TextMessage(reqJson));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%03d], id: [%s]\n", index, session.getId());
+//      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], id: [%s]\n", index, session.getId());
       assertTrue(ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJson), mapper.readTree(message.getPayload().toString())));
       increment();
-//      session.close();
-      if (!(ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJson), mapper.readTree(message.getPayload().toString())))) {
-        System.out.printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX[%02d]\n", index);
-        System.out.printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX[%02d]\n", index);
-        System.out.println(textMessageEventJson);
-        System.out.printf("-----------------------------------------------[%02d]\n", index);
-        System.out.println(message.getPayload().toString());
-        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        throw new RuntimeException();
-      }
+      session.close();
     }
   }
 
@@ -192,12 +183,10 @@ class MultipleSubscriberTextEventMessageIT {
     resultCount++;
   }
 
-  String getNextHex(int i) {
+  private String getNextHex(int i) {
     String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
-    String incrementedHexString = hexCounterSeed
+    return hexCounterSeed
         .substring(0, hexCounterSeed.length() - incrementedHexNumber.length())
         .concat(incrementedHexNumber);
-    System.out.println(incrementedHexString);
-    return incrementedHexString;
   }
 }

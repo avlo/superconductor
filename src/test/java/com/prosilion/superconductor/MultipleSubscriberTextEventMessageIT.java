@@ -3,12 +3,14 @@ package com.prosilion.superconductor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Synchronized;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.expression.EvaluationException;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,6 +22,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -30,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -125,8 +128,7 @@ class MultipleSubscriberTextEventMessageIT {
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
     this.pctThreshold = pctThreshold;
-//    this.executorService = Executors.newFixedThreadPool(reqInstances);
-    this.executorService = Executors.newSingleThreadExecutor();
+      this.executorService = Executors.newSingleThreadExecutor();
   }
 
   @BeforeAll
@@ -147,14 +149,25 @@ class MultipleSubscriberTextEventMessageIT {
       reqClients.add(callableTask);
     });
 //    System.out.println("reqClients count (1): " + reqClients.size());
-
-    executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
-        await().until(() -> future.get().isDone()));
   }
 
   @Test
   void testEventMessageThenReqMessage() {
 //    System.out.println("reqClients count (2): " + reqClients.size());
+
+    assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
+        await().until(() -> future.get().isDone())));
+
+//    expected below to catch internal thread exception, but did not
+//        await().until(() -> {
+//          try {
+//            future.get().isDone();
+//          } catch (EvaluationException e) {
+//            System.out.println("XXXXXXXXXXXXXXXXXXXX");
+//            System.out.println("XXXXXXXXXXXXXXXXXXXX");
+//          }
+//          return true;
+//        }));
 
     executorService.shutdown();
     await().until(() -> executorService.awaitTermination(5000, TimeUnit.SECONDS));
@@ -200,12 +213,17 @@ class MultipleSubscriberTextEventMessageIT {
     }
 
     @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+    public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
       boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), mapper.readTree(message.getPayload().toString()));
-      System.out.printf("CCCCCCCCCCCCCCCCCCCCCCCC[%02d], match: [%s]\n", index, condition);
-      assertTrue(condition);
-      increment();
+
+//    below sout seems to serve extending thread execution time, preventing its premature shutdown
+      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
       session.close();
+      increment();
+      if (!condition) {
+//        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
+        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", textMessageEventJsonReordered, mapper.readTree(message.getPayload().toString()).toPrettyString()));
+      }
     }
   }
 

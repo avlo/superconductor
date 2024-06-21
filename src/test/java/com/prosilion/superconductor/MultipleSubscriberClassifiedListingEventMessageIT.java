@@ -1,15 +1,20 @@
 package com.prosilion.superconductor;
 
-import kotlin.jvm.Synchronized;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
+import lombok.Synchronized;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.expression.EvaluationException;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -17,127 +22,241 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
-import java.util.Random;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.given;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
+@ContextConfiguration
+@TestPropertySource("/application-test.properties")
 class MultipleSubscriberClassifiedListingEventMessageIT {
-  private static final String TARGET_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+  private static final String TARGET_CLASSIFIED_LISTING_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
-  public final static String globalEventJson =
-      "[\"EVENT\",{\"id\":\"" + TARGET_CONTENT + "\",\"kind\":1,\"content\":\"1111111111\",\"pubkey\":\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\"created_at\":1717357053050,\"tags\":[],\"sig\":\"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
+  public final static String classifiedListingEventJsonSent =
+      StringTemplate.STR."""
+          [
+            "EVENT",
+            {
+              "id":"\{TARGET_CLASSIFIED_LISTING_EVENT_CONTENT}",
+              "kind": 30402,
+              "content": "classified content",
+              "tags": [
+                [
+                  "subject",
+                  "classified subject"
+                ],
+                [
+                  "title",
+                  "classified title"
+                ],
+                [
+                  "published_at",
+                  "1718843251760"
+                ],
+                [
+                  "summary",
+                  "classified summary"
+                ],
+                [
+                  "location",
+                  "classified peroulades"
+                ],
+                [
+                  "price",
+                  "271.00",
+                  "BTC",
+                  "1"
+                ],
+                [
+                  "e",
+                  "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
+                ],
+                [
+                  "p",
+                  "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                ],
+                [
+                  "t",
+                  "classified hash-tag-1111"
+                ],
+                [
+                  "g",
+                  "classified geo-tag-1"
+                ]
+              ],
+              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+              "created_at": 1718843251760,
+              "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
+            }
+          ]
+      """;
+
+  public final static String classifiedListingEventJsonExpectedWithReordering =
+      StringTemplate.STR."""
+          [
+            "EVENT",
+            {
+              "id":"\{TARGET_CLASSIFIED_LISTING_EVENT_CONTENT}",
+              "kind": 30402,
+              "content": "classified content",
+              "tags": [
+                [
+                  "price",
+                  "271.00",
+                  "BTC",
+                  "1"
+                ],
+                [
+                  "subject",
+                  "classified subject"
+                ],
+                [
+                  "published_at",
+                  "1718843251760"
+                ],
+                [
+                  "title",
+                  "classified title"
+                ],
+                [
+                  "summary",
+                  "classified summary"
+                ],
+                [
+                  "location",
+                  "classified peroulades"
+                ],
+                [
+                  "e",
+                  "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
+                ],
+                [
+                  "p",
+                  "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                ],
+                [
+                  "t",
+                  "classified hash-tag-1111"
+                ],
+                [
+                  "g",
+                  "classified geo-tag-1"
+                ]
+              ],
+              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+              "created_at": 1718843251760,
+              "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
+            }
+          ]
+      """;
 
   private static final String SCHEME_WS = "ws";
   private static final String HOST = "localhost";
-  private static final String PORT = "5555";
-  private static final String WEBSOCKET_URL = SCHEME_WS + "://" + HOST + ":" + PORT;
+  private final String websocketUrl;
 
-  private WebSocketStompClient eventStompClient;
-
+  private final String hexCounterSeed;
+  private final int hexStartNumber;
   private final Integer targetCount;
   private final Integer pctThreshold;
-  private final LongAdder resultCount = new LongAdder();
+  int resultCount;
 
-  //  @Autowired
-  //  private ServletContext servletContext;
+  private final ObjectMapper mapper = new ObjectMapper();
+  private final ExecutorService executorService;
+
+  List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
   MultipleSubscriberClassifiedListingEventMessageIT(
+      @Value("${server.port}") String port,
+      @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
       @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
+    this.websocketUrl = SCHEME_WS + "://" + HOST + ":" + port;
+    this.hexCounterSeed = hexCounterSeed;
+    this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
     this.pctThreshold = pctThreshold;
+    this.executorService = Executors.newSingleThreadExecutor();
   }
 
   @BeforeAll
-  public void setup() {
-    IntStream.range(0, targetCount).parallel().forEach(increment -> {
+  public void setup() throws InterruptedException {
+    WebSocketStompClient eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
+    eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
+    CompletableFuture<WebSocketSession> eventExecute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), websocketUrl, "");
+    await().until(eventExecute::isDone);
+
+    reqClients = new ArrayList<>(targetCount);
+    IntStream.range(0, targetCount).sequential().forEach(increment -> {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-      CompletableFuture<WebSocketSession> execute = reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, generateRandomHexString()), WEBSOCKET_URL, "");
-      await().until(execute::isDone);
-      reqStompClient.start();
+
+      Callable<CompletableFuture<WebSocketSession>> callableTask = () -> {
+        return reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, getNextHex(increment)), websocketUrl, "");
+      };
+      reqClients.add(callableTask);
     });
-
-    eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-    eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-    CompletableFuture<WebSocketSession> execute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), WEBSOCKET_URL, "");
-
-    await().until(execute::isDone);
-  }
-
-  @Test
-  void executors() {
-    //    ServletContext context = servletContext.getContext("/");
-    //    Set<SessionTrackingMode> defaultSessionTrackingModes = servletContext.getDefaultSessionTrackingModes();
-    //    Set<SessionTrackingMode> effectiveSessionTrackingModes = servletContext.getEffectiveSessionTrackingModes();
-    //    Map<String, ? extends ServletRegistration> servletRegistrations = servletContext.getServletRegistrations();
-    //    Enumeration<String> attributeNames = servletContext.getAttributeNames();
+//    System.out.println("reqClients count (1): " + reqClients.size());
+    assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
+        await().until(() -> future.get().isDone())));
   }
 
   @Test
   void testEventMessageThenReqMessage() {
-    assertDoesNotThrow(() -> eventStompClient.start());
-    assertDoesNotThrow(() -> eventStompClient.stop());
+//    System.out.println("reqClients count (2): " + reqClients.size());
 
-    long percentSuccessThreshold = Math.round(targetCount - (targetCount * (1 - pctThreshold * .01)));
+//    expected below to catch internal thread exception, but did not
+//        await().until(() -> {
+//          try {
+//            future.get().isDone();
+//          } catch (EvaluationException e) {
+//            System.out.println("XXXXXXXXXXXXXXXXXXXX");
+//            System.out.println("XXXXXXXXXXXXXXXXXXXX");
+//          }
+//          return true;
+//        }));
 
-    await().untilAdder(resultCount, greaterThanOrEqualTo(percentSuccessThreshold));
-
-    given().ignoreException(InterruptedException.class)
-        .await().until(() -> !eventStompClient.isRunning());
+    executorService.shutdown();
+    await().until(() -> executorService.awaitTermination(5000, TimeUnit.SECONDS));
+    await().until(executorService::isTerminated);
 
     System.out.println("-------------------");
     System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
         resultCount,
         targetCount,
-        ((resultCount.intValue() / targetCount)*100),
+        ((resultCount / targetCount) * 100),
         pctThreshold);
     System.out.println("-------------------");
   }
 
 
-
-
-
-
-
-
-
-
-
   static class EventMessageSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(globalEventJson));
+      session.sendMessage(new TextMessage(classifiedListingEventJsonSent));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertTrue(message.getPayload().toString().contains(TARGET_CONTENT));
+      assertTrue(message.getPayload().toString().contains(TARGET_CLASSIFIED_LISTING_EVENT_CONTENT));
       session.close();
     }
-  }
-
-  @Synchronized
-  private void incrementRange() {
-    resultCount.increment();
   }
 
   @Getter
   class ReqMessageSocketHandler extends TextWebSocketHandler {
     private final Integer index;
-    private boolean value = false;
     private final String reqJson;
 
     public ReqMessageSocketHandler(Integer index, String reqId) {
@@ -147,26 +266,37 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+//      System.out.printf("AAAAAAAAAAAAAAAAAAAAAAAA[%02d], id: [%s]\n", index, session.getId());
       session.sendMessage(new TextMessage(reqJson));
     }
 
     @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertEquals(globalEventJson, message.getPayload().toString());
-      value = true;
-      incrementRange();
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
+      JsonNode payloadString = mapper.readTree(message.getPayload().toString());
+      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(classifiedListingEventJsonExpectedWithReordering), payloadString);
+
+      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
+      System.out.println(payloadString.toPrettyString());
+      System.out.println("------------------------");
+//    below sout seems to serve extending thread execution time, preventing its premature shutdown
       session.close();
+      increment();
+      if (!condition) {
+//        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
+        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", classifiedListingEventJsonExpectedWithReordering, payloadString.toPrettyString()));
+      }
     }
   }
 
-  private static String generateRandomHexString() {
-    Random random = new Random();
-    StringBuilder hexString = new StringBuilder();
-    for (int i = 0; i < 32; i++) {
-      int randomNumber = random.nextInt(16); // Generate a random number between 0 and 15 (inclusive)
-      char hexDigit = (randomNumber < 10) ? (char) ('0' + randomNumber) : (char) ('a' + (randomNumber - 10));
-      hexString.append(hexDigit);
-    }
-    return hexString.toString();
+  @Synchronized
+  void increment() {
+    resultCount++;
+  }
+
+  private String getNextHex(int i) {
+    String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
+    return hexCounterSeed
+        .substring(0, hexCounterSeed.length() - incrementedHexNumber.length())
+        .concat(incrementedHexNumber);
   }
 }

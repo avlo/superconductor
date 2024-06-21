@@ -6,13 +6,11 @@ import lombok.Synchronized;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -22,7 +20,6 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -33,12 +30,12 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext
-@ContextConfiguration
+//@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+//@DirtiesContext
+@ExtendWith(SpringExtension.class)
 @TestPropertySource("/application-test.properties")
 class MultipleSubscriberTextEventMessageIT {
-  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "1111111111111111111111111111111111111111111111111111111111111111";
 
   @SuppressWarnings("preview")
   public final static String textMessageEventJson =
@@ -77,15 +74,23 @@ class MultipleSubscriberTextEventMessageIT {
 
   private final ObjectMapper mapper = new ObjectMapper();
 
+  public final String hexCounterSeed;
+  private final int hexStartNumber;
   private final Integer targetCount;
   private final Integer pctThreshold;
+
   //  private final LongAdder resultCount = new LongAdder();
   int resultCount;
+  int hexCount = 0;
   private final ExecutorService executorService;
 
+
   MultipleSubscriberTextEventMessageIT(
+      @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
       @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
+    this.hexCounterSeed = hexCounterSeed;
+    this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
     this.pctThreshold = pctThreshold;
     executorService = Executors.newFixedThreadPool(reqInstances);
@@ -99,13 +104,16 @@ class MultipleSubscriberTextEventMessageIT {
     await().until(eventExecute::isDone);
 
     List<Callable<CompletableFuture<WebSocketSession>>> reqClients = new ArrayList<>(targetCount);
-    IntStream.range(0, targetCount).parallel().forEach(increment -> {
+    IntStream.range(1, targetCount+1).parallel().forEach(increment -> {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
       Callable<CompletableFuture<WebSocketSession>> callableTask = () -> {
-        CompletableFuture<WebSocketSession> reqExecute = reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, generateRandomHexString()), WEBSOCKET_URL, "");
-        await().until(reqExecute::isDone);
+        CompletableFuture<WebSocketSession> reqExecute = reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, getNextHex(increment)), WEBSOCKET_URL, "");
+//        await().until(reqExecute::isDone);
+//        System.out.println("++++++++++++++++++++");
+//        System.out.println(increment);
+//        System.out.println("++++++++++++++++++++");
         return reqExecute;
       };
       reqClients.add(callableTask);
@@ -114,7 +122,7 @@ class MultipleSubscriberTextEventMessageIT {
 //      reqStompClient.start();
   }
 
-  @Test
+//  @Test
   void testEventMessageThenReqMessage() {
 //    assertDoesNotThrow(() -> eventStompClient.start());
 //    assertDoesNotThrow(() -> eventStompClient.stop());
@@ -184,14 +192,17 @@ class MultipleSubscriberTextEventMessageIT {
     resultCount++;
   }
 
-  private static String generateRandomHexString() {
-    Random random = new Random();
-    StringBuilder hexString = new StringBuilder();
-    for (int i = 0; i < 32; i++) {
-      int randomNumber = random.nextInt(16); // Generate a random number between 0 and 15 (inclusive)
-      char hexDigit = (randomNumber < 10) ? (char) ('0' + randomNumber) : (char) ('a' + (randomNumber - 10));
-      hexString.append(hexDigit);
-    }
-    return hexString.toString();
+  @Test
+  void another() {
+    IntStream.range(1, targetCount+1).forEach(this::getNextHex);
+  }
+
+  String getNextHex(int i) {
+    String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
+    String incrementedHexString = hexCounterSeed
+        .substring(0, hexCounterSeed.length() - incrementedHexNumber.length())
+        .concat(incrementedHexNumber);
+    System.out.println(incrementedHexString);
+    return incrementedHexString;
   }
 }

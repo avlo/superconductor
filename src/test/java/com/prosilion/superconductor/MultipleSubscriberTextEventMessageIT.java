@@ -104,7 +104,7 @@ class MultipleSubscriberTextEventMessageIT {
     await().until(eventExecute::isDone);
 
     List<Callable<CompletableFuture<WebSocketSession>>> reqClients = new ArrayList<>(targetCount);
-    IntStream.range(1, targetCount+1).parallel().forEach(increment -> {
+    IntStream.range(1, targetCount + 1).parallel().forEach(increment -> {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
@@ -122,7 +122,7 @@ class MultipleSubscriberTextEventMessageIT {
 //      reqStompClient.start();
   }
 
-//  @Test
+  @Test
   void testEventMessageThenReqMessage() {
 //    assertDoesNotThrow(() -> eventStompClient.start());
 //    assertDoesNotThrow(() -> eventStompClient.stop());
@@ -190,11 +190,6 @@ class MultipleSubscriberTextEventMessageIT {
   @Synchronized
   void increment() {
     resultCount++;
-  }
-
-  @Test
-  void another() {
-    IntStream.range(1, targetCount+1).forEach(this::getNextHex);
   }
 
   String getNextHex(int i) {

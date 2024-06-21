@@ -128,7 +128,7 @@ class MultipleSubscriberTextEventMessageIT {
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
     this.pctThreshold = pctThreshold;
-      this.executorService = Executors.newSingleThreadExecutor();
+    this.executorService = Executors.newSingleThreadExecutor();
   }
 
   @BeforeAll
@@ -149,14 +149,13 @@ class MultipleSubscriberTextEventMessageIT {
       reqClients.add(callableTask);
     });
 //    System.out.println("reqClients count (1): " + reqClients.size());
+    assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
+        await().until(() -> future.get().isDone())));
   }
 
   @Test
   void testEventMessageThenReqMessage() {
 //    System.out.println("reqClients count (2): " + reqClients.size());
-
-    assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
-        await().until(() -> future.get().isDone())));
 
 //    expected below to catch internal thread exception, but did not
 //        await().until(() -> {

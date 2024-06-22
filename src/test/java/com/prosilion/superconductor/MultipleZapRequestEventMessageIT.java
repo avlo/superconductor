@@ -41,124 +41,104 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext
 @ContextConfiguration
 @TestPropertySource("/application-test.properties")
-class MultipleSubscriberClassifiedListingEventMessageIT {
-  private static final String TARGET_CLASSIFIED_LISTING_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+class MultipleZapRequestEventMessageIT {
+  private static final String TARGET_ZAP_REQUEST_EVENT_CONTENT = "6122f2089e52ac1687bc4b7eef938f468a78ee47f188f40dc1ab95d38205b94a";
 
   @SuppressWarnings("preview")
-  public final static String classifiedListingEventJsonSent =
+  public final static String zapRequestEventJsonSent =
       StringTemplate.STR."""
           [
             "EVENT",
             {
-              "id":"\{TARGET_CLASSIFIED_LISTING_EVENT_CONTENT}",
-              "kind": 30402,
-              "content": "classified content",
+              "id":"\{TARGET_ZAP_REQUEST_EVENT_CONTENT}",
+              "kind": 9734,
+              "content": "content Zap Request",
+              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+              "created_at": 1719016694217,
               "tags": [
-                [
-                  "subject",
-                  "classified subject"
-                ],
-                [
-                  "title",
-                  "classified title"
-                ],
-                [
-                  "published_at",
-                  "1718843251760"
-                ],
-                [
-                  "summary",
-                  "classified summary"
-                ],
-                [
-                  "location",
-                  "classified peroulades"
-                ],
-                [
-                  "price",
-                  "271.00",
-                  "BTC",
-                  "1"
-                ],
                 [
                   "e",
                   "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
+                ],
+                [
+                  "g",
+                  "ZapRequest geo-tag-1"
+                ],
+                [
+                  "t",
+                  "ZapRequest hash-tag-1111"
                 ],
                 [
                   "p",
                   "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
                 ],
                 [
-                  "t",
-                  "classified hash-tag-1111"
+                  "relays",
+                  "ws://localhost:5555"
                 ],
                 [
-                  "g",
-                  "classified geo-tag-1"
+                  "subject",
+                  "subject Zap Request"
+                ],
+                [
+                  "amount",
+                  "271.00"
+                ],
+                [
+                  "lnurl",
+                  "lnurl1dp68gurn8ghj7um5v93kketj9ehx2amn9uh8wetvdskkkmn0wahz7mrww4excup0dajx2mrv92x9xp"
                 ]
               ],
-              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-              "created_at": 1718843251760,
               "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
             }
           ]
       """;
 
   @SuppressWarnings("preview")
-  public final static String classifiedListingEventJsonExpectedWithReordering =
+  public final static String zapRequestEventJsonWithReordering =
       StringTemplate.STR."""
           [
             "EVENT",
             {
-              "id":"\{TARGET_CLASSIFIED_LISTING_EVENT_CONTENT}",
-              "kind": 30402,
-              "content": "classified content",
+              "id":"\{TARGET_ZAP_REQUEST_EVENT_CONTENT}",
+              "kind": 9734,
+              "content": "content Zap Request",
+              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+              "created_at": 1719016694217,
               "tags": [
                 [
-                  "price",
-                  "271.00",
-                  "BTC",
-                  "1"
-                ],
-                [
-                  "subject",
-                  "classified subject"
-                ],
-                [
-                  "published_at",
-                  "1718843251760"
-                ],
-                [
-                  "title",
-                  "classified title"
-                ],
-                [
-                  "summary",
-                  "classified summary"
-                ],
-                [
-                  "location",
-                  "classified peroulades"
+                  "relays",
+                  "ws://localhost:5555"
                 ],
                 [
                   "e",
                   "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
                 ],
                 [
+                  "t",
+                  "ZapRequest hash-tag-1111"
+                ],
+                [
+                  "g",
+                  "ZapRequest geo-tag-1"
+                ],
+                [
                   "p",
                   "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
                 ],
                 [
-                  "t",
-                  "classified hash-tag-1111"
+                  "subject",
+                  "subject Zap Request"
                 ],
                 [
-                  "g",
-                  "classified geo-tag-1"
+                  "amount",
+                  "271.00"
+                ],
+                [
+                  "lnurl",
+                  "lnurl1dp68gurn8ghj7um5v93kketj9ehx2amn9uh8wetvdskkkmn0wahz7mrww4excup0dajx2mrv92x9xp"
                 ]
               ],
-              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-              "created_at": 1718843251760,
               "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
             }
           ]
@@ -179,7 +159,7 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  MultipleSubscriberClassifiedListingEventMessageIT(
+  MultipleZapRequestEventMessageIT(
       @Value("${server.port}") String port,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
@@ -246,12 +226,12 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
   static class EventMessageSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(classifiedListingEventJsonSent));
+      session.sendMessage(new TextMessage(zapRequestEventJsonSent));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertTrue(message.getPayload().toString().contains(TARGET_CLASSIFIED_LISTING_EVENT_CONTENT));
+      assertTrue(message.getPayload().toString().contains(TARGET_ZAP_REQUEST_EVENT_CONTENT));
       session.close();
     }
   }
@@ -263,7 +243,7 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
 
     public ReqMessageSocketHandler(Integer index, String reqId) {
       this.index = index;
-      reqJson = "[\"REQ\",\"" + reqId + "\",{\"ids\":[\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
+      reqJson = "[\"REQ\",\"" + reqId + "\",{\"ids\":[\"6122f2089e52ac1687bc4b7eef938f468a78ee47f188f40dc1ab95d38205b94a\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
     }
 
     @Override
@@ -275,16 +255,16 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
       JsonNode payloadString = mapper.readTree(message.getPayload().toString());
-      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(classifiedListingEventJsonExpectedWithReordering), payloadString);
+      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(zapRequestEventJsonWithReordering), payloadString);
 
       System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
       System.out.println(payloadString.toPrettyString());
       System.out.println("------------------------");
 //    below sout seems to serve extending thread execution time, preventing its premature shutdown
       if (!condition) {
-        session.close();
 //        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
-        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", classifiedListingEventJsonExpectedWithReordering, payloadString.toPrettyString()));
+        session.close();
+        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", zapRequestEventJsonWithReordering, payloadString.toPrettyString()));
       }
       increment();
       session.close();

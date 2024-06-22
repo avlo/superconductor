@@ -218,12 +218,13 @@ class MultipleSubscriberTextEventMessageIT {
 
 //    below sout seems to serve extending thread execution time, preventing its premature shutdown
       System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
-      session.close();
-      increment();
       if (!condition) {
 //        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
+        session.close();
         throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", textMessageEventJsonReordered, mapper.readTree(message.getPayload().toString()).toPrettyString()));
       }
+      increment();
+      session.close();
     }
   }
 

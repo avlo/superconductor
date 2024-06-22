@@ -1,10 +1,10 @@
 package com.prosilion.superconductor;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.MoreExecutors;
 import lombok.Getter;
 import lombok.Synchronized;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -41,65 +41,125 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext
 @ContextConfiguration
 @TestPropertySource("/application-test.properties")
-class MultipleSubscriberTextEventMessageIT {
-  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+class MultipleSubscriberClassifiedListingEventMessageIT {
+  private static final String TARGET_CLASSIFIED_LISTING_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
   @SuppressWarnings("preview")
-  public final static String textMessageEventJson =
+  public final static String classifiedListingEventJsonSent =
       StringTemplate.STR."""
           [
             "EVENT",
-              {
-                "content":"1111111111",
-                "id":"\{TARGET_TEXT_MESSAGE_EVENT_CONTENT}",
-                "kind":1,
-                "created_at":1717357053050,
-                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-                "tags": [
-                  [
-                    "p",
-                    "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
-                  ],
-                  [
-                    "e",
-                    "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
-                  ],
-                  [
-                    "g",
-                    "textnote geo-tag-1"
-                  ]
+            {
+              "id":"\{TARGET_CLASSIFIED_LISTING_EVENT_CONTENT}",
+              "kind": 30402,
+              "content": "classified content",
+              "tags": [
+                [
+                  "subject",
+                  "classified subject"
                 ],
-              "sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
+                [
+                  "title",
+                  "classified title"
+                ],
+                [
+                  "published_at",
+                  "1718843251760"
+                ],
+                [
+                  "summary",
+                  "classified summary"
+                ],
+                [
+                  "location",
+                  "classified peroulades"
+                ],
+                [
+                  "price",
+                  "271.00",
+                  "BTC",
+                  "1"
+                ],
+                [
+                  "e",
+                  "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
+                ],
+                [
+                  "p",
+                  "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                ],
+                [
+                  "t",
+                  "classified hash-tag-1111"
+                ],
+                [
+                  "g",
+                  "classified geo-tag-1"
+                ]
+              ],
+              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+              "created_at": 1718843251760,
+              "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
             }
           ]
       """;
 
   @SuppressWarnings("preview")
-  public final static String textMessageEventJsonReordered =
+  public final static String classifiedListingEventJsonExpectedWithReordering =
       StringTemplate.STR."""
           [
             "EVENT",
-              {
-                "content":"1111111111",
-                "id":"\{TARGET_TEXT_MESSAGE_EVENT_CONTENT}",
-                "kind":1,
-                "created_at":1717357053050,
-                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-                "tags": [
-                  [
-                    "e",
-                    "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
-                  ],
-                  [
-                    "p",
-                    "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
-                  ],
-                  [
-                    "g",
-                    "textnote geo-tag-1"
-                  ]
+            {
+              "id":"\{TARGET_CLASSIFIED_LISTING_EVENT_CONTENT}",
+              "kind": 30402,
+              "content": "classified content",
+              "tags": [
+                [
+                  "price",
+                  "271.00",
+                  "BTC",
+                  "1"
                 ],
-              "sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
+                [
+                  "subject",
+                  "classified subject"
+                ],
+                [
+                  "published_at",
+                  "1718843251760"
+                ],
+                [
+                  "title",
+                  "classified title"
+                ],
+                [
+                  "summary",
+                  "classified summary"
+                ],
+                [
+                  "location",
+                  "classified peroulades"
+                ],
+                [
+                  "e",
+                  "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
+                ],
+                [
+                  "p",
+                  "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                ],
+                [
+                  "t",
+                  "classified hash-tag-1111"
+                ],
+                [
+                  "g",
+                  "classified geo-tag-1"
+                ]
+              ],
+              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+              "created_at": 1718843251760,
+              "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
             }
           ]
       """;
@@ -119,7 +179,7 @@ class MultipleSubscriberTextEventMessageIT {
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  MultipleSubscriberTextEventMessageIT(
+  MultipleSubscriberClassifiedListingEventMessageIT(
       @Value("${server.port}") String port,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
@@ -186,12 +246,12 @@ class MultipleSubscriberTextEventMessageIT {
   static class EventMessageSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(textMessageEventJson));
+      session.sendMessage(new TextMessage(classifiedListingEventJsonSent));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertTrue(message.getPayload().toString().contains(TARGET_TEXT_MESSAGE_EVENT_CONTENT));
+      assertTrue(message.getPayload().toString().contains(TARGET_CLASSIFIED_LISTING_EVENT_CONTENT));
       session.close();
     }
   }
@@ -213,15 +273,18 @@ class MultipleSubscriberTextEventMessageIT {
     }
 
     @Override
-    public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
-      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), mapper.readTree(message.getPayload().toString()));
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
+      JsonNode payloadString = mapper.readTree(message.getPayload().toString());
+      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(classifiedListingEventJsonExpectedWithReordering), payloadString);
 
-//    below sout seems to serve extending thread execution time, preventing its premature shutdown
       System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
+      System.out.println(payloadString.toPrettyString());
+      System.out.println("------------------------");
+//    below sout seems to serve extending thread execution time, preventing its premature shutdown
       if (!condition) {
-//        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
         session.close();
-        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", textMessageEventJsonReordered, mapper.readTree(message.getPayload().toString()).toPrettyString()));
+//        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
+        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", classifiedListingEventJsonExpectedWithReordering, payloadString.toPrettyString()));
       }
       increment();
       session.close();

@@ -1,10 +1,10 @@
 package com.prosilion.superconductor;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.MoreExecutors;
 import lombok.Getter;
 import lombok.Synchronized;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -41,65 +41,105 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext
 @ContextConfiguration
 @TestPropertySource("/application-test.properties")
-class MultipleSubscriberTextEventMessageIT {
-  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+class MultipleZapRequestEventMessageIT {
+  private static final String TARGET_ZAP_REQUEST_EVENT_CONTENT = "6122f2089e52ac1687bc4b7eef938f468a78ee47f188f40dc1ab95d38205b94a";
 
   @SuppressWarnings("preview")
-  public final static String textMessageEventJson =
+  public final static String zapRequestEventJsonSent =
       StringTemplate.STR."""
           [
             "EVENT",
-              {
-                "content":"1111111111",
-                "id":"\{TARGET_TEXT_MESSAGE_EVENT_CONTENT}",
-                "kind":1,
-                "created_at":1717357053050,
-                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-                "tags": [
-                  [
-                    "p",
-                    "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
-                  ],
-                  [
-                    "e",
-                    "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
-                  ],
-                  [
-                    "g",
-                    "textnote geo-tag-1"
-                  ]
+            {
+              "id":"\{TARGET_ZAP_REQUEST_EVENT_CONTENT}",
+              "kind": 9734,
+              "content": "content Zap Request",
+              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+              "created_at": 1719016694217,
+              "tags": [
+                [
+                  "e",
+                  "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
                 ],
-              "sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
+                [
+                  "g",
+                  "ZapRequest geo-tag-1"
+                ],
+                [
+                  "t",
+                  "ZapRequest hash-tag-1111"
+                ],
+                [
+                  "p",
+                  "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                ],
+                [
+                  "relays",
+                  "ws://localhost:5555"
+                ],
+                [
+                  "subject",
+                  "subject Zap Request"
+                ],
+                [
+                  "amount",
+                  "271.00"
+                ],
+                [
+                  "lnurl",
+                  "lnurl1dp68gurn8ghj7um5v93kketj9ehx2amn9uh8wetvdskkkmn0wahz7mrww4excup0dajx2mrv92x9xp"
+                ]
+              ],
+              "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
             }
           ]
       """;
 
   @SuppressWarnings("preview")
-  public final static String textMessageEventJsonReordered =
+  public final static String zapRequestEventJsonWithReordering =
       StringTemplate.STR."""
           [
             "EVENT",
-              {
-                "content":"1111111111",
-                "id":"\{TARGET_TEXT_MESSAGE_EVENT_CONTENT}",
-                "kind":1,
-                "created_at":1717357053050,
-                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-                "tags": [
-                  [
-                    "e",
-                    "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
-                  ],
-                  [
-                    "p",
-                    "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
-                  ],
-                  [
-                    "g",
-                    "textnote geo-tag-1"
-                  ]
+            {
+              "id":"\{TARGET_ZAP_REQUEST_EVENT_CONTENT}",
+              "kind": 9734,
+              "content": "content Zap Request",
+              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+              "created_at": 1719016694217,
+              "tags": [
+                [
+                  "relays",
+                  "ws://localhost:5555"
                 ],
-              "sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
+                [
+                  "e",
+                  "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
+                ],
+                [
+                  "t",
+                  "ZapRequest hash-tag-1111"
+                ],
+                [
+                  "g",
+                  "ZapRequest geo-tag-1"
+                ],
+                [
+                  "p",
+                  "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                ],
+                [
+                  "subject",
+                  "subject Zap Request"
+                ],
+                [
+                  "amount",
+                  "271.00"
+                ],
+                [
+                  "lnurl",
+                  "lnurl1dp68gurn8ghj7um5v93kketj9ehx2amn9uh8wetvdskkkmn0wahz7mrww4excup0dajx2mrv92x9xp"
+                ]
+              ],
+              "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
             }
           ]
       """;
@@ -119,7 +159,7 @@ class MultipleSubscriberTextEventMessageIT {
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  MultipleSubscriberTextEventMessageIT(
+  MultipleZapRequestEventMessageIT(
       @Value("${server.port}") String port,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
@@ -186,12 +226,12 @@ class MultipleSubscriberTextEventMessageIT {
   static class EventMessageSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(textMessageEventJson));
+      session.sendMessage(new TextMessage(zapRequestEventJsonSent));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertTrue(message.getPayload().toString().contains(TARGET_TEXT_MESSAGE_EVENT_CONTENT));
+      assertTrue(message.getPayload().toString().contains(TARGET_ZAP_REQUEST_EVENT_CONTENT));
       session.close();
     }
   }
@@ -203,7 +243,7 @@ class MultipleSubscriberTextEventMessageIT {
 
     public ReqMessageSocketHandler(Integer index, String reqId) {
       this.index = index;
-      reqJson = "[\"REQ\",\"" + reqId + "\",{\"ids\":[\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
+      reqJson = "[\"REQ\",\"" + reqId + "\",{\"ids\":[\"6122f2089e52ac1687bc4b7eef938f468a78ee47f188f40dc1ab95d38205b94a\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
     }
 
     @Override
@@ -213,15 +253,18 @@ class MultipleSubscriberTextEventMessageIT {
     }
 
     @Override
-    public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
-      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), mapper.readTree(message.getPayload().toString()));
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
+      JsonNode payloadString = mapper.readTree(message.getPayload().toString());
+      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(zapRequestEventJsonWithReordering), payloadString);
 
-//    below sout seems to serve extending thread execution time, preventing its premature shutdown
       System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
+      System.out.println(payloadString.toPrettyString());
+      System.out.println("------------------------");
+//    below sout seems to serve extending thread execution time, preventing its premature shutdown
       if (!condition) {
 //        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
         session.close();
-        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", textMessageEventJsonReordered, mapper.readTree(message.getPayload().toString()).toPrettyString()));
+        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", zapRequestEventJsonWithReordering, payloadString.toPrettyString()));
       }
       increment();
       session.close();

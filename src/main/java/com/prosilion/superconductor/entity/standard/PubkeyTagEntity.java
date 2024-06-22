@@ -16,6 +16,8 @@ import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.tag.PubKeyTag;
 
+import java.util.Objects;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -52,5 +54,18 @@ public class PubkeyTagEntity extends AbstractTagEntity {
     return new PubkeyTagDto(
         new PubKeyTag(
             new PublicKey(publicKey), mainRelayUrl, petName));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    PubkeyTagEntity that = (PubkeyTagEntity) o;
+    return Objects.equals(publicKey, that.publicKey) && Objects.equals(mainRelayUrl, that.mainRelayUrl) && Objects.equals(petName, that.petName);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(publicKey, mainRelayUrl, petName);
   }
 }

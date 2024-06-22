@@ -32,7 +32,7 @@ public class ConcreteTagEntitiesService<
   public List<AbstractTagEntity> getTags(@NonNull Long eventId) {
     return tagPlugins.stream().map(tagModule ->
             tagModule.getTags(eventId))
-        .flatMap(List::stream).collect(Collectors.toList());
+        .flatMap(List::stream).distinct().collect(Collectors.toList());
   }
 
   public void saveTags(@NonNull Long eventId, @NonNull List<P> baseTags) {

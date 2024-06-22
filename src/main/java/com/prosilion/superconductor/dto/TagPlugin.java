@@ -37,7 +37,7 @@ public interface TagPlugin<
                 getStandardTagEntityRepositoryRxR().findById(
                     event.getEventId()))
             .orElse(Optional.empty()).stream().toList())
-        .flatMap(Collection::stream).toList();
+        .flatMap(Collection::stream).distinct().toList();
   }
 
   default void saveTag(Long eventId, P baseTag) {

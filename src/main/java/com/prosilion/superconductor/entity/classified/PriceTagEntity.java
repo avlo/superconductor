@@ -16,6 +16,7 @@ import nostr.event.BaseTag;
 import nostr.event.tag.PriceTag;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Setter
 @Getter
@@ -50,5 +51,17 @@ public class PriceTagEntity extends AbstractTagEntity {
   @Override
   public AbstractTagDto convertEntityToDto() {
     return new PriceTagDto(new PriceTag(number, currency, frequency));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    PriceTagEntity that = (PriceTagEntity) o;
+    return Objects.equals(number, that.number) && Objects.equals(currency, that.currency) && Objects.equals(frequency, that.frequency);
+  }
+  @Override
+  public int hashCode() {
+    return Objects.hash(number, currency, frequency);
   }
 }

@@ -15,6 +15,8 @@ import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.GeohashTag;
 
+import java.util.Objects;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -45,5 +47,18 @@ public class GeohashTagEntity extends AbstractTagEntity {
   @Override
   public AbstractTagDto convertEntityToDto() {
     return new GeohashTagDto(new GeohashTag(location));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    GeohashTagEntity that = (GeohashTagEntity) o;
+    return Objects.equals(location, that.location);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(location);
   }
 }

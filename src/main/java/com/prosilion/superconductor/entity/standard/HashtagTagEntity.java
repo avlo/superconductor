@@ -15,6 +15,8 @@ import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.HashtagTag;
 
+import java.util.Objects;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -45,5 +47,18 @@ public class HashtagTagEntity extends AbstractTagEntity {
   @Override
   public AbstractTagDto convertEntityToDto() {
     return new HashtagTagDto(new HashtagTag(hashtagTag));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    HashtagTagEntity that = (HashtagTagEntity) o;
+    return Objects.equals(hashtagTag, that.hashtagTag);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(hashtagTag);
   }
 }

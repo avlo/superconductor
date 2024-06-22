@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "subscriber-filter_referenced_pubkey-join")
+@Table(name = "subscriber-filter_referenced_pubkey")
 public class SubscriberFilterReferencedPubkey implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

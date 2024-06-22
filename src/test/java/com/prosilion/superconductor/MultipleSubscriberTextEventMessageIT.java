@@ -74,6 +74,7 @@ class MultipleSubscriberTextEventMessageIT {
           ]
       """;
 
+  @SuppressWarnings("preview")
   public final static String textMessageEventJsonReordered =
       StringTemplate.STR."""
           [

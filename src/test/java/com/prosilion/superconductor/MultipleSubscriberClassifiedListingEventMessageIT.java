@@ -44,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MultipleSubscriberClassifiedListingEventMessageIT {
   private static final String TARGET_CLASSIFIED_LISTING_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
+  @SuppressWarnings("preview")
   public final static String classifiedListingEventJsonSent =
       StringTemplate.STR."""
           [
@@ -103,6 +104,7 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
           ]
       """;
 
+  @SuppressWarnings("preview")
   public final static String classifiedListingEventJsonExpectedWithReordering =
       StringTemplate.STR."""
           [

@@ -1,6 +1,7 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.util.concurrent.MoreExecutors;
 import lombok.Getter;
 import lombok.Synchronized;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -129,7 +129,7 @@ class MultipleSubscriberTextEventMessageIT {
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
     this.pctThreshold = pctThreshold;
-    this.executorService = Executors.newSingleThreadExecutor();
+    this.executorService = MoreExecutors.newDirectExecutorService();
   }
 
   @BeforeAll
@@ -140,7 +140,7 @@ class MultipleSubscriberTextEventMessageIT {
     await().until(eventExecute::isDone);
 
     reqClients = new ArrayList<>(targetCount);
-    IntStream.range(0, targetCount).sequential().forEach(increment -> {
+    IntStream.range(0, targetCount).parallel().forEach(increment -> {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
 

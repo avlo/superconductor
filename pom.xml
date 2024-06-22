@@ -169,10 +169,16 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <jvmArguments>--enable-preview</jvmArguments> <!-- used in testing only -->
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <argLine>${argLine} --enable-preview</argLine> <!-- used in testing only -->
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -184,6 +190,9 @@
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${maven-failsafe-plugin.version}</version>
+        <configuration>
+          <argLine>${argLine} --enable-preview</argLine> <!-- used in testing only -->
+        </configuration>
         <executions>
           <execution>
             <goals>

@@ -83,7 +83,7 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
 
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar target/superconductor-1.5.1-SNAPSHOT.war
+    $ java -jar target/superconductor-1.6.0.war
 
 #### 2.  run using maven spring-boot run target
 
@@ -95,7 +95,7 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
 #### 3.  run using pre-existing application-server container instance
 
 
-    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.5.1-SNAPSHOT.war <your_container/instance/deployment_directory>
+    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.6.0.war <your_container/instance/deployment_directory>
  
 for full/debug developer console logging:
 
@@ -148,6 +148,8 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 
   http://localhost:5555/NIP01.html
+
+  http://localhost:5555/NIP57.html
 
   http://localhost:5555/NIP99.html
 

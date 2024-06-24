@@ -3,9 +3,6 @@ package com.prosilion.superconductor.entity.standard;
 import com.prosilion.superconductor.dto.standard.SubjectTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,9 +19,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "subject_tag")
 public class SubjectTagEntity extends AbstractTagEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
   private String subject;
 
   public SubjectTagEntity(@NonNull String subject) {

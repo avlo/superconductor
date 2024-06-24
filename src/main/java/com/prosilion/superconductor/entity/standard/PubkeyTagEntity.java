@@ -1,12 +1,9 @@
 package com.prosilion.superconductor.entity.standard;
 
-import com.prosilion.superconductor.dto.standard.PubkeyTagDto;
 import com.prosilion.superconductor.dto.AbstractTagDto;
+import com.prosilion.superconductor.dto.standard.PubkeyTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,11 +21,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "pubkey_tag")
 public class PubkeyTagEntity extends AbstractTagEntity {
-  //  TODO: below annotations and id necessary for compilation even thuogh same is defined in StandardTagEntity
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
   private String publicKey;
   private String mainRelayUrl;
   private String petName;

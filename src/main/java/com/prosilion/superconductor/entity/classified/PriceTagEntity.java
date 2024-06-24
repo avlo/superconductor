@@ -1,12 +1,9 @@
 package com.prosilion.superconductor.entity.classified;
 
-import com.prosilion.superconductor.dto.classified.PriceTagDto;
 import com.prosilion.superconductor.dto.AbstractTagDto;
+import com.prosilion.superconductor.dto.classified.PriceTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,10 +21,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "price_tag")
 public class PriceTagEntity extends AbstractTagEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
   private BigDecimal number;
   private String currency;
   private String frequency;

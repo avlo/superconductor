@@ -57,6 +57,15 @@ class MultipleSubscriberTextEventMessageIT {
                 "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
                 "tags": [
                   [
+                    "a",
+                    "wss://nostr.example.com",
+                    "30023:f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd"
+                  ],
+                  [
+                    "custom-tag",
+                    "custom-tag random value"
+                  ],
+                  [
                     "p",
                     "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
                   ],
@@ -91,8 +100,17 @@ class MultipleSubscriberTextEventMessageIT {
                     "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
                   ],
                   [
+                    "custom-tag",
+                    "custom-tag random value"
+                  ],
+                  [
                     "p",
                     "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                  ],
+                  [
+                    "a",
+                    "30023:f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd",
+                    "wss://nostr.example.com"
                   ],
                   [
                     "g",

@@ -13,7 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter_author")
-public class SubscriberFilterAuthor extends AbstractSubscriberFilterType {
+public class SubscriberFilterAuthor extends AbstractFilterType {
   private String author;
 
   public SubscriberFilterAuthor(Long filterId, String author) {

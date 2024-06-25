@@ -1,25 +1,46 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterKindRepository;
+import nostr.event.Kind;
+import nostr.event.impl.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-public class FilterKindPlugin<
-    S extends SubscriberFilterKind, // @MappedSuperclass for below
-    T extends SubscriberFilterKindRepository<S>>
-    implements FilterPlugin<S, T> {
+import java.util.ArrayList;
+import java.util.Optional;
 
-  private final SubscriberFilterKindRepository<S> join;
+
+@Component
+public class FilterKindPlugin implements FilterPlugin {
+
+  private final SubscriberFilterKindRepository<SubscriberFilterKind> join;
 
   @Autowired
-  public FilterKindPlugin(SubscriberFilterKindRepository<S> join) {
+  public FilterKindPlugin(SubscriberFilterKindRepository<SubscriberFilterKind> join) {
     this.join = join;
   }
 
   @Override
-  public T getAbstractSubscriberFilterTypeJoinRepository() {
-    return (T) join;
+  public Filters appendFilters(Long filterId, Filters filters) {
+    filters.setKinds(
+        join.getAllByFilterId(filterId).stream().map(subscriberFilterKind ->
+            Kind.valueOf(subscriberFilterKind.getKind())).toList());
+    return filters;
+  }
+
+  @Override
+  public void saveFilter(Long filterId, Filters filters) {
+    // TODO: saveAllAndFlush() vs save(), possibly solves inconsistency issues w/ entityManager?
+    join.saveAllAndFlush(() ->
+        Optional.ofNullable(
+                filters.getKinds())
+            .orElseGet(ArrayList::new).stream().map(kind ->
+                new SubscriberFilterKind(filterId, kind.getValue())).toList().iterator());
+  }
+
+  @Override
+  public SubscriberFilterKindRepository getJoin() {
+    return join;
   }
 
   @Override

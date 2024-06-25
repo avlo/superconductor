@@ -36,7 +36,7 @@ public interface TagPlugin<
         .map(event -> Optional.of(
                 getStandardTagEntityRepositoryRxR().findById(
                     event.getEventId()))
-            .orElse(Optional.empty()).stream().toList())
+            .orElseGet(Optional::empty).stream().toList())
         .flatMap(Collection::stream).distinct().toList();
   }
 

@@ -58,7 +58,9 @@ public class FilterMatcher<T extends GenericEvent> {
     if (nonNull(subscriberFilters.getUntil()) && subscriberFilters.getUntil() <= eventToCheck.event().getCreatedAt())
       nostrEvents.add(eventToCheck);
 
-    return nostrEvents.stream().limit(Optional.ofNullable(subscriberFilters.getLimit()).orElse(100)).toList();
+    return nostrEvents.stream().limit(
+        Optional.ofNullable(
+            subscriberFilters.getLimit()).orElse(100)).toList();
   }
 
   private Set<AddNostrEvent<T>> getCollect(List<Combo<T>> combos, AddNostrEvent<T> eventToCheck) {

@@ -1,23 +1,19 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
 import com.prosilion.superconductor.repository.join.subscriber.AbstractSubscriberFilterTypeJoinRepository;
+import nostr.event.impl.Filters;
 
-import java.util.List;
-
-public interface FilterPlugin<
-    S extends AbstractSubscriberFilterType, // @MappedSuperclass for below
-    T extends AbstractSubscriberFilterTypeJoinRepository<S>> {
+public interface FilterPlugin {
 
   String getCode();
 
-  T getAbstractSubscriberFilterTypeJoinRepository();
+  Filters appendFilters(Long filterId, Filters filters);
 
-  default List<S> getFilters(Long filterId) {
-    return getAbstractSubscriberFilterTypeJoinRepository()
-        .getAllByFilterId(filterId);
-  }
+  void saveFilter(Long filterId, Filters filterType);
 
-  default void saveFilter(S filterType) {
-    getAbstractSubscriberFilterTypeJoinRepository().save(filterType);
+  AbstractSubscriberFilterTypeJoinRepository<AbstractFilterType> getJoin();
+
+  default void removeFilters(Long filterId) {
+    getJoin().deleteAllByFilterId(filterId);
   }
 }

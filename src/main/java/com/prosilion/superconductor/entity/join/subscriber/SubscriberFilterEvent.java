@@ -13,7 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter_event")
-public class SubscriberFilterEvent extends AbstractSubscriberFilterType {
+public class SubscriberFilterEvent extends AbstractFilterType {
   private String eventIdString;
 
   public SubscriberFilterEvent(Long filterId, String eventIdString) {

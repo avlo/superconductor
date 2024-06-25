@@ -14,13 +14,13 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class AbstractSubscriberFilterType implements Serializable {
+public abstract class AbstractFilterType implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private Long filterId;
 
-  protected AbstractSubscriberFilterType(Long filterId) {
+  protected AbstractFilterType(Long filterId) {
     this.filterId = filterId;
   }
 

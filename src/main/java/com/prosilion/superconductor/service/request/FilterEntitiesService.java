@@ -1,41 +1,38 @@
 package com.prosilion.superconductor.service.request;
 
-import com.prosilion.superconductor.entity.join.subscriber.AbstractSubscriberFilterType;
 import com.prosilion.superconductor.entity.join.subscriber.FilterPlugin;
-import com.prosilion.superconductor.repository.join.subscriber.AbstractSubscriberFilterTypeJoinRepository;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.event.impl.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class FilterEntitiesService<
-    S extends AbstractSubscriberFilterType,
-    T extends AbstractSubscriberFilterTypeJoinRepository<S>> {
-  private final List<FilterPlugin<S, T>> filterPlugins;
+public class FilterEntitiesService {
+  private final List<FilterPlugin> filterPlugins;
 
   @Autowired
-  public FilterEntitiesService(List<FilterPlugin<S, T>> filterPlugins) {
+  public FilterEntitiesService(List<FilterPlugin> filterPlugins) {
     this.filterPlugins = filterPlugins;
   }
 
-  public List<AbstractSubscriberFilterType> getFilters(@NonNull Long filterId) {
-    return filterPlugins.stream().map(plugin ->
-            plugin.getFilters(filterId))
-        .flatMap(List::stream).distinct().collect(Collectors.toList());
+  public Filters getFilters(@NonNull Long filterId) {
+    Filters filters = new Filters();
+    filterPlugins.forEach(plugin ->
+        plugin.appendFilters(filterId, filters));
+    return filters;
   }
 
-  public void saveFilters(@NonNull Long filterId, @NonNull List<S> filters) {
+  public void saveFilters(@NonNull Long filterId, @NonNull Filters filters) {
     filterPlugins.forEach(plugin ->
-        filters.stream().filter(filter ->
-                filter.getCode().equalsIgnoreCase(plugin.getCode()))
-            .forEach(filter -> {
-              filter.setFilterId(filterId);
-              plugin.saveFilter(filter);
-            }));
+        plugin.saveFilter(filterId, filters));
+  }
+
+  public void removeFilters(@NonNull Long filterId) {
+    filterPlugins.forEach(plugin ->
+        plugin.removeFilters(filterId));
   }
 }

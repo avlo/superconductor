@@ -71,7 +71,7 @@ public class SubscriberService {
   }
 
 //  public String deactivateSubscriberBySessionId(String sessionId) throws NoResultException {
-//    Subscriber s = Optional.of(subscriberManager.getBySessionId(sessionId)).orElseThrow(NoResultException::new);
+//    Subscriber s = Optional.of/ofNullable(subscriberManager.getBySessionId(sessionId)).orElseThrow(NoResultException::new);
 //    s.setActive(false);
 //    return subscriberManager.save(s).getSubscriberId();
 //  }

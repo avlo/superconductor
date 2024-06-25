@@ -1,25 +1,45 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterAuthorRepository;
+import nostr.base.PublicKey;
+import nostr.event.impl.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-public class FilterAuthorPlugin<
-    S extends SubscriberFilterAuthor, // @MappedSuperclass for below
-    T extends SubscriberFilterAuthorRepository<S>>
-    implements FilterPlugin<S, T> {
+import java.util.ArrayList;
+import java.util.Optional;
 
-  private final SubscriberFilterAuthorRepository<S> join;
+@Component
+public class FilterAuthorPlugin implements FilterPlugin {
+
+  private final SubscriberFilterAuthorRepository<SubscriberFilterAuthor> join;
 
   @Autowired
-  public FilterAuthorPlugin(SubscriberFilterAuthorRepository<S> subscriberFilterAuthorRepository) {
+  public FilterAuthorPlugin(SubscriberFilterAuthorRepository<SubscriberFilterAuthor> subscriberFilterAuthorRepository) {
     this.join = subscriberFilterAuthorRepository;
   }
 
   @Override
-  public T getAbstractSubscriberFilterTypeJoinRepository() {
-    return (T) join;
+  public Filters appendFilters(Long filterId, Filters filters) {
+    filters.setAuthors(
+        join.getAllByFilterId(filterId).stream().map(author ->
+            new PublicKey(author.getAuthor())).toList());
+    return filters;
+  }
+
+  @Override
+  public void saveFilter(Long filterId, Filters filters) {
+    // TODO: saveAllAndFlush() vs save(), possibly solves inconsistency issues w/ entityManager?
+    join.saveAllAndFlush(() ->
+        Optional.ofNullable(
+                filters.getAuthors())
+            .orElseGet(ArrayList::new).stream().map(authorPubkey ->
+                new SubscriberFilterAuthor(filterId, authorPubkey.toString())).toList().iterator());
+  }
+
+  @Override
+  public SubscriberFilterAuthorRepository getJoin() {
+    return join;
   }
 
   @Override

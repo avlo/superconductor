@@ -23,4 +23,7 @@ public abstract class AbstractSubscriberFilter implements Serializable {
   protected AbstractSubscriberFilter(Long filterId) {
     this.filterId = filterId;
   }
+
+  public abstract boolean equals(Object o);
+  public abstract int hashCode();
 }

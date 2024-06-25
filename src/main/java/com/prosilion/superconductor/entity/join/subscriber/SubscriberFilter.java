@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Setter
 @Getter
@@ -38,5 +39,18 @@ public class SubscriberFilter implements Serializable {
     this.since = since;
     this.until = until;
     this.limit = limit;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SubscriberFilter that = (SubscriberFilter) o;
+    return Objects.equals(subscriberId, that.subscriberId) && Objects.equals(since, that.since) && Objects.equals(until, that.until) && Objects.equals(limit, that.limit);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(subscriberId, since, until, limit);
   }
 }

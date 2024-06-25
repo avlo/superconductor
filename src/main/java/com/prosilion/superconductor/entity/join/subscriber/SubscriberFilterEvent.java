@@ -26,11 +26,11 @@ public class SubscriberFilterEvent extends AbstractSubscriberFilter {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     SubscriberFilterEvent that = (SubscriberFilterEvent) o;
-    return Objects.equals(getFilterId(), that.getFilterId()) && Objects.equals(eventIdString, that.eventIdString);
+    return Objects.equals(eventIdString, that.eventIdString);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getFilterId(), eventIdString);
+    return Objects.hash(eventIdString);
   }
 }

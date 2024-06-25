@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -17,5 +19,18 @@ public class SubscriberFilterReferencedEvent extends AbstractSubscriberFilter {
   public SubscriberFilterReferencedEvent(Long filterId, String referencedEventId) {
     super(filterId);
     this.referencedEventId = referencedEventId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SubscriberFilterReferencedEvent that = (SubscriberFilterReferencedEvent) o;
+    return Objects.equals(referencedEventId, that.referencedEventId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(referencedEventId);
   }
 }

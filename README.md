@@ -136,13 +136,14 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 	select id, name, "value" from element_attribute;
 	select id, subscriber_id, session_id, active from subscriber;
 	select id, subscriber_id, "since", "until", "limit" from "subscriber-filter";
-	select id, referenced_event_id, filter_id from "subscriber-filter_referenced_event";
-	select id, referenced_pubkey, filter_id from "subscriber-filter_referenced_pubkey";
-	select id, filter_id, kind_id from "subscriber-filter_kind";
+	select id, filter_id, referenced_event_id from "subscriber-filter_referenced_event";
+	select id, filter_id, referenced_pubkey from "subscriber-filter_referenced_pubkey";
+	select id, filter_id, kind from "subscriber-filter_kind";
 	select id, filter_id, event_id_string from "subscriber-filter_event";
 	select id, filter_id, author from "subscriber-filter_author";
 	select id, event_id, price_tag_id from "event-price_tag-join";
 	select id, uri from relays_tag;
+	select id, event_id, relays_id from "event-relays_tag-join";
 	select id, number, currency, frequency from price_tag;
  
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc

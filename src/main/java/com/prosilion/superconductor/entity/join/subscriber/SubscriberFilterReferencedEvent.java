@@ -1,26 +1,21 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter_referenced_event")
-public class SubscriberFilterReferencedEvent implements Serializable {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
-  private Long filterId;
+public class SubscriberFilterReferencedEvent extends AbstractSubscriberFilter {
   private String referencedEventId;
 
   public SubscriberFilterReferencedEvent(Long filterId, String referencedEventId) {
-    this.filterId = filterId;
+    super(filterId);
     this.referencedEventId = referencedEventId;
   }
 }

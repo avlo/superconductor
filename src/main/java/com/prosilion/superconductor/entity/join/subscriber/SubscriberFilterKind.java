@@ -1,26 +1,21 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter_kind")
-public class SubscriberFilterKind implements Serializable {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
-  private Long filterId;
+public class SubscriberFilterKind extends AbstractSubscriberFilter {
   private Integer kindId;
 
   public SubscriberFilterKind(Long filterId, Integer kindId) {
-    this.filterId = filterId;
+    super(filterId);
     this.kindId = kindId;
   }
 }

@@ -1,15 +1,11 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 @Setter
@@ -17,16 +13,11 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter_event")
-public class SubscriberFilterEvent implements Serializable {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
-  private Long filterId;
+public class SubscriberFilterEvent extends AbstractSubscriberFilter {
   private String eventIdString;
 
   public SubscriberFilterEvent(Long filterId, String eventIdString) {
-    this.filterId = filterId;
+    super(filterId);
     this.eventIdString = eventIdString;
   }
 
@@ -35,11 +26,11 @@ public class SubscriberFilterEvent implements Serializable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     SubscriberFilterEvent that = (SubscriberFilterEvent) o;
-    return Objects.equals(filterId, that.filterId) && Objects.equals(eventIdString, that.eventIdString);
+    return Objects.equals(getFilterId(), that.getFilterId()) && Objects.equals(eventIdString, that.eventIdString);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(filterId, eventIdString);
+    return Objects.hash(getFilterId(), eventIdString);
   }
 }

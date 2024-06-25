@@ -8,19 +8,14 @@ import lombok.Setter;
 import java.io.Serializable;
 @Setter
 @Getter
-@NoArgsConstructor
 @Entity
+@NoArgsConstructor
 @Table(name = "subscriber-filter_referenced_pubkey")
-public class SubscriberFilterReferencedPubkey implements Serializable {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
-  private Long filterId;
+public class SubscriberFilterReferencedPubkey extends AbstractSubscriberFilter {
   private String referencedPubkey;
 
   public SubscriberFilterReferencedPubkey(Long filterId, String referencedPubkey) {
-    this.filterId = filterId;
+    super(filterId);
     this.referencedPubkey = referencedPubkey;
   }
 }

@@ -24,7 +24,6 @@ public class SubscriberFiltersManager {
   }
 
   public List<SubscriberFilter> getEntireSubscribersFilters() {
-    // TODO: review below, is this doing what it's supposed to be doing?  seems not a full graph
     return subscriberFilterRepository.findAll();
   }
 

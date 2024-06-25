@@ -21,16 +21,14 @@ public class FilterKindPlugin implements FilterPlugin {
   }
 
   @Override
-  public Filters appendFilters(Long filterId, Filters filters) {
+  public void appendFilters(Long filterId, Filters filters) {
     filters.setKinds(
         join.getAllByFilterId(filterId).stream().map(subscriberFilterKind ->
             Kind.valueOf(subscriberFilterKind.getKind())).toList());
-    return filters;
   }
 
   @Override
   public void saveFilter(Long filterId, Filters filters) {
-    // TODO: saveAllAndFlush() vs save(), possibly solves inconsistency issues w/ entityManager?
     join.saveAllAndFlush(() ->
         Optional.ofNullable(
                 filters.getKinds())

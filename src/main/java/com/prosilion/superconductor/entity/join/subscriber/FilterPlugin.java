@@ -7,7 +7,7 @@ public interface FilterPlugin {
 
   String getCode();
 
-  Filters appendFilters(Long filterId, Filters filters);
+  void appendFilters(Long filterId, Filters filters);
 
   void saveFilter(Long filterId, Filters filterType);
 

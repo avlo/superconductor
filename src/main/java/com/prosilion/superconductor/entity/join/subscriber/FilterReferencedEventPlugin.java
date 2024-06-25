@@ -20,16 +20,14 @@ public class FilterReferencedEventPlugin implements FilterPlugin {
   }
 
   @Override
-  public Filters appendFilters(Long filterId, Filters filters) {
+  public void appendFilters(Long filterId, Filters filters) {
     filters.setReferencedEvents(
         join.getAllByFilterId(filterId).stream().map(referencedEvent ->
             new GenericEvent(referencedEvent.getReferencedEventId())).toList());
-    return filters;
   }
 
   @Override
   public void saveFilter(Long filterId, Filters filters) {
-// TODO: saveAllAndFlush() vs save(), possibly solves inconsistency issues w/ entityManager?
     join.saveAllAndFlush(() ->
         Optional.ofNullable(
                 filters.getReferencedEvents())

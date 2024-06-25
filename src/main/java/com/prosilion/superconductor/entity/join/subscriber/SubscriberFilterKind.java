@@ -13,7 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter_kind")
-public class SubscriberFilterKind extends AbstractSubscriberFilter {
+public class SubscriberFilterKind extends AbstractSubscriberFilterType {
   private Integer kindId;
 
   public SubscriberFilterKind(Long filterId, Integer kindId) {
@@ -32,5 +32,10 @@ public class SubscriberFilterKind extends AbstractSubscriberFilter {
   @Override
   public int hashCode() {
     return Objects.hashCode(kindId);
+  }
+
+  @Override
+  public String getCode() {
+    return "kind";
   }
 }

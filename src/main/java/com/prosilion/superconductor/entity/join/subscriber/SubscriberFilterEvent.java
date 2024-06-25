@@ -13,7 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter_event")
-public class SubscriberFilterEvent extends AbstractSubscriberFilter {
+public class SubscriberFilterEvent extends AbstractSubscriberFilterType {
   private String eventIdString;
 
   public SubscriberFilterEvent(Long filterId, String eventIdString) {
@@ -32,5 +32,10 @@ public class SubscriberFilterEvent extends AbstractSubscriberFilter {
   @Override
   public int hashCode() {
     return Objects.hash(eventIdString);
+  }
+
+  @Override
+  public String getCode() {
+    return "event";
   }
 }

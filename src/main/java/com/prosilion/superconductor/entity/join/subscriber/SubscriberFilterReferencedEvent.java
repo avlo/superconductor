@@ -13,7 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber-filter_referenced_event")
-public class SubscriberFilterReferencedEvent extends AbstractSubscriberFilter {
+public class SubscriberFilterReferencedEvent extends AbstractSubscriberFilterType {
   private String referencedEventId;
 
   public SubscriberFilterReferencedEvent(Long filterId, String referencedEventId) {
@@ -32,5 +32,10 @@ public class SubscriberFilterReferencedEvent extends AbstractSubscriberFilter {
   @Override
   public int hashCode() {
     return Objects.hashCode(referencedEventId);
+  }
+
+  @Override
+  public String getCode() {
+    return "referencedEvent";
   }
 }

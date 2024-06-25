@@ -14,16 +14,17 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class AbstractSubscriberFilter implements Serializable {
+public abstract class AbstractSubscriberFilterType implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private Long filterId;
 
-  protected AbstractSubscriberFilter(Long filterId) {
+  protected AbstractSubscriberFilterType(Long filterId) {
     this.filterId = filterId;
   }
 
   public abstract boolean equals(Object o);
   public abstract int hashCode();
+  public abstract String getCode();
 }

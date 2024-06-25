@@ -4,14 +4,13 @@ import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterEvent;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface SubscriberFilterEventRepository extends JpaRepository<SubscriberFilterEvent, Long> {
+public interface SubscriberFilterEventRepository<T extends SubscriberFilterEvent> extends AbstractSubscriberFilterTypeJoinRepository<T> {
   @Query("SELECT new com.prosilion.superconductor.entity.EventEntity(e.id, e.eventIdString, e.kind, e.nip, e.pubKey, e.createdAt, e.signature, e.content) from EventEntity e where e.eventIdString = :eventIdString")
   List<EventEntity> findEventsBySubscriberFilterEventString(String eventIdString);
 
@@ -24,6 +23,6 @@ public interface SubscriberFilterEventRepository extends JpaRepository<Subscribe
   void deleteAllByFilterIdIn(List<Long> filterId);
 
   default void save(@NotNull Long filterId, @NotNull String eventIdString) {
-    this.save(new SubscriberFilterEvent(filterId, eventIdString));
+    save((T) new SubscriberFilterEvent(filterId, eventIdString));
   }
 }

@@ -13,7 +13,7 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 @Table(name = "subscriber-filter_referenced_pubkey")
-public class SubscriberFilterReferencedPubkey extends AbstractSubscriberFilter {
+public class SubscriberFilterReferencedPubkey extends AbstractSubscriberFilterType {
   private String referencedPubkey;
 
   public SubscriberFilterReferencedPubkey(Long filterId, String referencedPubkey) {
@@ -32,5 +32,10 @@ public class SubscriberFilterReferencedPubkey extends AbstractSubscriberFilter {
   @Override
   public int hashCode() {
     return Objects.hashCode(referencedPubkey);
+  }
+
+  @Override
+  public String getCode() {
+    return "referencedPubKey";
   }
 }

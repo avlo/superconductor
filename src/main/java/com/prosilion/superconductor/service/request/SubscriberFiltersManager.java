@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.service.request;
 
+import com.prosilion.superconductor.entity.join.subscriber.AbstractFilterType;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
+import com.prosilion.superconductor.repository.join.subscriber.AbstractSubscriberFilterTypeJoinRepository;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterRepository;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
@@ -14,11 +16,18 @@ import java.util.List;
 @Service
 @Transactional
 public class SubscriberFiltersManager {
-  private final FilterEntitiesService filterEntitiesService;
+  private final FilterEntitiesService<
+      AbstractSubscriberFilterTypeJoinRepository<AbstractFilterType>,
+      AbstractFilterType> filterEntitiesService;
   private final SubscriberFilterRepository subscriberFilterRepository;
 
   @Autowired
-  public SubscriberFiltersManager(FilterEntitiesService filterEntitiesService, SubscriberFilterRepository subscriberFilterRepository) {
+  public SubscriberFiltersManager(
+      FilterEntitiesService<
+          AbstractSubscriberFilterTypeJoinRepository<AbstractFilterType>,
+          AbstractFilterType>
+          filterEntitiesService,
+      SubscriberFilterRepository subscriberFilterRepository) {
     this.filterEntitiesService = filterEntitiesService;
     this.subscriberFilterRepository = subscriberFilterRepository;
   }

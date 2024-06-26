@@ -1,43 +1,46 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterReferencedEventRepository;
+import lombok.NonNull;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
-public class FilterReferencedEventPlugin implements FilterPlugin {
+public class FilterReferencedEventPlugin<
+    T extends SubscriberFilterReferencedEventRepository<U>,
+    U extends SubscriberFilterReferencedEvent> implements FilterPlugin<T, U> {
 
-  private final SubscriberFilterReferencedEventRepository<SubscriberFilterReferencedEvent> join;
+  private final SubscriberFilterReferencedEventRepository<U> join;
 
   @Autowired
-  public FilterReferencedEventPlugin(SubscriberFilterReferencedEventRepository<SubscriberFilterReferencedEvent> join) {
+  public FilterReferencedEventPlugin(SubscriberFilterReferencedEventRepository<U> join) {
     this.join = join;
   }
 
   @Override
-  public void appendFilters(Long filterId, Filters filters) {
+  public void appendFilters(@NonNull Long filterId, @NonNull Filters filters) {
     filters.setReferencedEvents(
         join.getAllByFilterId(filterId).stream().map(referencedEvent ->
             new GenericEvent(referencedEvent.getReferencedEventId())).toList());
   }
 
   @Override
-  public void saveFilter(Long filterId, Filters filters) {
-    join.saveAllAndFlush(() ->
-        Optional.ofNullable(
-                filters.getReferencedEvents())
-            .orElseGet(ArrayList::new).stream().map(genericEvent ->
-                new SubscriberFilterReferencedEvent(filterId, genericEvent.getId())).toList().iterator());
+  public List<U> getTypeSpecificFilterList(@NonNull Long filterId, @NonNull Filters filters) {
+    return Optional.ofNullable(
+            filters.getReferencedEvents())
+        .orElseGet(ArrayList::new).stream().map(genericEvent ->
+            (U) new SubscriberFilterReferencedEvent(filterId, genericEvent.getId())).toList();
   }
 
   @Override
-  public SubscriberFilterReferencedEventRepository getJoin() {
-    return join;
+  public T getJoin() {
+    return (T) join;
   }
 
   @Override

@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.service.request;
 
+import com.prosilion.superconductor.entity.join.subscriber.AbstractFilterType;
 import com.prosilion.superconductor.entity.join.subscriber.FilterPlugin;
+import com.prosilion.superconductor.repository.join.subscriber.AbstractSubscriberFilterTypeJoinRepository;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.Filters;
@@ -11,11 +13,13 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class FilterEntitiesService {
-  private final List<FilterPlugin> filterPlugins;
+public class FilterEntitiesService<
+    T extends AbstractSubscriberFilterTypeJoinRepository<U>,
+    U extends AbstractFilterType> {
+  private final List<FilterPlugin<T, U>> filterPlugins;
 
   @Autowired
-  public FilterEntitiesService(List<FilterPlugin> filterPlugins) {
+  public FilterEntitiesService(List<FilterPlugin<T, U>> filterPlugins) {
     this.filterPlugins = filterPlugins;
   }
 
@@ -28,7 +32,7 @@ public class FilterEntitiesService {
 
   public void saveFilters(@NonNull Long filterId, @NonNull Filters filters) {
     filterPlugins.forEach(plugin ->
-        plugin.saveFilter(filterId, filters));
+        plugin.saveFilters(filterId, filters));
   }
 
   public void removeFilters(@NonNull Long filterId) {

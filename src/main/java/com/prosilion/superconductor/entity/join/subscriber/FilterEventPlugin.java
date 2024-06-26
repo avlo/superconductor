@@ -1,43 +1,46 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterEventRepository;
+import lombok.NonNull;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
-public class FilterEventPlugin implements FilterPlugin {
+public class FilterEventPlugin<
+    T extends SubscriberFilterEventRepository<U>,
+    U extends SubscriberFilterEvent> implements FilterPlugin<T, U> {
 
-  private final SubscriberFilterEventRepository<SubscriberFilterEvent> join;
+  private final SubscriberFilterEventRepository<U> join;
 
   @Autowired
-  public FilterEventPlugin(SubscriberFilterEventRepository<SubscriberFilterEvent> join) {
+  public FilterEventPlugin(SubscriberFilterEventRepository<U> join) {
     this.join = join;
   }
 
   @Override
-  public void appendFilters(Long filterId, Filters filters) {
+  public void appendFilters(@NonNull Long filterId, @NonNull Filters filters) {
     filters.setEvents(
         join.getAllByFilterId(filterId).stream().map(event ->
             new GenericEvent(event.getEventIdString())).toList());
   }
 
   @Override
-  public void saveFilter(Long filterId, Filters filters) {
-    join.saveAllAndFlush(() ->
-        Optional.ofNullable(
-                filters.getEvents())
-            .orElseGet(ArrayList::new).stream().map(genericEvent ->
-                new SubscriberFilterEvent(filterId, genericEvent.getId())).toList().iterator());
+  public List<U> getTypeSpecificFilterList(@NonNull Long filterId, @NonNull Filters filters) {
+    return Optional.ofNullable(
+            filters.getEvents())
+        .orElseGet(ArrayList::new).stream().map(genericEvent ->
+            (U) new SubscriberFilterEvent(filterId, genericEvent.getId())).toList();
   }
 
   @Override
-  public SubscriberFilterEventRepository getJoin() {
-    return join;
+  public T getJoin() {
+    return (T) join;
   }
 
   @Override

@@ -114,6 +114,9 @@ class MultipleZapRequestEventMessageIT {
     await().until(executorService::isTerminated);
 
     System.out.println("-------------------");
+    System.out.println("resultCount: " + resultCount);
+    System.out.println("targetCount: " + targetCount);
+    System.out.println("((resultCount / targetCount) * 100): " + ((resultCount / targetCount) * 100));
     System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
         resultCount,
         targetCount,

@@ -104,31 +104,20 @@ class ContactListPetNamesEventMessageIT {
       };
       reqClients.add(callableTask);
     });
-//    System.out.println("reqClients count (1): " + reqClients.size());
     assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
         await().until(() -> future.get().isDone())));
   }
 
   @Test
   void testEventMessageThenReqMessage() {
-//    System.out.println("reqClients count (2): " + reqClients.size());
-
-//    expected below to catch internal thread exception, but did not
-//        await().until(() -> {
-//          try {
-//            future.get().isDone();
-//          } catch (EvaluationException e) {
-//            System.out.println("XXXXXXXXXXXXXXXXXXXX");
-//            System.out.println("XXXXXXXXXXXXXXXXXXXX");
-//          }
-//          return true;
-//        }));
-
     executorService.shutdown();
     await().until(() -> executorService.awaitTermination(5000, TimeUnit.SECONDS));
     await().until(executorService::isTerminated);
 
     System.out.println("-------------------");
+    System.out.println("resultCount: " + resultCount);
+    System.out.println("targetCount: " + targetCount);
+    System.out.println("((resultCount / targetCount) * 100): " + ((resultCount / targetCount) * 100));
     System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
         resultCount,
         targetCount,
@@ -171,8 +160,8 @@ class ContactListPetNamesEventMessageIT {
     public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
       boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), mapper.readTree(message.getPayload().toString()));
 
-//    below sout seems to serve extending thread execution time, preventing its premature shutdown
-      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
+//    below sout seems to serve extending thread execution time in persistent mode, preventing its premature shutdown
+//      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
       if (!condition) {
 //        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
         session.close();

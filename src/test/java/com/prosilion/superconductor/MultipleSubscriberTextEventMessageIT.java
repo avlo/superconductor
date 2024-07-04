@@ -104,7 +104,6 @@ class MultipleSubscriberTextEventMessageIT {
       };
       reqClients.add(callableTask);
     });
-//    System.out.println("reqClients count (1): " + reqClients.size());
     assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
         await().until(() -> future.get().isDone())));
   }
@@ -116,6 +115,9 @@ class MultipleSubscriberTextEventMessageIT {
     await().until(executorService::isTerminated);
 
     System.out.println("-------------------");
+    System.out.println("resultCount: " + resultCount);
+    System.out.println("targetCount: " + targetCount);
+    System.out.println("((resultCount / targetCount) * 100): " + ((resultCount / targetCount) * 100));
     System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
         resultCount,
         targetCount,
@@ -158,8 +160,8 @@ class MultipleSubscriberTextEventMessageIT {
     public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
       boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), mapper.readTree(message.getPayload().toString()));
 
-//    below sout seems to serve extending thread execution time, preventing its premature shutdown
-      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
+//    below sout seems to serve extending thread execution time in persistent mode, preventing its premature shutdown
+//      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
       if (!condition) {
 //        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
         session.close();

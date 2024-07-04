@@ -18,42 +18,64 @@
       <form class="form-inline">
         <div class="form-group">
           <label for="connect">WebSocket connection:</label>
-          <button id="connect" class="btn btn-default" type="submit">Connect</button>
-          <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">WebSocket Disconnect</button>
-          <button id="reqclose" class="btn btn-default" type="submit" disabled="disabled">Nostr Close Disconnect</button>
+          <div class="row">
+            <button id="connect" class="btn btn-default" type="submit">Connect</button>
+          </div>
+          <div class="row">
+            <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">WebSocket Disconnect
+            </button>
+          </div>
+          <div class="row">
+            <button id="reqclose" class="btn btn-default" type="submit" disabled="disabled">Nostr Close Disconnect
+            </button>
+          </div>
         </div>
       </form>
     </div>
     <div class="col-md-6">
       <form class="form-inline">
+        <label for="connect">Search Filters:</label>
         <div class="form-group">
           <label for="idcontent">Reference Event ID: </label>
           <input type="text" value="1111111111" id="idcontent" class="form-control" placeholder="message...">
         </div>
-
-        <label for="pubkey">User:</label>
 
         <select name="pubkey" id="pubkey">
           <option value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">User 1</option>
           <option value="hhhd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">User 2</option>
         </select>
 
-        <input type="hidden" id="kind" name="kind" value=1>
-        <input type="hidden" id="e_tag" name="e_tag" value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">
-        <input type="hidden" id="p_tag" name="p_tag" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
-        <label for="authors1">Reference Author1 PubKey: </label>
-        <input type="text" id="authors1" name="authors1" value="bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
-        <input type="hidden" id="authors2" name="authors2" value="cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
-        <input type="hidden" id="kinds" name="kinds" value=2>
-        <input type="hidden" id="referencedEvents" name="referencedEvents" value="111843d54a8fdab39aa45f61f19f3ff79cc19385370f6a272dda81fade0a052b">
-        <input type="hidden" id="referencePubKeys" name="referencePubKeys" value="222843d54a8fdab39aa45f61f19f3ff79cc19385370f6a272dda81fade0a052b">
-        <input type="hidden" id="since" name="since" value=1712006760>
-        <input type="hidden" id="until" name="until" value=1712006761>
-        <input type="hidden" id="limit" name="limit" value=1>
-        <button id="send" class="btn btn-default" type="submit">Send</button>
+        <div class="form-group">
+          <label for="authors1">Reference Author1 PubKey: </label>
+          <select name="authors1" id="authors1">
+            <option value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">aaad79f81</option>
+            <option value="bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">bbbd79f81</option>
+            <option value="cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">cccd79f81</option>
+          </select>
+
+          <input type="hidden" id="kind" name="kind" value=1>
+          <input type="hidden" id="e_tag" name="e_tag"
+                 value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">
+          <input type="hidden" id="p_tag" name="p_tag"
+                 value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
+
+          <input type="hidden" id="kinds" name="kinds" value=2>
+          <input type="hidden" id="referencedEvents" name="referencedEvents"
+                 value="111843d54a8fdab39aa45f61f19f3ff79cc19385370f6a272dda81fade0a052b">
+          <input type="hidden" id="referencePubKeys" name="referencePubKeys"
+                 value="222843d54a8fdab39aa45f61f19f3ff79cc19385370f6a272dda81fade0a052b">
+          <input type="hidden" id="since" name="since" value=1712006760>
+          <input type="hidden" id="until" name="until" value=1712006761>
+          <input type="hidden" id="limit" name="limit" value=1>
+        </div>
+
+        <div class="row" align="center">
+          <button id="send" class="btn btn-default" type="submit">Send</button>
+        </div>
       </form>
     </div>
   </div>
+  <br><br><br><br>
   <div class="row">
     <div class="col-md-12">
       <table id="conversation" class="table table-striped">

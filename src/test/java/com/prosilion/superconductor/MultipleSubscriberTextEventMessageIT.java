@@ -34,6 +34,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -77,8 +78,13 @@ class MultipleSubscriberTextEventMessageIT {
     this.pctThreshold = pctThreshold;
     this.executorService = MoreExecutors.newDirectExecutorService();
 
-    this.textMessageEventJson = Files.lines(Paths.get("src/test/resources/text_event_json_input.txt")).collect(Collectors.joining("\n"));
-    this.textMessageEventJsonReordered = Files.lines(Paths.get("src/test/resources/text_event_json_reordered.txt")).collect(Collectors.joining("\n"));
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/text_event_json_input.txt"))) {
+      this.textMessageEventJson = lines.collect(Collectors.joining("\n"));
+    }
+
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/text_event_json_reordered.txt"))) {
+      this.textMessageEventJsonReordered = lines.collect(Collectors.joining("\n"));
+    }
   }
 
   @BeforeAll

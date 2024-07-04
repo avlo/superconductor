@@ -1,10 +1,10 @@
 package com.prosilion.superconductor;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.MoreExecutors;
 import lombok.Getter;
 import lombok.Synchronized;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -24,13 +24,17 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -42,127 +46,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ContextConfiguration
 @TestPropertySource("/application-test.properties")
 class MultipleSubscriberClassifiedListingEventMessageIT {
-  private static final String TARGET_CLASSIFIED_LISTING_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
-  @SuppressWarnings("preview")
-  public final static String classifiedListingEventJsonSent =
-      StringTemplate.STR."""
-          [
-            "EVENT",
-            {
-              "id":"\{TARGET_CLASSIFIED_LISTING_EVENT_CONTENT}",
-              "kind": 30402,
-              "content": "classified content",
-              "tags": [
-                [
-                  "subject",
-                  "classified subject"
-                ],
-                [
-                  "title",
-                  "classified title"
-                ],
-                [
-                  "published_at",
-                  "1718843251760"
-                ],
-                [
-                  "summary",
-                  "classified summary"
-                ],
-                [
-                  "location",
-                  "classified peroulades"
-                ],
-                [
-                  "price",
-                  "271.00",
-                  "BTC",
-                  "1"
-                ],
-                [
-                  "e",
-                  "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
-                ],
-                [
-                  "p",
-                  "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
-                ],
-                [
-                  "t",
-                  "classified hash-tag-1111"
-                ],
-                [
-                  "g",
-                  "classified geo-tag-1"
-                ]
-              ],
-              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-              "created_at": 1718843251760,
-              "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
-            }
-          ]
-      """;
-
-  @SuppressWarnings("preview")
-  public final static String classifiedListingEventJsonExpectedWithReordering =
-      StringTemplate.STR."""
-          [
-            "EVENT",
-            {
-              "id":"\{TARGET_CLASSIFIED_LISTING_EVENT_CONTENT}",
-              "kind": 30402,
-              "content": "classified content",
-              "tags": [
-                [
-                  "price",
-                  "271.00",
-                  "BTC",
-                  "1"
-                ],
-                [
-                  "subject",
-                  "classified subject"
-                ],
-                [
-                  "published_at",
-                  "1718843251760"
-                ],
-                [
-                  "title",
-                  "classified title"
-                ],
-                [
-                  "summary",
-                  "classified summary"
-                ],
-                [
-                  "location",
-                  "classified peroulades"
-                ],
-                [
-                  "e",
-                  "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
-                ],
-                [
-                  "p",
-                  "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
-                ],
-                [
-                  "t",
-                  "classified hash-tag-1111"
-                ],
-                [
-                  "g",
-                  "classified geo-tag-1"
-                ]
-              ],
-              "pubkey": "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-              "created_at": 1718843251760,
-              "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
-            }
-          ]
-      """;
+  public final String textMessageEventJson;
+  public final String textMessageEventJsonReordered;
 
   private static final String SCHEME_WS = "ws";
   private static final String HOST = "localhost";
@@ -183,17 +70,25 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
       @Value("${server.port}") String port,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
-      @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
+      @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) throws IOException {
     this.websocketUrl = SCHEME_WS + "://" + HOST + ":" + port;
     this.hexCounterSeed = hexCounterSeed;
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
     this.pctThreshold = pctThreshold;
     this.executorService = MoreExecutors.newDirectExecutorService();
+
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/classified_listing_event_json_input.txt"))) {
+      this.textMessageEventJson = lines.collect(Collectors.joining("\n"));
+    }
+
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/classified_listing_event_json_reordered.txt"))) {
+      this.textMessageEventJsonReordered = lines.collect(Collectors.joining("\n"));
+    }
   }
 
   @BeforeAll
-  public void setup() throws InterruptedException {
+  public void setup() {
     WebSocketStompClient eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
     eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
     CompletableFuture<WebSocketSession> eventExecute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), websocketUrl, "");
@@ -204,31 +99,16 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
-      Callable<CompletableFuture<WebSocketSession>> callableTask = () -> {
-        return reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, getNextHex(increment)), websocketUrl, "");
-      };
+      Callable<CompletableFuture<WebSocketSession>> callableTask = () ->
+          reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, getNextHex(increment)), websocketUrl, "");
       reqClients.add(callableTask);
     });
-//    System.out.println("reqClients count (1): " + reqClients.size());
     assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
         await().until(() -> future.get().isDone())));
   }
 
   @Test
   void testEventMessageThenReqMessage() {
-//    System.out.println("reqClients count (2): " + reqClients.size());
-
-//    expected below to catch internal thread exception, but did not
-//        await().until(() -> {
-//          try {
-//            future.get().isDone();
-//          } catch (EvaluationException e) {
-//            System.out.println("XXXXXXXXXXXXXXXXXXXX");
-//            System.out.println("XXXXXXXXXXXXXXXXXXXX");
-//          }
-//          return true;
-//        }));
-
     executorService.shutdown();
     await().until(() -> executorService.awaitTermination(5000, TimeUnit.SECONDS));
     await().until(executorService::isTerminated);
@@ -243,15 +123,15 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
   }
 
 
-  static class EventMessageSocketHandler extends TextWebSocketHandler {
+  class EventMessageSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(classifiedListingEventJsonSent));
+      session.sendMessage(new TextMessage(textMessageEventJson));
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertTrue(message.getPayload().toString().contains(TARGET_CLASSIFIED_LISTING_EVENT_CONTENT));
+      assertTrue(message.getPayload().toString().contains(TARGET_TEXT_MESSAGE_EVENT_CONTENT));
       session.close();
     }
   }
@@ -268,23 +148,16 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-//      System.out.printf("AAAAAAAAAAAAAAAAAAAAAAAA[%02d], id: [%s]\n", index, session.getId());
       session.sendMessage(new TextMessage(reqJson));
     }
 
     @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
-      JsonNode payloadString = mapper.readTree(message.getPayload().toString());
-      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(classifiedListingEventJsonExpectedWithReordering), payloadString);
+    public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
+      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), mapper.readTree(message.getPayload().toString()));
 
-      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
-      System.out.println(payloadString.toPrettyString());
-      System.out.println("------------------------");
-//    below sout seems to serve extending thread execution time, preventing its premature shutdown
       if (!condition) {
         session.close();
-//        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
-        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", classifiedListingEventJsonExpectedWithReordering, payloadString.toPrettyString()));
+        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", textMessageEventJsonReordered, mapper.readTree(message.getPayload().toString()).toPrettyString()));
       }
       increment();
       session.close();

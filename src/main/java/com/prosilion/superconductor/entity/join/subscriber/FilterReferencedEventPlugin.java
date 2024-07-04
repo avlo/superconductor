@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
+import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterReferencedEventRepository;
 import lombok.NonNull;
 import nostr.event.impl.Filters;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 
 @Component
 public class FilterReferencedEventPlugin<
@@ -36,6 +38,16 @@ public class FilterReferencedEventPlugin<
             filters.getReferencedEvents())
         .orElseGet(ArrayList::new).stream().map(genericEvent ->
             (U) new SubscriberFilterReferencedEvent(filterId, genericEvent.getId())).toList();
+  }
+
+  @Override
+  public BiPredicate<GenericEvent, AddNostrEvent<GenericEvent>> getBiPredicate() {
+    return (t, u) -> t.getId().equals(u.event().getId());
+  }
+
+  @Override
+  public List<GenericEvent> getPluginFilters(Filters filters) {
+    return filters.getReferencedEvents();
   }
 
   @Override

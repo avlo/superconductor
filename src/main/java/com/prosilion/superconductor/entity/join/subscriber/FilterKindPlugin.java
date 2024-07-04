@@ -1,15 +1,19 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
+import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.repository.join.subscriber.SubscriberFilterKindRepository;
 import lombok.NonNull;
+import nostr.base.PublicKey;
 import nostr.event.Kind;
 import nostr.event.impl.Filters;
+import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 
 
 @Component
@@ -37,6 +41,16 @@ public class FilterKindPlugin<
             filters.getKinds())
         .orElseGet(ArrayList::new).stream().map(kind ->
             (U) new SubscriberFilterKind(filterId, kind.getValue())).toList();
+  }
+
+  @Override
+  public BiPredicate<PublicKey, AddNostrEvent<GenericEvent>> getBiPredicate() {
+    return (t, u) -> t.toString().equals(u.event().getPubKey().toString());
+  }
+
+  @Override
+  public List<Kind> getPluginFilters(Filters filters) {
+    return filters.getKinds();
   }
 
   @Override

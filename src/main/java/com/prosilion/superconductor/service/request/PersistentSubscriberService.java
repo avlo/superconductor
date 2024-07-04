@@ -1,15 +1,10 @@
 package com.prosilion.superconductor.service.request;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.entity.Subscriber;
-import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
-import com.prosilion.superconductor.pubsub.FireNostrEvent;
+import com.prosilion.superconductor.service.AbstractSubscriberService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.api.NIP01;
 import nostr.event.impl.Filters;
-import nostr.event.impl.GenericEvent;
-import nostr.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -19,21 +14,21 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class SubscriberService {
+public class PersistentSubscriberService extends AbstractSubscriberService {
   private final SubscriberManager subscriberManager;
   private final SubscriberFiltersService subscriberFiltersService;
-  private final ApplicationEventPublisher publisher;
 
   @Autowired
-  public SubscriberService(
+  public PersistentSubscriberService(
       SubscriberManager subscriberManager,
       SubscriberFiltersService subscriberFiltersService,
       ApplicationEventPublisher publisher) {
+    super(publisher);
     this.subscriberManager = subscriberManager;
     this.subscriberFiltersService = subscriberFiltersService;
-    this.publisher = publisher;
   }
 
+  @Override
   public Long save(@NonNull Subscriber subscriber, @NonNull List<Filters> filtersList) {
     try {
       removeSubscriberBySubscriberId(subscriber.getSubscriberId());
@@ -50,6 +45,7 @@ public class SubscriberService {
   /**
    * For a given subscriber, removes all their active sessions.  Typically/Expected to occur on WebSocketSession close
    */
+  @Override
   public List<Long> removeSubscriberBySessionId(@NonNull String sessionId) {
     subscriberManager.getBySessionId(sessionId).forEach(
         s -> subscriberFiltersService.deleteBySubscriberId(s.getId()));
@@ -61,6 +57,7 @@ public class SubscriberService {
    * For a given subscriber, removes a single session associated to a specific subscription.  Typically/Expected to occur on
    * a Nostr REQ CLOSE event
    */
+  @Override
   public Long removeSubscriberBySubscriberId(@NonNull String subscriberId) throws NoExistingUserException {
     subscriberManager.getBySubscriberId(subscriberId)
         .ifPresent(
@@ -76,21 +73,24 @@ public class SubscriberService {
 //    return subscriberManager.save(s).getSubscriberId();
 //  }
 
+  @Override
   public List<Filters> getFiltersList(@NonNull Long subscriberId) {
     return subscriberFiltersService.getFiltersList(subscriberId);
   }
 
+  @Override
   public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
     return subscriberFiltersService.getAllFiltersOfAllSubscribers();
   }
 
-  public <T extends GenericEvent> void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) throws JsonProcessingException {
-    EventMessage message = NIP01.createEventMessage(fireNostrEvent.event(), String.valueOf(fireNostrEvent.subscriberId()));
-    BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(get(fireNostrEvent.subscriberId()).getSessionId(), message);
-    publisher.publishEvent(event);
-  }
+//  public <T extends GenericEvent> void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) throws JsonProcessingException {
+//    EventMessage message = NIP01.createEventMessage(fireNostrEvent.event(), String.valueOf(fireNostrEvent.subscriberId()));
+//    BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(get(fireNostrEvent.subscriberId()).getSessionId(), message);
+//    publisher.publishEvent(event);
+//  }
 
-  private Subscriber get(@NonNull Long subscriberId) {
+  @Override
+  public Subscriber get(@NonNull Long subscriberId) {
     return subscriberManager.get(subscriberId).get();
   }
 }

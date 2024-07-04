@@ -1,8 +1,9 @@
 package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.pubsub.RemoveSubscriberFilterEvent;
+import com.prosilion.superconductor.service.SubscriberService;
+import com.prosilion.superconductor.service.request.CachedSubscriberService;
 import com.prosilion.superconductor.service.request.NoExistingUserException;
-import com.prosilion.superconductor.service.request.SubscriberService;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +20,10 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
   @Getter
   public final String command = "CLOSE";
   private final ApplicationEventPublisher publisher;
-  private final SubscriberService subscriberService;
+  private final CachedSubscriberService subscriberService;
 
   @Autowired
-  public CloseMessageService(SubscriberService subscriberService, ApplicationEventPublisher publisher) {
+  public CloseMessageService(CachedSubscriberService subscriberService, ApplicationEventPublisher publisher) {
     this.publisher = publisher;
     this.subscriberService = subscriberService;
   }

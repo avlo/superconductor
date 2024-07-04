@@ -143,42 +143,36 @@
     <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
 
-<!--      below:                                                      -->
-<!--          superconductor as a non-executable fatJar/dependency    -->
-<!--      if useful for you, simply uncomment below for inclusion     -->
-<!--                                                                  -->
-<!--      <plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-assembly-plugin</artifactId>-->
-<!--        <configuration>-->
-<!--          <descriptorRefs>-->
-<!--            <descriptorRef>jar-with-dependencies</descriptorRef>-->
-<!--          </descriptorRefs>-->
-<!--        </configuration>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <id>make-assembly</id>-->
-<!--            <phase>package</phase>-->
-<!--            <goals>-->
-<!--              <goal>single</goal>-->
-<!--            </goals>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
+      <!--      below:                                                      -->
+      <!--          superconductor as a non-executable fatJar/dependency    -->
+      <!--      if useful for you, simply uncomment below for inclusion     -->
+      <!--                                                                  -->
+      <!--      <plugin>-->
+      <!--        <groupId>org.apache.maven.plugins</groupId>-->
+      <!--        <artifactId>maven-assembly-plugin</artifactId>-->
+      <!--        <configuration>-->
+      <!--          <descriptorRefs>-->
+      <!--            <descriptorRef>jar-with-dependencies</descriptorRef>-->
+      <!--          </descriptorRefs>-->
+      <!--        </configuration>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <id>make-assembly</id>-->
+      <!--            <phase>package</phase>-->
+      <!--            <goals>-->
+      <!--              <goal>single</goal>-->
+      <!--            </goals>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--      </plugin>-->
 
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <jvmArguments>--enable-preview</jvmArguments> <!-- used in testing only -->
-        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
-        <configuration>
-          <argLine>${argLine} --enable-preview</argLine> <!-- used in testing only -->
-        </configuration>
         <executions>
           <execution>
             <goals>
@@ -190,9 +184,6 @@
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${maven-failsafe-plugin.version}</version>
-        <configuration>
-          <argLine>${argLine} --enable-preview</argLine> <!-- used in testing only -->
-        </configuration>
         <executions>
           <execution>
             <goals>
@@ -221,7 +212,6 @@
         <configuration>
           <source>22</source>
           <target>22</target>
-          <compilerArgs>--enable-preview</compilerArgs>
         </configuration>
       </plugin>
     </plugins>

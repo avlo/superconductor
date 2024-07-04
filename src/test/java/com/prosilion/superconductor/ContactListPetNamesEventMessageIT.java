@@ -24,13 +24,17 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -44,87 +48,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ContactListPetNamesEventMessageIT {
   private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
-  @SuppressWarnings("preview")
-  public final static String textMessageEventJson =
-      StringTemplate.STR."""
-          [
-            "EVENT",
-              {
-                "content":"1111111111",
-                "id":"\{TARGET_TEXT_MESSAGE_EVENT_CONTENT}",
-                "kind":3,
-                "created_at":1717357053050,
-                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-                "tags": [
-                  [
-                    "a",
-                    "wss://nostr.example.com",
-                    "30023:f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd"
-                  ],
-                  [
-                    "custom-tag",
-                    "custom-tag random value"
-                  ],
-                  [
-                    "p",
-                    "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe71111",
-                    "wss://alicerelay.com/",
-                    "alice"
-                  ],
-                  [
-                    "e",
-                    "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
-                  ],
-                  [
-                    "g",
-                    "textnote geo-tag-1"
-                  ]
-                ],
-              "sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
-            }
-          ]
-      """;
-
-  @SuppressWarnings("preview")
-  public final static String textMessageEventJsonReordered =
-      StringTemplate.STR."""
-          [
-            "EVENT",
-              {
-                "content":"1111111111",
-                "id":"\{TARGET_TEXT_MESSAGE_EVENT_CONTENT}",
-                "kind":3,
-                "created_at":1717357053050,
-                "pubkey":"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
-                "tags": [
-                  [
-                    "a",
-                    "wss://nostr.example.com",
-                    "30023:f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd"
-                  ],
-                  [
-                    "custom-tag",
-                    "custom-tag random value"
-                  ],
-                  [
-                    "e",
-                    "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
-                  ],
-                  [
-                    "g",
-                    "textnote geo-tag-1"
-                  ],
-                  [
-                    "p",
-                    "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe71111",
-                    "wss://alicerelay.com/",
-                    "alic e"
-                  ]
-                ],
-              "sig":"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
-            }
-          ]
-      """;
+  public final String textMessageEventJson;
+  public final String textMessageEventJsonReordered;
 
   private static final String SCHEME_WS = "ws";
   private static final String HOST = "localhost";
@@ -145,13 +70,21 @@ class ContactListPetNamesEventMessageIT {
       @Value("${server.port}") String port,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
-      @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
+      @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) throws IOException {
     this.websocketUrl = SCHEME_WS + "://" + HOST + ":" + port;
     this.hexCounterSeed = hexCounterSeed;
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
     this.pctThreshold = pctThreshold;
     this.executorService = MoreExecutors.newDirectExecutorService();
+
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/pet_names_json_input.txt"))) {
+      this.textMessageEventJson = lines.collect(Collectors.joining("\n"));
+    }
+
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/pet_names_json_reordered.txt"))) {
+      this.textMessageEventJsonReordered = lines.collect(Collectors.joining("\n"));
+    }
   }
 
   @BeforeAll
@@ -205,7 +138,7 @@ class ContactListPetNamesEventMessageIT {
   }
 
 
-  static class EventMessageSocketHandler extends TextWebSocketHandler {
+  class EventMessageSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
       session.sendMessage(new TextMessage(textMessageEventJson));

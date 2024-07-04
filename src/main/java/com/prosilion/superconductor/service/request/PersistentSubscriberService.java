@@ -83,12 +83,6 @@ public class PersistentSubscriberService extends AbstractSubscriberService {
     return subscriberFiltersService.getAllFiltersOfAllSubscribers();
   }
 
-//  public <T extends GenericEvent> void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) throws JsonProcessingException {
-//    EventMessage message = NIP01.createEventMessage(fireNostrEvent.event(), String.valueOf(fireNostrEvent.subscriberId()));
-//    BroadcastMessageEvent<EventMessage> event = new BroadcastMessageEvent<>(get(fireNostrEvent.subscriberId()).getSessionId(), message);
-//    publisher.publishEvent(event);
-//  }
-
   @Override
   public Subscriber get(@NonNull Long subscriberId) {
     return subscriberManager.get(subscriberId).get();

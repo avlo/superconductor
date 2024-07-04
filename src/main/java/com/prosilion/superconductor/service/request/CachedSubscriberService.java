@@ -30,7 +30,6 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     super(publisher);
   }
 
-
   @Override
   public Long save(@NonNull Subscriber subscriber, @NonNull List<Filters> filtersList) {
     long subscriberSessionHash = getHash(subscriber);
@@ -74,6 +73,10 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return map;
   }
 
+  @Override
+  public Subscriber get(@NonNull Long subscriberHash) {
+    return subscriberComboMap.get(subscriberHash).stream().findFirst().get().subscriber();
+  }
 
   private void put(Subscriber subscriber, Filters filters) {
     biMap.put(subscriber.getSubscriberId(), subscriber.getSessionId());
@@ -88,10 +91,6 @@ public class CachedSubscriberService extends AbstractSubscriberService {
             filters.getLimit()),
         filters);
 
-//    Objects.requireNonNull(subscriberComboMap
-//            .putIfAbsent(subscriberSessionHash, // if map doesn't (yet) contain the key...
-//                subscriberComboMap.put(subscriberSessionHash, List.of(combo)))) // add key & new List.of(combo) to the map
-//        .add(combo);  // otherwise (if key already exists), add combo object to existing combo list
     if (!subscriberComboMap.containsKey(subscriberSessionHash)) {
       subscriberComboMap.put(subscriberSessionHash, List.of(combo));
       return;
@@ -109,11 +108,6 @@ public class CachedSubscriberService extends AbstractSubscriberService {
 
   private long getHash(String string) {
     return Hashing.murmur3_128().hashString(string, StandardCharsets.UTF_8).asLong();
-  }
-
-  @Override
-  public Subscriber get(@NonNull Long subscriberHash) {
-    return subscriberComboMap.get(subscriberHash).stream().findFirst().get().subscriber();
   }
 
   private record Combo(Subscriber subscriber, SubscriberFilter subscriberFilter, Filters filters) {

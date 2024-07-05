@@ -5,12 +5,14 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Objects;
 
 @Setter
 @Getter
 @NoArgsConstructor
+@Cacheable("subscriber-filter_event")
 @Entity
 @Table(name = "subscriber-filter_event")
 public class SubscriberFilterEvent extends AbstractFilterType {

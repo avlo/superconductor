@@ -10,6 +10,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,27 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   }
 
   //  TODO: list of long???  why not just long
+//  @Cacheable("allSubscribersFilters")
+  @Override
+  public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
+    Map<Long, List<Filters>> map = new HashMap<>();
+    subscriberComboMap.forEach((key, value) -> map.put(key, value.stream().map(Combo::filters).toList()));
+    return map;
+  }
+
+  @Cacheable("subscriber")
+  @Override
+  public Subscriber get(@NonNull Long subscriberId) {
+    return subscriberComboMap.get(subscriberId).stream().findFirst().get().subscriber();
+  }
+
+//  @Cacheable("filters")
+  @Override
+  public List<Filters> getFiltersList(@NonNull Long subscriberId) {
+    return subscriberComboMap.get(subscriberId).stream().map(Combo::filters).toList();
+  }
+
+//  @CacheEvict(cacheNames = {"subscriberFiltersList", "subscriber", "allSubscribersFilters"})
   @Override
   public List<Long> removeSubscriberBySessionId(@NonNull String sessionId) {
     long hash = getHash(
@@ -50,6 +73,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return List.of(hash);
   }
 
+//  @CacheEvict(cacheNames = {"subscriberFiltersList", "subscriber", "allSubscribersFilters"})
   @Override
   public Long removeSubscriberBySubscriberId(@NonNull String subscriberId) throws NoExistingUserException {
     long hash = getHash(
@@ -59,23 +83,6 @@ public class CachedSubscriberService extends AbstractSubscriberService {
             true));
     subscriberComboMap.remove(hash);
     return hash;
-  }
-
-  @Override
-  public List<Filters> getFiltersList(@NonNull Long subscriberId) {
-    return subscriberComboMap.get(subscriberId).stream().map(Combo::filters).toList();
-  }
-
-  @Override
-  public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
-    Map<Long, List<Filters>> map = new HashMap<>();
-    subscriberComboMap.forEach((key, value) -> map.put(key, value.stream().map(Combo::filters).toList()));
-    return map;
-  }
-
-  @Override
-  public Subscriber get(@NonNull Long subscriberHash) {
-    return subscriberComboMap.get(subscriberHash).stream().findFirst().get().subscriber();
   }
 
   private void put(Subscriber subscriber, Filters filters) {

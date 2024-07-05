@@ -23,19 +23,21 @@
 ## NIPS
   #### Supported
   - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol & Standard Tags)
+  - [NIP-02](https://nostr-nips.com/nip-02) (Contact List and Petnames)
   - [NIP-10](https://nostr-nips.com/nip-10) (Marked "e" tags)
-  - [NIP-11](https://nostr-nips.com/nip-75) (Relay Information Document)
-  - [NIP-11](https://nostr-nips.com/nip-12) (Generic Tag Queries)
+  - [NIP-11](https://nostr-nips.com/nip-11) (Relay Information Document)
+  - [NIP-12](https://nostr-nips.com/nip-12) (Generic Tag Queries)
   - [NIP-14](https://nostr-nips.com/nip-14) (Subject tag in Text events)
   - [NIP-16](https://nostr-nips.com/nip-16) (Event treatment)
   - [NIP-19](https://nostr-nips.com/nip-19) (Bech-32 encoded entities)
-  - [NIP-19](https://nostr-nips.com/nip-20) (Command Results)
+  - [NIP-20](https://nostr-nips.com/nip-20) (Command Results)
   - [NIP-21](https://nostr-nips.com/nip-21) (URI scheme)
-  - [NIP-31](https://nostr-nips.com/nip-31) (Unknown event kinds)
   - [NIP-22](https://nostr-nips.com/nip-22) (Event "created_at" limits)
+  - [NIP-31](https://nostr-nips.com/nip-31) (Unknown event kinds)
+  - [NIP-33](https://nostr-nips.com/nip-33) (Parameterized Replaceable Events)
   - [NIP-57](https://nostr-nips.com/nip-57) (Lightning Zaps)
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
-    - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
+  - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
 
   #### In-Progress
   - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)

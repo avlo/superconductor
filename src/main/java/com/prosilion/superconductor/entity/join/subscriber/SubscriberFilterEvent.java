@@ -3,7 +3,6 @@ package com.prosilion.superconductor.entity.join.subscriber;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -12,7 +11,6 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor
 @Component
-@Cacheable("subscriber-filter_event")
 public class SubscriberFilterEvent extends AbstractFilterType {
   private String eventIdString;
 

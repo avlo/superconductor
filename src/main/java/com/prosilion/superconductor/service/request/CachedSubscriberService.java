@@ -40,7 +40,6 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   }
 
   //  TODO: list of long???  why not just long
-//  @Cacheable("allSubscribersFilters")
   @Override
   public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
     Map<Long, List<Filters>> map = new HashMap<>();
@@ -54,13 +53,11 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return subscriberComboMap.get(subscriberId).stream().findFirst().get().subscriber();
   }
 
-  //  @Cacheable("filters")
   @Override
   public List<Filters> getFiltersList(@NonNull Long subscriberId) {
     return subscriberComboMap.get(subscriberId).stream().map(Combo::filters).toList();
   }
 
-  //  @CacheEvict(cacheNames = {"subscriberFiltersList", "subscriber", "allSubscribersFilters"})
   @Override
   public List<Long> removeSubscriberBySessionId(@NonNull String sessionId) {
     long hash = getHash(
@@ -72,7 +69,6 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return List.of(hash);
   }
 
-  //  @CacheEvict(cacheNames = {"subscriberFiltersList", "subscriber", "allSubscribersFilters"})
   @Override
   public Long removeSubscriberBySubscriberId(@NonNull String subscriberId) throws NoExistingUserException {
     long hash = getHash(

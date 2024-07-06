@@ -16,7 +16,7 @@ public class ReqService<T extends ReqMessage, U extends GenericEvent> {
   private final NotifierService<U> notifierService;
 
   @Autowired
-  public ReqService(CachedSubscriberService abstractSubscriberService, NotifierService<U> notifierService) {
+  public ReqService(AbstractSubscriberService abstractSubscriberService, NotifierService<U> notifierService) {
     this.abstractSubscriberService = abstractSubscriberService;
     this.notifierService = notifierService;
   }

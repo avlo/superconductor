@@ -1,8 +1,7 @@
 package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.pubsub.RemoveSubscriberFilterEvent;
-import com.prosilion.superconductor.service.SubscriberService;
-import com.prosilion.superconductor.service.request.CachedSubscriberService;
+import com.prosilion.superconductor.service.AbstractSubscriberService;
 import com.prosilion.superconductor.service.request.NoExistingUserException;
 import lombok.Getter;
 import lombok.NonNull;
@@ -20,12 +19,12 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
   @Getter
   public final String command = "CLOSE";
   private final ApplicationEventPublisher publisher;
-  private final CachedSubscriberService subscriberService;
+  private final AbstractSubscriberService abstractSubscriberService;
 
   @Autowired
-  public CloseMessageService(CachedSubscriberService subscriberService, ApplicationEventPublisher publisher) {
+  public CloseMessageService(AbstractSubscriberService abstractSubscriberService, ApplicationEventPublisher publisher) {
     this.publisher = publisher;
-    this.subscriberService = subscriberService;
+    this.abstractSubscriberService = abstractSubscriberService;
   }
 
   @Override
@@ -35,7 +34,7 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
   }
 
   public void removeSubscriberBySessionId(@NonNull String sessionId) {
-    List<Long> subscriberBySessionId = subscriberService.removeSubscriberBySessionId(sessionId);
+    List<Long> subscriberBySessionId = abstractSubscriberService.removeSubscriberBySessionId(sessionId);
     subscriberBySessionId.forEach(subscriber -> publisher.publishEvent(new RemoveSubscriberFilterEvent(
         subscriber)));
   }
@@ -44,7 +43,7 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
     try {
       publisher.publishEvent(
           new RemoveSubscriberFilterEvent(
-              subscriberService.removeSubscriberBySubscriberId(subscriberId)));
+              abstractSubscriberService.removeSubscriberBySubscriberId(subscriberId)));
     } catch (NoExistingUserException e) {
       log.info("no match to remove for subscriberId [{}]", subscriberId);
     }

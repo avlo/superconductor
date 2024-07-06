@@ -2,7 +2,6 @@ package com.prosilion.superconductor.service;
 
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.pubsub.FireNostrEvent;
-import com.prosilion.superconductor.service.request.CachedSubscriberService;
 import com.prosilion.superconductor.util.FilterMatcher;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -16,7 +15,7 @@ public class SubscriberNotifierService<T extends GenericEvent> {
   private final FilterMatcher filterMatcher;
 
   @Autowired
-  public SubscriberNotifierService(CachedSubscriberService abstractSubscriberService, FilterMatcher filterMatcher) {
+  public SubscriberNotifierService(AbstractSubscriberService abstractSubscriberService, FilterMatcher filterMatcher) {
     this.abstractSubscriberService = abstractSubscriberService;
     this.filterMatcher = filterMatcher;
   }

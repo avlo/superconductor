@@ -3,7 +3,6 @@ package com.prosilion.superconductor.util;
 import com.prosilion.superconductor.entity.join.subscriber.AbstractFilterType;
 import com.prosilion.superconductor.entity.join.subscriber.FilterPlugin;
 import com.prosilion.superconductor.pubsub.AddNostrEvent;
-import com.prosilion.superconductor.repository.join.subscriber.AbstractSubscriberFilterTypeJoinRepository;
 import lombok.Getter;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
@@ -21,15 +20,10 @@ import static java.util.Objects.nonNull;
 
 @Component
 public class FilterMatcher {
-  private final List<FilterPlugin<
-      AbstractSubscriberFilterTypeJoinRepository<AbstractFilterType>,
-      AbstractFilterType>>
-      filterPlugins;
+  private final List<FilterPlugin<AbstractFilterType>> filterPlugins;
 
   @Autowired
-  public FilterMatcher(List<FilterPlugin<
-      AbstractSubscriberFilterTypeJoinRepository<AbstractFilterType>,
-      AbstractFilterType>> filterPlugins) {
+  public FilterMatcher(List<FilterPlugin<AbstractFilterType>> filterPlugins) {
     this.filterPlugins = filterPlugins;
   }
 

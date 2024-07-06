@@ -1,18 +1,16 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 @Setter
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "subscriber-filter_kind")
+@Component
 public class SubscriberFilterKind extends AbstractFilterType {
   private Integer kind;
 

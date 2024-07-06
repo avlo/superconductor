@@ -1,20 +1,18 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 @Setter
 @Getter
 @NoArgsConstructor
+@Component
 @Cacheable("subscriber-filter_event")
-@Entity
-@Table(name = "subscriber-filter_event")
 public class SubscriberFilterEvent extends AbstractFilterType {
   private String eventIdString;
 

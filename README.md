@@ -10,7 +10,7 @@
 - Simple.  Clean.  OO.
   - Java 22
   - Spring [WebSocketSession 3.2.2](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)
-  - Spring Boot 3.2.4
+  - Spring Boot 3.3.1
   - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) library by tcheeric
     
 - core [SOLID OO](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) principles, providing ease of:

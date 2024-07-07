@@ -85,7 +85,7 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
 
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar target/superconductor-1.6.2.war
+    $ java -jar target/superconductor-1.6.3.war
 
 #### 2.  run using maven spring-boot run target
 
@@ -97,7 +97,7 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
 #### 3.  run using pre-existing application-server container instance
 
 
-    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.6.2.war <your_container/instance/deployment_directory>
+    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.6.3.war <your_container/instance/deployment_directory>
  
 for full/debug developer console logging:
 
@@ -136,13 +136,6 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 	select id, code from generic_tag;
 	select id, generic_tag_id, element_attribute_id from "generic_tag-element_attribute-join";
 	select id, name, "value" from element_attribute;
-	select id, subscriber_id, session_id, active from subscriber;
-	select id, subscriber_id, "since", "until", "limit" from "subscriber-filter";
-	select id, filter_id, referenced_event_id from "subscriber-filter_referenced_event";
-	select id, filter_id, referenced_pubkey from "subscriber-filter_referenced_pubkey";
-	select id, filter_id, kind from "subscriber-filter_kind";
-	select id, filter_id, event_id_string from "subscriber-filter_event";
-	select id, filter_id, author from "subscriber-filter_author";
 	select id, event_id, price_tag_id from "event-price_tag-join";
 	select id, uri from relays_tag;
 	select id, event_id, relays_id from "event-relays_tag-join";

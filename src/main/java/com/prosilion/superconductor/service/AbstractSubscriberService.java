@@ -6,15 +6,11 @@ import com.prosilion.superconductor.pubsub.FireNostrEvent;
 import lombok.NonNull;
 import nostr.api.NIP01;
 import nostr.event.impl.GenericEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
 
-@Service
 public abstract class AbstractSubscriberService implements SubscriberService {
   private final ApplicationEventPublisher publisher;
 
-  @Autowired
   protected AbstractSubscriberService(ApplicationEventPublisher publisher) {
     this.publisher = publisher;
   }

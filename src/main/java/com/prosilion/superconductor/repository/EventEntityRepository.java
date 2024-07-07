@@ -14,13 +14,13 @@ import java.util.Optional;
 @Repository
 public interface EventEntityRepository extends JpaRepository<EventEntity, Long> {
 
-  @Cacheable("events")
-  @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+//  @Cacheable("events")
+//  @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
   @NotNull
   List<EventEntity> findAll();
 
-  @Cacheable("events")
-  @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+//  @Cacheable("events")
+//  @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
   List<EventEntity> findByContent(String content);
 
   Optional<EventEntity> findByEventIdString(String eventIdString);

@@ -2,6 +2,7 @@ function hashThenSend() {
     const concat = [
         '0',
         $("#pubkey").val(),
+        $("#created_at").val(),
         $("#kind").val(),
         $("#subject").val(),
         $("#title").val(),

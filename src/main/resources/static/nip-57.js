@@ -2,9 +2,7 @@ function hashThenSend() {
     const concat = [
         '0',
         $("#pubkey").val(),
-        // TODO: re-add below as fixed value exclusively used for testing
         $("#created_at").val(),
-        // '1712006666',
         $("#kind").val(),
         $("#subject").val(),
         $("#relays").val(),
@@ -50,8 +48,6 @@ function replaceHash(id_hash) {
                 ],
                 'pubkey': $("#pubkey").val(),
                 'created_at': Date.now(),
-                // TODO: hardcoding value exclusively used for testing
-                // 'created_at': '1712006666',
                 'sig': '86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546'
             }
         )

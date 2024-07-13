@@ -1,5 +1,6 @@
 package com.prosilion.superconductor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.MoreExecutors;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 @DirtiesContext
 @ContextConfiguration
 @TestPropertySource("/application-test.properties")
-class SinceDateGreaterThanCreatedDateIT {
+class CreatedDateBeforeSinceUntilDatesIT {
   private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
   public final String textMessageEventJson;
@@ -54,11 +55,13 @@ class SinceDateGreaterThanCreatedDateIT {
   private final String websocketUrl;
 
   private final Integer targetCount;
+
+  private final ObjectMapper mapper = new ObjectMapper();
   private final ExecutorService executorService;
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  SinceDateGreaterThanCreatedDateIT(@Value("${server.port}") String port) throws IOException {
+  CreatedDateBeforeSinceUntilDatesIT(@Value("${server.port}") String port) throws IOException {
     this.websocketUrl = SCHEME_WS + "://" + HOST + ":" + port;
     this.targetCount = 1;
     this.executorService = MoreExecutors.newDirectExecutorService();
@@ -116,7 +119,7 @@ class SinceDateGreaterThanCreatedDateIT {
     private final String reqJson;
 
     public ReqMessageSocketHandler() {
-      reqJson = "[\"REQ\",\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",{\"authors\":[\"000d79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111112}]";
+      reqJson = "[\"REQ\",\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",{\"authors\":[\"000d79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111109,\"until\": 1111111111110}]";
     }
 
     @Override
@@ -127,7 +130,7 @@ class SinceDateGreaterThanCreatedDateIT {
     @Override
     public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
       System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("SinceDateGreaterThanCreatedDateIT condition should never be reached");
+      System.out.println("CreatedDateBeforeSinceUntilDatesIT condition should never be reached");
       System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
       fail("'since' condition should never be reached");
     }

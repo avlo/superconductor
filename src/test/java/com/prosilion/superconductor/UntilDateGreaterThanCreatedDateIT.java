@@ -37,14 +37,13 @@ import java.util.stream.Stream;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 @ContextConfiguration
 @TestPropertySource("/application-test.properties")
-class SinceDateGreaterThanCreatedDateIT {
+class UntilDateGreaterThanCreatedDateIT {
   private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
   public final String textMessageEventJson;
@@ -58,7 +57,7 @@ class SinceDateGreaterThanCreatedDateIT {
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  SinceDateGreaterThanCreatedDateIT(@Value("${server.port}") String port) throws IOException {
+  UntilDateGreaterThanCreatedDateIT(@Value("${server.port}") String port) throws IOException {
     this.websocketUrl = SCHEME_WS + "://" + HOST + ":" + port;
     this.targetCount = 1;
     this.executorService = MoreExecutors.newDirectExecutorService();
@@ -80,10 +79,11 @@ class SinceDateGreaterThanCreatedDateIT {
       final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
       reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
-      Callable<CompletableFuture<WebSocketSession>> callableTask = () -> reqStompClient.getWebSocketClient().execute(
-          new ReqMessageSocketHandler(),
-          websocketUrl,
-          "");
+      Callable<CompletableFuture<WebSocketSession>> callableTask = () ->
+          reqStompClient.getWebSocketClient().execute(
+              new ReqMessageSocketHandler(increment),
+              websocketUrl,
+              "");
       reqClients.add(callableTask);
     });
     assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
@@ -113,10 +113,12 @@ class SinceDateGreaterThanCreatedDateIT {
 
   @Getter
   class ReqMessageSocketHandler extends TextWebSocketHandler {
+    private final Integer index;
     private final String reqJson;
 
-    public ReqMessageSocketHandler() {
-      reqJson = "[\"REQ\",\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",{\"authors\":[\"000d79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111112}]";
+    public ReqMessageSocketHandler(Integer index) {
+      this.index = index;
+      reqJson = "[\"REQ\",\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",{\"authors\":[\"000d79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": 1111111111112}]";
     }
 
     @Override
@@ -126,10 +128,9 @@ class SinceDateGreaterThanCreatedDateIT {
 
     @Override
     public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("SinceDateGreaterThanCreatedDateIT condition should never be reached");
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      fail("'since' condition should never be reached");
+      System.out.println("+++++++++++++++++++++++++");
+      System.out.println("UntilDateGreaterThanCreatedDateIT good");
+      System.out.println("+++++++++++++++++++++++++");
     }
   }
 }

@@ -36,6 +36,7 @@ public class FilterMatcher {
             filterPlugin.getBiPredicate())));
 
     Set<AddNostrEvent<GenericEvent>> nostrEvents = getFilterMatchingEvents(combos, eventToCheck);
+    System.out.println("match count: " + nostrEvents.size());
 
     if (nonNull(filters.getSince()) && filters.getSince() > eventToCheck.event().getCreatedAt())
       nostrEvents.add(eventToCheck);
@@ -43,9 +44,16 @@ public class FilterMatcher {
     if (nonNull(filters.getUntil()) && filters.getUntil() <= eventToCheck.event().getCreatedAt())
       nostrEvents.add(eventToCheck);
 
-    return nostrEvents.stream().limit(
+    List<AddNostrEvent<GenericEvent>> list = nostrEvents.stream().limit(
         Optional.ofNullable(
             filters.getLimit()).orElse(100)).toList();
+
+    list.forEach(match -> {
+      System.out.println("match: " + match.event().getId() + " id");
+      System.out.println("match: " + match.event().getPubKey() + " event");
+    });
+
+    return list;
   }
 
   private Set<AddNostrEvent<GenericEvent>> getFilterMatchingEvents(List<Combo> combos, AddNostrEvent<GenericEvent> eventToCheck) {

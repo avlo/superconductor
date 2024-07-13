@@ -48,9 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @ContextConfiguration
 @TestPropertySource("/application-test.properties")
 class MultipleEventSingleSubscriberTextEventMessageIT {
-
   @Autowired
   ApplicationContext applicationContext;
+
   public final String textMessageEventJson;
   public final String textMessageEventJsonReordered;
 
@@ -95,29 +95,17 @@ class MultipleEventSingleSubscriberTextEventMessageIT {
   @BeforeAll
   public void setup() {
     IntStream.range(0, targetCount).boxed().forEach(eventIdIncrement -> {
-      final WebSocketStompClient eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-      eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
-      final EventMessageSocketHandler eventHandlerBean = applicationContext.getBean(EventMessageSocketHandler.class);
+      LocalWebSocketClient localWebSocketClient = applicationContext.getAutowireCapableBeanFactory().getBean(LocalWebSocketClient.class);
+      StompClient stompClient = applicationContext.getAutowireCapableBeanFactory().getBean(StompClient.class, localWebSocketClient);
+      final EventMessageSocketHandler eventHandlerBean = applicationContext.getAutowireCapableBeanFactory().getBean(EventMessageSocketHandler.class);
       eventHandlerBean.setEventJson(textMessageEventJson, getNextHex(eventIdIncrement));
+
       Callable<CompletableFuture<WebSocketSession>> callableEventTask = () ->
-          eventStompClient.getWebSocketClient().execute(eventHandlerBean, websocketUrl, "");
+          stompClient.getWebSocketClient().execute(eventHandlerBean, websocketUrl, "");
       eventClients.add(callableEventTask);
-
-      final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-      reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
-      final ReqMessageSocketHandler reqHandlerBean = applicationContext.getBean(ReqMessageSocketHandler.class);
-      reqHandlerBean.setEventJson(textMessageEventJsonReordered, getNextHex(eventIdIncrement));
-      Callable<CompletableFuture<WebSocketSession>> callableReqTask = () ->
-          reqStompClient.getWebSocketClient().execute(reqHandlerBean, websocketUrl, "");
-      reqClients.add(callableReqTask);
     });
 
-    assertDoesNotThrow(() -> executorService.invokeAll(eventClients).stream().forEachOrdered(future ->
-        await().until(() -> future.get().isDone())));
-
-    assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().forEachOrdered(future ->
+    assertDoesNotThrow(() -> executorService.invokeAll(eventClients).forEach(future ->
         await().until(() -> future.get().isDone())));
   }
 
@@ -145,11 +133,9 @@ class MultipleEventSingleSubscriberTextEventMessageIT {
   }
 
   private String getNextHex(int i) {
-    final String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
-    final String concat = hexCounterSeed
-        .substring(0, hexCounterSeed.length() - incrementedHexNumber.length())
-        .concat(incrementedHexNumber);
-    return concat;
+    return hexCounterSeed
+        .substring(0, hexCounterSeed.length() - Integer.toHexString(hexStartNumber + i).length())
+        .concat(Integer.toHexString(hexStartNumber + i));
   }
 }
 
@@ -157,24 +143,20 @@ class MultipleEventSingleSubscriberTextEventMessageIT {
 @Scope("prototype")
 class EventMessageSocketHandler extends TextWebSocketHandler {
   private String eventJson;
+  private String eventId;
 
   public void setEventJson(String textMessageEventJson, String eventId) {
+    this.eventId = eventId;
     this.eventJson = textMessageEventJson.replace("EVENT_ID", eventId);
   }
 
   @Override
   public void afterConnectionEstablished(final WebSocketSession session) throws Exception {
-//      EventMessageSocketHandler eventMessageSocketHandler = this;
-//      int x = eventMessageSocketHandler.hashCode();
-//      System.out.println("EventMessageSocketHandler connection: " + x + " = " + eventJson);
     session.sendMessage(new TextMessage(eventJson));
   }
 
   @Override
   public void handleMessage(final WebSocketSession session, final WebSocketMessage<?> message) throws Exception {
-//      EventMessageSocketHandler eventMessageSocketHandler = this;
-//      int x = eventMessageSocketHandler.hashCode();
-//      System.out.println("EventMessageSocketHandler message: " + x + " = " + eventJson);
 //      assertTrue(message.getPayload().toString().contains(eventJson));
     session.close();
     await().until(() -> !session.isOpen());
@@ -187,25 +169,22 @@ class ReqMessageSocketHandler extends TextWebSocketHandler {
   private final ObjectMapper mapper = new ObjectMapper();
   private String reqJson;
   private String eventJson;
+  private String eventId;
 
   public void setEventJson(String textMessageEventJsonReordered, String eventId) {
+    this.eventId = eventId;
     this.eventJson = textMessageEventJsonReordered.replace("EVENT_ID", eventId);
     this.reqJson = "[\"REQ\",\"" + eventId + "\",{\"ids\":[\"" + eventId + "\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
   }
 
   @Override
   public void afterConnectionEstablished(final WebSocketSession session) throws Exception {
-//      ReqMessageSocketHandler handler = this;
-//      int x = handler.hashCode();
-//      System.out.println("ReqMessageSocketHandler connection: " + x + " = " + reqJson);
     session.sendMessage(new TextMessage(reqJson));
   }
 
   @Override
-  public void handleMessage(@NotNull final WebSocketSession session, final WebSocketMessage<?> message) throws EvaluationException, IOException {
-//      ReqMessageSocketHandler handler = this;
-//      int x = handler.hashCode();
-//      System.out.println("ReqMessageSocketHandler message: " + x + " = " + eventJson);
+  public void handleMessage(@NotNull final WebSocketSession session, final WebSocketMessage<?> message) throws
+      EvaluationException, IOException {
     boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(eventJson), mapper.readTree(message.getPayload().toString()));
 
     if (!condition) {
@@ -214,5 +193,22 @@ class ReqMessageSocketHandler extends TextWebSocketHandler {
     }
     session.close();
     await().until(() -> !session.isOpen());
+  }
+}
+
+@Component
+@Scope("prototype")
+class StompClient extends WebSocketStompClient {
+  public StompClient(LocalWebSocketClient localWebSocketClient) {
+    super(localWebSocketClient);
+    setMessageConverter(new MappingJackson2MessageConverter());
+  }
+}
+
+@Component
+@Scope("prototype")
+class LocalWebSocketClient extends StandardWebSocketClient {
+  public LocalWebSocketClient() {
+    super();
   }
 }

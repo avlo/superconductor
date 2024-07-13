@@ -47,7 +47,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return map;
   }
 
-  @Cacheable("subscriber")
+//  @Cacheable("subscriber")
   @Override
   public Subscriber get(@NonNull Long subscriberId) {
     return subscriberComboMap.get(subscriberId).stream().findFirst().get().subscriber();

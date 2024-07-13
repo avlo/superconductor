@@ -85,7 +85,7 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
 
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar target/superconductor-1.6.3.war
+    $ java -jar target/superconductor-1.6.4.war
 
 #### 2.  run using maven spring-boot run target
 
@@ -97,7 +97,7 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
 #### 3.  run using pre-existing application-server container instance
 
 
-    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.6.3.war <your_container/instance/deployment_directory>
+    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.6.4.war <your_container/instance/deployment_directory>
  
 for full/debug developer console logging:
 

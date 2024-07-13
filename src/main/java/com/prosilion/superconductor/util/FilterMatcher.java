@@ -36,24 +36,27 @@ public class FilterMatcher {
             filterPlugin.getBiPredicate())));
 
     Set<AddNostrEvent<GenericEvent>> nostrEvents = getFilterMatchingEvents(combos, eventToCheck);
-    System.out.println("match count: " + nostrEvents.size());
 
-    if (nonNull(filters.getSince()) && filters.getSince() > eventToCheck.event().getCreatedAt())
+    if (withinRange(filters.getSince(), filters.getUntil(), eventToCheck.event().getCreatedAt())) {
       nostrEvents.add(eventToCheck);
+    }
 
-    if (nonNull(filters.getUntil()) && filters.getUntil() <= eventToCheck.event().getCreatedAt())
-      nostrEvents.add(eventToCheck);
-
-    List<AddNostrEvent<GenericEvent>> list = nostrEvents.stream().limit(
+    return nostrEvents.stream().limit(
         Optional.ofNullable(
-            filters.getLimit()).orElse(100)).toList();
+            filters.getLimit()).orElse(10)).toList();
+  }
 
-    list.forEach(match -> {
-      System.out.println("match: " + match.event().getId() + " id");
-      System.out.println("match: " + match.event().getPubKey() + " event");
-    });
-
-    return list;
+  private boolean withinRange(Long since, Long until, Long createdAt) {
+    if (!nonNull(since) && !nonNull(until))
+      return true;
+    if ((nonNull(since) && !nonNull(until)) && (since < createdAt))
+      return true;
+    if ((!nonNull(since) && (until >= createdAt)))
+      return true;
+    if (nonNull(since) && nonNull(until)) {
+      return ((since < createdAt) && (until >= createdAt));
+    }
+    return false;
   }
 
   private Set<AddNostrEvent<GenericEvent>> getFilterMatchingEvents(List<Combo> combos, AddNostrEvent<GenericEvent> eventToCheck) {

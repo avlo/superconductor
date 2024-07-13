@@ -3,7 +3,6 @@ package com.prosilion.superconductor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.MoreExecutors;
 import lombok.Getter;
-import lombok.Synchronized;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -128,7 +127,7 @@ class SinceDateGreaterThanCreatedDateIT {
 
     public ReqMessageSocketHandler(Integer index, String reqId) {
       this.index = index;
-      reqJson = "[\"REQ\",\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",{\"authors\":[\"000d79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111110}]";
+      reqJson = "[\"REQ\",\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",{\"authors\":[\"000d79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111112}]";
     }
 
     @Override
@@ -139,12 +138,9 @@ class SinceDateGreaterThanCreatedDateIT {
 
     @Override
     public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
-//      session.close();
       System.out.println("*************************");
       System.out.println("*************************");
-      assertDoesNotThrow(() -> fail("'since' condition should never be reached"));
-      System.out.println("*************************");
-      System.out.println("*************************");
+      fail("'since' condition should never be reached");
     }
   }
 

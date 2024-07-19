@@ -28,6 +28,7 @@
     <lombok.version>1.18.32</lombok.version>
     <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
     <mysql-connector-j.version>8.4.0</mysql-connector-j.version>
+    <postgresql.version>42.7.3</postgresql.version>
   </properties>
 
   <dependencies>
@@ -105,34 +106,25 @@
       <version>${spring-boot.version}</version>
     </dependency>
 
+<!--    <dependency>-->
+<!--      <groupId>org.springframework.boot</groupId>-->
+<!--      <artifactId>spring-boot-docker-compose</artifactId>-->
+<!--      <version>${spring-boot.version}</version>-->
+<!--    </dependency>-->
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-cache</artifactId>
-      <version>${spring-boot.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-jcache</artifactId>
-      <version>6.5.2.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.ben-manes.caffeine</groupId>
-      <artifactId>jcache</artifactId>
-      <version>3.1.8</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>${h2.version}</version>
-    </dependency>
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
       <version>${mysql-connector-j.version}</version>
+      <scope>runtime</scope>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.postgresql</groupId>-->
+<!--      <artifactId>postgresql</artifactId>-->
+<!--      <version>${postgresql.version}</version>-->
+<!--      <scope>runtime</scope>-->
+<!--    </dependency>-->
+
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -148,6 +140,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <version>${spring-boot.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -73,7 +73,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <version>${spring-boot.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -105,12 +104,12 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <version>${spring-boot.version}</version>
     </dependency>
-
-<!--    <dependency>-->
-<!--      <groupId>org.springframework.boot</groupId>-->
-<!--      <artifactId>spring-boot-docker-compose</artifactId>-->
-<!--      <version>${spring-boot.version}</version>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-docker-compose</artifactId>
+      <version>${spring-boot.version}</version>
+      <scope>runtime</scope>
+    </dependency>
 
     <dependency>
       <groupId>com.mysql</groupId>
@@ -142,12 +141,12 @@
       <version>${spring-boot.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>${h2.version}</version>
-      <scope>test</scope>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.h2database</groupId>-->
+<!--      <artifactId>h2</artifactId>-->
+<!--      <version>${h2.version}</version>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>

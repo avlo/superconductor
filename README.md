@@ -94,7 +94,7 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
     $ mvn spring-boot:run 
 
 
-#### 3.  run using pre-existing application-server container instance
+#### 3.  run using pre-existing application-server-container instance
 
 
     $ cp <your_git_home_dir>/superconductor/target/superconductor-1.6.4.war <your_container/instance/deployment_directory>

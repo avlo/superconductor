@@ -8,11 +8,11 @@ services:
       org.springframework.boot.service-connection: mysql
     environment:
       MYSQL_DATABASE: superconductor
-      MYSQL_USER: <APP_USER>
-      MYSQL_PASSWORD: <APP_USER_PASSWORD>
-      MYSQL_ROOT_PASSWORD: <APP_ROOT_USER_PASSWORD>
+      MYSQL_USER: nick
+      MYSQL_PASSWORD: adminpass
+      MYSQL_ROOT_PASSWORD: adminpass
     networks:
-      superconductor-docker-network:
+      docker-network:
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "superconductor-mysqldb"]
       retries: 10
@@ -28,13 +28,13 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3306/superconductor
-      SPRING_DATASOURCE_USERNAME: <APP_USER>
-      SPRING_DATASOURCE_PASSWORD: <APP_USER_PASSWORD>
+      SPRING_DATASOURCE_USERNAME: nick
+      SPRING_DATASOURCE_PASSWORD: adminpass
     networks:
-      superconductor-docker-network:
+      docker-network:
 volumes:
   superconductor-db:
     driver: local
 networks:
-   superconductor-docker-network:
+   docker-network:
     driver: bridge

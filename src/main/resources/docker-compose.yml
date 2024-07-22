@@ -1,6 +1,6 @@
 services:
-  db:
-    container_name: mysql-db
+  superconductor-db:
+    container_name: superconductor-mysqldb
     image: mysql:8.4.0
     ports:
       - "3306:3306"
@@ -14,25 +14,26 @@ services:
     networks:
       superconductor-docker-network:
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "mysql-db"]
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "superconductor-mysqldb"]
       retries: 10
       interval: 3s
       timeout: 30s
-  app:
+  superconductor-app:
+    container_name: superconductor-app
     image: superconductor:1.6.4
     ports:
       - "5555:5555"
     depends_on:
-      db:
+      superconductor-db:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/superconductor
+      SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3306/superconductor
       SPRING_DATASOURCE_USERNAME: <APP_USER>
       SPRING_DATASOURCE_PASSWORD: <APP_USER_PASSWORD>
     networks:
       superconductor-docker-network:
 volumes:
-  db:
+  superconductor-db:
     driver: local
 networks:
    superconductor-docker-network:

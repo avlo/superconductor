@@ -5,7 +5,7 @@
 
   <groupId>com.prosilion</groupId>
   <artifactId>superconductor</artifactId>
-  <version>1.6.4</version>
+  <version>1.7.0</version>
   <name>superconductor</name>
   <description>SuperConductor Java Nostr-Relay Framework and Web Application</description>
   <packaging>war</packaging>
@@ -28,6 +28,7 @@
     <lombok.version>1.18.32</lombok.version>
     <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
     <mysql-connector-j.version>8.4.0</mysql-connector-j.version>
+    <postgresql.version>42.7.3</postgresql.version>
   </properties>
 
   <dependencies>
@@ -72,7 +73,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <version>${spring-boot.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -104,35 +104,35 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <version>${spring-boot.version}</version>
     </dependency>
-
-
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-cache</artifactId>
+      <artifactId>spring-boot-docker-compose</artifactId>
       <version>${spring-boot.version}</version>
+<!--      <optional>true</optional>-->
+      <scope>runtime</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-jcache</artifactId>
-      <version>6.5.2.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.ben-manes.caffeine</groupId>
-      <artifactId>jcache</artifactId>
-      <version>3.1.8</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>${h2.version}</version>
-    </dependency>
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
       <version>${mysql-connector-j.version}</version>
+<!--      TODO: try remove below if all works after commit -->
+<!--      <optional>true</optional>-->
+      <scope>runtime</scope>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.postgresql</groupId>-->
+<!--      <artifactId>postgresql</artifactId>-->
+<!--      <version>${postgresql.version}</version>-->
+<!--      <scope>runtime</scope>-->
+<!--    </dependency>-->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
+      <optional>true</optional>
+    </dependency>
+
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -234,4 +234,21 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>local</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <spring.profiles.active>local</spring.profiles.active>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <spring.profiles.active>prod</spring.profiles.active>
+      </properties>
+    </profile>
+  </profiles>
 </project>

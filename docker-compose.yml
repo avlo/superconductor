@@ -1,0 +1,40 @@
+services:
+  superconductor-db:
+    container_name: superconductor-mysqldb
+    image: mysql:8.4.0
+    ports:
+      - "3306:3306"
+    labels:
+      org.springframework.boot.service-connection: mysql
+    environment:
+      MYSQL_DATABASE: superconductor
+      MYSQL_USER: nick
+      MYSQL_PASSWORD: adminpass
+      MYSQL_ROOT_PASSWORD: adminpass
+    networks:
+      docker-network:
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "superconductor-mysqldb"]
+      retries: 10
+      interval: 3s
+      timeout: 30s
+  superconductor-app:
+    container_name: superconductor-app
+    image: superconductor:1.7.0
+    ports:
+      - "5555:5555"
+    depends_on:
+      superconductor-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3306/superconductor
+      SPRING_DATASOURCE_USERNAME: nick
+      SPRING_DATASOURCE_PASSWORD: adminpass
+    networks:
+      docker-network:
+volumes:
+  superconductor-db:
+    driver: local
+networks:
+   docker-network:
+    driver: bridge

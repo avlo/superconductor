@@ -48,7 +48,7 @@ public class FilterMatcher {
 
   private boolean withinRange(Long since, Long until, Long createdAt) {
     if (!nonNull(since) && !nonNull(until))
-      return true;
+      return false;
     if ((nonNull(since) && !nonNull(until)) && (since < createdAt))
       return true;
     if ((!nonNull(since) && (until >= createdAt)))

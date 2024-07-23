@@ -7,18 +7,23 @@
 ╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 ```
 # Java Nostr-Relay Framework & Web Application
-- Simple.  Clean.  OO.
+- Dependencies:
   - Java 22
-  - Spring [WebSocketSession 3.2.2](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)
-  - Spring Boot 3.3.1
-  - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) library by tcheeric
-    
-- core [SOLID OO](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) principles, providing ease of:
-  - understandability
-  - extensibility / modularization [(_HOW-TO: creating relay event-handlers_)](#adding-newcustom-events-to-superconductor)
-  - customization
-  - testing
+  - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.1
+  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.2.2
+  - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) API library 
 
+
+- [SOLID](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) engineering principles.  Simple.  Clean.  OO.
+  - understandability
+  - extensibility / modularization [(_HOW-TO: creating relay event-handlers_)](#adding-newcustom-events-to-superconductor)  
+  - testing
+  - customization
+
+
+- Containerized deployment:
+  - [Docker](https://hub.docker.com/_/docker) 27.0.3
+  - [Docker Compose](https://docs.docker.com/compose/install/) v2.28.1
 ----
 ## NIPS
   #### Supported
@@ -61,7 +66,7 @@
 
 <hr style="border:2px solid grey">
 
-# Using Superconductor
+# Build Superconductor
 ### Build and install nostr-java dependency library
 _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo-fork/tree/java22) (of tcheeric's [java19 nostr-java library](https://github.com/tcheeric/nostr-java)) supports virtual threads.  reversion to his library will occur upon its upgrade to java22._  
 
@@ -78,31 +83,56 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
     $ cd superconductor
     $ mvn clean install
 
+<hr style="border:2px solid grey">
+
+# Run SuperConductor (4 options)
+
+### 1.  Docker + Docker Compose
+##### Confirm minimal docker requirements 
+    $ docker --version
+>     Docker version 27.0.3
+    $ docker compose version
+>     Docker Compose version v2.28.1
+
+##### Dockerize project
+Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([preferably over Dockerfile](https://reflectoring.io/spring-boot-docker/))
+
+    $ mvn -N wrapper:wrapper
+    $ mvn spring-boot:build-image
+
+##### Start docker containers
+    $ docker compose -f docker-compose.yml up -d
+
+Superconductor is now ready to use.
+
+##### Stop docker containers
+    $ docker compose -f docker-compose.yml stop superconductor-app superconductor-db
+
+##### Remove docker containers
+    $ docker compose -f docker-compose.yml down --remove-orphans
+
 ----
 
-### Run SuperConductor (3 options)
-##### 1.  run as executable jar
-
+### 2.  Run locally using maven spring-boot:run target
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar target/superconductor-1.6.4.war
+    $ mvn spring-boot:run -Dspring.profiles.active=local 
 
-#### 2.  run using maven spring-boot run target
-
-
-    $ cd <your_git_home_dir>/superconductor
-    $ mvn spring-boot:run 
-
-
-#### 3.  run using pre-existing application-server-container instance
-
-
-    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.6.4.war <your_container/instance/deployment_directory>
- 
 for full/debug developer console logging:
 
     $ cd <your_git_home_dir>/superconductor
     $ mvn spring-boot:run -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE
+----
+
+### 3.  Run locally as executable jar
+
+    $ cd <your_git_home_dir>/superconductor
+    $ java -jar target/superconductor-1.6.4.war
+
+----
+### 4.  Run using pre-existing local application-server-container instance
+
+    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.6.4.war <your_container/instance/deployment_directory>
 
 ----
 
@@ -112,7 +142,7 @@ for full/debug developer console logging:
 
 <hr style="border:2px solid grey">
 
-## Default/embedded H2 DB console: ##
+## Default/embedded H2 DB console (local non-docker development mode): ##
 
     localhost:5555/h2-console/
 

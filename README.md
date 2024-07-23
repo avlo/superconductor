@@ -7,18 +7,19 @@
 ╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 ```
 # Java Nostr-Relay Framework & Web Application
-- Dependencies:
-  - Java 22
-  - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.1
-  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.2.2
-  - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) API library 
-
 
 - [SOLID](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) engineering principles.  Simple.  Clean.  OO.
   - understandability
   - extensibility / modularization [(_HOW-TO: creating relay event-handlers_)](#adding-newcustom-events-to-superconductor)  
   - testing
   - customization
+
+
+- Dependencies:
+  - Java 22
+  - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.1
+  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.2.2
+  - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) API library
 
 
 - Containerized deployment:
@@ -95,7 +96,7 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
 >     Docker Compose version v2.28.1
 
 ##### Dockerize project
-Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([preferably over Dockerfile](https://reflectoring.io/spring-boot-docker/))
+Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([preferential over Dockerfile](https://reflectoring.io/spring-boot-docker/))
 
     $ mvn -N wrapper:wrapper
     $ mvn spring-boot:build-image

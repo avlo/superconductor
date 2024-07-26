@@ -8,9 +8,9 @@ services:
       org.springframework.boot.service-connection: mysql
     environment:
       MYSQL_DATABASE: superconductor
-      MYSQL_USER: nick
-      MYSQL_PASSWORD: adminpass
-      MYSQL_ROOT_PASSWORD: adminpass
+      MYSQL_USER: <YOUR_MYSQL_USER>
+      MYSQL_PASSWORD: <YOUR_MYSQL_PASSWORD>
+#      MYSQL_ROOT_PASSWORD: <YOUR_MYSQL_ROOT_PASSWORD>
     networks:
       docker-network:
     healthcheck:
@@ -28,8 +28,8 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3306/superconductor
-      SPRING_DATASOURCE_USERNAME: nick
-      SPRING_DATASOURCE_PASSWORD: adminpass
+      SPRING_DATASOURCE_USERNAME: <YOUR_APP_USER>
+      SPRING_DATASOURCE_PASSWORD: <YOUR_APP_PASSWORD>
     networks:
       docker-network:
 volumes:

@@ -8,26 +8,9 @@
 ```
 # Java Nostr-Relay Framework & Web Application
 
-- [SOLID](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) engineering principles.  Simple.  Clean.  OO.
-  - understandability
-  - extensibility / modularization [(_HOW-TO: creating relay event-handlers_)](#adding-newcustom-events-to-superconductor)  
-  - testing
-  - customization
-
-
-- Dependencies:
-  - Java 22
-  - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.1
-  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.2.2
-  - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) API library
-
-
-- Containerized deployment:
-  - [Docker](https://hub.docker.com/_/docker) 27.0.3
-  - [Docker Compose](https://docs.docker.com/compose/install/) v2.28.1
 ----
-## NIPS
-  #### Supported
+
+### Supported Nips
   - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol & Standard Tags)
   - [NIP-02](https://nostr-nips.com/nip-02) (Contact List and Petnames)
   - [NIP-10](https://nostr-nips.com/nip-10) (Marked "e" tags)
@@ -45,13 +28,74 @@
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
   - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
 
-  #### In-Progress
+#### In-Progress
   - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
     - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
+    
+----
+### Production Mode (most users):
+#### Confirm minimal docker requirements
+
+    $ docker --version
+>     Docker version 27.0.3
+    $ docker compose version
+>     Docker Compose version v2.28.1
+
+(Download links for the above)
+- [Docker](https://hub.docker.com/_/docker) 27.0.3
+- [Docker Compose](https://docs.docker.com/compose/install/) v2.28.1
+
+----
+
+#### Download Superconductor Docker Image from [hub.docker](https://hub.docker.com/repository/docker/avlo/superconductor-app/tags)
+    $ docker pull avlo/superconductor-app:1.7.0
+
+----
+
+#### Download Docker-Compose configuration file:
+
+[docker-compose.yml](docker-compose.yml)
+
+----
+
+#### Run SuperConductor
+    $ docker compose -f /<path>/<to>/docker-compose.yml up -d
+
+Superconductor is now ready to use.
+
+----
+
+##### Stop docker containers
+    $ docker compose -f docker-compose.yml stop superconductor-app superconductor-db
+
+##### Remove docker containers
+    $ docker compose -f docker-compose.yml down --remove-orphans
 
 <hr style="border:2px solid grey">
 
-## Requirements
+### Development Mode
+
+- [SOLID](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design) engineering principles.  Simple.  Clean.  OO.
+    - understandability
+    - extensibility / modularization [(_HOW-TO: creating relay event-handlers_)](#adding-newcustom-events-to-superconductor)
+    - testing
+    - customization
+
+
+- Dependencies:
+    - Java 22
+    - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.1
+    - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.2.2
+    - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) API library
+
+
+- Containerized deployment:
+    - [Docker](https://hub.docker.com/_/docker) 27.0.3
+    - [Docker Compose](https://docs.docker.com/compose/install/) v2.28.1
+
+----
+
+### Requirements
 
     $ java -version
 
@@ -65,11 +109,11 @@
 >     Default locale: en_US, platform encoding: UTF-8
 >     OS name: "linux", version: "5.15.0-112-generic", arch: "amd64", family: "unix"
 
-<hr style="border:2px solid grey">
+----
 
-# Build Superconductor
-### Build and install nostr-java dependency library
-_note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo-fork/tree/java22) (of tcheeric's [java19 nostr-java library](https://github.com/tcheeric/nostr-java)) supports virtual threads.  reversion to his library will occur upon its upgrade to java22._  
+### Build Superconductor
+#### Build and install nostr-java dependency library
+_note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo-fork/tree/java22) (of tcheeric's [java19 nostr-java library](https://github.com/tcheeric/nostr-java)) supports virtual threads.  reversion to his library will occur upon its upgrade to java22._
 
     $ cd <your_git_home_dir>
     $ git clone git@github.com:avlo/nostr-java-avlo-fork.git
@@ -77,19 +121,19 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
     $ git checkout java22
     $ mvn clean install
 
-### Build and install SuperConductor
+#### Build and install SuperConductor
 
     $ cd <your_git_home_dir>
     $ git clone https://github.com/avlo/superconductor
     $ cd superconductor
     $ mvn clean install
 
-<hr style="border:2px solid grey">
+----
 
-# Run SuperConductor (4 options)
+### Run SuperConductor (4 options)
 
-### 1.  Docker + Docker Compose
-##### Confirm minimal docker requirements 
+#### 1.  Docker + Docker Compose
+##### Confirm minimal docker requirements
     $ docker --version
 >     Docker version 27.0.3
     $ docker compose version
@@ -139,16 +183,16 @@ for full/debug developer console logging:
 
 ### Relay Endpoint for clients
 
-  ws://localhost:5555
+ws://localhost:5555
 
 <hr style="border:2px solid grey">
 
-## Default/embedded H2 DB console (local non-docker development mode): ##
+### Default/embedded H2 DB console (local non-docker development mode): ##
 
     localhost:5555/h2-console/
 
 *user: sa*  
-*password: // blank* 
+*password: // blank*
 
 Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
@@ -171,26 +215,26 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 	select id, uri from relays_tag;
 	select id, event_id, relays_id from "event-relays_tag-join";
 	select id, number, currency, frequency from price_tag;
- 
+
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 
-  http://localhost:5555/NIP01.html
+http://localhost:5555/NIP01.html
 
-  http://localhost:5555/NIP57.html
+http://localhost:5555/NIP57.html
 
-  http://localhost:5555/NIP99.html
+http://localhost:5555/NIP99.html
 
-  http://localhost:5555/REQ.html
+http://localhost:5555/REQ.html
 <br>
 <hr style="border:2px solid grey">
 
-# Adding new/custom events to SuperConductor
+### Adding new/custom events to SuperConductor
 
 For Nostr clients generating canonical Nostr JSON (as defined in [NIP01 spec: Basic protocol flow description, Events, Signatures and Tags](https://nostr-nips.com/nip-01)), SuperConductor will automatically recognize those JSON events- including their database storage, retrieval and subscriber notification.  No additional work or customization is necessary.
 <br>
 <hr style="border:2px solid grey">
 
-# Adding new/custom tags to SuperConductor
+### Adding new/custom tags to SuperConductor
 
 SuperConductor supports any _**generic**_ tags automatically.  Otherwise, if custom tag structure is required, simply implement the [`TagPlugin`](https://github.com/avlo/superconductor/blob/master/src/main/java/com/prosilion/superconductor/dto/TagPlugin.java) interface (an example can be seen [here](https://github.com/avlo/superconductor/blob/master/src/main/java/com/prosilion/superconductor/dto/EventTagPlugin.java)) and your tag will automatically get included by SuperConductor after rebuilding and redeploying.
 

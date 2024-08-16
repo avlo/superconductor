@@ -11,6 +11,7 @@
 ### Supported Nips
   - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol & Standard Tags)
   - [NIP-02](https://nostr-nips.com/nip-02) (Contact List and Petnames)
+  - [NIP-05](https://nostr-nips.com/nip-05) (DNS-based internet identifiers)
   - [NIP-10](https://nostr-nips.com/nip-10) (Marked "e" tags)
   - [NIP-11](https://nostr-nips.com/nip-11) (Relay Information Document)
   - [NIP-12](https://nostr-nips.com/nip-12) (Generic Tag Queries)

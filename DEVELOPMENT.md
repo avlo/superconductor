@@ -152,6 +152,8 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 
+http://localhost:5555/NIP00.html
+
 http://localhost:5555/NIP01.html
 
 http://localhost:5555/NIP57.html

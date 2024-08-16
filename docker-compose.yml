@@ -10,7 +10,7 @@ services:
       MYSQL_DATABASE: superconductor
       MYSQL_USER: <YOUR_MYSQL_USER>
       MYSQL_PASSWORD: <YOUR_MYSQL_PASSWORD>
-#      MYSQL_ROOT_PASSWORD: <YOUR_MYSQL_ROOT_PASSWORD>
+      MYSQL_ROOT_PASSWORD: <YOUR_MYSQL_ROOT_PASSWORD>
     networks:
       docker-network:
     healthcheck:

@@ -25,7 +25,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
     this.okResponseService = okResponseService;
   }
 
-  public void processIncoming(@NotNull EventMessage eventMessage, @NonNull String sessionId) {
+  public void processIncoming(@NotNull T eventMessage, @NonNull String sessionId) {
     log.info("EVENT message NIP: {}", eventMessage.getNip());
     log.info("EVENT message type: {}", eventMessage.getEvent());
     try {

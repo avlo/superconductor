@@ -23,6 +23,7 @@
   - [NIP-22](https://nostr-nips.com/nip-22) (Event "created_at" limits)
   - [NIP-31](https://nostr-nips.com/nip-31) (Unknown event kinds)
   - [NIP-33](https://nostr-nips.com/nip-33) (Parameterized Replaceable Events)
+  - [NIP-46](https://nostr-nips.com/nip-46) (Nostr Connect)
   - [NIP-57](https://nostr-nips.com/nip-57) (Lightning Zaps)
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
   - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)

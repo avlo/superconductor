@@ -8,9 +8,9 @@ services:
       org.springframework.boot.service-connection: mysql
     environment:
       MYSQL_DATABASE: superconductor
-      MYSQL_USER: <YOUR_MYSQL_USER>
-      MYSQL_PASSWORD: <YOUR_MYSQL_PASSWORD>
-      MYSQL_ROOT_PASSWORD: <YOUR_MYSQL_ROOT_PASSWORD>
+      MYSQL_USER: mysqluser
+      MYSQL_PASSWORD: mysqluserpass
+      MYSQL_ROOT_PASSWORD: mysqlrootuserpass
     networks:
       docker-network:
     healthcheck:
@@ -20,7 +20,7 @@ services:
       timeout: 30s
   superconductor-app:
     container_name: superconductor-app
-    image: avlo/superconductor-app:1.7.1
+    image: superconductor:1.7.1
     ports:
       - "5555:5555"
     depends_on:
@@ -28,8 +28,9 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3306/superconductor
-      SPRING_DATASOURCE_USERNAME: <YOUR_APP_USER>
-      SPRING_DATASOURCE_PASSWORD: <YOUR_APP_PASSWORD>
+      SPRING_DATASOURCE_USERNAME: mysqluser
+      SPRING_DATASOURCE_PASSWORD: mysqluserpass
+      SPRING_PROFILES_ACTIVE: dev
     networks:
       docker-network:
 volumes:

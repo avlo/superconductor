@@ -67,28 +67,28 @@
 ----
 
 #### Download Superconductor Docker Image from [hub.docker](https://hub.docker.com/repository/docker/avlo/superconductor-app/tags)
-    $ docker pull avlo/superconductor-app:1.7.1
+    $ docker pull avlo/superconductor:1.7.1
 
 ----
 
 #### Download Docker-Compose configuration file:
 
-[docker-compose.yml](docker-compose.yml)
+[docker-compose-prod.yml](docker-compose-prod.yml)
 
 ----
 
 #### Run SuperConductor
-    $ docker compose -f /<path>/<to>/docker-compose.yml up -d
+    $ docker compose -f /<path>/<to>/docker-compose-prod.yml up -d
 
 Superconductor is now ready to use.
 
 ----
 
 ##### Stop docker containers
-    $ docker compose -f docker-compose.yml stop superconductor-app superconductor-db
+    $ docker compose -f docker-compose-prod.yml stop superconductor-app superconductor-db
 
 ##### Remove docker containers
-    $ docker compose -f docker-compose.yml down --remove-orphans
+    $ docker compose -f docker-compose-prod.yml down --remove-orphans
 
 <hr style="border:2px solid grey">
 

@@ -80,15 +80,15 @@ Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([pr
     $ mvn spring-boot:build-image
 
 ##### Start docker containers
-    $ docker compose -f docker-compose.yml up -d
+    $ docker compose -f docker-compose-dev.yml up -d
 
 Superconductor is now ready to use.
 
 ##### Stop docker containers
-    $ docker compose -f docker-compose.yml stop superconductor-app superconductor-db
+    $ docker compose -f docker-compose-dev.yml stop superconductor-app superconductor-db
 
 ##### Remove docker containers
-    $ docker compose -f docker-compose.yml down --remove-orphans
+    $ docker compose -f docker-compose-dev.yml down --remove-orphans
 
 ----
 

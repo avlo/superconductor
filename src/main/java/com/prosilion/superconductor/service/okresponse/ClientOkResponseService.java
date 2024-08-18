@@ -39,9 +39,9 @@ public class ClientOkResponseService {
     try {
       publisher.publishEvent(new OkClientResponse(sessionId, (GenericEvent) eventMessage.getEvent(), false, reason));
     } catch (JsonProcessingException e) {
-      String id = eventMessage.getEvent().getId();
-      String payload = "[\"OK\", \"" + id + "\", false, \"" + e.getMessage() + "\"]";
-      publisher.publishEvent(new TextMessage(payload));
+      publisher.publishEvent(new TextMessage(
+          "[\"OK\", \"" + eventMessage.getEvent().getId() + "\", false, \"" + e.getMessage() + "\"]"
+      ));
     }
   }
 }

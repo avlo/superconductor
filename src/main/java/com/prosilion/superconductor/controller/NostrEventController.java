@@ -51,8 +51,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   }
 
   @Override
-  public void registerWebSocketHandlers(
-      WebSocketHandlerRegistry registry) {
+  public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry.addHandler(this, "/")
         .setHandshakeHandler(
             new DefaultHandshakeHandler(
@@ -112,6 +111,9 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     final String sessionId = message.getSessionId();
     log.info("NostrEventController OK response to\nclient:\n\t{}\nresponse:\n\t{}", sessionId, okResponseMessage.getPayload());
     broadcast(sessionId, okResponseMessage);
+    if (!message.isValid()) {
+      afterConnectionClosed(Objects.requireNonNull(mapSessions.remove(sessionId)), CloseStatus.POLICY_VIOLATION);
+    }
   }
 
   private void broadcast(String sessionId, TextMessage message) {

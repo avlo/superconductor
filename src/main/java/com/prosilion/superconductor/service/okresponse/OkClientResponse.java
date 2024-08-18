@@ -13,10 +13,16 @@ import org.springframework.web.socket.TextMessage;
 public class OkClientResponse {
   private final TextMessage okResponseMessage;
   private final String sessionId;
+  private final boolean valid;
 
   public OkClientResponse(@NonNull String sessionId, @NonNull GenericEvent event) throws JsonProcessingException {
+    this(sessionId, true, event, "");
+  }
+
+  public OkClientResponse(@NonNull String sessionId, boolean valid, @NonNull GenericEvent event, @NonNull String message) throws JsonProcessingException {
+    this.valid = valid;
     this.sessionId = sessionId;
     this.okResponseMessage = new TextMessage(
-        new NIP20Impl.OkMessageFactory(event, true, "").create().encode());
+        new NIP20Impl.OkMessageFactory(event, valid, message).create().encode());
   }
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,7 +22,9 @@ public class RedisCache<T extends GenericEvent> {
   }
 
   public Map<Kind, Map<Long, T>> getAll() {
-    return eventEntityService.getAll();
+    return eventEntityService.getAll().entrySet().stream()
+        .filter(kindMapEntry -> !kindMapEntry.getKey().equals(Kind.CLIENT_AUTH))
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   protected void saveEventEntity(@NonNull GenericEvent event) {

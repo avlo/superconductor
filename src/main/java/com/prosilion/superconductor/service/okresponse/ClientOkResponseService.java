@@ -22,6 +22,19 @@ public class ClientOkResponseService {
   public void processOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage) throws JsonProcessingException {
     log.info("Processing event message: {}", eventMessage.getEvent());
     publisher.publishEvent(
-        new OkClientResponse(sessionId, (GenericEvent) eventMessage.getEvent()));
+        new OkClientResponse(
+            sessionId,
+            (GenericEvent) eventMessage.getEvent()
+        ));
+  }
+
+  public void processNotOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) throws JsonProcessingException {
+    log.info("Processing failed event message: {}, reason: {}", eventMessage.getEvent(), reason);
+    publisher.publishEvent(
+        new OkClientResponse(
+            sessionId,
+            false,
+            (GenericEvent) eventMessage.getEvent(),
+            reason));
   }
 }

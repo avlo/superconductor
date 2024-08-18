@@ -14,20 +14,28 @@ import org.springframework.stereotype.Service;
 @Getter
 @Slf4j
 @Service
-public class EventService<T extends EventMessage> implements EventServiceIF<T> {
+public class AuthenticatedEventService<T extends EventMessage> {
   private final NotifierService<GenericEvent> notifierService;
   private final RedisCache<GenericEvent> redisCache;
+  private final AuthEntityService authEntityService;
 
   @Autowired
-  public EventService(NotifierService<GenericEvent> notifierService, RedisCache<GenericEvent> redisCache) {
+  public AuthenticatedEventService(NotifierService<GenericEvent> notifierService,
+      AuthEntityService authEntityService,
+      RedisCache<GenericEvent> redisCache) {
     this.notifierService = notifierService;
+    this.authEntityService = authEntityService;
     this.redisCache = redisCache;
   }
 
   //  @Async
-  public void processIncomingEvent(@NonNull T eventMessage) {
-    log.info("processing incoming TEXT_NOTE: [{}]", eventMessage);
+  public boolean processIncomingEvent(@NonNull T eventMessage, @NonNull String sessionId) {
+    log.info("processing incoming AUTHENTICATED TEXT_NOTE: [{}]", eventMessage);
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
+
+    if (authEntityService.findAuthEntityBySessionId(sessionId).isPresent()) {
+      return false;
+    }
 
     TextNoteEvent textNoteEvent = new TextNoteEvent(
         event.getPubKey(),
@@ -40,5 +48,6 @@ public class EventService<T extends EventMessage> implements EventServiceIF<T> {
 
     redisCache.saveEventEntity(event);
     notifierService.nostrEventHandler(new AddNostrEvent<>(event));
+    return true;
   }
 }

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.message;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.superconductor.service.event.EventService;
+import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.okresponse.ClientOkResponseService;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class EventMessageService<T extends EventMessage> implements MessageService<T> {
   @Getter
-  public final String command = "EVENT";
-  private final EventService eventService;
+  public final String command = "EVENTXY";
+  private final EventServiceIF<T> eventService;
   private final ClientOkResponseService okResponseService;
 
   @Autowired
-  public EventMessageService(EventService eventService, ClientOkResponseService okResponseService) {
+  public EventMessageService(EventServiceIF<T> eventService, ClientOkResponseService okResponseService) {
     this.eventService = eventService;
     this.okResponseService = okResponseService;
   }

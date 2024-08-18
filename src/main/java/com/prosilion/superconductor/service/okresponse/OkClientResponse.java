@@ -16,10 +16,10 @@ public class OkClientResponse {
   private final boolean valid;
 
   public OkClientResponse(@NonNull String sessionId, @NonNull GenericEvent event) throws JsonProcessingException {
-    this(sessionId, true, event, "");
+    this(sessionId, event, true, "request successful");
   }
 
-  public OkClientResponse(@NonNull String sessionId, boolean valid, @NonNull GenericEvent event, @NonNull String message) throws JsonProcessingException {
+  public OkClientResponse(@NonNull String sessionId, @NonNull GenericEvent event, boolean valid, @NonNull String message) throws JsonProcessingException {
     this.valid = valid;
     this.sessionId = sessionId;
     this.okResponseMessage = new TextMessage(

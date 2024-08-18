@@ -33,9 +33,7 @@ public class AuthenticatedEventService<T extends EventMessage> {
     log.info("processing incoming AUTHENTICATED TEXT_NOTE: [{}]", eventMessage);
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
 
-    if (authEntityService.findAuthEntityBySessionId(sessionId).isPresent()) {
-      return false;
-    }
+    authEntityService.findAuthEntityBySessionId(sessionId);
 
     TextNoteEvent textNoteEvent = new TextNoteEvent(
         event.getPubKey(),

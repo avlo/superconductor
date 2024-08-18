@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.service.message;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.okresponse.ClientOkResponseService;
 import jakarta.validation.constraints.NotNull;
@@ -28,11 +27,7 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
   public void processIncoming(@NotNull T eventMessage, @NonNull String sessionId) {
     log.info("EVENT message NIP: {}", eventMessage.getNip());
     log.info("EVENT message type: {}", eventMessage.getEvent());
-    try {
-      eventService.processIncomingEvent(eventMessage);
-      okResponseService.processOkClientResponse(sessionId, eventMessage);
-    } catch (JsonProcessingException e) {
-      log.info("FAILED event message: {}", e.getMessage());
-    }
+    eventService.processIncomingEvent(eventMessage);
+    okResponseService.processOkClientResponse(sessionId, eventMessage);
   }
 }

@@ -13,6 +13,7 @@ import nostr.base.PublicKey;
 import nostr.base.Relay;
 import nostr.event.impl.CanonicalAuthenticationEvent;
 import nostr.event.impl.GenericEvent;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Setter
@@ -33,6 +34,9 @@ public class AuthEntity {
   private String sessionId;
   private String challenge;
 
+  @Value( "${superconductor.relay.url}" )
+  private String relayUrl;
+
   public AuthEntity(@NonNull String pubKey, @NonNull String challenge, @NonNull String sessionId) {
     this.pubKey = pubKey;
     this.challenge = challenge;
@@ -40,6 +44,6 @@ public class AuthEntity {
   }
 
   public <T extends GenericEvent> T convertEntityToDto() {
-    return (T) new CanonicalAuthenticationEvent(new PublicKey(pubKey), challenge, new Relay("ws://localhost:5555"));
+    return (T) new CanonicalAuthenticationEvent(new PublicKey(pubKey), challenge, new Relay(relayUrl));
   }
 }

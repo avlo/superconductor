@@ -11,6 +11,7 @@ import nostr.event.impl.GenericTag;
 import nostr.event.message.CanonicalAuthenticationMessage;
 import nostr.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,9 @@ public class AuthMessageService<T extends CanonicalAuthenticationMessage> implem
   public final String command = "AUTH";
   private final AuthEntityService authEntityService;
   private final ClientResponseService okResponseService;
+
+  @Value("${superconductor.relay.url}")
+  private String relayUrl;
 
   @Autowired
   public AuthMessageService(
@@ -42,12 +46,11 @@ public class AuthMessageService<T extends CanonicalAuthenticationMessage> implem
     log.info("AUTH message challenge string: {}, matched", challengeValue);
 
     String relayUriString = getElementValue(authMessage, "relay");
-    String relayUri = "ws://localhost:5555";
     String pubKey = authMessage.getEvent().getPubKey().toString();
-    if (!relayUriString.equalsIgnoreCase(relayUri)) {
+    if (!relayUriString.equalsIgnoreCase(relayUrl)) {
       log.info("AUTH message failed, relay URI string: [{}]", relayUriString);
       sendAuthFailed(authMessage, sessionId,
-          String.format("restricted: provided authentication relay URI [%s] does not match this relay host's URI [%s]", relayUriString, relayUri)
+          String.format("restricted: provided authentication relay URI [%s] does not match this relay host's URI [%s]", relayUriString, relayUrl)
       );
       return;
     }

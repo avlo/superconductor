@@ -67,7 +67,7 @@
 ----
 
 #### Download Superconductor Docker Image from [hub.docker](https://hub.docker.com/repository/docker/avlo/superconductor-app/tags)
-    $ docker pull avlo/superconductor:1.7.1
+    $ docker pull avlo/superconductor:1.7.2
 
 ----
 

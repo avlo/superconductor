@@ -5,7 +5,7 @@
 
   <groupId>com.prosilion</groupId>
   <artifactId>superconductor</artifactId>
-  <version>1.7.1</version>
+  <version>1.7.2</version>
   <name>superconductor</name>
   <description>SuperConductor Java Nostr-Relay Framework and Web Application</description>
   <packaging>war</packaging>

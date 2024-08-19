@@ -20,7 +20,7 @@ services:
       timeout: 30s
   superconductor-app:
     container_name: superconductor-app
-    image: superconductor:1.7.1
+    image: superconductor:1.7.2
     ports:
       - "5555:5555"
     depends_on:

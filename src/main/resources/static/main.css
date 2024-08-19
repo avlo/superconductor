@@ -19,3 +19,16 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; white-space:pre-wrap; f
 .boolean { color: blue; }
 .null { color: magenta; }
 .key { color: red; }
+
+.center {
+    text-align: center;
+}
+
+.gap{
+    margin-top: 1em;
+    display: block;
+}
+
+.alternate-color {
+    background-color: #e5e5e5
+}

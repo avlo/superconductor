@@ -9,8 +9,8 @@ function hashThenSend01() {
         $("#01-kind").val(),
         $("#e_tag").val(),
         $("#p_tag").val(),
-        $("#g_tag").val(),
-        $("#content").val()
+        $("#01-g_tag").val(),
+        $("#01-content").val()
     ].join(",");
 
     const text = [
@@ -29,11 +29,11 @@ function replaceHash01(id_hash) {
             {
                 'id': id_hash,
                 'kind': $("#01-kind").val(),
-                'content': $("#content").val(),
+                'content': $("#01-content").val(),
                 'tags': [
                     ['e', $("#e_tag").val()],
                     ['p', $("#p_tag").val()],
-                    ['g', $("#g_tag").val()]
+                    ['g', $("#01-g_tag").val()]
                 ],
                 'pubkey': $("#01-pubkey").val(),
                 'created_at': Date.now(),

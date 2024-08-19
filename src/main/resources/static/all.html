@@ -8,7 +8,10 @@
   <link href="/main.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="/register.js"></script>
+  <script src="/nip-00.js"></script>
   <script src="/nip-01.js"></script>
+  <script src="/nip-57.js"></script>
+  <script src="/nip-99.js"></script>
   <script src="/common.js"></script>
 </head>
 <body>
@@ -27,50 +30,226 @@
     </div>
   </div>
   <hr>
-  <h4>Register</h4>
+  <div class="alternate-color">
+    <hr>
+    <h4>Register</h4>
+    <div class="row">
+      <div class="col-md-6">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="challenge">Create Password: </label>
+            <input type="text" value="123123" id="challenge" class="form-control" placeholder="456456">
+          </div>
+          <div class="form-group">
+            <label for="pubkeyregister">Pubkey: </label>
+            <input type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                   id="pubkeyregister" class="form-control" placeholder="pubkeyregister">
+          </div>
+          <div class="form-group">
+            <input type="hidden" id="kindregister" name="kindregister" value=22242>
+            <input type="hidden" id="relay" name="relay" value='ws://localhost:5555'>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-inline">
+                <div class="center gap">
+                  <button id="sendregister" class="btn btn-default" type="submit">Register</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <h4>NIP-00</h4>
   <div class="row">
     <div class="col-md-6">
       <form class="form-inline">
         <div class="form-group">
-          <label for="challenge">Create Password: </label>
-          <input type="text" value="123123" id="challenge" class="form-control" placeholder="456456">
+          <label for="00-pubkey">Pubkey: </label>
+          <input type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="00-pubkey"
+                 class="form-control" placeholder="00-pubkey">
         </div>
-        <div class="form-group">
-          <label for="pubkeyregister">Pubkey: </label>
-          <input type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
-                 id="pubkeyregister" class="form-control" placeholder="pubkeyregister">
+        <input type="hidden" id="00-kind" name="00-kind" value=0>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-inline">
+              <div class="center gap">
+                <button id="send00" class="btn btn-default" type="submit">Send Nip-00 Event</button>
+              </div>
+            </div>
+          </div>
         </div>
-        <input type="hidden" id="kindregister" name="kindregister" value=22242>
-        <input type="hidden" id="relay" name="relay" value='ws://localhost:5555'>
-        <button id="sendregister" class="btn btn-default" type="submit">Send Register</button>
       </form>
     </div>
   </div>
   <hr>
-  <h4>NIP-01</h4>
+  <div class="alternate-color">
+    <hr>
+    <h4>NIP-01</h4>
+    <div class="row">
+      <div class="col-md-6">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="01-content">Send message:</label>
+            <input type="text" value="1111111111" id="01-content" class="form-control" placeholder="message...">
+          </div>
+          <div class="form-group">
+            <label for="01-pubkey">Pubkey: </label>
+            <input type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="01-pubkey"
+                   class="form-control" placeholder="01-pubkey">
+          </div>
+          <div class="form-group">
+            <label for="01-g_tag">GeoTag: </label>
+            <input type="text" value="textnote geo-tag-1" id="01-g_tag" class="form-control" placeholder="geo-tag">
+          </div>
+          <input type="hidden" id="01-kind" name="01-kind" value=1>
+          <input type="hidden" id="e_tag" name="e_tag"
+                 value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">
+          <input type="hidden" id="p_tag" name="p_tag"
+                 value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-inline">
+                <div class="center gap">
+                  <button id="send01" class="btn btn-default" type="submit">Send Nip-01 Event</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <h4>NIP-57</h4>
   <div class="row">
     <div class="col-md-6">
       <form class="form-inline">
         <div class="form-group">
-          <label for="content">Send message:</label>
-          <input type="text" value="1111111111" id="content" class="form-control" placeholder="message...">
+          <label for="relays">Relays Tag: </label>
+          <input type="text" value="ws://localhost:5555" id="relays" class="form-control" placeholder="relays...">
         </div>
         <div class="form-group">
-          <label for="01-pubkey">Pubkey: </label>
-          <input type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="01-pubkey"
-                 class="form-control" placeholder="01-pubkey">
+          <label for="amount">Amount: </label>
+          <input type="text" value="271" id="amount" class="form-control" placeholder="amount...">
         </div>
         <div class="form-group">
+          <label for="lnurl">LnUrl: </label>
+          <input type="text"
+                 value="lnurl1dp68gurn8ghj7um5v93kketj9ehx2amn9uh8wetvdskkkmn0wahz7mrww4excup0dajx2mrv92x9xp" id="lnurl"
+                 class="form-control" placeholder="lnurl...">
+        </div>
+        <div class="form-group gap">
+          <label for="subject">Subject: </label>
+          <input type="text" value="subject Zap Request" id="subject" class="form-control" placeholder="subject...">
+        </div>
+        <div class="form-group">
+          <label for="57-content">Content: </label>
+          <input type="text" value="content Zap Request" id="57-content" class="form-control"
+                 placeholder="content in markdown...">
+        </div>
+        <div class="form-group">
+          <label for="57-pubkey">Pubkey: </label>
+          <input type="text" value="bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="57-pubkey"
+                 class="form-control" placeholder="57-pubkey">
+        </div>
+        <div class="form-group gap">
           <label for="g_tag">GeoTag: </label>
-          <input type="text" value="textnote geo-tag-1" id="g_tag" class="form-control" placeholder="geo-tag">
+          <input type="text" value="ZapRequest geo-tag-1" id="g_tag" class="form-control" placeholder="geo-tag">
         </div>
-        <input type="hidden" id="01-kind" name="01-kind" value=1>
-        <input type="hidden" id="e_tag" name="e_tag"
+        <div class="form-group">
+          <label for="t_tag">HashTag: </label>
+          <input type="text" value="ZapRequest hash-tag-1111" id="t_tag" class="form-control" placeholder="t-tag">
+        </div>
+        <input type="hidden" id="location" name="location" value="peroulades">
+        <input type="hidden" id="number" name="number" value=271>
+        <input type="hidden" id="currency" name="currency" value="BTC">
+        <input type="hidden" id="frequency" name="frequency" value="1">
+        <input type="hidden" id="57-kind" name="57-kind" value=9734>
+        <!--                    below refers to another event-->
+        <input type="hidden" id="57-e_tag" name="57-e_tag"
                value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">
-        <input type="hidden" id="p_tag" name="p_tag"
+        <!--                    below refers to another user -->
+        <input type="hidden" id="57-p_tag" name="57-p_tag"
                value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
-        <button id="send01" class="btn btn-default" type="submit">Send 01</button>
+        <!--                    optional: below refers to another replaceable event-->
+        <!--                <input type="hidden" id="a" name="a" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">-->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-inline">
+              <div class="center gap">
+                <button id="send57" class="btn btn-default" type="submit">Send Nip-57 Event</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </form>
+    </div>
+  </div>
+  <hr>
+  <div class="alternate-color">
+    <hr>
+    <h4>NIP-99</h4>
+    <div class="row">
+      <div class="col-md-6">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="title">Listing Title: </label>
+            <input type="text" value="classified title" id="title" class="form-control" placeholder="listing title...">
+          </div>
+          <div class="form-group">
+            <label for="99-subject">Subject: </label>
+            <input type="text" value="classified subject" id="99-subject" class="form-control" placeholder="subject...">
+          </div>
+          <div class="form-group">
+            <label for="summary">Summary: </label>
+            <input type="text" value="classified summary" id="summary" class="form-control" placeholder="summary...">
+          </div>
+          <div class="form-group gap">
+            <label for="content">Content: </label>
+            <input type="text" value="classified content" id="content" class="form-control"
+                   placeholder="content in markdown...">
+          </div>
+          <div class="form-group">
+            <label for="pubkey">Pubkey: </label>
+            <input type="text" value="cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="pubkey"
+                   class="form-control" placeholder="pubkey">
+          </div>
+          <div class="form-group">
+            <label for="99-g_tag">GeoTag: </label>
+            <input type="text" value="classified geo-tag-1" id="99-g_tag" class="form-control" placeholder="geo-tag">
+          </div>
+          <div class="form-group gap">
+            <label for="99-t_tag">HashTag: </label>
+            <input type="text" value="classified hash-tag-1111" id="99-t_tag" class="form-control" placeholder="t-tag">
+          </div>
+          <input type="hidden" id="99-location" name="99-location" value="classified peroulades">
+          <input type="hidden" id="99-number" name="99-number" value=271>
+          <input type="hidden" id="99-currency" name="99-currency" value="BTC">
+          <input type="hidden" id="99-frequency" name="99-frequency" value="1">
+          <input type="hidden" id="kind" name="kind" value=30402>
+          <!--                    below refers to another event-->
+          <input type="hidden" id="99-e_tag" name="99-e_tag"
+                 value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">
+          <!--                    below refers to another user -->
+          <input type="hidden" id="99-p_tag" name="99-p_tag"
+                 value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
+          <!--                    optional: below refers to another replaceable event-->
+          <!--                <input type="hidden" id="a" name="a" value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">-->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-inline">
+                <div class="center gap">
+                  <button id="send99" class="btn btn-default" type="submit">Send Nip-99 Event</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
   <hr>

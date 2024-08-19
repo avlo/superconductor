@@ -29,7 +29,7 @@ public class AuthenticatedEventService<T extends EventMessage> {
   }
 
   //  @Async
-  public boolean processIncomingEvent(@NonNull T eventMessage, @NonNull String sessionId) {
+  public void processIncomingEvent(@NonNull T eventMessage, @NonNull String sessionId) {
     log.info("processing incoming AUTHENTICATED TEXT_NOTE: [{}]", eventMessage);
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
 
@@ -46,6 +46,5 @@ public class AuthenticatedEventService<T extends EventMessage> {
 
     redisCache.saveEventEntity(event);
     notifierService.nostrEventHandler(new AddNostrEvent<>(event));
-    return true;
   }
 }

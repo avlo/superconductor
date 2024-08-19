@@ -1,7 +1,7 @@
-function hashThenSend() {
+function hashThenSendRegister() {
     const concat = [
         '0',
-        $("#pubkey").val(),
+        $("#pubkeyregister").val(),
         22242,
         $("#relay").val(),
         $("#challenge").val()
@@ -13,16 +13,16 @@ function hashThenSend() {
         ']'
     ].join('');
 
-    createDigest(text).then((hash) => sendContent(hash));
+    createDigest(text).then((hash) => sendContentRegister(hash));
 }
 
-function replaceHash(id_hash) {
+function replaceHashRegister(id_hash) {
     return "["
         + "\"AUTH\","
         + JSON.stringify(
             {
                 'id': id_hash,
-                'pubkey': $("#pubkey").val(),
+                'pubkey': $("#pubkeyregister").val(),
                 'created_at': Date.now(),
                 'kind': 22242,
                 'tags': [

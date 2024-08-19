@@ -4,6 +4,7 @@ import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.service.message.CloseMessageService;
 import com.prosilion.superconductor.service.message.MessageService;
 import com.prosilion.superconductor.service.message.RelayInfoDocService;
+import com.prosilion.superconductor.service.okresponse.CloseClientResponse;
 import com.prosilion.superconductor.service.okresponse.OkClientResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -114,6 +115,14 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     if (!message.isValid()) {
       afterConnectionClosed(Objects.requireNonNull(mapSessions.remove(sessionId)), CloseStatus.POLICY_VIOLATION);
     }
+  }
+
+  @EventListener
+  public void broadcastCloseClientResponse(CloseClientResponse message) {
+    final TextMessage okResponseMessage = message.getCloseResponseMessage();
+    final String sessionId = message.getSessionId();
+    log.info("NostrEventController CLOSE response to\nsessionId:\n\t{}\npayload:\n\t{}", sessionId, okResponseMessage.getPayload());
+    broadcast(sessionId, okResponseMessage);
   }
 
   private void broadcast(String sessionId, TextMessage message) {

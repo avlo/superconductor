@@ -35,8 +35,8 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
 
   public void removeSubscriberBySessionId(@NonNull String sessionId) {
     List<Long> subscriberBySessionId = abstractSubscriberService.removeSubscriberBySessionId(sessionId);
-    subscriberBySessionId.forEach(subscriber -> publisher.publishEvent(new RemoveSubscriberFilterEvent(
-        subscriber)));
+    // TODO: no publishers bound to below?
+    subscriberBySessionId.forEach(subscriber -> publisher.publishEvent(new RemoveSubscriberFilterEvent(subscriber)));
   }
 
   public void removeSubscriberBySubscriberId(@NonNull String subscriberId) {

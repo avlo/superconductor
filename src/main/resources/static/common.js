@@ -44,11 +44,21 @@ async function createDigest(message) {
         .join(""); // convert bytes to hex string
 }
 
-function sendContent(id_hash) {
+function sendContentRegister(id_hash) {
     console.log("\nsending content...\n\n");
     console.log("sending w/ date now: " + dateNow);
     currentSubscriptonId = id_hash;
-    let localjsonstring = replaceHash(id_hash);
+    let localjsonstring = replaceHashRegister(id_hash);
+    console.log(localjsonstring);
+    console.log('\n\n');
+    ws.send(localjsonstring);
+}
+
+function sendContent01(id_hash) {
+    console.log("\nsending content...\n\n");
+    console.log("sending w/ date now: " + dateNow);
+    currentSubscriptonId = id_hash;
+    let localjsonstring = replaceHash01(id_hash);
     console.log(localjsonstring);
     console.log('\n\n');
     ws.send(localjsonstring);
@@ -81,7 +91,8 @@ $(function () {
     $("#connect").click(() => connect());
     $("#disconnect").click(() => disconnect());
     $("#reqclose").click(() => sendClose());
-    $("#send").click(() => hashThenSend());
+    $("#sendregister").click(() => hashThenSendRegister());
+    $("#send01").click(() => hashThenSend01());
 });
 
 function syntaxHighlight(json) {
@@ -102,3 +113,15 @@ function syntaxHighlight(json) {
         return '<span class="' + cls + '">' + match + '</span>';
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,7 +2,7 @@ package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.entity.auth.AuthEntity;
 import com.prosilion.superconductor.service.event.AuthEntityService;
-import com.prosilion.superconductor.service.okresponse.ClientOkResponseService;
+import com.prosilion.superconductor.service.okresponse.ClientResponseService;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NonNull;
@@ -19,12 +19,12 @@ public class AuthMessageService<T extends CanonicalAuthenticationMessage> implem
   @Getter
   public final String command = "AUTH";
   private final AuthEntityService authEntityService;
-  private final ClientOkResponseService okResponseService;
+  private final ClientResponseService okResponseService;
 
   @Autowired
   public AuthMessageService(
       AuthEntityService authEntityService,
-      ClientOkResponseService okResponseService) {
+      ClientResponseService okResponseService) {
     this.authEntityService = authEntityService;
     this.okResponseService = okResponseService;
   }

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.service.event.AuthenticatedEventService;
-import com.prosilion.superconductor.service.okresponse.ClientOkResponseService;
+import com.prosilion.superconductor.service.okresponse.ClientResponseService;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NonNull;
@@ -18,10 +18,12 @@ public class AuthenticatedEventMessageService<T extends EventMessage> implements
   @Getter
   public final String command = "EVENT";
   private final AuthenticatedEventService<T> authenticatedEventService;
-  private final ClientOkResponseService okResponseService;
+  private final ClientResponseService okResponseService;
 
   @Autowired
-  public AuthenticatedEventMessageService(AuthenticatedEventService<T> authenticatedEventService, ClientOkResponseService okResponseService) {
+  public AuthenticatedEventMessageService(
+      AuthenticatedEventService<T> authenticatedEventService,
+      ClientResponseService okResponseService) {
     this.authenticatedEventService = authenticatedEventService;
     this.okResponseService = okResponseService;
   }

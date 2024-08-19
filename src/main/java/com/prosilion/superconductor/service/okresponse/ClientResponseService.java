@@ -12,11 +12,11 @@ import org.springframework.web.socket.TextMessage;
 
 @Slf4j
 @Service
-public class ClientOkResponseService {
+public class ClientResponseService {
   private final ApplicationEventPublisher publisher;
 
   @Autowired
-  public ClientOkResponseService(ApplicationEventPublisher publisher) {
+  public ClientResponseService(ApplicationEventPublisher publisher) {
     this.publisher = publisher;
   }
 
@@ -31,6 +31,17 @@ public class ClientOkResponseService {
       publisher.publishEvent(new OkClientResponse(sessionId, (GenericEvent) eventMessage.getEvent(), true, reason));
     } catch (JsonProcessingException e) {
       processNotOkClientResponse(sessionId, eventMessage, e.getMessage());
+    }
+  }
+
+  public void processCloseClientResponse(@NonNull String sessionId) {
+    log.info("Processing close: {}", sessionId);
+    try {
+      publisher.publishEvent(new CloseClientResponse(sessionId));
+    } catch (JsonProcessingException e) {
+      publisher.publishEvent(new TextMessage(
+          "[\"CLOSE\", \"" + sessionId + "\"]"
+      ));
     }
   }
 

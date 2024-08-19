@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.service.event.EventServiceIF;
-import com.prosilion.superconductor.service.okresponse.ClientOkResponseService;
+import com.prosilion.superconductor.service.okresponse.ClientResponseService;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NonNull;
@@ -16,10 +16,10 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
   @Getter
   public final String command = "EVENTXY";
   private final EventServiceIF<T> eventService;
-  private final ClientOkResponseService okResponseService;
+  private final ClientResponseService okResponseService;
 
   @Autowired
-  public EventMessageService(EventServiceIF<T> eventService, ClientOkResponseService okResponseService) {
+  public EventMessageService(EventServiceIF<T> eventService, ClientResponseService okResponseService) {
     this.eventService = eventService;
     this.okResponseService = okResponseService;
   }

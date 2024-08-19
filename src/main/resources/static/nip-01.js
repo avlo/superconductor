@@ -1,3 +1,7 @@
+$(function () {
+    $("#send01").click(() => hashThenSend01());
+});
+
 function hashThenSend01() {
     const concat = [
         '0',
@@ -37,4 +41,14 @@ function replaceHash01(id_hash) {
             }
         )
         + "]";
+}
+
+function sendContent01(id_hash) {
+    console.log("\nsending content...\n\n");
+    console.log("sending w/ date now: " + dateNow);
+    currentSubscriptonId = id_hash;
+    let localjsonstring = replaceHash01(id_hash);
+    console.log(localjsonstring);
+    console.log('\n\n');
+    ws.send(localjsonstring);
 }

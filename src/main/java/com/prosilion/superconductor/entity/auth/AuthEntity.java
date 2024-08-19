@@ -13,12 +13,16 @@ import nostr.base.PublicKey;
 import nostr.base.Relay;
 import nostr.event.impl.CanonicalAuthenticationEvent;
 import nostr.event.impl.GenericEvent;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "auth")
+@ConditionalOnProperty(
+    name = "superconductor.auth.active",
+    havingValue = "true")
 public class AuthEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

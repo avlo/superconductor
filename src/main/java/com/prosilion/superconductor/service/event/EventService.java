@@ -9,11 +9,15 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Getter
 @Slf4j
 @Service
+@ConditionalOnProperty(
+    name = "superconductor.auth.active",
+    havingValue = "false")
 public class EventService<T extends EventMessage> implements EventServiceIF<T> {
   private final NotifierService<GenericEvent> notifierService;
   private final RedisCache<GenericEvent> redisCache;

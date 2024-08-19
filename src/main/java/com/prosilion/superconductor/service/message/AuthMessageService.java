@@ -11,10 +11,14 @@ import nostr.event.impl.GenericTag;
 import nostr.event.message.CanonicalAuthenticationMessage;
 import nostr.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@ConditionalOnProperty(
+    name = "superconductor.auth.active",
+    havingValue = "true")
 public class AuthMessageService<T extends CanonicalAuthenticationMessage> implements MessageService<T> {
   @Getter
   public final String command = "AUTH";

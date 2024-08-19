@@ -2,6 +2,7 @@ package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.pubsub.RemoveSubscriberFilterEvent;
 import com.prosilion.superconductor.service.AbstractSubscriberService;
+import com.prosilion.superconductor.service.event.AuthEntityService;
 import com.prosilion.superconductor.service.request.NoExistingUserException;
 import lombok.Getter;
 import lombok.NonNull;
@@ -20,10 +21,15 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
   public final String command = "CLOSE";
   private final ApplicationEventPublisher publisher;
   private final AbstractSubscriberService abstractSubscriberService;
+  private final AuthEntityService authEntityService;
 
   @Autowired
-  public CloseMessageService(AbstractSubscriberService abstractSubscriberService, ApplicationEventPublisher publisher) {
+  public CloseMessageService(
+      AbstractSubscriberService abstractSubscriberService,
+      AuthEntityService authEntityService,
+      ApplicationEventPublisher publisher) {
     this.publisher = publisher;
+    this.authEntityService = authEntityService;
     this.abstractSubscriberService = abstractSubscriberService;
   }
 
@@ -37,6 +43,11 @@ public class CloseMessageService<T extends CloseMessage> implements MessageServi
     List<Long> subscriberBySessionId = abstractSubscriberService.removeSubscriberBySessionId(sessionId);
     // TODO: no publishers bound to below?
     subscriberBySessionId.forEach(subscriber -> publisher.publishEvent(new RemoveSubscriberFilterEvent(subscriber)));
+    closeSession(sessionId);
+  }
+
+  public void closeSession(@NonNull String sessionId) {
+    authEntityService.removeAuthEntityBySessionId(sessionId);
   }
 
   public void removeSubscriberBySubscriberId(@NonNull String subscriberId) {

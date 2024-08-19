@@ -82,6 +82,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
       Objects.requireNonNull(mapSessions.remove(session.getId()));
       log.info("Subscriber session closed.");
     } catch (NullPointerException e) {
+      closeMessageService.closeSession(session.getId());
       log.info("Non-Subscriber session closed.");
     }
   }

@@ -26,7 +26,7 @@ public class AuthEntityService {
   }
 
   public Optional<AuthEntity> findAuthEntityBySessionId(@NonNull String sessionId) {
-    return Optional.of(authEntityRepository.findBySessionId(sessionId).orElseThrow());
+    return authEntityRepository.findBySessionId(sessionId);
   }
 
   public void removeAuthEntityBySessionId(@NonNull String sessionId) {

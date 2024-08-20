@@ -53,7 +53,7 @@ body {
 }
 
 main {
-    max-width: 801px;
+    /*max-width: 801px;*/
     margin: auto;
 }
 
@@ -87,11 +87,11 @@ p {
 
 .label {
     width: 100%;
-    padding: 22px 20px;
+    padding: 10px 10px;
     background: #e5e5e5;
     cursor: pointer;
     font-weight: bold;
-    font-size: 23px;
+    font-size: 20px;
     color: #7f7f7f;
     transition: background .3s, color .3s;
     border: none;
@@ -136,7 +136,7 @@ p {
     }
 
     .label {
-        width: 33.33%;
+        width: 20%;
         border-radius: 10px 10px 0 0;
         border-bottom: solid 2px #000;
     }

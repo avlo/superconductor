@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<link rel="shortcut icon" href="/favicon.ico">
+<html>
+<head>
+  <title>Nostr Request WebClient</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="main.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="/register.js"></script>
+  <script src="/req.js"></script>
+  <script src="/common.js"></script>
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Enable Javascript to view this page</h2></noscript>
+<main>
+  <h1>Request WebSocket</h1>
+  <form class="form-inline center">
+    <div class="form-group">
+      <button tabindex="1" id="connect" class="btn btn-default" type="submit">Connect</button>
+      <button tabindex="1" id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect</button>
+      <button tabindex="1" id="reqclose" class="btn btn-default" type="submit" disabled="disabled">Nostr Close
+        Disconnect
+      </button>
+    </div>
+  </form>
+  <hr>
+  <div class="tabs">
+    <input class="radiotab" name="tabs" tabindex="1" type="radio" id="tabone" checked="checked">
+    <label class="label" for="tabone">Register</label>
+    <div class="panel">
+      <div class="col-md-6">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="challenge">Create Password: </label>
+            <input tabindex="1" type="text" value="456456" id="challenge" class="form-control" placeholder="456456">
+          </div>
+          <div class="form-group">
+            <label for="pubkeyregister">Pubkey: </label>
+            <input tabindex="1" type="text" value="zzzd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                   id="pubkeyregister" class="form-control" placeholder="pubkeyregister">
+          </div>
+          <input type="hidden" id="kindregister" name="kindregister" value=22242>
+          <input type="hidden" id="relay" name="relay" value='ws://localhost:5555'>
+          <div class="row">
+            <div class="center gap">
+              <button id="sendregister" class="btn btn-default" type="submit" disabled="disabled">Register</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <input class="radiotab" tabindex="1" name="tabs" type="radio" id="tabtwo">
+    <label class="label" for="tabtwo">Search Filters:</label>
+    <div class="panel">
+      <div class="col-md-6">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="idcontent">Reference Event ID: </label>
+            <input tabindex="1" type="text" value="" id="idcontent" class="form-control" placeholder="">
+          </div>
+          <div class="form-group">
+            <label for="pubkey">User Pubkey: </label>
+            <input tabindex="1" type="text" value="" id="pubkey" class="form-control" placeholder="">
+          </div>
+          <div class="form-group">
+            <label for="authors1">Author Filter: </label>
+            <input tabindex="1" type="text" value="authors1" id="authors1" class="form-control" placeholder="">
+          </div>
+          <input type="hidden" id="kind" name="kind" value=1>
+          <input type="hidden" id="e_tag" name="e_tag"
+                 value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">
+          <input type="hidden" id="p_tag" name="p_tag"
+                 value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
+
+          <input type="hidden" id="kinds" name="kinds" value=2>
+          <input type="hidden" id="referencedEvents" name="referencedEvents"
+                 value="111843d54a8fdab39aa45f61f19f3ff79cc19385370f6a272dda81fade0a052b">
+          <input type="hidden" id="referencePubKeys" name="referencePubKeys"
+                 value="222843d54a8fdab39aa45f61f19f3ff79cc19385370f6a272dda81fade0a052b">
+          <input type="hidden" id="since" name="since" value=1712006760>
+          <input type="hidden" id="until" name="until" value=1712006761>
+          <input type="hidden" id="limit" name="limit" value=1>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-inline">
+                <div class="center gap">
+                  <button id="sendrequest" class="btn btn-default" type="submit" disabled="disabled">Send Request</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <h4>Matched Events</h4>
+  <div class="row">
+    <div class="col-md-12">
+      <table id="conversation" class="table table-striped">
+        <tbody id="events">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+</body>
+</html>

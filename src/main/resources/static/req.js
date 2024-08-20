@@ -1,4 +1,8 @@
-function hashThenSend() {
+$(function () {
+    $("#sendrequest").click(() => hashThenSendRequest());
+});
+
+function hashThenSendRequest() {
     const concat = [
         '0',
         $("#pubkey").val(),
@@ -6,7 +10,7 @@ function hashThenSend() {
         // $("#kind").val(),
         // $("#e_tag").val(),
         // $("#p_tag").val(),
-        $("#content").val()
+        $("#idcontent").val()
     ].join(",");
 
     const text = [
@@ -15,10 +19,10 @@ function hashThenSend() {
         ']'
     ].join('');
 
-    createDigest(text).then((hash) => sendContent(hash));
+    createDigest(text).then((hash) => sendContentRequest(hash));
 }
 
-function replaceHash(id_hash) {
+function replaceHashRequest(id_hash) {
     let clickNow = Date.now();
     return "["
         + "\"REQ\","
@@ -36,4 +40,14 @@ function replaceHash(id_hash) {
             }
         )
         + "]";
+}
+
+function sendContentRequest(id_hash) {
+    console.log("\nsending content...\n\n");
+    console.log("sending w/ date now: " + dateNow);
+    currentSubscriptonId = id_hash;
+    let localjsonstring = replaceHashRequest(id_hash);
+    console.log(localjsonstring);
+    console.log('\n\n');
+    ws.send(localjsonstring);
 }

@@ -2,7 +2,7 @@
 <link rel="shortcut icon" href="/favicon.ico">
 <html>
 <head>
-  <title>Integrated Client</title>
+  <title>Nostr Events WebClient</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link href="main.css" rel="stylesheet">
@@ -17,7 +17,7 @@
 <body>
 <noscript><h2 style="color: #ff0000">Enable Javascript to view this page</h2></noscript>
 <main>
-  <h1>WebSocket</h1>
+  <h1>Event WebSocket</h1>
   <form class="form-inline center">
     <div class="form-group">
       <button tabindex="1" id="connect" class="btn btn-default" type="submit">Connect</button>
@@ -209,9 +209,9 @@
                    placeholder="content in markdown...">
           </div>
           <div class="form-group">
-            <label for="pubkey">Pubkey: </label>
-            <input tabindex="1" type="text" value="cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="pubkey"
-                   class="form-control" placeholder="pubkey">
+            <label for="99-pubkey">Pubkey: </label>
+            <input tabindex="1" type="text" value="cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="99-pubkey"
+                   class="form-control" placeholder="99-pubkey">
           </div>
           <div class="form-group">
             <label for="99-g_tag">GeoTag: </label>
@@ -226,7 +226,7 @@
           <input type="hidden" id="99-number" name="99-number" value=271>
           <input type="hidden" id="99-currency" name="99-currency" value="BTC">
           <input type="hidden" id="99-frequency" name="99-frequency" value="1">
-          <input type="hidden" id="kind" name="kind" value=30402>
+          <input type="hidden" id="99-kind" name="99-kind" value=30402>
           <!--                    below refers to another event-->
           <input type="hidden" id="99-e_tag" name="99-e_tag"
                  value="494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346">
@@ -248,7 +248,7 @@
       </div>
     </div>
   </div>
-  <h4>Events</h4>
+  <h4>Response</h4>
   <div class="row">
     <div class="col-md-12">
       <table id="conversation" class="table table-striped">

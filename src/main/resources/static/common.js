@@ -16,6 +16,13 @@ function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
     $("#reqclose").prop("disabled", !connected);
+
+    $("#sendregister").prop("disabled", !connected);
+    $("#send00").prop("disabled", !connected);
+    $("#send01").prop("disabled", !connected);
+    $("#send57").prop("disabled", !connected);
+    $("#send99").prop("disabled", !connected);
+
     if (connected) {
         $("#conversation").show();
     } else {

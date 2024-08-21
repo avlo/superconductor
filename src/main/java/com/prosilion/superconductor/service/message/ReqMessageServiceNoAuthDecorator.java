@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.message;
 
+import com.prosilion.superconductor.service.okresponse.ClientResponseService;
 import com.prosilion.superconductor.service.request.ReqService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,10 @@ public class ReqMessageServiceNoAuthDecorator<T extends ReqMessage> implements M
   private final ReqMessageService<T> reqMessageService;
 
   @Autowired
-  public ReqMessageServiceNoAuthDecorator(ReqService<T, GenericEvent> reqService) {
-    this.reqMessageService = new ReqMessageService<>(reqService);
+  public ReqMessageServiceNoAuthDecorator(
+      ReqService<T, GenericEvent> reqService,
+      ClientResponseService clientResponseService) {
+    this.reqMessageService = new ReqMessageService<>(reqService, clientResponseService);
   }
 
   @Override

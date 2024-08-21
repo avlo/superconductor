@@ -46,8 +46,8 @@ public class CloseMessageServiceAuthDecorator<T extends CloseMessage> implements
 
   @Override
   public void removeSubscriberBySessionId(@NonNull String sessionId) {
-    closeMessageService.removeSubscriberBySessionId(sessionId);
     closeSession(sessionId);
+    closeMessageService.removeSubscriberBySessionId(sessionId);
   }
 
   @Override

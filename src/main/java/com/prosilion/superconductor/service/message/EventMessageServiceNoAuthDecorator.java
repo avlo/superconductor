@@ -2,7 +2,6 @@ package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.okresponse.ClientResponseService;
-import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.message.EventMessage;
@@ -23,7 +22,7 @@ public class EventMessageServiceNoAuthDecorator<T extends EventMessage> implemen
     this.eventMessageService = new EventMessageService<>(eventService, okResponseService);
   }
 
-  public void processIncoming(@NotNull T eventMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull T eventMessage, @NonNull String sessionId) {
     log.info("EVENT message NIP: {}", eventMessage.getNip());
     log.info("EVENT message type: {}", eventMessage.getEvent());
     eventMessageService.processIncoming(eventMessage, sessionId);

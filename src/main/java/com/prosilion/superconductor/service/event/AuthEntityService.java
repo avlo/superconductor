@@ -22,6 +22,7 @@ public class AuthEntityService {
   }
 
   public Long save(AuthEntity authEntity) {
+    removeAuthEntityBySessionId(authEntity.getSessionId());
     return authEntityRepository.save(authEntity).getId();
   }
 

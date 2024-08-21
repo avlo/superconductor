@@ -29,18 +29,20 @@ public class AuthEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-//  TODO: might just need sessionId, revisit
+  //  TODO: might just need sessionId, revisit
   private String pubKey;
   private String sessionId;
   private String challenge;
+  private Long createdAt;
 
-  @Value( "${superconductor.relay.url}" )
+  @Value("${superconductor.relay.url}")
   private String relayUrl;
 
-  public AuthEntity(@NonNull String pubKey, @NonNull String challenge, @NonNull String sessionId) {
+  public AuthEntity(@NonNull String pubKey, @NonNull String challenge, @NonNull String sessionId, @NonNull Long createdAt) {
     this.pubKey = pubKey;
     this.challenge = challenge;
     this.sessionId = sessionId;
+    this.createdAt = createdAt;
   }
 
   public <T extends GenericEvent> T convertEntityToDto() {

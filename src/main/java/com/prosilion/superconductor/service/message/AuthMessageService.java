@@ -3,7 +3,6 @@ package com.prosilion.superconductor.service.message;
 import com.prosilion.superconductor.entity.auth.AuthEntity;
 import com.prosilion.superconductor.service.event.AuthEntityService;
 import com.prosilion.superconductor.service.okresponse.ClientResponseService;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 
 @Slf4j
 @Service
@@ -37,7 +38,7 @@ public class AuthMessageService<T extends CanonicalAuthenticationMessage> implem
     this.okResponseService = okResponseService;
   }
 
-  public void processIncoming(@NotNull T authMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull T authMessage, @NonNull String sessionId) {
     log.info("processing incoming AUTH message: [{}]", authMessage);
     log.info("AUTH message NIP: {}", authMessage.getNip());
     log.info("AUTH message sessionId: {}", sessionId);
@@ -55,17 +56,19 @@ public class AuthMessageService<T extends CanonicalAuthenticationMessage> implem
       return;
     }
 
+    Long createdAt = Instant.now().toEpochMilli();
     authEntityService.save(
         new AuthEntity(
             pubKey,
             challengeValue,
-            sessionId));
-    log.info("auth saved for pubkey {}, session {}", pubKey, sessionId);
+            sessionId,
+            createdAt));
+    log.info("auth saved for pubkey [{}], session [{}], createdAt [{}]", pubKey, sessionId, createdAt);
 
     okResponseService.processOkClientResponse(
         sessionId,
         new EventMessage(authMessage.getEvent()),
-        String.format("success: auth saved for pubkey [%s], session [%s]", pubKey, sessionId));
+        String.format("success: auth saved for pubkey [%s], session [%s], created at [%s]", pubKey, sessionId, createdAt));
   }
 
   private void sendAuthFailed(T authMessage, String sessionId, String failureReason) {

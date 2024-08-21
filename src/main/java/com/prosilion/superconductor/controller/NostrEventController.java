@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.controller;
 
 import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
-import com.prosilion.superconductor.service.message.CloseMessageService;
+import com.prosilion.superconductor.service.message.CloseMessageServiceIF;
 import com.prosilion.superconductor.service.message.MessageService;
 import com.prosilion.superconductor.service.message.RelayInfoDocService;
 import com.prosilion.superconductor.service.okresponse.CloseClientResponse;
@@ -35,16 +35,16 @@ import java.util.stream.Collectors;
 @Slf4j
 @Controller
 @EnableWebSocket
-public class NostrEventController<T extends BaseMessage> extends TextWebSocketHandler implements WebSocketConfigurer {
+public class NostrEventController<T extends BaseMessage, U extends CloseMessage> extends TextWebSocketHandler implements WebSocketConfigurer {
   private final Map<String, MessageService<T>> messageServiceMap;
-  private final CloseMessageService<CloseMessage> closeMessageService;
+  private final CloseMessageServiceIF<U> closeMessageService;
   private final RelayInfoDocService relayInfoDocService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
 
   @Autowired
   public NostrEventController(
       List<MessageService<T>> messageServices,
-      CloseMessageService<CloseMessage> closeMessageService,
+      CloseMessageServiceIF<U> closeMessageService,
       RelayInfoDocService relayInfoDocService) {
     this.messageServiceMap = messageServices.stream().collect(Collectors.toMap(MessageService<T>::getCommand, Function.identity()));
     this.closeMessageService = closeMessageService;

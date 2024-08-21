@@ -7,31 +7,28 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.message.EventMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
-@ConditionalOnProperty(
-    name = "superconductor.auth.active",
-    havingValue = "false")
 public class EventMessageService<T extends EventMessage> implements MessageService<T> {
   @Getter
   public final String command = "EVENT";
   private final EventServiceIF<T> eventService;
-  private final ClientResponseService okResponseService;
+  private final ClientResponseService clientResponseService;
 
-  @Autowired
-  public EventMessageService(EventServiceIF<T> eventService, ClientResponseService okResponseService) {
+  public EventMessageService(EventServiceIF<T> eventService, ClientResponseService clientResponseService) {
     this.eventService = eventService;
-    this.okResponseService = okResponseService;
+    this.clientResponseService = clientResponseService;
   }
 
   public void processIncoming(@NotNull T eventMessage, @NonNull String sessionId) {
-    log.info("EVENT message NIP: {}", eventMessage.getNip());
-    log.info("EVENT message type: {}", eventMessage.getEvent());
     eventService.processIncomingEvent(eventMessage);
-    okResponseService.processOkClientResponse(sessionId, eventMessage);
+  }
+
+  protected void processOkClientResponse(T eventMessage, String sessionId) {
+    clientResponseService.processOkClientResponse(sessionId, eventMessage);
+  }
+
+  protected void processNotOkClientResponse(T eventMessage, String sessionId, String errorMessage) {
+    clientResponseService.processNotOkClientResponse(sessionId, new EventMessage(eventMessage.getEvent()), errorMessage);
   }
 }

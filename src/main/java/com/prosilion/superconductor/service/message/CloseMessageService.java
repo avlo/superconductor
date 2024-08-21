@@ -2,54 +2,47 @@ package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.pubsub.RemoveSubscriberFilterEvent;
 import com.prosilion.superconductor.service.AbstractSubscriberService;
-import com.prosilion.superconductor.service.event.AuthEntityService;
 import com.prosilion.superconductor.service.request.NoExistingUserException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.message.CloseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Slf4j
-@Service
-public class CloseMessageService<T extends CloseMessage> implements MessageService<T> {
+public class CloseMessageService<T extends CloseMessage> implements CloseMessageServiceIF<T> {
   @Getter
   public final String command = "CLOSE";
   private final ApplicationEventPublisher publisher;
   private final AbstractSubscriberService abstractSubscriberService;
-  private final AuthEntityService authEntityService;
 
-  @Autowired
   public CloseMessageService(
       AbstractSubscriberService abstractSubscriberService,
-      AuthEntityService authEntityService,
       ApplicationEventPublisher publisher) {
     this.publisher = publisher;
-    this.authEntityService = authEntityService;
     this.abstractSubscriberService = abstractSubscriberService;
   }
 
   @Override
   public void processIncoming(@NonNull T closeMessage, @NonNull String sessionId) {
-    log.info("processing CLOSE event");
-    removeSubscriberBySubscriberId(closeMessage.getSubscriptionId());
+    log.info("processing CLOSE event, sessionId [{}]", sessionId);
+    removeSubscriberBySessionId(sessionId);
   }
 
+  @Override
+  public void closeSession(@NonNull String sessionId) {
+  }
+
+  @Override
   public void removeSubscriberBySessionId(@NonNull String sessionId) {
     List<Long> subscriberBySessionId = abstractSubscriberService.removeSubscriberBySessionId(sessionId);
     // TODO: no publishers bound to below?
     subscriberBySessionId.forEach(subscriber -> publisher.publishEvent(new RemoveSubscriberFilterEvent(subscriber)));
-    closeSession(sessionId);
   }
 
-  public void closeSession(@NonNull String sessionId) {
-    authEntityService.removeAuthEntityBySessionId(sessionId);
-  }
-
+  @Override
   public void removeSubscriberBySubscriberId(@NonNull String subscriberId) {
     try {
       publisher.publishEvent(

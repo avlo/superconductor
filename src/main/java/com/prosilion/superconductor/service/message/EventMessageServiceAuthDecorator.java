@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.service.message;
 
-import com.prosilion.superconductor.service.event.AuthenticatedEventService;
+import com.prosilion.superconductor.service.event.EventServiceAuthDecorator;
+import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.okresponse.ClientResponseService;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.message.EventMessage;
@@ -18,18 +18,17 @@ import java.util.NoSuchElementException;
 @ConditionalOnProperty(
     name = "superconductor.auth.active",
     havingValue = "true")
-public class AuthenticatedEventMessageService<T extends EventMessage> implements MessageService<T> {
-  @Getter
-  public final String command = "EVENT";
-  private final AuthenticatedEventService<T> authenticatedEventService;
-  private final ClientResponseService okResponseService;
+public class EventMessageServiceAuthDecorator<T extends EventMessage> implements MessageService<T> {
+  private final EventMessageService<T> eventMessageService;
+  private final EventServiceAuthDecorator<T> authenticatedEventService;
 
   @Autowired
-  public AuthenticatedEventMessageService(
-      AuthenticatedEventService<T> authenticatedEventService,
-      ClientResponseService okResponseService) {
+  public EventMessageServiceAuthDecorator(
+      EventServiceIF<T> eventService,
+      ClientResponseService clientResponseService,
+      EventServiceAuthDecorator<T> authenticatedEventService) {
+    this.eventMessageService = new EventMessageService<>(eventService, clientResponseService);
     this.authenticatedEventService = authenticatedEventService;
-    this.okResponseService = okResponseService;
   }
 
   public void processIncoming(@NotNull T eventMessage, @NonNull String sessionId) {
@@ -39,10 +38,14 @@ public class AuthenticatedEventMessageService<T extends EventMessage> implements
       authenticatedEventService.processIncomingEvent(eventMessage, sessionId);
     } catch (NoSuchElementException e) {
       log.info("AUTHENTICATED EVENT message failed session authentication");
-      okResponseService.processNotOkClientResponse(sessionId, new EventMessage(eventMessage.getEvent()),
-          String.format("restricted: session [%s] has not been authenticated", sessionId));
+      eventMessageService.processNotOkClientResponse(eventMessage, sessionId, String.format("restricted: session [%s] has not been authenticated", sessionId));
       return;
     }
-    okResponseService.processOkClientResponse(sessionId, eventMessage);
+    eventMessageService.processOkClientResponse(eventMessage, sessionId);
+  }
+
+  @Override
+  public String getCommand() {
+    return eventMessageService.getCommand();
   }
 }

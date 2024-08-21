@@ -10,7 +10,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,7 @@ import java.util.Map;
 @Slf4j
 @Service
 public class CachedSubscriberService extends AbstractSubscriberService {
-  private final Map<Long, List<Combo>> subscriberComboMap = Collections.synchronizedMap(new HashMap<>());
+  private final Map<Long, List<Combo>> subscriberSessionHashComboMap = Collections.synchronizedMap(new HashMap<>());
   private final BiMap<String, String> biMap = HashBiMap.create();
 
   @Autowired
@@ -34,7 +33,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   @Override
   public Long save(@NonNull Subscriber subscriber, @NonNull List<Filters> filtersList) {
     long subscriberSessionHash = getHash(subscriber);
-    subscriber.setId(subscriberSessionHash);
+    subscriber.setSubscriberSessionHash(subscriberSessionHash);
     filtersList.forEach(filters -> put(subscriber, filters));
     return subscriberSessionHash;
   }
@@ -43,19 +42,19 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   @Override
   public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
     Map<Long, List<Filters>> map = new HashMap<>();
-    subscriberComboMap.forEach((key, value) -> map.put(key, value.stream().map(Combo::filters).toList()));
+    subscriberSessionHashComboMap.forEach((key, value) -> map.put(key, value.stream().map(Combo::filters).toList()));
     return map;
   }
 
 //  @Cacheable("subscriber")
   @Override
-  public Subscriber get(@NonNull Long subscriberId) {
-    return subscriberComboMap.get(subscriberId).stream().findFirst().get().subscriber();
+  public Subscriber get(@NonNull Long subscriberSessionHash) {
+    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().findFirst().get().subscriber();
   }
 
   @Override
-  public List<Filters> getFiltersList(@NonNull Long subscriberId) {
-    return subscriberComboMap.get(subscriberId).stream().map(Combo::filters).toList();
+  public List<Filters> getFiltersList(@NonNull Long subscriberSessionHash) {
+    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().map(Combo::filters).toList();
   }
 
   @Override
@@ -65,7 +64,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
             biMap.inverse().get(sessionId),
             sessionId,
             true));
-    subscriberComboMap.remove(hash);
+    subscriberSessionHashComboMap.remove(hash);
     return List.of(hash);
   }
 
@@ -76,7 +75,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
             subscriberId,
             biMap.remove(subscriberId),
             true));
-    subscriberComboMap.remove(hash);
+    subscriberSessionHashComboMap.remove(hash);
     return hash;
   }
 
@@ -93,11 +92,11 @@ public class CachedSubscriberService extends AbstractSubscriberService {
             filters.getLimit()),
         filters);
 
-    if (!subscriberComboMap.containsKey(subscriberSessionHash)) {
-      subscriberComboMap.put(subscriberSessionHash, List.of(combo));
+    if (!subscriberSessionHashComboMap.containsKey(subscriberSessionHash)) {
+      subscriberSessionHashComboMap.put(subscriberSessionHash, List.of(combo));
       return;
     }
-    subscriberComboMap.get(subscriberSessionHash).add(combo);
+    subscriberSessionHashComboMap.get(subscriberSessionHash).add(combo);
   }
 
   private long getHash(Subscriber subscriber) {

@@ -18,7 +18,7 @@ public abstract class AbstractSubscriberService implements SubscriberService {
   public <T extends GenericEvent> void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) throws JsonProcessingException {
     publisher.publishEvent(
         new BroadcastMessageEvent<>(
-            get(fireNostrEvent.subscriberId()).getSessionId(),
-            NIP01.createEventMessage(fireNostrEvent.event(), String.valueOf(fireNostrEvent.subscriberId()))));
+            get(fireNostrEvent.subscriptionHash()).getSessionId(),
+            NIP01.createEventMessage(fireNostrEvent.event(), fireNostrEvent.subscriberId())));
   }
 }

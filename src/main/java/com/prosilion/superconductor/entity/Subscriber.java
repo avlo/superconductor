@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 public class Subscriber implements Serializable {
-  private Long id;
+  private Long subscriberSessionHash;
 
   private String subscriberId;
   private String sessionId;

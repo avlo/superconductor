@@ -19,5 +19,5 @@ public interface SubscriberService {
 
   Map<Long, List<Filters>> getAllFiltersOfAllSubscribers();
 
-  Subscriber get(@NonNull Long subscriberId);
+  Subscriber get(@NonNull Long subscriberHash);
 }

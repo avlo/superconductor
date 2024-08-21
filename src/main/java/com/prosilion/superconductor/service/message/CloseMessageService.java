@@ -49,7 +49,7 @@ public class CloseMessageService<T extends CloseMessage> implements CloseMessage
           new RemoveSubscriberFilterEvent(
               abstractSubscriberService.removeSubscriberBySubscriberId(subscriberId)));
     } catch (NoExistingUserException e) {
-      log.info("no match to remove for subscriberId [{}]", subscriberId);
+      log.info("no match to remove for subscriptionHash [{}]", subscriberId);
     }
   }
 //  public void deactivateSubscriberBySessionId(String sessionId) throws NoResultException {

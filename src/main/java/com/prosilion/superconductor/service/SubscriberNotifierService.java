@@ -21,18 +21,21 @@ public class SubscriberNotifierService<T extends GenericEvent> {
   }
 
   public void nostrEventHandler(@NonNull AddNostrEvent<T> addNostrEvent) {
-    abstractSubscriberService.getAllFiltersOfAllSubscribers().forEach((subscriberId, filtersList) ->
-        subscriptionEventHandler(subscriberId, addNostrEvent));
+    abstractSubscriberService.getAllFiltersOfAllSubscribers().forEach((subscriberSessionHash, filtersList) ->
+        subscriptionEventHandler(subscriberSessionHash, addNostrEvent));
   }
 
-  public void subscriptionEventHandler(@NonNull Long subscriberId, @NonNull AddNostrEvent<T> addNostrEvent) {
-    broadcastMatch(addNostrEvent, subscriberId);
+  public void subscriptionEventHandler(@NonNull Long subscriberSessionHash, @NonNull AddNostrEvent<T> addNostrEvent) {
+    broadcastMatch(addNostrEvent, subscriberSessionHash);
   }
 
-  private void broadcastMatch(AddNostrEvent<T> addNostrEvent, Long subscriberId) {
-    abstractSubscriberService.getFiltersList(subscriberId).forEach(filters ->
+  private void broadcastMatch(AddNostrEvent<T> addNostrEvent, Long subscriberSessionHash) {
+    abstractSubscriberService.getFiltersList(subscriberSessionHash).forEach(filters ->
         filterMatcher.intersectFilterMatches(filters, (AddNostrEvent<GenericEvent>) addNostrEvent).forEach(event ->
-            broadcastToClients((FireNostrEvent<T>) new FireNostrEvent<>(subscriberId, event.event()))));
+            broadcastToClients((FireNostrEvent<T>) new FireNostrEvent<>(
+                subscriberSessionHash,
+                abstractSubscriberService.get(subscriberSessionHash).getSubscriberId(),
+                event.event()))));
   }
 
   @SneakyThrows

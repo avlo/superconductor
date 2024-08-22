@@ -26,17 +26,8 @@ public class CloseMessageServiceNoAuthDecorator<T extends CloseMessage> implemen
 
   @Override
   public void processIncoming(@NonNull T closeMessage, @NonNull String sessionId) {
-    closeMessageService.processIncoming(closeMessage, sessionId);
-  }
-
-  @Override
-  public String getCommand() {
-    return closeMessageService.getCommand();
-  }
-
-  @Override
-  public void removeSubscriberBySessionId(@NonNull String sessionId) {
-    closeMessageService.removeSubscriberBySessionId(sessionId);
+    closeSession(sessionId);
+    removeSubscriberBySessionId(sessionId);
   }
 
   @Override
@@ -44,10 +35,17 @@ public class CloseMessageServiceNoAuthDecorator<T extends CloseMessage> implemen
     closeMessageService.closeSession(sessionId);
   }
 
+  @Override
+  public void removeSubscriberBySessionId(@NonNull String sessionId) {
+    closeMessageService.removeSubscriberBySessionId(sessionId);
+  }
+
   public void removeSubscriberBySubscriberId(@NonNull String subscriberId) {
     closeMessageService.removeSubscriberBySubscriberId(subscriberId);
   }
-//  public void deactivateSubscriberBySessionId(String sessionId) throws NoResultException {
-//    subscriberService.deactivateSubscriberBySessionId(sessionId);
-//  }
+
+  @Override
+  public String getCommand() {
+    return closeMessageService.getCommand();
+  }
 }

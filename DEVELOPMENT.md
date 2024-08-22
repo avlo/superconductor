@@ -100,7 +100,7 @@ Superconductor is now ready to use.
 for full/debug developer console logging:
 
     $ cd <your_git_home_dir>/superconductor
-    $ mvn spring-boot:run -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE
+    $ mvn spring-boot:run -Dspring.profiles.active=local -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE
 ----
 
 ### 3.  Run locally as executable jar

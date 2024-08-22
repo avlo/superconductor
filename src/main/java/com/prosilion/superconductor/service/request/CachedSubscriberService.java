@@ -59,9 +59,10 @@ public class CachedSubscriberService extends AbstractSubscriberService {
 
   @Override
   public List<Long> removeSubscriberBySessionId(@NonNull String sessionId) {
+    String subscriberId = biMap.inverse().getOrDefault(sessionId, "");
     long hash = getHash(
         new Subscriber(
-            biMap.inverse().get(sessionId),
+            subscriberId,
             sessionId,
             true));
     subscriberSessionHashComboMap.remove(hash);

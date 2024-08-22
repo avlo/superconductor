@@ -55,7 +55,7 @@ public class HashtagTagPlugin<
   }
 
   @Override
-  public Q getStandardTagEntityRepositoryRxR() {
+  public Q getStandardTagEntityRepository() {
     return (Q) hashtagTagEntityRepository;
   }
 }

@@ -55,7 +55,7 @@ public class PubkeyTagPlugin<
   }
 
   @Override
-  public Q getStandardTagEntityRepositoryRxR() {
+  public Q getStandardTagEntityRepository() {
     return (Q) pubkeyTagEntityRepository;
   }
 }

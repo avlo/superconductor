@@ -55,7 +55,7 @@ public class PriceTagPlugin<
   }
 
   @Override
-  public Q getStandardTagEntityRepositoryRxR() {
+  public Q getStandardTagEntityRepository() {
     return (Q) priceTagEntityRepository;
   }
 }

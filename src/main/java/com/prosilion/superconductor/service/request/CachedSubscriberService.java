@@ -80,7 +80,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   }
 
   private void put(Subscriber subscriber, Filters filters) {
-    biMap.put(subscriber.getSubscriberId(), subscriber.getSessionId());
+    biMap.forcePut(subscriber.getSubscriberId(), subscriber.getSessionId());
     long subscriberSessionHash = getHash(subscriber);
 
     Combo combo = new Combo(

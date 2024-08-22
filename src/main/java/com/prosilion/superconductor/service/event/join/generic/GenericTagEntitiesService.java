@@ -36,7 +36,7 @@ public class GenericTagEntitiesService {
 
   public List<GenericTagDto> getGenericTags(@NonNull Long eventId) {
     return repo.findAllById(
-            join.getAllByEventId(eventId).stream()
+            join.findByEventId(eventId).stream()
                 .map(EventEntityGenericTagEntity::getGenericTagId).toList())
         .stream().map(genericTagEntity ->
             genericTagEntity.convertEntityToDto(

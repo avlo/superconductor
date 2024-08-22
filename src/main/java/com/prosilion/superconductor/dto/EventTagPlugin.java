@@ -54,7 +54,7 @@ public class EventTagPlugin<
   }
 
   @Override
-  public Q getStandardTagEntityRepositoryRxR() {
+  public Q getStandardTagEntityRepository() {
     return (Q) eventTagEntityRepository;
   }
 }

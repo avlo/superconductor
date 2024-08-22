@@ -55,7 +55,7 @@ public class RelaysTagPlugin<
   }
 
   @Override
-  public Q getStandardTagEntityRepositoryRxR() {
+  public Q getStandardTagEntityRepository() {
     return (Q) relaysTagEntityRepository;
   }
 }

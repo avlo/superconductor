@@ -55,7 +55,7 @@ public class GeohashTagPlugin<
   }
 
   @Override
-  public Q getStandardTagEntityRepositoryRxR() {
+  public Q getStandardTagEntityRepository() {
     return (Q) geohashTagEntityRepository;
   }
 }

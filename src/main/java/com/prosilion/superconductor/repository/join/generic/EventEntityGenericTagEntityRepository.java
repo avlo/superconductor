@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface EventEntityGenericTagEntityRepository extends JpaRepository<EventEntityGenericTagEntity, Long> {
-  List<EventEntityGenericTagEntity> getAllByEventId(Long eventId);
+  List<EventEntityGenericTagEntity> findByEventId(Long eventId);
 }

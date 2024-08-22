@@ -27,15 +27,15 @@ public interface TagPlugin<
 
   T getEventEntityStandardTagEntityRepositoryJoin();
 
-  Q getStandardTagEntityRepositoryRxR();
+  Q getStandardTagEntityRepository();
 
   default List<R> getTags(Long eventId) {
     return getEventEntityStandardTagEntityRepositoryJoin()
-        .getAllByEventId(eventId)
+        .findByEventId(eventId)
         .stream()
         .map(event -> Optional.of(
-                getStandardTagEntityRepositoryRxR().findById(
-                    event.getEventId()))
+                getStandardTagEntityRepository().findById(
+                    event.getId()))
             .orElseGet(Optional::empty).stream().toList())
         .flatMap(Collection::stream).distinct().toList();
   }
@@ -44,7 +44,7 @@ public interface TagPlugin<
     getEventEntityStandardTagEntityRepositoryJoin().save(
         getEventEntityTagEntity(
             eventId,
-            getStandardTagEntityRepositoryRxR().save(
+            getStandardTagEntityRepository().save(
                 convertDtoToEntity(baseTag)).getId()));
   }
 }

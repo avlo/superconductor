@@ -54,7 +54,7 @@ public class SubjectTagPlugin<
   }
 
   @Override
-  public Q getStandardTagEntityRepositoryRxR() {
+  public Q getStandardTagEntityRepository() {
     return (Q) subjectTagEntityRepository;
   }
 }

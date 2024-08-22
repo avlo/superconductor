@@ -8,6 +8,6 @@ import java.util.List;
 
 @NoRepositoryBean
 public interface EventEntityAbstractTagEntityRepository<T extends EventEntityAbstractTagEntity> extends JpaRepository<T, Long> {
-  List<T> getAllByEventId(Long eventId);
+  List<T> findByEventId(Long eventId);
   String getCode();
 }

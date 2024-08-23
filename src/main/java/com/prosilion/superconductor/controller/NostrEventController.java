@@ -8,8 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseMessage;
 import nostr.event.json.codec.BaseMessageDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -21,6 +25,7 @@ import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrate
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +42,9 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   private final RelayInfoDocService relayInfoDocService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
 
+  @Value("${superconductor.auth.active}")
+  private boolean authActive;
+
   @Autowired
   public NostrEventController(List<MessageService<T>> messageServices, RelayInfoDocService relayInfoDocService) {
     this.messageServiceMap = messageServices.stream().collect(
@@ -44,6 +52,18 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
             MessageService<T>::getCommand,
             Function.identity()));
     this.relayInfoDocService = relayInfoDocService;
+  }
+
+  @GetMapping("/api-tests.html")
+  public String apiTests(Model model) {
+    model.addAttribute("authActive", authActive);
+    return "thymeleaf/api-tests";
+  }
+
+  @GetMapping("/request-test.html")
+  public String requestTest(Model model) {
+    model.addAttribute("authActive", authActive);
+    return "thymeleaf/request-test";
   }
 
   @Override

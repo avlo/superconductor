@@ -1,18 +1,19 @@
 <!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <link rel="shortcut icon" href="/favicon.ico">
 <html>
 <head>
   <title>Nostr Events WebClient</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link href="main.css" rel="stylesheet">
+  <link href="/main.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="/register.js"></script>
-  <script src="/nip-00.js"></script>
-  <script src="/nip-01.js"></script>
-  <script src="/nip-57.js"></script>
-  <script src="/nip-99.js"></script>
-  <script src="/common.js"></script>
+  <script src="/js/register.js"></script>
+  <script src="/js/nip-00.js"></script>
+  <script src="/js/nip-01.js"></script>
+  <script src="/js/nip-57.js"></script>
+  <script src="/js/nip-99.js"></script>
+  <script src="/js/common.js"></script>
 </head>
 <body>
 <noscript><h2 style="color: #ff0000">Enable Javascript to view this page</h2></noscript>
@@ -23,13 +24,15 @@
       <button tabindex="1" id="connect" class="btn btn-default" type="submit">Connect</button>
       <button tabindex="1" id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect</button>
       <button tabindex="1" id="reqclose" class="btn btn-default" type="submit" disabled="disabled">Nostr Close
-        Disconnect</button>
+        Disconnect
+      </button>
     </div>
   </form>
   <hr>
-  <div class="tabs">
 
-    <input class="radiotab" name="tabs" tabindex="1" type="radio" id="tabone" checked="checked">
+  <div th:switch="${authActive}" class="tabs">
+
+    <input th:case='true' class="radiotab" name="tabs" tabindex="1" type="radio" id="tabone" checked="checked">
     <label class="label" for="tabone">Register</label>
     <div class="panel">
       <div class="col-md-6">
@@ -61,7 +64,8 @@
         <form class="form-inline">
           <div class="form-group">
             <label for="00-pubkey">Pubkey: </label>
-            <input tabindex="1" type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="00-pubkey"
+            <input tabindex="1" type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                   id="00-pubkey"
                    class="form-control" placeholder="00-pubkey">
           </div>
           <input type="hidden" id="00-kind" name="00-kind" value=0>
@@ -69,7 +73,9 @@
             <div class="col-md-6">
               <div class="form-inline">
                 <div class="center gap">
-                  <button tabindex="1" id="send00" class="btn btn-default" type="submit" disabled="disabled">Send Nip-00 Event</button>
+                  <button tabindex="1" id="send00" class="btn btn-default" type="submit" disabled="disabled">Send Nip-00
+                    Event
+                  </button>
                 </div>
               </div>
             </div>
@@ -78,24 +84,26 @@
       </div>
     </div>
 
-
-    <input class="radiotab" tabindex="1" name="tabs" type="radio" id="tabthree">
+    <input th:case='false' class="radiotab" name="tabs" tabindex="1" type="radio" id="tabthree" checked="checked">
     <label class="label" for="tabthree">NIP-01</label>
     <div class="panel">
       <div class="col-md-6">
         <form class="form-inline">
           <div class="form-group">
             <label for="01-content">Send message:</label>
-            <input tabindex="1" type="text" value="1111111111" id="01-content" class="form-control" placeholder="message...">
+            <input tabindex="1" type="text" value="1111111111" id="01-content" class="form-control"
+                   placeholder="message...">
           </div>
           <div class="form-group">
             <label for="01-pubkey">Pubkey: </label>
-            <input tabindex="1" type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="01-pubkey"
+            <input tabindex="1" type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                   id="01-pubkey"
                    class="form-control" placeholder="01-pubkey">
           </div>
           <div class="form-group">
             <label for="01-g_tag">GeoTag: </label>
-            <input tabindex="1" type="text" value="textnote geo-tag-1" id="01-g_tag" class="form-control" placeholder="geo-tag">
+            <input tabindex="1" type="text" value="textnote geo-tag-1" id="01-g_tag" class="form-control"
+                   placeholder="geo-tag">
           </div>
           <input type="hidden" id="01-kind" name="01-kind" value=1>
           <input type="hidden" id="e_tag" name="e_tag"
@@ -106,7 +114,8 @@
             <div class="col-md-6">
               <div class="form-inline">
                 <div class="center gap">
-                  <button id="send01" class="btn btn-default" type="submit" disabled="disabled">Send Nip-01 Event</button>
+                  <button id="send01" class="btn btn-default" type="submit" disabled="disabled">Send Nip-01 Event
+                  </button>
                 </div>
               </div>
             </div>
@@ -123,7 +132,8 @@
         <form class="form-inline">
           <div class="form-group">
             <label for="relays">Relays Tag: </label>
-            <input tabindex="1" type="text" value="ws://localhost:5555" id="relays" class="form-control" placeholder="relays...">
+            <input tabindex="1" type="text" value="ws://localhost:5555" id="relays" class="form-control"
+                   placeholder="relays...">
           </div>
           <div class="form-group">
             <label for="amount">Amount: </label>
@@ -138,7 +148,8 @@
           </div>
           <div class="form-group gap">
             <label for="subject">Subject: </label>
-            <input tabindex="1" type="text" value="subject Zap Request" id="subject" class="form-control" placeholder="subject...">
+            <input tabindex="1" type="text" value="subject Zap Request" id="subject" class="form-control"
+                   placeholder="subject...">
           </div>
           <div class="form-group">
             <label for="57-content">Content: </label>
@@ -147,16 +158,19 @@
           </div>
           <div class="form-group">
             <label for="57-pubkey">Pubkey: </label>
-            <input tabindex="1" type="text" value="bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="57-pubkey"
+            <input tabindex="1" type="text" value="bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                   id="57-pubkey"
                    class="form-control" placeholder="57-pubkey">
           </div>
           <div class="form-group gap">
             <label for="g_tag">GeoTag: </label>
-            <input tabindex="1" type="text" value="ZapRequest geo-tag-1" id="g_tag" class="form-control" placeholder="geo-tag">
+            <input tabindex="1" type="text" value="ZapRequest geo-tag-1" id="g_tag" class="form-control"
+                   placeholder="geo-tag">
           </div>
           <div class="form-group">
             <label for="t_tag">HashTag: </label>
-            <input tabindex="1" type="text" value="ZapRequest hash-tag-1111" id="t_tag" class="form-control" placeholder="t-tag">
+            <input tabindex="1" type="text" value="ZapRequest hash-tag-1111" id="t_tag" class="form-control"
+                   placeholder="t-tag">
           </div>
           <input type="hidden" id="location" name="location" value="peroulades">
           <input type="hidden" id="number" name="number" value=271>
@@ -175,7 +189,8 @@
             <div class="col-md-6">
               <div class="form-inline">
                 <div class="center gap">
-                  <button id="send57" class="btn btn-default" type="submit" disabled="disabled">Send Nip-57 Event</button>
+                  <button id="send57" class="btn btn-default" type="submit" disabled="disabled">Send Nip-57 Event
+                  </button>
                 </div>
               </div>
             </div>
@@ -202,7 +217,8 @@
           </div>
           <div class="form-group">
             <label for="summary">Summary: </label>
-            <input tabindex="1" type="text" value="classified summary" id="summary" class="form-control" placeholder="summary...">
+            <input tabindex="1" type="text" value="classified summary" id="summary" class="form-control"
+                   placeholder="summary...">
           </div>
           <div class="form-group gap">
             <label for="content">Content: </label>
@@ -211,12 +227,14 @@
           </div>
           <div class="form-group">
             <label for="99-pubkey">Pubkey: </label>
-            <input tabindex="1" type="text" value="cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984" id="99-pubkey"
+            <input tabindex="1" type="text" value="cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                   id="99-pubkey"
                    class="form-control" placeholder="99-pubkey">
           </div>
           <div class="form-group">
             <label for="99-g_tag">GeoTag: </label>
-            <input tabindex="1" type="text" value="classified geo-tag-1" id="99-g_tag" class="form-control" placeholder="geo-tag">
+            <input tabindex="1" type="text" value="classified geo-tag-1" id="99-g_tag" class="form-control"
+                   placeholder="geo-tag">
           </div>
           <div class="form-group gap">
             <label for="99-t_tag">HashTag: </label>
@@ -240,7 +258,8 @@
             <div class="col-md-6">
               <div class="form-inline">
                 <div class="center gap">
-                  <button id="send99" class="btn btn-default" type="submit" disabled="disabled">Send Nip-99 Event</button>
+                  <button id="send99" class="btn btn-default" type="submit" disabled="disabled">Send Nip-99 Event
+                  </button>
                 </div>
               </div>
             </div>

@@ -1,15 +1,16 @@
 <!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <link rel="shortcut icon" href="/favicon.ico">
 <html>
 <head>
   <title>Nostr Request WebClient</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link href="main.css" rel="stylesheet">
+  <link href="/main.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="/register.js"></script>
-  <script src="/req.js"></script>
-  <script src="/common.js"></script>
+  <script src="/js/register.js"></script>
+  <script src="/js/req.js"></script>
+  <script src="/js/common.js"></script>
 </head>
 <body>
 <noscript><h2 style="color: #ff0000">Enable Javascript to view this page</h2></noscript>
@@ -20,12 +21,15 @@
       <button tabindex="1" id="connect" class="btn btn-default" type="submit">Connect</button>
       <button tabindex="1" id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect</button>
       <button tabindex="1" id="reqclose" class="btn btn-default" type="submit" disabled="disabled">Nostr Close
-        Disconnect</button>
+        Disconnect
+      </button>
     </div>
   </form>
   <hr>
-  <div class="tabs">
-    <input class="radiotab" name="tabs" tabindex="1" type="radio" id="tabone" checked="checked">
+
+  <div th:switch="${authActive}" class="tabs">
+
+    <input th:case='true' class="radiotab" name="tabs" tabindex="1" type="radio" id="tabone" checked="checked">
     <label class="label" for="tabone">Register</label>
     <div class="panel">
       <div class="col-md-6">
@@ -49,7 +53,8 @@
         </form>
       </div>
     </div>
-    <input class="radiotab" tabindex="1" name="tabs" type="radio" id="tabtwo">
+
+    <input th:case='false' class="radiotab" name="tabs" tabindex="1" type="radio" id="tabtwo" checked="checked">
     <label class="label" for="tabtwo">Search Filters:</label>
     <div class="panel">
       <div class="col-md-6">
@@ -84,7 +89,8 @@
             <div class="col-md-6">
               <div class="form-inline">
                 <div class="center gap">
-                  <button id="sendrequest" class="btn btn-default" type="submit" disabled="disabled">Send Request</button>
+                  <button id="sendrequest" class="btn btn-default" type="submit" disabled="disabled">Send Request
+                  </button>
                 </div>
               </div>
             </div>

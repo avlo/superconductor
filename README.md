@@ -86,7 +86,7 @@ Superconductor is now ready to use.
 ----
 
 ##### Stop docker containers
-    $ docker compose -f docker-compose-prod.yml stop superconductor-app superconductor-db
+    $ docker compose -f docker-compose-prod.yml stop superconductor superconductor-db
 
 ##### Remove docker containers
     $ docker compose -f docker-compose-prod.yml down --remove-orphans

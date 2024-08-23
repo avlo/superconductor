@@ -18,7 +18,7 @@ services:
       retries: 10
       interval: 3s
       timeout: 30s
-  superconductor-app:
+  superconductor:
     container_name: superconductor-app
     image: avlo/superconductor:1.7.2
     ports:

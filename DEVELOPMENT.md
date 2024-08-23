@@ -79,7 +79,7 @@ Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([pr
     $ mvn -N wrapper:wrapper
     $ mvn spring-boot:build-image
 
-(*optionally edit various [docker-compose-dev.yml](docker-compose-dev.yml?plain=1#L30-L31) parameters as desired.*)
+(*optionally edit various [docker-compose-dev.yml](docker-compose-dev.yml?plain=1#L10,L32,L36-L37) parameters as desired.*)
 
 ##### Start docker containers
     $ docker compose -f docker-compose-dev.yml up -d

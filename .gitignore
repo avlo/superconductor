@@ -1,7 +1,8 @@
+.mvn
 .idea
-superconductor.iml
-target/
 .project
 
+superconductor.iml
+target/
+
 pom.xml.versionsBackup
-trigger-text.txt

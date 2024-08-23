@@ -72,7 +72,7 @@
 
 ----
 
-#### Download Docker-Compose configuration file:
+#### Download Docker-Compose configuration file _(and optionally [edit various parameters](docker-compose-prod.yml?plain=1#L30-L31) as desired)_:
 
 [docker-compose-prod.yml](docker-compose-prod.yml)
 

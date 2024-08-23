@@ -27,6 +27,8 @@ services:
       superconductor-db:
         condition: service_healthy
     environment:
+#      authentication is off by default.  uncomment below to activate
+#      superconductor.auth.active: true
       SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3306/superconductor
       SPRING_DATASOURCE_USERNAME: mysqluser
       SPRING_DATASOURCE_PASSWORD: mysqluserpass

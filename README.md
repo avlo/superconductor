@@ -36,6 +36,7 @@
   - [NIP-36](https://nostr-nips.com/nip-36) (Sensitive Content / Content Warning)
   - [NIP-38](https://nostr-nips.com/nip-38) (User Statuses)
   - [NIP-39](https://nostr-nips.com/nip-39) (External Identities in Profiles)
+  - [NIP-42](https://nostr-nips.com/nip-42) (Authentication of clients to relays)
   - [NIP-46](https://nostr-nips.com/nip-46) (Nostr Connect)
   - [NIP-48](https://nostr-nips.com/nip-48) (Proxy Tags)
   - [NIP-52](https://nostr-nips.com/nip-52) (Calendar Events)

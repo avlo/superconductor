@@ -7,8 +7,8 @@ services:
     labels:
       org.springframework.boot.service-connection: mysql
     environment:
-#      set below db name and credentials as desired
       MYSQL_DATABASE: superconductor
+#      set below db name and credentials as desired
       MYSQL_USER: mysqluser
       MYSQL_PASSWORD: mysqluserpass
       MYSQL_ROOT_PASSWORD: mysqlrootuserpass
@@ -29,8 +29,8 @@ services:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: dev
-#      set below spring datasource parameters and credentials as desired
       SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3306/superconductor
+#      set below spring datasource parameters and credentials as desired
       SPRING_DATASOURCE_USERNAME: mysqluser
       SPRING_DATASOURCE_PASSWORD: mysqluserpass
 #      authentication is off by default.  uncomment the following line to activate

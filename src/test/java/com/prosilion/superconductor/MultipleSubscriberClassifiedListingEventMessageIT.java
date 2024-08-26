@@ -51,8 +51,6 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
   public final String textMessageEventJson;
   public final String textMessageEventJsonReordered;
 
-  private static final String SCHEME_WS = "ws";
-  private static final String HOST = "localhost";
   private final String websocketUrl;
 
   private final String hexCounterSeed;
@@ -67,11 +65,11 @@ class MultipleSubscriberClassifiedListingEventMessageIT {
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
   MultipleSubscriberClassifiedListingEventMessageIT(
-      @Value("${server.port}") String port,
+      @Value("${superconductor.relay.url}") String relayUrl,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
       @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) throws IOException {
-    this.websocketUrl = SCHEME_WS + "://" + HOST + ":" + port;
+    this.websocketUrl = relayUrl;
     this.hexCounterSeed = hexCounterSeed;
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;

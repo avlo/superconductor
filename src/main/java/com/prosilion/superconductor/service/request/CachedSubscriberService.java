@@ -74,6 +74,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
             subscriberId,
             sessionId,
             true));
+    biMap.inverse().remove(sessionId);
     subscriberSessionHashComboMap.remove(hash);
     return List.of(hash);
   }

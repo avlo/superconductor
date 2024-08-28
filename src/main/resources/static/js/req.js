@@ -1,5 +1,6 @@
 $(function () {
-    $("#sendrequest").click(() => hashThenSendRequest());
+    // $("#sendrequest").click(() => hashThenSendRequest());
+    $("#sendrequest").click(() => sendContentRequest($("#subscription_id").val()));
 });
 
 function hashThenSendRequest() {
@@ -39,20 +40,20 @@ function stringifyJson() {
     return JSON.stringify(cullEmptyKeyValuePairs());
 }
 
-function replaceHashRequest(id_hash) {
+function populateRequestJson(subscription_id) {
     return "["
         + "\"REQ\","
-        + "\"" + id_hash + "\","
+        + "\"" + subscription_id + "\","
         + stringifyJson()
         + "]";
 }
 
-function sendContentRequest(id_hash) {
+function sendContentRequest(subscription_id) {
     console.log("\nsending content...\n\n");
     console.log("sending w/ date now: " + dateNow);
-    currentSubscriptonId = id_hash;
-    let localjsonstring = replaceHashRequest(id_hash);
-    console.log(localjsonstring);
+    currentSubscriptonId = subscription_id;
+    let outboundJson = populateRequestJson(subscription_id);
+    console.log(outboundJson);
     console.log('\n\n');
-    ws.send(localjsonstring);
+    ws.send(outboundJson);
 }

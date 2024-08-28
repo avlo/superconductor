@@ -4,11 +4,13 @@ import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent
 import com.prosilion.superconductor.service.message.MessageService;
 import com.prosilion.superconductor.service.message.RelayInfoDocService;
 import com.prosilion.superconductor.service.clientresponse.ClientResponse;
+import com.prosilion.superconductor.service.request.pubsub.TerminatedSocket;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseMessage;
 import nostr.event.json.codec.BaseMessageDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,17 +41,22 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   private final Map<String, MessageService<T>> messageServiceMap;
   private final RelayInfoDocService relayInfoDocService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
+  private final ApplicationEventPublisher publisher;
 
   @Value("${superconductor.auth.active}")
   private boolean authActive;
 
   @Autowired
-  public NostrEventController(List<MessageService<T>> messageServices, RelayInfoDocService relayInfoDocService) {
+  public NostrEventController(
+      List<MessageService<T>> messageServices,
+      RelayInfoDocService relayInfoDocService,
+      ApplicationEventPublisher publisher) {
     this.messageServiceMap = messageServices.stream().collect(
         Collectors.toMap(
             MessageService<T>::getCommand,
             Function.identity()));
     this.relayInfoDocService = relayInfoDocService;
+    this.publisher = publisher;
   }
 
   @GetMapping("/api-tests.html")
@@ -81,12 +88,13 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   }
 
   /**
-   * WebSocket-Close handler.  Differentiated from Nostr-Close if/when encountered in method
+   * WebSocket-Termination handler.  Differentiated from Nostr-Close if/when encountered in method
    * {@link #handleTextMessage(WebSocketSession, TextMessage) }
    */
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
     log.info("client initiated close, sessionId [{}]", session.getId());
+    publisher.publishEvent(new TerminatedSocket(session.getId()));
     closeSession(session);
   }
 

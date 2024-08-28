@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.hash.Hashing;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
+import com.prosilion.superconductor.service.request.pubsub.TerminatedSocket;
 import com.prosilion.superconductor.util.EmptyFiltersException;
 import lombok.Getter;
 import lombok.NonNull;
@@ -16,6 +17,7 @@ import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -64,6 +66,11 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   @Override
   public List<Filters> getFiltersList(@NonNull Long subscriberSessionHash) {
     return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().map(Combo::getFilters).toList();
+  }
+
+  @EventListener
+  public void terminateSocket(@NonNull TerminatedSocket terminatedSocket) {
+    removeSubscriberBySessionId(terminatedSocket.sessionId());
   }
 
   @Override

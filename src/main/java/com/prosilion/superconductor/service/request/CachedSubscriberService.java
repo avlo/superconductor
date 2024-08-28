@@ -6,9 +6,14 @@ import com.google.common.hash.Hashing;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
 import com.prosilion.superconductor.service.AbstractSubscriberService;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.base.GenericTagQuery;
+import nostr.base.PublicKey;
+import nostr.event.Kind;
 import nostr.event.impl.Filters;
+import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -18,6 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 @Slf4j
 @Service
@@ -31,10 +38,12 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   }
 
   @Override
-  public Long save(@NonNull Subscriber subscriber, @NonNull List<Filters> filtersList) {
+  public Long save(@NonNull Subscriber subscriber, @NonNull List<Filters> filtersList) throws EmptyFiltersException {
     long subscriberSessionHash = getHash(subscriber);
     subscriber.setSubscriberSessionHash(subscriberSessionHash);
-    filtersList.forEach(filters -> put(subscriber, filters));
+    for (Filters filters : filtersList) {
+      put(subscriber, filters);
+    }
     return subscriberSessionHash;
   }
 
@@ -42,19 +51,19 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   @Override
   public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
     Map<Long, List<Filters>> map = new HashMap<>();
-    subscriberSessionHashComboMap.forEach((key, value) -> map.put(key, value.stream().map(Combo::filters).toList()));
+    subscriberSessionHashComboMap.forEach((key, value) -> map.put(key, value.stream().map(Combo::getFilters).toList()));
     return map;
   }
 
-//  @Cacheable("subscriber")
+  //  @Cacheable("subscriber")
   @Override
   public Subscriber get(@NonNull Long subscriberSessionHash) {
-    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().findFirst().get().subscriber();
+    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().findFirst().get().getSubscriber();
   }
 
   @Override
   public List<Filters> getFiltersList(@NonNull Long subscriberSessionHash) {
-    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().map(Combo::filters).toList();
+    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().map(Combo::getFilters).toList();
   }
 
   @Override
@@ -70,7 +79,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   }
 
   @Override
-  public Long removeSubscriberBySubscriberId(@NonNull String subscriberId) throws NoExistingUserException {
+  public Long removeSubscriberBySubscriberId(@NonNull String subscriberId) {
     long hash = getHash(
         new Subscriber(
             subscriberId,
@@ -80,7 +89,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return hash;
   }
 
-  private void put(Subscriber subscriber, Filters filters) {
+  private void put(Subscriber subscriber, Filters filters) throws EmptyFiltersException {
     biMap.forcePut(subscriber.getSubscriberId(), subscriber.getSessionId());
     long subscriberSessionHash = getHash(subscriber);
 
@@ -112,6 +121,54 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return Hashing.murmur3_128().hashString(string, StandardCharsets.UTF_8).asLong();
   }
 
-  private record Combo(Subscriber subscriber, SubscriberFilter subscriberFilter, Filters filters) {
+  @Getter
+  private static class Combo {
+    private final Subscriber subscriber;
+    private final SubscriberFilter subscriberFilter;
+    private final Filters filters;
+
+    public Combo(Subscriber subscriber, SubscriberFilter subscriberFilter, Filters filters) throws EmptyFiltersException {
+      this.subscriber = subscriber;
+      if (!checkMinimallyPopulatedFilters(subscriberFilter, filters))
+        throw new EmptyFiltersException(String.format("invalid: empty filters encountered for subscriber [%s]", subscriber.getSubscriberId()));
+      this.subscriberFilter = subscriberFilter;
+      this.filters = filters;
+    }
+
+    private static boolean checkMinimallyPopulatedFilters(SubscriberFilter subscriberFilter, Filters filters) {
+      return Objects.nonNull(subscriberFilter.getSince())
+          || Objects.nonNull(subscriberFilter.getUntil())
+          || Objects.nonNull(subscriberFilter.getLimit())
+          || hasValidField(filters.getEvents(), getEventPredicate())
+          || hasValidField(filters.getAuthors(), getPubKeyPredicate())
+          || hasValidField(filters.getKinds(), getKindPredicate())
+          || hasValidField(filters.getReferencedEvents(), getEventPredicate())
+          || hasValidField(filters.getReferencePubKeys(), getPubKeyPredicate())
+          || hasValidGenericTagQuery(filters.getGenericTagQuery());
+    }
+
+    private static <T> boolean hasValidField(List<T> filtersField, Predicate<T> fieldPredicate) {
+      return Objects.nonNull(filtersField)
+          && !filtersField.isEmpty()
+          && filtersField.stream().anyMatch(fieldPredicate);
+    }
+
+    private static Predicate<PublicKey> getPubKeyPredicate() {
+      return pubKey -> !pubKey.toString().isBlank();
+    }
+
+    private static Predicate<GenericEvent> getEventPredicate() {
+      return event -> !event.getId().isBlank();
+    }
+
+    private static Predicate<Kind> getKindPredicate() {
+      return kind -> !kind.toString().isBlank();
+    }
+
+    private static boolean hasValidGenericTagQuery(GenericTagQuery genericTagQuery) {
+      return Objects.nonNull(genericTagQuery)
+          && Objects.nonNull(genericTagQuery.getTagName())
+          && !genericTagQuery.getTagName().isBlank();
+    }
   }
 }

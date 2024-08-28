@@ -10,11 +10,12 @@ import org.springframework.web.socket.TextMessage;
 public class ClientNoticeResponse implements ClientResponse {
   private final TextMessage textMessage;
   private final String sessionId;
-  private final boolean valid = false;
+  private final boolean valid;
 
-  public ClientNoticeResponse(@NonNull String sessionId, @NonNull String noticeMessage) throws JsonProcessingException {
+  public ClientNoticeResponse(@NonNull String sessionId, @NonNull String noticeMessage, boolean valid) throws JsonProcessingException {
     this.sessionId = sessionId;
     this.textMessage = new TextMessage(
         new NIP01Impl.NoticeMessageFactory(noticeMessage).create().encode());
+    this.valid = valid;
   }
 }

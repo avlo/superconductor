@@ -57,10 +57,10 @@ public class ClientResponseService {
     }
   }
 
-  public void processNoticeClientResponse(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull String reason) {
+  public void processNoticeClientResponse(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull String reason, boolean valid) {
     log.info("Processing failed request message: {}, reason: {}", reqMessage, reason);
     try {
-      publisher.publishEvent(new ClientNoticeResponse(sessionId, reason));
+      publisher.publishEvent(new ClientNoticeResponse(sessionId, reason, valid));
     } catch (JsonProcessingException e) {
       publisher.publishEvent(new TextMessage(
           "[\"NOTICE\", \"" + reqMessage + "\"]"

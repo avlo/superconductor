@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.service.message;
 
 import com.prosilion.superconductor.service.okresponse.ClientResponseService;
+import com.prosilion.superconductor.service.request.EmptyFiltersException;
 import com.prosilion.superconductor.service.request.ReqService;
 import lombok.Getter;
 import lombok.NonNull;
@@ -22,10 +23,14 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<T
 
   @Override
   public void processIncoming(@NonNull T reqMessage, @NonNull String sessionId) {
-    reqService.processIncoming(reqMessage, sessionId);
+    try {
+      reqService.processIncoming(reqMessage, sessionId);
+    } catch (EmptyFiltersException e) {
+      clientResponseService.processNoticeClientResponse(reqMessage, sessionId, e.getMessage(), true);
+    }
   }
 
   protected void processNoticeClientResponse(@NonNull T reqMessage, @NonNull String sessionId, @NonNull String errorMessage) {
-    clientResponseService.processNoticeClientResponse(reqMessage, sessionId, errorMessage);
+    clientResponseService.processNoticeClientResponse(reqMessage, sessionId, errorMessage, false);
   }
 }

@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.controller;
 
-import com.prosilion.superconductor.pubsub.BroadcastMessageEvent;
+import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.service.message.MessageService;
 import com.prosilion.superconductor.service.message.RelayInfoDocService;
-import com.prosilion.superconductor.service.okresponse.ClientResponse;
+import com.prosilion.superconductor.service.clientresponse.ClientResponse;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseMessage;
 import nostr.event.json.codec.BaseMessageDecoder;

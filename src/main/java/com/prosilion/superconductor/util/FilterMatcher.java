@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.util;
 
 import com.prosilion.superconductor.entity.join.subscriber.AbstractFilterType;
-import com.prosilion.superconductor.entity.join.subscriber.FilterPlugin;
-import com.prosilion.superconductor.pubsub.AddNostrEvent;
+import com.prosilion.superconductor.plugin.filter.FilterPlugin;
+import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.Getter;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;

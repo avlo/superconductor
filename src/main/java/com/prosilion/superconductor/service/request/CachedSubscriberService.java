@@ -5,7 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.hash.Hashing;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
-import com.prosilion.superconductor.service.AbstractSubscriberService;
+import com.prosilion.superconductor.util.EmptyFiltersException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

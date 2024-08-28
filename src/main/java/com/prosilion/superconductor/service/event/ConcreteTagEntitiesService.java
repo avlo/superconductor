@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.superconductor.dto.TagPlugin;
+import com.prosilion.superconductor.plugin.tag.TagPlugin;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;

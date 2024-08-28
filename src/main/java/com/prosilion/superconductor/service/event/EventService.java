@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.superconductor.pubsub.AddNostrEvent;
-import com.prosilion.superconductor.service.NotifierService;
+import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
+import com.prosilion.superconductor.service.request.NotifierService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.GenericEvent;

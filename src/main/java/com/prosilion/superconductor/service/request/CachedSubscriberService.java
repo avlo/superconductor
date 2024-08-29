@@ -41,6 +41,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
 
   @Override
   public Long save(@NonNull Subscriber subscriber, @NonNull List<Filters> filtersList) throws EmptyFiltersException {
+    removeSubscriberBySessionId(subscriber.getSessionId());
     long subscriberSessionHash = getHash(subscriber);
     subscriber.setSubscriberSessionHash(subscriberSessionHash);
     for (Filters filters : filtersList) {

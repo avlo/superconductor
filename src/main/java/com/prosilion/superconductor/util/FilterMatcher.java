@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 
@@ -59,34 +59,33 @@ public class FilterMatcher {
     return false;
   }
 
-  private Set<AddNostrEvent<GenericEvent>> getFilterMatchingEvents(List<Combo> combos, AddNostrEvent<GenericEvent> eventToCheck) {
-    return combos
-        .stream()
-        .map(combo ->
-            filterTypeMatchesEventAttribute(
-                combo.getSubscriberFilterType(),
-                combo.getBiPredicate(),
-                eventToCheck))
-        .takeWhile(aBoolean -> aBoolean.equals(true))
-        .map(result -> eventToCheck)
-        .collect(Collectors.toSet());
+  private <U> Set<AddNostrEvent<GenericEvent>> getFilterMatchingEvents(List<Combo> combos, AddNostrEvent<GenericEvent> eventToCheck) {
+//    TODO: convert to stream
+    Set<AddNostrEvent<GenericEvent>> matchedCombos = new HashSet<>();
+    for (Combo<U> combo : combos) {
+      if (filterTypeMatchesEventAttribute(combo, eventToCheck)) {
+        matchedCombos.add(eventToCheck);
+      }
+    }
+    return matchedCombos;
   }
 
-  private boolean filterTypeMatchesEventAttribute(List<?> subscriberFilters, BiPredicate biPredicate, AddNostrEvent<GenericEvent> eventToCheck) {
-    return subscriberFilters
-        .stream()
-        .allMatch(
-            testable -> biPredicate.test(testable, eventToCheck)
-        );
+  private <U> boolean filterTypeMatchesEventAttribute(Combo<U> combo, AddNostrEvent<GenericEvent> eventToCheck) {
+//    TODO: convert to stream
+    for (U testable : combo.getSubscriberFilterType()) {
+      if (combo.getBiPredicate().test(testable, eventToCheck))
+        return true;
+    }
+    return false;
   }
 }
 
 @Getter
-class Combo {
-  List<?> subscriberFilterType;
-  BiPredicate<?, AddNostrEvent<GenericEvent>> biPredicate;
+class Combo<U> {
+  List<U> subscriberFilterType;
+  BiPredicate<U, AddNostrEvent<GenericEvent>> biPredicate;
 
-  public Combo(List<?> subscriberFilterType, BiPredicate<?, AddNostrEvent<GenericEvent>> biPredicate) {
+  public Combo(List<U> subscriberFilterType, BiPredicate<U, AddNostrEvent<GenericEvent>> biPredicate) {
     this.subscriberFilterType = subscriberFilterType;
     this.biPredicate = biPredicate;
   }

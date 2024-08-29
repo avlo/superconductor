@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 @Component
-public class FilterReferencedPubkeyPlugin<T extends SubscriberFilterReferencedPubkey> implements FilterPlugin<T> {
+public class FilterReferencedPubkeyPlugin<T extends PublicKey> implements FilterPlugin<T> {
 
   @Override
-  public BiPredicate<PublicKey, AddNostrEvent<GenericEvent>> getBiPredicate() {
+  public BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate() {
     return (t, u) -> t.toString().equals(u.event().getPubKey().toString());
   }
 
   @Override
-  public List<PublicKey> getPluginFilters(Filters filters) {
-    return filters.getReferencePubKeys();
+  public List<T> getPluginFilters(Filters filters) {
+    return (List<T>) filters.getReferencePubKeys();
   }
 
   @Override

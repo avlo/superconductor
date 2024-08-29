@@ -10,16 +10,16 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 @Component
-public class FilterReferencedEventPlugin<T extends SubscriberFilterReferencedEvent> implements FilterPlugin<T> {
+public class FilterReferencedEventPlugin<T extends GenericEvent> implements FilterPlugin<T> {
 
   @Override
-  public BiPredicate<GenericEvent, AddNostrEvent<GenericEvent>> getBiPredicate() {
+  public BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate() {
     return (t, u) -> t.getId().equals(u.event().getId());
   }
 
   @Override
-  public List<GenericEvent> getPluginFilters(Filters filters) {
-    return filters.getReferencedEvents();
+  public List<T> getPluginFilters(Filters filters) {
+    return (List<T>) filters.getReferencedEvents();
   }
 
   @Override

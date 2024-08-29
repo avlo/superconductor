@@ -8,11 +8,11 @@ import nostr.event.impl.GenericEvent;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-public interface FilterPlugin<T extends AbstractFilterType> {
+public interface FilterPlugin<T> {
 
   String getCode();
 
-  BiPredicate<?, AddNostrEvent<GenericEvent>> getBiPredicate();
+  BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate();
 
-  List<?> getPluginFilters(Filters filters);
+  List<T> getPluginFilters(Filters filters);
 }

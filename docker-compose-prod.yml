@@ -21,7 +21,7 @@ services:
       timeout: 30s
   superconductor:
     container_name: superconductor-app
-    image: avlo/superconductor:1.7.3
+    image: avlo/superconductor:1.7.4
     ports:
       - "5555:5555"
     depends_on:

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.message.close;
 
-import com.prosilion.superconductor.service.request.pubsub.RemoveSubscriberFilterEvent;
+import com.prosilion.superconductor.service.request.pubsub.RemoveSubscriberFilter;
 import com.prosilion.superconductor.service.request.AbstractSubscriberService;
 import com.prosilion.superconductor.util.NoExistingUserException;
 import lombok.Getter;
@@ -39,14 +39,14 @@ public class CloseMessageService<T extends CloseMessage> implements CloseMessage
   public void removeSubscriberBySessionId(@NonNull String sessionId) {
     List<Long> subscriberBySessionId = abstractSubscriberService.removeSubscriberBySessionId(sessionId);
     // TODO: no publishers bound to below?
-    subscriberBySessionId.forEach(subscriber -> publisher.publishEvent(new RemoveSubscriberFilterEvent(subscriber)));
+    subscriberBySessionId.forEach(subscriber -> publisher.publishEvent(new RemoveSubscriberFilter(subscriber)));
   }
 
   @Override
   public void removeSubscriberBySubscriberId(@NonNull String subscriberId) {
     try {
       publisher.publishEvent(
-          new RemoveSubscriberFilterEvent(
+          new RemoveSubscriberFilter(
               abstractSubscriberService.removeSubscriberBySubscriberId(subscriberId)));
     } catch (NoExistingUserException e) {
       log.info("no match to remove for subscriptionHash [{}]", subscriberId);

@@ -1,5 +1,6 @@
 package com.prosilion.superconductor;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.MoreExecutors;
 import lombok.Getter;
@@ -50,6 +51,7 @@ class MultipleSubscriberTextEventMessageIT {
 
   public final String textMessageEventJson;
   public final String textMessageEventJsonReordered;
+  public static final String EOSE = "[\"EOSE\",\"0000000000000000000000000000000000000000000000000\"]";
 
   private final String websocketUrl;
 
@@ -156,14 +158,16 @@ class MultipleSubscriberTextEventMessageIT {
 
     @Override
     public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
-      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), mapper.readTree(message.getPayload().toString()));
+      JsonNode jsonNode = mapper.readTree(message.getPayload().toString());
+      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), jsonNode);
+      boolean eoseCondition = ComparatorWithoutOrder.equalsJson(mapper.readTree(EOSE), jsonNode);
 
 //    below sout seems to serve extending thread execution time in persistent mode, preventing its premature shutdown
 //      System.out.printf("BBBBBBBBBBBBBBBBBBBBBBBB[%02d], match: [%s]\n", index, condition);
-      if (!condition) {
+      if (!condition && !eoseCondition) {
 //        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCC");
         session.close();
-        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", textMessageEventJsonReordered, mapper.readTree(message.getPayload().toString()).toPrettyString()));
+        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", textMessageEventJsonReordered, jsonNode.toPrettyString()));
       }
       increment();
       session.close();

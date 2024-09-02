@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.service.request;
 
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
+import com.prosilion.superconductor.service.request.pubsub.EoseNotice;
 import com.prosilion.superconductor.service.request.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
 import lombok.NonNull;
@@ -20,12 +21,16 @@ public class SubscriberNotifierService<T extends GenericEvent> {
     this.filterMatcher = filterMatcher;
   }
 
-  public void nostrEventHandler(@NonNull AddNostrEvent<T> addNostrEvent) {
+  protected void nostrEventHandler(@NonNull AddNostrEvent<T> addNostrEvent) {
     abstractSubscriberService.getAllFiltersOfAllSubscribers().forEach((subscriberSessionHash, filtersList) ->
-        subscriptionEventHandler(subscriberSessionHash, addNostrEvent));
+        eventHandler(subscriberSessionHash, addNostrEvent));
   }
 
-  public void subscriptionEventHandler(@NonNull Long subscriberSessionHash, @NonNull AddNostrEvent<T> addNostrEvent) {
+  protected void newSubscriptionHandler(@NonNull Long subscriberSessionHash, @NonNull AddNostrEvent<T> addNostrEvent) {
+    eventHandler(subscriberSessionHash, addNostrEvent);
+  }
+
+  private void eventHandler(@NonNull Long subscriberSessionHash, @NonNull AddNostrEvent<T> addNostrEvent) {
     broadcastMatch(addNostrEvent, subscriberSessionHash);
   }
 
@@ -41,5 +46,12 @@ public class SubscriberNotifierService<T extends GenericEvent> {
   @SneakyThrows
   private void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) {
     abstractSubscriberService.broadcastToClients(fireNostrEvent);
+  }
+
+  @SneakyThrows
+  protected void broadcastEose(@NonNull Long subscriberSessionHash) {
+    abstractSubscriberService.broadcastToClients(new EoseNotice(
+        subscriberSessionHash,
+        abstractSubscriberService.get(subscriberSessionHash).getSubscriberId()));
   }
 }

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.request;
 
-import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.service.event.RedisCache;
+import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.NonNull;
 import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +25,7 @@ public class NotifierService<T extends GenericEvent> {
   public void subscriptionEventHandler(@NonNull Long subscriberSessionHash) {
     redisCache.getAll().forEach((kind, eventMap) ->
         eventMap.forEach((eventId, event) ->
-            subscriberNotifierService.subscriptionEventHandler(subscriberSessionHash, new AddNostrEvent<>(event))));
+            subscriberNotifierService.newSubscriptionHandler(subscriberSessionHash, new AddNostrEvent<>(event))));
+    subscriberNotifierService.broadcastEose(subscriberSessionHash);
   }
 }

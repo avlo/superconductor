@@ -133,25 +133,27 @@ ws://localhost:5555
 Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
 	select id, pub_key, session_id, challenge from auth;
-	select id, event_id_string, kind, nip, created_at, pub_key, content from event;
-	select id, event_id, event_tag_id from "event-event_tag-join";
-	select id, event_id_string, recommended_relay_url, marker from event_tag;
-	select id, event_id, pubkey_id from "event-pubkey_tag-join";
-	select id, public_key, main_relay_url, pet_name from pubkey_tag;
-	select id, event_id, subject_tag_id from "event-subject_tag-join";
-	select id, subject from subject_tag;
-	select id, hashtag_tag from hashtag_tag;
-	select id, location from geohash_tag;
-	select id, event_id, geohash_tag_id from "event-geohash_tag-join";
-	select id, event_id, hash_tag_id from "event-hashtag_tag-join";
-	select id, event_id, generic_tag_id  FROM "event-generic_tag-join";
-	select id, code from generic_tag;
-	select id, generic_tag_id, element_attribute_id from "generic_tag-element_attribute-join";
-	select id, name, "value" from element_attribute;
-	select id, event_id, price_tag_id from "event-price_tag-join";
-	select id, uri from relays_tag;
-	select id, event_id, relays_id from "event-relays_tag-join";
-	select id, number, currency, frequency from price_tag;
+    select id, event_id_string, kind, nip, created_at, pub_key, content from event;
+    select id, event_id, event_tag_id from "event-event_tag-join";
+    select id, event_id_string, recommended_relay_url, marker from event_tag;
+    select id, event_id, pubkey_id from "event-pubkey_tag-join";
+    select id, public_key, main_relay_url, pet_name from pubkey_tag;
+    select id, event_id, subject_tag_id from "event-subject_tag-join";
+    select id, subject from subject_tag;
+    select id, hashtag_tag from hashtag_tag;
+    select id, location from geohash_tag;
+    select id, identifier from identifier_tag;
+    select id, event_id, geohash_tag_id from "event-geohash_tag-join";
+    select id, event_id, hash_tag_id from "event-hashtag_tag-join";
+    select id, event_id, generic_tag_id from "event-generic_tag-join";
+    select id, event_id, identifier_tag_id from "event-identifier_tag-join";
+    select id, code from generic_tag;
+    select id, generic_tag_id, element_attribute_id from "generic_tag-element_attribute-join";
+    select id, name, "value" from element_attribute;
+    select id, event_id, price_tag_id from "event-price_tag-join";
+    select id, uri from relays_tag;
+    select id, event_id, relays_id from "event-relays_tag-join";
+    select id, number, currency, frequency from price_tag;
 
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 

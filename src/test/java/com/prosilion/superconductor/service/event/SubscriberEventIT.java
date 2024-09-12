@@ -56,11 +56,11 @@ class SubscriberEventIT {
     genericEvent.setCreatedAt(CREATED_AT);
     genericEvent.setSignature(Identity.generateRandomIdentity().sign(genericEvent));
 
-    ClassifiedListing classifiedListing = new ClassifiedListing(
-        "classified title",
-        "classified summary",
-        new PriceTag(new BigDecimal(2.71), "BTC", "frequency")
-    );
+    ClassifiedListing classifiedListing = ClassifiedListing.builder(
+            "classified title",
+            "classified summary",
+            new PriceTag(new BigDecimal(2.71), "BTC", "frequency"))
+        .build();
 
     classifiedListingEvent = new ClassifiedListingEvent(
         genericEvent.getPubKey(),
@@ -80,6 +80,6 @@ class SubscriberEventIT {
     Long savedEventId = eventEntityService.saveEventEntity(classifiedListingEvent);
     GenericEvent eventDto = eventEntityService.getEventById(savedEventId);
     assertEquals(CONTENT, eventDto.getContent());
-    assertEquals(3, eventDto.getTags().size());
+    assertEquals(6, eventDto.getTags().size());
   }
 }

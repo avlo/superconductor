@@ -48,18 +48,14 @@ class SinceDateGreaterThanCreatedDateIT {
   private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
   public final String textMessageEventJson;
-
-  private static final String SCHEME_WS = "ws";
-  private static final String HOST = "localhost";
   private final String websocketUrl;
-
   private final Integer targetCount;
   private final ExecutorService executorService;
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  SinceDateGreaterThanCreatedDateIT(@Value("${server.port}") String port) throws IOException {
-    this.websocketUrl = SCHEME_WS + "://" + HOST + ":" + port;
+  SinceDateGreaterThanCreatedDateIT(@Value("${relay.url}") String relayUrl) throws IOException {
+    this.websocketUrl = relayUrl;
     this.targetCount = 1;
     this.executorService = MoreExecutors.newDirectExecutorService();
 

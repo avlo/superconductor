@@ -16,8 +16,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestPropertySource("/application-test.properties")
 @DirtiesContext
 class ZapRequestEventIT {
   public static final String EVENT_HEX = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
@@ -44,22 +47,27 @@ class ZapRequestEventIT {
   public static final SubjectTag SUBJECT_TAG = new SubjectTag(SUBJECT);
   public static final GeohashTag G_TAG = new GeohashTag("Zap Request Test Geohash Tag");
   public static final HashtagTag T_TAG = new HashtagTag("Zap Request Test Hashtag Tag");
-  public static final String ZAP_RECEIPT_RELAY_URI = "ws://localhost:5555";
+
   public static final String AMOUNT_CODE = "amount";
   public static final String AMOUNT = "1111";
   public static final String LNURL_CODE = "lnurl";
   public static final String LN_URL = "lnurl1dp68gurn8ghj7ar0wfsj6er9wchxuemjda4ju6t09ashq6f0w4ek2u30d3h82unv8a6xzeead3hkw6twye4nz0fcxgmnsef3vy6rsefkx93nyd338ycnvdeex9jxzcnzxeskvdekxq6rswr9x3nrqvfexvex2vf3vejnwvp4x3nr2wfhx56x2vmyv5mx2udztdn";
 
-  public static final RelaysTag RELAYS_TAG = new RelaysTag(new Relay(ZAP_RECEIPT_RELAY_URI));
-
   public static final Integer ZAP_REQUEST_KIND = 9734;
   public static final String CONTENT = "Zap Request Content";
 
+  private final RelaysTag relaysTag;
+  private final String websocketUrl;
 
   @Autowired
   EventEntityService<GenericEvent> eventEntityService;
 
   GenericEvent zapRequestEvent;
+
+  public ZapRequestEventIT(@Value("${relay.url}") String relayUrl) {
+    this.websocketUrl = relayUrl;
+    relaysTag = new RelaysTag(new Relay(relayUrl));
+  }
 
   @BeforeAll
   void setUp() {
@@ -76,7 +84,7 @@ class ZapRequestEventIT {
     tags.add(T_TAG);
     tags.add(GenericTag.create(AMOUNT_CODE, 57, AMOUNT));
     tags.add(GenericTag.create(LNURL_CODE, 57, LN_URL));
-    tags.add(RELAYS_TAG);
+    tags.add(relaysTag);
     zapRequestEvent.setTags(tags);
 
     zapRequestEvent.setPubKey(EVENT_PUBKEY);
@@ -154,7 +162,7 @@ class ZapRequestEventIT {
         .map(RelaysTag.class::cast)
         .map(RelaysTag::getRelays).findFirst().orElseThrow();
 
-    assertTrue(relays.stream().map(Relay::getUri).toList().contains(ZAP_RECEIPT_RELAY_URI));
+    assertTrue(relays.stream().map(Relay::getUri).toList().contains(websocketUrl));
   }
 
   private static boolean genericTagExists(Stream<BaseTag> savedEventTags, String code, String value) {

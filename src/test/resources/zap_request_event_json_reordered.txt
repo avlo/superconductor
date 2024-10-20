@@ -10,7 +10,7 @@
     "tags": [
       [
         "relays",
-        "ws://localhost:5555"
+        "wss://localhost:5555"
       ],
       [
         "e",

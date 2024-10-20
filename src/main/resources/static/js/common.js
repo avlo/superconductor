@@ -3,7 +3,7 @@ let currentSubscriptonId
 let dateNow
 
 function connect() {
-    ws = new WebSocket('ws://localhost:5555');
+    ws = new WebSocket('wss://localhost:5555');
     ws.onmessage = function (messageEvent) {
         showEvent(messageEvent.data);
     }

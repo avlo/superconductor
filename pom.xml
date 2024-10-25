@@ -181,7 +181,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-<!--  below configuration appears to be necessary for JDK22, ref: -->
+<!--  TODO: below buildpacks configuration appears to (currently) be necessary for JDK22, ref: -->
 <!--  https://github.com/paketo-buildpacks/bellsoft-liberica/issues/565  -->
         <configuration>
           <image>

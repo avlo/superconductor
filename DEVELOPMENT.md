@@ -108,12 +108,12 @@ for full/debug developer console logging:
 ### 3.  Run locally as executable jar
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar target/superconductor-1.7.5.war
+    $ java -jar target/superconductor-1.8.0.war
 
 ----
 ### 4.  Run using pre-existing local application-server-container instance
 
-    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.7.5.war <your_container/instance/deployment_directory>
+    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.8.0.war <your_container/instance/deployment_directory>
 
 ----
 

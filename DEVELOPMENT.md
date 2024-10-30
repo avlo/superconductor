@@ -18,7 +18,7 @@
 
 - Dependencies:
   - Java 22
-  - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.1
+  - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.4
   - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.2.2
   - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) API library
 
@@ -87,7 +87,7 @@ Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([pr
 Superconductor is now ready to use.
 
 ##### Stop docker containers
-    $ docker compose -f docker-compose-dev.yml stop superconductor superconductor-db
+    $ docker compose -f docker-compose-dev.yml stop
 
 ##### Remove docker containers
     $ docker compose -f docker-compose-dev.yml down --remove-orphans
@@ -119,7 +119,7 @@ for full/debug developer console logging:
 
 ### Relay Endpoint for clients
 
-ws://localhost:5555
+wss://localhost:5555
 
 <hr style="border:2px solid grey">
 

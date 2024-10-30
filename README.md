@@ -21,6 +21,7 @@
   - [NIP-11](https://nostr-nips.com/nip-11) (Relay Information Document)
   - [NIP-12](https://nostr-nips.com/nip-12) (Generic Tag Queries)
   - [NIP-14](https://nostr-nips.com/nip-14) (Subject tag in Text events)
+  - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
   - [NIP-16](https://nostr-nips.com/nip-16) (Event treatment)
   - [NIP-18](https://nostr-nips.com/nip-18) (Reposts)
   - [NIP-19](https://nostr-nips.com/nip-19) (Bech-32 encoded entities)
@@ -46,11 +47,6 @@
   - [NIP-58](https://nostr-nips.com/nip-58) (Badges)
   - [NIP-89](https://nostr-nips.com/nip-89) (Recommended Application Handlers)
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
-  - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
-
-#### In-Progress
-  - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
-    - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
     
 ----
 ### Normal/Production Mode (for most users) Instructions:
@@ -62,8 +58,8 @@
 >     Docker Compose version v2.28.1
 
 (Download links for the above)
-- [Docker](https://hub.docker.com/_/docker) 27.0.3
-- [Docker Compose](https://docs.docker.com/compose/install/) v2.28.1
+- [Docker](https://hub.docker.com/_/docker) 27.0.3 (or higher)
+- [Docker Compose](https://docs.docker.com/compose/install/) v2.28.1 (or higher)
 
 ----
 
@@ -78,6 +74,20 @@
 
 ----
 
+#### Security/Authentication Certificate configuration
+
+[Web Socket Security](https://en.wikipedia.org/wiki/WS-Security) (wss:) **_is enabled by default_**, requiring a valid [SSL Certificate](https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/).  
+
+Production deployments must either:
+
+1) obtain then [configure a certification](src/main/resources/application-prod.properties??plain=1#L14-L18) definition (recommended)  
+   or
+2) [de-activate wss](src/main/resources/application-prod.properties??plain=1#L10) (defaults to non-secure ws, not recommended).  
+
+_Note: For non-production (local, dev, and test) environment convenience, Superconductor ships with a self-signed certificate configuration.  see [Development Mode Instructions](DEVELOPMENT.md). for additional information._   
+
+----
+
 #### Run SuperConductor
     $ docker compose -f /<path>/<to>/docker-compose-prod.yml up -d
 
@@ -86,10 +96,10 @@ Superconductor is now ready to use.
 ----
 
 ##### Stop docker containers
-    $ docker compose -f docker-compose-prod.yml stop superconductor superconductor-db
+    $ docker compose -f /<path>/<to>/docker-compose-prod.yml stop
 
 ##### Remove docker containers
-    $ docker compose -f docker-compose-prod.yml down --remove-orphans
+    $ docker compose -f /<path>/<to>/docker-compose-prod.yml down --remove-orphans
 
 <hr style="border:2px solid grey">
 

@@ -3,7 +3,7 @@ services:
     container_name: superconductor-mysqldb
     image: mysql:9.1.0
     ports:
-      - "3306:3306"
+      - "3316:3316"
     labels:
       org.springframework.boot.service-connection: mysql
     environment:
@@ -24,7 +24,6 @@ services:
     image: superconductor:1.7.5
     ports:
       - "5555:5555"
-      - "443:443"
     depends_on:
       superconductor-db:
         condition: service_healthy

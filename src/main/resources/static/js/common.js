@@ -8,7 +8,7 @@ function connect() {
         showEvent(messageEvent.data);
     }
     setConnected(true);
-    dateNow = Date.now();
+    dateNow = Math.floor(Date.now() / 1000);
     console.log("date now: " + dateNow);
 }
 
@@ -52,8 +52,15 @@ async function createDigest(message) {
         .join(""); // convert bytes to hex string
 }
 
+async function signEvent(event) {
+    console.log('signEvent() input: \n\n' + event + '\n\n');
+    var signedPopulatedEvent = await window.nostr.nip44.encrypt(await window.nostr.getPublicKey(), event);
+    console.log('signEvent() output: ' + signedPopulatedEvent);
+    return signedPopulatedEvent;
+}
+
 function sendClose() {
-    let localjsonstring = replaceCloseHash(currentSubscriptonId);
+    var localjsonstring = replaceCloseHash(currentSubscriptonId);
     console.log(localjsonstring);
     console.log('\n\n');
     ws.send(localjsonstring);
@@ -70,7 +77,7 @@ function replaceCloseHash(id_hash) {
 }
 
 function showEvent(content) {
-    let jsonPretty = JSON.stringify(JSON.parse(content), null, 2);
+    var jsonPretty = JSON.stringify(JSON.parse(content), null, 2);
     $("#events").append("<tr><td><pre>" + syntaxHighlight(jsonPretty) + "</pre></td></tr>");
 }
 

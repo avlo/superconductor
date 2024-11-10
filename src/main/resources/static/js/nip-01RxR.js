@@ -4,63 +4,30 @@ $(function () {
 
 function createEvent() {
     var event = getStringifiedJson();
-    // var event = getConstJson();
-    // var event = getObjectJson();
     console.log("createEvent() created event JSON: \n\n" + event + "\n\n");
     signEvent(event).then((fullyPopulatedSignedEvent) => sendContent01(fullyPopulatedSignedEvent));
 }
 
-// function Event(created_at, kind, tags, content) {
-//     this.created_at = created_at;
-//     this.kind = kind;
-//     this.tags = tags;
-//     this.content = content;
-// }
-
-// function getObjectJson() {
-//     return new Event(
-//         dateNow,
-//         Number($("#01-kind").val()),
-//         [
-//             ['e', $("#e_tag").val()],
-//             ['p', $("#p_tag").val()],
-//             ['g', $("#01-g_tag").val()],
-//         ],
-//         $("#01-content").val()
-//     );
-// }
-
 function getStringifiedJson() {
-    var text =
-        JSON.stringify(
-            {
-                'created_at': dateNow,
-                'kind': Number($("#01-kind").val()),
-                'tags': [
-                    ['e', $("#e_tag").val()],
-                    ['p', $("#p_tag").val()],
-                    ['g', $("#01-g_tag").val()],
-                ],
-                'content': $("#01-content").val()
-            }
-        );
+    const tags = [
+        '[\"e\",\"' + $("#e_tag").val() + '\"]',
+        '[\"p\",\"' + $("#p_tag").val() + '\"]',
+        '[\"g\",\"' + $("#01-g_tag").val() + '\"]'
+    ].join(",");
+
+    const inner = [
+        '"created_at":' + dateNow,
+        '"kind":' + Number($("#01-kind").val()),
+        '"tags":['+ tags + ']',
+        '"content":"' + $("#01-content").val() + '"'
+    ].join(",");
+
+    const outer = [
+        '{"event\":{' + inner + '}}'
+    ]
     // var encoded = encodeURIComponent(text);
     // console.log("encoded: " + encoded);
-    return text;
-}
-
-function getConstJson() {
-    const event = {
-        created_at: dateNow,
-        kind: Number($("#01-kind").val()),
-        tags: [
-            ['e', $("#e_tag").val()],
-            ['p', $("#p_tag").val()],
-            ['g', $("#01-g_tag").val()],
-        ],
-        content: $("#01-content").val()
-    }
-    return event;
+    return outer;
 }
 
 function saveEventId(signedPopulatedEvent) {

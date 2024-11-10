@@ -6,7 +6,6 @@ function connect() {
     ws.onmessage = function (messageEvent) {
         showEvent(messageEvent.data);
     }
-    // sessionId = ws
     setConnected(true);
     dateNow = Math.floor(Date.now() / 1000);
     console.log("date [" + dateNow + "]");
@@ -59,23 +58,6 @@ async function signEvent(event) {
     return signedPopulatedEvent;
 }
 
-function sendClose() {
-    var closeJson = replaceCloseHash();
-    console.log("sendClose() JSON [" + closeJson + "]");
-    console.log('\n\n');
-    ws.send(closeJson);
-    disconnect();
-    setConnected(false);
-    console.log("Disconnected via Nostr CLOSE");
-}
-
-function replaceCloseHash() {
-    return "["
-        + "\"CLOSE\","
-        + "\"" + dateNow + "\""
-        + "]";
-}
-
 function showEvent(content) {
     var jsonPretty = JSON.stringify(JSON.parse(content), null, 2);
     $("#events").append("<tr><td><pre>" + syntaxHighlight(jsonPretty) + "</pre></td></tr>");
@@ -85,7 +67,6 @@ $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#connect").click(() => connect());
     $("#disconnect").click(() => disconnect());
-    $("#reqclose").click(() => sendClose());
 });
 
 function syntaxHighlight(json) {

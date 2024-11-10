@@ -1,27 +1,7 @@
 $(function () {
-    // $("#sendrequest").click(() => hashThenSendRequest());
-    $("#sendrequest").click(() => sendContentRequest($("#subscription_id").val()));
+    $("#sendrequest").click(() => sendContentRequest());
+    $("#reqclose").click(() => sendClose());
 });
-
-function hashThenSendRequest() {
-    const concat = [
-        '0',
-        $("#pubkey").val(),
-        dateNow,
-        // $("#kind").val(),
-        // $("#e_tag").val(),
-        // $("#p_tag").val(),
-        $("#idcontent").val()
-    ].join(",");
-
-    const text = [
-        '[',
-        concat,
-        ']'
-    ].join('');
-
-    createDigest(text).then((hash) => sendContentRequest(hash));
-}
 
 function cullEmptyKeyValuePairs() {
     return {
@@ -40,20 +20,35 @@ function stringifyJson() {
     return JSON.stringify(cullEmptyKeyValuePairs());
 }
 
-function populateRequestJson(subscription_id) {
+function populateRequestJson() {
     return "["
         + "\"REQ\","
-        + "\"" + subscription_id + "\","
+        + "\"" + $("#subscription_id").val() + "\","
         + stringifyJson()
         + "]";
 }
 
-function sendContentRequest(subscription_id) {
+function sendContentRequest() {
     console.log("\nsending content...\n\n");
     console.log("sending w/ date now: " + dateNow);
-    currentSubscriptonId = subscription_id;
-    let outboundJson = populateRequestJson(subscription_id);
+    let outboundJson = populateRequestJson();
     console.log(outboundJson);
     console.log('\n\n');
     ws.send(outboundJson);
+}
+
+function sendClose() {
+    let closeJson = populateCloseJson();
+    console.log(closeJson);
+    console.log('\n\n');
+    ws.send(closeJson);
+    setConnected(false);
+    console.log("Disconnected via Nostr CLOSE");
+}
+
+function populateCloseJson() {
+    return "["
+        + "\"CLOSE\","
+        + "\"" + $("#subscription_id").val() + "\""
+        + "]";
 }

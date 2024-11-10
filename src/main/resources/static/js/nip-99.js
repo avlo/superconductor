@@ -3,6 +3,7 @@ $(function () {
 });
 
 function generate99TypeScriptEvent() {
+    const dateNow = Math.floor(Date.now() / 1000);
     const tags = [
         ['subject', $("#99-subject").val()],
         ['title', $("#title").val()],

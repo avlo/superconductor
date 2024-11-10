@@ -1,5 +1,4 @@
 let ws
-let dateNow
 
 function connect() {
     ws = new WebSocket('wss://localhost:5555');
@@ -7,8 +6,6 @@ function connect() {
         showEvent(messageEvent.data);
     }
     setConnected(true);
-    dateNow = Math.floor(Date.now() / 1000);
-    console.log("date [" + dateNow + "]");
 }
 
 function setConnected(connected) {

@@ -30,7 +30,6 @@ function populateRequestJson() {
 
 function sendContentRequest() {
     console.log("\nsending content...\n\n");
-    console.log("sending w/ date now: " + dateNow);
     let outboundJson = populateRequestJson();
     console.log(outboundJson);
     console.log('\n\n');

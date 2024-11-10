@@ -17,7 +17,7 @@ function generate57TypeScriptEvent() {
     let event = {
         id: '',
         kind: Number($("#57-kind").val()),
-        created_at: dateNow,
+        created_at: Math.floor(Date.now() / 1000),
         content: $("#57-content").val(),
         tags: tags,
         pubkey: '',

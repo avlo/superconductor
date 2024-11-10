@@ -27,7 +27,7 @@ function replaceHashRegister(id_hash) {
             {
                 'id': id_hash,
                 'pubkey': $("#pubkeyregister").val(),
-                'created_at': Date.now(),
+                'created_at': Math.floor(Date.now() / 1000),
                 'kind': 22242,
                 'tags': [
                     ['relay', $("#relay").val()],
@@ -42,7 +42,6 @@ function replaceHashRegister(id_hash) {
 
 function sendContentRegister(id_hash) {
     console.log("\nsending content...\n\n");
-    console.log("sending w/ date now: " + dateNow);
     currentSubscriptonId = id_hash;
     let localjsonstring = replaceHashRegister(id_hash);
     console.log(localjsonstring);

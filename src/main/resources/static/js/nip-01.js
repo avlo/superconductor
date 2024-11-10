@@ -12,7 +12,7 @@ function generate01TypeScriptEvent() {
     let event = {
         id: '',
         kind: Number($("#01-kind").val()),
-        created_at: dateNow,
+        created_at: Math.floor(Date.now() / 1000),
         content: $("#01-content").val(),
         tags: tags,
         pubkey: '',

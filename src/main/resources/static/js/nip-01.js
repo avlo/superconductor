@@ -1,17 +1,11 @@
 $(function () {
-    $("#send01").click(() => createEvent());
+    $("#send01").click(() => createEvent(generate01TypeScriptEvent()));
 });
 
-function createEvent() {
-    var typeScriptEvent = generateTypeScriptEvent();
-    console.log("createEvent() created event JSON: \n\n" + typeScriptEvent + "\n\n");
-    signEvent(typeScriptEvent).then((fullyPopulatedSignedEvent) => sendContent01(fullyPopulatedSignedEvent));
-}
-
-function generateTypeScriptEvent() {
+function generate01TypeScriptEvent() {
     const tags = [
-        ['e', $("#e_tag").val()],
-        ['p', $("#p_tag").val()],
+        ['e', $("#01-e_tag").val()],
+        ['p', $("#01-p_tag").val()],
         ['g', $("#01-g_tag").val()]
     ];
 
@@ -25,19 +19,4 @@ function generateTypeScriptEvent() {
         sig: ''
     }
     return event;
-}
-
-function sendContent01(signedPopulatedEvent) {
-    console.log("\nsending content...\n\n");
-    console.log(addEventMessageWrapper(signedPopulatedEvent));
-    console.log('\n\n');
-    ws.send(addEventMessageWrapper(signedPopulatedEvent));
-}
-
-function addEventMessageWrapper(id_hash) {
-    return "["
-        + "\"EVENT\","
-        + JSON.stringify(id_hash
-        )
-        + "]";
 }

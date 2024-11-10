@@ -39,16 +39,9 @@ function disconnect() {
     console.log("Disconnected via WS close");
 }
 
-async function createDigest(message) {
-    const utf8 = new Uint8Array(message.length);
-    new TextEncoder().encodeInto(message, utf8);
-    const hashBuffer = await window.crypto.subtle.digest("SHA-256", utf8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
-    return hashArray
-        .map(b => b
-            .toString(16)
-            .padStart(2, "0"))
-        .join(""); // convert bytes to hex string
+function createEvent(typeScriptEvent) {
+    console.log("createEvent() created event JSON: \n\n" + typeScriptEvent + "\n\n");
+    signEvent(typeScriptEvent).then((fullyPopulatedSignedEvent) => sendContent(fullyPopulatedSignedEvent));
 }
 
 async function signEvent(event) {
@@ -56,6 +49,21 @@ async function signEvent(event) {
     var signedPopulatedEvent = await window.nostr.signEvent(event);
     console.log('signEvent() output: ' + signedPopulatedEvent);
     return signedPopulatedEvent;
+}
+
+function sendContent(signedPopulatedEvent) {
+    console.log("\nsending content...\n\n");
+    console.log(addEventMessageWrapper(signedPopulatedEvent));
+    console.log('\n\n');
+    ws.send(addEventMessageWrapper(signedPopulatedEvent));
+}
+
+function addEventMessageWrapper(id_hash) {
+    return "["
+        + "\"EVENT\","
+        + JSON.stringify(id_hash
+        )
+        + "]";
 }
 
 function showEvent(content) {

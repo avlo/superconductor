@@ -1,5 +1,4 @@
 let ws
-let currentSubscriptonId
 let dateNow
 
 function connect() {
@@ -7,9 +6,10 @@ function connect() {
     ws.onmessage = function (messageEvent) {
         showEvent(messageEvent.data);
     }
+    // sessionId = ws
     setConnected(true);
     dateNow = Math.floor(Date.now() / 1000);
-    console.log("date now: " + dateNow);
+    console.log("date [" + dateNow + "]");
 }
 
 function setConnected(connected) {
@@ -54,26 +54,25 @@ async function createDigest(message) {
 
 async function signEvent(event) {
     console.log('signEvent() input: \n\n' + event + '\n\n');
-    // var signedPopulatedEvent = await window.nostr.nip44.encrypt(await window.nostr.getPublicKey(), event);
     var signedPopulatedEvent = await window.nostr.signEvent(event);
     console.log('signEvent() output: ' + signedPopulatedEvent);
     return signedPopulatedEvent;
 }
 
 function sendClose() {
-    var localjsonstring = replaceCloseHash(currentSubscriptonId);
-    console.log(localjsonstring);
+    var closeJson = replaceCloseHash();
+    console.log("sendClose() JSON [" + closeJson + "]");
     console.log('\n\n');
-    ws.send(localjsonstring);
+    ws.send(closeJson);
     disconnect();
     setConnected(false);
     console.log("Disconnected via Nostr CLOSE");
 }
 
-function replaceCloseHash(id_hash) {
+function replaceCloseHash() {
     return "["
         + "\"CLOSE\","
-        + "\"" + id_hash + "\""
+        + "\"" + dateNow + "\""
         + "]";
 }
 
@@ -107,15 +106,3 @@ function syntaxHighlight(json) {
         return '<span class="' + cls + '">' + match + '</span>';
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-

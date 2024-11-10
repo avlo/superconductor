@@ -54,7 +54,8 @@ async function createDigest(message) {
 
 async function signEvent(event) {
     console.log('signEvent() input: \n\n' + event + '\n\n');
-    var signedPopulatedEvent = await window.nostr.nip44.encrypt(await window.nostr.getPublicKey(), event);
+    // var signedPopulatedEvent = await window.nostr.nip44.encrypt(await window.nostr.getPublicKey(), event);
+    var signedPopulatedEvent = await window.nostr.signEvent(event);
     console.log('signEvent() output: ' + signedPopulatedEvent);
     return signedPopulatedEvent;
 }

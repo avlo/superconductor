@@ -33,7 +33,7 @@ class EventMessageIT {
 
   private WebSocketStompClient eventStompClient;
 
-  public EventMessageIT(@Value("${relay.url}") String relayUrl) {
+  public EventMessageIT(@Value("${superconductor.relay.url}") String relayUrl) {
     this.websocketUrl = relayUrl;
   }
 

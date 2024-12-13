@@ -53,7 +53,7 @@ class CreatedDateBetweenSinceUntilDatesIT {
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  CreatedDateBetweenSinceUntilDatesIT(@Value("${relay.url}") String relayUrl) throws IOException {
+  CreatedDateBetweenSinceUntilDatesIT(@Value("${superconductor.relay.url}") String relayUrl) throws IOException {
     this.websocketUrl = relayUrl;
     this.targetCount = 1;
     this.executorService = MoreExecutors.newDirectExecutorService();

@@ -53,7 +53,7 @@ class SinceDateLessThanCreatedDateIT {
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  SinceDateLessThanCreatedDateIT(@Value("${relay.url}") String relayUrl) throws IOException {
+  SinceDateLessThanCreatedDateIT(@Value("${superconductor.relay.url}") String relayUrl) throws IOException {
     this.websocketUrl = relayUrl;
     this.targetCount = 1;
     this.executorService = MoreExecutors.newDirectExecutorService();

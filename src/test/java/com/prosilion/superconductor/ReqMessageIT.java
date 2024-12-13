@@ -34,7 +34,7 @@ class ReqMessageIT {
 
   private WebSocketStompClient reqStompClient;
 
-  public ReqMessageIT(@Value("${relay.url}") String relayUrl) {
+  public ReqMessageIT(@Value("${superconductor.relay.url}") String relayUrl) {
     this.websocketUrl = relayUrl;
   }
 

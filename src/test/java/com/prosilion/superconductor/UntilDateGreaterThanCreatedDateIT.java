@@ -53,7 +53,7 @@ class UntilDateGreaterThanCreatedDateIT {
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  UntilDateGreaterThanCreatedDateIT(@Value("${relay.url}") String relayUrl) throws IOException {
+  UntilDateGreaterThanCreatedDateIT(@Value("${superconductor.relay.url}") String relayUrl) throws IOException {
     this.websocketUrl = relayUrl;
     this.targetCount = 1;
     this.executorService = MoreExecutors.newDirectExecutorService();

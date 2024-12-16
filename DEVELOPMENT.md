@@ -64,6 +64,27 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
 
 ----
 
+### JUnit / SpringBootTest Superconductor
+##### Two test modes, configurable via [appication-test.properties](src/test/resources/application-test.properties) file
+##### 1. Secure (WSS/TLS) tests mode (default setting)
+```
+# wss autoconfigure
+# secure test (wss) enabled 'true' by default.  for non-secure (ws), change below value to 'false' and...
+server.ssl.enabled=true                                            <--------  "true" for wss/tls
+# ...also for non-secure (ws), change below value to 'ws'...
+superconductor.relay.url=wss://localhost:5555                      <--------  "wss" protocol for wss/tls 
+```
+
+#### 2. Non-Secure (WS) tests mode
+```
+# wss autoconfigure
+# secure test (wss) enabled 'true' by default.  for non-secure (ws), change below value to 'false' and...
+server.ssl.enabled=false                                           <--------  "false" for ws/non-secure
+# ...also for non-secure (ws), change below value to 'ws'...
+superconductor.relay.url=ws://localhost:5555                       <--------  "ws" protocol for ws/non-secure 
+```
+----
+
 ### Run SuperConductor (4 options)
 
 #### 1.  Docker + Docker Compose
@@ -118,7 +139,18 @@ for full/debug developer console logging:
 ----
 
 ### Relay Endpoint for clients
+#### Two modes
+##### 1. Secure (WSS/TLS) mode (default)
+wss://localhost:5555
 
+#### 2. Non-Secure (WS) mode, configurable via _application-**\<env>**.properties_ file (for example, in [appication-local.properties](src/main/resources/application-local.properties))
+```
+# wss autoconfigure
+# secure test (wss) enabled 'true' by default.  for non-secure (ws), change below value to 'false' and...
+server.ssl.enabled=false                                           <--------  "false" for ws/non-secure
+# ...also for non-secure (ws), change below value to 'ws'...
+superconductor.relay.url=ws://localhost:5555                       <--------  "ws" protocol for ws/non-secure 
+```
 ws://localhost:5555
 
 <hr style="border:2px solid grey">

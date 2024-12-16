@@ -79,9 +79,12 @@
 ----
 
 #### Run SuperConductor
-    $ docker compose -f /<path>/<to>/docker-compose-prod.yml up -d
 
-Superconductor is now ready to use.
+$ docker compose -f /<path>/<to>/docker-compose-prod.yml up -d
+
+Superconductor is now ready to use.  
+
+_note: SuperConductor runs in secure (WSS/TLS) mode by default_
 
 ----
 

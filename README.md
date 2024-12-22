@@ -78,10 +78,10 @@
 
 ----
 
-#### Configure SuperConductor security, 3 options:  
+#### Configure SuperConductor security, 3 options:
 
-| SecurityLevel | Specification                                                        |Details       |
-|---------------|----------------------------------------------------------------------|---------------|
+| SecurityLevel | Specification                                                        | Details                                                                                                                                                                                                                                                                                                                                                                             |
+|---------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Highest       | SSL Certificate WSS/HTTPS<br>(industry standard secure encrypted)    | 1. [Obtain](https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/) an SSL certificate.<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-prod.properties?plain=1#L6,8,L11-L15) in application-prod.properties file. |
 | Medium        | Self-Signed Certificate WSS/HTTPS (locally created secure encrypted) | 1. Create a [Self-Signed Certificate](https://www.baeldung.com/openssl-self-signed-cert).<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-prod.properties?plain=1#L6,8,L11-L15) in application-prod.properties file. |
 | None/Default  | WS/HTTP<br>non-secure / non-encrypted                                | For expedient/immediate use without need for an [SSL/TLS certificate](https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/), SuperConductor WebSockets default to WS/HTTP (non-secure/non-encrypted) mode. |  

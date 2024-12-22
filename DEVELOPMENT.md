@@ -66,23 +66,34 @@ _note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo
 
 ### JUnit / SpringBootTest Superconductor
 ##### Two test modes, configurable via [appication-test.properties](src/test/resources/application-test.properties) file
-##### 1. Secure (WSS/TLS) tests mode (default setting)
+#### 1. Non-Secure (WS) tests mode (default)
 ```
-# wss autoconfigure
-# secure test (wss) enabled 'true' by default.  for non-secure (ws), change below value to 'false' and...
-server.ssl.enabled=true                                            <--------  "true" for wss/tls
-# ...also for non-secure (ws), change below value to 'ws'...
-superconductor.relay.url=wss://localhost:5555                      <--------  "wss" protocol for wss/tls 
-```
-
-#### 2. Non-Secure (WS) tests mode
-```
-# wss autoconfigure
-# secure test (wss) enabled 'true' by default.  for non-secure (ws), change below value to 'false' and...
+# ws autoconfigure
+# security test (ws) disabled ('false') by default.
 server.ssl.enabled=false                                           <--------  "false" for ws/non-secure
-# ...also for non-secure (ws), change below value to 'ws'...
+# ...
 superconductor.relay.url=ws://localhost:5555                       <--------  "ws" protocol for ws/non-secure 
 ```
+
+##### 2. Secure (WSS/TLS) tests mode
+```
+# wss autoconfigure
+# to enable secure tests (wss), change below value to 'true' and...
+server.ssl.enabled=true                                            <--------  "true" for wss/secure
+# ...also for secure (wss), change below value to 'wss'...
+superconductor.relay.url=wss://localhost:5555                      <--------  "wss" protocol for wss/secure 
+```
+
+----
+
+#### Configure SuperConductor run-time security, 3 options:
+
+| SecurityLevel | Specification                                                        | Details                                                                                                                                                                                                                                                                                                                                                                             |
+|---------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Highest       | SSL Certificate WSS/HTTPS<br>(industry standard secure encrypted)    | 1. [Obtain](https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/) an SSL certificate.<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local.properties?plain=1#L6,8,L11-L15) in application-local/dev.properties file. |
+| Medium        | Self-Signed Certificate WSS/HTTPS (locally created secure encrypted) | 1. Create a [Self-Signed Certificate](https://www.baeldung.com/openssl-self-signed-cert).<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local.properties?plain=1#L6,8,L11-L15) in application-local/dev.properties file.                              |
+| None/Default  | WS/HTTP<br>non-secure / non-encrypted                                | For expedient/immediate use without need for an [SSL/TLS certificate](https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/), SuperConductor WebSockets default to WS/HTTP (non-secure/non-encrypted) mode.                                                                                                                                                           |  
+
 ----
 
 ### Run SuperConductor (4 options)

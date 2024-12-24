@@ -43,8 +43,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext
 @ContextConfiguration
 @TestPropertySource("/application-test.properties")
-class MatchingReferencedEventIT {
-  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
+class MatchingReferencedPubkeyIT {
+  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
 
   public final String textMessageEventJson;
   private final String websocketUrl;
@@ -53,7 +53,7 @@ class MatchingReferencedEventIT {
 
   List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
 
-  MatchingReferencedEventIT(@Value("${superconductor.relay.url}") String relayUrl) throws IOException {
+  MatchingReferencedPubkeyIT(@Value("${superconductor.relay.url}") String relayUrl) throws IOException {
     this.websocketUrl = relayUrl;
     this.targetCount = 1;
     this.executorService = MoreExecutors.newDirectExecutorService();
@@ -114,7 +114,7 @@ class MatchingReferencedEventIT {
 
     public ReqMessageSocketHandler(Integer index) {
       this.index = index;
-      reqJson = "[\"REQ\",\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",{\"#e\":[\"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\"]}]";
+      reqJson = "[\"REQ\",\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",{\"#p\":[\"2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
     }
 
     @Override
@@ -125,7 +125,9 @@ class MatchingReferencedEventIT {
     @Override
     public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
       System.out.println("+++++++++++++++++++++++++");
-      System.out.println("MatchingReferencedEventIT good");
+      System.out.println("MatchingReferencedPubkeyIT good");
+      System.out.println("------------");
+      System.out.printf("\n   %s\n\n", message.getPayload());
       System.out.println("+++++++++++++++++++++++++");
     }
   }

@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.plugin.filter;
 
-import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterReferencedPubkey;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import nostr.base.PublicKey;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
+import nostr.event.tag.PubKeyTag;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,7 +15,11 @@ public class FilterReferencedPubkeyPlugin<T extends PublicKey> implements Filter
 
   @Override
   public BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate() {
-    return (t, u) -> t.toString().equals(u.event().getPubKey().toString());
+    return (t, u) ->
+        u.event().getTags().stream()
+            .filter(PubKeyTag.class::isInstance)
+            .map(PubKeyTag.class::cast)
+            .anyMatch(pubKeyTag -> pubKeyTag.getPublicKey().toString().equals(t.toString()));
   }
 
   @Override

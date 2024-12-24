@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.plugin.filter;
 
-import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterReferencedEvent;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
+import nostr.event.tag.EventTag;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,7 +14,11 @@ public class FilterReferencedEventPlugin<T extends GenericEvent> implements Filt
 
   @Override
   public BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate() {
-    return (t, u) -> t.getId().equals(u.event().getId());
+    return (t, u) ->
+        u.event().getTags().stream()
+            .filter(EventTag.class::isInstance)
+            .map(EventTag.class::cast)
+            .anyMatch(eventTag -> eventTag.getIdEvent().equals(t.getId()));
   }
 
   @Override

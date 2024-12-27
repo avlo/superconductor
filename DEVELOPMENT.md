@@ -47,12 +47,11 @@
 
 ### Build Superconductor
 #### Build and install nostr-java dependency library
-_note: below [java22 nostr-java variant](https://github.com/avlo/nostr-java-avlo-fork/tree/java22) (of tcheeric's [java19 nostr-java library](https://github.com/tcheeric/nostr-java)) supports virtual threads.  reversion to his library will occur upon its upgrade to java22._
 
     $ cd <your_git_home_dir>
     $ git clone git@github.com:avlo/nostr-java-avlo-fork.git
     $ cd nostr-java-avlo-fork
-    $ git checkout java22
+    $ git checkout develop
     $ mvn clean install
 
 #### Build and install SuperConductor

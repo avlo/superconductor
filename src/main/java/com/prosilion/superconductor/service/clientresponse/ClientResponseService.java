@@ -22,7 +22,6 @@ public class ClientResponseService {
   }
 
   public void processOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage) {
-    log.info("Processing event message: {}", eventMessage.getEvent());
     processOkClientResponse(sessionId, eventMessage, "success: request processed");
   }
 

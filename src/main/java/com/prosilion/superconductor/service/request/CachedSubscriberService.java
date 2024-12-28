@@ -10,7 +10,6 @@ import com.prosilion.superconductor.util.EmptyFiltersException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.GenericTagQuery;
 import nostr.base.PublicKey;
 import nostr.event.Kind;
 import nostr.event.impl.Filters;
@@ -174,10 +173,10 @@ public class CachedSubscriberService extends AbstractSubscriberService {
       return kind -> !kind.toString().isBlank();
     }
 
-    private static boolean hasValidGenericTagQuery(GenericTagQuery genericTagQuery) {
+    private static boolean hasValidGenericTagQuery(Map<String, List<String>> genericTagQuery) {
       return Objects.nonNull(genericTagQuery)
-          && Objects.nonNull(genericTagQuery.getTagName())
-          && !genericTagQuery.getTagName().isBlank();
+          && genericTagQuery.entrySet().stream().noneMatch(entry -> Objects.nonNull(entry.getValue()))
+          && genericTagQuery.entrySet().stream().noneMatch(entry -> entry.getValue().toString().isBlank());
     }
   }
 }

@@ -12,6 +12,10 @@ import nostr.event.message.EventMessage;
 import nostr.event.message.OkMessage;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +29,9 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
+@Lazy
+@Service
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class NostrRelayService {
   private final StandardWebSocketClient eventSocketClient;
   private Map<String, StandardWebSocketClient> requestSocketClientMap = new ConcurrentHashMap<>();

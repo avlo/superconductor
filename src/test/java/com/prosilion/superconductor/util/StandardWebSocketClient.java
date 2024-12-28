@@ -31,7 +31,6 @@ public class StandardWebSocketClient extends TextWebSocketHandler {
   private List<String> events = Collections.synchronizedList(new ArrayList<>());
 
   public StandardWebSocketClient(@NonNull String relayUri
-//      , @NonNull SslBundles sslBundles
   ) throws ExecutionException, InterruptedException {
     org.springframework.web.socket.client.standard.StandardWebSocketClient standardWebSocketClient = new org.springframework.web.socket.client.standard.StandardWebSocketClient();
 //    standardWebSocketClient.setSslContext(sslBundles.getBundle("server").createSslContext());

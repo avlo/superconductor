@@ -3,7 +3,6 @@ package com.prosilion.superconductor.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nostr.base.PublicKey;
-import nostr.event.impl.GenericEvent;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.GeohashTag;
 import nostr.event.tag.HashtagTag;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
@@ -22,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static org.awaitility.Awaitility.await;
@@ -60,17 +57,10 @@ class StandardWebSocketClientIT {
   public static final BigDecimal NUMBER = new BigDecimal(PRICE_NUMBER);
 
   private final NostrRelayService nostrRelayService;
-  private final String uuidPrefix;
 
   @Autowired
-  public StandardWebSocketClientIT(
-//      SslBundles sslBundles,
-      @Value("${superconductor.relay.url}") String relayUri,
-      @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix) throws ExecutionException, InterruptedException {
-    this.uuidPrefix = uuidPrefix;
-    this.nostrRelayService = new NostrRelayService(relayUri, uuidPrefix
-//        , sslBundles
-    );
+  public StandardWebSocketClientIT(NostrRelayService nostrRelayService) {
+    this.nostrRelayService = nostrRelayService;
   }
 
   @BeforeEach
@@ -126,7 +116,7 @@ class StandardWebSocketClientIT {
     return
 //        "   [" +
 //            "\"EVENT\"," +
-            "          {\"id\": \"" + EVENT_ID + "\",\n" +
+        "          {\"id\": \"" + EVENT_ID + "\",\n" +
             "          \"kind\": " + KIND + ",\n" +
             "          \"content\": \"" + CLASSIFIED_CONTENT + "\",\n" +
             "          \"pubkey\": \"" + PUB_KEY + "\",\n" +

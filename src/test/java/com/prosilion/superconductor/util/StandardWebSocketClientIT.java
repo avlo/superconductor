@@ -2,6 +2,7 @@ package com.prosilion.superconductor.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import nostr.base.PublicKey;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.GeohashTag;
@@ -23,8 +24,10 @@ import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
@@ -66,36 +69,36 @@ class StandardWebSocketClientIT {
   @BeforeEach
   void setup() throws IOException {
     String eventJson = eventJson();
-    nostrRelayService.save(eventJson);
-//    assertEquals(
-//        expectedEventResponseJson(ID),
-//        standardWebSocketClient.getEvents()
-//            .stream().findFirst().get());
+    nostrRelayService.createEvent(eventJson);
+    assertEquals(
+        expectedEventResponseJson(EVENT_ID),
+        nostrRelayService.getEvents()
+            .stream().findFirst().get());
   }
 
   @Test
   void testSendRequestExpectEventResponse() throws IOException, ExecutionException, InterruptedException {
-    String genericEvent = nostrRelayService.get(EVENT_ID);
+    String genericEvent = nostrRelayService.sendRequest(EVENT_ID);
 
     ObjectMapper objectMapper = new ObjectMapper();
     String content = expectedRequestResponseJson();
-    System.out.println("111111111111111111111");
-    System.out.println("111111111111111111111");
-    System.out.println("expected Json:");
-    System.out.printf("  %s\n", content);
-    System.out.println("---------------------");
-    System.out.println("---------------------");
+    log.debug("111111111111111111111");
+    log.debug("111111111111111111111");
+    log.debug("expected Json:");
+    log.debug("  {}\n", content);
+    log.debug("---------------------");
+    log.debug("---------------------");
     JsonNode expected = objectMapper.readTree(content);
 
     JsonNode actual = objectMapper.readTree(genericEvent);
 
-    System.out.println("expected:");
-    System.out.printf("  %s\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(expected));
-    System.out.println("---------------------");
-    System.out.println("actual:");
-    System.out.printf("  %s\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
-    System.out.println("111111111111111111111");
-    System.out.println("111111111111111111111");
+    log.debug("expected:");
+    log.debug("  {}\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(expected));
+    log.debug("---------------------");
+    log.debug("actual:");
+    log.debug("  {}\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
+    log.debug("111111111111111111111");
+    log.debug("111111111111111111111");
 
     assertTrue(
         JsonComparator.equalsJson(

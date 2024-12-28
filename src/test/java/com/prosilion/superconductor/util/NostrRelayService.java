@@ -10,7 +10,6 @@ import nostr.event.json.codec.BaseEventEncoder;
 import nostr.event.json.codec.BaseMessageDecoder;
 import nostr.event.message.EventMessage;
 import nostr.event.message.OkMessage;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Lazy;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -52,36 +50,23 @@ public class NostrRelayService {
     );
   }
 
-  public void save(@NonNull String eventJson) throws IOException {
-    OkMessage createEvent =
-        createNostrEvent(
-            eventJson
-        );
-
-    assertTrue(createEvent.getFlag());
+  public void createEvent(@NonNull String eventJson) throws IOException {
+    assertTrue(
+        getOkMessage(
+            sendEvent(eventJson)
+        ).getFlag());
   }
 
-  public void save(@NonNull GenericEvent event) throws IOException {
-    OkMessage okMessageClassifiedListing =
-        createNostrEvent(
-            new EventMessageFactory(event).create()
-        );
-
-    assertTrue(okMessageClassifiedListing.getFlag());
+  public void createEvent(@NonNull GenericEvent event) throws IOException {
+    assertTrue(
+        getOkMessage(
+            sendEvent(
+                new EventMessageFactory(event).create())
+        ).getFlag());
   }
 
-  private OkMessage createNostrEvent(@NonNull String eventJson) throws IOException {
-    return getOkMessage(sendEvent(eventJson));
-  }
-
-  private OkMessage createNostrEvent(@NonNull EventMessage eventMessage) throws IOException {
-    return getOkMessage(sendEvent(eventMessage));
-  }
-
-  @NotNull
   private static OkMessage getOkMessage(List<String> received) {
-    Optional<String> last = Streams.findLast(received.stream());
-    return last
+    return Streams.findLast(received.stream())
         .map(baseMessage -> new BaseMessageDecoder<OkMessage>().decode(baseMessage))
         .orElseThrow();
   }
@@ -100,40 +85,30 @@ public class NostrRelayService {
 
   public List<String> getEvents() {
     List<String> events = eventSocketClient.getEvents();
-    log.info("received relay response:");
-    log.info("\n" + events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
+    log.debug("received relay response:");
+    log.debug("\n" + events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
     return events;
   }
 
-//  --------------------------------------------------------------------
-//  REQUESTS
-//  --------------------------------------------------------------------
-
-  public String get(@NonNull String eventId) throws IOException, ExecutionException, InterruptedException {
-    String event =
-        sendNostrRequest(
-            eventId,
-            GenericEvent.class
-        );
-
-    return event;
+  public String sendRequest(@NonNull String eventId) throws IOException, ExecutionException, InterruptedException {
+    return sendNostrRequest(
+        eventId,
+        GenericEvent.class
+    );
   }
-
 
   private String sendNostrRequest(
       @NonNull String eventId,
       @NonNull Class<GenericEvent> type) throws IOException, ExecutionException, InterruptedException {
-    List<String> returnedEvents = sendRequest(
-        eventId
-    );
+    List<String> returnedEvents = request(eventId);
 
-    System.out.println("55555555555555555");
-    System.out.println("after REQUEST:");
-    System.out.printf("key:\n  [%s]\n", eventId);
-    System.out.println("-----------------");
-    System.out.println("returnedEvents:");
-    System.out.printf(returnedEvents.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
-    System.out.println("55555555555555555");
+    log.debug("55555555555555555");
+    log.debug("after REQUEST:");
+    log.debug("key:\n  [{}]\n", eventId);
+    log.debug("-----------------");
+    log.debug("returnedEvents:");
+    log.debug(returnedEvents.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
+    log.debug("55555555555555555");
     Stream<BaseMessage> baseMessageStream = returnedEvents.stream().map(baseMessage -> new BaseMessageDecoder<>().decode(baseMessage));
 
     Stream<BaseMessage> baseMessageStream1 = baseMessageStream.filter(baseMessage -> !baseMessage.getCommand().equalsIgnoreCase("EOSE"));
@@ -149,8 +124,8 @@ public class NostrRelayService {
 //    Stream<T> tStream = stringStream.map(encode -> new GenericEventDecoder<>(type).decode(encode));
 
 //    Optional<T> max = tStream.max((a, b) -> {
-//      System.out.println("a: " + a);
-//      System.out.println("b: " + b);
+//      log.debug("a: " + a);
+//      log.debug("b: " + b);
 //      return getCompare(a, b);
 //    });
 //    T latestDatedEvent = max.orElseThrow();
@@ -159,24 +134,24 @@ public class NostrRelayService {
     String last = list.getLast();
     String latestDatedEvent = last;
 
-//    System.out.println("2222222222222222222");
-//    System.out.println("2222222222222222222");
-//    System.out.println(latestDatedEvent);
-//    System.out.println("2222222222222222222");
-//    System.out.println("2222222222222222222");
+//    log.debug("2222222222222222222");
+//    log.debug("2222222222222222222");
+//    log.debug(latestDatedEvent);
+//    log.debug("2222222222222222222");
+//    log.debug("2222222222222222222");
     return latestDatedEvent;
   }
 
-  private List<String> sendRequest(@NonNull String keyWhichIsTheEventId) throws ExecutionException, InterruptedException, IOException {
+  private List<String> request(@NonNull String keyWhichIsTheEventId) throws ExecutionException, InterruptedException, IOException {
     String subscriberPrefixEventIdSuffix = subscriberIdPrefix + keyWhichIsTheEventId;
     final StandardWebSocketClient webSocketClientIF = requestSocketClientMap.get(subscriberPrefixEventIdSuffix);
     if (webSocketClientIF != null) {
-      System.out.printf("3333333333333 existing REQ socket\nkey:\n  [%s]\nsocket:\n  [%s]\n\n", subscriberPrefixEventIdSuffix, webSocketClientIF.getClientSession().getId());
+      log.debug("3333333333333 existing REQ socket\nkey:\n  [{}]\nsocket:\n  [{}]\n\n", subscriberPrefixEventIdSuffix, webSocketClientIF.getClientSession().getId());
       List<String> events = webSocketClientIF.getEvents();
-      System.out.println("-------------");
-      System.out.println("socket getEvents():");
-      events.forEach(event -> System.out.printf("  %s\n", event));
-      System.out.println("33333333333\n");
+      log.debug("-------------");
+      log.debug("socket getEvents():");
+      events.forEach(event -> log.debug("  {}\n", event));
+      log.debug("33333333333\n");
       return events;
     }
 
@@ -185,13 +160,13 @@ public class NostrRelayService {
     ));
 
     final StandardWebSocketClient newWebSocketClientIF = requestSocketClientMap.get(subscriberPrefixEventIdSuffix);
-    System.out.printf("222222222222 new REQ socket\nkey:\n  [%s]\nsocket:\n  [%s]\n\n", subscriberPrefixEventIdSuffix, newWebSocketClientIF.getClientSession().getId());
+    log.debug("222222222222 new REQ socket\nkey:\n  [{}]\nsocket:\n  [{}]\n\n", subscriberPrefixEventIdSuffix, newWebSocketClientIF.getClientSession().getId());
     newWebSocketClientIF.send(createReqJson(subscriberPrefixEventIdSuffix, keyWhichIsTheEventId));
     List<String> events = newWebSocketClientIF.getEvents();
-    System.out.println("-------------");
-    System.out.println("socket getEvents():");
-    events.forEach(event -> System.out.printf("  %s\n", event));
-    System.out.println("222222222222\n");
+    log.debug("-------------");
+    log.debug("socket getEvents():");
+    events.forEach(event -> log.debug("  {}\n", event));
+    log.debug("222222222222\n");
     return newWebSocketClientIF.getEvents();
   }
 

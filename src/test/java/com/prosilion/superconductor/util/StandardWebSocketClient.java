@@ -46,18 +46,18 @@ public class StandardWebSocketClient extends TextWebSocketHandler {
   @Override
   protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
     String payload = message.getPayload();
-    System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-    System.out.printf("socket:\n  [%s]\n", session.getId());
-    System.out.println("------------------------------");
-    System.out.println("  " + payload);
-    System.out.println("------------------------------");
-    System.out.println("events BEFORE payload:");
-    System.out.printf(events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
-    System.out.println("------------------------------");
+    log.debug("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+    log.debug("socket:\n  [{}]\n", session.getId());
+    log.debug("------------------------------");
+    log.debug("  " + payload);
+    log.debug("------------------------------");
+    log.debug("events BEFORE payload:");
+    log.debug(events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
+    log.debug("------------------------------");
     events.add(payload);
-    System.out.println("events AFTER  payload:");
-    System.out.printf(events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
-    System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\n\n");
+    log.debug("events AFTER  payload:");
+    log.debug(events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
+    log.debug("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\n\n");
     completed.setRelease(true);
   }
 
@@ -68,22 +68,22 @@ public class StandardWebSocketClient extends TextWebSocketHandler {
   public void send(String json) throws IOException {
     clientSession.sendMessage(new TextMessage(json));
     await().untilTrue(completed);
-//    System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-//    System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-//    System.out.println("sending JSON:");
-//    System.out.println(json);
+//    log.debug("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+//    log.debug("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+//    log.debug("sending JSON:");
+//    log.debug(json);
 
-////    System.out.println("------------------------------");
+////    log.debug("------------------------------");
 ////    List<String> eventList = Collections.synchronizedList(List.copyOf(events));
 ////    events.clear();
 ////    eventList.forEach(System.out::println);
 ////    events = Collections.synchronizedList(new ArrayList<>());
 ////    completed = false;
 
-//    System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-//    System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY\n\n\n\n\n\n\n\n");
-//    System.out.println("==============================");
-//    System.out.println("==============================\n\n\n\n\n\n\n\n");
+//    log.debug("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+//    log.debug("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY\n\n\n\n\n\n\n\n");
+//    log.debug("==============================");
+//    log.debug("==============================\n\n\n\n\n\n\n\n");
     completed.setRelease(false);
   }
 }

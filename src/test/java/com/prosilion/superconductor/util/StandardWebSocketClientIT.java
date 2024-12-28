@@ -3,6 +3,7 @@ package com.prosilion.superconductor.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nostr.base.PublicKey;
+import nostr.event.impl.GenericEvent;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.GeohashTag;
 import nostr.event.tag.HashtagTag;
@@ -30,15 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
-//@ContextConfiguration
-//@TestPropertySource("/application-test.properties")
-//@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 class StandardWebSocketClientIT {
-  private static final String PRV_KEY_VALUE = "23c011c4c02de9aa98d48c3646c70bb0e7ae30bdae1dfed4d251cbceadaeeb7b";
-  private static final String SUBSCRIBER_ID = "NostrWebSocketClientTest-subscriber_001";
-
-  public static final String ID = "299ab85049a7923e9cd82329c0fa489ca6fd6d21feeeac33543b1237e14a9e07";
+  public static final String EVENT_ID = "299ab85049a7923e9cd82329c0fa489ca6fd6d21feeeac33543b1237e14a9e07";
   public static final String KIND = "30402";
   public static final String CLASSIFIED_CONTENT = "classified content";
   public static final String PUB_KEY = "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
@@ -65,12 +60,14 @@ class StandardWebSocketClientIT {
   public static final BigDecimal NUMBER = new BigDecimal(PRICE_NUMBER);
 
   private final NostrRelayService nostrRelayService;
+  private final String uuidPrefix;
 
   @Autowired
   public StandardWebSocketClientIT(
 //      SslBundles sslBundles,
       @Value("${superconductor.relay.url}") String relayUri,
-      @Value("${superconductor.test.uuid.prefix}") String uuidPrefix) throws ExecutionException, InterruptedException {
+      @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix) throws ExecutionException, InterruptedException {
+    this.uuidPrefix = uuidPrefix;
     this.nostrRelayService = new NostrRelayService(relayUri, uuidPrefix
 //        , sslBundles
     );
@@ -78,7 +75,8 @@ class StandardWebSocketClientIT {
 
   @BeforeEach
   void setup() throws IOException {
-    nostrRelayService.save(eventJson());
+    String eventJson = eventJson();
+    nostrRelayService.save(eventJson);
 //    assertEquals(
 //        expectedEventResponseJson(ID),
 //        standardWebSocketClient.getEvents()
@@ -87,16 +85,20 @@ class StandardWebSocketClientIT {
 
   @Test
   void testSendRequestExpectEventResponse() throws IOException, ExecutionException, InterruptedException {
-    nostrRelayService.get(SUBSCRIBER_ID);
+    String genericEvent = nostrRelayService.get(EVENT_ID);
 
     ObjectMapper objectMapper = new ObjectMapper();
-    JsonNode expected = objectMapper.readTree(expectedRequestResponseJson());
-    List<String> returnedEvents = nostrRelayService.getEvents();
-
-    JsonNode actual = objectMapper.readTree(returnedEvents.getFirst());
-
+    String content = expectedRequestResponseJson();
     System.out.println("111111111111111111111");
     System.out.println("111111111111111111111");
+    System.out.println("expected Json:");
+    System.out.printf("  %s\n", content);
+    System.out.println("---------------------");
+    System.out.println("---------------------");
+    JsonNode expected = objectMapper.readTree(content);
+
+    JsonNode actual = objectMapper.readTree(genericEvent);
+
     System.out.println("expected:");
     System.out.printf("  %s\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(expected));
     System.out.println("---------------------");
@@ -122,8 +124,9 @@ class StandardWebSocketClientIT {
 
   private String expectedRequestResponseJson() {
     return
-        "   [\"EVENT\",\"" + SUBSCRIBER_ID + "\",\n" +
-            "          {\"id\": \"" + ID + "\",\n" +
+//        "   [" +
+//            "\"EVENT\"," +
+            "          {\"id\": \"" + EVENT_ID + "\",\n" +
             "          \"kind\": " + KIND + ",\n" +
             "          \"content\": \"" + CLASSIFIED_CONTENT + "\",\n" +
             "          \"pubkey\": \"" + PUB_KEY + "\",\n" +
@@ -142,7 +145,9 @@ class StandardWebSocketClientIT {
             "            [ \"summary\", \"" + SUMMARY + "\" ]\n" +
             "          ],\n" +
             "          \"sig\": \"" + SIGNATURE + "\"\n" +
-            "        }]";
+            "        }"
+//                +"]"
+        ;
   }
 
   private String eventJson() {

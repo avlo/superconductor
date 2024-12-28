@@ -67,23 +67,9 @@ public class StandardWebSocketClient extends TextWebSocketHandler {
 
   public void send(String json) throws IOException {
     clientSession.sendMessage(new TextMessage(json));
-    await().untilTrue(completed);
-//    log.debug("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-//    log.debug("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-//    log.debug("sending JSON:");
-//    log.debug(json);
-
-////    log.debug("------------------------------");
-////    List<String> eventList = Collections.synchronizedList(List.copyOf(events));
-////    events.clear();
-////    eventList.forEach(System.out::println);
-////    events = Collections.synchronizedList(new ArrayList<>());
-////    completed = false;
-
-//    log.debug("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-//    log.debug("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY\n\n\n\n\n\n\n\n");
-//    log.debug("==============================");
-//    log.debug("==============================\n\n\n\n\n\n\n\n");
+    await()
+//        .timeout(66, TimeUnit.MINUTES)
+        .untilTrue(completed);
     completed.setRelease(false);
   }
 }

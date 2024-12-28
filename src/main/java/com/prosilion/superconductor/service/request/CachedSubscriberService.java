@@ -175,7 +175,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
 
     private static boolean hasValidGenericTagQuery(Map<String, List<String>> genericTagQuery) {
       return Objects.nonNull(genericTagQuery)
-          && genericTagQuery.entrySet().stream().noneMatch(entry -> Objects.nonNull(entry.getValue()))
+          && genericTagQuery.entrySet().stream().allMatch(entry -> Objects.nonNull(entry.getValue()))
           && genericTagQuery.entrySet().stream().noneMatch(entry -> entry.getValue().toString().isBlank());
     }
   }

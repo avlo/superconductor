@@ -2,6 +2,7 @@ package com.prosilion.superconductor.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.PublicKey;
 import nostr.event.tag.EventTag;
@@ -9,10 +10,12 @@ import nostr.event.tag.GeohashTag;
 import nostr.event.tag.HashtagTag;
 import nostr.event.tag.PubKeyTag;
 import nostr.event.tag.SubjectTag;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.logging.log4j.util.Strings;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
@@ -60,13 +63,20 @@ class StandardWebSocketClientIT {
   public static final BigDecimal NUMBER = new BigDecimal(PRICE_NUMBER);
 
   private final NostrRelayService nostrRelayService;
+  private final String uuidPrefix;
+
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Autowired
-  public StandardWebSocketClientIT(NostrRelayService nostrRelayService) {
+  public StandardWebSocketClientIT(
+      @NonNull NostrRelayService nostrRelayService,
+      @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix
+  ) {
     this.nostrRelayService = nostrRelayService;
+    this.uuidPrefix = uuidPrefix;
   }
 
-  @BeforeEach
+  @BeforeAll
   void setup() throws IOException {
     String eventJson = eventJson();
     nostrRelayService.createEvent(eventJson);
@@ -78,19 +88,13 @@ class StandardWebSocketClientIT {
 
   @Test
   void testSendRequestExpectEventResponse() throws IOException, ExecutionException, InterruptedException {
-    String genericEvent = nostrRelayService.sendRequest(EVENT_ID);
+    String returnedEvent = nostrRelayService.sendRequest(
+        createReqJson(EVENT_ID),
+        EVENT_ID
+    );
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    String content = expectedRequestResponseJson();
-    log.debug("111111111111111111111");
-    log.debug("111111111111111111111");
-    log.debug("expected Json:");
-    log.debug("  {}\n", content);
-    log.debug("---------------------");
-    log.debug("---------------------");
-    JsonNode expected = objectMapper.readTree(content);
-
-    JsonNode actual = objectMapper.readTree(genericEvent);
+    JsonNode expected = objectMapper.readTree(expectedRequestResponseJson());
+    JsonNode actual = objectMapper.readTree(returnedEvent);
 
     log.debug("expected:");
     log.debug("  {}\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(expected));
@@ -111,8 +115,9 @@ class StandardWebSocketClientIT {
     return "[\"OK\",\"" + subscriptionId + "\",true,\"success: request processed\"]";
   }
 
-  private String createReqJson(String subscriberId, String id) {
-    return "[\"REQ\",\"" + subscriberId + "\",{\"ids\":[\"" + id + "\"]}]";
+  private String createReqJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"]}]";
   }
 
   private String expectedRequestResponseJson() {

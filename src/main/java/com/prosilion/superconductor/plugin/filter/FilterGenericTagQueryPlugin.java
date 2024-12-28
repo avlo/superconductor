@@ -7,8 +7,10 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.tag.IdentifierTag;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 
 @Component
@@ -24,7 +26,11 @@ public class FilterGenericTagQueryPlugin<T extends Map<String, List<String>>> im
 
   @Override
   public List<T> getPluginFilters(Filters filters) {
-    return (List<T>) List.of(filters.getGenericTagQuery());
+    return (List<T>) List.of(
+        Optional.ofNullable(
+                filters.getGenericTagQuery())
+            .orElse(
+                Collections.emptyMap()));
   }
 
   @Override

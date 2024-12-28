@@ -90,21 +90,23 @@ public class NostrRelayService {
     return events;
   }
 
-  public String sendRequest(@NonNull String eventId) throws IOException, ExecutionException, InterruptedException {
+  public String sendRequest(@NonNull String reqJson, @NonNull String clientUuid) throws IOException, ExecutionException, InterruptedException {
     return sendNostrRequest(
-        eventId,
+        reqJson,
+        clientUuid,
         GenericEvent.class
     );
   }
 
   private String sendNostrRequest(
-      @NonNull String eventId,
+      @NonNull String reqJson,
+      @NonNull String clientUuid,
       @NonNull Class<GenericEvent> type) throws IOException, ExecutionException, InterruptedException {
-    List<String> returnedEvents = request(eventId);
+    List<String> returnedEvents = request(reqJson, clientUuid);
 
     log.debug("55555555555555555");
     log.debug("after REQUEST:");
-    log.debug("key:\n  [{}]\n", eventId);
+    log.debug("key:\n  [{}]\n", clientUuid);
     log.debug("-----------------");
     log.debug("returnedEvents:");
     log.debug(returnedEvents.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
@@ -142,8 +144,8 @@ public class NostrRelayService {
     return latestDatedEvent;
   }
 
-  private List<String> request(@NonNull String keyWhichIsTheEventId) throws ExecutionException, InterruptedException, IOException {
-    String subscriberPrefixEventIdSuffix = subscriberIdPrefix + keyWhichIsTheEventId;
+  private List<String> request(@NonNull String reqJson, @NonNull String clientUuid) throws ExecutionException, InterruptedException, IOException {
+    String subscriberPrefixEventIdSuffix = subscriberIdPrefix + clientUuid;
     final StandardWebSocketClient webSocketClientIF = requestSocketClientMap.get(subscriberPrefixEventIdSuffix);
     if (webSocketClientIF != null) {
       log.debug("3333333333333 existing REQ socket\nkey:\n  [{}]\nsocket:\n  [{}]\n\n", subscriberPrefixEventIdSuffix, webSocketClientIF.getClientSession().getId());
@@ -161,21 +163,12 @@ public class NostrRelayService {
 
     final StandardWebSocketClient newWebSocketClientIF = requestSocketClientMap.get(subscriberPrefixEventIdSuffix);
     log.debug("222222222222 new REQ socket\nkey:\n  [{}]\nsocket:\n  [{}]\n\n", subscriberPrefixEventIdSuffix, newWebSocketClientIF.getClientSession().getId());
-    newWebSocketClientIF.send(createReqJson(subscriberPrefixEventIdSuffix, keyWhichIsTheEventId));
+    newWebSocketClientIF.send(reqJson);
     List<String> events = newWebSocketClientIF.getEvents();
     log.debug("-------------");
     log.debug("socket getEvents():");
     events.forEach(event -> log.debug("  {}\n", event));
     log.debug("222222222222\n");
     return newWebSocketClientIF.getEvents();
-  }
-
-  private String createReqJson(@NonNull String subscriberId, @NonNull String dTag) {
-//    TODO: re-introduce below after investigation
-//    String result = ids.stream()
-//        .map(s -> "\"" + s + "\"")
-//        .collect(Collectors.joining(", "));
-//    String joinedString = "[\"REQ\",\"" + subscriberId + "\",{\"ids\":[" + result + "]}]";
-    return "[\"REQ\",\"" + subscriberId + "\",{\"ids\":[\"" + dTag + "\"]}]";
   }
 }

@@ -1,10 +1,14 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.superconductor.util.NostrRelayService;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
@@ -20,21 +24,24 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 @ActiveProfiles("test")
 class MatchingIdentityTagIT {
-  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "superconductor_subscriber_id-";
-
-  public final String textMessageEventJson;
+  private final NostrRelayService nostrRelayService;
+  private final String textMessageEventJson;
+  private final String uuidPrefix;
   private final Integer targetCount;
 
-  private final NostrRelayService nostrRelayService;
-
   @Autowired
-  MatchingIdentityTagIT(NostrRelayService nostrRelayService) throws IOException {
+  MatchingIdentityTagIT(
+      @NonNull NostrRelayService nostrRelayService,
+      @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix
+  ) throws IOException {
     this.nostrRelayService = nostrRelayService;
+    this.uuidPrefix = uuidPrefix;
     this.targetCount = 1;
 
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_identity_single_filter_json_input.txt"))) {
@@ -60,12 +67,23 @@ class MatchingIdentityTagIT {
   @Test
   void testReqMessages() throws IOException, ExecutionException, InterruptedException {
 //    IntStream.range(0, targetCount).parallel().forEach(increment -> {
-    sendReq(0);
+    sendReq(String.valueOf(0));
 //    });
   }
 
-  private void sendReq(int increment) throws IOException, ExecutionException, InterruptedException {
-    String s = nostrRelayService.sendRequest(String.valueOf(increment));
-    assertTrue(s.contains(TARGET_TEXT_MESSAGE_EVENT_CONTENT + increment));
+  private void sendReq(String increment) throws IOException, ExecutionException, InterruptedException {
+    String okMessage = nostrRelayService.sendRequest(
+        createReqJson(increment),
+        increment
+    );
+    log.debug("okMessage:");
+    log.debug("  " + okMessage);
+    String dTag = "[\"d\",\"" + uuidPrefix + increment + "\"]";
+    assertTrue(okMessage.contains(dTag));
+  }
+
+  private String createReqJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuidKey + "\",{\"#d\":[\"" + uuidKey + "\"]}]";
   }
 }

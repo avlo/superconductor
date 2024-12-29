@@ -4,10 +4,11 @@ import com.google.common.collect.Streams;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.api.factory.impl.NIP01Impl.EventMessageFactory;
-import nostr.event.BaseMessage;
+import nostr.base.Command;
 import nostr.event.impl.GenericEvent;
 import nostr.event.json.codec.BaseEventEncoder;
 import nostr.event.json.codec.BaseMessageDecoder;
+import nostr.event.message.EoseMessage;
 import nostr.event.message.EventMessage;
 import nostr.event.message.OkMessage;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,12 +18,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -90,7 +93,7 @@ public class NostrRelayService {
     return events;
   }
 
-  public String sendRequest(@NonNull String reqJson, @NonNull String clientUuid) throws IOException, ExecutionException, InterruptedException {
+  public Map<Command, Optional<String>> sendRequest(@NonNull String reqJson, @NonNull String clientUuid) throws IOException, ExecutionException, InterruptedException {
     return sendNostrRequest(
         reqJson,
         clientUuid,
@@ -98,7 +101,7 @@ public class NostrRelayService {
     );
   }
 
-  private String sendNostrRequest(
+  private Map<Command, Optional<String>> sendNostrRequest(
       @NonNull String reqJson,
       @NonNull String clientUuid,
       @NonNull Class<GenericEvent> type) throws IOException, ExecutionException, InterruptedException {
@@ -111,37 +114,25 @@ public class NostrRelayService {
     log.debug("returnedEvents:");
     log.debug(returnedEvents.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
     log.debug("55555555555555555");
-    Stream<BaseMessage> baseMessageStream = returnedEvents.stream().map(baseMessage -> new BaseMessageDecoder<>().decode(baseMessage));
 
-    Stream<BaseMessage> baseMessageStream1 = baseMessageStream.filter(baseMessage -> !baseMessage.getCommand().equalsIgnoreCase("EOSE"));
+    Optional<String> eoseMessageOptional = returnedEvents.stream().map(baseMessage -> new BaseMessageDecoder<>().decode(baseMessage))
+        .filter(EoseMessage.class::isInstance)
+        .map(EoseMessage.class::cast)
+        .findFirst()
+        .map(EoseMessage::getSubscriptionId);
 
-    Stream<BaseMessage> baseMessageStream2 = baseMessageStream1.filter(EventMessage.class::isInstance);
+    Optional<String> eventMessageOptional = returnedEvents.stream().map(baseMessage -> new BaseMessageDecoder<>().decode(baseMessage))
+        .filter(EventMessage.class::isInstance)
+        .map(EventMessage.class::cast)
+        .map(eventMessage -> (GenericEvent) eventMessage.getEvent())
+        .sorted(Comparator.comparing(GenericEvent::getCreatedAt))
+        .map(event -> new BaseEventEncoder<>(event).encode())
+        .reduce((first, second) -> second); // gets last/aka, most recently dated event
 
-    Stream<EventMessage> eventMessageStream = baseMessageStream2.map(EventMessage.class::cast);
-
-    Stream<GenericEvent> genericEventStream = eventMessageStream.map(eventMessage -> (GenericEvent) eventMessage.getEvent());
-
-    Stream<String> stringStream = genericEventStream.map(event -> new BaseEventEncoder<>(event).encode());
-
-//    Stream<T> tStream = stringStream.map(encode -> new GenericEventDecoder<>(type).decode(encode));
-
-//    Optional<T> max = tStream.max((a, b) -> {
-//      log.debug("a: " + a);
-//      log.debug("b: " + b);
-//      return getCompare(a, b);
-//    });
-//    T latestDatedEvent = max.orElseThrow();
-
-    List<String> list = stringStream.toList();
-    String last = list.getLast();
-    String latestDatedEvent = last;
-
-//    log.debug("2222222222222222222");
-//    log.debug("2222222222222222222");
-//    log.debug(latestDatedEvent);
-//    log.debug("2222222222222222222");
-//    log.debug("2222222222222222222");
-    return latestDatedEvent;
+    Map<Command, Optional<String>> returnMap = new HashMap<>();
+    returnMap.put(Command.EOSE, eoseMessageOptional);
+    returnMap.put(Command.EVENT, eventMessageOptional);
+    return returnMap;
   }
 
   private List<String> request(@NonNull String reqJson, @NonNull String clientUuid) throws ExecutionException, InterruptedException, IOException {

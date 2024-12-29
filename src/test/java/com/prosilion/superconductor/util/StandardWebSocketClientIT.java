@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.base.Command;
 import nostr.base.PublicKey;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.GeohashTag;
@@ -24,6 +25,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import static org.awaitility.Awaitility.await;
@@ -88,13 +91,13 @@ class StandardWebSocketClientIT {
 
   @Test
   void testSendRequestExpectEventResponse() throws IOException, ExecutionException, InterruptedException {
-    String returnedEvent = nostrRelayService.sendRequest(
+    Map<Command, Optional<String>> returnedEvent = nostrRelayService.sendRequest(
         createReqJson(EVENT_ID),
         EVENT_ID
     );
 
     JsonNode expected = objectMapper.readTree(expectedRequestResponseJson());
-    JsonNode actual = objectMapper.readTree(returnedEvent);
+    JsonNode actual = objectMapper.readTree(returnedEvent.get(Command.EVENT).get());
 
     log.debug("expected:");
     log.debug("  {}\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(expected));

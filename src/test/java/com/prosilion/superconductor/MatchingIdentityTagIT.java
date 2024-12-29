@@ -3,6 +3,7 @@ package com.prosilion.superconductor;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.base.Command;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,10 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,17 +52,7 @@ class MatchingIdentityTagIT {
   }
 
   @BeforeAll
-  public void setup() {
-    IntStream.range(0, targetCount).parallel().forEach(increment -> {
-      try {
-        createEvent(increment);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
-  }
-
-  private void createEvent(int increment) throws IOException {
+  public void setup() throws IOException {
     nostrRelayService.createEvent(textMessageEventJson);
   }
 
@@ -72,14 +64,14 @@ class MatchingIdentityTagIT {
   }
 
   private void sendReq(String increment) throws IOException, ExecutionException, InterruptedException {
-    String okMessage = nostrRelayService.sendRequest(
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqJson(increment),
         increment
     );
     log.debug("okMessage:");
-    log.debug("  " + okMessage);
+    log.debug("  " + returnedJsonMap);
     String dTag = "[\"d\",\"" + uuidPrefix + increment + "\"]";
-    assertTrue(okMessage.contains(dTag));
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(dTag));
   }
 
   private String createReqJson(@NonNull String uuid) {

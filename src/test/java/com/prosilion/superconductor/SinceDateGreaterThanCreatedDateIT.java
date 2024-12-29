@@ -68,6 +68,10 @@ class SinceDateGreaterThanCreatedDateIT {
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
+
+    /**
+     * since 1111111111112 should yield empty, since target time (1111111111111) is before it
+     */
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isEmpty());
     assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
   }

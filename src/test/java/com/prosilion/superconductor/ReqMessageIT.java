@@ -45,7 +45,7 @@ class ReqMessageIT {
   }
 
   @Test
-  void testEventMessageThenReqMessage() throws IOException, ExecutionException, InterruptedException {
+  void testReqFilteredByEventAndAuthor() throws IOException, ExecutionException, InterruptedException {
     String uuidKey = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
     String authorPubkey = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
 
@@ -55,7 +55,6 @@ class ReqMessageIT {
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-//    String dTag = "[\"d\",\"" + uuidPrefix + increment + "\"]";
     assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(uuidKey));
     assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(authorPubkey));
   }
@@ -63,5 +62,46 @@ class ReqMessageIT {
   private String createReqJson(@NonNull String uuid, @NonNull String authorPubkey) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
     return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"],\"authors\":[\"" + authorPubkey + "\"]}]";
+  }
+
+  @Test
+  void testReqFilteredByEventId() throws IOException, ExecutionException, InterruptedException {
+    String uuidKey = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createEventReqJson(uuidKey),
+        uuidKey
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(uuidKey));
+  }
+
+  private String createEventReqJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"]}]";
+  }
+
+  @Test
+  void testReqFilteredByAuthor() throws IOException, ExecutionException, InterruptedException {
+    String authorPubkey = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createAuthorReqJson(authorPubkey),
+        authorPubkey
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
+
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(authorPubkey));
+
+//    additional eventId confirmation
+    String eventId = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(eventId));
+  }
+
+  private String createAuthorReqJson(@NonNull String authorPubkey) {
+    final String uuidKey = Strings.concat(uuidPrefix, authorPubkey);
+    return "[\"REQ\",\"" + uuidKey + "\",{\"authors\":[\"" + authorPubkey + "\"]}]";
   }
 }

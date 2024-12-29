@@ -88,8 +88,8 @@ public class NostrRelayService {
 
   public List<String> getEvents() {
     List<String> events = eventSocketClient.getEvents();
-    log.debug("received relay response:");
-    log.debug("\n" + events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
+//    log.debug("received relay response:");
+//    log.debug("\n" + events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
     return events;
   }
 
@@ -136,11 +136,11 @@ public class NostrRelayService {
   }
 
   private List<String> request(@NonNull String reqJson, @NonNull String clientUuid) throws ExecutionException, InterruptedException, IOException {
-    String subscriberPrefixEventIdSuffix = subscriberIdPrefix + clientUuid;
-    final StandardWebSocketClient webSocketClientIF = requestSocketClientMap.get(subscriberPrefixEventIdSuffix);
-    if (webSocketClientIF != null) {
-      log.debug("3333333333333 existing REQ socket\nkey:\n  [{}]\nsocket:\n  [{}]\n\n", subscriberPrefixEventIdSuffix, webSocketClientIF.getClientSession().getId());
-      List<String> events = webSocketClientIF.getEvents();
+    final String subscriberPrefixEventIdSuffix = subscriberIdPrefix + clientUuid;
+    final StandardWebSocketClient existingSubscriberUuidWebClient = requestSocketClientMap.get(subscriberPrefixEventIdSuffix);
+    if (existingSubscriberUuidWebClient != null) {
+      log.debug("3333333333333 existing REQ socket\nkey:\n  [{}]\nsocket:\n  [{}]\n\n", subscriberPrefixEventIdSuffix, existingSubscriberUuidWebClient.getClientSession().getId());
+      List<String> events = existingSubscriberUuidWebClient.getEvents();
       log.debug("-------------");
       log.debug("socket getEvents():");
       events.forEach(event -> log.debug("  {}\n", event));
@@ -152,14 +152,15 @@ public class NostrRelayService {
 //        , sslBundles
     ));
 
-    final StandardWebSocketClient newWebSocketClientIF = requestSocketClientMap.get(subscriberPrefixEventIdSuffix);
-    log.debug("222222222222 new REQ socket\nkey:\n  [{}]\nsocket:\n  [{}]\n\n", subscriberPrefixEventIdSuffix, newWebSocketClientIF.getClientSession().getId());
-    newWebSocketClientIF.send(reqJson);
-    List<String> events = newWebSocketClientIF.getEvents();
+    final StandardWebSocketClient newSubscriberUuidWebClient = requestSocketClientMap.get(subscriberPrefixEventIdSuffix);
+    final String newSubscriberUuidWebClientsessionId = newSubscriberUuidWebClient.getClientSession().getId();
+    log.debug("222222222222 new REQ socket\nkey:\n  [{}]\nsocket:\n  [{}]\n\n", subscriberPrefixEventIdSuffix, newSubscriberUuidWebClientsessionId);
+    newSubscriberUuidWebClient.send(reqJson);
+    List<String> events = newSubscriberUuidWebClient.getEvents();
     log.debug("-------------");
-    log.debug("socket getEvents():");
+    log.debug("socket [{}] getEvents():", newSubscriberUuidWebClientsessionId);
     events.forEach(event -> log.debug("  {}\n", event));
     log.debug("222222222222\n");
-    return newWebSocketClientIF.getEvents();
+    return events;
   }
 }

@@ -38,7 +38,7 @@ class EventMessageIT {
   EventMessageIT(
       @NonNull NostrRelayService nostrRelayService,
       @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix
-  ) throws IOException {
+  ) {
     this.nostrRelayService = nostrRelayService;
     this.uuidPrefix = uuidPrefix;
   }

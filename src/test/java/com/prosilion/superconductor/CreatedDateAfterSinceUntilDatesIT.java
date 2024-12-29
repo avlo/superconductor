@@ -1,64 +1,48 @@
 package com.prosilion.superconductor;
 
-import com.google.common.util.concurrent.MoreExecutors;
-import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import com.prosilion.superconductor.util.NostrRelayService;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import nostr.base.Command;
+import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.expression.EvaluationException;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
+@Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
-@ContextConfiguration
-@TestPropertySource("/application-test.properties")
+@ActiveProfiles("test")
 class CreatedDateAfterSinceUntilDatesIT {
-  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+  private final NostrRelayService nostrRelayService;
+  private final String textMessageEventJson;
+  private final String uuidPrefix;
 
-  public final String textMessageEventJson;
-  private final String websocketUrl;
-  private final Integer targetCount;
-
-  private final ExecutorService executorService;
-
-  List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
-
-  CreatedDateAfterSinceUntilDatesIT(@Value("${superconductor.relay.url}") String relayUrl) throws IOException {
-    this.websocketUrl = relayUrl;
-    this.targetCount = 1;
-    this.executorService = MoreExecutors.newDirectExecutorService();
+  @Autowired
+  CreatedDateAfterSinceUntilDatesIT(@NonNull NostrRelayService nostrRelayService,
+      @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix
+  ) throws IOException {
+    this.nostrRelayService = nostrRelayService;
+    this.uuidPrefix = uuidPrefix;
 
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/created_at_date_filter_json_input.txt"))) {
       this.textMessageEventJson = lines.collect(Collectors.joining("\n"));
@@ -66,67 +50,35 @@ class CreatedDateAfterSinceUntilDatesIT {
   }
 
   @BeforeAll
-  public void setup() {
-    WebSocketStompClient eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-    eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-    CompletableFuture<WebSocketSession> eventExecute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), websocketUrl, "");
-    await().until(eventExecute::isDone);
-
-    reqClients = new ArrayList<>(targetCount);
-    IntStream.range(0, targetCount).parallel().forEach(increment -> {
-      final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-      reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
-      Callable<CompletableFuture<WebSocketSession>> callableTask = () -> reqStompClient.getWebSocketClient().execute(
-          new ReqMessageSocketHandler(),
-          websocketUrl,
-          "");
-      reqClients.add(callableTask);
-    });
-    assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
-        await().until(() -> future.get().isDone())));
+  public void setup() throws IOException {
+    log.debug("setup() send event:\n  {}", textMessageEventJson);
+    nostrRelayService.createEvent(textMessageEventJson);
+    assertTrue(!List.of(nostrRelayService.getEvents()).isEmpty());
   }
 
   @Test
-  void testEventMessageThenReqMessage() {
-    executorService.shutdown();
-    await().until(() -> executorService.awaitTermination(5000, TimeUnit.SECONDS));
-    await().until(executorService::isTerminated);
+  void testReqMessages() throws IOException, ExecutionException, InterruptedException {
+    sendReq(String.valueOf(0));
   }
 
+  private void sendReq(String increment) throws IOException, ExecutionException, InterruptedException {
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createReqJson(increment),
+        increment
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
 
-  class EventMessageSocketHandler extends TextWebSocketHandler {
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(textMessageEventJson));
-    }
+    /**
+     * since 1111111111112 and until 1111111111113 should yield empty, since target time (1111111111111) is before the two
+     */
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isEmpty());
 
-    @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertTrue(message.getPayload().toString().contains(TARGET_TEXT_MESSAGE_EVENT_CONTENT));
-      session.close();
-    }
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
   }
 
-  @Getter
-  class ReqMessageSocketHandler extends TextWebSocketHandler {
-    private final String reqJson;
-
-    public ReqMessageSocketHandler() {
-      reqJson = "[\"REQ\",\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\",{\"authors\":[\"000d79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111112,\"until\": 1111111111113}]";
-    }
-
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(reqJson));
-    }
-
-    @Override
-    public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("CreatedDateAfterSinceUntilDatesIT condition should never be reached");
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      fail("'since' condition should never be reached");
-    }
+  private String createReqJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuidKey + "\",{\"authors\":[\"000d79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111112,\"until\": 1111111111113}]";
   }
 }

@@ -20,8 +20,11 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.IntStream;
+
+import static org.awaitility.Awaitility.await;
 
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -32,8 +35,6 @@ class MultipleSubscriberTextEventMessageIT {
   private final String hexCounterSeed;
   private final int hexStartNumber;
   private final Integer targetCount;
-  private final Integer pctThreshold;
-  int resultCount;
 
   private final NostrRelayService nostrRelayService;
   private final String uuidPrefix;
@@ -52,13 +53,14 @@ class MultipleSubscriberTextEventMessageIT {
     this.hexCounterSeed = hexCounterSeed;
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
-    this.pctThreshold = pctThreshold;
     this.executorService = MoreExecutors.newDirectExecutorService();
   }
 
   @BeforeAll
   public void setup() throws IOException {
-    IntStream.range(0, targetCount).forEach(this::createEvent);
+    CompletableFuture<Void> eventFutures = CompletableFuture.runAsync(() ->
+        IntStream.range(0, targetCount).forEach(this::createEvent));
+    await().until(eventFutures::isDone);
   }
 
   @SneakyThrows
@@ -76,7 +78,9 @@ class MultipleSubscriberTextEventMessageIT {
 
   @Test
   void testReqMessage() {
-    IntStream.range(0, targetCount).forEach(this::sendRequest);
+    CompletableFuture<Void> requestFutures = CompletableFuture.runAsync(() ->
+        IntStream.range(0, targetCount).forEach(this::sendRequest));
+    await().until(requestFutures::isDone);
   }
 
   @SneakyThrows

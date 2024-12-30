@@ -40,17 +40,17 @@ public class AuthMessageService<T extends CanonicalAuthenticationMessage> implem
   }
 
   public void processIncoming(@NonNull T authMessage, @NonNull String sessionId) {
-    log.info("processing incoming AUTH message: [{}]", authMessage);
-    log.info("AUTH message NIP: {}", authMessage.getNip());
-    log.info("AUTH message sessionId: {}", sessionId);
+    log.debug("processing incoming AUTH message: [{}]", authMessage);
+    log.debug("AUTH message NIP: {}", authMessage.getNip());
+    log.debug("AUTH message sessionId: {}", sessionId);
     String challengeValue = getElementValue(authMessage, "challenge");
 //    TODO: check non-blank / quality password /etc
-    log.info("AUTH message challenge string: {}, matched", challengeValue);
+    log.debug("AUTH message challenge string: {}, matched", challengeValue);
 
     String relayUriString = getElementValue(authMessage, "relay");
     String pubKey = authMessage.getEvent().getPubKey().toString();
     if (!relayUriString.equalsIgnoreCase(relayUrl)) {
-      log.info("AUTH message failed, relay URI string: [{}]", relayUriString);
+      log.debug("AUTH message failed, relay URI string: [{}]", relayUriString);
       sendAuthFailed(authMessage, sessionId,
           String.format("restricted: provided authentication relay URI [%s] does not match this relay host's URI [%s]", relayUriString, relayUrl)
       );
@@ -64,7 +64,7 @@ public class AuthMessageService<T extends CanonicalAuthenticationMessage> implem
             challengeValue,
             sessionId,
             createdAt));
-    log.info("auth saved for pubkey [{}], session [{}], createdAt [{}]", pubKey, sessionId, createdAt);
+    log.debug("auth saved for pubkey [{}], session [{}], createdAt [{}]", pubKey, sessionId, createdAt);
 
     okResponseService.processOkClientResponse(
         sessionId,

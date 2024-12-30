@@ -27,7 +27,7 @@ public class CloseMessageService<T extends CloseMessage> implements CloseMessage
 
   @Override
   public void processIncoming(@NonNull T closeMessage, @NonNull String sessionId) {
-    log.info("processing CLOSE event, sessionId [{}]", sessionId);
+    log.debug("processing CLOSE event, sessionId [{}]", sessionId);
     removeSubscriberBySessionId(sessionId);
   }
 
@@ -49,7 +49,7 @@ public class CloseMessageService<T extends CloseMessage> implements CloseMessage
           new RemoveSubscriberFilter(
               abstractSubscriberService.removeSubscriberBySubscriberId(subscriberId)));
     } catch (NoExistingUserException e) {
-      log.info("no match to remove for subscriptionHash [{}]", subscriberId);
+      log.debug("no match to remove for subscriptionHash [{}]", subscriberId);
     }
   }
 //  public void deactivateSubscriberBySessionId(String sessionId) throws NoResultException {

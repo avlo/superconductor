@@ -24,7 +24,7 @@ public class EventService<T extends EventMessage> implements EventServiceIF<T> {
 
   //  @Async
   public void processIncomingEvent(@NonNull T eventMessage) {
-    log.info("processing incoming TEXT_NOTE: [{}]", eventMessage);
+    log.debug("processing incoming TEXT_NOTE: [{}]", eventMessage);
     GenericEvent event = (GenericEvent) eventMessage.getEvent();
 
     TextNoteEvent textNoteEvent = new TextNoteEvent(

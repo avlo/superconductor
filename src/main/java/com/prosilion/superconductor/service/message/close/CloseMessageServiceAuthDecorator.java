@@ -30,7 +30,7 @@ public class CloseMessageServiceAuthDecorator<T extends CloseMessage> implements
 
   @Override
   public void processIncoming(@NonNull T closeMessage, @NonNull String sessionId) {
-    log.info("processing AUTH CLOSE event, sessionId [{}]", sessionId);
+    log.debug("processing AUTH CLOSE event, sessionId [{}]", sessionId);
     closeSession(sessionId);
     removeSubscriberBySessionId(sessionId);
   }

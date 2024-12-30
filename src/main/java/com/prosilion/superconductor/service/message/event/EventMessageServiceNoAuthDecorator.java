@@ -24,8 +24,8 @@ public class EventMessageServiceNoAuthDecorator<T extends EventMessage> implemen
   }
 
   public void processIncoming(@NonNull T eventMessage, @NonNull String sessionId) {
-    log.info("EVENT message NIP: {}", eventMessage.getNip());
-    log.info("EVENT message type: {}", eventMessage.getEvent());
+    log.debug("EVENT message NIP: {}", eventMessage.getNip());
+    log.debug("EVENT message type: {}", eventMessage.getEvent());
     eventMessageService.processIncoming(eventMessage, sessionId);
     eventMessageService.processOkClientResponse(eventMessage, sessionId);
   }

@@ -76,20 +76,20 @@ public class NostrRelayService {
 
   private List<String> sendEvent(String eventJson) throws IOException {
     eventSocketClient.send(eventJson);
-    log.info("socket send event JSON content\n  {}", eventJson);
+    log.debug("socket send event JSON content\n  {}", eventJson);
     return getEvents();
   }
 
   private List<String> sendEvent(EventMessage eventMessage) throws IOException {
     eventSocketClient.send(eventMessage);
-    log.info("socket send EventMessage content\n  {}", eventMessage.getEvent());
+    log.debug("socket send EventMessage content\n  {}", eventMessage.getEvent());
     return getEvents();
   }
 
   public List<String> getEvents() {
     List<String> events = eventSocketClient.getEvents();
-//    log.debug("received relay response:");
-//    log.debug("\n" + events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
+    log.debug("received relay response:");
+    log.debug("\n" + events.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
     return events;
   }
 

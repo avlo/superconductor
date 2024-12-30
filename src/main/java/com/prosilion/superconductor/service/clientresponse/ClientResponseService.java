@@ -26,7 +26,7 @@ public class ClientResponseService {
   }
 
   public void processOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
-    log.info("Processing event message: {}, reason: {}", eventMessage.getEvent(), reason);
+    log.debug("Processing event message: {}, reason: {}", eventMessage.getEvent(), reason);
     try {
       publisher.publishEvent(new ClientOkResponse(sessionId, (GenericEvent) eventMessage.getEvent(), true, reason));
     } catch (JsonProcessingException e) {
@@ -35,7 +35,7 @@ public class ClientResponseService {
   }
 
   public void processCloseClientResponse(@NonNull String sessionId) {
-    log.info("Processing close: {}", sessionId);
+    log.debug("Processing close: {}", sessionId);
     try {
       publisher.publishEvent(new ClientCloseResponse(sessionId));
     } catch (JsonProcessingException e) {
@@ -46,7 +46,7 @@ public class ClientResponseService {
   }
 
   public void processNotOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
-    log.info("Processing failed event message: {}, reason: {}", eventMessage.getEvent(), reason);
+    log.debug("Processing failed event message: {}, reason: {}", eventMessage.getEvent(), reason);
     try {
       publisher.publishEvent(new ClientOkResponse(sessionId, (GenericEvent) eventMessage.getEvent(), false, reason));
     } catch (JsonProcessingException e) {
@@ -57,7 +57,7 @@ public class ClientResponseService {
   }
 
   public void processNoticeClientResponse(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull String reason, boolean valid) {
-    log.info("Processing failed request message: {}, reason: {}", reqMessage, reason);
+    log.debug("Processing failed request message: {}, reason: {}", reqMessage, reason);
     try {
       publisher.publishEvent(new ClientNoticeResponse(sessionId, reason, valid));
     } catch (JsonProcessingException e) {

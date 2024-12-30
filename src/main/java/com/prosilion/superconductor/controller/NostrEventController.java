@@ -81,7 +81,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-    log.info("Connected new session [{}]", session.getId());
+    log.debug("Connected new session [{}]", session.getId());
     if (isRelayInformationDocumentRequest(session))
       return;
     mapSessions.put(session.getId(), session);
@@ -93,7 +93,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
    */
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-    log.info("client initiated close, sessionId [{}]", session.getId());
+    log.debug("client initiated close, sessionId [{}]", session.getId());
     publisher.publishEvent(new TerminatedSocket(session.getId()));
     closeSession(session);
   }
@@ -105,7 +105,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
    */
   @Override
   public void handleTextMessage(WebSocketSession session, TextMessage baseMessage) {
-    log.info("Message from session [{}]", session.getId());
+    log.debug("Message from session [{}]", session.getId());
     log.debug("Message content [{}]", baseMessage.getPayload());
     T message = (T) new BaseMessageDecoder<>().decode(baseMessage.getPayload());
     messageServiceMap.get(message.getCommand()).processIncoming(message, session.getId());
@@ -119,7 +119,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     TextMessage response = message.getMessage();
     String sessionId = message.getSessionId();
     broadcast(sessionId, response);
-    log.info("NostrEventController broadcast to\nsession:\n\t{}\nmessage:\n\t{}", sessionId, response.getPayload());
+    log.debug("NostrEventController broadcast to\nsession:\n\t{}\nmessage:\n\t{}", sessionId, response.getPayload());
   }
 
   /**
@@ -131,18 +131,18 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     String sessionId = message.getSessionId();
     broadcast(sessionId, response);
     if (message.isValid()) {
-      log.info("OK response to\nclient:\n\t{}\npayload:\n\t{}", sessionId, response.getPayload());
+      log.debug("OK response to\nclient:\n\t{}\npayload:\n\t{}", sessionId, response.getPayload());
       return;
     }
     closeSession(sessionId);
-    log.info("CLOSE response to\nclient:\n\t{}\npayload:\n\t{}", sessionId, response.getPayload());
+    log.debug("CLOSE response to\nclient:\n\t{}\npayload:\n\t{}", sessionId, response.getPayload());
   }
 
   private void broadcast(String sessionId, TextMessage message) {
     try {
       mapSessions.get(Optional.ofNullable(sessionId).orElseThrow()).sendMessage(message);
     } catch (Exception e) {
-      log.info("Orphaned client session [{}], message [{}] not sent", sessionId, message);
+      log.debug("Orphaned client session [{}], message [{}] not sent", sessionId, message);
     }
   }
 
@@ -159,7 +159,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     try {
       session.close();
     } catch (IOException e) {
-      log.info("Non-Subscriber session closed.");
+      log.debug("Non-Subscriber session closed.");
     }
   }
 
@@ -167,9 +167,9 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     try {
       mapSessions.get(Optional.ofNullable(sessionId).orElseThrow()).close();
       Objects.requireNonNull(mapSessions.remove(sessionId));
-      log.info("sessionId removed from mapSessions");
+      log.debug("sessionId removed from mapSessions");
     } catch (Exception e) {
-      log.info("no sessionId to remove from mapSessions");
+      log.debug("no sessionId to remove from mapSessions");
     }
   }
 }

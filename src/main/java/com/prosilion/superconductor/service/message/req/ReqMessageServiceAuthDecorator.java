@@ -34,12 +34,12 @@ public class ReqMessageServiceAuthDecorator<T extends ReqMessage> implements Mes
 
   @Override
   public void processIncoming(@NonNull T reqMessage, @NonNull String sessionId) {
-    log.info("AUTH REQ decoded, contents: {}", reqMessage);
+    log.debug("AUTH REQ decoded, contents: {}", reqMessage);
 
     try {
       authEntityService.findAuthEntityBySessionId(sessionId).orElseThrow();
     } catch (NoSuchElementException e) {
-      log.info("AUTHENTICATED REQ message failed session authentication");
+      log.debug("AUTHENTICATED REQ message failed session authentication");
       reqMessageService.processNoticeClientResponse(reqMessage, sessionId, String.format("restricted: session [%s] has not been authenticated", sessionId));
       return;
     }

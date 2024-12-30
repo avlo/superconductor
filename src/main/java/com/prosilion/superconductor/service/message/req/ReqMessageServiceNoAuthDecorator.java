@@ -28,7 +28,7 @@ public class ReqMessageServiceNoAuthDecorator<T extends ReqMessage> implements M
 
   @Override
   public void processIncoming(@NonNull T reqMessage, @NonNull String sessionId) {
-    log.info("REQ decoded, contents: {}", reqMessage);
+    log.debug("REQ decoded, contents: {}", reqMessage);
     reqMessageService.processIncoming(reqMessage, sessionId);
   }
 

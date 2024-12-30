@@ -129,7 +129,7 @@ public class RelayInfoDocService {
   }
 
   public WebSocketMessage<String> processIncoming() {
-    log.info("Send RelayInformationDocument: {}", nip11Json);
+    log.debug("Send RelayInformationDocument: {}", nip11Json);
     return new TextMessage(nip11Json);
   }
 }

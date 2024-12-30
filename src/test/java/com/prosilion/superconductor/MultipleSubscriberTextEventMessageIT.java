@@ -8,8 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
@@ -31,6 +35,7 @@ import static org.awaitility.Awaitility.await;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 @ActiveProfiles("test")
+@TestMethodOrder(OrderAnnotation.class)
 class MultipleSubscriberTextEventMessageIT {
   private final String hexCounterSeed;
   private final int hexStartNumber;
@@ -58,9 +63,21 @@ class MultipleSubscriberTextEventMessageIT {
 
   @BeforeAll
   public void setup() throws IOException {
-    CompletableFuture<Void> eventFutures = CompletableFuture.runAsync(() ->
-        IntStream.range(0, targetCount).forEach(this::createEvent));
-    await().until(eventFutures::isDone);
+    long start = System.currentTimeMillis();
+
+    CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
+        IntStream.range(0, targetCount).forEach(this::createEvent), executorService);
+    await()
+        .timeout(1, TimeUnit.MINUTES)
+        .until(voidCompletableFuture::isDone);
+
+//    CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
+//        IntStream.range(0, targetCount).forEach(this::createEvent));
+//    await()
+//        .timeout(1, TimeUnit.MINUTES)
+//        .until(voidCompletableFuture::isDone);
+
+    log.info("events setup elapsed time [{}]", System.currentTimeMillis() - start);
   }
 
   @SneakyThrows
@@ -77,11 +94,32 @@ class MultipleSubscriberTextEventMessageIT {
   }
 
   @Test
-  void testReqMessage() {
+  @Order(0)
+  void testReqMessageWithExecutor() {
+    long start = System.currentTimeMillis();
+
     CompletableFuture<Void> requestFutures = CompletableFuture.runAsync(() ->
-        IntStream.range(0, targetCount).forEach(this::sendRequest));
-    await().until(requestFutures::isDone);
+        IntStream.range(0, targetCount).forEach(this::sendRequest), executorService);
+    await()
+        .timeout(1, TimeUnit.MINUTES)
+        .until(requestFutures::isDone);
+
+    log.debug("testReqMessageWithExecutor requests completed after elapsed time [{}]", System.currentTimeMillis() - start);
   }
+
+//  @Test
+//  @Order(1)
+//  void testReqMessageWithoutExecutor() {
+//    long start = System.currentTimeMillis();
+//
+//    CompletableFuture<Void> requestFutures = CompletableFuture.runAsync(() ->
+//        IntStream.range(0, targetCount).forEach(this::sendRequest));
+//    await()
+//        .timeout(1, TimeUnit.MINUTES)
+//        .until(requestFutures::isDone);
+//
+//    log.debug("testReqMessageWithoutExecutor requests completed after elapsed time [{}]", System.currentTimeMillis() - start);
+//  }
 
   @SneakyThrows
   private void sendRequest(int increment) {

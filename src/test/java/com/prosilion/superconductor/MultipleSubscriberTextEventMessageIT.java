@@ -1,6 +1,5 @@
 package com.prosilion.superconductor;
 
-import com.google.common.util.concurrent.MoreExecutors;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -24,11 +23,16 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -58,7 +62,7 @@ class MultipleSubscriberTextEventMessageIT {
     this.hexCounterSeed = hexCounterSeed;
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
-    this.executorService = MoreExecutors.newDirectExecutorService();
+    this.executorService = Executors.newVirtualThreadPerTaskExecutor();
   }
 
   @BeforeAll
@@ -66,16 +70,15 @@ class MultipleSubscriberTextEventMessageIT {
     long start = System.currentTimeMillis();
 
     CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
-        IntStream.range(0, targetCount).forEach(this::createEvent), executorService);
+            IntStream.range(0, targetCount).forEach(value ->
+                assertAll(() -> createEvent(value)))
+        , executorService);
+
     await()
         .timeout(1, TimeUnit.MINUTES)
         .until(voidCompletableFuture::isDone);
 
-//    CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
-//        IntStream.range(0, targetCount).forEach(this::createEvent));
-//    await()
-//        .timeout(1, TimeUnit.MINUTES)
-//        .until(voidCompletableFuture::isDone);
+    assertFalse(voidCompletableFuture.isCompletedExceptionally());
 
     log.info("events setup elapsed time [{}]", System.currentTimeMillis() - start);
   }
@@ -90,39 +93,29 @@ class MultipleSubscriberTextEventMessageIT {
   }
 
   private String getGlobalEventJson(String startEventId) {
-    return "[\"EVENT\",{\"id\":\"" + startEventId + "\",\"kind\":1,\"content\":\"1111111111\",\"pubkey\":\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\"created_at\":1717357053050,\"tags\":[],\"sig\":\"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
+    return "[ \"EVENT\", { \"content\": \"1111111111\", \"id\":\"" + startEventId + "\", \"kind\": 1, \"created_at\": 1717357053050, \"pubkey\": \"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\", \"tags\": [[\"a\", \"wss://nostr.example.com\", \"30023:f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd\"], [\"custom-tag\", \"custom-tag random value\"], [\"p\", \"2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"], [\"e\", \"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\"], [\"g\", \"textnote geo-tag-1\"]], \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
   }
 
   @Test
   @Order(0)
-  void testReqMessageWithExecutor() {
+  void testReqMessageWithExecutor() throws InterruptedException {
     long start = System.currentTimeMillis();
 
-    CompletableFuture<Void> requestFutures = CompletableFuture.runAsync(() ->
-        IntStream.range(0, targetCount).forEach(this::sendRequest), executorService);
+    CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
+            IntStream.range(0, targetCount).forEach(value ->
+                assertAll(() -> sendRequest(value)))
+        , executorService);
+
     await()
         .timeout(1, TimeUnit.MINUTES)
-        .until(requestFutures::isDone);
+        .until(voidCompletableFuture::isDone);
+
+    assertFalse(voidCompletableFuture.isCompletedExceptionally());
 
     log.debug("testReqMessageWithExecutor requests completed after elapsed time [{}]", System.currentTimeMillis() - start);
   }
 
-//  @Test
-//  @Order(1)
-//  void testReqMessageWithoutExecutor() {
-//    long start = System.currentTimeMillis();
-//
-//    CompletableFuture<Void> requestFutures = CompletableFuture.runAsync(() ->
-//        IntStream.range(0, targetCount).forEach(this::sendRequest));
-//    await()
-//        .timeout(1, TimeUnit.MINUTES)
-//        .until(requestFutures::isDone);
-//
-//    log.debug("testReqMessageWithoutExecutor requests completed after elapsed time [{}]", System.currentTimeMillis() - start);
-//  }
-
-  @SneakyThrows
-  private void sendRequest(int increment) {
+  private void sendRequest(int increment) throws IOException, ExecutionException, InterruptedException {
     String uuidKey = getNextHex(increment);
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqJson(uuidKey),
@@ -130,6 +123,7 @@ class MultipleSubscriberTextEventMessageIT {
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(uuidKey));
   }
 
   private String createReqJson(@NonNull String uuid) {

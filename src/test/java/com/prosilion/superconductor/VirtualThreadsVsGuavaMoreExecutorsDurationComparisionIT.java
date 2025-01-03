@@ -53,8 +53,7 @@ class VirtualThreadsVsGuavaMoreExecutorsDurationComparisionIT {
       @NonNull NostrRelayService nostrRelayService,
       @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
-      @Value("${superconductor.test.req.instances}") Integer reqInstances,
-      @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) {
+      @Value("${superconductor.test.req.instances}") Integer reqInstances) {
     this.nostrRelayService = nostrRelayService;
     this.uuidPrefix = uuidPrefix;
     this.hexCounterSeed = hexCounterSeed;

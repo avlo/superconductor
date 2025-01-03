@@ -34,8 +34,9 @@ class MultipleSubscriberEventIdAndAuthorIT extends AbstractMultipleSubscriber {
       @NonNull NostrRelayService nostrRelayService,
       @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
+      @Value("${superconductor.test.req.hexNumberOfBytes}") Integer hexNumberOfBytes,
       @Value("${superconductor.test.req.instances}") Integer reqInstances) {
-    super(nostrRelayService, hexCounterSeed, reqInstances);
+    super(nostrRelayService, hexCounterSeed, hexNumberOfBytes, reqInstances);
     this.uuidPrefix = uuidPrefix;
   }
 

@@ -55,9 +55,10 @@ abstract class AbstractMultipleSubscriber {
   AbstractMultipleSubscriber(
       NostrRelayService nostrRelayService,
       String hexCounterSeed,
+      Integer hexNumberOfBytes,
       Integer reqInstances) {
     this.nostrRelayService = nostrRelayService;
-    this.hexCounterSeed = hexCounterSeed;
+    this.hexCounterSeed = hexCounterSeed.repeat(2*hexNumberOfBytes);
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
   }

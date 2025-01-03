@@ -17,9 +17,9 @@
 
 
 - Dependencies:
-  - Java 22
-  - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.1
-  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.2.2
+  - Java 21
+  - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.4
+  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.3.4
   - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) API library
 
 
@@ -33,15 +33,14 @@
 
     $ java -version
 
->     openjdk version "22" 2024-03-19
->     OpenJDK Runtime Environment (build 22+36-2370)
->     OpenJDK 64-Bit Server VM (build 22+36-2370, mixed mode, sharing)
+>     openjdk version "21.0.2" 2024-01-16
+>     OpenJDK Runtime Environment (build 21.0.2+13-58)
+>     OpenJDK 64-Bit Server VM (build 21.0.2+13-58, mixed mode, sharing)
 
     $ mvn -version
 >     Apache Maven 4.0.0-beta-3 (e92f645c2749eb2a4f5a8843cf01e7441e4b559f)
->     Java version: 22, vendor: Oracle Corporation
+>     Java version: 21.0.2, vendor: Oracle Corporation
 >     Default locale: en_US, platform encoding: UTF-8
->     OS name: "linux", version: "5.15.0-112-generic", arch: "amd64", family: "unix"
 
 ----
 
@@ -128,23 +127,23 @@ Superconductor is now ready to use.
 ### 2.  Run locally using maven spring-boot:run target
 
     $ cd <your_git_home_dir>/superconductor
-    $ mvn spring-boot:run -Dspring.profiles.active=local 
+    $ mvn spring-boot:run -P local 
 
 for full/debug developer console logging:
 
     $ cd <your_git_home_dir>/superconductor
-    $ mvn spring-boot:run -Dspring.profiles.active=local -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE
+    $ mvn spring-boot:run -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE -P local
 ----
 
 ### 3.  Run locally as executable jar
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar target/superconductor-1.9.0.war
+    $ java -jar target/superconductor-1.9.1.war
 
 ----
 ### 4.  Run using pre-existing local application-server-container instance
 
-    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.9.0.war <your_container/instance/deployment_directory>
+    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.9.1.war <your_container/instance/deployment_directory>
 
 ----
 

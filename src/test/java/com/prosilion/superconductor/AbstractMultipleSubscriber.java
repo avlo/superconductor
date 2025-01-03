@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prosilion.superconductor.util.NostrRelayService;
+import lombok.Getter;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,13 +42,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(OrderAnnotation.class)
 abstract class AbstractMultipleSubscriber {
   private final ObjectMapper mapper = new ObjectMapper();
-
+  @Getter
   private final String hexCounterSeed;
-  private final int hexStartNumber;
+  @Getter
   private final Integer targetCount;
-
+  @Getter
   private final NostrRelayService nostrRelayService;
+  @Getter
   private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+  private final int hexStartNumber;
 
   AbstractMultipleSubscriber(
       NostrRelayService nostrRelayService,
@@ -78,8 +80,7 @@ abstract class AbstractMultipleSubscriber {
     log.info("events setup elapsed time [{}]", System.currentTimeMillis() - start);
   }
 
-  @SneakyThrows
-  private void createEvent(int increment) {
+  private void createEvent(int increment) throws IOException {
     String nextHex = getNextHex(increment);
     log.debug("next hex: {}", nextHex);
     String globalEventJson = getGlobalEventJson(nextHex);
@@ -87,13 +88,13 @@ abstract class AbstractMultipleSubscriber {
     nostrRelayService.createEvent(globalEventJson);
   }
 
-  abstract String getGlobalEventJson(String startEventId);
-  abstract String getExpectedJsonInAnyOrder(String startEventId);
+  abstract String getGlobalEventJson(@NonNull String startEventId);
+  abstract String getExpectedJsonInAnyOrder(@NonNull String startEventId);
   abstract String createReqJson(@NonNull String uuid);
 
   @Test
   @Order(0)
-  void testReqMessageWithExecutor() {
+  void testReqMessage() {
     long start = System.currentTimeMillis();
 
     CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
@@ -128,14 +129,14 @@ abstract class AbstractMultipleSubscriber {
   }
 
 
-  private String getNextHex(int i) {
+  protected String getNextHex(int i) {
     String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
     return hexCounterSeed
         .substring(0, hexCounterSeed.length() - incrementedHexNumber.length())
         .concat(incrementedHexNumber);
   }
 
-  private boolean compareWithoutOrder(String payloadString, String expectedJson) throws JsonProcessingException {
+  protected boolean compareWithoutOrder(String payloadString, String expectedJson) throws JsonProcessingException {
     JsonNode jsonNode = mapper.readTree(payloadString);
     return ComparatorWithoutOrder.equalsJson(mapper.readTree(expectedJson), jsonNode);
   }

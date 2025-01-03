@@ -1,183 +1,39 @@
 package com.prosilion.superconductor;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.util.concurrent.MoreExecutors;
-import lombok.Getter;
-import lombok.Synchronized;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import com.prosilion.superconductor.util.NostrRelayService;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
+import org.junit.jupiter.api.Nested;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.expression.EvaluationException;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+@Slf4j
+@Nested
+class MultipleZapRequestEventMessageIT extends AbstractMultipleSubscriber {
+  private final String uuidPrefix;
 
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext
-@ContextConfiguration
-@TestPropertySource("/application-test.properties")
-class MultipleZapRequestEventMessageIT {
-  private static final String TARGET_TEXT_MESSAGE_EVENT_CONTENT = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
-
-  public final String textMessageEventJson;
-  public final String textMessageEventJsonReordered;
-  public static final String EOSE = "[\"EOSE\",\"0000000000000000000000000000000000000000000000000\"]";
-
-  private final String websocketUrl;
-
-  private final String hexCounterSeed;
-  private final int hexStartNumber;
-  private final Integer targetCount;
-  private final Integer pctThreshold;
-  int resultCount;
-
-  private final ObjectMapper mapper = new ObjectMapper();
-  private final ExecutorService executorService;
-
-  List<Callable<CompletableFuture<WebSocketSession>>> reqClients;
-
+  @Autowired
   MultipleZapRequestEventMessageIT(
-      @Value("${superconductor.relay.url}") String relayUrl,
+      @NonNull NostrRelayService nostrRelayService,
+      @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
-      @Value("${superconductor.test.req.instances}") Integer reqInstances,
-      @Value("${superconductor.test.req.success_threshold_pct}") Integer pctThreshold) throws IOException {
-    this.websocketUrl = relayUrl;
-    this.hexCounterSeed = hexCounterSeed;
-    this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
-    this.targetCount = reqInstances;
-    this.pctThreshold = pctThreshold;
-    this.executorService = MoreExecutors.newDirectExecutorService();
-
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/zap_request_event_json_input.txt"))) {
-      this.textMessageEventJson = lines.collect(Collectors.joining("\n"));
-    }
-
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/zap_request_event_json_reordered.txt"))) {
-      this.textMessageEventJsonReordered = lines.collect(Collectors.joining("\n"));
-    }
+      @Value("${superconductor.test.req.instances}") Integer reqInstances) {
+    super(nostrRelayService, hexCounterSeed, reqInstances);
+    this.uuidPrefix = uuidPrefix;
   }
 
-  @BeforeAll
-  public void setup() {
-    WebSocketStompClient eventStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-    eventStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-    CompletableFuture<WebSocketSession> eventExecute = eventStompClient.getWebSocketClient().execute(new EventMessageSocketHandler(), websocketUrl, "");
-    await().until(eventExecute::isDone);
-
-    reqClients = new ArrayList<>(targetCount);
-    IntStream.range(0, targetCount).parallel().forEach(increment -> {
-      final WebSocketStompClient reqStompClient = new WebSocketStompClient(new StandardWebSocketClient());
-      reqStompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
-      Callable<CompletableFuture<WebSocketSession>> callableTask = () ->
-          reqStompClient.getWebSocketClient().execute(new ReqMessageSocketHandler(increment, getNextHex(increment)), websocketUrl, "");
-      reqClients.add(callableTask);
-    });
-    assertDoesNotThrow(() -> executorService.invokeAll(reqClients).stream().parallel().forEach(future ->
-        await().until(() -> future.get().isDone())));
+  public String getGlobalEventJson(String startEventId) {
+    return "[\"EVENT\",{\"id\":\"" + startEventId + "\", \"kind\": 9734, \"content\": \"content Zap Request\", \"pubkey\": \"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\", \"created_at\": 1719016694217, \"tags\": [[\"e\",\"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\"], [\"g\",\"ZapRequest geo-tag-1\"], [\"t\",\"ZapRequest hash-tag-1111\"], [\"p\",\"2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"], [\"relays\",\"wss://localhost:5555\"], [\"subject\",\"subject Zap Request\"], [\"amount\",\"271.00\"], [\"lnurl\",\"lnurl1dp68gurn8ghj7um5v93kketj9ehx2amn9uh8wetvdskkkmn0wahz7mrww4excup0dajx2mrv92x9xp\"]], \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
   }
 
-  @Test
-  void testEventMessageThenReqMessage() throws EvaluationException {
-    executorService.shutdown();
-    await().until(() -> executorService.awaitTermination(5000, TimeUnit.SECONDS));
-    await().until(executorService::isTerminated);
-
-    System.out.println("-------------------");
-    System.out.println("resultCount: " + resultCount);
-    System.out.println("targetCount: " + targetCount);
-    System.out.println("((resultCount / targetCount) * 100): " + ((resultCount / targetCount) * 100));
-    System.out.printf("[%s/%s] == [%d%% of minimal %d%%] completed before test-container thread ended%n",
-        resultCount,
-        targetCount,
-        ((resultCount / targetCount) * 100),
-        pctThreshold);
-    System.out.println("-------------------");
+  public String getExpectedJsonInAnyOrder(String startEventId) {
+    return "{\"id\":\"" + startEventId + "\", \"pubkey\": \"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\", \"created_at\": 1719016694217, \"tags\": [[\"e\",\"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\"], [\"p\",\"2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"], [\"g\",\"ZapRequest geo-tag-1\"], [\"t\",\"ZapRequest hash-tag-1111\"], [\"relays\",\"wss://localhost:5555\"], [\"subject\",\"subject Zap Request\"], [\"amount\",\"271.00\"], [\"lnurl\",\"lnurl1dp68gurn8ghj7um5v93kketj9ehx2amn9uh8wetvdskkkmn0wahz7mrww4excup0dajx2mrv92x9xp\"]], \"kind\": 9734, \"content\": \"content Zap Request\", \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}";
   }
 
-
-  class EventMessageSocketHandler extends TextWebSocketHandler {
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(textMessageEventJson));
-    }
-
-    @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-      assertTrue(message.getPayload().toString().contains(TARGET_TEXT_MESSAGE_EVENT_CONTENT));
-      session.close();
-    }
-  }
-
-  @Getter
-  class ReqMessageSocketHandler extends TextWebSocketHandler {
-    private final Integer index;
-    private final String reqJson;
-
-    public ReqMessageSocketHandler(Integer index, String reqId) {
-      this.index = index;
-      reqJson = "[\"REQ\",\"0000000000000000000000000000000000000000000000000\",{\"ids\":[\"5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
-    }
-
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-      session.sendMessage(new TextMessage(reqJson));
-    }
-
-    @Override
-    public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws EvaluationException, IOException {
-      JsonNode jsonNode = mapper.readTree(message.getPayload().toString());
-      boolean condition = ComparatorWithoutOrder.equalsJson(mapper.readTree(textMessageEventJsonReordered), jsonNode);
-      boolean eoseCondition = ComparatorWithoutOrder.equalsJson(mapper.readTree(EOSE), jsonNode);
-
-      if (!condition && !eoseCondition) {
-        session.close();
-        throw new EvaluationException(String.format("Json doesnt' match.  Expected value:%n%s%n but received:%n%s%n", textMessageEventJsonReordered, mapper.readTree(message.getPayload().toString()).toPrettyString()));
-      }
-      increment();
-      session.close();
-    }
-  }
-
-  @Synchronized
-  void increment() {
-    resultCount++;
-  }
-
-  private String getNextHex(int i) {
-    String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
-    return hexCounterSeed
-        .substring(0, hexCounterSeed.length() - incrementedHexNumber.length())
-        .concat(incrementedHexNumber);
+  public String createReqJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"]}]";
+//    return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
   }
 }

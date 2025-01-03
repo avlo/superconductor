@@ -118,8 +118,13 @@ abstract class AbstractMultipleSubscriber {
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(uuidKey));
-    assertTrue(compareWithoutOrder(returnedJsonMap.get(Command.EVENT).get(), getExpectedJsonInAnyOrder(uuidKey)));
+    String responseJson = returnedJsonMap.get(Command.EVENT).get();
+    String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(uuidKey);
+    log.debug("expectedJson:\n  {}", expectedJsonInAnyOrder);
+    log.debug("------------");
+    log.debug("responseJson:\n  {}", responseJson);
+    assertTrue(responseJson.contains(uuidKey));
+    assertTrue(compareWithoutOrder(responseJson, expectedJsonInAnyOrder));
   }
 
 

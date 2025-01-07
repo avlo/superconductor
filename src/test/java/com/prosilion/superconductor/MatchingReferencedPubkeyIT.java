@@ -76,6 +76,6 @@ class MatchingReferencedPubkeyIT {
 
   private String createReqJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuidKey + "\",{\"#p\":[\"" + uuid + "\"]}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"#p\":[\"" + uuid + "\"]}]";
   }
 }

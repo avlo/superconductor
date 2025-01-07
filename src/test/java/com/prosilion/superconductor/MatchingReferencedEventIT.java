@@ -76,6 +76,6 @@ class MatchingReferencedEventIT {
 
   private String createReqJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuidKey + "\",{\"#e\":[\"" + uuid + "\"]}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"#e\":[\"" + uuid + "\"]}]";
   }
 }

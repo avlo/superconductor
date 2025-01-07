@@ -136,7 +136,8 @@ public class NostrRelayService {
   }
 
   private List<String> request(@NonNull String reqJson, @NonNull String clientUuid) throws ExecutionException, InterruptedException, IOException {
-    final String subscriberPrefixEventIdSuffix = subscriberIdPrefix + clientUuid;
+//    final String subscriberPrefixEventIdSuffix = subscriberIdPrefix + clientUuid;
+    final String subscriberPrefixEventIdSuffix = clientUuid;
     final StandardWebSocketClient existingSubscriberUuidWebClient = requestSocketClientMap.get(subscriberPrefixEventIdSuffix);
     if (existingSubscriberUuidWebClient != null) {
       log.debug("3333333333333 existing REQ socket\nkey:\n  [{}]\nsocket:\n  [{}]\n\n", subscriberPrefixEventIdSuffix, existingSubscriberUuidWebClient.getClientSession().getId());

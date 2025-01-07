@@ -132,6 +132,7 @@ abstract class AbstractMultipleSubscriber {
 
   protected String getNextHex(int i) {
     String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
+    log.debug("incrementedHexNumber:\n  [{}]", incrementedHexNumber);
     return hexCounterSeed
         .substring(0, hexCounterSeed.length() - incrementedHexNumber.length())
         .concat(incrementedHexNumber);

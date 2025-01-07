@@ -81,14 +81,14 @@ class MultipleSubscriberEventIdAndAuthorIT extends AbstractMultipleSubscriber {
 
   public String createReqJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    String reqJson = "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"]}]";
+    String reqJson = "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"]}]";
     log.debug("generated EVENT request json:\n  {}", reqJson);
     return reqJson;
   }
 
   private String createReqAuthorJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    String reqJson = "[\"REQ\",\"" + uuidKey + "\",{\"authors\":[\"" + uuid + "\"]}]";
+    String reqJson = "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"" + uuid + "\"]}]";
     log.debug("generated AUTHOR request json:\n  {}", reqJson);
     return reqJson;
   }

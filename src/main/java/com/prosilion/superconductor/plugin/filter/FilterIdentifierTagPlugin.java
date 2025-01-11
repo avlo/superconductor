@@ -14,28 +14,31 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 
 @Component
-public class FilterGenericTagQueryPlugin<T extends Map<String, List<String>>> implements FilterPlugin<T> {
+public class FilterIdentifierTagPlugin<T extends Map<String, List<String>>> implements FilterPlugin<T> {
 
   @Override
   public BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate() {
     return (t, u) ->
-        getIdentifierTags(u.event().getTags()).stream()
-            .map(IdentifierTag::getId)
-            .anyMatch(dTag -> t.entrySet().stream().anyMatch(entry -> entry.getValue().getFirst().equals(dTag)));
+    {
+      return getIdentifierTags(u.event().getTags()).stream()
+          .map(IdentifierTag::getId)
+          .anyMatch(dTag -> t.entrySet().stream().anyMatch(entry -> entry.getValue().getFirst().equals(dTag)));
+    };
   }
 
   @Override
   public List<T> getPluginFilters(Filters filters) {
+    Map<String, List<String>> genericTagQuery = filters.getGenericTagQuery();
     return (List<T>) List.of(
         Optional.ofNullable(
-                filters.getGenericTagQuery())
+                genericTagQuery)
             .orElse(
                 Collections.emptyMap()));
   }
 
   @Override
   public String getCode() {
-    return "genericTagQuery";
+    return "identifierTagQuery";
   }
 
   private List<IdentifierTag> getIdentifierTags(List<BaseTag> baseTags) {

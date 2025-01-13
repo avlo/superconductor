@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseMessage;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
@@ -43,7 +42,7 @@ public class StandardWebSocketClient extends TextWebSocketHandler {
   }
 
   @Override
-  protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
+  protected void handleTextMessage(@NonNull WebSocketSession session, TextMessage message) {
     String payload = message.getPayload();
 //    log.debug("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 //    log.debug("socket:\n  [{}]\n", session.getId());

@@ -16,7 +16,6 @@ import nostr.event.BaseTag;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,11 +87,11 @@ public class EventEntityService<T extends GenericEvent> {
         .convertEntityToDto();
   }
 
-  private @NotNull Optional<EventEntity> getById(Long id) {
+  private @NonNull Optional<EventEntity> getById(Long id) {
     return eventEntityRepository.findById(id);
   }
 
-  private @NotNull EventEntity populateEventEntity(EventEntity eventEntity) {
+  private @NonNull EventEntity populateEventEntity(EventEntity eventEntity) {
     List<BaseTag> concreteTags = concreteTagEntitiesService.getTags(
             eventEntity.getId()).stream()
         .map(AbstractTagEntity::getAsBaseTag).toList();

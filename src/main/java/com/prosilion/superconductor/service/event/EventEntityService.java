@@ -87,11 +87,11 @@ public class EventEntityService<T extends GenericEvent> {
         .convertEntityToDto();
   }
 
-  private @NonNull Optional<EventEntity> getById(Long id) {
+  private Optional<EventEntity> getById(Long id) {
     return eventEntityRepository.findById(id);
   }
 
-  private @NonNull EventEntity populateEventEntity(EventEntity eventEntity) {
+  private EventEntity populateEventEntity(EventEntity eventEntity) {
     List<BaseTag> concreteTags = concreteTagEntitiesService.getTags(
             eventEntity.getId()).stream()
         .map(AbstractTagEntity::getAsBaseTag).toList();

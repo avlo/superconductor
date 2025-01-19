@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +34,7 @@ import java.util.stream.IntStream;
 import static org.awaitility.Awaitility.await;
 
 @Slf4j
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 @ActiveProfiles("test")
@@ -53,10 +54,11 @@ class VirtualThreadsVsGuavaMoreExecutorsDurationComparisionIT {
       @NonNull NostrRelayService nostrRelayService,
       @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
+      @Value("${superconductor.test.req.hexNumberOfBytes}") Integer hexNumberOfBytes,
       @Value("${superconductor.test.req.instances}") Integer reqInstances) {
     this.nostrRelayService = nostrRelayService;
     this.uuidPrefix = uuidPrefix;
-    this.hexCounterSeed = hexCounterSeed;
+    this.hexCounterSeed = hexCounterSeed.repeat(2*hexNumberOfBytes);
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
   }
@@ -135,11 +137,12 @@ class VirtualThreadsVsGuavaMoreExecutorsDurationComparisionIT {
 
   private String createReqJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"]}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"]}]";
   }
 
   private String getNextHex(int i) {
     String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
+    log.debug("incrementedHexNumber:\n  [{}]", incrementedHexNumber);
     return hexCounterSeed
         .substring(0, hexCounterSeed.length() - incrementedHexNumber.length())
         .concat(incrementedHexNumber);

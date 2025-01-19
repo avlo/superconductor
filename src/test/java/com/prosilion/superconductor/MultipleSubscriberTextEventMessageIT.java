@@ -34,6 +34,6 @@ class MultipleSubscriberTextEventMessageIT extends AbstractMultipleSubscriber {
 
   public String createReqJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"]}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"]}]";
   }
 }

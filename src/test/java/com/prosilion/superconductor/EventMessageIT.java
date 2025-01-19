@@ -85,7 +85,7 @@ class EventMessageIT {
 
   private String createEventReqJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"]}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"]}]";
   }
 
   @Test
@@ -108,6 +108,6 @@ class EventMessageIT {
 
   private String createAuthorReqJson(@NonNull String authorPubkey) {
     final String uuidKey = Strings.concat(uuidPrefix, authorPubkey);
-    return "[\"REQ\",\"" + uuidKey + "\",{\"authors\":[\"" + authorPubkey + "\"]}]";
+    return "[\"REQ\",\"" + authorPubkey + "\",{\"authors\":[\"" + authorPubkey + "\"]}]";
   }
 }

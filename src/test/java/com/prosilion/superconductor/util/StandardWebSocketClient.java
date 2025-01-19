@@ -42,7 +42,7 @@ public class StandardWebSocketClient extends TextWebSocketHandler {
   }
 
   @Override
-  protected void handleTextMessage(@NonNull WebSocketSession session, TextMessage message) {
+  protected void handleTextMessage(WebSocketSession session, TextMessage message) {
     String payload = message.getPayload();
 //    log.debug("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 //    log.debug("socket:\n  [{}]\n", session.getId());

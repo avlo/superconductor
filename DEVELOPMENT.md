@@ -20,12 +20,12 @@
   - Java 21
   - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.4
   - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.3.4
-  - Event/Message [nostr-java](https://github.com/tcheeric/nostr-java) API library
+  - Event/Message [nostr-java](https://github.com/avlo/nostr-java-avlo-fork/tree/develop)   (symmetric fork of tcheeric's [nostr-java](https://github.com/tcheeric/nostr-java/tree/develop)) API/library
 
 
 - Containerized deployment:
-  - [Docker](https://hub.docker.com/_/docker) 27.0.3
-  - [Docker Compose](https://docs.docker.com/compose/install/) v2.28.1
+  - [Docker](https://hub.docker.com/_/docker) 27.5.0
+  - [Docker Compose](https://docs.docker.com/compose/install/) v2.32.4
 
 ----
 
@@ -33,14 +33,13 @@
 
     $ java -version
 
->     openjdk version "21.0.2" 2024-01-16
->     OpenJDK Runtime Environment (build 21.0.2+13-58)
->     OpenJDK 64-Bit Server VM (build 21.0.2+13-58, mixed mode, sharing)
+>     java version "21.0.5" 2024-10-15 LTS
+>     Java(TM) SE Runtime Environment (build 21.0.5+9-LTS-239)
+>     Java HotSpot(TM) 64-Bit Server VM (build 21.0.5+9-LTS-239, mixed mode, sharing)
 
     $ mvn -version
->     Apache Maven 4.0.0-beta-3 (e92f645c2749eb2a4f5a8843cf01e7441e4b559f)
->     Java version: 21.0.2, vendor: Oracle Corporation
->     Default locale: en_US, platform encoding: UTF-8
+>     Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+>     Java version: 21.0.5, vendor: Oracle Corporation
 
 ----
 
@@ -99,17 +98,18 @@ superconductor.relay.url=wss://localhost:5555                      <--------  "w
 #### 1.  Docker + Docker Compose
 ##### Confirm minimal docker requirements
     $ docker --version
->     Docker version 27.0.3
+>     Docker version 27.5.0
     $ docker compose version
->     Docker Compose version v2.28.1
+>     Docker Compose version v2.32.4
 
+_(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28.1 or higher.  Earlier versions are at the liability of the developer/administrator)_
 ##### Dockerize project
 Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([preferential over Dockerfile](https://reflectoring.io/spring-boot-docker/))
 
     $ mvn -N wrapper:wrapper
     $ mvn spring-boot:build-image
 
-(*optionally edit various [docker-compose-dev.yml](docker-compose-dev.yml?plain=1#L10,L32,L36-L37) parameters as desired.*)
+(*optionally edit various [docker-compose-dev.yml](docker-compose-dev.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
 
 ##### Start docker containers
     $ docker compose -f docker-compose-dev.yml up -d

@@ -54,16 +54,18 @@
     
 ----
 ### Normal/Production Mode (for most users) Instructions:
-#### Confirm minimal docker requirements
+#### Confirm docker requirements
 
     $ docker --version
->     Docker version 27.0.3
+>     Docker version 27.5.0
     $ docker compose version
->     Docker Compose version v2.28.1
+>     Docker Compose version v2.32.4
 
 (Download links for the above)
-- [Docker](https://hub.docker.com/_/docker) 27.0.3
-- [Docker Compose](https://docs.docker.com/compose/install/) v2.28.1
+- [Docker](https://hub.docker.com/_/docker) 27.5.0
+- [Docker Compose](https://docs.docker.com/compose/install/) v2.32.4
+
+_(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28.1 or higher.  Earlier versions are at the liability of the developer/administrator)_
 
 ----
 
@@ -72,7 +74,7 @@
 
 ----
 
-#### Download Docker-Compose configuration file _(and optionally [edit various parameters](docker-compose-prod.yml?plain=1#L10,32,L36-L37) as desired)_:
+#### Download Docker-Compose configuration file _(and optionally [edit various parameters](docker-compose-prod.yml?plain=1#L10,32,L36-L37) as applicable)_:
 
 [docker-compose-prod.yml](docker-compose-prod.yml)
 

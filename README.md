@@ -47,11 +47,7 @@
   - [NIP-89](https://nostr-nips.com/nip-89) (Recommended Application Handlers)
   - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)
   - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
-
-#### In-Progress
-  - [NIP-15](https://nostr-nips.com/nip-15) (Nostr Marketplace)
-    - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)
-    
+ 
 ----
 ### Normal/Production Mode (for most users) Instructions:
 #### Confirm docker requirements
@@ -74,35 +70,103 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 
 ----
 
-#### Download Docker-Compose configuration file _(and optionally [edit various parameters](docker-compose-prod.yml?plain=1#L10,32,L36-L37) as applicable)_:
+#### Configure SuperConductor security level, 3 options:
 
-[docker-compose-prod.yml](docker-compose-prod.yml)
+<details>
+  <summary>Highest | SSL Certificate (WSS/HTTPS)</summary>
+  <ul>
+    <li><a href="https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/">Obtain</a> an SSL certificate</li>
+    <li><a href="https://www.baeldung.com/java-import-cer-certificate-into-keystore">Install</a> the certificate</li>
+    <li>Download <a href="src/main/resources/application-prod_wss.properties.properties">application-prod_wss.properties</a> file & configure <a href="src/main/resources/application-prod_wss.properties.properties?plain=1#L6,8,L11-L15"> SSL settings</a></li>
+    <li>Download <a href="docker-compose-prod_wss.yml">docker-compose-prod_wss.yml</a> file <i>(and optionally <a href="docker-compose-prod_wss.yml?plain=1#L10,32,L36-L37">edit relevant parameters</a> as applicable)</i></li>
+  </ul>
+</details>
 
-----
+<details>
+  <summary>Medium | Self-Signed Certificate (WSS/HTTPS)</summary>
+  <ul>
+    <li><a href="https://www.baeldung.com/openssl-self-signed-cert">Create </a>a Self-Signed Certificate</li>
+	<li><a href="https://www.baeldung.com/java-import-cer-certificate-into-keystore">Install</a> the certificate</li>
+	<li>Download <a href="src/main/resources/application-prod_wss.properties.properties">application-prod_wss.properties</a> file & configure <a href="src/main/resources/application-prod_wss.properties.properties?plain=1#L6,8,L11-L15"> SSL settings</a></li>
+    <li>Download <a href="docker-compose-prod_wss.yml">docker-compose-prod_wss.yml</a> file <i>(and optionally <a href="docker-compose-prod_wss.yml?plain=1#L10,32,L36-L37">edit relevant parameters</a> as applicable)</i></li>
+  </ul>
+</details> 
 
-#### Configure SuperConductor security, 3 options:
-
-| SecurityLevel | Specification                                                        | Details                                                                                                                                                                                                                                                                                                                                                                             |
-|---------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Highest       | SSL Certificate WSS/HTTPS<br>(industry standard secure encrypted)    | 1. [Obtain](https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/) an SSL certificate.<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-prod.properties?plain=1#L6,8,L11-L15) in application-prod.properties file. |
-| Medium        | Self-Signed Certificate WSS/HTTPS (locally created secure encrypted) | 1. Create a [Self-Signed Certificate](https://www.baeldung.com/openssl-self-signed-cert).<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-prod.properties?plain=1#L6,8,L11-L15) in application-prod.properties file. |
-| None/Default  | WS/HTTP<br>non-secure / non-encrypted                                | For expedient/immediate use without need for an [SSL/TLS certificate](https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/), SuperConductor WebSockets default to WS/HTTP (non-secure/non-encrypted) mode. |  
+<details>
+  <summary>Lowest | Non-secure / Non-encrypted (WS/HTTP)</summary>
+  <ul>
+    <li>Security-related configuration(s) not required</li>
+    <li>Download <a href="docker-compose-prod_ws.yml">docker-compose-prod_ws.yml</a> file <i>(and optionally <a href="docker-compose-prod_ws.yml?plain=1#L10,32,L36-L37">edit relevant parameters</a> as applicable)</i></li>
+  </ul>
+</details>
 
 ----
 
 #### Run SuperConductor
 
-    $ docker compose -f /<path>/<to>/docker-compose-prod.yml up -d
+<details>
+  <summary>WSS/HTTPS</summary>  
 
-Superconductor is now ready to use.
+run without logging:
+
+    docker compose -f docker-compose-prod_wss.yml up 
+
+run with container logging displayed to console:  
+
+    docker compose -f docker-compose-prod_wss.yml up --abort-on-container-failure --attach-dependencies
+
+run with docker logging displayed to console:  
+
+    docker compose -f docker-compose-prod_wss.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
+</details> 
+
+<details>
+  <summary>WS/HTTP</summary>  
+
+run without logging:
+
+    docker compose -f docker-compose-prod_ws.yml up 
+
+run with container logging displayed to console:
+
+    docker compose -f docker-compose-prod_ws.yml up --abort-on-container-failure --attach-dependencies
+
+run with docker logging displayed to console:
+
+    docker compose -f docker-compose-prod_ws.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
+</details> 
 
 ----
 
-##### Stop docker containers
-    $ docker compose -f docker-compose-prod.yml stop superconductor superconductor-db
+##### Stop SuperConductor
 
-##### Remove docker containers
-    $ docker compose -f docker-compose-prod.yml down --remove-orphans
+<details>
+  <summary>WSS/HTTPS</summary>
+
+    docker compose -f docker-compose-prod_wss.yml stop superconductor superconductor-db
+</details> 
+
+<details>
+  <summary>WS/HTTP</summary>  
+
+    docker compose -f docker-compose-prod_ws.yml stop superconductor superconductor-db
+</details>
+
+----  
+
+##### Remove SuperConductor docker containers
+
+<details>
+  <summary>WSS/HTTPS</summary>
+
+    docker compose -f docker-compose-prod_wss.yml down --remove-orphans
+</details> 
+
+<details>
+  <summary>WS/HTTP</summary>  
+
+    docker compose -f docker-compose-prod_ws.yml down --remove-orphans
+</details>
 
 <hr style="border:2px solid grey">
 

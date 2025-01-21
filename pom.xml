@@ -249,9 +249,15 @@
       </properties>
     </profile>
     <profile>
-      <id>dev</id>
+      <id>dev_ws</id>
       <properties>
-        <spring.profiles.active>dev</spring.profiles.active>
+        <spring.profiles.active>dev_ws</spring.profiles.active>
+      </properties>
+    </profile>
+    <profile>
+      <id>dev_wss</id>
+      <properties>
+        <spring.profiles.active>dev_wss</spring.profiles.active>
       </properties>
     </profile>
     <profile>

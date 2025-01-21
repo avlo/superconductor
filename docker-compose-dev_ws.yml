@@ -25,12 +25,11 @@ services:
     image: superconductor:1.10.0
     ports:
       - "5555:5555"
-      - "443:443"
     depends_on:
       superconductor-db:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: dev_ws
       SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3316/superconductor
 #      set below spring datasource parameters and credentials as desired
       SPRING_DATASOURCE_USERNAME: mysqluser

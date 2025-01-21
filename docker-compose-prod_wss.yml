@@ -1,9 +1,9 @@
 services:
   superconductor-db:
     container_name: superconductor-mysqldb
-    image: mysql:8.4.0
+    image: mysql:9.1.0
     ports:
-      - "3306:3306"
+      - "3316:3316"
     labels:
       org.springframework.boot.service-connection: mysql
     environment:
@@ -12,6 +12,7 @@ services:
       MYSQL_USER: mysqluser
       MYSQL_PASSWORD: mysqluserpass
       MYSQL_ROOT_PASSWORD: mysqlrootuserpass
+      MYSQL_TCP_PORT: 3316
     networks:
       docker-network:
     healthcheck:
@@ -24,12 +25,13 @@ services:
     image: avlo/superconductor:1.10.0
     ports:
       - "5555:5555"
+      - "443:443"
     depends_on:
       superconductor-db:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3306/superconductor
+      SPRING_PROFILES_ACTIVE: prod_wss
+      SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3316/superconductor
 #      set below spring datasource credentials as desired
       SPRING_DATASOURCE_USERNAME: mysqluser
       SPRING_DATASOURCE_PASSWORD: mysqluserpass
@@ -41,5 +43,5 @@ volumes:
   superconductor-db:
     driver: local
 networks:
-   docker-network:
+  docker-network:
     driver: bridge

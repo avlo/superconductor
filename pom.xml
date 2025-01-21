@@ -261,9 +261,15 @@
       </properties>
     </profile>
     <profile>
-      <id>prod</id>
+      <id>prod_ws</id>
       <properties>
-        <spring.profiles.active>prod</spring.profiles.active>
+        <spring.profiles.active>prod_ws</spring.profiles.active>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod_wss</id>
+      <properties>
+        <spring.profiles.active>prod_wss</spring.profiles.active>
       </properties>
     </profile>
   </profiles>

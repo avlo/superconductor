@@ -63,7 +63,7 @@
 
 ### JUnit / SpringBootTest Superconductor
 ##### Two test modes, configurable via [appication-test.properties](src/test/resources/application-test.properties) file
-#### 1. Non-Secure (WS) tests mode (default)
+#### 1. Non-Secure (WS) tests mode
 ```
 # ws autoconfigure
 # security test (ws) disabled ('false') by default.
@@ -85,11 +85,11 @@ superconductor.relay.url=wss://localhost:5555                      <--------  "w
 
 #### Configure SuperConductor run-time security, 3 options:
 
-| SecurityLevel | Specification                                                        | Details                                                                                                                                                                                                                                                                                                                                                                             |
-|---------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Highest       | SSL Certificate WSS/HTTPS<br>(industry standard secure encrypted)    | 1. [Obtain](https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/) an SSL certificate.<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local.properties?plain=1#L6,8,L11-L15) in application-local/dev.properties file. |
-| Medium        | Self-Signed Certificate WSS/HTTPS (locally created secure encrypted) | 1. Create a [Self-Signed Certificate](https://www.baeldung.com/openssl-self-signed-cert).<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local.properties?plain=1#L6,8,L11-L15) in application-local/dev.properties file.                              |
-| None/Default  | WS/HTTP<br>non-secure / non-encrypted                                | For expedient/immediate use without need for an [SSL/TLS certificate](https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/), SuperConductor WebSockets default to WS/HTTP (non-secure/non-encrypted) mode.                                                                                                                                                           |  
+| SecurityLevel | Specification                                                        | Details                                                                                                                                                                                                                                                                                                                                                                                 |
+|---------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Highest       | SSL Certificate WSS/HTTPS<br>(industry standard secure encrypted)    | 1. [Obtain](https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/) an SSL certificate.<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file. |
+| Medium        | Self-Signed Certificate WSS/HTTPS (locally created secure encrypted) | 1. Create a [Self-Signed Certificate](https://www.baeldung.com/openssl-self-signed-cert).<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file.                      |
+| None/Default  | WS/HTTP<br>non-secure / non-encrypted                                | Security-related configuration(s) not required                                                                                                                                                                                                                                                                                                                                          |  
 
 ----
 
@@ -109,38 +109,102 @@ Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([pr
     $ mvn -N wrapper:wrapper
     $ mvn spring-boot:build-image
 
-(*optionally edit various [docker-compose-dev.yml](docker-compose-dev.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
+(*optionally edit [docker-compose-dev_wss.yml](docker-compose-dev_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
 
 ##### Start docker containers
-    $ docker compose -f docker-compose-dev.yml up -d
 
-Superconductor is now ready to use.
+<details>
+  <summary>WSS/HTTPS</summary>  
+
+run without logging:
+
+    docker compose -f docker-compose-dev_wss.yml up 
+
+run with container logging displayed to console:
+
+    docker compose -f docker-compose-dev_wss.yml up --abort-on-container-failure --attach-dependencies
+
+run with docker logging displayed to console:
+
+    docker compose -f docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
+</details> 
+
+<details>
+  <summary>WS/HTTP</summary>  
+
+run without logging:
+
+    docker compose -f docker-compose-dev_ws.yml up 
+
+run with container logging displayed to console:
+
+    docker compose -f docker-compose-dev_ws.yml up --abort-on-container-failure --attach-dependencies
+
+run with docker logging displayed to console:
+
+    docker compose -f docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
+</details> 
+
+----
 
 ##### Stop docker containers
-    $ docker compose -f docker-compose-dev.yml stop superconductor superconductor-db
+
+<details>
+  <summary>WSS/HTTPS</summary>
+
+    docker compose -f docker-compose-dev_wss.yml stop superconductor superconductor-db
+</details> 
+
+<details>
+  <summary>WS/HTTP</summary>  
+
+    docker compose -f docker-compose-prod_ws.yml stop superconductor superconductor-db
+</details>
+
+----  
 
 ##### Remove docker containers
-    $ docker compose -f docker-compose-dev.yml down --remove-orphans
+
+<details>
+  <summary>WSS/HTTPS</summary>
+
+    docker compose -f docker-compose-dev_wss.yml down --remove-orphans
+</details> 
+
+<details>
+  <summary>WS/HTTP</summary>  
+
+    docker compose -f docker-compose-prod_ws.yml down --remove-orphans
+</details>  
 
 ----
 
 ### 2.  Run locally using maven spring-boot:run target
 
-    $ cd <your_git_home_dir>/superconductor
-    $ mvn spring-boot:run -P local 
+<details>
+  <summary>WSS/HTTPS</summary>
 
-for full/debug developer console logging:
 
-    $ cd <your_git_home_dir>/superconductor
-    $ mvn spring-boot:run -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE -P local
+    cd <your_git_home_dir>/superconductor
+    mvn spring-boot:run -P local_wss
+</details> 
+
+<details>
+  <summary>WS/HTTP</summary>
+
+    cd <your_git_home_dir>/superconductor
+    mvn spring-boot:run -P local_ws
+</details>  
+
 ----
 
 ### 3.  Run locally as executable jar
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar target/superconductor-1.10.0.war
+    $ java -jar target/superconductor-1.10.0.war  
 
 ----
+
 ### 4.  Run using pre-existing local application-server-container instance
 
     $ cp <your_git_home_dir>/superconductor/target/superconductor-1.10.0.war <your_container/instance/deployment_directory>
@@ -148,19 +212,18 @@ for full/debug developer console logging:
 ----
 
 ### Relay Endpoint for clients
-#### Two modes
-##### 1. Secure (WSS/TLS) mode (default)
-wss://localhost:5555
 
-#### 2. Non-Secure (WS) mode, configurable via _application-**\<env>**.properties_ file (for example, in [appication-local.properties](src/main/resources/application-local.properties))
-```
-# wss autoconfigure
-# secure (wss) enabled 'true' by default.  for non-secure (ws), change below value to 'false' and...
-server.ssl.enabled=false                                           <--------  "false" for ws/non-secure
-# ...also for non-secure (ws), change below value to 'ws'...
-superconductor.relay.url=ws://localhost:5555                       <--------  "ws" protocol for ws/non-secure 
-```
-ws://localhost:5555
+<details>
+  <summary>WSS/HTTPS</summary>
+
+    wss://localhost:5555
+</details> 
+
+<details>
+  <summary>WS/HTTP</summary>  
+
+    ws://localhost:5555
+</details>
 
 <hr style="border:2px solid grey">
 

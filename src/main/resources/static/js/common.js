@@ -1,7 +1,7 @@
 let ws
 
 function connect() {
-    ws = new WebSocket('wss://localhost:5555');
+    ws = new WebSocket("/");
     ws.onmessage = function (messageEvent) {
         showEvent(messageEvent.data);
     }

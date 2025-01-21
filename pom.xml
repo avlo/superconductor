@@ -21,7 +21,9 @@
     <spring-boot.version>${parent.version}</spring-boot.version>
     <nostr-java.version>0.6.3-SNAPSHOT</nostr-java.version>
 
+    <awaitility.version>4.2.0</awaitility.version>
     <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
+    <guava.version>33.2.1-jre</guava.version>
     <h2.version>2.2.224</h2.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     <junit-jupiter.version>5.10.2</junit-jupiter.version>
@@ -87,7 +89,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>33.2.1-jre</version>
+      <version>${guava.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -147,7 +149,7 @@
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
-      <version>4.2.0</version>
+      <version>${awaitility.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -181,20 +183,9 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-<!--  TODO: below buildpacks configuration appears to (currently) be necessary for JDK22, ref: -->
-<!--  https://github.com/paketo-buildpacks/bellsoft-liberica/issues/565  -->
         <configuration>
           <image>
-            <env>
-              <BP_JVM_VERSION>21</BP_JVM_VERSION>
-            </env>
-            <buildpacks>
-              <buildpack>paketobuildpacks/azul-zulu</buildpack>
-              <buildpack>urn:cnb:builder:paketo-buildpacks/syft</buildpack>
-              <buildpack>urn:cnb:builder:paketo-buildpacks/executable-jar</buildpack>
-              <buildpack>urn:cnb:builder:paketo-buildpacks/spring-boot</buildpack>
-            </buildpacks>
-            <builder>paketobuildpacks/builder-jammy-base</builder>
+            <builder>paketobuildpacks/builder-jammy-base:latest</builder>
           </image>
         </configuration>
       </plugin>
@@ -246,15 +237,15 @@
   </build>
   <profiles>
     <profile>
-      <id>local</id>
+      <id>local_ws</id>
       <properties>
-        <spring.profiles.active>local</spring.profiles.active>
+        <spring.profiles.active>local_ws</spring.profiles.active>
       </properties>
     </profile>
     <profile>
-      <id>local-avlo</id>
+      <id>local_wss</id>
       <properties>
-        <spring.profiles.active>local-avlo</spring.profiles.active>
+        <spring.profiles.active>local_wss</spring.profiles.active>
       </properties>
     </profile>
     <profile>

@@ -64,9 +64,9 @@ class ZapRequestEventIT {
 
   GenericEvent zapRequestEvent;
 
-  public ZapRequestEventIT(@Value("${superconductor.relay.url}") String relayUrl) {
-    this.websocketUrl = relayUrl;
-    relaysTag = new RelaysTag(new Relay(relayUrl));
+  public ZapRequestEventIT(@Value("${superconductor.relay.uri}") String relayUri) {
+    this.websocketUrl = relayUri;
+    relaysTag = new RelaysTag(new Relay(relayUri));
   }
 
   @BeforeAll

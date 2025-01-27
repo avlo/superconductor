@@ -3,14 +3,14 @@ package com.prosilion.superconductor.service.event.type;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
-import nostr.event.NIP01Event;
+import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class PublishEventTypePlugin<T extends NIP01Event> implements EventTypePlugin<T> {
+public class PublishEventTypePlugin<T extends GenericEvent> implements EventTypePlugin<T> {
   private final RedisCache<T> redisCache;
 
   @Autowired

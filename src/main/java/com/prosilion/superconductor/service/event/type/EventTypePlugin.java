@@ -5,6 +5,6 @@ import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 
 public interface EventTypePlugin<T extends GenericEvent> {
-  void processIncomingEvent(@NonNull T eventMessage);
+  void processIncomingEvent(@NonNull T event);
   Kind getKind();
 }

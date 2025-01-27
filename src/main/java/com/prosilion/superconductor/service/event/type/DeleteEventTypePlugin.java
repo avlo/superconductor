@@ -4,8 +4,8 @@ import com.prosilion.superconductor.entity.EventEntity;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
-import nostr.event.NIP09Event;
 import nostr.event.impl.DeletionEvent;
+import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
 import nostr.event.tag.EventTag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Component
-public class DeleteEventTypePlugin<T extends NIP09Event> implements EventTypePlugin<T> {
+public class DeleteEventTypePlugin<T extends GenericEvent> implements EventTypePlugin<T> {
   private final RedisCache<T> redisCache;
 
   @Autowired
@@ -40,7 +40,6 @@ public class DeleteEventTypePlugin<T extends NIP09Event> implements EventTypePlu
 
     saveEvent(event);
     deleteEvents(event);
-    assert (false);
   }
 
   private void saveEvent(T event) {
@@ -48,11 +47,18 @@ public class DeleteEventTypePlugin<T extends NIP09Event> implements EventTypePlu
   }
 
   private void deleteEvents(T event) {
+//    TODO: refactor below 3 sections into single stream
     List<Optional<EventEntity>> matchingEvents = event.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(eventTag ->
+
+
+            ///  debug issue this line, returns event but without BaseTags
             redisCache.getByEventIdString(eventTag.getIdEvent())
+
+
+
                 .filter(eventEntity ->
                     eventEntity.getPubKey().equals(
                         event.getPubKey().toHexString()))).toList();
@@ -64,33 +70,22 @@ public class DeleteEventTypePlugin<T extends NIP09Event> implements EventTypePlu
 
     List<Optional<EventEntity>> eventsToDelete =
         matchingEvents.stream().map(optionalEventEntity ->
-            optionalEventEntity.filter(eventEntity ->
-                eventEntity.getKind().toString().equals(
-                    getStreamStream(kTags).distinct().toString()))).toList();
+            Optional.of(optionalEventEntity.filter(eventEntity ->
+                    Optional.of(kTags.stream()
+                            .map(kTag ->
+                                kTag.getAttributes()
+                                    .stream().map(elementAttribute ->
+                                        elementAttribute.getValue().toString())
+                                    .distinct()
+                            )
+                            .flatMap(Stream::distinct))
+                        .orElse(Stream.empty())
+                        .toList()
+                        .contains(eventEntity.getKind().toString())))
+                .orElseGet(Optional::empty)).toList();
 
     eventsToDelete.forEach(optionalEventEntity ->
         optionalEventEntity.ifPresent(redisCache::deleteEventEntity));
-
-// handle "a" tag...
-    assert(false);
-  }
-
-  private static Stream<String> getStreamStream(List<GenericTag> kTags) {
-    Stream<String> stringStream = kTags.stream()
-        .map(
-            DeleteEventTypePlugin::getDistinct)
-        .flatMap(Stream::distinct);
-
-    Stream<String> stringStream1 = Optional.of(stringStream).orElse(Stream.empty());
-    return stringStream1;
-  }
-
-  private static Stream<String> getDistinct(GenericTag kTag) {
-    Stream<String> stringStream = kTag.getAttributes()
-        .stream().map(elementAttribute ->
-            elementAttribute.getValue().toString())
-        .distinct();
-    return stringStream;
   }
 
   @Override

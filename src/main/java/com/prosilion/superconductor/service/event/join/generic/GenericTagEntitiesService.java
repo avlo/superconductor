@@ -56,6 +56,14 @@ public class GenericTagEntitiesService {
         .forEach(tag -> saveJoins(eventId, tag));
   }
 
+  public void deleteTags(@NonNull List<BaseTag> tags) {
+    assert(false);
+  }
+
+  public void deleteTags(@NonNull Long eventId) {
+    assert(false);
+  }
+
   private GenericTagEntity saveTag(GenericTagDto tag) {
     GenericTagEntity save = repo.save(tag.convertDtoToEntity());
     service.saveElementAttributeList(save.getId(), tag.atts());

@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.service.event;
+package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.dto.generic.ElementAttributeDto;
@@ -8,6 +8,7 @@ import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.EventEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.service.event.ConcreteTagEntitiesService;
 import com.prosilion.superconductor.service.event.join.generic.GenericTagEntitiesService;
 import jakarta.persistence.NoResultException;
 import lombok.NonNull;
@@ -55,7 +56,7 @@ public class EventEntityService<T extends GenericEvent> {
     this.eventEntityRepository = eventEntityRepository;
   }
 
-  protected Long saveEventEntity(@NonNull GenericEvent event) {
+  public Long saveEventEntity(@NonNull GenericEvent event) {
     EventDto eventToSave = new EventDto(
         event.getPubKey(),
         event.getId(),
@@ -80,11 +81,21 @@ public class EventEntityService<T extends GenericEvent> {
             Collectors.toMap(EventEntity::getId, EventEntity::convertEntityToDto)));
   }
 
+  public Optional<EventEntity> findByEventIdString(String eventIdString) {
+    return eventEntityRepository.findByEventIdString(eventIdString);
+  }
+
   public T getEventById(@NonNull Long id) {
     return populateEventEntity(
         getById(id)
             .orElseThrow())
         .convertEntityToDto();
+  }
+
+  protected void deleteEventEntity(@NonNull EventEntity eventToDelete) {
+    concreteTagEntitiesService.deleteTags(eventToDelete.getId(), eventToDelete.getTags());
+    genericTagEntitiesService.deleteTags(eventToDelete.getTags());
+    eventEntityRepository.delete(eventToDelete);
   }
 
   private Optional<EventEntity> getById(Long id) {

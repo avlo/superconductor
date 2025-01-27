@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.service.event;
+package com.prosilion.superconductor.service.event.type;
 
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;

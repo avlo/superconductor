@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.superconductor.plugin.tag.TagPlugin;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.plugin.tag.TagPlugin;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
 import lombok.NonNull;
@@ -29,7 +29,7 @@ public class ConcreteTagEntitiesService<
     this.tagPlugins = tagPlugins;
   }
 
-  public List<AbstractTagEntity> getTags(@NonNull Long eventId) {
+  public List<R> getTags(@NonNull Long eventId) {
     return tagPlugins.stream().map(tagModule ->
             tagModule.getTags(eventId))
         .flatMap(List::stream).distinct().collect(Collectors.toList());
@@ -37,9 +37,16 @@ public class ConcreteTagEntitiesService<
 
   public void saveTags(@NonNull Long eventId, @NonNull List<P> baseTags) {
     tagPlugins.forEach(module ->
-        baseTags.stream().filter(tags ->
+        baseTags.stream()
+            .filter(tags ->
                 tags.getCode().equalsIgnoreCase(module.getCode()))
             .forEach(tag ->
                 module.saveTag(eventId, tag)));
+  }
+
+  public void deleteTags(@NonNull Long eventId, @NonNull List<P> baseTags) {
+    tagPlugins.forEach(module ->
+        baseTags.forEach(tag ->
+            module.deleteTag(eventId, tag)));
   }
 }

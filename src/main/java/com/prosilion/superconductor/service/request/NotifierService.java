@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.request;
 
-import com.prosilion.superconductor.service.event.RedisCache;
+import com.prosilion.superconductor.service.event.type.RedisCache;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.NonNull;
 import nostr.event.impl.GenericEvent;

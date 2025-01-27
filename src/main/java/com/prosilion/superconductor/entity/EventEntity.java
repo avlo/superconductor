@@ -59,7 +59,7 @@ public class EventEntity {
   }
 
   public <T extends GenericEvent> T convertEntityToDto() {
-    byte[] rawData = NostrUtil.hex128ToBytes(signature);
+    byte[] rawData = NostrUtil.hexToBytes(signature);
     final Signature signature = new Signature();
     signature.setRawData(rawData);
     return (T) new EventDto(new PublicKey(pubKey), eventIdString, Kind.valueOf(kind), nip, createdAt, signature, tags, content);

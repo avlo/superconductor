@@ -1,0 +1,41 @@
+package com.prosilion.superconductor.service.event.type;
+
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import nostr.event.Kind;
+import nostr.event.NIP01Event;
+import nostr.event.impl.TextNoteEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component
+public class PublishEventTypePlugin<T extends NIP01Event> implements EventTypePlugin<T> {
+  private final RedisCache<T> redisCache;
+
+  @Autowired
+  public PublishEventTypePlugin(RedisCache<T> redisCache) {
+    this.redisCache = redisCache;
+  }
+
+  @Override
+  public void processIncomingEvent(@NonNull T event) {
+    log.debug("processing incoming TEXT_NOTE: [{}]", event);
+
+    TextNoteEvent textNoteEvent = new TextNoteEvent(
+        event.getPubKey(),
+        event.getTags(),
+        event.getContent()
+    );
+    textNoteEvent.setId(event.getId());
+    textNoteEvent.setCreatedAt(event.getCreatedAt());
+    textNoteEvent.setSignature(event.getSignature());
+
+    redisCache.saveEventEntity(event);
+  }
+
+  @Override
+  public Kind getKind() {
+    return Kind.TEXT_NOTE;
+  }
+}

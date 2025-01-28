@@ -4,34 +4,31 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
-import nostr.event.impl.TextNoteEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class PublishEventTypePlugin<T extends GenericEvent> implements EventTypePlugin<T> {
-  private final RedisCache<T> redisCache;
+public class PublishEventTypePlugin<T extends GenericEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
 
   @Autowired
   public PublishEventTypePlugin(RedisCache<T> redisCache) {
-    this.redisCache = redisCache;
+    super(redisCache);
   }
 
   @Override
   public void processIncomingEvent(@NonNull T event) {
-    log.debug("processing incoming TEXT_NOTE: [{}]", event);
-
-    TextNoteEvent textNoteEvent = new TextNoteEvent(
-        event.getPubKey(),
-        event.getTags(),
-        event.getContent()
-    );
-    textNoteEvent.setId(event.getId());
-    textNoteEvent.setCreatedAt(event.getCreatedAt());
-    textNoteEvent.setSignature(event.getSignature());
-
-    redisCache.saveEventEntity(event);
+    log.debug("processing incoming CANONICAL EVENT: [{}]", event);
+//    TODO: below necessary/useful?
+//    TextNoteEvent textNoteEvent = new TextNoteEvent(
+//        event.getPubKey(),
+//        event.getTags(),
+//        event.getContent()
+//    );
+//    textNoteEvent.setId(event.getId());
+//    textNoteEvent.setCreatedAt(event.getCreatedAt());
+//    textNoteEvent.setSignature(event.getSignature());
+    save(event);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.request;
 
+import com.prosilion.superconductor.service.event.type.DeletionEventService;
 import com.prosilion.superconductor.service.event.type.RedisCache;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.NonNull;
@@ -11,11 +12,16 @@ import org.springframework.stereotype.Service;
 public class NotifierService<T extends GenericEvent> {
   private final SubscriberNotifierService<T> subscriberNotifierService;
   private final RedisCache<T> redisCache;
+  private final DeletionEventService deletionEventService;
 
   @Autowired
-  public NotifierService(SubscriberNotifierService<T> subscriberNotifierService, RedisCache<T> redisCache) {
+  public NotifierService(
+      SubscriberNotifierService<T> subscriberNotifierService,
+      RedisCache<T> redisCache,
+      DeletionEventService deletionEventService) {
     this.subscriberNotifierService = subscriberNotifierService;
     this.redisCache = redisCache;
+    this.deletionEventService = deletionEventService;
   }
 
   public void nostrEventHandler(@NonNull AddNostrEvent<T> addNostrEvent) {

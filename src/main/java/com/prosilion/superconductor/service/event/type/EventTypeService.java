@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class EventTypeService<T extends GenericEvent> implements EventTypeServiceIF<T> {
   private final Map<Kind, EventTypePlugin<T>> eventTypePluginsMap;
 
+
   @Autowired
   public EventTypeService(List<EventTypePlugin<T>> eventTypePlugins) {
     this.eventTypePluginsMap = eventTypePlugins.stream().collect(

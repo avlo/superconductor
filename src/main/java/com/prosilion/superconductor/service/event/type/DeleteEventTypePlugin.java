@@ -17,17 +17,20 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Component
-public class DeleteEventTypePlugin<T extends GenericEvent> implements EventTypePlugin<T> {
-  private final RedisCache<T> redisCache;
+public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
+  private final DeletionEventService deletionEventService;
 
   @Autowired
-  public DeleteEventTypePlugin(RedisCache<T> redisCache) {
-    this.redisCache = redisCache;
+  public DeleteEventTypePlugin(
+      RedisCache<T> redisCache,
+      DeletionEventService deletionEventService) {
+    super(redisCache);
+    this.deletionEventService = deletionEventService;
   }
 
   @Override
   public void processIncomingEvent(@NonNull T event) {
-    log.debug("deleting incoming TEXT_NOTE: [{}]", event);
+    log.debug("processing incoming DELETE EVENT: [{}]", event);
 
     DeletionEvent deletionEvent = new DeletionEvent(
         event.getPubKey(),
@@ -38,25 +41,20 @@ public class DeleteEventTypePlugin<T extends GenericEvent> implements EventTypeP
     deletionEvent.setCreatedAt(event.getCreatedAt());
     deletionEvent.setSignature(event.getSignature());
 
-    saveEvent(event);
-    deleteEvents(event);
+    save(event); // NIP-09 req's saving of event itself
+    saveDeletionEvent(event);
   }
 
-  private void saveEvent(T event) {
-    redisCache.saveEventEntity(event); // NIP-09 req's saving of event itself
-  }
-
-  private void deleteEvents(T event) {
+  private void saveDeletionEvent(T event) {
 //    TODO: refactor below 3 sections into single stream
-    List<Optional<EventEntity>> matchingEvents = event.getTags().stream()
+    List<Optional<EventEntity>> matchingEventIds = event.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(eventTag ->
 
 
             ///  debug issue this line, returns event but without BaseTags
-            redisCache.getByEventIdString(eventTag.getIdEvent())
-
+            getRedisCache().getByEventIdString(eventTag.getIdEvent())
 
 
                 .filter(eventEntity ->
@@ -68,8 +66,8 @@ public class DeleteEventTypePlugin<T extends GenericEvent> implements EventTypeP
         .map(GenericTag.class::cast)
         .filter(genericTag -> genericTag.getCode().equals("k")).toList();
 
-    List<Optional<EventEntity>> eventsToDelete =
-        matchingEvents.stream().map(optionalEventEntity ->
+    List<Optional<EventEntity>> eventsNotToFire =
+        matchingEventIds.stream().map(optionalEventEntity ->
             Optional.of(optionalEventEntity.filter(eventEntity ->
                     Optional.of(kTags.stream()
                             .map(kTag ->
@@ -84,8 +82,8 @@ public class DeleteEventTypePlugin<T extends GenericEvent> implements EventTypeP
                         .contains(eventEntity.getKind().toString())))
                 .orElseGet(Optional::empty)).toList();
 
-    eventsToDelete.forEach(optionalEventEntity ->
-        optionalEventEntity.ifPresent(redisCache::deleteEventEntity));
+    eventsNotToFire.forEach(optionalEventEntity ->
+        optionalEventEntity.ifPresent(eventEntity -> deletionEventService.addHiddenEvent(eventEntity.getId())));
   }
 
   @Override
@@ -93,4 +91,3 @@ public class DeleteEventTypePlugin<T extends GenericEvent> implements EventTypeP
     return Kind.DELETION;
   }
 }
-

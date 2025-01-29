@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,10 @@ public class EventTypeService<T extends GenericEvent> implements EventTypeServic
 
   @Override
   public void processIncomingEvent(@NonNull T event) {
-    eventTypePluginsMap.get(Kind.valueOf(event.getKind())).processIncomingEvent(event);
+    Optional.ofNullable(
+            eventTypePluginsMap.get(
+                Kind.valueOf(event.getKind()))) // currently should only match DELETE kind
+        .orElse(
+            eventTypePluginsMap.get(Kind.TEXT_NOTE)).processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
   }
 }

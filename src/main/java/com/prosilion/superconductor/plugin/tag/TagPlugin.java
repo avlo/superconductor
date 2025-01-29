@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.plugin.tag;
 
-import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.dto.AbstractTagDto;
 import nostr.event.BaseTag;
 
 import java.util.Collection;
@@ -13,10 +13,10 @@ import java.util.Optional;
 
 public interface TagPlugin<
     P extends BaseTag,
-    Q extends AbstractTagEntityRepository<R>, // entity table
-    R extends AbstractTagEntity, // from an entity table
-    S extends EventEntityAbstractTagEntity, // from a join table
-    T extends EventEntityAbstractTagEntityRepository<S>>  // join table
+    Q extends AbstractTagEntityRepository<R>, // dto table
+    R extends AbstractTagEntity, // dto to return
+    S extends EventEntityAbstractTagEntity, // @MappedSuperclass for below
+    T extends EventEntityAbstractTagEntityRepository<S>> // event -> dto join table
 {
   String getCode();
 
@@ -31,7 +31,8 @@ public interface TagPlugin<
   Q getStandardTagEntityRepository();
 
   default List<R> getTags(Long eventId) {
-    return getEventEntityStandardTagEntityRepositoryJoin().findByEventId(eventId)
+    return getEventEntityStandardTagEntityRepositoryJoin()
+        .findByEventId(eventId)
         .stream()
         .map(event -> Optional.of(
                 getStandardTagEntityRepository().findById(
@@ -46,12 +47,5 @@ public interface TagPlugin<
             eventId,
             getStandardTagEntityRepository().save(
                 convertDtoToEntity(baseTag)).getId()));
-  }
-
-  default void deleteTag(Long eventId, P tag) {
-    R rTag = convertDtoToEntity(tag);
-    getEventEntityStandardTagEntityRepositoryJoin().delete(
-        getEventEntityTagEntity(eventId, rTag.getId()));
-    getStandardTagEntityRepository().delete(rTag);
   }
 }

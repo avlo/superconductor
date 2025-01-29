@@ -1,12 +1,17 @@
 package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.superconductor.entity.EventEntity;
+import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
+import com.prosilion.superconductor.util.FilterMatcher;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.base.PublicKey;
 import nostr.event.Kind;
 import nostr.event.impl.DeletionEvent;
+import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
+import nostr.event.tag.AddressTag;
 import nostr.event.tag.EventTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,14 +23,17 @@ import java.util.stream.Stream;
 @Slf4j
 @Component
 public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
-  private final DeletionEventService deletionEventService;
+  private final DeletionEventEntityService deletionEventEntityService;
+  private final FilterMatcher filterMatcher;
 
   @Autowired
   public DeleteEventTypePlugin(
       RedisCache<T> redisCache,
-      DeletionEventService deletionEventService) {
+      DeletionEventEntityService deletionEventEntityService,
+      FilterMatcher filterMatcher) {
     super(redisCache);
-    this.deletionEventService = deletionEventService;
+    this.deletionEventEntityService = deletionEventEntityService;
+    this.filterMatcher = filterMatcher;
   }
 
   @Override
@@ -51,12 +59,8 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(eventTag ->
-
-
             ///  debug issue this line, returns event but without BaseTags
             getRedisCache().getByEventIdString(eventTag.getIdEvent())
-
-
                 .filter(eventEntity ->
                     eventEntity.getPubKey().equals(
                         event.getPubKey().toHexString()))).toList();
@@ -82,8 +86,39 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
                         .contains(eventEntity.getKind().toString())))
                 .orElseGet(Optional::empty)).toList();
 
+//    List<Long> eventsNotToFireIds = eventsNotToFire.stream().flatMap(eventEntity -> eventEntity.stream().map(EventEntity::getId)).distinct().toList();
+//
+//    getRedisCache().getAll().values().stream().flatMap(mapEventEntry ->
+//        mapEventEntry.values().stream().map(this::filterMatches)).map(filtered -> filtered.stream().map(anitem -> anitem.)
+//
+//        eventsNotToFire.addAll(list.stream().map(entity -> entity.))
+
     eventsNotToFire.forEach(optionalEventEntity ->
-        optionalEventEntity.ifPresent(eventEntity -> deletionEventService.addHiddenEvent(eventEntity.getId())));
+        optionalEventEntity.ifPresent(eventEntity -> deletionEventEntityService.addDeletionEvent(eventEntity.getId())));
+  }
+
+  private List<GenericEvent> filterMatches(T event) {
+    List<AddressTag> addressTagList = event.getTags().stream()
+        .filter(AddressTag.class::isInstance)
+        .map(AddressTag.class::cast)
+        .toList();
+
+    AddressTag first = addressTagList.getFirst();
+
+    Integer kind = first.getKind();
+    PublicKey pubkey = first.getPublicKey();
+    String dIdent = first.getIdentifierTag().getId();
+
+    Filters filters = Filters
+        .builder()
+        .kinds(List.of(Kind.valueOf(kind)))
+        .authors(List.of(pubkey))
+        .build();
+    filters.setGenericTagQuery("a", List.of(dIdent));
+
+    List<AddNostrEvent<GenericEvent>> addNostrEvents = filterMatcher.intersectFilterMatches(filters, new AddNostrEvent<>(event));
+    List<GenericEvent> list = addNostrEvents.stream().map(addNostrEvent -> addNostrEvent.event()).toList();
+    return list;
   }
 
   @Override
@@ -91,3 +126,4 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
     return Kind.DELETION;
   }
 }
+

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.superconductor.service.event.type.EventTypeService;
+import com.prosilion.superconductor.service.event.type.EventTypeServiceIF;
 import com.prosilion.superconductor.service.request.NotifierService;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.NonNull;
@@ -12,23 +12,23 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class EventService<T extends EventMessage> implements EventServiceIF<T> {
-  private final EventTypeService<GenericEvent> eventTypeService;
-  private final NotifierService<GenericEvent> notifierService;
+public class EventService<T extends GenericEvent> implements EventServiceIF<T> {
+  private final EventTypeServiceIF<T> eventTypeService;
+  private final NotifierService<T> notifierService;
 
   @Autowired
   public EventService(
-      NotifierService<GenericEvent> notifierService,
-      EventTypeService<GenericEvent> eventTypeService) {
+      NotifierService<T> notifierService,
+      EventTypeServiceIF<T> eventTypeService) {
     this.notifierService = notifierService;
     this.eventTypeService = eventTypeService;
   }
 
   //  @Async
   @Override
-  public void processIncomingEvent(@NonNull T eventMessage) {
+  public <U extends EventMessage> void processIncomingEvent(@NonNull U eventMessage) {
     log.debug("processing incoming TEXT_NOTE: [{}]", eventMessage);
-    GenericEvent event = (GenericEvent) eventMessage.getEvent();
+    T event = (T) eventMessage.getEvent();
     eventTypeService.processIncomingEvent(event);
     notifierService.nostrEventHandler(new AddNostrEvent<>(event));
   }

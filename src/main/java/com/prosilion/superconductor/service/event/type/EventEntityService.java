@@ -92,8 +92,9 @@ public class EventEntityService<T extends GenericEvent> {
         .convertEntityToDto();
   }
 
+//  TODO: perhaps below as admin fxnality
   protected void deleteEventEntity(@NonNull EventEntity eventToDelete) {
-    concreteTagEntitiesService.deleteTags(eventToDelete.getId(), eventToDelete.getTags());
+//    concreteTagEntitiesService.deleteTags(eventToDelete.getId(), eventToDelete.getTags());
     genericTagEntitiesService.deleteTags(eventToDelete.getTags());
     eventEntityRepository.delete(eventToDelete);
   }

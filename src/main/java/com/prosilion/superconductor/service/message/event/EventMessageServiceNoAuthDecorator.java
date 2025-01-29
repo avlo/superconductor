@@ -1,10 +1,11 @@
 package com.prosilion.superconductor.service.message.event;
 
-import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.message.MessageService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -19,7 +20,7 @@ public class EventMessageServiceNoAuthDecorator<T extends EventMessage> implemen
   private final EventMessageService<T> eventMessageService;
 
   @Autowired
-  public EventMessageServiceNoAuthDecorator(EventServiceIF<T> eventService, ClientResponseService okResponseService) {
+  public EventMessageServiceNoAuthDecorator(EventServiceIF<GenericEvent> eventService, ClientResponseService okResponseService) {
     this.eventMessageService = new EventMessageService<>(eventService, okResponseService);
   }
 

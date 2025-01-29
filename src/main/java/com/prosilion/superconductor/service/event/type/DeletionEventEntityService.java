@@ -20,8 +20,8 @@ public class DeletionEventEntityService {
     this.repo = repo;
   }
 
-  public List<Long> findAll() {
-    return repo.findAll().stream().map(DeletionEventEntity::getId).toList();
+  public List<DeletionEventEntity> findAll() {
+    return repo.findAll();
   }
 
   protected void addDeletionEvent(@NonNull Long deletedEventId) {

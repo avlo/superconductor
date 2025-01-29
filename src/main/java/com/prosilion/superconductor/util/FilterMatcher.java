@@ -70,6 +70,13 @@ public class FilterMatcher {
     return matchedCombos;
   }
 
+  private <U> Set<AddNostrEvent<GenericEvent>> getFilterMatchingEventsRxR(List<Combo> combos, AddNostrEvent<GenericEvent> eventToCheck) {
+//    TODO: convert to stream
+    Set<AddNostrEvent<GenericEvent>> matchedCombos = new HashSet<>();
+    combos.stream().filter(combo -> filterTypeMatchesEventAttribute(combo, eventToCheck)).forEach(combo -> matchedCombos.add(eventToCheck));
+    return matchedCombos;
+  }
+
   private <U> boolean filterTypeMatchesEventAttribute(Combo<U> combo, AddNostrEvent<GenericEvent> eventToCheck) {
 //    TODO: convert to stream
     for (U testable : combo.getSubscriberFilterType()) {
@@ -77,6 +84,11 @@ public class FilterMatcher {
         return true;
     }
     return false;
+  }
+
+  private <U> boolean filterTypeMatchesEventAttributeRxR(Combo<U> combo, AddNostrEvent<GenericEvent> eventToCheck) {
+    boolean anyMatch = combo.getSubscriberFilterType().stream().allMatch(testable -> combo.getBiPredicate().test(testable, eventToCheck));
+    return anyMatch;
   }
 }
 

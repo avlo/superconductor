@@ -1,8 +1,6 @@
 package com.prosilion.superconductor.plugin.filter;
 
-import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterKind;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import nostr.base.PublicKey;
 import nostr.event.Kind;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
@@ -16,7 +14,7 @@ public class FilterKindPlugin<T extends Kind> implements FilterPlugin<T> {
 
   @Override
   public BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate() {
-    return (t, u) -> t.toString().equals(u.event().getKind());
+    return (t, u) -> t.equals(Kind.valueOf(u.event().getKind()));
   }
 
   @Override

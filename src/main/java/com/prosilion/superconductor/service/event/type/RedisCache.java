@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.superconductor.entity.EventEntity;
+import com.prosilion.superconductor.entity.join.deletion.DeletionEventEntity;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
@@ -30,12 +31,12 @@ public class RedisCache<T extends GenericEvent> {
   }
 
   public Map<Kind, Map<Long, T>> getAll() {
+    final List<DeletionEventEntity> allDeletionEventEntities = getAllDeletionEventEntities(); // do up front
     Map<Kind, Map<Long, T>> returnedSet = getAllEventEntities().entrySet().stream()
         .filter(
-            kindMapEntry ->
-                kindMapEntry.getValue().keySet().stream().noneMatch(
-                    getAllDeletionEventEntities()::contains
-                ))
+            eventMap ->
+                eventMap.getValue().keySet().stream().noneMatch(eventId ->
+                    checkEventIdMatchesAnyDeletionEventEntityId(eventId, allDeletionEventEntities)))
         .filter(kindMapEntry ->
             !kindMapEntry.getKey().equals(Kind.CLIENT_AUTH))
         .collect(
@@ -70,8 +71,12 @@ public class RedisCache<T extends GenericEvent> {
     return eventEntityService.getAll();
   }
 
-  //  TODO: deletionEvent entiy cache-location candidate
-  private List<Long> getAllDeletionEventEntities() {
+  //  TODO: deletionEvent entity cache-location candidate
+  private List<DeletionEventEntity> getAllDeletionEventEntities() {
     return deletionEventEntityService.findAll();
+  }
+
+  private boolean checkEventIdMatchesAnyDeletionEventEntityId(Long eventId, List<DeletionEventEntity> deletionEventEntities) {
+    return deletionEventEntities.stream().map(DeletionEventEntity::getEventId).anyMatch(eventId::equals);
   }
 }

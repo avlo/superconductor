@@ -10,12 +10,6 @@ import java.util.List;
 @Component
 public class FilterEventPlugin<T extends EventFilter<GenericEvent>, U extends GenericEvent> implements FilterPlugin<T, U> {
 
-//  @Override
-//  public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
-//    return (eventFilter, addNostrEvent) ->
-//        eventFilter.getPredicate().test(addNostrEvent.event());
-//  }
-
   @Override
   public List<T> getPluginFilters(FiltersCore filters) {
     return getFilterableListByType(filters, getCode());

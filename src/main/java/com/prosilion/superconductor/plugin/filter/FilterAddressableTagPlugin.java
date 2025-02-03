@@ -18,7 +18,7 @@ public class FilterAddressableTagPlugin<T extends AddressableTagFilter<AddressTa
   @Override
   public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
     return (addressableTagFilter, addNostrEvent) ->
-        addressableTagFilter.getPredicate().test(addNostrEvent.event());
+        compare(addressableTagFilter.getFilterCriterion(), addNostrEvent.event());
   }
 
   @Override
@@ -31,17 +31,11 @@ public class FilterAddressableTagPlugin<T extends AddressableTagFilter<AddressTa
     return AddressableTagFilter.filterKey;
   }
 
-//  private List<AddressTag> getAddressableTags(GenericEvent genericEvent) {
-//    return genericEvent.getTags().stream()
-//        .filter(AddressTag.class::isInstance)
-//        .map(AddressTag.class::cast)
-//        .toList();
-//  }
-
   private boolean compare(@NonNull AddressTag addressTag, @NonNull GenericEvent genericEvent) {
+//    TODO: should be refactorable given AddressableTagFilter has same logic as below
     String genericEventPubKey = genericEvent.getPubKey().toHexString();
     Integer genericEventKind = genericEvent.getKind();
-    List<IdentifierTag> genericEventIdentifierTags = getIdentifierTags(genericEvent);
+    List<IdentifierTag> genericEventIdentifierTags = getTypeSpecificTags(IdentifierTag.class, genericEvent);
     IdentifierTag addressTagIdentifierTag = addressTag.getIdentifierTag();
     String addressTagPublicKey = addressTag.getPublicKey().toHexString();
     Integer addressTagKind = addressTag.getKind();

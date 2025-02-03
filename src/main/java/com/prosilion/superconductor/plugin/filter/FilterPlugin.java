@@ -3,11 +3,10 @@ package com.prosilion.superconductor.plugin.filter;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import nostr.event.BaseTag;
 import nostr.event.filter.Filterable;
 import nostr.event.filter.FiltersCore;
 import nostr.event.impl.GenericEvent;
-import nostr.event.impl.GenericTag;
-import nostr.event.tag.IdentifierTag;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,26 +18,17 @@ public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
 
   String getCode();
 
-//  BiPredicate<T, AddNostrEvent<U>> getBiPredicate();
-
   List<T> getPluginFilters(FiltersCore filters);
 
   default BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
-    return (contentFilter, addNostrEvent) ->
-        contentFilter.getPredicate().test(addNostrEvent.event());
+    return (filterable, addNostrEvent) ->
+        filterable.getPredicate().test(addNostrEvent.event());
   }
 
-  default List<GenericTag> getGenericQueryTags(GenericEvent genericEvent) {
+  default <T extends BaseTag> List<T> getTypeSpecificTags(Class<T> tagClass, GenericEvent genericEvent) {
     return genericEvent.getTags().stream()
-        .filter(GenericTag.class::isInstance)
-        .map(GenericTag.class::cast)
-        .toList();
-  }
-
-  default List<IdentifierTag> getIdentifierTags(GenericEvent genericEvent) {
-    return genericEvent.getTags().stream()
-        .filter(IdentifierTag.class::isInstance)
-        .map(IdentifierTag.class::cast)
+        .filter(tagClass::isInstance)
+        .map(tagClass::cast)
         .toList();
   }
 

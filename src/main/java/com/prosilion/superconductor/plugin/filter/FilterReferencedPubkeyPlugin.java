@@ -17,7 +17,9 @@ public class FilterReferencedPubkeyPlugin<T extends ReferencedPublicKeyFilter<Pu
   @Override
   public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
     return (referencedPublicKeyFilter, addNostrEvent) ->
-        referencedPublicKeyFilter.getPredicate().test(addNostrEvent.event());
+        getReferencedPublicKeyTags(addNostrEvent.event()).stream().anyMatch(pubKeyTag ->
+            pubKeyTag.getPublicKey().toHexString().equals(
+                referencedPublicKeyFilter.getFilterCriterion().toHexString()));
   }
 
   @Override

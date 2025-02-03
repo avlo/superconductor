@@ -16,7 +16,8 @@ public class FilterReferencedEventPlugin<T extends ReferencedEventFilter<Generic
   @Override
   public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
     return (referencedEventFilter, addNostrEvent) ->
-        referencedEventFilter.getPredicate().test(addNostrEvent.event());
+        getTypeSpecificTags(EventTag.class, addNostrEvent.event()).stream().anyMatch(eventTag ->
+            eventTag.getIdEvent().equals(referencedEventFilter.getFilterCriterion().getId()));
   }
 
   @Override
@@ -27,12 +28,5 @@ public class FilterReferencedEventPlugin<T extends ReferencedEventFilter<Generic
   @Override
   public String getCode() {
     return ReferencedEventFilter.filterKey;
-  }
-
-  private List<EventTag> getReferencedEventTags(GenericEvent genericEvent) {
-    return genericEvent.getTags().stream()
-        .filter(EventTag.class::isInstance)
-        .map(EventTag.class::cast)
-        .toList();
   }
 }

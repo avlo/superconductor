@@ -10,13 +10,15 @@ import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class SubscriberNotifierService<T extends GenericEvent> {
   private final AbstractSubscriberService abstractSubscriberService;
-  private final FilterMatcher filterMatcher;
+  private final FilterMatcher<T> filterMatcher;
 
   @Autowired
-  public SubscriberNotifierService(AbstractSubscriberService abstractSubscriberService, FilterMatcher filterMatcher) {
+  public SubscriberNotifierService(AbstractSubscriberService abstractSubscriberService, FilterMatcher<T> filterMatcher) {
     this.abstractSubscriberService = abstractSubscriberService;
     this.filterMatcher = filterMatcher;
   }
@@ -35,12 +37,15 @@ public class SubscriberNotifierService<T extends GenericEvent> {
   }
 
   private void broadcastMatch(AddNostrEvent<T> addNostrEvent, Long subscriberSessionHash) {
-    abstractSubscriberService.getFiltersList(subscriberSessionHash).forEach(filters ->
-        filterMatcher.intersectFilterMatches(filters, (AddNostrEvent<GenericEvent>) addNostrEvent).forEach(event ->
-            broadcastToClients((FireNostrEvent<T>) new FireNostrEvent<>(
-                subscriberSessionHash,
-                abstractSubscriberService.get(subscriberSessionHash).getSubscriberId(),
-                event.event()))));
+    abstractSubscriberService.getFiltersList(subscriberSessionHash).forEach(userFilters ->
+    {
+      Optional<AddNostrEvent<T>> optional = filterMatcher.intersectFilterMatches(userFilters, addNostrEvent);
+      optional.ifPresent(event ->
+          broadcastToClients(new FireNostrEvent<>(
+              subscriberSessionHash,
+              abstractSubscriberService.get(subscriberSessionHash).getSubscriberId(),
+              event.event())));
+    });
   }
 
   @SneakyThrows

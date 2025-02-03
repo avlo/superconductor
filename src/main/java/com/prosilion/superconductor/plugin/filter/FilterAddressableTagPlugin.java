@@ -1,60 +1,54 @@
 package com.prosilion.superconductor.plugin.filter;
 
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import nostr.event.BaseTag;
-import nostr.event.impl.Filters;
+import lombok.NonNull;
+import nostr.event.filter.AddressableTagFilter;
+import nostr.event.filter.FiltersCore;
 import nostr.event.impl.GenericEvent;
-import nostr.event.impl.GenericTag;
+import nostr.event.tag.AddressTag;
+import nostr.event.tag.IdentifierTag;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiPredicate;
 
 @Component
-public class FilterAddressableTagPlugin<T extends Map<String, List<String>>> implements FilterPlugin<T> {
+public class FilterAddressableTagPlugin<T extends AddressableTagFilter<AddressTag>, U extends GenericEvent> implements FilterPlugin<T, U> {
 
   @Override
-  public BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate() {
-    return (reqResult, genericEvent) ->
-
-//      TODO: below return type currently won't work since AddressTag aren't formally part of clEvent (cont...)
-//      List<AddressTag> genericEventAddressableTags = getAddressableTags(genericEventTags);
-//      TODO, cont: so for now, use GenericTag- & when ready to replace below w/ AddressTag, see FilterIdentifierTagPlugin for usage pattern
-        getAddressableTags(genericEvent.event().getTags()).stream()
-            .map(GenericTag::getCode).toList().stream()
-            .anyMatch(aTag -> reqResult.entrySet().stream().anyMatch(entry -> entry.getKey().equals("#".concat(aTag))));
+  public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
+    return (addressableTagFilter, addNostrEvent) ->
+        addressableTagFilter.getPredicate().test(addNostrEvent.event());
   }
 
   @Override
-  public List<T> getPluginFilters(Filters filters) {
-    return (List<T>) List.of(
-        Optional.ofNullable(
-                filters.getGenericTagQuery())
-            .orElse(
-                Collections.emptyMap()));
+  public List<T> getPluginFilters(FiltersCore filters) {
+    return getFilterableListByType(filters, getCode());
   }
 
   @Override
   public String getCode() {
-    return "addressableTagQuery";
+    return AddressableTagFilter.filterKey;
   }
 
-  //      TODO: re: line 23- below method signature currently won't work since AddressTag aren't formally part of clEvent (cont...)
-//  private List<AddressTag> getAddressableTags(List<BaseTag> baseTags) {
-  private List<GenericTag> getAddressableTags(List<BaseTag> baseTags) {
-
-//      TODO, cont: for now, use GenericTag (cont...)
-    List<GenericTag> list = getGenericQueryTags(baseTags);
-
-//      TODO, cont: use below filtering currently if/when AddressTag are formally part of clEvent
-//    List<AddressTag> list = baseTags.stream()
+//  private List<AddressTag> getAddressableTags(GenericEvent genericEvent) {
+//    return genericEvent.getTags().stream()
 //        .filter(AddressTag.class::isInstance)
 //        .map(AddressTag.class::cast)
 //        .toList();
+//  }
 
-    return list;
+  private boolean compare(@NonNull AddressTag addressTag, @NonNull GenericEvent genericEvent) {
+    String genericEventPubKey = genericEvent.getPubKey().toHexString();
+    Integer genericEventKind = genericEvent.getKind();
+    List<IdentifierTag> genericEventIdentifierTags = getIdentifierTags(genericEvent);
+    IdentifierTag addressTagIdentifierTag = addressTag.getIdentifierTag();
+    String addressTagPublicKey = addressTag.getPublicKey().toHexString();
+    Integer addressTagKind = addressTag.getKind();
+
+    return genericEventPubKey.equals(addressTagPublicKey) &&
+        genericEventKind.equals(addressTagKind) &&
+        genericEventIdentifierTags.stream().anyMatch(identifierTag ->
+            identifierTag.getId().equals(addressTagIdentifierTag.getId()));
   }
 }

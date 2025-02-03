@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.PublicKey;
 import nostr.event.Kind;
+import nostr.event.filter.FiltersCore;
 import nostr.event.impl.DeletionEvent;
 import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
@@ -111,12 +112,12 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
 
     Filters filters = Filters
         .builder()
-        .kinds(List.of(Kind.valueOf(kind)))
-        .authors(List.of(pubkey))
+//        .kinds(List.of(Kind.valueOf(kind)))
+//        .authors(List.of(pubkey))
         .build();
     filters.setGenericTagQuery("a", List.of(dIdent));
 
-    List<AddNostrEvent<GenericEvent>> addNostrEvents = filterMatcher.intersectFilterMatches(filters, new AddNostrEvent<>(event));
+    Optional<AddNostrEvent> addNostrEvents = filterMatcher.intersectFilterMatches(new FiltersCore(), new AddNostrEvent<>(event));
     List<GenericEvent> list = addNostrEvents.stream().map(addNostrEvent -> addNostrEvent.event()).toList();
     return list;
   }

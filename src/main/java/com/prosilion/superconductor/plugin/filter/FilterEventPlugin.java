@@ -1,29 +1,28 @@
 package com.prosilion.superconductor.plugin.filter;
 
-import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilterEvent;
-import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import nostr.event.impl.Filters;
+import nostr.event.filter.EventFilter;
+import nostr.event.filter.FiltersCore;
 import nostr.event.impl.GenericEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.function.BiPredicate;
 
 @Component
-public class FilterEventPlugin<T extends GenericEvent> implements FilterPlugin<T> {
+public class FilterEventPlugin<T extends EventFilter<GenericEvent>, U extends GenericEvent> implements FilterPlugin<T, U> {
+
+//  @Override
+//  public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
+//    return (eventFilter, addNostrEvent) ->
+//        eventFilter.getPredicate().test(addNostrEvent.event());
+//  }
 
   @Override
-  public BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate() {
-    return (t, u) -> t.getId().equals(u.event().getId());
-  }
-
-  @Override
-  public List<T> getPluginFilters(Filters filters) {
-    return (List<T>) filters.getEvents();
+  public List<T> getPluginFilters(FiltersCore filters) {
+    return getFilterableListByType(filters, getCode());
   }
 
   @Override
   public String getCode() {
-    return "event";
+    return EventFilter.filterKey;
   }
 }

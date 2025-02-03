@@ -1,7 +1,8 @@
 package com.prosilion.superconductor.plugin.filter;
 
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import nostr.event.impl.Filters;
+import nostr.event.filter.FiltersCore;
+import nostr.event.filter.ReferencedEventFilter;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.EventTag;
 import org.springframework.stereotype.Component;
@@ -10,24 +11,28 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 @Component
-public class FilterReferencedEventPlugin<T extends GenericEvent> implements FilterPlugin<T> {
+public class FilterReferencedEventPlugin<T extends ReferencedEventFilter<GenericEvent>, U extends GenericEvent> implements FilterPlugin<T, U> {
 
   @Override
-  public BiPredicate<T, AddNostrEvent<GenericEvent>> getBiPredicate() {
-    return (t, u) ->
-        u.event().getTags().stream()
-            .filter(EventTag.class::isInstance)
-            .map(EventTag.class::cast)
-            .anyMatch(eventTag -> eventTag.getIdEvent().equals(t.getId()));
+  public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
+    return (referencedEventFilter, addNostrEvent) ->
+        referencedEventFilter.getPredicate().test(addNostrEvent.event());
   }
 
   @Override
-  public List<T> getPluginFilters(Filters filters) {
-    return (List<T>) filters.getReferencedEvents();
+  public List<T> getPluginFilters(FiltersCore filters) {
+    return getFilterableListByType(filters, getCode());
   }
 
   @Override
   public String getCode() {
-    return "referencedEvent";
+    return ReferencedEventFilter.filterKey;
+  }
+
+  private List<EventTag> getReferencedEventTags(GenericEvent genericEvent) {
+    return genericEvent.getTags().stream()
+        .filter(EventTag.class::isInstance)
+        .map(EventTag.class::cast)
+        .toList();
   }
 }

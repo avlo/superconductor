@@ -81,6 +81,6 @@ class UntilDateGreaterThanCreatedDateIT {
 
   private String createReqJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"000d79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + uuid + "}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + uuid + "}]";
   }
 }

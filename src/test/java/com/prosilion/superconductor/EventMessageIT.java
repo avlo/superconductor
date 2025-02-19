@@ -80,7 +80,7 @@ class EventMessageIT {
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(uuidKey));
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(uuidKey));
   }
 
   private String createEventReqJson(@NonNull String uuid) {
@@ -99,15 +99,34 @@ class EventMessageIT {
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(authorPubkey));
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(authorPubkey));
 
 //    additional eventId confirmation
     String eventId = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(eventId));
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(eventId));
   }
 
   private String createAuthorReqJson(@NonNull String authorPubkey) {
     final String uuidKey = Strings.concat(uuidPrefix, authorPubkey);
     return "[\"REQ\",\"" + authorPubkey + "\",{\"authors\":[\"" + authorPubkey + "\"]}]";
+  }
+
+  @Test
+  void testReqNonMatchingEvent() throws IOException, ExecutionException, InterruptedException {
+    String subscriberId = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+    String nonMatchingEventId = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createNonMatchEventReqJson(subscriberId, nonMatchingEventId),
+        subscriberId
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isEmpty());
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+  }
+
+  private String createNonMatchEventReqJson(@NonNull String subscriberId, @NonNull String nonMatchingEventId) {
+    return "[\"REQ\",\"" + subscriberId + "\",{\"ids\":[\"" + nonMatchingEventId + "\"]}]";
   }
 }

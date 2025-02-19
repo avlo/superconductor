@@ -32,13 +32,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 @ActiveProfiles("test")
-class MatchingReferencedPubkeyIT {
+class MatchingOneOfMultipleFilterAttributesIT {
   private final NostrRelayService nostrRelayService;
   private final String textMessageEventJson;
   private final String uuidPrefix;
 
   @Autowired
-  MatchingReferencedPubkeyIT(@NonNull NostrRelayService nostrRelayService,
+  MatchingOneOfMultipleFilterAttributesIT(@NonNull NostrRelayService nostrRelayService,
       @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix
   ) throws IOException {
     this.nostrRelayService = nostrRelayService;
@@ -57,44 +57,50 @@ class MatchingReferencedPubkeyIT {
   }
 
   @Test
-  void testReqMessages() throws IOException, ExecutionException, InterruptedException {
-    String referencedPubKey = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+  void testMatchingOneOfMultipleReferencedEvents() throws IOException, ExecutionException, InterruptedException {
+    String referencedEventIdMatch = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
+    String referencedEventIdNoMatch = "0000000000000000000000000000000000000000000000000000000000000000";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqJson(referencedPubKey),
-        referencedPubKey
+        createReferencedEventReqJson(referencedEventIdMatch, referencedEventIdNoMatch),
+        referencedEventIdMatch
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isPresent());
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(referencedPubKey));
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(referencedEventIdMatch));
 
-//    associated event
     assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
     assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
   }
 
-  private String createReqJson(@NonNull String uuid) {
-    final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuid + "\",{\"#p\":[\"" + uuid + "\"]}]";
-  }
-
   @Test
-  void testReqNonMatchingReferencedPubkey() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
-    String nonMatchingReferencedPubKey = "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
-
+  void testMatchingOneOfMultipleReferencedPublicKeys() throws IOException, ExecutionException, InterruptedException {
+    String referencedPubkeyMatch = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+    String referencedPubkeyNoMatch = "0000000000000000000000000000000000000000000000000000000000000000";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createNonMatchReferencedEventReqJson(subscriberId, nonMatchingReferencedPubKey),
-        subscriberId
+        createReferencedPubKeyReqJson(referencedPubkeyMatch, referencedPubkeyNoMatch),
+        referencedPubkeyMatch
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isEmpty());
+
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(referencedPubkeyMatch));
+
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
     assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
   }
 
-  private String createNonMatchReferencedEventReqJson(@NonNull String subscriberId, @NonNull String nonMatchingRefPubKey) {
-    return "[\"REQ\",\"" + subscriberId + "\",{\"#p\":[\"" + nonMatchingRefPubKey + "\"]}]";
+  private String createReferencedEventReqJson(@NonNull String uuid, String nonMatchingEventId) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    String eventIds = String.join("\",\"", uuid, nonMatchingEventId);
+    return "[\"REQ\",\"" + uuid + "\",{\"#e\":[\"" + eventIds + "\"]}]";
+  }
+
+  private String createReferencedPubKeyReqJson(@NonNull String uuid, String nonMatchingEventId) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    String eventIds = String.join("\",\"", uuid, nonMatchingEventId);
+    return "[\"REQ\",\"" + uuid + "\",{\"#p\":[\"" + eventIds + "\"]}]";
   }
 }

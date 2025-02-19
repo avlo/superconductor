@@ -58,9 +58,7 @@ class MatchingIdentityTagIT {
 
   @Test
   void testReqMessages() throws IOException, ExecutionException, InterruptedException {
-//    IntStream.range(0, targetCount).parallel().forEach(increment -> {
     sendReq(String.valueOf(0));
-//    });
   }
 
   private void sendReq(String increment) throws IOException, ExecutionException, InterruptedException {

@@ -12,7 +12,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.PublicKey;
 import nostr.event.Kind;
-import nostr.event.filter.FiltersCore;
+import nostr.event.filter.Filters;
 import nostr.event.filter.SinceFilter;
 import nostr.event.filter.UntilFilter;
 import nostr.event.impl.GenericEvent;
@@ -44,11 +44,11 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   }
 
   @Override
-  public Long save(@NonNull Subscriber subscriber, @NonNull List<FiltersCore> filtersCoreList) throws EmptyFiltersException {
+  public Long save(@NonNull Subscriber subscriber, @NonNull List<Filters> filtersList) throws EmptyFiltersException {
     removeSubscriberBySessionId(subscriber.getSessionId());
     long subscriberSessionHash = getHash(subscriber);
     subscriber.setSubscriberSessionHash(subscriberSessionHash);
-    for (FiltersCore filters : filtersCoreList) {
+    for (Filters filters : filtersList) {
       put(subscriber, filters);
     }
     return subscriberSessionHash;
@@ -56,8 +56,8 @@ public class CachedSubscriberService extends AbstractSubscriberService {
 
   //  TODO: list of long???  why not just long
   @Override
-  public Map<Long, List<FiltersCore>> getAllFiltersOfAllSubscribers() {
-    Map<Long, List<FiltersCore>> map = new HashMap<>();
+  public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
+    Map<Long, List<Filters>> map = new HashMap<>();
     subscriberSessionHashComboMap.forEach((key, value) -> map.put(key, value.stream().map(Combo::getFilters).toList()));
     return map;
   }
@@ -69,7 +69,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   }
 
   @Override
-  public List<FiltersCore> getFiltersList(@NonNull Long subscriberSessionHash) {
+  public List<Filters> getFiltersList(@NonNull Long subscriberSessionHash) {
     return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().map(Combo::getFilters).toList();
   }
 
@@ -102,21 +102,21 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return hash;
   }
 
-  private void put(Subscriber subscriber, FiltersCore filtersCore) throws EmptyFiltersException {
+  private void put(Subscriber subscriber, Filters filters) throws EmptyFiltersException {
     biMap.forcePut(subscriber.getSubscriberId(), subscriber.getSessionId());
     long subscriberSessionHash = getHash(subscriber);
 
     SubscriberFilter subscriberFilter = new SubscriberFilter();
     subscriberFilter.setSubscriberId(subscriberSessionHash);
-    subscriberFilter.setLimit(filtersCore.getLimit());
+    subscriberFilter.setLimit(filters.getLimit());
 
-    setBoundCriterion(filtersCore, SinceFilter.filterKey, subscriberFilter::setSince);
-    setBoundCriterion(filtersCore, UntilFilter.filterKey, subscriberFilter::setUntil);
+    setBoundCriterion(filters, SinceFilter.filterKey, subscriberFilter::setSince);
+    setBoundCriterion(filters, UntilFilter.filterKey, subscriberFilter::setUntil);
 
     Combo combo = new Combo(
         subscriber,
         subscriberFilter,
-        filtersCore);
+        filters);
 
     if (!subscriberSessionHashComboMap.containsKey(subscriberSessionHash)) {
       subscriberSessionHashComboMap.put(subscriberSessionHash, List.of(combo));
@@ -124,10 +124,10 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     }
     subscriberSessionHashComboMap.get(subscriberSessionHash).add(combo);
   }
-  private static void setBoundCriterion(FiltersCore filtersCore, String bound, Consumer<Long> longConsumer) {
+  private static void setBoundCriterion(Filters filters, String bound, Consumer<Long> longConsumer) {
     Optional
         .ofNullable(
-            filtersCore.getFilterableByType(bound))
+            filters.getFilterableByType(bound))
         .<Long>map(filterable ->
             filterable.getFirst().getFilterCriterion())
         .ifPresent(longConsumer);
@@ -149,9 +149,9 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   private static class Combo {
     private final Subscriber subscriber;
     private final SubscriberFilter subscriberFilter;
-    private final FiltersCore filters;
+    private final Filters filters;
 
-    public Combo(Subscriber subscriber, SubscriberFilter subscriberFilter, FiltersCore filters) throws EmptyFiltersException {
+    public Combo(Subscriber subscriber, SubscriberFilter subscriberFilter, Filters filters) throws EmptyFiltersException {
       this.subscriber = subscriber;
       if (!checkMinimallyPopulatedFilters(subscriberFilter, filters))
         throw new EmptyFiltersException(String.format("invalid: empty filters encountered for subscriber [%s]", subscriber.getSubscriberId()));
@@ -160,7 +160,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     }
 
     //    TODO: confirm below not necessary since should be part of framework
-    private static boolean checkMinimallyPopulatedFilters(SubscriberFilter subscriberFilter, FiltersCore filters) {
+    private static boolean checkMinimallyPopulatedFilters(SubscriberFilter subscriberFilter, Filters filters) {
       return true;
 //      return Objects.nonNull(subscriberFilter.getSince())
 //          || Objects.nonNull(subscriberFilter.getUntil())

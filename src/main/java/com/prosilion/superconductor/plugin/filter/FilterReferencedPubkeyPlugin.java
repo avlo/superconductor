@@ -2,7 +2,7 @@ package com.prosilion.superconductor.plugin.filter;
 
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import nostr.base.PublicKey;
-import nostr.event.filter.FiltersCore;
+import nostr.event.filter.Filters;
 import nostr.event.filter.ReferencedPublicKeyFilter;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.PubKeyTag;
@@ -16,26 +16,16 @@ public class FilterReferencedPubkeyPlugin<T extends ReferencedPublicKeyFilter<Pu
 
   @Override
   public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
-    return (referencedPublicKeyFilter, addNostrEvent) ->
-        getReferencedPublicKeyTags(addNostrEvent.event()).stream().anyMatch(pubKeyTag ->
-            pubKeyTag.getPublicKey().toHexString().equals(
-                referencedPublicKeyFilter.getFilterCriterion().toHexString()));
+    return getBiPredicate(PubKeyTag.class);
   }
 
   @Override
-  public List<T> getPluginFilters(FiltersCore filters) {
+  public List<T> getPluginFilters(Filters filters) {
     return getFilterableListByType(filters, getCode());
   }
 
   @Override
   public String getCode() {
     return ReferencedPublicKeyFilter.filterKey;
-  }
-
-  private List<PubKeyTag> getReferencedPublicKeyTags(GenericEvent genericEvent) {
-    return genericEvent.getTags().stream()
-        .filter(PubKeyTag.class::isInstance)
-        .map(PubKeyTag.class::cast)
-        .toList();
   }
 }

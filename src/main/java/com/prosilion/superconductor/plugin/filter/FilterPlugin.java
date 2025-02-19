@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import nostr.event.BaseTag;
 import nostr.event.filter.Filterable;
-import nostr.event.filter.FiltersCore;
+import nostr.event.filter.Filters;
 import nostr.event.impl.GenericEvent;
 
 import java.util.List;
@@ -17,12 +17,32 @@ import java.util.stream.Collectors;
 public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
 
   String getCode();
-
-  List<T> getPluginFilters(FiltersCore filters);
+  List<T> getPluginFilters(Filters filters);
 
   default BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
     return (filterable, addNostrEvent) ->
         filterable.getPredicate().test(addNostrEvent.event());
+  }
+
+  /**
+   * Used exclusively by filterables requiring investigation into a *list* of an events tags:
+   *    ReferencedEvent
+   *    ReferencedPubkey
+   *    Addressable
+   *    Identifier (if more than one IdentifierTag in an event?)
+   *    (likely?) GenericTagQuery
+   * not:
+   *    Author
+   *    Event
+   *    Kind
+   *    Since
+   *    Until
+   */
+  default <V extends BaseTag> BiPredicate<T, AddNostrEvent<U>> getBiPredicate(Class<V> clazz) {
+    return (filterable, addNostrEvent) ->
+        getTypeSpecificTags(clazz, addNostrEvent.event()).stream()
+            .anyMatch(tag ->
+                filterable.getPredicate().test(addNostrEvent.event()));
   }
 
   default <T extends BaseTag> List<T> getTypeSpecificTags(Class<T> tagClass, GenericEvent genericEvent) {
@@ -32,10 +52,10 @@ public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
         .toList();
   }
 
-  default List<T> getFilterableListByType(@NonNull FiltersCore core, @NonNull String type) {
+  default List<T> getFilterableListByType(@NonNull Filters filters, @NonNull String type) {
     return Optional
         .ofNullable(
-            core.getFilterableByType(type))
+            filters.getFilterableByType(type))
         .stream().flatMap(filterables ->
             filterables.stream().map(filterable ->
                 (T) filterable.getFilterCriterion()))
@@ -44,7 +64,7 @@ public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
 
   @SneakyThrows
   default void setFilterableListByType(
-      @NonNull FiltersCore core,
+      @NonNull Filters filters,
       @NonNull String key,
       @NonNull List<T> filterTypeList,
       @NonNull Function<T, Filterable> filterableFunction) {
@@ -54,7 +74,7 @@ public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
           String.format("[%s] filter must contain at least one element", key));
     }
 
-    core.addFilterable(
+    filters.addFilterable(
         key,
         filterTypeList.stream().map(filterableFunction).collect(Collectors.toList()));
 //        .orElseThrow(() ->

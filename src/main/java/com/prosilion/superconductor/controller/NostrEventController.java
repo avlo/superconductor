@@ -1,9 +1,10 @@
 package com.prosilion.superconductor.controller;
 
-import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.superconductor.service.clientresponse.ClientResponse;
 import com.prosilion.superconductor.service.message.MessageService;
 import com.prosilion.superconductor.service.message.RelayInfoDocService;
-import com.prosilion.superconductor.service.clientresponse.ClientResponse;
+import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.service.request.pubsub.TerminatedSocket;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseMessage;
@@ -104,7 +105,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
    * {@link #afterConnectionClosed(WebSocketSession, CloseStatus) }
    */
   @Override
-  public void handleTextMessage(WebSocketSession session, TextMessage baseMessage) {
+  public void handleTextMessage(WebSocketSession session, TextMessage baseMessage) throws JsonProcessingException {
     log.debug("Message from session [{}]", session.getId());
     log.debug("Message content [{}]", baseMessage.getPayload());
     T message = (T) new BaseMessageDecoder<>().decode(baseMessage.getPayload());

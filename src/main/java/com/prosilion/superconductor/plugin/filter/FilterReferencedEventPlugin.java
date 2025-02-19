@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.plugin.filter;
 
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import nostr.event.filter.FiltersCore;
+import nostr.event.filter.Filters;
 import nostr.event.filter.ReferencedEventFilter;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.EventTag;
@@ -15,13 +15,11 @@ public class FilterReferencedEventPlugin<T extends ReferencedEventFilter<Generic
 
   @Override
   public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
-    return (referencedEventFilter, addNostrEvent) ->
-        getTypeSpecificTags(EventTag.class, addNostrEvent.event()).stream().anyMatch(eventTag ->
-            eventTag.getIdEvent().equals(referencedEventFilter.getFilterCriterion().getId()));
+    return getBiPredicate(EventTag.class);
   }
 
   @Override
-  public List<T> getPluginFilters(FiltersCore filters) {
+  public List<T> getPluginFilters(Filters filters) {
     return getFilterableListByType(filters, getCode());
   }
 

@@ -78,4 +78,23 @@ class MatchingReferencedEventIT {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
     return "[\"REQ\",\"" + uuid + "\",{\"#e\":[\"" + uuid + "\"]}]";
   }
+
+  @Test
+  void testReqNonMatchingReferencedEvent() throws IOException, ExecutionException, InterruptedException {
+    String subscriberId = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+    String nonMatchingReferencedEventId = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createNonMatchReferencedEventReqJson(subscriberId, nonMatchingReferencedEventId),
+        subscriberId
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isEmpty());
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+  }
+
+  private String createNonMatchReferencedEventReqJson(@NonNull String subscriberId, @NonNull String nonMatchingEventId) {
+    return "[\"REQ\",\"" + subscriberId + "\",{\"#e\":[\"" + nonMatchingEventId + "\"]}]";
+  }
 }

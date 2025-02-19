@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
 import org.apache.logging.log4j.util.Strings;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 @ActiveProfiles("test")
@@ -43,7 +43,7 @@ class EventMessageIT {
     this.uuidPrefix = uuidPrefix;
   }
 
-  @BeforeAll
+  @BeforeEach
   public void setup() throws IOException {
     log.debug("setup() send event:\n  {}", globalEventJson);
     nostrRelayService.createEvent(globalEventJson);
@@ -61,13 +61,13 @@ class EventMessageIT {
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(uuidKey));
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(authorPubkey));
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isPresent());
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(uuidKey));
+    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(authorPubkey));
   }
 
   private String createReqJson(@NonNull String uuid, @NonNull String authorPubkey) {
-    final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"],\"authors\":[\"" + authorPubkey + "\"]}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"],\"authors\":[\"" + authorPubkey + "\"]}]";
   }
 
   @Test
@@ -100,7 +100,6 @@ class EventMessageIT {
     log.debug("  " + returnedJsonMap);
 
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(authorPubkey));
-
 //    additional eventId confirmation
     String eventId = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(eventId));

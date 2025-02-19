@@ -64,8 +64,9 @@ class MatchingIdentityTagIT {
   }
 
   private void sendReq(String increment) throws IOException, ExecutionException, InterruptedException {
+    String reqJson = createReqJson(increment);
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqJson(increment),
+        reqJson,
         increment
     );
     log.debug("okMessage:");

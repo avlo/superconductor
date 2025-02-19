@@ -1,7 +1,9 @@
 package com.prosilion.superconductor.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Streams;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nostr.api.factory.impl.NIP01Impl.EventMessageFactory;
 import nostr.base.Command;
@@ -73,7 +75,13 @@ public class NostrRelayService {
 
   private static OkMessage getOkMessage(List<String> received) {
     return Streams.findLast(received.stream())
-        .map(baseMessage -> new BaseMessageDecoder<OkMessage>().decode(baseMessage))
+        .map(baseMessage -> {
+          try {
+            return new BaseMessageDecoder<OkMessage>().decode(baseMessage);
+          } catch (JsonProcessingException e) {
+            return null;
+          }
+        })
         .orElseThrow();
   }
 
@@ -118,13 +126,27 @@ public class NostrRelayService {
     log.debug(returnedEvents.stream().map(event -> String.format("  %s\n", event)).collect(Collectors.joining()));
     log.debug("55555555555555555");
 
-    Optional<String> eoseMessageOptional = returnedEvents.stream().map(baseMessage -> new BaseMessageDecoder<>().decode(baseMessage))
+    Optional<String> eoseMessageOptional = returnedEvents.stream().map(baseMessage -> {
+          try {
+            return new BaseMessageDecoder<>().decode(baseMessage);
+          } catch (JsonProcessingException e) {
+            return null;
+          }
+        })
+        .filter(Objects::nonNull)
         .filter(EoseMessage.class::isInstance)
         .map(EoseMessage.class::cast)
         .findFirst()
         .map(EoseMessage::getSubscriptionId);
 
-    Optional<String> eventMessageOptional = returnedEvents.stream().map(baseMessage -> new BaseMessageDecoder<>().decode(baseMessage))
+    Optional<String> eventMessageOptional = returnedEvents.stream().map(baseMessage -> {
+          try {
+            return new BaseMessageDecoder<>().decode(baseMessage);
+          } catch (JsonProcessingException e) {
+            return null;
+          }
+        })
+        .filter(Objects::nonNull)
         .filter(EventMessage.class::isInstance)
         .map(EventMessage.class::cast)
         .map(eventMessage -> (GenericEvent) eventMessage.getEvent())

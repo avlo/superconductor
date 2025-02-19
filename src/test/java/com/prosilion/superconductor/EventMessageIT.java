@@ -16,11 +16,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -47,7 +47,7 @@ class EventMessageIT {
   public void setup() throws IOException {
     log.debug("setup() send event:\n  {}", globalEventJson);
     nostrRelayService.createEvent(globalEventJson);
-    assertTrue(!List.of(nostrRelayService.getEvents()).isEmpty());
+    assertFalse(nostrRelayService.getEvents().isEmpty());
   }
 
   @Test

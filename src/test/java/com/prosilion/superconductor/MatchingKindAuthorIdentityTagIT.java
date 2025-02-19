@@ -17,13 +17,13 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -48,7 +48,7 @@ class MatchingKindAuthorIdentityTagIT {
   public void setup() throws IOException {
     log.debug("setup() send event:\n  {}", textMessageEventJson);
     nostrRelayService.createEvent(textMessageEventJson);
-    assertTrue(!List.of(nostrRelayService.getEvents()).isEmpty());
+    assertFalse(nostrRelayService.getEvents().isEmpty());
   }
 
   @Test

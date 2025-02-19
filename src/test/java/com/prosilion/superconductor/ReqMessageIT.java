@@ -61,7 +61,7 @@ class ReqMessageIT {
 
   private String createReqJson(@NonNull String uuid, @NonNull String authorPubkey) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuidPrefix + "\",{\"ids\":[\"" + uuid + "\"],\"authors\":[\"" + authorPubkey + "\"]}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"],\"authors\":[\"" + authorPubkey + "\"]}]";
   }
 
   @Test
@@ -79,7 +79,7 @@ class ReqMessageIT {
 
   private String createEventReqJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuidPrefix + "\",{\"ids\":[\"" + uuid + "\"]}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"]}]";
   }
 
   @Test

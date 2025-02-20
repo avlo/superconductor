@@ -11,46 +11,46 @@
 
 <details>
   <summary>Supported Nips</summary>
-  <ul>  
-  - [NIP-01](https://nostr-nips.com/nip-01) (Basic protocol & Standard Tags)  
-  - [NIP-02](https://nostr-nips.com/nip-02) (Contact List and Petnames)  
-  - [NIP-03](https://nostr-nips.com/nip-03) (OpenTimestamps Attestations for Events)  
-  - [NIP-04](https://nostr-nips.com/nip-04) (Encrypted Direct Message)  
-  - [NIP-05](https://nostr-nips.com/nip-05) (DNS-based internet identifiers)  
-  - [NIP-06](https://nostr-nips.com/nip-06) (Basic key derivation from mnemonic seed phrase)  
-  - [NIP-07](https://nostr-nips.com/nip-07) (window.nostr capability for web browsers)  
-  - [NIP-08](https://nostr-nips.com/nip-08) (Handling Mentions)  
-  - [NIP-10](https://nostr-nips.com/nip-10) (Marked "e" tags)  
-  - [NIP-11](https://nostr-nips.com/nip-11) (Relay Information Document)  
-  - [NIP-12](https://nostr-nips.com/nip-12) (Generic Tag Queries)  
-  - [NIP-14](https://nostr-nips.com/nip-14) (Subject tag in Text events)  
-  - [NIP-16](https://nostr-nips.com/nip-16) (Event treatment)  
-  - [NIP-18](https://nostr-nips.com/nip-18) (Reposts)  
-  - [NIP-19](https://nostr-nips.com/nip-19) (Bech-32 encoded entities)  
-  - [NIP-20](https://nostr-nips.com/nip-20) (Command Results)  
-  - [NIP-21](https://nostr-nips.com/nip-21) (URI scheme)  
-  - [NIP-22](https://nostr-nips.com/nip-22) (Event "created_at" limits)  
-  - [NIP-25](https://nostr-nips.com/nip-25) (Reactions)  
-  - [NIP-27](https://nostr-nips.com/nip-27) (Text Note References)  
-  - [NIP-28](https://nostr-nips.com/nip-28) (Public Chat)  
-  - [NIP-30](https://nostr-nips.com/nip-30) (Custom Emoji)  
-  - [NIP-31](https://nostr-nips.com/nip-31) (Unknown event kinds)  
-  - [NIP-33](https://nostr-nips.com/nip-33) (Parameterized Replaceable Events)  
-  - [NIP-36](https://nostr-nips.com/nip-36) (Sensitive Content / Content Warning)  
-  - [NIP-38](https://nostr-nips.com/nip-38) (User Statuses)  
-  - [NIP-39](https://nostr-nips.com/nip-39) (External Identities in Profiles)  
-  - [NIP-42](https://nostr-nips.com/nip-42) (Authentication of clients to relays)  
-  - [NIP-46](https://nostr-nips.com/nip-46) (Nostr Connect)  
-  - [NIP-48](https://nostr-nips.com/nip-48) (Proxy Tags)  
-  - [NIP-52](https://nostr-nips.com/nip-52) (Calendar Events)  
-  - [NIP-53](https://nostr-nips.com/nip-53) (Live Activities)  
-  - [NIP-56](https://nostr-nips.com/nip-56) (Reporting)  
-  - [NIP-57](https://nostr-nips.com/nip-57) (Lightning Zaps)  
-  - [NIP-58](https://nostr-nips.com/nip-58) (Badges)  
-  - [NIP-89](https://nostr-nips.com/nip-89) (Recommended Application Handlers)  
-  - [NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)  
-  - used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [  Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)  
-    </ul>
+  <ul>
+    <li>[NIP-01](https://nostr-nips.com/nip-01) (Basic protocol & Standard Tags)</li>
+    <li>[NIP-02](https://nostr-nips.com/nip-02) (Contact List and Petnames)</li>
+    <li>[NIP-03](https://nostr-nips.com/nip-03) (OpenTimestamps Attestations for Events)</li>
+    <li>[NIP-04](https://nostr-nips.com/nip-04) (Encrypted Direct Message)</li>
+    <li>[NIP-05](https://nostr-nips.com/nip-05) (DNS-based internet identifiers)</li>
+    <li>[NIP-06](https://nostr-nips.com/nip-06) (Basic key derivation from mnemonic seed phrase)</li>
+    <li>[NIP-07](https://nostr-nips.com/nip-07) (window.nostr capability for web browsers)</li>
+    <li>[NIP-08](https://nostr-nips.com/nip-08) (Handling Mentions)</li>
+    <li>[NIP-10](https://nostr-nips.com/nip-10) (Marked "e" tags)</li>
+    <li>[NIP-11](https://nostr-nips.com/nip-11) (Relay Information Document)</li>
+    <li>[NIP-12](https://nostr-nips.com/nip-12) (Generic Tag Queries)</li>
+    <li>[NIP-14](https://nostr-nips.com/nip-14) (Subject tag in Text events)</li>
+    <li>[NIP-16](https://nostr-nips.com/nip-16) (Event treatment)</li>
+    <li>[NIP-18](https://nostr-nips.com/nip-18) (Reposts)</li>
+    <li>[NIP-19](https://nostr-nips.com/nip-19) (Bech-32 encoded entities)</li>
+    <li>[NIP-20](https://nostr-nips.com/nip-20) (Command Results)</li>
+    <li>[NIP-21](https://nostr-nips.com/nip-21) (URI scheme)</li>
+    <li>[NIP-22](https://nostr-nips.com/nip-22) (Event "created_at" limits)</li>
+    <li>[NIP-25](https://nostr-nips.com/nip-25) (Reactions)</li>
+    <li>[NIP-27](https://nostr-nips.com/nip-27) (Text Note References)</li>
+    <li>[NIP-28](https://nostr-nips.com/nip-28) (Public Chat)</li>
+    <li>[NIP-30](https://nostr-nips.com/nip-30) (Custom Emoji)</li>
+    <li>[NIP-31](https://nostr-nips.com/nip-31) (Unknown event kinds)</li>
+    <li>[NIP-33](https://nostr-nips.com/nip-33) (Parameterized Replaceable Events)</li>
+    <li>[NIP-36](https://nostr-nips.com/nip-36) (Sensitive Content / Content Warning)</li>
+    <li>[NIP-38](https://nostr-nips.com/nip-38) (User Statuses)</li>
+    <li>[NIP-39](https://nostr-nips.com/nip-39) (External Identities in Profiles)</li>
+    <li>[NIP-42](https://nostr-nips.com/nip-42) (Authentication of clients to relays)</li>
+    <li>[NIP-46](https://nostr-nips.com/nip-46) (Nostr Connect)</li>
+    <li>[NIP-48](https://nostr-nips.com/nip-48) (Proxy Tags)</li>
+    <li>[NIP-52](https://nostr-nips.com/nip-52) (Calendar Events)</li>
+    <li>[NIP-53](https://nostr-nips.com/nip-53) (Live Activities)</li>
+    <li>[NIP-56](https://nostr-nips.com/nip-56) (Reporting)</li>
+    <li>[NIP-57](https://nostr-nips.com/nip-57) (Lightning Zaps)</li>
+    <li>[NIP-58](https://nostr-nips.com/nip-58) (Badges)</li>
+    <li>[NIP-89](https://nostr-nips.com/nip-89) (Recommended Application Handlers)</li>
+    <li>[NIP-99](https://nostr-nips.com/nip-99) (Classified Listings)</li>
+    <li>used by [Barchetta](https://github.com/avlo/barchetta) Smart-Contract Negotiation Protocol (in progress) atop [Bitcoin](https://en.wikipedia.org/wiki/Bitcoin) [Lightning-Network](https://en.wikipedia.org/wiki/Lightning_Network) [RGB](https://rgb.tech/)</li>
+  </ul>
 </details>  
 
 ----

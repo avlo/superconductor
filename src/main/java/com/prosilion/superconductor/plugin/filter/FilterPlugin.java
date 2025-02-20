@@ -2,7 +2,6 @@ package com.prosilion.superconductor.plugin.filter;
 
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import nostr.event.BaseTag;
 import nostr.event.filter.Filterable;
 import nostr.event.filter.Filters;
@@ -11,8 +10,6 @@ import nostr.event.impl.GenericEvent;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
 
@@ -55,30 +52,10 @@ public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
   default List<T> getFilterableListByType(@NonNull Filters filters, @NonNull String type) {
     return Optional
         .ofNullable(
-            filters.getFilterableByType(type))
+            filters.getFilterByType(type))
         .stream().flatMap(filterables ->
             filterables.stream().map(filterable ->
                 (T) filterable.getFilterCriterion()))
         .toList();
-  }
-
-  @SneakyThrows
-  default void setFilterableListByType(
-      @NonNull Filters filters,
-      @NonNull String key,
-      @NonNull List<T> filterTypeList,
-      @NonNull Function<T, Filterable> filterableFunction) {
-
-    if (filterTypeList.isEmpty()) {
-      throw new IllegalArgumentException(
-          String.format("[%s] filter must contain at least one element", key));
-    }
-
-    filters.addFilterable(
-        key,
-        filterTypeList.stream().map(filterableFunction).collect(Collectors.toList()));
-//        .orElseThrow(() ->
-//            new IllegalArgumentException(
-//                String.format("[%s] filter must contain at least one element")))
   }
 }

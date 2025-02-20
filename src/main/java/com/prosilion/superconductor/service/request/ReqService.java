@@ -3,13 +3,10 @@ package com.prosilion.superconductor.service.request;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.util.EmptyFiltersException;
 import lombok.NonNull;
-import nostr.event.filter.Filters;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.ReqMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ReqService<T extends ReqMessage, U extends GenericEvent> {
@@ -29,11 +26,6 @@ public class ReqService<T extends ReqMessage, U extends GenericEvent> {
                 reqMessage.getSubscriptionId(),
                 sessionId,
                 true),
-            getFiltersList(reqMessage)
-        ));
-  }
-
-  private static <T extends ReqMessage> @NonNull List<Filters> getFiltersList(@NonNull T reqMessage) {
-    return reqMessage.getFiltersList();
+            reqMessage.getFiltersList()));
   }
 }

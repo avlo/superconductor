@@ -4,11 +4,13 @@ import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 @ActiveProfiles("test")
+@TestMethodOrder(OrderAnnotation.class)
 class MatchingMultipleGenericTagQuerySingleLetterIT {
   private final NostrRelayService nostrRelayService;
   private final String textMessageEventJson;
@@ -58,6 +61,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   }
 
   @Test
+  @Order(0)
   void testReqMessagesMissingOneGenericMatch() throws IOException, ExecutionException, InterruptedException {
     String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
@@ -75,6 +79,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   }
 
   @Test
+  @Order(1)
   void testReqMessagesMissingBothGenericMatch() throws IOException, ExecutionException, InterruptedException {
     String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
@@ -92,6 +97,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   }
 
   @Test
+  @Order(2)
   void testReqMessagesMatchesGeneric() throws IOException, ExecutionException, InterruptedException {
     String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
@@ -121,6 +127,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   }
 
   @Test
+  @Order(3)
   void testReqMessagesMatchesGenericWithSpaces() throws IOException, ExecutionException, InterruptedException {
     String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"

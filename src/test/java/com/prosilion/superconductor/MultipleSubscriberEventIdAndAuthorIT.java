@@ -42,13 +42,13 @@ class MultipleSubscriberEventIdAndAuthorIT extends AbstractMultipleSubscriber {
 
 
   @Test
-  @Order(1)
+  @Order(99)
   void testAuthorRequestfromItsOwnTest() {
     long start = System.currentTimeMillis();
 
     CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
             IntStream.range(0, super.getTargetCount()).forEach(value ->
-                assertAll(() -> sendRequestForAuthor()))
+                assertAll(this::sendRequestForAuthor))
         , super.getExecutorService());
 
     await()
@@ -70,7 +70,7 @@ class MultipleSubscriberEventIdAndAuthorIT extends AbstractMultipleSubscriber {
 
     log.debug("author okMessage:");
     log.debug("  " + authorMap);
-    String responseJson = authorMap.get(Command.EVENT).get();
+    String responseJson = Optional.of(authorMap.get(Command.EVENT)).get().orElseThrow();
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(increment);
     log.debug("author expectedJson:\n  {}", expectedJsonInAnyOrder);
     log.debug("------------");

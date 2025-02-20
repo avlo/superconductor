@@ -5,14 +5,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 @ActiveProfiles("test")
@@ -58,12 +58,12 @@ abstract class AbstractMultipleSubscriber {
       Integer hexNumberOfBytes,
       Integer reqInstances) {
     this.nostrRelayService = nostrRelayService;
-    this.hexCounterSeed = hexCounterSeed.repeat(2*hexNumberOfBytes);
+    this.hexCounterSeed = hexCounterSeed.repeat(2 * hexNumberOfBytes);
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
     this.targetCount = reqInstances;
   }
 
-  @BeforeAll
+  @BeforeEach
   public void setup() throws IOException {
     long start = System.currentTimeMillis();
 
@@ -89,9 +89,9 @@ abstract class AbstractMultipleSubscriber {
     nostrRelayService.createEvent(globalEventJson);
   }
 
-  abstract String getGlobalEventJson(@NonNull String startEventId);
-  abstract String getExpectedJsonInAnyOrder(@NonNull String startEventId);
-  abstract String createReqJson(@NonNull String uuid);
+  abstract String getGlobalEventJson(String startEventId);
+  abstract String getExpectedJsonInAnyOrder(String startEventId);
+  abstract String createReqJson(String uuid);
 
   @Test
   @Order(0)
@@ -118,9 +118,8 @@ abstract class AbstractMultipleSubscriber {
         createReqJson(uuidKey),
         uuidKey
     );
-    log.debug("okMessage:");
-    log.debug("  " + returnedJsonMap);
-    String responseJson = returnedJsonMap.get(Command.EVENT).get();
+    log.debug("okMessage:\n  {}", returnedJsonMap);
+    String responseJson = Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow();
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(uuidKey);
     log.debug("expectedJson:\n  {}", expectedJsonInAnyOrder);
     log.debug("------------");

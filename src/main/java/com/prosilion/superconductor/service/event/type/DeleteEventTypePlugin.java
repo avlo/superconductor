@@ -5,11 +5,11 @@ import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.PublicKey;
 import nostr.event.Kind;
-import nostr.event.filter.FiltersCore;
+import nostr.event.filter.AddressableTagFilter;
+import nostr.event.filter.Filterable;
+import nostr.event.filter.Filters;
 import nostr.event.impl.DeletionEvent;
-import nostr.event.impl.Filters;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
 import nostr.event.tag.AddressTag;
@@ -17,10 +17,13 @@ import nostr.event.tag.EventTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+// TODO: complete this class
 @Slf4j
 @Component
 public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
@@ -105,20 +108,17 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
         .toList();
 
     AddressTag first = addressTagList.getFirst();
-
-    Integer kind = first.getKind();
-    PublicKey pubkey = first.getPublicKey();
+//    Integer kind = first.getKind();
+//    PublicKey pubkey = first.getPublicKey();
     String dIdent = first.getIdentifierTag().getId();
 
-    Filters filters = Filters
-        .builder()
-//        .kinds(List.of(Kind.valueOf(kind)))
-//        .authors(List.of(pubkey))
-        .build();
-    filters.setGenericTagQuery("a", List.of(dIdent));
+    Map<String, List<Filterable>> expectedFilters = new HashMap<>();
+    expectedFilters.put(dIdent,
+        List.of(
+            new AddressableTagFilter<>(first)));
 
-    Optional<AddNostrEvent> addNostrEvents = filterMatcher.intersectFilterMatches(new FiltersCore(), new AddNostrEvent<>(event));
-    List<GenericEvent> list = addNostrEvents.stream().map(addNostrEvent -> addNostrEvent.event()).toList();
+    Optional<AddNostrEvent> addNostrEvents = filterMatcher.intersectFilterMatches(new Filters(expectedFilters), new AddNostrEvent<>(event));
+    List<GenericEvent> list = addNostrEvents.stream().map(AddNostrEvent::event).toList();
     return list;
   }
 

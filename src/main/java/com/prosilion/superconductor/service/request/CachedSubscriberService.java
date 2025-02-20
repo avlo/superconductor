@@ -127,7 +127,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   private static void setBoundCriterion(Filters filters, String bound, Consumer<Long> longConsumer) {
     Optional
         .ofNullable(
-            filters.getFilterableByType(bound))
+            filters.getFilterByType(bound))
         .<Long>map(filterable ->
             filterable.getFirst().getFilterCriterion())
         .ifPresent(longConsumer);

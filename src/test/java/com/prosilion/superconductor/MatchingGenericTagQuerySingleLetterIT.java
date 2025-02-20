@@ -89,7 +89,6 @@ class MatchingGenericTagQuerySingleLetterIT {
     Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow();
 //    associated event
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
-
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains("textnote-geo-tag-1"));
     assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
   }

@@ -10,7 +10,7 @@
 
 ----
 
-### Normal/Production Mode (for most users) Instructions:
+### Normal/Production Mode Instructions:
 #### Confirm docker requirements
 
     $ docker --version

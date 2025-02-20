@@ -236,12 +236,13 @@ run with docker logging displayed to console:
 
 Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
-	select id, pub_key, session_id, challenge from auth;
-    select id, event_id_string, kind, nip, created_at, pub_key, content from event;
+    select id, pub_key, session_id, challenge from auth;
+    select id, concat(left(event_id_string,10), '...') as event_id_string, kind, nip, created_at, concat(left(pub_key,10), '...') as pub_key, content from event;
     select id, event_id, event_tag_id from "event-event_tag-join";
     select id, event_id_string, recommended_relay_url, marker from event_tag;
     select id, event_id, pubkey_id from "event-pubkey_tag-join";
-    select id, public_key, main_relay_url, pet_name from pubkey_tag;
+    select id, event_id from deletion_event;
+    select id, concat(left(public_key,10), '...') as public_key, main_relay_url, pet_name from pubkey_tag;
     select id, event_id, subject_tag_id from "event-subject_tag-join";
     select id, subject from subject_tag;
     select id, hashtag_tag from hashtag_tag;

@@ -7,7 +7,8 @@
 ╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 ```
 # Java Nostr-Relay Framework & Web Application
-
+  
+  
 ### Normal/Production Mode (for most users) Instructions:
 #### Confirm docker requirements
 

@@ -112,12 +112,7 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
 //    PublicKey pubkey = first.getPublicKey();
     String dIdent = first.getIdentifierTag().getId();
 
-    Map<String, List<Filterable>> expectedFilters = new HashMap<>();
-    expectedFilters.put(dIdent,
-        List.of(
-            new AddressableTagFilter<>(first)));
-
-    Optional<AddNostrEvent> addNostrEvents = filterMatcher.intersectFilterMatches(new Filters(expectedFilters), new AddNostrEvent<>(event));
+    Optional<AddNostrEvent> addNostrEvents = filterMatcher.intersectFilterMatches(new Filters(new AddressableTagFilter<>(first)), new AddNostrEvent<>(event));
     List<GenericEvent> list = addNostrEvents.stream().map(AddNostrEvent::event).toList();
     return list;
   }

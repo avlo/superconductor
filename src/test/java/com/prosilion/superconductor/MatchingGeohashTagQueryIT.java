@@ -33,19 +33,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 @ActiveProfiles("test")
-class MatchingGenericTagQuerySingleLetterIT {
+class MatchingGeohashTagQueryIT {
   private final NostrRelayService nostrRelayService;
   private final String textMessageEventJson;
   private final String uuidPrefix;
 
   @Autowired
-  MatchingGenericTagQuerySingleLetterIT(@NonNull NostrRelayService nostrRelayService,
+  MatchingGeohashTagQueryIT(@NonNull NostrRelayService nostrRelayService,
       @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix
   ) throws IOException {
     this.nostrRelayService = nostrRelayService;
     this.uuidPrefix = uuidPrefix;
 
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_generic_tag_query_filter_single_letter_json_input.txt"))) {
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_geohash_tag_query_filter_input.txt"))) {
       this.textMessageEventJson = lines.collect(Collectors.joining("\n"));
     }
   }

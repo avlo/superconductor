@@ -41,7 +41,7 @@ public class FilterMatcher<T extends GenericEvent> {
     return getFilterMatchingEvents(combos, eventToCheck) ? Optional.of(eventToCheck) : Optional.empty();
   }
 
-  private <U> boolean getFilterMatchingEvents(List<Combo<U>> combos, AddNostrEvent<T> eventToCheck) {
+  private <U extends Filterable> boolean getFilterMatchingEvents(List<Combo<U>> combos, AddNostrEvent<T> eventToCheck) {
     for (Combo<U> combo : combos) {
       if (!filterableMatchesAtLeastOneEventAttribute(combo, eventToCheck)) {
         return false;
@@ -50,7 +50,7 @@ public class FilterMatcher<T extends GenericEvent> {
     return true;
   }
 
-  private <U> boolean filterableMatchesAtLeastOneEventAttribute(Combo<U> combo, AddNostrEvent<T> eventToCheck) {
+  private <U extends Filterable> boolean filterableMatchesAtLeastOneEventAttribute(Combo<U> combo, AddNostrEvent<T> eventToCheck) {
 //    TODO: convert to stream
     List<U> subscriberFilterType = combo.getFilterable();
     for (U testable : subscriberFilterType) {
@@ -62,11 +62,11 @@ public class FilterMatcher<T extends GenericEvent> {
   }
 
   @Getter
-  class Combo<Filterable> {
-    List<Filterable> filterable;
-    BiPredicate<Filterable, AddNostrEvent<T>> biPredicate;
+  class Combo<V extends Filterable> {
+    List<V> filterable;
+    BiPredicate<V, AddNostrEvent<T>> biPredicate;
 
-    public Combo(List<Filterable> filterable, BiPredicate<Filterable, AddNostrEvent<T>> biPredicate) {
+    public Combo(List<V> filterable, BiPredicate<V, AddNostrEvent<T>> biPredicate) {
       this.filterable = filterable;
       this.biPredicate = biPredicate;
     }

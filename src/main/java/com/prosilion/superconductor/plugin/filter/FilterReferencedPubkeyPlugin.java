@@ -25,6 +25,6 @@ public class FilterReferencedPubkeyPlugin<T extends ReferencedPublicKeyFilter<Pu
 
   @Override
   public String getCode() {
-    return "p";
+    return T.FILTER_KEY;
   }
 }

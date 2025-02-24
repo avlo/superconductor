@@ -25,6 +25,6 @@ public class FilterReferencedEventPlugin<T extends ReferencedEventFilter<EventTa
 
   @Override
   public String getCode() {
-    return "e";
+    return T.FILTER_KEY;
   }
 }

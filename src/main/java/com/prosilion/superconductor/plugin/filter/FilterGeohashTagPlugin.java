@@ -25,6 +25,6 @@ public class FilterGeohashTagPlugin<T extends GeohashTagFilter<GeohashTag>, U ex
 
   @Override
   public String getCode() {
-    return "g";
+    return T.FILTER_KEY;
   }
 }

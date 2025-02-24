@@ -10,12 +10,9 @@ import com.prosilion.superconductor.util.EmptyFiltersException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.PublicKey;
-import nostr.event.Kind;
 import nostr.event.filter.Filters;
 import nostr.event.filter.SinceFilter;
 import nostr.event.filter.UntilFilter;
-import nostr.event.impl.GenericEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -26,11 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 @Slf4j
 @Service
@@ -102,7 +96,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return hash;
   }
 
-  private void put(Subscriber subscriber, Filters filters) throws EmptyFiltersException {
+  private void put(Subscriber subscriber, Filters filters) {
     biMap.forcePut(subscriber.getSubscriberId(), subscriber.getSessionId());
     long subscriberSessionHash = getHash(subscriber);
 
@@ -129,7 +123,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
         .ofNullable(
             filters.getFilterByType(bound))
         .<Long>map(filterable ->
-            filterable.getFirst().getFilterableCriterion())
+            filterable.getFirst().getFilterable())
         .ifPresent(longConsumer);
   }
 
@@ -151,55 +145,10 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     private final SubscriberFilter subscriberFilter;
     private final Filters filters;
 
-    public Combo(Subscriber subscriber, SubscriberFilter subscriberFilter, Filters filters) throws EmptyFiltersException {
+    public Combo(Subscriber subscriber, SubscriberFilter subscriberFilter, Filters filters) {
       this.subscriber = subscriber;
-      if (!checkMinimallyPopulatedFilters(subscriberFilter, filters))
-        throw new EmptyFiltersException(String.format("invalid: empty filters encountered for subscriber [%s]", subscriber.getSubscriberId()));
       this.subscriberFilter = subscriberFilter;
       this.filters = filters;
-    }
-
-    //    TODO: confirm below not necessary since should be part of framework
-    private static boolean checkMinimallyPopulatedFilters(SubscriberFilter subscriberFilter, Filters filters) {
-      return true;
-//      return Objects.nonNull(subscriberFilter.getSince())
-//          || Objects.nonNull(subscriberFilter.getUntil())
-//          || Objects.nonNull(subscriberFilter.getLimit())
-//          || hasValidField(filters.getEvents(), getEventPredicate())
-//          || hasValidField(filters.getAuthors(), getPubKeyPredicate())
-//          || hasValidField(filters.getKinds(), getKindPredicate())
-//          || hasValidField(filters.getReferencedEvents(), getEventPredicate())
-//          || hasValidField(filters.getReferencePubKeys(), getPubKeyPredicate())
-//          || hasValidGenericTagQuery(filters.getGenericTagQuery());
-    }
-
-    private static <T> boolean hasValidField(List<T> filtersField, Predicate<T> fieldPredicate) {
-      return Objects.nonNull(filtersField)
-          && !filtersField.isEmpty()
-          && filtersField.stream().anyMatch(fieldPredicate);
-    }
-
-    private static Predicate<PublicKey> getPubKeyPredicate() {
-      return pubKey -> !pubKey.toString().isBlank();
-    }
-
-    private static Predicate<GenericEvent> getEventPredicate() {
-      return event -> !event.getId().isBlank();
-    }
-
-    Function<Kind, Boolean> kindBooleanFunction = kind -> !kind.toString().isBlank();
-
-    private Predicate<Kind> getKindPredicate() {
-      return kind -> {
-        Function<Kind, Boolean> kindBooleanFunction = kind1 -> !kind1.toString().isBlank();
-        return kindBooleanFunction.apply(kind);
-      };
-    }
-
-    private static boolean hasValidGenericTagQuery(Map<String, List<String>> genericTagQuery) {
-      return Objects.nonNull(genericTagQuery)
-          && genericTagQuery.entrySet().stream().allMatch(entry -> Objects.nonNull(entry.getValue()))
-          && genericTagQuery.entrySet().stream().noneMatch(entry -> entry.getValue().toString().isBlank());
     }
   }
 }

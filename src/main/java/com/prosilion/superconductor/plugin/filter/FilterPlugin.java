@@ -55,7 +55,7 @@ public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
             filters.getFilterByType(type))
         .stream().flatMap(filterables ->
             filterables.stream().map(filterable ->
-                (T) filterable.getFilterableCriterion()))
+                (T) filterable.getFilterable()))
         .toList();
   }
 }

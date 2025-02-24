@@ -25,6 +25,6 @@ public class FilterIdentifierTagPlugin<T extends IdentifierTagFilter<IdentifierT
 
   @Override
   public String getCode() {
-    return T.filterKey;
+    return "d";
   }
 }

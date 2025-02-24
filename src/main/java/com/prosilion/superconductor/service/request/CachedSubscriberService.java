@@ -110,8 +110,8 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     subscriberFilter.setSubscriberId(subscriberSessionHash);
     subscriberFilter.setLimit(filters.getLimit());
 
-    setBoundCriterion(filters, SinceFilter.filterKey, subscriberFilter::setSince);
-    setBoundCriterion(filters, UntilFilter.filterKey, subscriberFilter::setUntil);
+    setBoundCriterion(filters, SinceFilter.FILTER_KEY, subscriberFilter::setSince);
+    setBoundCriterion(filters, UntilFilter.FILTER_KEY, subscriberFilter::setUntil);
 
     Combo combo = new Combo(
         subscriber,
@@ -129,7 +129,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
         .ofNullable(
             filters.getFilterByType(bound))
         .<Long>map(filterable ->
-            filterable.getFirst().getFilterCriterion())
+            filterable.getFirst().getFilterableCriterion())
         .ifPresent(longConsumer);
   }
 

@@ -18,6 +18,6 @@ public class FilterAuthorPlugin<T extends AuthorFilter<PublicKey>, U extends Gen
 
   @Override
   public String getCode() {
-    return AuthorFilter.filterKey;
+    return T.FILTER_KEY;
   }
 }

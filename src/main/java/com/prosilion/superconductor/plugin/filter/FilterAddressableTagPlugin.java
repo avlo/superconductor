@@ -25,6 +25,6 @@ public class FilterAddressableTagPlugin<T extends AddressableTagFilter<AddressTa
 
   @Override
   public String getCode() {
-    return AddressableTagFilter.filterKey;
+    return "a";
   }
 }

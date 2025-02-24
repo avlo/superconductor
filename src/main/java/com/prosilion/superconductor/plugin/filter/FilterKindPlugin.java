@@ -18,6 +18,6 @@ public class FilterKindPlugin<T extends KindFilter<Kind>, U extends GenericEvent
 
   @Override
   public String getCode() {
-    return KindFilter.filterKey;
+    return KindFilter.FILTER_KEY;
   }
 }

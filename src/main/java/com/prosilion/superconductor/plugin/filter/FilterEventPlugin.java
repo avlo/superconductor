@@ -17,6 +17,6 @@ public class FilterEventPlugin<T extends EventFilter<GenericEvent>, U extends Ge
 
   @Override
   public String getCode() {
-    return EventFilter.filterKey;
+    return T.FILTER_KEY;
   }
 }

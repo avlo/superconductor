@@ -17,6 +17,6 @@ public class FilterSincePlugin<T extends SinceFilter, U extends GenericEvent> im
 
   @Override
   public String getCode() {
-    return T.filterKey;
+    return T.FILTER_KEY;
   }
 }

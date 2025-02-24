@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 @Component
-public class FilterReferencedEventPlugin<T extends ReferencedEventFilter<GenericEvent>, U extends GenericEvent> implements FilterPlugin<T, U> {
+public class FilterReferencedEventPlugin<T extends ReferencedEventFilter<EventTag>, U extends GenericEvent> implements FilterPlugin<T, U> {
 
   @Override
   public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
@@ -25,6 +25,6 @@ public class FilterReferencedEventPlugin<T extends ReferencedEventFilter<Generic
 
   @Override
   public String getCode() {
-    return ReferencedEventFilter.filterKey;
+    return "e";
   }
 }

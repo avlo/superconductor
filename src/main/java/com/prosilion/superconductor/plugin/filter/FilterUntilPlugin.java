@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.plugin.filter;
 
 import nostr.event.filter.Filters;
-import nostr.event.filter.SinceFilter;
 import nostr.event.filter.UntilFilter;
 import nostr.event.impl.GenericEvent;
 import org.springframework.stereotype.Component;
@@ -18,6 +17,6 @@ public class FilterUntilPlugin<T extends UntilFilter, U extends GenericEvent> im
 
   @Override
   public String getCode() {
-    return T.filterKey;
+    return T.FILTER_KEY;
   }
 }

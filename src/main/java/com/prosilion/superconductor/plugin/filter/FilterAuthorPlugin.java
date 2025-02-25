@@ -2,19 +2,11 @@ package com.prosilion.superconductor.plugin.filter;
 
 import nostr.base.PublicKey;
 import nostr.event.filter.AuthorFilter;
-import nostr.event.filter.Filters;
 import nostr.event.impl.GenericEvent;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
-public class FilterAuthorPlugin<T extends AuthorFilter<PublicKey>, U extends GenericEvent> implements FilterPlugin<T, U> {
-
-  @Override
-  public List<T> getPluginFilters(Filters filters) {
-    return getFilterableListByType(filters, getCode());
-  }
+public class FilterAuthorPlugin<T extends AuthorFilter<V>, U extends GenericEvent, V extends PublicKey> implements FilterPlugin<T, U> {
 
   @Override
   public String getCode() {

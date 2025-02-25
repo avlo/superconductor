@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IdentityTagPlugin<
+public class IdentifierTagPlugin<
     P extends IdentifierTag,
     Q extends IdentifierTagEntityRepository<R>,
     R extends IdentifierTagEntity,
@@ -23,7 +23,7 @@ public class IdentityTagPlugin<
   private final EventEntityIdentifierTagEntityRepository<S> join;
 
   @Autowired
-  public IdentityTagPlugin(@NonNull IdentifierTagEntityRepository<R> identifierTagEntityRepository, @NonNull EventEntityIdentifierTagEntityRepository<S> join) {
+  public IdentifierTagPlugin(@NonNull IdentifierTagEntityRepository<R> identifierTagEntityRepository, @NonNull EventEntityIdentifierTagEntityRepository<S> join) {
     this.identifierTagEntityRepository = identifierTagEntityRepository;
     this.join = join;
   }

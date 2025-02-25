@@ -21,20 +21,6 @@ public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
         filterable.getPredicate().test(addNostrEvent.event());
   }
 
-  /**
-   * Used exclusively by filterables requiring investigation into a *list* of an events tags:
-   *    ReferencedEvent
-   *    ReferencedPubkey
-   *    Addressable
-   *    Identifier (if more than one IdentifierTag in an event?)
-   *    (likely?) GenericTagQuery
-   * not:
-   *    Author
-   *    Event
-   *    Kind
-   *    Since
-   *    Until
-   */
   default <V extends BaseTag> BiPredicate<T, AddNostrEvent<U>> getBiPredicate(Class<V> clazz) {
     return (filterable, addNostrEvent) ->
         getTypeSpecificTags(clazz, addNostrEvent.event()).stream()
@@ -42,7 +28,7 @@ public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
                 filterable.getPredicate().test(addNostrEvent.event()));
   }
 
-  default <T extends BaseTag> List<T> getTypeSpecificTags(Class<T> tagClass, GenericEvent genericEvent) {
+  default <V extends BaseTag> List<V> getTypeSpecificTags(Class<V> tagClass, GenericEvent genericEvent) {
     return genericEvent.getTags().stream()
         .filter(tagClass::isInstance)
         .map(tagClass::cast)

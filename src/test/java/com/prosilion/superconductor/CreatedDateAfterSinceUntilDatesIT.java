@@ -72,9 +72,8 @@ class CreatedDateAfterSinceUntilDatesIT {
     /**
      * since 1111111111112 and until 1111111111113 should yield empty, since target time (1111111111111) is before the two
      */
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isEmpty());
-
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   private String createReqJson(@NonNull String uuid) {

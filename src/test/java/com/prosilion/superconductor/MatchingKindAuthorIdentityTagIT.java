@@ -62,12 +62,12 @@ class MatchingKindAuthorIdentityTagIT {
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
 
 //    associated event
     assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
     assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("matching kind, author, identity-tag filter test"));
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   private String createClEventJsonReq(String uuid, String authorPubKey) {

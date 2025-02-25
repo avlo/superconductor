@@ -73,10 +73,10 @@ class SinceDateLessThanCreatedDateIT {
     /**
      * "since" 1111111111110 should yield present, as target time (1111111111111) is after it
      */
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
     assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("1111111111111"));
 
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   private String createReqJson(@NonNull String uuid) {

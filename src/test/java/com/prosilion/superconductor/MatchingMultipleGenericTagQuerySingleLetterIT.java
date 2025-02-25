@@ -74,8 +74,8 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isEmpty());
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   @Test
@@ -92,8 +92,8 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isEmpty());
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   @Test
@@ -110,11 +110,11 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
     Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow();
 //    associated event
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   private String createReqJson(@NonNull String uuid, String genericTagStringG, String genericTagStringH) {
@@ -141,14 +141,14 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
     Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow();
 //    associated event
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains("textnote-geo-tag-1"));
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains("hash-tag-1"));
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains("random i tag with spaces"));
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   private String createReqTagWResultSpaces(@NonNull String uuid, String genericTagStringG, String genericTagStringH, String genericTagStringI) {

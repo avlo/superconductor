@@ -61,7 +61,7 @@ class EventMessageIT {
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(uuidKey));
     assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(authorPubkey));
   }
@@ -121,8 +121,8 @@ class EventMessageIT {
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().isEmpty());
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EOSE)).get().isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   private String createNonMatchEventReqJson(@NonNull String subscriberId, @NonNull String nonMatchingEventId) {

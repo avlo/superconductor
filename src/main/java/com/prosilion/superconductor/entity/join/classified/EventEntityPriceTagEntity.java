@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.entity.join.classified;
 
-import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.join.EventEntityAbstractEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "event-price_tag-join")
-public class EventEntityPriceTagEntity extends EventEntityAbstractTagEntity {
+public class EventEntityPriceTagEntity extends EventEntityAbstractEntity {
   private Long priceTagId;
 
   public EventEntityPriceTagEntity(Long eventId, Long priceTagId) {

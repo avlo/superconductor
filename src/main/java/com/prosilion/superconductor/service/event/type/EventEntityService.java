@@ -4,7 +4,7 @@ import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.EventEntity;
-import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.join.EventEntityAbstractEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.EventEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
@@ -33,8 +33,8 @@ public class EventEntityService<T extends GenericEvent> {
       BaseTag,
       AbstractTagEntityRepository<AbstractTagEntity>,
       AbstractTagEntity,
-      EventEntityAbstractTagEntity,
-      EventEntityAbstractTagEntityRepository<EventEntityAbstractTagEntity>>
+      EventEntityAbstractEntity,
+      EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>>
       concreteTagEntitiesService;
   private final GenericTagEntitiesService genericTagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
@@ -45,8 +45,8 @@ public class EventEntityService<T extends GenericEvent> {
           BaseTag,
           AbstractTagEntityRepository<AbstractTagEntity>,
           AbstractTagEntity,
-          EventEntityAbstractTagEntity,
-          EventEntityAbstractTagEntityRepository<EventEntityAbstractTagEntity>>
+          EventEntityAbstractEntity,
+          EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>>
           concreteTagEntitiesService,
       GenericTagEntitiesService genericTagEntitiesService,
       EventEntityRepository eventEntityRepository) {

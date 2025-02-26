@@ -2,7 +2,7 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.superconductor.plugin.tag.TagPlugin;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
-import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.join.EventEntityAbstractEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
 import lombok.NonNull;
@@ -20,7 +20,7 @@ public class ConcreteTagEntitiesService<
     P extends BaseTag,
     Q extends AbstractTagEntityRepository<R>,
     R extends AbstractTagEntity,
-    S extends EventEntityAbstractTagEntity,
+    S extends EventEntityAbstractEntity,
     T extends EventEntityAbstractTagEntityRepository<S>> {
   private final List<TagPlugin<P, Q, R, S, T>> tagPlugins;
 

@@ -1,9 +1,7 @@
 package com.prosilion.superconductor.entity.join.deletion;
 
+import com.prosilion.superconductor.entity.join.EventEntityAbstractEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,13 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "deletion_event")
-public class DeletionEventEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private Long eventId;
-
+public class DeletionEventEntity extends EventEntityAbstractEntity {
   public DeletionEventEntity(@NonNull Long eventId) {
-    this.eventId = eventId;
+    super.setEventId(eventId);
   }
 }

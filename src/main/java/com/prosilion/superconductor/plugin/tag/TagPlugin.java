@@ -2,7 +2,7 @@ package com.prosilion.superconductor.plugin.tag;
 
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
-import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
+import com.prosilion.superconductor.entity.join.EventEntityAbstractEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
 import nostr.event.BaseTag;
@@ -15,7 +15,7 @@ public interface TagPlugin<
     P extends BaseTag,
     Q extends AbstractTagEntityRepository<R>, // dto table
     R extends AbstractTagEntity, // dto to return
-    S extends EventEntityAbstractTagEntity, // @MappedSuperclass for below
+    S extends EventEntityAbstractEntity, // @MappedSuperclass for below
     T extends EventEntityAbstractTagEntityRepository<S>> // event -> dto join table
 {
   String getCode();

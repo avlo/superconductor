@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.plugin.tag;
 
+import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.join.EventEntityAbstractTagEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
-import com.prosilion.superconductor.dto.AbstractTagDto;
 import nostr.event.BaseTag;
 
 import java.util.Collection;
@@ -19,33 +19,31 @@ public interface TagPlugin<
     T extends EventEntityAbstractTagEntityRepository<S>> // event -> dto join table
 {
   String getCode();
-
-  R convertDtoToEntity(P tag);
-
   AbstractTagDto getTagDto(P baseTag);
+  AbstractTagEntityRepository<R> getRepo();
+  EventEntityAbstractTagEntityRepository<S> getJoin();
+  S getEventEntityTagEntity(Long eventId, Long baseTagId);
 
-  S getEventEntityTagEntity(Long eventId, Long tagId);
-
-  T getEventEntityStandardTagEntityRepositoryJoin();
-
-  Q getStandardTagEntityRepository();
+  default R convertDtoToEntity(P baseTag) {
+    return (R) getTagDto(baseTag).convertDtoToEntity();
+  }
 
   default List<R> getTags(Long eventId) {
-    return getEventEntityStandardTagEntityRepositoryJoin()
+    return getJoin()
         .findByEventId(eventId)
         .stream()
         .map(event -> Optional.of(
-                getStandardTagEntityRepository().findById(
+                getRepo().findById(
                     event.getId()))
             .orElseGet(Optional::empty).stream().toList())
         .flatMap(Collection::stream).distinct().toList();
   }
 
   default void saveTag(Long eventId, P baseTag) {
-    getEventEntityStandardTagEntityRepositoryJoin().save(
+    getJoin().save(
         getEventEntityTagEntity(
             eventId,
-            getStandardTagEntityRepository().save(
+            getRepo().save(
                 convertDtoToEntity(baseTag)).getId()));
   }
 }

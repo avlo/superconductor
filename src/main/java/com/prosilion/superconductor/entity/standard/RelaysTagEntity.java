@@ -5,6 +5,7 @@ import com.prosilion.superconductor.dto.standard.RelaysTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -24,7 +25,7 @@ public class RelaysTagEntity extends AbstractTagEntity {
   private String uri;
 
   public RelaysTagEntity(@NonNull RelaysTag relaysTag) {
-    this.uri = relaysTag.getRelays().get(0).getUri();
+    this.uri = relaysTag.getRelays().getFirst().getUri();
   }
 
   @Override
@@ -33,6 +34,7 @@ public class RelaysTagEntity extends AbstractTagEntity {
   }
 
   @Override
+  @Transient
   public BaseTag getAsBaseTag() {
     return new RelaysTag(new Relay(uri));
   }

@@ -5,6 +5,7 @@ import com.prosilion.superconductor.dto.standard.IdentifierTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -32,6 +33,7 @@ public class IdentifierTagEntity extends AbstractTagEntity {
   }
 
   @Override
+  @Transient
   public BaseTag getAsBaseTag() {
     return new IdentifierTag(identifier);
   }

@@ -15,7 +15,7 @@ import lombok.Setter;
 public class EventEntityGeohashTagEntity extends EventEntityAbstractTagEntity {
   private Long geohashTagId;
 
-  public <T extends EventEntityAbstractTagEntity> EventEntityGeohashTagEntity(Long eventId, Long geohashTagId) {
+  public EventEntityGeohashTagEntity(Long eventId, Long geohashTagId) {
     super.setEventId(eventId);
     this.geohashTagId = geohashTagId;
   }

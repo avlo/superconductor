@@ -15,7 +15,7 @@ import lombok.Setter;
 public class EventEntityIdentifierTagEntity extends EventEntityAbstractTagEntity {
   private Long identifierTagId;
 
-  public <T extends EventEntityAbstractTagEntity> EventEntityIdentifierTagEntity(Long eventId, Long identifierTagId) {
+  public EventEntityIdentifierTagEntity(Long eventId, Long identifierTagId) {
     super.setEventId(eventId);
     this.identifierTagId = identifierTagId;
   }

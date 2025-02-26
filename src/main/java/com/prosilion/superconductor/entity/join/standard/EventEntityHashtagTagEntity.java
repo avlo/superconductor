@@ -15,7 +15,7 @@ import lombok.Setter;
 public class EventEntityHashtagTagEntity extends EventEntityAbstractTagEntity {
   private Long hashTagId;
 
-  public <T extends EventEntityAbstractTagEntity> EventEntityHashtagTagEntity(Long eventId, Long hashTagId) {
+  public EventEntityHashtagTagEntity(Long eventId, Long hashTagId) {
     super.setEventId(eventId);
     this.hashTagId = hashTagId;
   }

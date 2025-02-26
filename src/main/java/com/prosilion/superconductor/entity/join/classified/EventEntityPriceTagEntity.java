@@ -15,7 +15,7 @@ import lombok.Setter;
 public class EventEntityPriceTagEntity extends EventEntityAbstractTagEntity {
   private Long priceTagId;
 
-  public <T extends EventEntityAbstractTagEntity> EventEntityPriceTagEntity(Long eventId, Long priceTagId) {
+  public EventEntityPriceTagEntity(Long eventId, Long priceTagId) {
     super.setEventId(eventId);
     this.priceTagId = priceTagId;
   }

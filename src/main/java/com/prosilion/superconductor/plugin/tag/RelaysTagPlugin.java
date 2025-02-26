@@ -17,26 +17,11 @@ public class RelaysTagPlugin<
     Q extends RelaysTagEntityRepository<R>,
     R extends RelaysTagEntity,
     S extends EventEntityRelaysTagEntity,
-    T extends EventEntityRelaysTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, T> {
-
-  private final RelaysTagEntityRepository<R> relaysTagEntityRepository;
-  private final EventEntityRelaysTagEntityRepository<S> join;
+    T extends EventEntityRelaysTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public RelaysTagPlugin(@Nonnull RelaysTagEntityRepository<R> relaysTagEntityRepository, @NonNull EventEntityRelaysTagEntityRepository<S> join) {
-    this.relaysTagEntityRepository = relaysTagEntityRepository;
-    this.join = join;
-  }
-
-  @Override
-  public String getCode() {
-    return "relays";
-  }
-
-  @Override
-  public R convertDtoToEntity(P relaysTag) {
-    return (R) getTagDto(relaysTag).convertDtoToEntity();
+  public RelaysTagPlugin(@Nonnull RelaysTagEntityRepository<R> repo, @NonNull EventEntityRelaysTagEntityRepository<S> join) {
+    super(repo, join, "relays");
   }
 
   @Override
@@ -47,15 +32,5 @@ public class RelaysTagPlugin<
   @Override
   public S getEventEntityTagEntity(Long eventId, Long relaysTagId) {
     return (S) new EventEntityRelaysTagEntity(eventId, relaysTagId);
-  }
-
-  @Override
-  public T getEventEntityStandardTagEntityRepositoryJoin() {
-    return (T) join;
-  }
-
-  @Override
-  public Q getStandardTagEntityRepository() {
-    return (Q) relaysTagEntityRepository;
   }
 }

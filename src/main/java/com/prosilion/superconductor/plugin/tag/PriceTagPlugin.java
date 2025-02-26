@@ -17,26 +17,11 @@ public class PriceTagPlugin<
     Q extends PriceTagEntityRepository<R>,
     R extends PriceTagEntity,
     S extends EventEntityPriceTagEntity,
-    T extends EventEntityPriceTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, T> {
-
-  private final PriceTagEntityRepository<R> priceTagEntityRepository;
-  private final EventEntityPriceTagEntityRepository<S> join;
+    T extends EventEntityPriceTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public PriceTagPlugin(@Nonnull PriceTagEntityRepository<R> priceTagEntityRepository, @NonNull EventEntityPriceTagEntityRepository<S> join) {
-    this.priceTagEntityRepository = priceTagEntityRepository;
-    this.join = join;
-  }
-
-  @Override
-  public String getCode() {
-    return "price";
-  }
-
-  @Override
-  public R convertDtoToEntity(P priceTag) {
-    return (R) getTagDto(priceTag).convertDtoToEntity();
+  public PriceTagPlugin(@Nonnull PriceTagEntityRepository<R> repo, @NonNull EventEntityPriceTagEntityRepository<S> join) {
+    super(repo, join, "price");
   }
 
   @Override
@@ -47,15 +32,5 @@ public class PriceTagPlugin<
   @Override
   public S getEventEntityTagEntity(Long eventId, Long pricetagId) {
     return (S) new EventEntityPriceTagEntity(eventId, pricetagId);
-  }
-
-  @Override
-  public T getEventEntityStandardTagEntityRepositoryJoin() {
-    return (T) join;
-  }
-
-  @Override
-  public Q getStandardTagEntityRepository() {
-    return (Q) priceTagEntityRepository;
   }
 }

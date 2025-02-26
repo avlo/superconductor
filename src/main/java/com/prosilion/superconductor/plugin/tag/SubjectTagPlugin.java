@@ -16,26 +16,11 @@ public class SubjectTagPlugin<
     Q extends SubjectTagEntityRepository<R>,
     R extends SubjectTagEntity,
     S extends EventEntitySubjectTagEntity,
-    T extends EventEntitySubjectTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, T> {
-
-  private final SubjectTagEntityRepository<R> subjectTagEntityRepository;
-  private final EventEntitySubjectTagEntityRepository<S> join;
+    T extends EventEntitySubjectTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public SubjectTagPlugin(@NonNull SubjectTagEntityRepository<R> subjectTagEntityRepository, @NonNull EventEntitySubjectTagEntityRepository<S> join) {
-    this.subjectTagEntityRepository = subjectTagEntityRepository;
-    this.join = join;
-  }
-
-  @Override
-  public String getCode() {
-    return "subject";
-  }
-
-  @Override
-  public R convertDtoToEntity(P subjectTag) {
-    return (R) getTagDto(subjectTag).convertDtoToEntity();
+  public SubjectTagPlugin(@NonNull SubjectTagEntityRepository<R> repo, @NonNull EventEntitySubjectTagEntityRepository<S> join) {
+    super(repo, join, "subject");
   }
 
   @Override
@@ -46,15 +31,5 @@ public class SubjectTagPlugin<
   @Override
   public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
     return (S) new EventEntitySubjectTagEntity(eventId, subjectTagId);
-  }
-
-  @Override
-  public T getEventEntityStandardTagEntityRepositoryJoin() {
-    return (T) join;
-  }
-
-  @Override
-  public Q getStandardTagEntityRepository() {
-    return (Q) subjectTagEntityRepository;
   }
 }

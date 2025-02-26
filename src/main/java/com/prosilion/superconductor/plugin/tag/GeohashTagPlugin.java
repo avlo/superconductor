@@ -17,26 +17,11 @@ public class GeohashTagPlugin<
     Q extends GeohashTagEntityRepository<R>,
     R extends GeohashTagEntity,
     S extends EventEntityGeohashTagEntity,
-    T extends EventEntityGeohashTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, T> {
-
-  private final GeohashTagEntityRepository<R> geohashTagEntityRepository;
-  private final EventEntityGeohashTagEntityRepository<S> join;
+    T extends EventEntityGeohashTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public GeohashTagPlugin(@Nonnull GeohashTagEntityRepository<R> geohashTagEntityRepository, @NonNull EventEntityGeohashTagEntityRepository<S> join) {
-    this.geohashTagEntityRepository = geohashTagEntityRepository;
-    this.join = join;
-  }
-
-  @Override
-  public String getCode() {
-    return "g";
-  }
-
-  @Override
-  public R convertDtoToEntity(P geohashTag) {
-    return (R) getTagDto(geohashTag).convertDtoToEntity();
+  public GeohashTagPlugin(@Nonnull GeohashTagEntityRepository<R> repo, @NonNull EventEntityGeohashTagEntityRepository<S> join) {
+    super(repo, join, "g");
   }
 
   @Override
@@ -47,15 +32,5 @@ public class GeohashTagPlugin<
   @Override
   public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
     return (S) new EventEntityGeohashTagEntity(eventId, subjectTagId);
-  }
-
-  @Override
-  public T getEventEntityStandardTagEntityRepositoryJoin() {
-    return (T) join;
-  }
-
-  @Override
-  public Q getStandardTagEntityRepository() {
-    return (Q) geohashTagEntityRepository;
   }
 }

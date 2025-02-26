@@ -16,26 +16,11 @@ public class IdentifierTagPlugin<
     Q extends IdentifierTagEntityRepository<R>,
     R extends IdentifierTagEntity,
     S extends EventEntityIdentifierTagEntity,
-    T extends EventEntityIdentifierTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, T> {
-
-  private final IdentifierTagEntityRepository<R> identifierTagEntityRepository;
-  private final EventEntityIdentifierTagEntityRepository<S> join;
+    T extends EventEntityIdentifierTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public IdentifierTagPlugin(@NonNull IdentifierTagEntityRepository<R> identifierTagEntityRepository, @NonNull EventEntityIdentifierTagEntityRepository<S> join) {
-    this.identifierTagEntityRepository = identifierTagEntityRepository;
-    this.join = join;
-  }
-
-  @Override
-  public String getCode() {
-    return "d";
-  }
-
-  @Override
-  public R convertDtoToEntity(P identifierTag) {
-    return (R) getTagDto(identifierTag).convertDtoToEntity();
+  public IdentifierTagPlugin(@NonNull IdentifierTagEntityRepository<R> repo, @NonNull EventEntityIdentifierTagEntityRepository<S> join) {
+    super(repo, join, "d");
   }
 
   @Override
@@ -46,15 +31,5 @@ public class IdentifierTagPlugin<
   @Override
   public S getEventEntityTagEntity(Long eventId, Long identifierTagId) {
     return (S) new EventEntityIdentifierTagEntity(eventId, identifierTagId);
-  }
-
-  @Override
-  public T getEventEntityStandardTagEntityRepositoryJoin() {
-    return (T) join;
-  }
-
-  @Override
-  public Q getStandardTagEntityRepository() {
-    return (Q) identifierTagEntityRepository;
   }
 }

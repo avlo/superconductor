@@ -17,26 +17,11 @@ public class HashtagTagPlugin<
     Q extends HashtagTagEntityRepository<R>,
     R extends HashtagTagEntity,
     S extends EventEntityHashtagTagEntity,
-    T extends EventEntityHashtagTagEntityRepository<S>>
-    implements TagPlugin<P, Q, R, S, T> {
-
-  private final HashtagTagEntityRepository<R> hashtagTagEntityRepository;
-  private final EventEntityHashtagTagEntityRepository<S> join;
+    T extends EventEntityHashtagTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public HashtagTagPlugin(@Nonnull HashtagTagEntityRepository<R> hashtagTagEntityRepository, @NonNull EventEntityHashtagTagEntityRepository<S> join) {
-    this.hashtagTagEntityRepository = hashtagTagEntityRepository;
-    this.join = join;
-  }
-
-  @Override
-  public String getCode() {
-    return "t";
-  }
-
-  @Override
-  public R convertDtoToEntity(P hashtagTag) {
-    return (R) getTagDto(hashtagTag).convertDtoToEntity();
+  public HashtagTagPlugin(@Nonnull HashtagTagEntityRepository<R> repo, @NonNull EventEntityHashtagTagEntityRepository<S> join) {
+    super(repo, join, "t");
   }
 
   @Override
@@ -47,15 +32,5 @@ public class HashtagTagPlugin<
   @Override
   public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
     return (S) new EventEntityHashtagTagEntity(eventId, subjectTagId);
-  }
-
-  @Override
-  public T getEventEntityStandardTagEntityRepositoryJoin() {
-    return (T) join;
-  }
-
-  @Override
-  public Q getStandardTagEntityRepository() {
-    return (Q) hashtagTagEntityRepository;
   }
 }

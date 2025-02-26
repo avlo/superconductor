@@ -7,13 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FilterReferencedEventPlugin<T extends ReferencedEventFilter<EventTag>, U extends GenericEvent> extends AbstractTagFilterPlugin<T, U, EventTag> {
-
   public FilterReferencedEventPlugin() {
-    super(EventTag.class);
-  }
-
-  @Override
-  public String getCode() {
-    return T.FILTER_KEY;
+    super(ReferencedEventFilter.FILTER_KEY, EventTag.class);
   }
 }

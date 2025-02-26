@@ -7,13 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FilterGeohashTagPlugin<T extends GeohashTagFilter<GeohashTag>, U extends GenericEvent> extends AbstractTagFilterPlugin<T, U, GeohashTag> {
-
   public FilterGeohashTagPlugin() {
-    super(GeohashTag.class);
-  }
-
-  @Override
-  public String getCode() {
-    return T.FILTER_KEY;
+    super(GeohashTagFilter.FILTER_KEY, GeohashTag.class);
   }
 }

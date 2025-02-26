@@ -7,13 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FilterReferencedPubkeyPlugin<T extends ReferencedPublicKeyFilter<PubKeyTag>, U extends GenericEvent> extends AbstractTagFilterPlugin<T, U, PubKeyTag> {
-
   public FilterReferencedPubkeyPlugin() {
-    super(PubKeyTag.class);
-  }
-
-  @Override
-  public String getCode() {
-    return T.FILTER_KEY;
+    super(ReferencedPublicKeyFilter.FILTER_KEY, PubKeyTag.class);
   }
 }

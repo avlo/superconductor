@@ -11,6 +11,7 @@ import java.util.function.BiPredicate;
 
 @Component
 public class FilterGenericTagQueryPlugin<T extends GenericTagQueryFilter<GenericTagQuery>, U extends GenericEvent> implements FilterBiPredicate<T, U> {
+  public static final String BLANK = "";
 
   @Override
   public BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
@@ -19,6 +20,6 @@ public class FilterGenericTagQueryPlugin<T extends GenericTagQueryFilter<Generic
 
   @Override
   public String getCode() {
-    return "";
+    return BLANK;
   }
 }

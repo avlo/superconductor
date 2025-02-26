@@ -5,10 +5,9 @@ import nostr.event.impl.GenericEvent;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilterUntilPlugin<T extends UntilFilter, U extends GenericEvent> implements FilterPlugin<T, U> {
+public class FilterUntilPlugin<T extends UntilFilter, U extends GenericEvent> extends AbstractFilterPlugin<T, U> {
 
-  @Override
-  public String getCode() {
-    return T.FILTER_KEY;
+  public FilterUntilPlugin() {
+    super(T.FILTER_KEY);
   }
 }

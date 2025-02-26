@@ -6,10 +6,8 @@ import nostr.event.impl.GenericEvent;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilterAuthorPlugin<T extends AuthorFilter<V>, U extends GenericEvent, V extends PublicKey> implements FilterPlugin<T, U> {
-
-  @Override
-  public String getCode() {
-    return T.FILTER_KEY;
+public class FilterAuthorPlugin<T extends AuthorFilter<V>, U extends GenericEvent, V extends PublicKey> extends AbstractFilterPlugin<T, U> {
+  public FilterAuthorPlugin() {
+    super(T.FILTER_KEY);
   }
 }

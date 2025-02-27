@@ -12,7 +12,7 @@ import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.SubjectTag;
 
-import java.util.Objects;
+import java.util.List;
 
 @Setter
 @Getter
@@ -21,9 +21,12 @@ import java.util.Objects;
 @Table(name = "subject_tag")
 public class SubjectTagEntity extends AbstractTagEntity {
   private String subject;
+  private List<String> filterField;
 
   public SubjectTagEntity(@NonNull String subject) {
+    super("subject");
     this.subject = subject;
+    this.filterField = List.of(this.subject);
   }
 
   @Override
@@ -33,25 +36,7 @@ public class SubjectTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  public String getCode() {
-    return "subject";
-  }
-
-  @Override
   public SubjectTagDto convertEntityToDto() {
     return new SubjectTagDto(new SubjectTag(subject));
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    SubjectTagEntity that = (SubjectTagEntity) o;
-    return Objects.equals(subject, that.subject);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(subject);
   }
 }

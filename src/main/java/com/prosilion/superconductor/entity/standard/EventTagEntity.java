@@ -13,7 +13,9 @@ import nostr.event.BaseTag;
 import nostr.event.Marker;
 import nostr.event.tag.EventTag;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Setter
 @Getter
@@ -24,22 +26,22 @@ public class EventTagEntity extends AbstractTagEntity {
   private String eventIdString;
   private Marker marker;
   private String recommendedRelayUrl;
+  private List<String> filterField;
 
   public EventTagEntity(@NonNull EventTag eventTag) {
-    this.eventIdString = eventTag.getIdEvent();
-    this.marker = eventTag.getMarker();
-    this.recommendedRelayUrl = eventTag.getRecommendedRelayUrl();
+    this(eventTag.getIdEvent(), eventTag.getMarker(), eventTag.getRecommendedRelayUrl());
   }
 
   public EventTagEntity(@NonNull String eventIdString, Marker marker, String recommendedRelayUrl) {
+    super("e");
     this.eventIdString = eventIdString;
     this.marker = marker;
     this.recommendedRelayUrl = recommendedRelayUrl;
-  }
-
-  @Override
-  public String getCode() {
-    return "e";
+    this.filterField = Stream.of(
+            this.eventIdString,
+            Optional.ofNullable(this.marker).map(Marker::getValue).toString(),
+            Optional.ofNullable(this.recommendedRelayUrl).toString())
+        .toList();
   }
 
   @Override
@@ -51,17 +53,5 @@ public class EventTagEntity extends AbstractTagEntity {
   @Override
   public EventTagDto convertEntityToDto() {
     return new EventTagDto(new EventTag(eventIdString, recommendedRelayUrl, marker));
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    EventTagEntity that = (EventTagEntity) o;
-    return Objects.equals(eventIdString, that.eventIdString) && marker == that.marker && Objects.equals(recommendedRelayUrl, that.recommendedRelayUrl);
-  }
-  @Override
-  public int hashCode() {
-    return Objects.hash(eventIdString, marker, recommendedRelayUrl);
   }
 }

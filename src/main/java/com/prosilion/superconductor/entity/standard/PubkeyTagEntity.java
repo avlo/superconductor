@@ -14,7 +14,9 @@ import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.tag.PubKeyTag;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Setter
 @Getter
@@ -25,16 +27,18 @@ public class PubkeyTagEntity extends AbstractTagEntity {
   private String publicKey;
   private String mainRelayUrl;
   private String petName;
+  private List<String> filterField;
 
   public PubkeyTagEntity(@NonNull PubKeyTag pubKeyTag) {
+    super("p");
     this.publicKey = pubKeyTag.getPublicKey().toString();
     this.mainRelayUrl = pubKeyTag.getMainRelayUrl();
     this.petName = pubKeyTag.getPetName();
-  }
-
-  @Override
-  public String getCode() {
-    return "p";
+    this.filterField = Stream.of(
+            this.publicKey,
+            Optional.ofNullable(this.mainRelayUrl).toString(),
+            Optional.ofNullable(this.petName).toString())
+        .toList();
   }
 
   @Override
@@ -48,18 +52,5 @@ public class PubkeyTagEntity extends AbstractTagEntity {
     return new PubkeyTagDto(
         new PubKeyTag(
             new PublicKey(publicKey), mainRelayUrl, petName));
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    PubkeyTagEntity that = (PubkeyTagEntity) o;
-    return Objects.equals(publicKey, that.publicKey) && Objects.equals(mainRelayUrl, that.mainRelayUrl) && Objects.equals(petName, that.petName);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(publicKey, mainRelayUrl, petName);
   }
 }

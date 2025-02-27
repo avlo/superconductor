@@ -14,7 +14,7 @@ import nostr.base.Relay;
 import nostr.event.BaseTag;
 import nostr.event.tag.RelaysTag;
 
-import java.util.Objects;
+import java.util.List;
 
 @Setter
 @Getter
@@ -23,14 +23,12 @@ import java.util.Objects;
 @Table(name = "relays_tag")
 public class RelaysTagEntity extends AbstractTagEntity {
   private String uri;
+  private List<String> filterField;
 
   public RelaysTagEntity(@NonNull RelaysTag relaysTag) {
+    super("relays");
     this.uri = relaysTag.getRelays().getFirst().getUri();
-  }
-
-  @Override
-  public String getCode() {
-    return "relays";
+    this.filterField = List.of(this.uri);
   }
 
   @Override
@@ -42,18 +40,5 @@ public class RelaysTagEntity extends AbstractTagEntity {
   @Override
   public AbstractTagDto convertEntityToDto() {
     return new RelaysTagDto(new RelaysTag(new Relay(uri)));
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    RelaysTagEntity that = (RelaysTagEntity) o;
-    return Objects.equals(uri, that.uri);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(uri);
   }
 }

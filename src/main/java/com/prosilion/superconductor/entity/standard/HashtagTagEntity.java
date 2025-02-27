@@ -13,7 +13,7 @@ import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.HashtagTag;
 
-import java.util.Objects;
+import java.util.List;
 
 @Setter
 @Getter
@@ -22,9 +22,12 @@ import java.util.Objects;
 @Table(name = "hashtag_tag")
 public class HashtagTagEntity extends AbstractTagEntity {
   private String hashtagTag;
+  private List<String> filterField;
 
   public HashtagTagEntity(@NonNull HashtagTag hashtagTag) {
+    super("t");
     this.hashtagTag = hashtagTag.getHashTag();
+    this.filterField = List.of(this.hashtagTag);
   }
 
   @Override
@@ -34,25 +37,7 @@ public class HashtagTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  public String getCode() {
-    return "t";
-  }
-
-  @Override
   public AbstractTagDto convertEntityToDto() {
     return new HashtagTagDto(new HashtagTag(hashtagTag));
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    HashtagTagEntity that = (HashtagTagEntity) o;
-    return Objects.equals(hashtagTag, that.hashtagTag);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(hashtagTag);
   }
 }

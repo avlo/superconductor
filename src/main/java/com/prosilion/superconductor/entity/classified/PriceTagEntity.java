@@ -13,7 +13,7 @@ import nostr.event.BaseTag;
 import nostr.event.tag.PriceTag;
 
 import java.math.BigDecimal;
-import java.util.Objects;
+import java.util.List;
 
 @Setter
 @Getter
@@ -24,16 +24,14 @@ public class PriceTagEntity extends AbstractTagEntity {
   private BigDecimal number;
   private String currency;
   private String frequency;
+  private List<String> filterField;
 
   public PriceTagEntity(@NonNull PriceTag priceTag) {
+    super("price");
     this.number = priceTag.getNumber();
     this.currency = priceTag.getCurrency();
     this.frequency = priceTag.getFrequency();
-  }
-
-  @Override
-  public String getCode() {
-    return "price";
+    this.filterField = List.of(number.toString(), currency, frequency);
   }
 
   @Override
@@ -46,15 +44,15 @@ public class PriceTagEntity extends AbstractTagEntity {
     return new PriceTagDto(new PriceTag(number, currency, frequency));
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    PriceTagEntity that = (PriceTagEntity) o;
-    return Objects.equals(number, that.number) && Objects.equals(currency, that.currency) && Objects.equals(frequency, that.frequency);
-  }
-  @Override
-  public int hashCode() {
-    return Objects.hash(number, currency, frequency);
-  }
+//  @Override
+//  public boolean equals(Object o) {
+//    if (this == o) return true;
+//    if (o == null || getClass() != o.getClass()) return false;
+//    PriceTagEntity that = (PriceTagEntity) o;
+//    return Objects.equals(number, that.number) && Objects.equals(currency, that.currency) && Objects.equals(frequency, that.frequency);
+//  }
+//  @Override
+//  public int hashCode() {
+//    return Objects.hash(number, currency, frequency);
+//  }
 }

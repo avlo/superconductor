@@ -13,7 +13,7 @@ import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.GeohashTag;
 
-import java.util.Objects;
+import java.util.List;
 
 @Setter
 @Getter
@@ -22,14 +22,12 @@ import java.util.Objects;
 @Table(name = "geohash_tag")
 public class GeohashTagEntity extends AbstractTagEntity {
   private String location;
+  private List<String> filterField;
 
   public GeohashTagEntity(@NonNull GeohashTag geohashTag) {
+    super("g");
     this.location = geohashTag.getLocation();
-  }
-
-  @Override
-  public String getCode() {
-    return "g";
+    this.filterField = List.of(location);
   }
 
   @Override
@@ -41,18 +39,5 @@ public class GeohashTagEntity extends AbstractTagEntity {
   @Override
   public AbstractTagDto convertEntityToDto() {
     return new GeohashTagDto(new GeohashTag(location));
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    GeohashTagEntity that = (GeohashTagEntity) o;
-    return Objects.equals(location, that.location);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(location);
   }
 }

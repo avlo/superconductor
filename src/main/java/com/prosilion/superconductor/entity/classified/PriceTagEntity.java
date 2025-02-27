@@ -5,6 +5,7 @@ import com.prosilion.superconductor.dto.classified.PriceTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -20,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "price_tag")
+// TODO: comprehensive unit test all parameter variants
 public class PriceTagEntity extends AbstractTagEntity {
   private BigDecimal number;
   private String currency;
@@ -35,6 +37,7 @@ public class PriceTagEntity extends AbstractTagEntity {
   }
 
   @Override
+  @Transient
   public BaseTag getAsBaseTag() {
     return new PriceTag(number, currency, frequency);
   }
@@ -43,16 +46,4 @@ public class PriceTagEntity extends AbstractTagEntity {
   public AbstractTagDto convertEntityToDto() {
     return new PriceTagDto(new PriceTag(number, currency, frequency));
   }
-
-//  @Override
-//  public boolean equals(Object o) {
-//    if (this == o) return true;
-//    if (o == null || getClass() != o.getClass()) return false;
-//    PriceTagEntity that = (PriceTagEntity) o;
-//    return Objects.equals(number, that.number) && Objects.equals(currency, that.currency) && Objects.equals(frequency, that.frequency);
-//  }
-//  @Override
-//  public int hashCode() {
-//    return Objects.hash(number, currency, frequency);
-//  }
 }

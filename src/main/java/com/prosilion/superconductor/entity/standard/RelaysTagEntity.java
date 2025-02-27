@@ -21,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "relays_tag")
+// TODO: comprehensive unit test all parameter variants
 public class RelaysTagEntity extends AbstractTagEntity {
   private String uri;
   private List<String> filterField;

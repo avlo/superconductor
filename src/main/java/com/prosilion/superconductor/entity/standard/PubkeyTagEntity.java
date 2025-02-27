@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @Entity
 @Table(name = "pubkey_tag")
+// TODO: comprehensive unit test all parameter variants
 public class PubkeyTagEntity extends AbstractTagEntity {
   private String publicKey;
   private String mainRelayUrl;

@@ -27,7 +27,7 @@ public class GeohashTagEntity extends AbstractTagEntity {
   public GeohashTagEntity(@NonNull GeohashTag geohashTag) {
     super("g");
     this.location = geohashTag.getLocation();
-    this.filterField = List.of(location);
+    this.filterField = List.of(this.location);
   }
 
   @Override

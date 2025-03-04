@@ -1,0 +1,88 @@
+plugins {
+    id("java")
+    id("org.springframework.boot") version "3.4.3"
+    id 'java-library'
+    id 'maven-publish'
+    id("io.freefair.lombok") version "8.12.2.1"
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url = uri('https://repo.maven.apache.org/maven2/')
+    }
+}
+
+dependencies {
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'xyz.tcheeric:nostr-java-api:0.6.5-SNAPSHOT'
+    implementation('xyz.tcheeric:nostr-java-event:0.6.5-SNAPSHOT')
+    implementation('xyz.tcheeric:nostr-java-id:0.6.5-SNAPSHOT')
+    implementation('com.h2database:h2:2.2.224')
+    implementation('com.google.guava:guava:33.2.1-jre')
+
+    runtimeOnly('com.mysql:mysql-connector-j:9.1.0')
+
+    runtimeOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    testImplementation('org.junit.jupiter:junit-jupiter:5.10.2')
+    testImplementation('org.springframework.boot:spring-boot-starter-test:3.4.3')
+    testImplementation('org.awaitility:awaitility:4.2.0')
+//    testImplementation 'io.projectreactor:reactor-test'
+}
+
+group = 'com.prosilion'
+version = '1.11.0'
+description = 'superconductor'
+java.sourceCompatibility = JavaVersion.VERSION_21
+
+//tasks.named("bootRun") {
+////    systemProperty 'spring.profiles.active', findProperty('profile') ?: 'local_ws'
+//    systemProperty 'spring.profiles.active', 'local_ws'
+//}
+
+tasks.register("bootRunLocalWs") {
+    group = "application"
+    description = "Superconductor STANDARD MODE: local_ws"
+    doFirst {
+        tasks.bootRun.configure {
+            systemProperty("spring.profiles.active", "local_ws")
+        }
+    }
+    finalizedBy("bootRun")
+}
+
+tasks.register("bootRunLocalWss") {
+    group = "application"
+    description = "Superconductor SECURE MODE: local_wss"
+    doFirst {
+        tasks.bootRun.configure {
+            systemProperty("spring.profiles.active", "local_wss")
+        }
+    }
+    finalizedBy("bootRun")
+}
+
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+test {
+    systemProperty("spring.profiles.active", "test")
+    useJUnitPlatform()
+}

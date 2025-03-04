@@ -6,3 +6,9 @@ superconductor.iml
 target/
 
 pom.xml.versionsBackup
+
+.gradle/
+build/
+gradle/
+gradlew
+gradlew.bat

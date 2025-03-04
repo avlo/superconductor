@@ -1,13 +1,16 @@
 plugins {
     id "java"
+    id "war"
     id "org.springframework.boot" version "3.4.3"
-    id 'java-library'
-    id 'maven-publish'
     id "io.freefair.lombok" version "8.12.2.1"
     id "jacoco"
-    id 'com.adarshr.test-logger' version '4.0.0'
+    id "java-library"
+    id "maven-publish"
+    id "com.adarshr.test-logger" version "4.0.0"
 }
 
+//apply plugin: 'maven-plugin'
+apply plugin: 'java-library'
 apply plugin: 'io.spring.dependency-management'
 
 repositories {
@@ -62,6 +65,20 @@ tasks.test {
 tasks.jacocoTestReport {
 //    TODO: enforce coverage metrics    
     dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = group
+            artifactId = description
+            version = version
+            from components.web
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }
 
 tasks.register("bootRunLocalWs") {

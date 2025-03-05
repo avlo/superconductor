@@ -7,6 +7,7 @@ plugins {
     id "java-library"
     id "maven-publish"
     id "com.adarshr.test-logger" version "4.0.0"
+    id "org.gradle.test-retry" version "1.6.2"
 }
 
 //apply plugin: 'maven-plugin'
@@ -58,6 +59,8 @@ tasks.withType(Javadoc).configureEach {
 
 tasks.test {
     systemProperty("spring.profiles.active", "test")
+//    maxParallelForks = Runtime.getRuntime().availableProcessors()
+    maxParallelForks = Math.floorDiv(Runtime.runtime.availableProcessors(), 2) + 1
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
 }
@@ -103,4 +106,10 @@ tasks.register("bootRunLocalWss") {
     finalizedBy("bootRun")
 }
 
-test {}
+test {
+    retry {
+        failOnPassedAfterRetry = true
+        maxRetries = 1
+        maxFailures = 42
+    }
+}

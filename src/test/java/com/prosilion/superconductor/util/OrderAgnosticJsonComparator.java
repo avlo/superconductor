@@ -52,9 +52,8 @@ public class OrderAgnosticJsonComparator implements Comparator<Iterable<? extend
       case STRING:
         return o1.asText().equals(o2.asText()) ? 0 : -1;
       case NUMBER:
-        double double1 = o1.asDouble();
-        double double2 = o2.asDouble();
-        return Math.abs(double1 - double2) / Math.max(double1, double2) < 0.999 ? 0 : -1;
+        Double double1 = o1.asDouble(); // object req'd for proper .equals() call
+        return double1.equals(o2.asDouble()) ? 0 : -1;
       case OBJECT:
         // ignores fields with null value that are missing at other JSON
         var missingNotNullFields = Sets
@@ -65,10 +64,9 @@ public class OrderAgnosticJsonComparator implements Comparator<Iterable<? extend
         if (!missingNotNullFields.isEmpty()) {
           return -1;
         }
-        Integer reduce1 = stream(spliteratorUnknownSize(o1.fieldNames(), Spliterator.ORDERED), false)
+        return stream(spliteratorUnknownSize(o1.fieldNames(), Spliterator.ORDERED), false)
             .map(key -> compareJsonNodes(o1.get(key), o2.get(key)))
             .reduce(0, (a, b) -> a == -1 || b == -1 ? -1 : 0);
-        return reduce1;
       case ARRAY:
         if (o1.size() != o2.size()) {
           return -1;
@@ -79,11 +77,10 @@ public class OrderAgnosticJsonComparator implements Comparator<Iterable<? extend
         var o1Iterator = o1.elements();
         var o2Iterator = o2.elements();
         var o2Elements = Sets.newHashSet(o2.elements());
-        Integer reduce = stream(spliteratorUnknownSize(o1Iterator, Spliterator.ORDERED), false)
+        return stream(spliteratorUnknownSize(o1Iterator, Spliterator.ORDERED), false)
             .map(o1Next -> ignoreElementOrderInArrays ?
                 lookForMatchingElement(o1Next, o2Elements) : compareJsonNodes(o1Next, o2Iterator.next()))
             .reduce(0, (a, b) -> a == -1 || b == -1 ? -1 : 0);
-        return reduce;
       case MISSING:
       case BINARY:
       case POJO:

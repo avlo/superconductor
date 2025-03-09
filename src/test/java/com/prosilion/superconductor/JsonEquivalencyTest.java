@@ -35,7 +35,7 @@ class JsonEquivalencyTest {
       this.reorderedJson = lines.collect(Collectors.joining("\n"));
     }
 
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/json_un_equiv_kind_input.txt"))) {
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/json_un_equiv_created_at_input.txt"))) {
       this.failKindTargetJson = lines.collect(Collectors.joining("\n"));
     }
   }
@@ -57,7 +57,7 @@ class JsonEquivalencyTest {
 
   @Test
   void testNonEquivalencyKind() throws JsonProcessingException {
-//    below is NOT catching kind (or created at) diffs, likely because they're not quoted as are other fields??
+//    below catches single-char diff in "created_at" tag (1717357053050 -vs- 1717357053051)
     assertFalse(OrderAgnosticJsonComparator.equalsJson(
         mapper.readTree(referenceJson),
         mapper.readTree(failKindTargetJson)));

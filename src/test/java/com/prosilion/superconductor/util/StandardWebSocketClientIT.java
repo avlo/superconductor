@@ -108,7 +108,7 @@ class StandardWebSocketClientIT {
     log.debug("111111111111111111111");
 
     assertTrue(
-        JsonComparator.equalsJson(
+        OrderAgnosticJsonComparator.equalsJson(
             expected,
             actual));
     await().atMost(Duration.ofSeconds(3));

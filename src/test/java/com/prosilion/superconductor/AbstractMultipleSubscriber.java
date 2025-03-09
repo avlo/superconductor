@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
+import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
@@ -135,6 +136,6 @@ abstract class AbstractMultipleSubscriber {
 
   protected boolean compareWithoutOrder(String payloadString, String expectedJson) throws JsonProcessingException {
     JsonNode jsonNode = mapper.readTree(payloadString);
-    return ComparatorWithoutOrder.equalsJson(mapper.readTree(expectedJson), jsonNode);
+    return OrderAgnosticJsonComparator.equalsJson(mapper.readTree(expectedJson), jsonNode);
   }
 }

@@ -12,12 +12,12 @@ import java.util.Spliterator;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 
-class JsonComparator implements Comparator<Iterable<? extends JsonNode>> {
+public class OrderAgnosticJsonComparator implements Comparator<Iterable<? extends JsonNode>> {
 
   private boolean ignoreElementOrderInArrays = true;
 
   public static boolean equalsJson(JsonNode target, JsonNode other) {
-    return new JsonComparator().compare(target, other) == 0;
+    return new OrderAgnosticJsonComparator().compare(target, other) == 0;
   }
 
   @Override

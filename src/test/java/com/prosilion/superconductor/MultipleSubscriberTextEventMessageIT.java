@@ -4,7 +4,6 @@ import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Slf4j
 @Nested
 class MultipleSubscriberTextEventMessageIT extends AbstractMultipleSubscriber {
-  private final String uuidPrefix;
 
   private final String authorPubKey;
   private final String addressableTagAuthorPubKey;
@@ -26,13 +24,11 @@ class MultipleSubscriberTextEventMessageIT extends AbstractMultipleSubscriber {
   @Autowired
   MultipleSubscriberTextEventMessageIT(
       @NonNull NostrRelayService nostrRelayService,
-      @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.hexNumberOfBytes}") Integer hexNumberOfBytes,
       @Value("${superconductor.test.req.instances}") Integer reqInstances) {
     super(nostrRelayService, hexCounterSeed, hexNumberOfBytes, reqInstances);
 
-    this.uuidPrefix = uuidPrefix;
     this.authorPubKey = Factory.generateRandomHex64String();
     this.addressableTagAuthorPubKey = Factory.generateRandomHex64String();
     this.content = Factory.lorumIpsum(getClass());
@@ -51,7 +47,6 @@ class MultipleSubscriberTextEventMessageIT extends AbstractMultipleSubscriber {
   }
 
   public String createReqJson(@NonNull String uuid) {
-    final String uuidKey = Strings.concat(uuidPrefix, uuid);
     return "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"]}]";
   }
 }

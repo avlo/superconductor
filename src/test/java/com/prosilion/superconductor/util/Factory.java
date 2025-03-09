@@ -2,7 +2,9 @@ package com.prosilion.superconductor.util;
 
 import lombok.Getter;
 import nostr.api.factory.impl.NIP01Impl;
+import nostr.api.factory.impl.NIP99Impl;
 import nostr.event.BaseTag;
+import nostr.event.impl.ClassifiedListing;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.TextNoteEvent;
 import nostr.event.tag.*;
@@ -26,6 +28,15 @@ public class Factory {
 //    EventNostr sign = nip01_1.createTextNoteEvent(tags, content).sign();
 //    return sign;
     return (T) textNoteEvent;
+  }
+
+  public static <T extends GenericEvent> T createClassifiedListingEvent(
+      Identity identity,
+      List<BaseTag> tags,
+      String content,
+      ClassifiedListing cl) {
+
+    return (T) new NIP99Impl.ClassifiedListingEventFactory(identity, tags, content, cl).create();
   }
 
   public static GenericEvent createGenericEvent() {
@@ -65,6 +76,10 @@ public class Factory {
     return new PriceTag(NUMBER, CURRENCY, FREQUENCY);
   }
 
+  public static ClassifiedListing createClassifiedListing(String title, String summary) {
+    return new Factory.ClassifiedListingComposite(title, summary, createPriceTag()).getClassifiedListing();
+  }
+
   public static <T> String lorumIpsum() {
     return lorumIpsum(Factory.class);
   }
@@ -93,13 +108,26 @@ public class Factory {
   }
 
   @Getter
-  private static class PriceComposite {
+  public static class PriceComposite {
     private final String currency = "BTC";
     private final String frequency = "nanosecond";
     private final BigDecimal price;
 
     private PriceComposite() {
       price = createRandomBigDecimal();
+    }
+  }
+
+  @Getter
+  public static class ClassifiedListingComposite {
+    private final ClassifiedListing classifiedListing;
+
+    private ClassifiedListingComposite(String title, String summary, PriceTag priceTag) {
+      this.classifiedListing = ClassifiedListing.builder(
+              title,
+              summary,
+              priceTag)
+          .build();
     }
   }
 }

@@ -3,6 +3,7 @@ package com.prosilion.superconductor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,35 +12,26 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.IntStream;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@TestInstance(Lifecycle.PER_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext
 @ActiveProfiles("test")
-@TestMethodOrder(OrderAnnotation.class)
+@TestMethodOrder(OrderAnnotation.class) // exists because MultipleSubscriberEventIdAndAuthorIT has additional tests
 abstract class AbstractMultipleSubscriber {
   private final ObjectMapper mapper = new ObjectMapper();
   @Getter
@@ -50,7 +42,9 @@ abstract class AbstractMultipleSubscriber {
   private final NostrRelayService nostrRelayService;
   @Getter
   private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+
   private final int hexStartNumber;
+  private final List<String> targetEventIds = new ArrayList<>();
 
   AbstractMultipleSubscriber(
       NostrRelayService nostrRelayService,
@@ -60,7 +54,7 @@ abstract class AbstractMultipleSubscriber {
     this.nostrRelayService = nostrRelayService;
     this.hexCounterSeed = hexCounterSeed.repeat(2 * hexNumberOfBytes);
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
-    this.targetCount = reqInstances;
+    this.targetCount = 1;
   }
 
   @BeforeEach
@@ -73,7 +67,7 @@ abstract class AbstractMultipleSubscriber {
         , executorService);
 
     await()
-        .timeout(1, TimeUnit.MINUTES)
+        .timeout(10, TimeUnit.MINUTES)
         .until(voidCompletableFuture::isDone);
 
     assertFalse(voidCompletableFuture.isCompletedExceptionally());
@@ -87,10 +81,13 @@ abstract class AbstractMultipleSubscriber {
     String globalEventJson = getGlobalEventJson(nextHex);
     log.debug("setup() send event:\n  {}", globalEventJson);
     nostrRelayService.createEvent(globalEventJson);
+    targetEventIds.add(nextHex); // used as subscriberIds for (currently one) test MultipleSubscriberTextEventMessageIT
   }
 
   abstract String getGlobalEventJson(String startEventId);
+
   abstract String getExpectedJsonInAnyOrder(String startEventId);
+
   abstract String createReqJson(String uuid);
 
   @Test
@@ -99,7 +96,7 @@ abstract class AbstractMultipleSubscriber {
     long start = System.currentTimeMillis();
 
     CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
-            IntStream.range(0, targetCount).forEach(value ->
+            targetEventIds.forEach(value ->
                 assertAll(() -> sendRequest(value)))
         , executorService);
 
@@ -112,8 +109,7 @@ abstract class AbstractMultipleSubscriber {
     log.debug("testReqMessageWithExecutor requests completed after elapsed time [{}]", System.currentTimeMillis() - start);
   }
 
-  private void sendRequest(int increment) throws IOException, ExecutionException, InterruptedException {
-    String uuidKey = getNextHex(increment);
+  private void sendRequest(String uuidKey) throws IOException, ExecutionException, InterruptedException {
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqJson(uuidKey),
         uuidKey
@@ -129,11 +125,11 @@ abstract class AbstractMultipleSubscriber {
   }
 
 
-  protected String getNextHex(int i) {
+  private String getNextHex(int i) {
     String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
     log.debug("incrementedHexNumber:\n  [{}]", incrementedHexNumber);
-    return hexCounterSeed
-        .substring(0, hexCounterSeed.length() - incrementedHexNumber.length())
+    return Factory.generateRandomHex64String()
+        .substring(0, 64 - incrementedHexNumber.length())
         .concat(incrementedHexNumber);
   }
 

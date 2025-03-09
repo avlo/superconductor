@@ -1,7 +1,6 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import org.junit.jupiter.api.Test;
@@ -18,13 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class JsonEquivalencyTest {
   private final ObjectMapper mapper = new ObjectMapper();
 
-  public final String tempTargetJson;
-  public final String targetJson;
+  public final String referenceJson;
+  public final String reorderedJson;
   public final String failTargetJson;
+  public final String failKindTargetJson;
 
   public JsonEquivalencyTest() throws IOException {
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/json_equiv_input.txt"))) {
-      this.tempTargetJson = lines.collect(Collectors.joining("\n"));
+      this.referenceJson = lines.collect(Collectors.joining("\n"));
     }
 
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/json_un_equiv_input.txt"))) {
@@ -32,23 +32,34 @@ class JsonEquivalencyTest {
     }
 
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/json_equiv_reordered.txt"))) {
-      this.targetJson = lines.collect(Collectors.joining("\n"));
+      this.reorderedJson = lines.collect(Collectors.joining("\n"));
     }
 
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/json_un_equiv_kind_input.txt"))) {
+      this.failKindTargetJson = lines.collect(Collectors.joining("\n"));
+    }
   }
 
   @Test
   void testEquivalency() throws JsonProcessingException {
-    JsonNode expected = mapper.readTree(targetJson);
-    JsonNode actual = mapper.readTree(tempTargetJson);
-    assertTrue(OrderAgnosticJsonComparator.equalsJson(expected, actual));
+    assertTrue(OrderAgnosticJsonComparator.equalsJson(
+        mapper.readTree(referenceJson),
+        mapper.readTree(reorderedJson)));
   }
 
   @Test
   void testNonEquivalency() throws JsonProcessingException {
-    JsonNode expected = mapper.readTree(failTargetJson);
-    JsonNode actual = mapper.readTree(tempTargetJson);
+    assertFalse(OrderAgnosticJsonComparator.equalsJson(
+        mapper.readTree(referenceJson),
 //    below catches single-char diff in "content" tag (2111111111 -vs- 1111111111)
-    assertFalse(OrderAgnosticJsonComparator.equalsJson(expected, actual));
+        mapper.readTree(failTargetJson)));
+  }
+
+  @Test
+  void testNonEquivalencyKind() throws JsonProcessingException {
+//    below is NOT catching kind (or created at) diffs, likely because they're not quoted as are other fields??
+    assertFalse(OrderAgnosticJsonComparator.equalsJson(
+        mapper.readTree(referenceJson),
+        mapper.readTree(failKindTargetJson)));
   }
 }

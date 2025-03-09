@@ -28,32 +28,46 @@ class EventMessageIT {
   private final String authorPubKey;
   private final String eventId;
 
+  private final String globalSubscriberId;
+
   @Autowired
   EventMessageIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
 
-    eventId = Factory.generateRandomHex64String();
-    authorPubKey = Factory.generateRandomHex64String();
+    this.globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
+    this.eventId = Factory.generateRandomHex64String();
+    this.authorPubKey = Factory.generateRandomHex64String();
     String content = Factory.lorumIpsum(getClass());
 
     String globalEventJson = "[\"EVENT\",{\"id\":\"" + eventId + "\",\"kind\":1,\"content\":\"" + content + "\",\"pubkey\":\"" + authorPubKey + "\",\"created_at\":1717357053050,\"tags\":[],\"sig\":\"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
     log.debug("setup() send event:\n  {}", globalEventJson);
 
-    nostrRelayService.createEvent(globalEventJson);
-    assertFalse(nostrRelayService.getEvents().isEmpty());
+    this.nostrRelayService.createEvent(globalEventJson);
+    assertFalse(this.nostrRelayService.getEvents().isEmpty());
   }
 
   @Test
   void testReqFilteredByEventAndAuthor() throws IOException, ExecutionException, InterruptedException {
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, Optional<String>> returnedJsonMapToUniqueSubscriberId = nostrRelayService.sendRequest(
         createReqJson(eventId, authorPubKey),
         Factory.generateRandomHex64String() // client UUID
     );
+    log.debug("okMessage to UniqueSubscriberId:");
+    log.debug("  " + returnedJsonMapToUniqueSubscriberId);
+    assertTrue(returnedJsonMapToUniqueSubscriberId.get(Command.EVENT).isPresent());
+    assertTrue(Optional.of(returnedJsonMapToUniqueSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(eventId));
+    assertTrue(Optional.of(returnedJsonMapToUniqueSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(authorPubKey));
+
+    Map<Command, Optional<String>> returnedJsonMapToSingleGlobalSubscriberId = nostrRelayService.sendRequest(
+        createReqJson(eventId, authorPubKey),
+        globalSubscriberId
+    );
     log.debug("okMessage:");
-    log.debug("  " + returnedJsonMap);
-    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(eventId));
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(authorPubKey));
+
+    log.debug("  " + returnedJsonMapToSingleGlobalSubscriberId);
+    assertTrue(returnedJsonMapToSingleGlobalSubscriberId.get(Command.EVENT).isPresent());
+    assertTrue(Optional.of(returnedJsonMapToSingleGlobalSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(eventId));
+    assertTrue(Optional.of(returnedJsonMapToSingleGlobalSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(authorPubKey));
   }
 
   private String createReqJson(@NonNull String uuid, @NonNull String authorPubkey) {
@@ -62,13 +76,21 @@ class EventMessageIT {
 
   @Test
   void testReqFilteredByEventId() throws IOException, ExecutionException, InterruptedException {
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, Optional<String>> returnedJsonMapToUniqueSubscriberId = nostrRelayService.sendRequest(
         createEventReqJson(eventId),
         Factory.generateRandomHex64String() // client UUID
     );
     log.debug("okMessage:");
-    log.debug("  " + returnedJsonMap);
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(eventId));
+    log.debug("  " + returnedJsonMapToUniqueSubscriberId);
+    assertTrue(Optional.of(returnedJsonMapToUniqueSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(eventId));
+
+    Map<Command, Optional<String>> returnedJsonMapToSingleGlobalSubscriberId = nostrRelayService.sendRequest(
+        createEventReqJson(eventId),
+        globalSubscriberId // client UUID
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMapToSingleGlobalSubscriberId);
+    assertTrue(Optional.of(returnedJsonMapToSingleGlobalSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(eventId));
   }
 
   private String createEventReqJson(@NonNull String uuid) {
@@ -77,15 +99,25 @@ class EventMessageIT {
 
   @Test
   void testReqFilteredByAuthor() throws IOException, ExecutionException, InterruptedException {
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, Optional<String>> returnedJsonMapToUniqueSubscriberId = nostrRelayService.sendRequest(
         createAuthorReqJson(authorPubKey),
         Factory.generateRandomHex64String() // client UUID
     );
-    log.debug("okMessage:");
-    log.debug("  " + returnedJsonMap);
+    log.debug("okMessage to UniqueSubscriberId:");
+    log.debug("  " + returnedJsonMapToUniqueSubscriberId);
 
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(authorPubKey));
-    assertTrue(Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow().contains(eventId));
+    assertTrue(Optional.of(returnedJsonMapToUniqueSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(authorPubKey));
+    assertTrue(Optional.of(returnedJsonMapToUniqueSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(eventId));
+
+    Map<Command, Optional<String>> returnedJsonMapToSingleGlobalSubscriberId = nostrRelayService.sendRequest(
+        createAuthorReqJson(authorPubKey),
+        globalSubscriberId // client UUID
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMapToSingleGlobalSubscriberId);
+
+    assertTrue(Optional.of(returnedJsonMapToSingleGlobalSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(authorPubKey));
+    assertTrue(Optional.of(returnedJsonMapToSingleGlobalSubscriberId.get(Command.EVENT)).get().orElseThrow().contains(eventId));
   }
 
   private String createAuthorReqJson(@NonNull String authorPubkey) {

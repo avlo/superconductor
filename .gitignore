@@ -1,6 +1,7 @@
 .mvn
 .idea
 .project
+.gitattributes
 
 superconductor.iml
 target/

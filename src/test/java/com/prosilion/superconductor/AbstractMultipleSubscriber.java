@@ -32,9 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @TestMethodOrder(OrderAnnotation.class) // exists because MultipleSubscriberEventIdAndAuthorIT has additional tests
 abstract class AbstractMultipleSubscriber {
-  private final ObjectMapper mapper = new ObjectMapper();
-  @Getter
-  private final String hexCounterSeed;
+  private final static ObjectMapper mapper = new ObjectMapper();
   @Getter
   private final Integer targetCount;
   @Getter
@@ -52,8 +50,7 @@ abstract class AbstractMultipleSubscriber {
       Integer hexNumberOfBytes,
       Integer reqInstances) {
     this.nostrRelayService = nostrRelayService;
-    this.hexCounterSeed = hexCounterSeed.repeat(2 * hexNumberOfBytes);
-    this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
+    this.hexStartNumber = Integer.parseInt(hexCounterSeed.repeat(2 * hexNumberOfBytes), 16);
     this.targetCount = reqInstances;
   }
 
@@ -120,7 +117,7 @@ abstract class AbstractMultipleSubscriber {
     assertTrue(compareWithoutOrder(responseJson, expectedJsonInAnyOrder));
   }
 
-  protected String getNextHex(int i) {
+  protected synchronized String getNextHex(int i) {
     String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
     log.debug("incrementedHexNumber:\n  [{}]", incrementedHexNumber);
     return Factory.generateRandomHex64String()
@@ -128,7 +125,7 @@ abstract class AbstractMultipleSubscriber {
         .concat(incrementedHexNumber);
   }
 
-  protected boolean compareWithoutOrder(String payloadString, String expectedJson) throws JsonProcessingException {
+  protected static boolean compareWithoutOrder(String payloadString, String expectedJson) throws JsonProcessingException {
     JsonNode jsonNode = mapper.readTree(payloadString);
     return OrderAgnosticJsonComparator.equalsJson(mapper.readTree(expectedJson), jsonNode);
   }

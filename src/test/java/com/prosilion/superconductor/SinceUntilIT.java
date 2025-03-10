@@ -48,10 +48,6 @@ class SinceUntilIT {
     assertFalse(nostrRelayService.getEvents().isEmpty());
   }
 
-//  *********************************************
-//  1st test
-//  *********************************************  
-
   @Test
   void testReqCreatedDateAfterSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
     sendCreatedDateAfterSinceUntilDatesReq(String.valueOf(0));
@@ -76,10 +72,6 @@ class SinceUntilIT {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
     return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111112,\"until\": 1111111111113}]";
   }
-
-//  *********************************************
-//  2nd test
-//  *********************************************
 
   @Test
   void testReqCreatedDateBeforeSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
@@ -106,10 +98,6 @@ class SinceUntilIT {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
     return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111109,\"until\": 1111111111110}]";
   }
-
-//  *********************************************
-//  3rd test
-//  *********************************************
 
   @Test
   void testReqCreatedDateBetweenSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
@@ -139,5 +127,86 @@ class SinceUntilIT {
   private String createReqCreatedDateBetweenSinceUntilDatesJson(@NonNull String uuid) {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
     return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111110,\"until\": 1111111111112}]";
+  }
+
+  @Test
+  void testReqUntilDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+    sendUntilDateGreaterThanCreatedDateReq();
+  }
+
+  private void sendUntilDateGreaterThanCreatedDateReq() throws IOException, ExecutionException, InterruptedException {
+    String uuid = "1111111111112";
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createReqUntilDateGreaterThanCreatedDateJson(uuid),
+        uuid
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
+
+    /**
+     * "until" 1111111111112 should yield present, as target time (1111111111111) is before it
+     */
+    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("1111111111111"));
+
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+  }
+
+  private String createReqUntilDateGreaterThanCreatedDateJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + uuid + "}]";
+  }
+
+  @Test
+  void testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages() throws IOException, ExecutionException, InterruptedException {
+    sendUntilDateGreaterThanCreatedDatePubKeyTagReq();
+  }
+
+  private void sendUntilDateGreaterThanCreatedDatePubKeyTagReq() throws IOException, ExecutionException, InterruptedException {
+    String uuid = "1111111111112";
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(uuid),
+        uuid
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
+
+    /**
+     * "until" 1111111111112 should yield present, as target time (1111111111111) is before it
+     */
+    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("1111111111111"));
+
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+  }
+
+  private String createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + uuid + "}]";
+  }
+
+  @Test
+  void testReqUntilDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+    sendUntilDateLessThanCreatedDateReq(String.valueOf(0));
+  }
+
+  private void sendUntilDateLessThanCreatedDateReq(String increment) throws IOException, ExecutionException, InterruptedException {
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createReqUntilDateLessThanCreatedDateJson(increment),
+        increment
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
+
+    /**
+     * until 1111111111110 should yield empty, since target time (1111111111111) is after it
+     */
+    assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+  }
+
+  private String createReqUntilDateLessThanCreatedDateJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": 1111111111110}]";
   }
 }

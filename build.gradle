@@ -1,0 +1,116 @@
+plugins {
+    id "java"
+    id "war"
+    id "org.springframework.boot" version "3.4.3"
+    id "io.freefair.lombok" version "8.12.2.1"
+    id "jacoco"
+    id "java-library"
+    id "maven-publish"
+    id "com.adarshr.test-logger" version "4.0.0"
+    id "org.gradle.test-retry" version "1.6.2"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url = uri('https://repo.maven.apache.org/maven2/')
+    }
+}
+
+dependencies {
+    developmentOnly 'org.springframework.boot:spring-boot-devtools:3.4.3'
+
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.4.3')
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'xyz.tcheeric:nostr-java-api:0.6.5-SNAPSHOT'
+    implementation 'xyz.tcheeric:nostr-java-event:0.6.5-SNAPSHOT'
+    implementation 'xyz.tcheeric:nostr-java-id:0.6.5-SNAPSHOT'
+    implementation 'com.google.guava:guava:33.2.1-jre'
+
+    implementation 'com.h2database:h2:2.2.224'
+    implementation 'com.mysql:mysql-connector-j:9.1.0'
+    implementation 'org.springframework.boot:spring-boot-docker-compose'
+
+    testImplementation 'com.h2database:h2:2.2.224'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.4.3'
+    testImplementation 'org.awaitility:awaitility:4.2.0'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+group = 'com.prosilion'
+version = '1.11.0'
+description = 'superconductor'
+java.sourceCompatibility = JavaVersion.VERSION_21
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.test {
+    systemProperty("spring.profiles.active", "test")
+//    below defined in junit-platform.properties
+//    maxParallelForks = Runtime.getRuntime().availableProcessors()
+//    maxParallelForks = Math.floorDiv(Runtime.runtime.availableProcessors(), 2) + 1
+    useJUnitPlatform()
+//    failFast = true
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+tasks.jacocoTestReport {
+//    TODO: enforce coverage metrics    
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = group
+            artifactId = description
+            from components.web
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
+
+tasks.register("bootRunLocalWs") {
+    group = "application"
+    description = "Superconductor STANDARD MODE: local_ws"
+    doFirst {
+        tasks.bootRun.configure {
+            systemProperty("spring.profiles.active", "local_ws")
+        }
+    }
+    finalizedBy("bootRun")
+}
+
+tasks.register("bootRunLocalWss") {
+    group = "application"
+    description = "Superconductor SECURE MODE: local_wss"
+    doFirst {
+        tasks.bootRun.configure {
+            systemProperty("spring.profiles.active", "local_wss")
+        }
+    }
+    finalizedBy("bootRun")
+}
+
+test {
+    retry {
+//        failOnPassedAfterRetry = true
+//        maxRetries = 1
+////        maxFailures = 42
+    }
+}

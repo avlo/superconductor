@@ -110,7 +110,7 @@ tasks.register("bootRunLocalWss") {
 test {
     retry {
 //        failOnPassedAfterRetry = true
-//        maxRetries = 1
-////        maxFailures = 42
+        maxRetries = 1
+//        maxFailures = 42
     }
 }

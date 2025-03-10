@@ -74,7 +74,7 @@ class StandardWebSocketClientIT {
     assertEquals(
         expectedEventResponseJson(EVENT_ID),
         nostrRelayService.getEvents()
-            .stream().findFirst().get());
+            .stream().findFirst().orElseThrow());
   }
 
   @Test
@@ -85,7 +85,7 @@ class StandardWebSocketClientIT {
     );
 
     JsonNode expected = objectMapper.readTree(expectedRequestResponseJson());
-    JsonNode actual = objectMapper.readTree(returnedEvent.get(Command.EVENT).get());
+    JsonNode actual = objectMapper.readTree(returnedEvent.get(Command.EVENT).orElseThrow());
 
     log.debug("expected:");
     log.debug("  {}\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(expected));

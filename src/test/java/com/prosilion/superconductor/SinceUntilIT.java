@@ -4,6 +4,7 @@ import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
+import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,20 +15,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 class SinceUntilIT {
   private final NostrRelayService nostrRelayService;
-  private final static String subscriberId = "some-subscriber-id";
+  private final static String subscriberIdPrefix = "some-subscriber-id-";
+  private final AtomicInteger counter = new AtomicInteger(0);
 
   @Autowired
   SinceUntilIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
@@ -41,17 +45,20 @@ class SinceUntilIT {
     }
   }
 
+  Supplier<String> subscriberIdSupplier = () -> Strings.concat(subscriberIdPrefix, String.valueOf(counter.getAndIncrement()));
+
   @Test
   void testReqCreatedDateAfterSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
+    String methodSubscriberId = subscriberIdSupplier.get();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqCreatedDateAfterSinceUntilDatesJson(subscriberId),
-        subscriberId
+        createReqCreatedDateAfterSinceUntilDatesJson(methodSubscriberId),
+        methodSubscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    /**
-     * since 1111111111112 and until 1111111111113 should yield empty, since target time (1111111111111) is before the two
+    /*
+      since 1111111111112 and until 1111111111113 should yield empty, since target time (1111111111111) is before the two
      */
     assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
     assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
@@ -63,14 +70,15 @@ class SinceUntilIT {
 
   @Test
   void testReqCreatedDateBeforeSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
+    String methodSubscriberId = subscriberIdSupplier.get();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqCreatedDateBeforeSinceUntilDatesJson(subscriberId),
-        subscriberId
+        createReqCreatedDateBeforeSinceUntilDatesJson(methodSubscriberId),
+        methodSubscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    /**
+    /*
      * since 1111111111109 and until 1111111111110 should yield empty, since target time (1111111111111) is not between the two
      */
     assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
@@ -83,15 +91,15 @@ class SinceUntilIT {
 
   @Test
   void testReqCreatedDateBetweenSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
-    String uniquesubcriberid = "uniquesubcriberid";
+    String methodSubscriberId = subscriberIdSupplier.get();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqCreatedDateBetweenSinceUntilDatesJson(uniquesubcriberid),
-        uniquesubcriberid
+        createReqCreatedDateBetweenSinceUntilDatesJson(methodSubscriberId),
+        methodSubscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    /**
+    /*
      + "since" 1111111111110 and until 1111111111112 should yield present, as target time (1111111111111) is between the two
      */
     assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
@@ -108,15 +116,16 @@ class SinceUntilIT {
 
   @Test
   void testReqUntilDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
-    String uuid = "1111111111112";
+    String until = "1111111111112";
+    String methodSubscriberId = subscriberIdSupplier.get();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqUntilDateGreaterThanCreatedDateJson(uuid),
-        uuid
+        createReqUntilDateGreaterThanCreatedDateJson(methodSubscriberId, until),
+        methodSubscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    /**
+    /*
      * "until" 1111111111112 should yield present, as target time (1111111111111) is before it
      */
     assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
@@ -124,21 +133,22 @@ class SinceUntilIT {
     assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
-  private String createReqUntilDateGreaterThanCreatedDateJson(@NonNull String uuid) {
-    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + uuid + "}]";
+  private String createReqUntilDateGreaterThanCreatedDateJson(String subscriberId, @NonNull String until) {
+    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + until + "}]";
   }
 
   @Test
   void testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages() throws IOException, ExecutionException, InterruptedException {
     String uuid = "1111111111112";
+    String methodSubscriberId = subscriberIdSupplier.get();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(uuid),
-        uuid
+        createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(methodSubscriberId, uuid),
+        methodSubscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    /**
+    /*
      * "until" 1111111111112 should yield present, as target time (1111111111111) is before it
      */
     assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
@@ -146,23 +156,25 @@ class SinceUntilIT {
     assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
-  private String createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(@NonNull String uuid) {
-    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + uuid + "}]";
+  private String createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(String subscriberId, @NonNull String until) {
+    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + until + "}]";
   }
 
   @Test
   void testReqUntilDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+    String methodSubscriberId = subscriberIdSupplier.get();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqUntilDateLessThanCreatedDateJson(subscriberId),
-        subscriberId
+        createReqUntilDateLessThanCreatedDateJson(methodSubscriberId),
+        methodSubscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    /**
+    /*
      * until 1111111111110 should yield empty, since target time (1111111111111) is after it
      */
-    assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
+
+    assertThrows(NoSuchElementException.class, () -> returnedJsonMap.get(Command.EVENT).orElseThrow().isEmpty());
     assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
@@ -172,14 +184,15 @@ class SinceUntilIT {
 
   @Test
   void testReqSinceDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+    String methodSubscriberId = subscriberIdSupplier.get();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqSinceDateGreaterThanCreatedDateJson(subscriberId),
-        subscriberId
+        createReqSinceDateGreaterThanCreatedDateJson(methodSubscriberId),
+        methodSubscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    /**
+    /*
      * since 1111111111112 should yield empty, since target time (1111111111111) is before it
      */
     assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
@@ -192,24 +205,23 @@ class SinceUntilIT {
 
   @Test
   void testReqSinceDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
-    String uuid = "1111111111110";
+    String since = "1111111111110";
+    String methodSubscriberId = subscriberIdSupplier.get();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqSinceDateLessThanCreatedDateJson(subscriberId, uuid),
-        subscriberId
+        createReqSinceDateLessThanCreatedDateJson(methodSubscriberId, since),
+        methodSubscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    /**
+    /*
      * "since" 1111111111110 should yield present, as target time (1111111111111) is after it
      */
-    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("1111111111111"));
-
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains("1111111111111"));
+    assertFalse(returnedJsonMap.get(Command.EOSE).orElseThrow().isEmpty());
   }
 
-  private String createReqSinceDateLessThanCreatedDateJson(String subscriberId, @NonNull String uuid) {
-    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": " + uuid + "}]";
+  private String createReqSinceDateLessThanCreatedDateJson(String subscriberId, @NonNull String since) {
+    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": " + since + "}]";
   }
 }

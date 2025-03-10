@@ -1,7 +1,6 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.superconductor.util.NostrMediaType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,8 +17,7 @@ class RelayDocumentIT {
   WebTestClient webTestClient;
   WebClient webClient;
 
-  @BeforeEach
-  void setup() {
+  RelayDocumentIT() {
     webTestClient = WebTestClient.bindToServer(clientHttpConnector).build();
     webClient = WebClient.create();
   }

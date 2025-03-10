@@ -6,20 +6,13 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
 import nostr.base.PublicKey;
-import nostr.event.tag.EventTag;
-import nostr.event.tag.GeohashTag;
-import nostr.event.tag.HashtagTag;
-import nostr.event.tag.PubKeyTag;
-import nostr.event.tag.SubjectTag;
+import nostr.event.tag.*;
 import org.apache.logging.log4j.util.Strings;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -34,9 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext
 @ActiveProfiles("test")
 class StandardWebSocketClientIT {
   public static final String EVENT_ID = "299ab85049a7923e9cd82329c0fa489ca6fd6d21feeeac33543b1237e14a9e07";
@@ -74,13 +65,10 @@ class StandardWebSocketClientIT {
   public StandardWebSocketClientIT(
       @NonNull NostrRelayService nostrRelayService,
       @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix
-  ) {
+  ) throws IOException {
     this.nostrRelayService = nostrRelayService;
     this.uuidPrefix = uuidPrefix;
-  }
 
-  @BeforeAll
-  void setup() throws IOException {
     String eventJson = eventJson();
     nostrRelayService.createEvent(eventJson);
     assertEquals(

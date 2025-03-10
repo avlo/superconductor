@@ -10,12 +10,9 @@ import nostr.event.tag.PriceTag;
 import nostr.event.tag.PubKeyTag;
 import nostr.event.tag.SubjectTag;
 import nostr.id.Identity;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -24,9 +21,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
 class SubscriberEventIT {
   public static final String EVENT_ID = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
@@ -40,8 +35,7 @@ class SubscriberEventIT {
   EventEntityService<GenericEvent> eventEntityService;
   ClassifiedListingEvent classifiedListingEvent;
 
-  @BeforeAll
-  void setUp() {
+  SubscriberEventIT() {
     GenericEvent genericEvent = new GenericEvent();
     genericEvent.setNip(NIP); // superfluous?
     genericEvent.setId(EVENT_ID);

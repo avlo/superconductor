@@ -5,13 +5,10 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
 import nostr.event.Kind;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -27,28 +24,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext
 @ActiveProfiles("test")
 class MatchingKindAuthorIdentityTagIT {
   private final NostrRelayService nostrRelayService;
-  private final String textMessageEventJson;
 
   @Autowired
   MatchingKindAuthorIdentityTagIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
 
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_kind_author_identitytag_filter_input.json"))) {
-      this.textMessageEventJson = lines.collect(Collectors.joining("\n"));
+      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
+      log.debug("setup() send event:\n  {}", textMessageEventJson);
+      nostrRelayService.createEvent(textMessageEventJson);
+      assertFalse(nostrRelayService.getEvents().isEmpty());
     }
-  }
-
-  @BeforeAll
-  public void setup() throws IOException {
-    log.debug("setup() send event:\n  {}", textMessageEventJson);
-    nostrRelayService.createEvent(textMessageEventJson);
-    assertFalse(nostrRelayService.getEvents().isEmpty());
   }
 
   @Test

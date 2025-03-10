@@ -5,35 +5,23 @@ import nostr.base.Relay;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
-import nostr.event.tag.EventTag;
-import nostr.event.tag.GeohashTag;
-import nostr.event.tag.HashtagTag;
-import nostr.event.tag.PubKeyTag;
-import nostr.event.tag.RelaysTag;
-import nostr.event.tag.SubjectTag;
+import nostr.event.tag.*;
 import nostr.id.Identity;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestPropertySource("/application-test.properties")
-@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
 class ZapRequestEventIT {
   public static final String EVENT_HEX = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
   public static final String PTAG_HEX = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76985";
@@ -67,10 +55,7 @@ class ZapRequestEventIT {
   public ZapRequestEventIT(@Value("${superconductor.relay.uri}") String relayUri) {
     this.websocketUrl = relayUri;
     relaysTag = new RelaysTag(new Relay(relayUri));
-  }
 
-  @BeforeAll
-  void setUp() {
     zapRequestEvent = new GenericEvent();
 
     zapRequestEvent.setKind(ZAP_REQUEST_KIND);

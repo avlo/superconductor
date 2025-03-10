@@ -1,9 +1,7 @@
 package com.prosilion.superconductor.entity;
 
 import com.prosilion.superconductor.repository.EventEntityRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 )
 
 // annotation used in conjunction with non-static @BeforeAll
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 
 // note: placing @Sql at class level- in combo with @BeforeAll/setup() calling save() seems to execute for every test method, even with
 //  executionPhase = ExecutionPhase.BEFORE_TEST_CLASS set.  fix was to instead use @Sql on @BeforeAll setup() method
@@ -34,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 // TODO: remove below if dirtiescontext works as expected
 //@Sql(scripts = {"/cleanup_event.sql", "/cleanup_req.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+//@DirtiesContext
 class EventEntityRepositoryIT {
   public static final String SIGNATURE = "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546";
   public static final String EVENT_ID = "aaaeee6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
@@ -43,20 +42,13 @@ class EventEntityRepositoryIT {
   public static final Integer NIP = 1;
   public static final long CREATED_AT = 1717357053050L;
 
+  private final EventEntityRepository eventEntityRepository;
+
   @Autowired
-  EventEntityRepository eventEntityRepository;
-
-  // below gets executed only once
-  // @Sql(scripts = {"/data.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
-  // non-static @BeforeAll used in conjunction with @TestInstance above
-  @BeforeAll
-  void setUp() {
-    eventEntityRepository.save(new EventEntity(EVENT_ID, KIND, NIP, PUB_KEY, CREATED_AT, SIGNATURE, CONTENT));
+  EventEntityRepositoryIT(EventEntityRepository eventEntityRepository) {
+    this.eventEntityRepository = eventEntityRepository;
+    this.eventEntityRepository.save(new EventEntity(EVENT_ID, KIND, NIP, PUB_KEY, CREATED_AT, SIGNATURE, CONTENT));
   }
-
-//    @AfterEach
-//    void tearDown() {
-//    }
 
   @Test
   void getIdEquals1() {

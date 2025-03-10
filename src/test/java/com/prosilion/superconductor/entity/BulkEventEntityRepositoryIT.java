@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
     classes = EventEntityRepository.class)
 )
 @Sql(scripts = {"/event.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
+@ActiveProfiles("test")
 //@Sql(scripts = {"/cleanup_event.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class BulkEventEntityRepositoryIT {
   public static final String SIGNATURE = "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546";
@@ -31,6 +33,7 @@ class BulkEventEntityRepositoryIT {
   public static final Integer KIND = 1;
   public static final Integer NIP = 1;
   public static final long CREATED_AT = 1717357053050L;
+  
   @Autowired
   EventEntityRepository eventEntityRepository;
 

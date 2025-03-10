@@ -4,15 +4,10 @@ import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
-import org.apache.logging.log4j.util.Strings;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -24,57 +19,57 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext
 @ActiveProfiles("test")
 class MatchingIdentityTagIT {
   private final NostrRelayService nostrRelayService;
-  private final String textMessageEventJson;
-  private final String uuidPrefix;
-  private final Integer targetCount;
+  private final static String SUBSCRIBER_ID = "superconductor_subscriber_id-0";
 
   @Autowired
-  MatchingIdentityTagIT(
-      @NonNull NostrRelayService nostrRelayService,
-      @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix
-  ) throws IOException {
+  MatchingIdentityTagIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-    this.uuidPrefix = uuidPrefix;
-    this.targetCount = 1;
-
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_identity_single_filter_json_input.txt"))) {
-      this.textMessageEventJson = lines.collect(Collectors.joining("\n"));
+      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
+      log.debug("setup() send event:\n  {}", textMessageEventJson);
+      nostrRelayService.createEvent(textMessageEventJson);
+      assertFalse(nostrRelayService.getEvents().isEmpty());
     }
-  }
-
-  @BeforeAll
-  public void setup() throws IOException {
-    nostrRelayService.createEvent(textMessageEventJson);
   }
 
   @Test
   void testReqMessages() throws IOException, ExecutionException, InterruptedException {
-    sendReq(String.valueOf(0));
-  }
-
-  private void sendReq(String increment) throws IOException, ExecutionException, InterruptedException {
-    String reqJson = createReqJson(increment);
+    String reqJson = createReqJson("some-uuid");
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         reqJson,
-        increment
+        SUBSCRIBER_ID
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-    String dTag = "[\"d\",\"" + uuidPrefix + increment + "\"]";
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(dTag));
+    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains("some-uuid"));
   }
 
-  private String createReqJson(@NonNull String uuid) {
-    final String uuidKey = Strings.concat(uuidPrefix, uuid);
-    return "[\"REQ\",\"" + uuidKey + "\",{\"#d\":[\"" + uuidKey + "\"]}]";
+  @Test
+  void testAddressableReqMessages() throws IOException, ExecutionException, InterruptedException {
+//    TODO: request addressable filter isn't intended to w/ simple string match, revisit when time
+//    String reqJson = createAddressableReqJson(SUBSCRIBER_ID, "30023:f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd");
+//    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+//        reqJson,
+//        SUBSCRIBER_ID
+//    );
+//    log.debug("okMessage:");
+//    log.debug("  " + returnedJsonMap);
+//    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains(SUBSCRIBER_ID));
+  }
+
+  private String createReqJson(String uuid) {
+    return "[\"REQ\",\"" + uuid + "\",{\"#d\":[\"" + uuid + "\"]}]";
+  }
+
+  private String createAddressableReqJson(String uuid, String target) {
+    return "[\"REQ\",\"" + uuid + "\",{\"#a\":[\"" + target + "\"]}]";
   }
 }

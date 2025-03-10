@@ -7,7 +7,6 @@ import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.*;
 import nostr.id.Identity;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,8 +37,7 @@ class EventEntityServiceIT {
 
   private static GenericEvent textNoteEvent;
 
-  @BeforeAll
-  static void setUp() {
+  public EventEntityServiceIT() {
     List<BaseTag> tags = new ArrayList<>();
     tags.add(E_TAG);
     tags.add(P_TAG);

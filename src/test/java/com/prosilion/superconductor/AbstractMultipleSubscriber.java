@@ -9,7 +9,6 @@ import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -58,8 +57,7 @@ abstract class AbstractMultipleSubscriber {
     this.targetCount = 1;
   }
 
-  @BeforeEach
-  public void setup() throws IOException {
+  private void createEvent(int increment) throws IOException {
     long start = System.currentTimeMillis();
 
     CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
@@ -74,9 +72,7 @@ abstract class AbstractMultipleSubscriber {
     assertFalse(voidCompletableFuture.isCompletedExceptionally());
 
     log.info("events setup elapsed time [{}]", System.currentTimeMillis() - start);
-  }
 
-  private void createEvent(int increment) throws IOException {
     String nextHex = getNextHex(increment);
     log.debug("next hex: {}", nextHex);
     String globalEventJson = getGlobalEventJson(nextHex);

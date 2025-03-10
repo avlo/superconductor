@@ -4,18 +4,13 @@ import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -31,33 +26,22 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@TestInstance(Lifecycle.PER_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext
 @ActiveProfiles("test")
 @TestMethodOrder(OrderAnnotation.class)
 class MatchingMultipleGenericTagQuerySingleLetterIT {
   private final NostrRelayService nostrRelayService;
-  private final String textMessageEventJson;
-  private final String uuidPrefix;
 
   @Autowired
-  MatchingMultipleGenericTagQuerySingleLetterIT(@NonNull NostrRelayService nostrRelayService,
-      @Value("${superconductor.test.subscriberid.prefix}") String uuidPrefix
-  ) throws IOException {
+  MatchingMultipleGenericTagQuerySingleLetterIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-    this.uuidPrefix = uuidPrefix;
 
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_multiple_generic_tag_query_filter_single_letter_json_input.txt"))) {
-      this.textMessageEventJson = lines.collect(Collectors.joining("\n"));
+      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
+      log.debug("setup() send event:\n  {}", textMessageEventJson);
+      nostrRelayService.createEvent(textMessageEventJson);
+      assertFalse(nostrRelayService.getEvents().isEmpty());
     }
-  }
-
-  @BeforeEach
-  public void setup() throws IOException {
-    log.debug("setup() send event:\n  {}", textMessageEventJson);
-    nostrRelayService.createEvent(textMessageEventJson);
-    assertFalse(nostrRelayService.getEvents().isEmpty());
   }
 
   @Test

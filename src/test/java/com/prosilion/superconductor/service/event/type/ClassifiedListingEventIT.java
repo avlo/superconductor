@@ -4,19 +4,12 @@ import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericEvent;
 import nostr.event.impl.GenericTag;
-import nostr.event.tag.EventTag;
-import nostr.event.tag.GeohashTag;
-import nostr.event.tag.HashtagTag;
-import nostr.event.tag.PriceTag;
-import nostr.event.tag.PubKeyTag;
-import nostr.event.tag.SubjectTag;
+import nostr.event.tag.*;
 import nostr.id.Identity;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,10 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext
+@ActiveProfiles("test")
 class ClassifiedListingEventIT {
-//  udpate all tests to have unique values
+  //  udpate all tests to have unique values
   public static final String EVENT_HEX = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
   public static final String PTAG_HEX = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76985";
   public static final String ETAG_HEX = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4347";
@@ -66,10 +58,8 @@ class ClassifiedListingEventIT {
 
   GenericEvent classifiedListingEvent;
 
-  @BeforeAll
-  void setUp() {
+  public ClassifiedListingEventIT() {
     classifiedListingEvent = new GenericEvent();
-
     classifiedListingEvent.setKind(CLASSIFIED_LISTING_KIND);
     classifiedListingEvent.setContent(CONTENT);
 

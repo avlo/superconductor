@@ -4,7 +4,6 @@ import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,23 +14,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 class SinceUntilIT {
   private final NostrRelayService nostrRelayService;
-  private final static String subscriberIdPrefix = "some-subscriber-id-";
-  private final AtomicInteger counter = new AtomicInteger(0);
 
   @Autowired
   SinceUntilIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
@@ -45,14 +40,12 @@ class SinceUntilIT {
     }
   }
 
-  Supplier<String> subscriberIdSupplier = () -> Strings.concat(subscriberIdPrefix, String.valueOf(counter.getAndIncrement()));
-
   @Test
   void testReqCreatedDateAfterSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
-    String methodSubscriberId = subscriberIdSupplier.get();
+    String subscriberId = "testReqCreatedDateAfterSinceUntilDatesMessages";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqCreatedDateAfterSinceUntilDatesJson(methodSubscriberId),
-        methodSubscriberId
+        createReqCreatedDateAfterSinceUntilDatesJson(subscriberId),
+        subscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
@@ -70,10 +63,10 @@ class SinceUntilIT {
 
   @Test
   void testReqCreatedDateBeforeSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
-    String methodSubscriberId = subscriberIdSupplier.get();
+    String subscriberId = "testReqCreatedDateBeforeSinceUntilDatesMessages";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqCreatedDateBeforeSinceUntilDatesJson(methodSubscriberId),
-        methodSubscriberId
+        createReqCreatedDateBeforeSinceUntilDatesJson(subscriberId),
+        subscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
@@ -91,10 +84,10 @@ class SinceUntilIT {
 
   @Test
   void testReqCreatedDateBetweenSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
-    String methodSubscriberId = subscriberIdSupplier.get();
+    String subscriberId = "testReqCreatedDateBetweenSinceUntilDatesMessages";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqCreatedDateBetweenSinceUntilDatesJson(methodSubscriberId),
-        methodSubscriberId
+        createReqCreatedDateBetweenSinceUntilDatesJson(subscriberId),
+        subscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
@@ -117,10 +110,10 @@ class SinceUntilIT {
   @Test
   void testReqUntilDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
     String until = "1111111111112";
-    String methodSubscriberId = subscriberIdSupplier.get();
+    String subscriberId = "testReqUntilDateGreaterThanCreatedDateMessages";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqUntilDateGreaterThanCreatedDateJson(methodSubscriberId, until),
-        methodSubscriberId
+        createReqUntilDateGreaterThanCreatedDateJson(subscriberId, until),
+        subscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
@@ -140,10 +133,10 @@ class SinceUntilIT {
   @Test
   void testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages() throws IOException, ExecutionException, InterruptedException {
     String uuid = "1111111111112";
-    String methodSubscriberId = subscriberIdSupplier.get();
+    String subscriberId = "testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(methodSubscriberId, uuid),
-        methodSubscriberId
+        createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(subscriberId, uuid),
+        subscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
@@ -162,10 +155,10 @@ class SinceUntilIT {
 
   @Test
   void testReqUntilDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
-    String methodSubscriberId = subscriberIdSupplier.get();
+    String subscriberId = "testReqUntilDateLessThanCreatedDateMessages";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqUntilDateLessThanCreatedDateJson(methodSubscriberId),
-        methodSubscriberId
+        createReqUntilDateLessThanCreatedDateJson(subscriberId),
+        subscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
@@ -174,20 +167,20 @@ class SinceUntilIT {
      * until 1111111111110 should yield empty, since target time (1111111111111) is after it
      */
 
-    assertThrows(NoSuchElementException.class, () -> returnedJsonMap.get(Command.EVENT).orElseThrow().isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
     assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   private String createReqUntilDateLessThanCreatedDateJson(@NonNull String uuid) {
-    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": 1111111111110}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": 1111111111110}]";
   }
 
   @Test
   void testReqSinceDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
-    String methodSubscriberId = subscriberIdSupplier.get();
+    String subscriberId = "testReqSinceDateGreaterThanCreatedDateMessages";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqSinceDateGreaterThanCreatedDateJson(methodSubscriberId),
-        methodSubscriberId
+        createReqSinceDateGreaterThanCreatedDateJson(subscriberId),
+        subscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
@@ -206,10 +199,10 @@ class SinceUntilIT {
   @Test
   void testReqSinceDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
     String since = "1111111111110";
-    String methodSubscriberId = subscriberIdSupplier.get();
+    String subscriberId = "testReqSinceDateLessThanCreatedDateMessages";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqSinceDateLessThanCreatedDateJson(methodSubscriberId, since),
-        methodSubscriberId
+        createReqSinceDateLessThanCreatedDateJson(subscriberId, since),
+        subscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);

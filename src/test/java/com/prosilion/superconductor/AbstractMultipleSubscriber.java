@@ -9,10 +9,8 @@ import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
@@ -30,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 @TestMethodOrder(OrderAnnotation.class) // exists because MultipleSubscriberEventIdAndAuthorIT has additional tests
 abstract class AbstractMultipleSubscriber {
@@ -44,6 +43,7 @@ abstract class AbstractMultipleSubscriber {
   private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
   private final int hexStartNumber;
+  @Getter
   private final List<String> targetEventIds = new ArrayList<>();
 
   AbstractMultipleSubscriber(
@@ -54,12 +54,11 @@ abstract class AbstractMultipleSubscriber {
     this.nostrRelayService = nostrRelayService;
     this.hexCounterSeed = hexCounterSeed.repeat(2 * hexNumberOfBytes);
     this.hexStartNumber = Integer.parseInt(hexCounterSeed, 16);
-    this.targetCount = 1;
+    this.targetCount = reqInstances;
   }
 
-  private void createEvent(int increment) throws IOException {
-    long start = System.currentTimeMillis();
-
+  @BeforeAll
+  public void beforeAll() {
     CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() ->
             IntStream.range(0, targetCount).forEach(value ->
                 assertAll(() -> createEvent(value)))
@@ -70,15 +69,15 @@ abstract class AbstractMultipleSubscriber {
         .until(voidCompletableFuture::isDone);
 
     assertFalse(voidCompletableFuture.isCompletedExceptionally());
+  }
 
-    log.info("events setup elapsed time [{}]", System.currentTimeMillis() - start);
-
+  private void createEvent(int increment) throws IOException {
     String nextHex = getNextHex(increment);
     log.debug("next hex: {}", nextHex);
     String globalEventJson = getGlobalEventJson(nextHex);
     log.debug("setup() send event:\n  {}", globalEventJson);
     nostrRelayService.createEvent(globalEventJson);
-    targetEventIds.add(nextHex); // used as subscriberIds for (currently one) test MultipleSubscriberTextEventMessageIT
+    targetEventIds.add(nextHex); // targetEventId String values utilized by inherited classes
   }
 
   abstract String getGlobalEventJson(String startEventId);
@@ -121,8 +120,7 @@ abstract class AbstractMultipleSubscriber {
     assertTrue(compareWithoutOrder(responseJson, expectedJsonInAnyOrder));
   }
 
-
-  private String getNextHex(int i) {
+  protected String getNextHex(int i) {
     String incrementedHexNumber = Integer.toHexString(hexStartNumber + i);
     log.debug("incrementedHexNumber:\n  [{}]", incrementedHexNumber);
     return Factory.generateRandomHex64String()

@@ -65,6 +65,5 @@ class MultipleSubcsriberClassifiedListingEventMessageIT extends AbstractMultiple
 
   public String createReqJson(@NonNull String uuid) {
     return "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"]}]";
-//    return "[\"REQ\",\"" + uuidKey + "\",{\"ids\":[\"" + uuid + "\"],\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]}]";
   }
 }

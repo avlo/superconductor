@@ -209,4 +209,58 @@ class SinceUntilIT {
     final String uuidKey = Strings.concat(uuidPrefix, uuid);
     return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": 1111111111110}]";
   }
+
+  @Test
+  void testReqSinceDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+    sendSinceDateGreaterThanCreatedDateReq(String.valueOf(0));
+  }
+
+  private void sendSinceDateGreaterThanCreatedDateReq(String increment) throws IOException, ExecutionException, InterruptedException {
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createReqJson(increment),
+        increment
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
+
+    /**
+     * since 1111111111112 should yield empty, since target time (1111111111111) is before it
+     */
+    assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+  }
+
+  private String createReqJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111112}]";
+  }
+
+
+  @Test
+  void testReqSinceDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+    sendSinceDateLessThanCreatedDateReq();
+  }
+
+  private void sendSinceDateLessThanCreatedDateReq() throws IOException, ExecutionException, InterruptedException {
+    String uuid = "1111111111110";
+    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+        createReqSinceDateLessThanCreatedDateJson(uuid),
+        uuid
+    );
+    log.debug("okMessage:");
+    log.debug("  " + returnedJsonMap);
+
+    /**
+     * "since" 1111111111110 should yield present, as target time (1111111111111) is after it
+     */
+    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("1111111111111"));
+
+    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+  }
+
+  private String createReqSinceDateLessThanCreatedDateJson(@NonNull String uuid) {
+    final String uuidKey = Strings.concat(uuidPrefix, uuid);
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": " + uuid + "}]";
+  }
 }

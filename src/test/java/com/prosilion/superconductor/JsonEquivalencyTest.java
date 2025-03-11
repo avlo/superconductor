@@ -2,6 +2,8 @@ package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JsonEquivalencyTest {
-  private final ObjectMapper mapper = new ObjectMapper();
+  private final ObjectMapper MAPPER_AFTERBURNER = JsonMapper.builder().addModule(new AfterburnerModule()).build();
 
   public final String referenceJson;
   public final String reorderedJson;
@@ -43,23 +45,23 @@ class JsonEquivalencyTest {
   @Test
   void testEquivalency() throws JsonProcessingException {
     assertTrue(OrderAgnosticJsonComparator.equalsJson(
-        mapper.readTree(referenceJson),
-        mapper.readTree(reorderedJson)));
+        MAPPER_AFTERBURNER.readTree(referenceJson),
+        MAPPER_AFTERBURNER.readTree(reorderedJson)));
   }
 
   @Test
   void testNonEquivalency() throws JsonProcessingException {
     assertFalse(OrderAgnosticJsonComparator.equalsJson(
-        mapper.readTree(referenceJson),
+        MAPPER_AFTERBURNER.readTree(referenceJson),
 //    below catches single-char diff in "content" tag (2111111111 -vs- 1111111111)
-        mapper.readTree(failTargetJson)));
+        MAPPER_AFTERBURNER.readTree(failTargetJson)));
   }
 
   @Test
   void testNonEquivalencyKind() throws JsonProcessingException {
 //    below catches single-char diff in "created_at" tag (1717357053050 -vs- 1717357053051)
     assertFalse(OrderAgnosticJsonComparator.equalsJson(
-        mapper.readTree(referenceJson),
-        mapper.readTree(failKindTargetJson)));
+        MAPPER_AFTERBURNER.readTree(referenceJson),
+        MAPPER_AFTERBURNER.readTree(failKindTargetJson)));
   }
 }

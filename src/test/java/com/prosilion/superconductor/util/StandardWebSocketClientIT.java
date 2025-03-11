@@ -2,6 +2,8 @@ package com.prosilion.superconductor.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
@@ -59,7 +61,7 @@ class StandardWebSocketClientIT {
   private final NostrRelayService nostrRelayService;
   private final String uuidPrefix;
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper MAPPER_AFTERBURNER = JsonMapper.builder().addModule(new AfterburnerModule()).build();
 
   @Autowired
   public StandardWebSocketClientIT(
@@ -84,14 +86,14 @@ class StandardWebSocketClientIT {
         EVENT_ID
     );
 
-    JsonNode expected = objectMapper.readTree(expectedRequestResponseJson());
-    JsonNode actual = objectMapper.readTree(returnedEvent.get(Command.EVENT).orElseThrow());
+    JsonNode expected = MAPPER_AFTERBURNER.readTree(expectedRequestResponseJson());
+    JsonNode actual = MAPPER_AFTERBURNER.readTree(returnedEvent.get(Command.EVENT).orElseThrow());
 
     log.debug("expected:");
-    log.debug("  {}\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(expected));
+    log.debug("  {}\n", MAPPER_AFTERBURNER.writerWithDefaultPrettyPrinter().writeValueAsString(expected));
     log.debug("---------------------");
     log.debug("actual:");
-    log.debug("  {}\n", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
+    log.debug("  {}\n", MAPPER_AFTERBURNER.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
     log.debug("111111111111111111111");
     log.debug("111111111111111111111");
 

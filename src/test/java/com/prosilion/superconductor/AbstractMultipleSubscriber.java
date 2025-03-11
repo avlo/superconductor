@@ -3,6 +3,8 @@ package com.prosilion.superconductor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
@@ -32,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @TestMethodOrder(OrderAnnotation.class) // exists because MultipleSubscriberEventIdAndAuthorIT has additional tests
 abstract class AbstractMultipleSubscriber {
-  private final static ObjectMapper mapper = new ObjectMapper();
+  private final static ObjectMapper MAPPER_AFTERBURNER = JsonMapper.builder().addModule(new AfterburnerModule()).build();
   @Getter
   private final Integer targetCount;
   @Getter
@@ -126,7 +128,7 @@ abstract class AbstractMultipleSubscriber {
   }
 
   protected static boolean compareWithoutOrder(String payloadString, String expectedJson) throws JsonProcessingException {
-    JsonNode jsonNode = mapper.readTree(payloadString);
-    return OrderAgnosticJsonComparator.equalsJson(mapper.readTree(expectedJson), jsonNode);
+    JsonNode jsonNode = MAPPER_AFTERBURNER.readTree(payloadString);
+    return OrderAgnosticJsonComparator.equalsJson(MAPPER_AFTERBURNER.readTree(expectedJson), jsonNode);
   }
 }

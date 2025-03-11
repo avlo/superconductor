@@ -46,6 +46,7 @@ dependencies {
     implementation 'xyz.tcheeric:nostr-java-event:0.6.5-SNAPSHOT'
     implementation 'xyz.tcheeric:nostr-java-id:0.6.5-SNAPSHOT'
 
+    implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:2.18.3'
     implementation 'com.google.guava:guava:33.2.1-jre'
     implementation 'com.h2database:h2'
     implementation 'com.mysql:mysql-connector-j'

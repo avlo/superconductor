@@ -26,6 +26,7 @@
     <guava.version>33.2.1-jre</guava.version>
     <h2.version>2.2.224</h2.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+    <jackson-module-afterburner.version>2.18.3</jackson-module-afterburner.version>
     <junit-jupiter.version>5.10.2</junit-jupiter.version>
     <lombok.version>1.18.34</lombok.version>
     <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
@@ -80,6 +81,11 @@
       <groupId>xyz.tcheeric</groupId>
       <artifactId>nostr-java-id</artifactId>
       <version>${nostr-java.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-afterburner</artifactId>
+      <version>${jackson-module-afterburner.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.5</version>
+    <version>3.4.3</version>
   </parent>
 
   <properties>
@@ -23,6 +23,7 @@
 
     <awaitility.version>4.2.0</awaitility.version>
     <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
+    <commons-lang3.version>3.17.0</commons-lang3.version>
     <guava.version>33.2.1-jre</guava.version>
     <h2.version>2.2.224</h2.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
@@ -65,6 +66,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-websocket</artifactId>
+      <version>${spring-boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
       <version>${spring-boot.version}</version>
     </dependency>
     <dependency>
@@ -129,6 +135,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
       <version>${spring-boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

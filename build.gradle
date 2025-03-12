@@ -32,27 +32,36 @@ repositories {
     }
 }
 
+
 dependencies {
-    developmentOnly 'org.springframework.boot:spring-boot-devtools:3.4.3'
+    def springBootVersion = '3.4.3'
+    def nostrJavaVersion = '0.6.5-SNAPSHOT'
+    def apacheCommonsLang3 = '3.17.0'
+    def jacksonModuleAfterburner = '2.18.3'
+    def googleGuava = '33.2.1-jre'
+    def awaitility = '4.2.0'
     
+    developmentOnly 'org.springframework.boot:spring-boot-devtools:' + springBootVersion
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-    implementation 'xyz.tcheeric:nostr-java-api:0.6.5-SNAPSHOT'
-    implementation 'xyz.tcheeric:nostr-java-event:0.6.5-SNAPSHOT'
-    implementation 'xyz.tcheeric:nostr-java-id:0.6.5-SNAPSHOT'
+    implementation 'xyz.tcheeric:nostr-java-api:' + nostrJavaVersion
+//    implementation 'xyz.tcheeric:nostr-java-event:0.6.5-SNAPSHOT'
+//    implementation 'xyz.tcheeric:nostr-java-id:0.6.5-SNAPSHOT'
 
-    implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:2.18.3'
-    implementation 'com.google.guava:guava:33.2.1-jre'
+    implementation 'org.apache.commons:commons-lang3:' + apacheCommonsLang3
+    implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:' + jacksonModuleAfterburner
+    implementation 'com.google.guava:guava:' + googleGuava
     implementation 'com.h2database:h2'
     implementation 'com.mysql:mysql-connector-j'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-    
-    testImplementation 'org.awaitility:awaitility:4.2.0'
+
+    testImplementation 'org.awaitility:awaitility:' + awaitility
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -64,7 +73,7 @@ tasks.named('test') {
 
 test {
     retry {
-//        failOnPassedAfterRetry = true
+        failOnPassedAfterRetry = false
         maxRetries = 2
 //        maxFailures = 42
     }

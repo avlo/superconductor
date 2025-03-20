@@ -111,7 +111,7 @@ public class Factory {
   }
 
   public static String generateRandomHex64String() {
-    return UUID.randomUUID().toString().concat(UUID.randomUUID().toString()).replace("-", "");
+    return UUID.randomUUID().toString().concat(UUID.randomUUID().toString()).replaceAll("[^A-Za-z0-9]", "");
   }
 
   public static BigDecimal createRandomBigDecimal() {

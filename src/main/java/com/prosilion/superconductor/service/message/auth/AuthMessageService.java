@@ -7,7 +7,7 @@ import com.prosilion.superconductor.service.message.MessageService;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.impl.GenericTag;
+import nostr.event.tag.GenericTag;
 import nostr.event.message.CanonicalAuthenticationMessage;
 import nostr.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;

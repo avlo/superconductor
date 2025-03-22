@@ -11,7 +11,7 @@ import nostr.event.filter.Filterable;
 import nostr.event.filter.Filters;
 import nostr.event.impl.DeletionEvent;
 import nostr.event.impl.GenericEvent;
-import nostr.event.impl.GenericTag;
+import nostr.event.tag.GenericTag;
 import nostr.event.tag.AddressTag;
 import nostr.event.tag.EventTag;
 import org.springframework.beans.factory.annotation.Autowired;

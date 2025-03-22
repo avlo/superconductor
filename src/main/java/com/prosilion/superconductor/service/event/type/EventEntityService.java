@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
-import nostr.event.impl.GenericTag;
+import nostr.event.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +92,7 @@ public class EventEntityService<T extends GenericEvent> {
         .convertEntityToDto();
   }
 
-//  TODO: perhaps below as admin fxnality
+  //  TODO: perhaps below as admin fxnality
   protected void deleteEventEntity(@NonNull EventEntity eventToDelete) {
 //    concreteTagEntitiesService.deleteTags(eventToDelete.getId(), eventToDelete.getTags());
     genericTagEntitiesService.deleteTags(eventToDelete.getTags());
@@ -111,7 +111,7 @@ public class EventEntityService<T extends GenericEvent> {
     List<BaseTag> genericTags = genericTagEntitiesService.getGenericTags(
             eventEntity.getId()).stream()
         .map(genericTag ->
-            new GenericTag(genericTag.code(), 1, genericTag.atts().stream()
+            new GenericTag(genericTag.code(), genericTag.atts().stream()
                 .map(ElementAttributeDto::getElementAttribute).toList())).toList().stream()
         .map(BaseTag.class::cast).toList();
 

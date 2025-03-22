@@ -29,6 +29,6 @@ public class ElementAttributeEntity implements Serializable {
   private String value;
 
   public ElementAttributeDto convertToDto() {
-    return new ElementAttributeDto(new ElementAttribute(name, value, 1));
+    return new ElementAttributeDto(new ElementAttribute(name, value));
   }
 }

@@ -3,7 +3,7 @@ package com.prosilion.superconductor.service.event.type;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.impl.GenericEvent;
-import nostr.event.impl.GenericTag;
+import nostr.event.tag.GenericTag;
 import nostr.event.tag.*;
 import nostr.id.Identity;
 import org.junit.jupiter.api.Test;

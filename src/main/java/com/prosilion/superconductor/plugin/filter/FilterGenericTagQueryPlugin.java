@@ -4,7 +4,7 @@ import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import nostr.base.GenericTagQuery;
 import nostr.event.filter.GenericTagQueryFilter;
 import nostr.event.impl.GenericEvent;
-import nostr.event.impl.GenericTag;
+import nostr.event.tag.GenericTag;
 import org.springframework.stereotype.Component;
 
 import java.util.function.BiPredicate;

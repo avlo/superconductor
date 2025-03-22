@@ -10,7 +10,7 @@ import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
-import nostr.event.impl.GenericTag;
+import nostr.event.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

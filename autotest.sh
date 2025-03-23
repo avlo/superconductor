@@ -113,8 +113,6 @@ run_nostr_tests() {
 ###########     main    ################
 ########################################
 
-export -f killshell
-
 { cd_nostr; rm_maven_local; build_nostr; publish_nostr_to_m2_local; } 
 banner "nostr-java dependencies completed"
 
@@ -129,13 +127,7 @@ if [ $super_completion_code != 0 ]; then
 fi
 
 banner "superconductor dependencies completed"
-
 run_super_service
-export -f killsuper 
-
 run_nostr_tests
-export -f killnostr
-export -f killboth
-
 banner "tests passed"
 terminate_super

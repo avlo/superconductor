@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# clear;. ./autotest.sh &
+# clear;. ./autotest.sh
 # ps| grep java|awk '{print $1}' | xargs kill -9
 
 SLEEP=12

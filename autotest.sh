@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run script:
-#   clear;. ./autotest.sh
+#   $ . ./autotest.sh
 # kill process/thread/job
 #   <ctrl>-C
 #   kill %1
@@ -63,28 +63,28 @@ content_line() {
 
 cd_nostr() {
   banner "cd to nostr-java:" "" "     [$NOSTR_HOME]"
-  cd $NOSTR_HOME || (exit 33) 
+  cd $NOSTR_HOME || exit_with_code "33" 
 }
 
 cd_superconductor() {
   banner "cd to superconductor:" "" "     [$SUPER_HOME]"
-  cd $SUPER_HOME || (exit 33) 
+  cd $SUPER_HOME || exit_with_code "33"
 }
 
 rm_maven_local() {
   banner "clear nostr-java [$NOSTR_JAVA_MAVEN_LOCAL_REPO] repo"
-  rm -rf $NOSTR_JAVA_MAVEN_LOCAL_REPO || (exit 33)   
+  rm -rf $NOSTR_JAVA_MAVEN_LOCAL_REPO || exit_with_code "33"   
 }
 
 build_nostr() {
   banner "building nostr-java..."
-  invoke_builder || (exit 33)
+  invoke_builder || exit_with_code "33"
   banner "...completed nostr-java build" 
 }
 
 publish_nostr_to_m2_local() {
   banner "publishing to m2/local local:" "" "       [$NOSTR_JAVA_MAVEN_LOCAL_REPO]"  
-  invoke_publisher || (exit 33)
+  invoke_publisher || exit_with_code "33"
   banner "...completed publishing to m2/local"
   banner "$NOSTR_JAVA_MAVEN_LOCAL_REPO contents:"
   tree -D $NOSTR_JAVA_MAVEN_LOCAL_REPO
@@ -98,38 +98,9 @@ build_and_test_super() {
   sleep .01  
 }
 
-terminate_super() {
-  kill -9 $SUPER_PID
-  banner "super terminated"
-}
-
-terminate_nostr() {
-  kill -9 $NOSTR_PID
-  banner "nostr terminated"
-}
-
-killsuper() {
-  terminate_super
-}
-
-killnostr() {
-  terminate_nostr
-}
-
-killboth() {
-  terminate_super
-  terminate_nostr
-}
-
-killshell() {
-  kill $BASHPID
-  killboth  
-}
-
 run_super_service() {
   cd_superconductor
-  { invoke_runner & } || (exit 33) 
-  SUPER_PID=$!
+  { invoke_runner & SUPER_PID=$! || (terminate_super "33") } 
   banner "starting superconductor service pid: [$SUPER_PID]" "& waiting [$SLEEP] seconds prior to starting nostr-java test"
   sleep $SLEEP
 }
@@ -137,11 +108,32 @@ run_super_service() {
 run_nostr_tests() {
   banner "...[$SLEEP] seconds wait over, starting nostr-java tests..."
   cd_nostr
-  { invoke_tester & } || (exit 33)
-  NOSTR_PID=$!
+  { invoke_tester & NOSTR_PID=$! || (terminate_both "33") }
   banner "...nostr-java tests started, pid: [$NOSTR_PID]..."
   wait $NOSTR_PID
   banner "...nostr-java tests done"
+}
+
+terminate_super() {
+  kill -9 "$SUPER_PID"
+  banner "super terminated"
+  (exit_with_code "$1")
+}
+
+terminate_nostr() {
+  kill -9 "$NOSTR_PID"
+  banner "nostr terminated"
+  (exit_with_code "$1")
+}
+
+terminate_both() {
+  terminate_super "$1"
+  terminate_nostr "$1"
+}
+
+exit_with_code() {
+  cd_superconductor
+  (exit "$1")
 }
 
 user_prompt() {
@@ -179,12 +171,11 @@ super_completion_code=$?
 banner "super exit code [$super_completion_code]"
 if [ $super_completion_code != 0 ]; then
   banner "erroneous exit, tests not performed"
-  terminate_super
-  (exit 33);
+  (terminate_both "33")
 fi
 
 banner "superconductor dependencies completed"
 run_super_service
 run_nostr_tests
 banner "tests passed"
-terminate_super
+terminate_super "0"

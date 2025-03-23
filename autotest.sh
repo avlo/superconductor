@@ -21,14 +21,14 @@ invoke_builder() {
   if [ $MODE == "gradle" ]; then
     gradle clean build -x test; return
   fi
-  mvn clean compile -Dmaven.test.skip=true
+  mvn install -DskipTests
 }
 
 invoke_publisher() {
   if [ $MODE == "gradle" ]; then
     gradle publishToMavenLocal; return
   fi
-  mvn install    
+# no explicit mvn install step as it's done after build/line 24     
 }
 
 invoke_runner() {

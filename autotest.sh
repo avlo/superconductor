@@ -1,13 +1,20 @@
 #!/bin/bash
 
 # run script:
-#   $ . ./autotest.sh
+#   . ./autotest.sh
+
+# script parameters (see #user_prompt):
+#   G/g gradle, M/m maven, (default/<enter>: gradle) 
+
 # kill process/thread/job
 #   <ctrl>-C
 #   kill %1
 #   ps| grep java|awk '{print $1}' | xargs kill -9
 
-SLEEP=12
+# duration (seconds) between superconductor service process start and nostr-java integration-test start
+IT_WAIT=15
+# IT_WAIT > ( time @ superconductor service process in "running state" ) - ( time @ superconductor service process start )  
+
 M2_HOME='/home/nick/.m2/repository/'
 NOSTR_JAVA_MAVEN_LOCAL_REPO=$M2_HOME/xyz/tcheeric
 GIT_HOME='/home/nick/git'
@@ -101,12 +108,12 @@ build_and_test_super() {
 run_super_service() {
   cd_superconductor
   { invoke_runner & SUPER_PID=$! || (terminate_super "33") } 
-  banner "starting superconductor service pid: [$SUPER_PID]" "& waiting [$SLEEP] seconds prior to starting nostr-java test"
-  sleep $SLEEP
+  banner "starting superconductor service pid: [$SUPER_PID]" "& waiting [$IT_WAIT] seconds prior to starting nostr-java test"
+  sleep $IT_WAIT
 }
 
 run_nostr_tests() {
-  banner "...[$SLEEP] seconds wait over, starting nostr-java tests..."
+  banner "...[$IT_WAIT] seconds wait over, starting nostr-java tests..."
   cd_nostr
   { invoke_tester & NOSTR_PID=$! || (terminate_both "33") }
   banner "...nostr-java tests started, pid: [$NOSTR_PID]..."
@@ -136,9 +143,11 @@ exit_with_code() {
   (exit "$1")
 }
 
+usage() { echo "Usage: . ./autotest.sh" 1>&2; exit 1; }
+
 user_prompt() {
   while true; do
-      read -p "G/g (or enter) for Gradle, M/m for Maven)" yesno
+      read -p "G/g gradle, M/m maven, (default/<enter>: gradle)" yesno
       case $yesno in
           [Yy]* ) 
               echo "Gradle selected"

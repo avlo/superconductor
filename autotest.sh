@@ -1,14 +1,18 @@
 #!/bin/bash
 
-# clear;. ./autotest.sh
-# ps| grep java|awk '{print $1}' | xargs kill -9
+# run script:
+#   clear;. ./autotest.sh
+# kill process/thread/job
+#   <ctrl>-C
+#   kill %1
+#   ps| grep java|awk '{print $1}' | xargs kill -9
 
 SLEEP=12
-GIT_HOME='/home/nick/git'
 M2_HOME='/home/nick/.m2/repository/'
+NOSTR_JAVA_MAVEN_LOCAL_REPO=$M2_HOME/xyz/tcheeric
+GIT_HOME='/home/nick/git'
 NOSTR_HOME=$GIT_HOME/avlo-nostr-java-fork/
 SUPER_HOME=$GIT_HOME/superconductor/
-NOSTR_JAVA_MAVEN_LOCAL_REPO=$M2_HOME/xyz/tcheeric
 
 # build tool mode defaults to gradle
 MODE="gradle"
@@ -17,7 +21,7 @@ invoke_builder() {
   if [ $MODE == "gradle" ]; then
     gradle clean build -x test; return
   fi
-  mvn clean -Dmaven.test.skip=true    
+  mvn clean compile -Dmaven.test.skip=true
 }
 
 invoke_publisher() {

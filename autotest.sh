@@ -142,7 +142,7 @@ run_nostr_tests() {
 
 user_prompt() {
   while true; do
-      read -p "Y/y or enter for Gradle, M/m for Maven)" yesno
+      read -p "G/g (or enter) for Gradle, M/m for Maven)" yesno
       case $yesno in
           [Yy]* ) 
               echo "Gradle selected"

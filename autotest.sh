@@ -41,18 +41,22 @@ invoke_publisher() {
 
 invoke_runner_thread() {
   if [ $MODE == "gradle" ]; then
-    gradle bootRunLocalWs || terminate_both "33"
+    gradle bootRunLocalWs &
+    SUPER_PID=$!
   else
-    mvn spring-boot:run -P local_ws || terminate_both "33"
+    mvn spring-boot:run -P local_ws &
+    SUPER_PID=$!
   fi
   return $!
 }
 
-invoke_tester() {
+invoke_tester_thread() {
   if [ $MODE == "gradle" ]; then
-    gradle test --rerun-tasks || terminate_both "33"
+    gradle test --rerun-tasks
+    TESTER_PID=$!
   else
-    mvn verify || terminate_both "33"
+    mvn verify
+    TESTER_PID=$!
   fi
   return $!
 }
@@ -104,49 +108,20 @@ publish_nostr_java_to_m2_local() {
   invoke_publisher || exit_with_code "33"
   banner "...completed publishing to m2/local"
   banner "$NOSTR_JAVA_MAVEN_LOCAL_REPO contents:"
-  tree -D $NOSTR_JAVA_MAVEN_LOCAL_REPO
-}
-
-run_superconductor_tests() {
-  banner "building superconductor & running tests..."
-  sleep .01
-  invoke_tester
-  super_completion_code=$?
-  sleep .01
-  if [ $super_completion_code != 0 ]; then
-    banner "...superconductor test failure, code: [$super_completion_code], exiting"
-    terminate_super "33"
-  fi  
-  banner "...completed superconductor build and test"
-}
-
-run_nostr_java_tests() {
-  banner "...[$IT_WAIT] seconds wait over, starting nostr-java tests..."
-  cd_nostr_java
-  invoke_tester & NOSTR_PID=$! || terminate_both "33"
-  banner "...nostr-java tests started, pid: [$NOSTR_PID]..."
-  wait $NOSTR_PID
-  banner "...nostr-java tests done"
-}
-
-start_superconductor() {
-  cd_superconductor
-  invoke_runner_thread & SUPER_PID=$! || terminate_super "33" 
-  banner "starting superconductor service pid: [$SUPER_PID]" "& waiting [$IT_WAIT] seconds prior to starting nostr-java test"
-  sleep $IT_WAIT
+  banner -D $NOSTR_JAVA_MAVEN_LOCAL_REPO
 }
 
 terminate_superconductor() {
+  banner "prekill superconductor pid: [$SUPER_PID]"
   kill -9 "$SUPER_PID"
-  pkill -P $$
   banner "superconductor terminated"
   exit_with_code "$1"
 }
 
 terminate_nostr_java() {
-  kill -9 "$NOSTR_PID"
+  banner "prekill nostr_java pid: [$TESTER_PID]"
+  kill -9 "$TESTER_PID"
   kill -9 "$SUPER_PID"
-  pkill -P $$
   banner "nostr-java terminated"
   exit_with_code "$1"
 }
@@ -159,6 +134,30 @@ terminate_both() {
 exit_with_code() {
   cd_superconductor
   exit "$1"
+}
+
+run_superconductor_tests() {
+  cd_superconductor
+  banner "building superconductor & running tests..."
+  sleep .01
+  invoke_tester_thread
+  banner "...superconductor build and test completed"
+}
+
+run_nostr_java_tests() {
+  cd_nostr_java
+  banner "...[$IT_WAIT] seconds wait over, starting nostr-java tests..."
+  invoke_tester_thread
+  sleep .01
+  banner "...nostr-java tests completed"
+}
+
+start_superconductor() {
+  cd_superconductor
+  invoke_runner_thread 
+  sleep .01
+  banner "starting superconductor service pid: [$SUPER_PID]" "& waiting [$IT_WAIT] seconds prior to starting nostr-java test"
+  sleep $IT_WAIT
 }
 
 usage() { echo "Usage: . ./autotest.sh" 1>&2; exit 1; }
@@ -184,21 +183,13 @@ user_prompt() {
 }
 
 ###########     main    ################
-
 user_prompt
  
 cd_nostr_java
 rm_maven_local
 build_nostr_java
 publish_nostr_java_to_m2_local 
-banner "nostr-java dependencies completed"
-
-cd_superconductor
 run_superconductor_tests
-banner "superconductor dependencies completed"
-
 start_superconductor
 run_nostr_java_tests
-banner "tests passed"
-
 terminate_superconductor "0"

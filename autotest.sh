@@ -57,20 +57,25 @@ invoke_tester() {
   return $!
 }
 
+banner_line_content() {
+  numeric=$(echo "$@" | grep -oE '[0-9]+([.][0-9]+)?')
+  if [ ${#numeric} -gt 3 ]; then    
+    printf "|$(tput bold setaf 003) %-65s $(tput sgr0)|\n" "$@" 
+  else
+    printf "|$(tput bold) %-65s $(tput sgr0)|\n" "$@"
+  fi
+}
+
 banner() {
   echo "+-------------------------------------------------------------------+"
   printf "| %-65s |\n" "$(date)"
   echo "|                                                                   |"
   for arg
-    do
+    do 
         banner_line_content "$arg"
     done
   echo "+-------------------------------------------------------------------+"
   printf "\n"
-}
-
-banner_line_content() {
-  printf "|$(tput bold) %-65s $(tput sgr0)|\n" "$@"
 }
 
 cd_nostr() {

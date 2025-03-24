@@ -111,16 +111,27 @@ publish_nostr_java_to_m2_local() {
   tree -D $NOSTR_JAVA_MAVEN_LOCAL_REPO
 }
 
+kill_pids() {
+#  banner "parent pid [$1]"
+  for var in $(pgrep -P "$1"); 
+    do 
+#      banner "kill child pid [$var]"
+      kill -15 "$var"
+    done
+#  banner "kill parent pid [$1]"
+  kill -15 "$1"
+}
+
 terminate_superconductor() {
   cd_superconductor
-  { kill -15 "$SUPER_PID"; } & wait
+  kill_pids "$SUPER_PID"
   banner "superconductor pid [$SUPER_PID] terminated"
   exit_with_code "$1"
 }
 
 # below should connect to failing nostr java tests
 terminate_nostr_java() {
-  { kill -15 "$TESTER_PID"; } & wait
+  kill_pids "$TESTER_PID"
   banner "nostr-java pid [$TESTER_PID] terminated"
   terminate_superconductor
 }

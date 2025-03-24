@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # run script:
-#   . ./autotest.sh
+#  ./autotest.sh
 
 # script parameters (see #user_prompt):
-#   G/g gradle, M/m maven, (default/<enter>: gradle) 
+#  G/g gradle, M/m maven, (default/<enter>: gradle) 
 
 # kill process/thread/job
 #   <ctrl>-C

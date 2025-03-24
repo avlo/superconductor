@@ -6,10 +6,8 @@
 # script parameters (see #user_prompt):
 #  G/g gradle, M/m maven, (default/<enter>: gradle) 
 
-# kill process/thread/job
-#   <ctrl>-C
-#   kill %1
-#   ps| grep java|awk '{print $1}' | xargs kill -9
+#debug/verbose mode
+# PS4="\033[1;33m+\033[0m "; set -x
 
 # duration (seconds) between superconductor service process start and nostr-java integration-test start
 IT_WAIT=15
@@ -24,9 +22,12 @@ SUPER_HOME=$GIT_HOME/superconductor/
 # build tool mode defaults to gradle
 MODE="gradle"
 
+# full re-run mode, default off
+CLEAN_AND_RERUN_MODE=0
+
 invoke_builder() {
   if [ $MODE == "gradle" ]; then
-    gradle clean build -x test || exit_with_code "33"
+    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full re-build started"; gradle clean build -x test; return; } || { banner "changed-classes-only build started"; gradle build -x test; return; }) || exit_with_code "33"
   else
     mvn install -DskipTests || exit_with_code "33"
   fi
@@ -52,7 +53,7 @@ invoke_runner_thread() {
 
 invoke_tester_thread() {
   if [ $MODE == "gradle" ]; then
-    gradle test --rerun-tasks
+    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full tests-rerun mode started"; gradle test --rerun-tasks; return; } || { banner "changed-classes-only test mode started"; gradle test; return; }) || exit_with_code "33"
     TESTER_PID=$!
   else
     mvn verify
@@ -168,21 +169,33 @@ usage() { echo "Usage:  ./autotest.sh" 1>&2; exit 1; }
 
 user_prompt() {
   while true; do
-      read -p "G/g -> gradle, M/m -> maven, (default/<enter>: gradle)" yesno
-      case $yesno in
-          [Gg]* ) 
-              echo "Gradle selected"
-              return
-          ;;
-          [Mm]* ) 
-              echo "Maven selected"
-              MODE="maven"
-              return
-          ;;
-          * ) echo "Default (Gradle) selected"
-              return
-          ;;
+    read -p "superconductor integration-test script options:
+  (g) -> gradle
+  (m) -> maven
+  (v) -> force test-rerun (gradle only)
+(default: gradle, changed-tests only): " -a args_array
+    
+    [[ ${#args_array[@]} -eq 0 ]] && 
+      { printf "$(tput bold setaf 003)%-0s$(tput sgr0)\n" "default (gradle) builder & runner selected";
+        printf "$(tput bold setaf 003)%-0s$(tput sgr0)\n" "default (changed-tests only) mode selected";
+        return; }
+        
+    for entry in "${args_array[@]}"; do
+      case $entry in
+        [g] ) 
+            printf "$(tput bold setaf 003)%-0s$(tput sgr0)\n" "gradle builder & runner selected"
+            ;;
+        [m] ) 
+            printf "$(tput bold setaf 003)%-0s$(tput sgr0)\n" "maven builder & runner selected"
+            MODE="maven"
+            ;;
+        [v] ) 
+            printf "$(tput bold setaf 003)%-0s$(tput sgr0)\n" "gradle force test-rerun mode selected"
+            CLEAN_AND_RERUN_MODE=1
+            ;;    
       esac
+    done
+    return
   done
 }
 

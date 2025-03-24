@@ -164,13 +164,13 @@ start_superconductor() {
   sleep $IT_WAIT
 }
 
-usage() { echo "Usage: . ./autotest.sh" 1>&2; exit 1; }
+usage() { echo "Usage:  ./autotest.sh" 1>&2; exit 1; }
 
 user_prompt() {
   while true; do
-      read -p "G/g gradle, M/m maven, (default/<enter>: gradle)" yesno
+      read -p "G/g -> gradle, M/m -> maven, (default/<enter>: gradle)" yesno
       case $yesno in
-          [Yy]* ) 
+          [Gg]* ) 
               echo "Gradle selected"
               return
           ;;

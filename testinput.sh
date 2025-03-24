@@ -7,24 +7,46 @@ MODE="gradle"
 # build tool defaults to gradle
 
 invoke_builder() {
-  if [ $MODE == "gradle" ]; then
-    echo "gradle builder"; return
-  fi
-  echo "maven builder"    
+  echo "gradle builder" 
+  sleep 1000 &
+  SUPER_PID=$!
 }
 
+start_superconductor() {
+  invoke_builder || terminate_super "33" 
+  banner "starting superconductor service pid: [$SUPER_PID]" 
+}
 
-#BUILDER=$(gradle clean build -x test)
-#PUBLISHER=$(gradle publishToMavenLocal)
-#RUNNER=$(gradle bootRunLocalWs)
-#TESTER=$(gradle test --rerun-tasks)
+banner_line_content() {
+  numeric=$(echo "$@" | grep -oE '[0-9]+([.][0-9]+)?')
+  if [ ${#numeric} -gt 3 ]; then    
+    printf "|$(tput bold setaf 003) %-65s $(tput sgr0)|\n" "$@" 
+  else
+    printf "|$(tput bold) %-65s $(tput sgr0)|\n" "$@"
+  fi
+}
 
-#use_maven() {
-#  BUILDER=$(mvn clean -Dmaven.test.skip=true)
-#  PUBLISHER=$(mvn install)
-#  RUNNER=$(mvn spring-boot:run -P local_ws)
-#  TESTER=$(mvn verify)
-#}
+banner() {
+  echo "+-------------------------------------------------------------------+"
+  printf "| %-65s |\n" "$(date)"
+  echo "|                                                                   |"
+  for arg
+    do 
+        banner_line_content "$arg"
+    done
+  echo "+-------------------------------------------------------------------+"
+  printf "\n"
+}
+
+terminate_superconductor() {
+  banner "prekill $SUPER_PID"
+  kill -9 "$SUPER_PID"
+  banner "postkill $SUPER_PID"
+#  pkill -P $$
+#  `pstree "$SUPER_PID"`
+#  banner "$procval"
+  banner "superconductor terminated"
+}
 
 user_prompt() {
   while true; do
@@ -51,5 +73,5 @@ user_prompt() {
 ########################################
 
 user_prompt
-
-invoke_builder
+start_superconductor
+terminate_superconductor

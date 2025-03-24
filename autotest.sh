@@ -78,7 +78,7 @@ banner() {
   printf "\n"
 }
 
-cd_nostr() {
+cd_nostr_java() {
   banner "cd to nostr-java:" "" "     [$NOSTR_HOME]"
   cd $NOSTR_HOME || exit_with_code "33" 
 }
@@ -93,13 +93,13 @@ rm_maven_local() {
   rm -rf $NOSTR_JAVA_MAVEN_LOCAL_REPO || exit_with_code "33"   
 }
 
-build_nostr() {
+build_nostr_java() {
   banner "building nostr-java..."
   invoke_builder || exit_with_code "33"
   banner "...completed nostr-java build" 
 }
 
-publish_nostr_to_m2_local() {
+publish_nostr_java_to_m2_local() {
   banner "publishing to m2/local local:" "" "       [$NOSTR_JAVA_MAVEN_LOCAL_REPO]"  
   invoke_publisher || exit_with_code "33"
   banner "...completed publishing to m2/local"
@@ -120,31 +120,30 @@ run_superconductor_tests() {
   banner "...completed superconductor build and test"
 }
 
-run_nostr_tests() {
+run_nostr_java_tests() {
   banner "...[$IT_WAIT] seconds wait over, starting nostr-java tests..."
-  cd_nostr
+  cd_nostr_java
   invoke_tester & NOSTR_PID=$! || terminate_both "33"
   banner "...nostr-java tests started, pid: [$NOSTR_PID]..."
   wait $NOSTR_PID
   banner "...nostr-java tests done"
 }
 
-run_super_service() {
+start_superconductor() {
   cd_superconductor
   invoke_runner_thread & SUPER_PID=$! || terminate_super "33" 
   banner "starting superconductor service pid: [$SUPER_PID]" "& waiting [$IT_WAIT] seconds prior to starting nostr-java test"
   sleep $IT_WAIT
 }
 
-
-terminate_super() {
+terminate_superconductor() {
   kill -9 "$SUPER_PID"
   pkill -P $$
   banner "superconductor terminated"
   exit_with_code "$1"
 }
 
-terminate_nostr() {
+terminate_nostr_java() {
   kill -9 "$NOSTR_PID"
   kill -9 "$SUPER_PID"
   pkill -P $$
@@ -153,8 +152,8 @@ terminate_nostr() {
 }
 
 terminate_both() {
-  terminate_super "$1"
-  terminate_nostr "$1"
+  terminate_superconductor "$1"
+  terminate_nostr_java "$1"
 }
 
 exit_with_code() {
@@ -188,18 +187,18 @@ user_prompt() {
 
 user_prompt
  
-cd_nostr
+cd_nostr_java
 rm_maven_local
-build_nostr
-publish_nostr_to_m2_local 
+build_nostr_java
+publish_nostr_java_to_m2_local 
 banner "nostr-java dependencies completed"
 
 cd_superconductor
 run_superconductor_tests
 banner "superconductor dependencies completed"
 
-run_super_service
-run_nostr_tests
+start_superconductor
+run_nostr_java_tests
 banner "tests passed"
 
-terminate_super "0"
+terminate_superconductor "0"

@@ -36,7 +36,7 @@ invoke_publisher() {
   if [ $MODE == "gradle" ]; then
     gradle publishToMavenLocal || exit_with_code "33"
   fi
-# no explicit mvn install step as it's done after build/line 24     
+# no explicit mvn install step as it's done after maven invoke_builder, above     
 }
 
 invoke_runner_thread() {
@@ -44,7 +44,7 @@ invoke_runner_thread() {
     gradle bootRunLocalWs &
     SUPER_PID=$!
   else
-    mvn spring-boot:run -P local_ws &
+    { mvn spring-boot:run -P local_ws; } &
     SUPER_PID=$!
   fi
   return $!
@@ -108,31 +108,24 @@ publish_nostr_java_to_m2_local() {
   invoke_publisher || exit_with_code "33"
   banner "...completed publishing to m2/local"
   banner "$NOSTR_JAVA_MAVEN_LOCAL_REPO contents:"
-  banner -D $NOSTR_JAVA_MAVEN_LOCAL_REPO
+  tree -D $NOSTR_JAVA_MAVEN_LOCAL_REPO
 }
 
 terminate_superconductor() {
-  banner "prekill superconductor pid: [$SUPER_PID]"
-  kill -9 "$SUPER_PID"
-  banner "superconductor terminated"
+  cd_superconductor
+  { kill -15 "$SUPER_PID"; } & wait
+  banner "superconductor pid [$SUPER_PID] terminated"
   exit_with_code "$1"
 }
 
+# below should connect to failing nostr java tests
 terminate_nostr_java() {
-  banner "prekill nostr_java pid: [$TESTER_PID]"
-  kill -9 "$TESTER_PID"
-  kill -9 "$SUPER_PID"
-  banner "nostr-java terminated"
-  exit_with_code "$1"
-}
-
-terminate_both() {
-  terminate_superconductor "$1"
-  terminate_nostr_java "$1"
+  { kill -15 "$TESTER_PID"; } & wait
+  banner "nostr-java pid [$TESTER_PID] terminated"
+  terminate_superconductor
 }
 
 exit_with_code() {
-  cd_superconductor
   exit "$1"
 }
 
@@ -145,8 +138,8 @@ run_superconductor_tests() {
 }
 
 run_nostr_java_tests() {
-  cd_nostr_java
   banner "...[$IT_WAIT] seconds wait over, starting nostr-java tests..."
+  cd_nostr_java
   invoke_tester_thread
   sleep .01
   banner "...nostr-java tests completed"

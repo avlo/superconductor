@@ -26,30 +26,35 @@ MODE="gradle"
 
 invoke_builder() {
   if [ $MODE == "gradle" ]; then
-    gradle clean build -x test; return
+    gradle clean build -x test || exit_with_code "33"
+  else
+    mvn install -DskipTests || exit_with_code "33"
   fi
-  mvn install -DskipTests
 }
 
 invoke_publisher() {
   if [ $MODE == "gradle" ]; then
-    gradle publishToMavenLocal; return
+    gradle publishToMavenLocal || exit_with_code "33"
   fi
 # no explicit mvn install step as it's done after build/line 24     
 }
 
-invoke_runner() {
+invoke_runner_thread() {
   if [ $MODE == "gradle" ]; then
-    gradle bootRunLocalWs; return
+    gradle bootRunLocalWs || terminate_both "33"
+  else
+    mvn spring-boot:run -P local_ws || terminate_both "33"
   fi
-  mvn spring-boot:run -P local_ws    
+  return $!
 }
 
 invoke_tester() {
   if [ $MODE == "gradle" ]; then
-      gradle test --rerun-tasks; return
+    gradle test --rerun-tasks || terminate_both "33"
+  else
+    mvn verify || terminate_both "33"
   fi
-  mvn verify
+  return $!
 }
 
 banner() {
@@ -58,13 +63,13 @@ banner() {
   echo "|                                                                   |"
   for arg
     do
-        content_line "$arg"
+        banner_line_content "$arg"
     done
   echo "+-------------------------------------------------------------------+"
   printf "\n"
 }
 
-content_line() {
+banner_line_content() {
   printf "|$(tput bold) %-65s $(tput sgr0)|\n" "$@"
 }
 
@@ -97,40 +102,49 @@ publish_nostr_to_m2_local() {
   tree -D $NOSTR_JAVA_MAVEN_LOCAL_REPO
 }
 
-build_and_test_super() {
+run_superconductor_tests() {
   banner "building superconductor & running tests..."
   sleep .01
-  invoke_tester || return 
+  invoke_tester
+  super_completion_code=$?
+  sleep .01
+  if [ $super_completion_code != 0 ]; then
+    banner "...superconductor test failure, code: [$super_completion_code], exiting"
+    terminate_super "33"
+  fi  
   banner "...completed superconductor build and test"
-  sleep .01  
-}
-
-run_super_service() {
-  cd_superconductor
-  { invoke_runner & SUPER_PID=$! || (terminate_super "33") } 
-  banner "starting superconductor service pid: [$SUPER_PID]" "& waiting [$IT_WAIT] seconds prior to starting nostr-java test"
-  sleep $IT_WAIT
 }
 
 run_nostr_tests() {
   banner "...[$IT_WAIT] seconds wait over, starting nostr-java tests..."
   cd_nostr
-  { invoke_tester & NOSTR_PID=$! || (terminate_both "33") }
+  invoke_tester & NOSTR_PID=$! || terminate_both "33"
   banner "...nostr-java tests started, pid: [$NOSTR_PID]..."
   wait $NOSTR_PID
   banner "...nostr-java tests done"
 }
 
+run_super_service() {
+  cd_superconductor
+  invoke_runner_thread & SUPER_PID=$! || terminate_super "33" 
+  banner "starting superconductor service pid: [$SUPER_PID]" "& waiting [$IT_WAIT] seconds prior to starting nostr-java test"
+  sleep $IT_WAIT
+}
+
+
 terminate_super() {
   kill -9 "$SUPER_PID"
-  banner "super terminated"
-  (exit_with_code "$1")
+  pkill -P $$
+  banner "superconductor terminated"
+  exit_with_code "$1"
 }
 
 terminate_nostr() {
   kill -9 "$NOSTR_PID"
-  banner "nostr terminated"
-  (exit_with_code "$1")
+  kill -9 "$SUPER_PID"
+  pkill -P $$
+  banner "nostr-java terminated"
+  exit_with_code "$1"
 }
 
 terminate_both() {
@@ -140,7 +154,7 @@ terminate_both() {
 
 exit_with_code() {
   cd_superconductor
-  (exit "$1")
+  exit "$1"
 }
 
 usage() { echo "Usage: . ./autotest.sh" 1>&2; exit 1; }
@@ -165,26 +179,22 @@ user_prompt() {
   done
 }
 
-########################################
 ###########     main    ################
-########################################
 
-user_prompt 
-
-{ cd_nostr; rm_maven_local; build_nostr; publish_nostr_to_m2_local; } 
+user_prompt
+ 
+cd_nostr
+rm_maven_local
+build_nostr
+publish_nostr_to_m2_local 
 banner "nostr-java dependencies completed"
+
 cd_superconductor
-
-build_and_test_super
-super_completion_code=$?
-banner "super exit code [$super_completion_code]"
-if [ $super_completion_code != 0 ]; then
-  banner "erroneous exit, tests not performed"
-  (terminate_both "33")
-fi
-
+run_superconductor_tests
 banner "superconductor dependencies completed"
+
 run_super_service
 run_nostr_tests
 banner "tests passed"
+
 terminate_super "0"

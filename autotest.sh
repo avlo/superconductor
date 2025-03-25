@@ -21,13 +21,13 @@ SUPER_HOME=$GIT_HOME/superconductor/
 
 # build tool mode defaults to gradle
 MODE="gradle"
-
+FAST_LABEL="fast (gradle-managed classses+dependencies)"
 # full re-run mode, default off
 CLEAN_AND_RERUN_MODE=0
 
 invoke_builder() {
   if [ $MODE == "gradle" ]; then
-    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full re-build started"; gradle clean build -x test; return; } || { banner "changed-classes-only build started"; gradle build -x test; return; }) || exit_with_code "33"
+    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full re-build started"; gradle clean build -x test; return; } || { banner "$FAST_LABEL build started"; gradle build -x test; return; }) || exit_with_code "33"
   else
     mvn install -DskipTests || exit_with_code "33"
   fi
@@ -53,7 +53,7 @@ invoke_runner_thread() {
 
 invoke_tester_thread() {
   if [ $MODE == "gradle" ]; then
-    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full tests-rerun mode started"; gradle test --rerun-tasks; return; } || { banner "changed-classes-only test mode started"; gradle test; return; }) || exit_with_code "33"
+    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full tests-rerun mode started"; gradle test --rerun-tasks; return; } || { banner "$FAST_LABEL tests started"; gradle test; return; }) || exit_with_code "33"
     TESTER_PID=$!
   else
     mvn verify
@@ -170,10 +170,9 @@ usage() { echo "Usage:  ./autotest.sh" 1>&2; exit 1; }
 user_prompt() {
   while true; do
     read -p "superconductor integration-test script options:
-  (g) -> gradle
   (m) -> maven
   (v) -> force test-rerun (gradle only)
-(default: gradle, changed-tests only): " -a args_array
+  (enter/default) -> updated gradle-cache classes/tests only; aka, fast mode): " -a args_array
     
     [[ ${#args_array[@]} -eq 0 ]] && 
       { printf "$(tput bold setaf 003)%-0s$(tput sgr0)\n" "default (gradle) builder & runner selected";

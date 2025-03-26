@@ -13,11 +13,11 @@
 IT_WAIT=15
 # IT_WAIT > ( time @ superconductor service process in "running state" ) - ( time @ superconductor service process start )  
 
-M2_HOME='/home/nick/.m2/repository/'
+M2_HOME='/home/nick/.m2/repository'
 NOSTR_JAVA_MAVEN_LOCAL_REPO=$M2_HOME/xyz/tcheeric
 GIT_HOME='/home/nick/git'
-NOSTR_HOME=$GIT_HOME/avlo-nostr-java-fork/
-SUPER_HOME=$GIT_HOME/superconductor/
+NOSTR_HOME=$GIT_HOME/avlo-nostr-java-fork
+SUPER_HOME=$GIT_HOME/superconductor
 
 # build tool mode defaults to gradle
 MODE="gradle"
@@ -27,9 +27,17 @@ CLEAN_AND_RERUN_MODE=0
 
 invoke_builder() {
   if [ $MODE == "gradle" ]; then
-    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full re-build started"; gradle clean build -x test; return; } || { banner "$FAST_LABEL build started"; gradle build -x test; return; }) || exit_with_code "33"
+    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "gradle full re-build started"; gradle clean build -x test; return; } || { banner "$FAST_LABEL build started"; gradle build -x test; return; }) || exit_with_code "33"
   else
-    mvn install -DskipTests || exit_with_code "33"
+    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "maven full re-build started"; mvn clean install -DskipTests; return; } || { banner "maven build started"; mvn install -DskipTests; return; }) || exit_with_code "33"
+  fi
+}
+
+invoke_unit_tests() {
+  if [ $MODE == "gradle" ]; then
+    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full unit retest started"; gradle test --rerun-tasks; return; } || { banner "$FAST_LABEL unit tests started"; gradle test; return; }) || exit_with_code "33"
+  else
+    mvn test || exit_with_code "33"
   fi
 }
 
@@ -51,10 +59,11 @@ invoke_runner_thread() {
   return $!
 }
 
-invoke_tester_thread() {
+invoke_integration_tests() {
   if [ $MODE == "gradle" ]; then
-    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full tests-rerun mode started"; gradle test --rerun-tasks; return; } || { banner "$FAST_LABEL tests started"; gradle test; return; }) || exit_with_code "33"
+    [[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && ( banner "full integration tests-rerun mode started"; gradle check --rerun-tasks ) || ( banner "$FAST_LABEL integration tests started"; gradle check )
     TESTER_PID=$!
+    debug_banner "invoke_integration_tests" [$TESTER_PID]
   else
     mvn verify
     TESTER_PID=$!
@@ -62,7 +71,7 @@ invoke_tester_thread() {
   return $!
 }
 
-banner_line_content() {
+banner_content_line() {
   numeric=$(echo "$@" | grep -oE '[0-9]+([.][0-9]+)?')
   if [ ${#numeric} -gt 3 ]; then    
     printf "|$(tput bold setaf 003) %-65s $(tput sgr0)|\n" "$@" 
@@ -71,15 +80,28 @@ banner_line_content() {
   fi
 }
 
+banner_content() {
+  printf "| %-65s |\n" "$(date)"
+    echo "|                                                                   |"
+    for arg
+      do 
+        banner_content_line "$arg"
+      done
+}
+
 banner() {
   echo "+-------------------------------------------------------------------+"
-  printf "| %-65s |\n" "$(date)"
-  echo "|                                                                   |"
-  for arg
-    do 
-        banner_line_content "$arg"
-    done
+  banner_content "$@"
   echo "+-------------------------------------------------------------------+"
+  printf "\n"
+}
+
+debug_banner() {
+  echo "*********************************************************************"
+  banner_content \
+        "     DEBUG: " \
+        "       " "$@"
+  echo "*********************************************************************"
   printf "\n"
 }
 
@@ -99,9 +121,20 @@ rm_maven_local() {
 }
 
 build_nostr_java() {
+  cd_nostr_java
+  rm_maven_local
   banner "building nostr-java..."
   invoke_builder || exit_with_code "33"
-  banner "...completed nostr-java build" 
+  banner "...running nostr-java unit tests..."
+  invoke_unit_tests || exit_with_code "33"
+  banner "...completed nostr-java build & unit tests" 
+}
+
+build_superconductor() {
+  cd_superconductor
+  banner "building superconducator..."
+  invoke_builder || exit_with_code "33"
+  banner "...completed superconducator build" 
 }
 
 publish_nostr_java_to_m2_local() {
@@ -123,6 +156,10 @@ kill_pids() {
   kill -15 "$1"
 }
 
+exit_with_code() {
+  exit $1
+}
+
 terminate_superconductor() {
   cd_superconductor
   kill_pids "$SUPER_PID"
@@ -137,24 +174,20 @@ terminate_nostr_java() {
   terminate_superconductor
 }
 
-exit_with_code() {
-  exit "$1"
-}
-
-run_superconductor_tests() {
+run_superconductor_integration_tests() {
+  banner "running superconductor integration tests..."
   cd_superconductor
-  banner "building superconductor & running tests..."
   sleep .01
-  invoke_tester_thread
-  banner "...superconductor build and test completed"
+  invoke_integration_tests || terminate_superconductor "33"
+  banner "...superconductor integration tests completed"
 }
 
-run_nostr_java_tests() {
-  banner "...[$IT_WAIT] seconds wait over, starting nostr-java tests..."
+run_nostr_java_integration_tests() {
+  banner "...[$IT_WAIT] seconds wait over, starting nostr-java integration tests..."
   cd_nostr_java
-  invoke_tester_thread
+  invoke_integration_tests
   sleep .01
-  banner "...nostr-java tests completed"
+  banner "...nostr-java integration tests completed"
 }
 
 start_superconductor() {
@@ -200,12 +233,17 @@ user_prompt() {
 
 ###########     main    ################
 user_prompt
- 
-cd_nostr_java
-rm_maven_local
+
+# nostr-java snapshot 
 build_nostr_java
-publish_nostr_java_to_m2_local 
-run_superconductor_tests
+publish_nostr_java_to_m2_local
+
+# superconductor snapshot
+build_superconductor 
+run_superconductor_integration_tests
+
+# nostr-java integration tests
 start_superconductor
-run_nostr_java_tests
+run_nostr_java_integration_tests || terminate_nostr_java "33"
+
 terminate_superconductor "0"

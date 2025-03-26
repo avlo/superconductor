@@ -21,13 +21,13 @@ SUPER_HOME=$GIT_HOME/superconductor
 
 # build tool mode defaults to gradle
 MODE="gradle"
-FAST_LABEL="fast (gradle-managed classses+dependencies)"
+FAST_LABEL="fast (gradle-managed entities state)"
 # full re-run mode, default off
 CLEAN_AND_RERUN_MODE=0
 
 invoke_builder() {
   if [ $MODE == "gradle" ]; then
-    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "gradle full re-build started"; gradle clean build -x test; return; } || { banner "$FAST_LABEL build started"; gradle build -x test; return; }) || exit_with_code "33"
+    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "gradle full re-build started"; gradle clean build -x test -x check; return; } || { banner "$FAST_LABEL build started"; gradle build -x test -x check; return; }) || exit_with_code "33"
   else
     ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "maven full re-build started"; mvn clean install -DskipTests; return; } || { banner "maven build started"; mvn install -DskipTests; return; }) || exit_with_code "33"
   fi
@@ -61,9 +61,9 @@ invoke_runner_thread() {
 
 invoke_integration_tests() {
   if [ $MODE == "gradle" ]; then
-    [[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && ( banner "full integration tests-rerun mode started"; gradle check --rerun-tasks ) || ( banner "$FAST_LABEL integration tests started"; gradle check )
+    [[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && ( banner "full integration tests-rerun mode started"; gradle check --rerun-tasks -x test ) || ( banner "$FAST_LABEL integration tests started"; gradle check -x test )
     TESTER_PID=$!
-    debug_banner "invoke_integration_tests" [$TESTER_PID]
+#    debug_banner "invoke_integration_tests" [$TESTER_PID]
   else
     mvn verify
     TESTER_PID=$!
@@ -81,7 +81,7 @@ banner_content_line() {
 }
 
 banner_content() {
-  printf "| %-65s |\n" "$(date)"
+  printf "| %-65s |\n" "$(date +"%F %T.%3N")"
     echo "|                                                                   |"
     for arg
       do 
@@ -125,16 +125,16 @@ build_nostr_java() {
   rm_maven_local
   banner "building nostr-java..."
   invoke_builder || exit_with_code "33"
-  banner "...running nostr-java unit tests..."
+  banner "...nostr-java unit tests, next..."
   invoke_unit_tests || exit_with_code "33"
   banner "...completed nostr-java build & unit tests" 
 }
 
 build_superconductor() {
   cd_superconductor
-  banner "building superconducator..."
+  banner "building superconductor..."
   invoke_builder || exit_with_code "33"
-  banner "...completed superconducator build" 
+  banner "...completed superconductor build" 
 }
 
 publish_nostr_java_to_m2_local() {
@@ -163,7 +163,7 @@ exit_with_code() {
 terminate_superconductor() {
   cd_superconductor
   kill_pids "$SUPER_PID"
-  banner "superconductor pid [$SUPER_PID] terminated"
+  banner "superconductor pid [$SUPER_PID] terminated, autotest complete"
   exit_with_code "$1"
 }
 
@@ -183,7 +183,7 @@ run_superconductor_integration_tests() {
 }
 
 run_nostr_java_integration_tests() {
-  banner "...[$IT_WAIT] seconds wait over, starting nostr-java integration tests..."
+  banner "...[$IT_WAIT] seconds done, starting nostr-java integration tests..."
   cd_nostr_java
   invoke_integration_tests
   sleep .01

@@ -25,17 +25,53 @@ FAST_LABEL="fast (gradle-managed entities state)"
 # full re-run mode, default off
 CLEAN_AND_RERUN_MODE=0
 
+gradle_clean_build_no_tests() {
+  gradle clean build -x test -x check
+}
+
+gradle_build_no_tests() {
+  gradle build -x test -x check
+}
+
+maven_clean_install_no_tests() {
+  mvn clean install -DskipTests
+}
+
+maven_install_no_tests() {
+  mvn install -DskipTests
+}
+
+gradle_test_rerun_tasks() {
+  gradle test --rerun-tasks
+}
+
+gradle_test() {
+  gradle test --rerun-tasks
+}
+
+gradle_integration_test_rerun_tasks() {
+  gradle check --rerun-tasks -x test
+}
+
+gradle_integration_test() {
+  gradle check
+}
+
+is_clean_rerun_mode() {
+  [[ $CLEAN_AND_RERUN_MODE -eq 1 ]]
+}
+
 invoke_builder() {
   if [ $MODE == "gradle" ]; then
-    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "gradle full re-build started"; gradle clean build -x test -x check; return; } || { banner "$FAST_LABEL build started"; gradle build -x test -x check; return; }) || exit_with_code "33"
+    ( is_clean_rerun_mode && { banner "gradle full re-build started"; gradle_clean_build_no_tests; return; } || { banner "$FAST_LABEL build started"; gradle_build_no_tests; return; }) || exit_with_code "33"
   else
-    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "maven full re-build started"; mvn clean install -DskipTests; return; } || { banner "maven build started"; mvn install -DskipTests; return; }) || exit_with_code "33"
+    ( is_clean_rerun_mode && { banner "maven full re-build started"; maven_clean_install_no_tests; return; } || { banner "maven build started"; maven_install_no_tests; return; }) || exit_with_code "33"
   fi
 }
 
 invoke_unit_tests() {
   if [ $MODE == "gradle" ]; then
-    ([[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && { banner "full unit retest started"; gradle test --rerun-tasks; return; } || { banner "$FAST_LABEL unit tests started"; gradle test; return; }) || exit_with_code "33"
+    ( is_clean_rerun_mode && { banner "full unit retest started"; gradle_test_rerun_tasks; return; } || { banner "$FAST_LABEL unit tests started"; gradle_test; return; }) || exit_with_code "33"
   else
     mvn test || exit_with_code "33"
   fi
@@ -61,7 +97,7 @@ invoke_runner_thread() {
 
 invoke_integration_tests() {
   if [ $MODE == "gradle" ]; then
-    [[ $CLEAN_AND_RERUN_MODE -eq 1 ]] && ( banner "full integration tests-rerun mode started"; gradle check --rerun-tasks -x test ) || ( banner "$FAST_LABEL integration tests started"; gradle check -x test )
+    is_clean_rerun_mode && ( banner "full integration tests-rerun mode started"; gradle_integration_test_rerun_tasks ) || ( banner "$FAST_LABEL integration tests started"; gradle_integration_test )
     TESTER_PID=$!
 #    debug_banner "invoke_integration_tests" [$TESTER_PID]
   else

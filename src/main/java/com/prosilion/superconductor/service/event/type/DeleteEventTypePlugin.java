@@ -6,20 +6,17 @@ import com.prosilion.superconductor.util.FilterMatcher;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
-import nostr.event.filter.AddressableTagFilter;
-import nostr.event.filter.Filterable;
+import nostr.event.filter.AddressTagFilter;
 import nostr.event.filter.Filters;
 import nostr.event.impl.DeletionEvent;
 import nostr.event.impl.GenericEvent;
-import nostr.event.tag.GenericTag;
 import nostr.event.tag.AddressTag;
 import nostr.event.tag.EventTag;
+import nostr.event.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -28,13 +25,13 @@ import java.util.stream.Stream;
 @Component
 public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
   private final DeletionEventEntityService deletionEventEntityService;
-  private final FilterMatcher filterMatcher;
+  private final FilterMatcher<T> filterMatcher;
 
   @Autowired
   public DeleteEventTypePlugin(
       RedisCache<T> redisCache,
       DeletionEventEntityService deletionEventEntityService,
-      FilterMatcher filterMatcher) {
+      FilterMatcher<T> filterMatcher) {
     super(redisCache);
     this.deletionEventEntityService = deletionEventEntityService;
     this.filterMatcher = filterMatcher;
@@ -101,7 +98,7 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
         optionalEventEntity.ifPresent(eventEntity -> deletionEventEntityService.addDeletionEvent(eventEntity.getId())));
   }
 
-  private List<GenericEvent> filterMatches(T event) {
+  private List<T> filterMatches(T event) {
     List<AddressTag> addressTagList = event.getTags().stream()
         .filter(AddressTag.class::isInstance)
         .map(AddressTag.class::cast)
@@ -112,9 +109,11 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
 //    PublicKey pubkey = first.getPublicKey();
     String dIdent = first.getIdentifierTag().getId();
 
-    Optional<AddNostrEvent> addNostrEvents = filterMatcher.intersectFilterMatches(new Filters(new AddressableTagFilter<>(first)), new AddNostrEvent<>(event));
-    List<GenericEvent> list = addNostrEvents.stream().map(AddNostrEvent::event).toList();
-    return list;
+    return filterMatcher.intersectFilterMatches(
+            new Filters(
+                new AddressTagFilter<>(first)),
+            new AddNostrEvent<T>(event)).stream()
+        .map(AddNostrEvent::event).toList();
   }
 
   @Override

@@ -111,7 +111,7 @@ public class EventEntityService<T extends GenericEvent> {
     List<BaseTag> genericTags = genericTagEntitiesService.getGenericTags(
             eventEntity.getId()).stream()
         .map(genericTag ->
-            new GenericTag(genericTag.code(), 1, genericTag.atts().stream()
+            new GenericTag(genericTag.code(), genericTag.atts().stream()
                 .map(ElementAttributeDto::getElementAttribute).toList())).toList().stream()
         .map(BaseTag.class::cast).toList();
 

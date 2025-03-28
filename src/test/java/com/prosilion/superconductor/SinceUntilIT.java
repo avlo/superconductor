@@ -1,5 +1,6 @@
 package com.prosilion.superconductor;
 
+import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ class SinceUntilIT {
 
   @Test
   void testReqCreatedDateAfterSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "testReqCreatedDateAfterSinceUntilDatesMessages";
+    String subscriberId = Factory.generateRandomHex64String();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqCreatedDateAfterSinceUntilDatesJson(subscriberId),
         subscriberId
@@ -63,7 +64,7 @@ class SinceUntilIT {
 
   @Test
   void testReqCreatedDateBeforeSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "testReqCreatedDateBeforeSinceUntilDatesMessages";
+    String subscriberId = Factory.generateRandomHex64String();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqCreatedDateBeforeSinceUntilDatesJson(subscriberId),
         subscriberId
@@ -84,7 +85,7 @@ class SinceUntilIT {
 
   @Test
   void testReqCreatedDateBetweenSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "testReqCreatedDateBetweenSinceUntilDatesMessages";
+    String subscriberId = Factory.generateRandomHex64String();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqCreatedDateBetweenSinceUntilDatesJson(subscriberId),
         subscriberId
@@ -111,7 +112,7 @@ class SinceUntilIT {
   @Test
   void testReqUntilDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
     String until = "1111111111112";
-    String subscriberId = "testReqUntilDateGreaterThanCreatedDateMessages";
+    String subscriberId = Factory.generateRandomHex64String();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqUntilDateGreaterThanCreatedDateJson(subscriberId, until),
         subscriberId
@@ -134,7 +135,7 @@ class SinceUntilIT {
   @Test
   void testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages() throws IOException, ExecutionException, InterruptedException {
     String uuid = "1111111111112";
-    String subscriberId = "testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages";
+    String subscriberId = Factory.generateRandomHex64String();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(subscriberId, uuid),
         subscriberId
@@ -156,7 +157,7 @@ class SinceUntilIT {
 
   @Test
   void testReqUntilDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "testReqUntilDateLessThanCreatedDateMessages";
+    String subscriberId = Factory.generateRandomHex64String();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqUntilDateLessThanCreatedDateJson(subscriberId),
         subscriberId
@@ -178,7 +179,7 @@ class SinceUntilIT {
 
   @Test
   void testReqSinceDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "testReqSinceDateGreaterThanCreatedDateMessages";
+    String subscriberId = Factory.generateRandomHex64String();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqSinceDateGreaterThanCreatedDateJson(subscriberId),
         subscriberId
@@ -200,7 +201,7 @@ class SinceUntilIT {
   @Test
   void testReqSinceDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
     String since = "1111111111110";
-    String subscriberId = "testReqSinceDateLessThanCreatedDateMessages";
+    String subscriberId = Factory.generateRandomHex64String();
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqSinceDateLessThanCreatedDateJson(subscriberId, since),
         subscriberId

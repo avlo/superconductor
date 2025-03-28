@@ -1,5 +1,6 @@
 package com.prosilion.superconductor;
 
+import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class MatchingIdentityTagIT {
   private final NostrRelayService nostrRelayService;
-  private final static String SUBSCRIBER_ID = "superconductor_subscriber_id-0";
+  private final static String SUBSCRIBER_ID = Factory.generateRandomHex64String();
 
   @Autowired
   MatchingIdentityTagIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
@@ -53,7 +54,7 @@ class MatchingIdentityTagIT {
   }
 
   @Test
-  void testAddressableReqMessages() throws IOException, ExecutionException, InterruptedException {
+  void testAddressableReqMessages()  {
 //    TODO: request addressable filter isn't intended to w/ simple string match, revisit when time
 //    String reqJson = createAddressableReqJson(SUBSCRIBER_ID, "30023:f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd");
 //    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(

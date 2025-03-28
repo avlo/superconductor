@@ -1,5 +1,6 @@
 package com.prosilion.superconductor;
 
+import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   @Test
   @Order(0)
   void testReqMessagesMissingOneGenericMatch() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
+    String subscriberId = Factory.generateRandomHex64String();
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagStringGMissing = "textnote-geo-tag-2";
     String genericTagStringHPresent = "hash-tag-1";
@@ -65,7 +66,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   @Test
   @Order(1)
   void testReqMessagesMissingBothGenericMatch() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
+    String subscriberId = Factory.generateRandomHex64String();
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagStringGMissing = "textnote-geo-tag-2";
     String genericTagStringHPresent = "hash-tag-2";
@@ -83,7 +84,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   @Test
   @Order(2)
   void testReqMessagesMatchesGeneric() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
+    String subscriberId = Factory.generateRandomHex64String();
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagStringG = "textnote-geo-tag-1";
     String genericTagStringH = "hash-tag-1";
@@ -113,7 +114,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   @Test
   @Order(3)
   void testReqMessagesMatchesGenericWithSpaces() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
+    String subscriberId = Factory.generateRandomHex64String();
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagStringG = "textnote-geo-tag-1";
     String genericTagStringH = "hash-tag-1";

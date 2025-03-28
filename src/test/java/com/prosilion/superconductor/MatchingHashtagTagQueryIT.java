@@ -1,5 +1,6 @@
 package com.prosilion.superconductor;
 
+import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ class MatchingHashtagTagQueryIT {
 
   @Test
   void testReqMessagesNoGenericMatch() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
+    String subscriberId = Factory.generateRandomHex64String();
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagString = "textnote-hashtag-tag-2";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
@@ -58,7 +59,7 @@ class MatchingHashtagTagQueryIT {
 
   @Test
   void testReqMessagesMatchesGeneric() throws IOException, ExecutionException, InterruptedException {
-    String subscriberId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
+    String subscriberId = Factory.generateRandomHex64String();
 //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagString = "textnote-hashtag-tag-1";
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(

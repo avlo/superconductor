@@ -4,7 +4,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.3'
     id 'io.spring.dependency-management' version '1.1.7'
-
     id 'io.freefair.lombok' version '8.12.2.1'
     id 'com.adarshr.test-logger' version '4.0.0'
     id 'org.gradle.test-retry' version '1.6.2'
@@ -107,6 +106,13 @@ tasks.register("bootRunLocalWs") {
         }
     }
     finalizedBy("bootRun")
+}
+
+if(!project.hasProperty("server.port"))
+    project.ext.set("server.port", 5555)
+
+bootRun {
+    args += ["--server.port=${project.properties["server.port"]}"]
 }
 
 tasks.register("bootRunLocalWss") {

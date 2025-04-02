@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.entity.standard;
 
 import com.prosilion.superconductor.dto.AbstractTagDto;
-import com.prosilion.superconductor.dto.standard.RelaysTagDto;
+import com.prosilion.superconductor.dto.standard.VoteTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -11,38 +11,36 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import nostr.base.Relay;
 import nostr.event.BaseTag;
-import nostr.event.tag.RelaysTag;
+import nostr.event.tag.VoteTag;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "relays_tag")
-// TODO: comprehensive unit test all parameter variants
-public class RelaysTagEntity extends AbstractTagEntity {
-  private String uri;
+@Table(name = "vote_tag")
+public class VoteTagEntity extends AbstractTagEntity {
+  private Integer vote;
 
-  public RelaysTagEntity(@NonNull RelaysTag relaysTag) {
-    super("relays");
-    this.uri = relaysTag.getRelays().getFirst().getUri();
+  public VoteTagEntity(@NonNull VoteTag voteTag) {
+    super("v");
+    this.vote = voteTag.getVote();
   }
 
   @Override
   @Transient
   public BaseTag getAsBaseTag() {
-    return new RelaysTag(new Relay(uri));
+    return new VoteTag(vote);
   }
 
   @Override
   public AbstractTagDto convertEntityToDto() {
-    return new RelaysTagDto(new RelaysTag(new Relay(uri)));
+    return new VoteTagDto(new VoteTag(vote));
   }
 
   @Override
   @Transient
   public List<String> get() {
-    return List.of(uri);
+    return List.of(String.valueOf(vote));
   }
 }

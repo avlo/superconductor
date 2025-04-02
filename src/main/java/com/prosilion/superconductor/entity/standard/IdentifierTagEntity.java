@@ -6,14 +6,13 @@ import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.IdentifierTag;
-
-import java.util.List;
 
 @Setter
 @Getter
@@ -22,12 +21,10 @@ import java.util.List;
 @Table(name = "identifier_tag")
 public class IdentifierTagEntity extends AbstractTagEntity {
   private String identifier;
-  private List<String> filterField;
 
   public IdentifierTagEntity(@NonNull IdentifierTag identifierTag) {
     super("d");
     this.identifier = identifierTag.getId();
-    this.filterField = List.of(this.identifier);
   }
 
   @Override
@@ -39,5 +36,11 @@ public class IdentifierTagEntity extends AbstractTagEntity {
   @Override
   public AbstractTagDto convertEntityToDto() {
     return new IdentifierTagDto(new IdentifierTag(identifier));
+  }
+
+  @Override
+  @Transient
+  public List<String> get() {
+    return List.of(identifier);
   }
 }

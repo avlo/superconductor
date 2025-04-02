@@ -16,4 +16,9 @@ public class SubscriberFilterEvent extends AbstractFilterType {
     super(filterId, "event");
     this.filterField = eventIdString;
   }
+
+  @Override
+  public Object get() {
+    return filterField;
+  }
 }

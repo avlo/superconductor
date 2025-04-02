@@ -6,14 +6,13 @@ import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.GeohashTag;
-
-import java.util.List;
 
 @Setter
 @Getter
@@ -22,12 +21,10 @@ import java.util.List;
 @Table(name = "geohash_tag")
 public class GeohashTagEntity extends AbstractTagEntity {
   private String location;
-  private List<String> filterField;
 
   public GeohashTagEntity(@NonNull GeohashTag geohashTag) {
     super("g");
     this.location = geohashTag.getLocation();
-    this.filterField = List.of(this.location);
   }
 
   @Override
@@ -39,5 +36,11 @@ public class GeohashTagEntity extends AbstractTagEntity {
   @Override
   public AbstractTagDto convertEntityToDto() {
     return new GeohashTagDto(new GeohashTag(location));
+  }
+
+  @Override
+  @Transient
+  public List<String> get() {
+    return List.of(location);
   }
 }

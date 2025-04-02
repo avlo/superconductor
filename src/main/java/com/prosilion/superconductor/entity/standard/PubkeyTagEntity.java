@@ -6,6 +6,9 @@ import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -13,10 +16,6 @@ import lombok.Setter;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.tag.PubKeyTag;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 @Setter
 @Getter
@@ -28,18 +27,12 @@ public class PubkeyTagEntity extends AbstractTagEntity {
   private String publicKey;
   private String mainRelayUrl;
   private String petName;
-  private List<String> filterField;
 
   public PubkeyTagEntity(@NonNull PubKeyTag pubKeyTag) {
     super("p");
-    this.publicKey = pubKeyTag.getPublicKey().toString();
+    this.publicKey = pubKeyTag.getPublicKey().toHexString();
     this.mainRelayUrl = pubKeyTag.getMainRelayUrl();
     this.petName = pubKeyTag.getPetName();
-    this.filterField = Stream.of(
-            this.publicKey,
-            Optional.ofNullable(this.mainRelayUrl).toString(),
-            Optional.ofNullable(this.petName).toString())
-        .toList();
   }
 
   @Override
@@ -53,5 +46,15 @@ public class PubkeyTagEntity extends AbstractTagEntity {
     return new PubkeyTagDto(
         new PubKeyTag(
             new PublicKey(publicKey), mainRelayUrl, petName));
+  }
+
+  @Override
+  @Transient
+  public List<String> get() {
+    return Stream.of(
+            this.publicKey,
+            Optional.ofNullable(this.mainRelayUrl).toString(),
+            Optional.ofNullable(this.petName).toString())
+        .toList();
   }
 }

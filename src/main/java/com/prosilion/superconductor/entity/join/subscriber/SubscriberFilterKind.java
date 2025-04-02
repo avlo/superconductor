@@ -16,4 +16,9 @@ public class SubscriberFilterKind extends AbstractFilterType {
     super(filterId, "kind");
     this.filterField = kind;
   }
+
+  @Override
+  public Object get() {
+    return filterField;
+  }
 }

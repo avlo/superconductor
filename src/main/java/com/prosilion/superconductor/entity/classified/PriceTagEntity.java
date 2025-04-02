@@ -6,15 +6,15 @@ import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.PriceTag;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Setter
 @Getter
@@ -26,14 +26,12 @@ public class PriceTagEntity extends AbstractTagEntity {
   private BigDecimal number;
   private String currency;
   private String frequency;
-  private List<String> filterField;
 
   public PriceTagEntity(@NonNull PriceTag priceTag) {
     super("price");
     this.number = priceTag.getNumber();
     this.currency = priceTag.getCurrency();
     this.frequency = priceTag.getFrequency();
-    this.filterField = List.of(number.toString(), currency, frequency);
   }
 
   @Override
@@ -45,5 +43,13 @@ public class PriceTagEntity extends AbstractTagEntity {
   @Override
   public AbstractTagDto convertEntityToDto() {
     return new PriceTagDto(new PriceTag(number, currency, frequency));
+  }
+
+  @Override
+  @Transient
+  public List<String> get() {
+    return List.of(number.toString(),
+        Optional.ofNullable(currency).toString(),
+        Optional.ofNullable(frequency).toString());
   }
 }

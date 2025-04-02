@@ -16,4 +16,9 @@ public class SubscriberFilterReferencedPubkey extends AbstractFilterType {
     super(filterId, "referencedPubKey");
     this.filterField = referencedPubkey;
   }
+
+  @Override
+  public Object get() {
+    return filterField;
+  }
 }

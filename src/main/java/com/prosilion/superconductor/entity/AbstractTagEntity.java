@@ -5,16 +5,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import nostr.event.BaseTag;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Supplier;
 
 @Setter
 @Getter
@@ -31,6 +30,7 @@ public abstract class AbstractTagEntity implements Supplier<List<String>>, Seria
   }
 
   public abstract AbstractTagDto convertEntityToDto();
+
   public abstract BaseTag getAsBaseTag();
 
   @Override
@@ -45,11 +45,4 @@ public abstract class AbstractTagEntity implements Supplier<List<String>>, Seria
   public int hashCode() {
     return Objects.hash(get());
   }
-
-  @Override
-  public List<String> get() {
-    return getFilterField();
-  }
-
-  protected abstract List<String> getFilterField();
 }

@@ -16,4 +16,9 @@ public class SubscriberFilterAuthor extends AbstractFilterType {
     super(filterId, "author");
     this.filterField = author;
   }
+
+  @Override
+  public Object get() {
+    return filterField;
+  }
 }

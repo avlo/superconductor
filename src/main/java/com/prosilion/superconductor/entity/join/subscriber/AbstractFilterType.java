@@ -1,12 +1,11 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Supplier;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Setter
 @Getter
@@ -33,11 +32,4 @@ public abstract class AbstractFilterType implements Supplier<Object>, Serializab
     AbstractFilterType that = (AbstractFilterType) o;
     return Objects.equals(get(), that.get());
   }
-
-  @Override
-  public Object get() {
-    return getFilterField();
-  }
-
-  abstract Object getFilterField();
 }

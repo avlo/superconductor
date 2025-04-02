@@ -16,4 +16,9 @@ public class SubscriberFilterReferencedEvent extends AbstractFilterType {
     super(filterId, "referencedEvent");
     this.filterField = referencedEventId;
   }
+
+  @Override
+  public Object get() {
+    return filterField;
+  }
 }

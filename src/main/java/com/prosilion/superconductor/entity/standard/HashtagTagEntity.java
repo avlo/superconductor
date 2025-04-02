@@ -6,14 +6,13 @@ import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import nostr.event.BaseTag;
 import nostr.event.tag.HashtagTag;
-
-import java.util.List;
 
 @Setter
 @Getter
@@ -22,12 +21,10 @@ import java.util.List;
 @Table(name = "hashtag_tag")
 public class HashtagTagEntity extends AbstractTagEntity {
   private String hashtagTag;
-  private List<String> filterField;
 
   public HashtagTagEntity(@NonNull HashtagTag hashtagTag) {
     super("t");
     this.hashtagTag = hashtagTag.getHashTag();
-    this.filterField = List.of(this.hashtagTag);
   }
 
   @Override
@@ -39,5 +36,11 @@ public class HashtagTagEntity extends AbstractTagEntity {
   @Override
   public AbstractTagDto convertEntityToDto() {
     return new HashtagTagDto(new HashtagTag(hashtagTag));
+  }
+
+  @Override
+  @Transient
+  public List<String> get() {
+    return List.of(hashtagTag);
   }
 }

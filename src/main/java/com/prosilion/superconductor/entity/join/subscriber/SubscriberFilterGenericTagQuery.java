@@ -16,4 +16,9 @@ public class SubscriberFilterGenericTagQuery extends AbstractFilterType {
     super(filterId, "genericTag");
     this.filterField = genericTagString;
   }
+
+  @Override
+  public Object get() {
+    return filterField;
+  }
 }

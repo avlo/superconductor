@@ -6,8 +6,8 @@ import nostr.event.tag.AddressTag;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilterAddressableTagPlugin<T extends AddressTagFilter<AddressTag>, U extends GenericEvent> extends AbstractTagFilterPlugin<T, U, AddressTag> {
-  public FilterAddressableTagPlugin() {
+public class FilterAddressTagPlugin<T extends AddressTagFilter<AddressTag>, U extends GenericEvent> extends AbstractTagFilterPlugin<T, U, AddressTag> {
+  public FilterAddressTagPlugin() {
     super(AddressTagFilter.FILTER_KEY, AddressTag.class);
   }
 }

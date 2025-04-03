@@ -35,6 +35,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <mysql-connector-j.version>9.1.0</mysql-connector-j.version>
     <postgresql.version>42.7.3</postgresql.version>
+    <subdivisions.version>0.0.1</subdivisions.version>
   </properties>
 
   <dependencyManagement>
@@ -87,6 +88,11 @@
       <groupId>xyz.tcheeric</groupId>
       <artifactId>nostr-java-id</artifactId>
       <version>${nostr-java.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion</groupId>
+      <artifactId>subdivisions</artifactId>
+      <version>${subdivisions.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>

@@ -107,7 +107,7 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
     AddressTag first = addressTagList.getFirst();
 //    Integer kind = first.getKind();
 //    PublicKey pubkey = first.getPublicKey();
-    String dIdent = first.getIdentifierTag().getId();
+    String uuid = first.getIdentifierTag().getUuid();
 
     return filterMatcher.intersectFilterMatches(
             new Filters(

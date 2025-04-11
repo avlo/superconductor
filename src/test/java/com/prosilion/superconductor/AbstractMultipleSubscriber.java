@@ -64,7 +64,7 @@ abstract class AbstractMultipleSubscriber {
         , executorService);
 
     await()
-        .timeout(10, TimeUnit.MINUTES)
+        .timeout(1, TimeUnit.MINUTES)
         .until(voidCompletableFuture::isDone);
 
     assertFalse(voidCompletableFuture.isCompletedExceptionally());
@@ -104,7 +104,7 @@ abstract class AbstractMultipleSubscriber {
     log.debug("testReqMessageWithExecutor requests completed after elapsed time [{}]", System.currentTimeMillis() - start);
   }
 
-  private void sendRequest(String uuidKey) throws IOException, ExecutionException, InterruptedException {
+  private void sendRequest(String uuidKey) throws JsonProcessingException {
     Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqJson(uuidKey),
         uuidKey

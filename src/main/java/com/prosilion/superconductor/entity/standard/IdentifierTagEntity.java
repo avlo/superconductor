@@ -20,27 +20,27 @@ import nostr.event.tag.IdentifierTag;
 @Entity
 @Table(name = "identifier_tag")
 public class IdentifierTagEntity extends AbstractTagEntity {
-  private String identifier;
+  private String uuid;
 
   public IdentifierTagEntity(@NonNull IdentifierTag identifierTag) {
     super("d");
-    this.identifier = identifierTag.getId();
+    this.uuid = identifierTag.getUuid();
   }
 
   @Override
   @Transient
   public BaseTag getAsBaseTag() {
-    return new IdentifierTag(identifier);
+    return new IdentifierTag(uuid);
   }
 
   @Override
   public AbstractTagDto convertEntityToDto() {
-    return new IdentifierTagDto(new IdentifierTag(identifier));
+    return new IdentifierTagDto(new IdentifierTag(uuid));
   }
 
   @Override
   @Transient
   public List<String> get() {
-    return List.of(identifier);
+    return List.of(uuid);
   }
 }

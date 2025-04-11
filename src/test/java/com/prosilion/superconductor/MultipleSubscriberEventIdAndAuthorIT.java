@@ -54,7 +54,7 @@ class MultipleSubscriberEventIdAndAuthorIT extends AbstractMultipleSubscriber {
     assertFalse(voidCompletableFuture.isCompletedExceptionally());
   }
 
-  private void sendRequestForAuthor(String uuid) throws IOException, ExecutionException, InterruptedException {
+  private void sendRequestForAuthor(String uuid) {
     Map<Command, Optional<String>> authorMap = super.getNostrRelayService().sendRequest(
         createReqAuthorJson(uuid),
         uuid

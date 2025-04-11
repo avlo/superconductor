@@ -26,16 +26,16 @@ import nostr.event.tag.IdentifierTag;
 @Table(name = "address_tag")
 public class AddressTagEntity extends AbstractTagEntity {
   private Integer kind;
-  private String publicKey;
-  private String identifierTag;
-  private String relay;
+  private String pubKey;
+  private String uuid;
+  private String relayUri;
 
   public AddressTagEntity(@NonNull AddressTag addressTag) {
     super("a");
     this.kind = addressTag.getKind();
-    this.publicKey = addressTag.getPublicKey().toHexString();
-    Optional.ofNullable(addressTag.getIdentifierTag()).ifPresent(identifier -> this.setIdentifierTag(identifier.getId()));
-    Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.setRelay(relay.getUri()));
+    this.pubKey = addressTag.getPublicKey().toHexString();
+    this.uuid = addressTag.getIdentifierTag().getUuid();
+    Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.relayUri = relay.getUri());
   }
 
   @Override
@@ -54,18 +54,19 @@ public class AddressTagEntity extends AbstractTagEntity {
   public List<String> get() {
     return Stream.of(
             kind.toString(),
-            publicKey,
-            Optional.ofNullable(identifierTag).toString(),
-            Optional.ofNullable(relay).toString())
+            pubKey,
+            uuid,
+            Optional.ofNullable(relayUri).toString())
         .toList();
   }
 
   private AddressTag createAddressTag() {
     AddressTag addressTag = new AddressTag();
     addressTag.setKind(kind);
-    addressTag.setPublicKey(new PublicKey(publicKey));
-    Optional.ofNullable(identifierTag).ifPresent(identifier -> addressTag.setIdentifierTag(new IdentifierTag(identifier)));
-    Optional.ofNullable(relay).ifPresent(relay -> addressTag.setRelay(new Relay(relay)));
+    addressTag.setPublicKey(new PublicKey(pubKey));
+    addressTag.setIdentifierTag(new IdentifierTag(uuid));
+    Optional.ofNullable(relayUri).ifPresent(relayUri ->
+        addressTag.setRelay(new Relay(relayUri)));
     return addressTag;
   }
 }

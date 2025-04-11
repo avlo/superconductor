@@ -1,24 +1,25 @@
 package com.prosilion.superconductor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.Command;
+import nostr.event.filter.Filters;
+import nostr.event.filter.IdentifierTagFilter;
+import nostr.event.message.ReqMessage;
+import nostr.event.tag.IdentifierTag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class MatchingIdentityTagIT {
   private final NostrRelayService nostrRelayService;
-  private final static String SUBSCRIBER_ID = Factory.generateRandomHex64String();
+  private final static String D_TAG_VALUE_FROM_FILE = "matching_identity_single_filter_json_input-uuid";
 
   @Autowired
   MatchingIdentityTagIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
@@ -42,35 +43,16 @@ class MatchingIdentityTagIT {
   }
 
   @Test
-  void testReqMessages() throws IOException, ExecutionException, InterruptedException {
-    String reqJson = createReqJson("some-uuid");
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        reqJson,
-        SUBSCRIBER_ID
-    );
+  void testReqMessages() throws JsonProcessingException {
+    String subscriberId = Factory.generateRandomHex64String();
+
+    IdentifierTag identifierTag = new IdentifierTag();
+    identifierTag.setUuid(D_TAG_VALUE_FROM_FILE);
+
+    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new IdentifierTagFilter<>(identifierTag)));
+    List<String> returnedEvents = nostrRelayService.sendRequestReturnEvents(reqMessage);
     log.debug("okMessage:");
-    log.debug("  " + returnedJsonMap);
-    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains("some-uuid"));
-  }
-
-  @Test
-  void testAddressableReqMessages()  {
-//    TODO: request addressable filter isn't intended to w/ simple string match, revisit when time
-//    String reqJson = createAddressableReqJson(SUBSCRIBER_ID, "30023:f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd");
-//    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
-//        reqJson,
-//        SUBSCRIBER_ID
-//    );
-//    log.debug("okMessage:");
-//    log.debug("  " + returnedJsonMap);
-//    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains(SUBSCRIBER_ID));
-  }
-
-  private String createReqJson(String uuid) {
-    return "[\"REQ\",\"" + uuid + "\",{\"#d\":[\"" + uuid + "\"]}]";
-  }
-
-  private String createAddressableReqJson(String uuid, String target) {
-    return "[\"REQ\",\"" + uuid + "\",{\"#a\":[\"" + target + "\"]}]";
+    log.debug("  " + returnedEvents);
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.contains(D_TAG_VALUE_FROM_FILE)));
   }
 }

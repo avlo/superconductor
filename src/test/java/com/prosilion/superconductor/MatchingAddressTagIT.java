@@ -12,12 +12,10 @@ import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.PublicKey;
-import nostr.event.Kind;
-import nostr.event.filter.AuthorFilter;
+import nostr.event.filter.AddressTagFilter;
 import nostr.event.filter.Filters;
-import nostr.event.filter.IdentifierTagFilter;
-import nostr.event.filter.KindFilter;
 import nostr.event.message.ReqMessage;
+import nostr.event.tag.AddressTag;
 import nostr.event.tag.IdentifierTag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +29,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-class MatchingKindAuthorIdentityTagIT {
+class MatchingAddressTagIT {
   private final NostrRelayService nostrRelayService;
-  private final static String uuidFromFile = "superconductor_subscriber_id-0";
-  private final static String eventId = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
-  private final static String authorPubKey = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
-  private final static String content = "matching kind, author, identity-tag filter test";
+  private final static String A_TAG_VALUE_FROM_FILE = "1:babc22b02998a4a5600ecb6203e6efbe550074348a49d921060ff3225a123dc1:UUID-1";
 
   @Autowired
-  MatchingKindAuthorIdentityTagIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
+  MatchingAddressTagIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_kind_author_identitytag_filter_input.json"))) {
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_address_tag_single_filter_json_input.txt"))) {
       String textMessageEventJson = lines.collect(Collectors.joining("\n"));
       log.debug("setup() send event:\n  {}", textMessageEventJson);
       nostrRelayService.createEvent(textMessageEventJson);
@@ -51,22 +45,19 @@ class MatchingKindAuthorIdentityTagIT {
   }
 
   @Test
-  void testReqMessagesViaReqMessage() throws JsonProcessingException {
-    final String subscriberId = Factory.generateRandomHex64String();
+  void testReqMessages() throws JsonProcessingException {
+    String subscriberId = Factory.generateRandomHex64String();
 
-    KindFilter<Kind> kindFilter = new KindFilter<>(Kind.CALENDAR_TIME_BASED_EVENT);
-    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(new PublicKey(authorPubKey));
-    IdentifierTagFilter<IdentifierTag> identifierTagFilter = new IdentifierTagFilter<>(new IdentifierTag(uuidFromFile));
+    AddressTag addressTag = new AddressTag();
+    addressTag.setKind(1);
+    addressTag.setPublicKey(new PublicKey("babc22b02998a4a5600ecb6203e6efbe550074348a49d921060ff3225a123dc1"));
+    addressTag.setIdentifierTag(new IdentifierTag("UUID-1"));
 
-    ReqMessage reqMessage = new ReqMessage(subscriberId,
-        new Filters(
-            kindFilter, authorFilter, identifierTagFilter));
-
+    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new AddressTagFilter<>(addressTag)));
     List<String> returnedEvents = nostrRelayService.sendRequestReturnEvents(reqMessage);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
 
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.contains(eventId)));
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.contains(content)));
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.contains(A_TAG_VALUE_FROM_FILE)));
   }
 }

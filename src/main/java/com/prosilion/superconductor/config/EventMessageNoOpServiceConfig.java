@@ -12,12 +12,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration
-@ConditionalOnProperty(name = "afterimage.noop.event", havingValue = "true")
+@ConditionalOnProperty(name = "superconductor.noop.event", havingValue = "true")
 public class EventMessageNoOpServiceConfig {
   @Bean
   MessageService<EventMessage> getEventMessageService(
       ClientResponseService clientResponseService,
-      @Value("${afterimage.noop.event.description}") String noOp) {
+      @Value("${superconductor.noop.event.description}") String noOp) {
     log.debug("loaded EventMessageNoOpService bean (NO_OP_EVENT)");
     return new EventMessageNoOpService<>(clientResponseService, noOp);
   }

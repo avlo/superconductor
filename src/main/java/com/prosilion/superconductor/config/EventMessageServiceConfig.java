@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration
-@ConditionalOnProperty(name = "afterimage.noop.event", havingValue = "false")
+@ConditionalOnProperty(name = "superconductor.noop.event", havingValue = "false")
 public class EventMessageServiceConfig {
 
 //  TODO: remove below comment once confirm proper to always load EventService as @Service
@@ -28,7 +28,7 @@ public class EventMessageServiceConfig {
 //  }
 
   @Bean
-  @ConditionalOnProperty(name = "afterimage.auth.active", havingValue = "false")
+  @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "false")
   MessageService<EventMessage> getEventMessageServiceNoAuthDecorator(
       EventServiceIF<GenericEvent> eventService,
       ClientResponseService okResponseService) {
@@ -37,7 +37,7 @@ public class EventMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "afterimage.auth.active", havingValue = "true")
+  @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "true")
   MessageService<EventMessage> getEventMessageServiceAuthDecorator(
       EventServiceIF<GenericEvent> eventService,
       ClientResponseService clientResponseService,

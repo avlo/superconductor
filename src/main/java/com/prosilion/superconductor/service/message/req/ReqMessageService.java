@@ -31,7 +31,7 @@ public class ReqMessageService<T extends ReqMessage> implements MessageService<T
     }
   }
 
-  protected void processNoticeClientResponse(@NonNull T reqMessage, @NonNull String sessionId, @NonNull String errorMessage) {
+  public void processNoticeClientResponse(@NonNull T reqMessage, @NonNull String sessionId, @NonNull String errorMessage) {
     clientResponseService.processNoticeClientResponse(reqMessage, sessionId, errorMessage, false);
   }
 }

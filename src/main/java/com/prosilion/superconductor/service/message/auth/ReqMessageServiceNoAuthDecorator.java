@@ -1,7 +1,8 @@
-package com.prosilion.superconductor.service.message.req;
+package com.prosilion.superconductor.service.message.auth;
 
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.message.MessageService;
+import com.prosilion.superconductor.service.message.req.ReqMessageService;
 import com.prosilion.superconductor.service.request.ReqService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

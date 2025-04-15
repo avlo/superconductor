@@ -28,9 +28,7 @@ configurations {
 repositories {
     mavenLocal()
     mavenCentral()
-    gradlePluginPortal {
-        url = 'https://plugins.gradle.org/m2/'
-    }
+    gradlePluginPortal()
 }
 
 

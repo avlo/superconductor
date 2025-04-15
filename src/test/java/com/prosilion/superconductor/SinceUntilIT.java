@@ -2,6 +2,7 @@ package com.prosilion.superconductor;
 
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
+import java.util.List;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
@@ -36,15 +37,14 @@ class SinceUntilIT {
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/created_at_date_filter_json_input.txt"))) {
       String textMessageEventJson = lines.collect(Collectors.joining("\n"));
       log.debug("setup() send event:\n  {}", textMessageEventJson);
-      nostrRelayService.createEvent(textMessageEventJson);
-      assertFalse(nostrRelayService.getEvents().isEmpty());
+      assertTrue(nostrRelayService.sendEvent(textMessageEventJson).getFlag());
     }
   }
 
   @Test
-  void testReqCreatedDateAfterSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
+  void testReqCreatedDateAfterSinceUntilDatesMessages() {
     String subscriberId = Factory.generateRandomHex64String();
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqCreatedDateAfterSinceUntilDatesJson(subscriberId),
         subscriberId
     );
@@ -55,7 +55,7 @@ class SinceUntilIT {
       since 1111111111112 and until 1111111111113 should yield empty, since target time (1111111111111) is before the two
      */
     assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createReqCreatedDateAfterSinceUntilDatesJson(@NonNull String uuid) {
@@ -63,9 +63,9 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqCreatedDateBeforeSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
+  void testReqCreatedDateBeforeSinceUntilDatesMessages() {
     String subscriberId = Factory.generateRandomHex64String();
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqCreatedDateBeforeSinceUntilDatesJson(subscriberId),
         subscriberId
     );
@@ -76,7 +76,7 @@ class SinceUntilIT {
      * since 1111111111109 and until 1111111111110 should yield empty, since target time (1111111111111) is not between the two
      */
     assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createReqCreatedDateBeforeSinceUntilDatesJson(@NonNull String uuid) {
@@ -84,9 +84,9 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqCreatedDateBetweenSinceUntilDatesMessages() throws IOException, ExecutionException, InterruptedException {
+  void testReqCreatedDateBetweenSinceUntilDatesMessages() {
     String subscriberId = Factory.generateRandomHex64String();
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqCreatedDateBetweenSinceUntilDatesJson(subscriberId),
         subscriberId
     );
@@ -96,11 +96,11 @@ class SinceUntilIT {
     /*
      + "since" 1111111111110 and until 1111111111112 should yield present, as target time (1111111111111) is between the two
      */
-    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("1111111111111"));
+    assertFalse(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("1111111111111")));
 
 //    associated event
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("aaabbb6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("aaabbb6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
 //    TODO: investigate below EOSE missing, causes test failure
 //    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
@@ -110,10 +110,10 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqUntilDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+  void testReqUntilDateGreaterThanCreatedDateMessages() {
     String until = "1111111111112";
     String subscriberId = Factory.generateRandomHex64String();
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqUntilDateGreaterThanCreatedDateJson(subscriberId, until),
         subscriberId
     );
@@ -123,9 +123,9 @@ class SinceUntilIT {
     /*
      * "until" 1111111111112 should yield present, as target time (1111111111111) is before it
      */
-    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("1111111111111"));
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertFalse(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("1111111111111")));
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createReqUntilDateGreaterThanCreatedDateJson(String subscriberId, @NonNull String until) {
@@ -133,10 +133,10 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages() throws IOException, ExecutionException, InterruptedException {
+  void testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages() {
     String uuid = "1111111111112";
     String subscriberId = Factory.generateRandomHex64String();
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(subscriberId, uuid),
         subscriberId
     );
@@ -146,9 +146,9 @@ class SinceUntilIT {
     /*
      * "until" 1111111111112 should yield present, as target time (1111111111111) is before it
      */
-    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("1111111111111"));
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertFalse(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("1111111111111")));
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(String subscriberId, @NonNull String until) {
@@ -156,9 +156,9 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqUntilDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+  void testReqUntilDateLessThanCreatedDateMessages() {
     String subscriberId = Factory.generateRandomHex64String();
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqUntilDateLessThanCreatedDateJson(subscriberId),
         subscriberId
     );
@@ -170,7 +170,7 @@ class SinceUntilIT {
      */
 
     assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createReqUntilDateLessThanCreatedDateJson(@NonNull String uuid) {
@@ -178,9 +178,9 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqSinceDateGreaterThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+  void testReqSinceDateGreaterThanCreatedDateMessages() {
     String subscriberId = Factory.generateRandomHex64String();
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqSinceDateGreaterThanCreatedDateJson(subscriberId),
         subscriberId
     );
@@ -191,7 +191,7 @@ class SinceUntilIT {
      * since 1111111111112 should yield empty, since target time (1111111111111) is before it
      */
     assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createReqSinceDateGreaterThanCreatedDateJson(@NonNull String uuid) {
@@ -199,10 +199,10 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqSinceDateLessThanCreatedDateMessages() throws IOException, ExecutionException, InterruptedException {
+  void testReqSinceDateLessThanCreatedDateMessages() {
     String since = "1111111111110";
     String subscriberId = Factory.generateRandomHex64String();
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqSinceDateLessThanCreatedDateJson(subscriberId, since),
         subscriberId
     );
@@ -212,8 +212,8 @@ class SinceUntilIT {
     /*
      * "since" 1111111111110 should yield present, as target time (1111111111111) is after it
      */
-    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains("1111111111111"));
-    assertFalse(returnedJsonMap.get(Command.EOSE).orElseThrow().isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("1111111111111")));
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createReqSinceDateLessThanCreatedDateJson(String subscriberId, @NonNull String since) {

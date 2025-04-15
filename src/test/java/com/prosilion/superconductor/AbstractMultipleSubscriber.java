@@ -8,25 +8,32 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import nostr.base.Command;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.ActiveProfiles;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import nostr.base.Command;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -75,7 +82,7 @@ abstract class AbstractMultipleSubscriber {
     log.debug("next hex: {}", nextHex);
     String globalEventJson = getGlobalEventJson(nextHex);
     log.debug("setup() send event:\n  {}", globalEventJson);
-    nostrRelayService.createEvent(globalEventJson);
+    nostrRelayService.sendEvent(globalEventJson);
     targetEventIds.add(nextHex); // targetEventId String values utilized by inherited classes
   }
 
@@ -105,18 +112,18 @@ abstract class AbstractMultipleSubscriber {
   }
 
   private void sendRequest(String uuidKey) throws JsonProcessingException {
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqJson(uuidKey),
         uuidKey
     );
     log.debug("okMessage:\n  {}", returnedJsonMap);
-    String responseJson = Optional.of(returnedJsonMap.get(Command.EVENT)).get().orElseThrow();
+    List<String> responseJson = returnedJsonMap.get(Command.EVENT);
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(uuidKey);
     log.debug("expectedJson:\n  {}", expectedJsonInAnyOrder);
     log.debug("------------");
     log.debug("responseJson:\n  {}", responseJson);
-    assertTrue(responseJson.contains(uuidKey));
-    assertTrue(compareWithoutOrder(responseJson, expectedJsonInAnyOrder));
+    assertTrue(responseJson.stream().anyMatch(s -> s.contains(uuidKey)));
+    assertTrue(compareWithoutOrder(responseJson.getFirst(), expectedJsonInAnyOrder));
   }
 
   protected synchronized String getNextHex(int i) {

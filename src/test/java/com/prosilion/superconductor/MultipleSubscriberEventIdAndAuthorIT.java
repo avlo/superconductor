@@ -2,6 +2,7 @@ package com.prosilion.superconductor;
 
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
+import java.util.List;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
@@ -55,14 +56,14 @@ class MultipleSubscriberEventIdAndAuthorIT extends AbstractMultipleSubscriber {
   }
 
   private void sendRequestForAuthor(String uuid) {
-    Map<Command, Optional<String>> authorMap = super.getNostrRelayService().sendRequest(
+    Map<Command, List<String>> authorMap = super.getNostrRelayService().sendRequest(
         createReqAuthorJson(uuid),
         uuid
     );
 
     log.debug("author okMessage:");
     log.debug("  " + authorMap);
-    String responseJson = Optional.of(authorMap.get(Command.EVENT)).get().orElseThrow();
+    String responseJson = authorMap.get(Command.EVENT).getFirst();
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(authorPubKey);
     log.debug("author expectedJson:\n  {}", expectedJsonInAnyOrder);
     log.debug("------------");

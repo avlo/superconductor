@@ -1,6 +1,14 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.superconductor.util.NostrRelayService;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
@@ -9,15 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,8 +34,7 @@ class MatchingOneOfMultipleFilterAttributesIT {
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_reference_event_filter_json_input.txt"))) {
       String textMessageEventJson = lines.collect(Collectors.joining("\n"));
       log.debug("setup() send event:\n  {}", textMessageEventJson);
-      nostrRelayService.createEvent(textMessageEventJson);
-      assertFalse(nostrRelayService.getEvents().isEmpty());
+      assertTrue(nostrRelayService.sendEvent(textMessageEventJson).getFlag());
     }
   }
 
@@ -44,36 +42,36 @@ class MatchingOneOfMultipleFilterAttributesIT {
   void testMatchingOneOfMultipleReferencedEvents() throws IOException, ExecutionException, InterruptedException {
     String referencedEventIdMatch = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
     String referencedEventIdNoMatch = "0000000000000000000000000000000000000000000000000000000000000000";
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReferencedEventReqJson(referencedEventIdMatch, referencedEventIdNoMatch),
         referencedEventIdMatch
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(referencedEventIdMatch));
+    assertFalse(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains(referencedEventIdMatch)));
 
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   @Test
   void testMatchingOneOfMultipleReferencedPublicKeys() throws IOException, ExecutionException, InterruptedException {
     String referencedPubkeyMatch = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
     String referencedPubkeyNoMatch = "0000000000000000000000000000000000000000000000000000000000000000";
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReferencedPubKeyReqJson(referencedPubkeyMatch, referencedPubkeyNoMatch),
         referencedPubkeyMatch
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(referencedPubkeyMatch));
+    assertFalse(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains(referencedPubkeyMatch)));
 
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createReferencedEventReqJson(@NonNull String uuid, String nonMatchingEventId) {

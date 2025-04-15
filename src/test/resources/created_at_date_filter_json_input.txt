@@ -9,8 +9,8 @@
     "tags": [
       [
         "a",
-        "wss://nostr.example.com",
-        "30023:aaabbbd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd"
+        "30023:aaabbbd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd",
+        "wss://nostr.example.com"
       ],
       [
         "custom-tag",

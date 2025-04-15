@@ -2,8 +2,8 @@ package com.prosilion.superconductor;
 
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
@@ -34,14 +34,14 @@ class ReqMessageIT {
     String uuidKey = "dddeee6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
     String authorPubkey = "dddeeef81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
 
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqJson(uuidKey, authorPubkey),
         uuidKey
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains(uuidKey));
-    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains(authorPubkey));
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains(uuidKey)));
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains(authorPubkey)));
   }
 
   private String createReqJson(@NonNull String uuid, @NonNull String authorPubkey) {
@@ -52,13 +52,13 @@ class ReqMessageIT {
   void testReqFilteredByEventId() {
     String uuidKey = "dddeee6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
 
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createEventReqJson(uuidKey),
         uuidKey
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
-    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains(uuidKey));
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains(uuidKey)));
   }
 
   private String createEventReqJson(@NonNull String uuid) {
@@ -70,18 +70,18 @@ class ReqMessageIT {
     String authorPubkey = "dddeeef81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
     String subscriberId = Factory.generateRandomHex64String();
 
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createAuthorReqJson(subscriberId, authorPubkey),
         authorPubkey
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains(authorPubkey));
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains(authorPubkey)));
 
-//    additional eventId confirmation
+    //    additional eventId confirmation
     String eventId = "dddeee6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
-    assertTrue(returnedJsonMap.get(Command.EVENT).orElseThrow().contains(eventId));
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains(eventId)));
   }
 
   private String createAuthorReqJson(@NonNull String subscriberId, @NonNull String authorPubkey) {

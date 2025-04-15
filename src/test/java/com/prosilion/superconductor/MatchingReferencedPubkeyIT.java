@@ -2,6 +2,14 @@ package com.prosilion.superconductor;
 
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
@@ -10,15 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,27 +35,26 @@ class MatchingReferencedPubkeyIT {
     try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_reference_event_filter_json_input.txt"))) {
       String textMessageEventJson = lines.collect(Collectors.joining("\n"));
       log.debug("setup() send event:\n  {}", textMessageEventJson);
-      nostrRelayService.createEvent(textMessageEventJson);
-      assertFalse(nostrRelayService.getEvents().isEmpty());
+      assertTrue(nostrRelayService.sendEvent(textMessageEventJson).getFlag());
     }
   }
 
   @Test
-  void testReqMessages() throws IOException, ExecutionException, InterruptedException {
+  void testReqMessages() {
     String referencedPubKey = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createReqJson(referencedPubKey),
         referencedPubKey
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
 
-    assertTrue(returnedJsonMap.get(Command.EVENT).isPresent());
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains(referencedPubKey));
+    assertFalse(returnedJsonMap.get(Command.EVENT).isEmpty());
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains(referencedPubKey)));
 
-//    associated event
-    assertTrue(returnedJsonMap.get(Command.EVENT).get().contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"));
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    //    associated event
+    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createReqJson(@NonNull String uuid) {
@@ -64,18 +62,18 @@ class MatchingReferencedPubkeyIT {
   }
 
   @Test
-  void testReqNonMatchingReferencedPubkey() throws IOException, ExecutionException, InterruptedException {
+  void testReqNonMatchingReferencedPubkey() {
     String subscriberId = Factory.generateRandomHex64String();
     String nonMatchingReferencedPubKey = "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
 
-    Map<Command, Optional<String>> returnedJsonMap = nostrRelayService.sendRequest(
+    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
         createNonMatchReferencedEventReqJson(subscriberId, nonMatchingReferencedPubKey),
         subscriberId
     );
     log.debug("okMessage:");
     log.debug("  " + returnedJsonMap);
     assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
-    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
+    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
   }
 
   private String createNonMatchReferencedEventReqJson(@NonNull String subscriberId, @NonNull String nonMatchingRefPubKey) {

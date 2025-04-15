@@ -16,7 +16,7 @@ IT_WAIT=15
 M2_HOME='/home/nick/.m2/repository'
 NOSTR_JAVA_MAVEN_LOCAL_REPO=$M2_HOME/xyz/tcheeric
 GIT_HOME='/home/nick/git'
-NOSTR_HOME=$GIT_HOME/avlo-nostr-java-fork
+NOSTR_HOME=$GIT_HOME/nostr-java-avlo-fork
 SUPER_HOME=$GIT_HOME/superconductor
 
 # build tool mode defaults to gradle

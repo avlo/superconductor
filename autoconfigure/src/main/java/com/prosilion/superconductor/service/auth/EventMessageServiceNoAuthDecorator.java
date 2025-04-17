@@ -1,5 +1,6 @@
-package com.prosilion.superconductor.service.message.event;
+package com.prosilion.superconductor.service.auth;
 
+import com.prosilion.superconductor.service.event.standard.EventMessageService;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.message.MessageService;
@@ -7,19 +8,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
-@ConditionalOnProperty(
-    name = "superconductor.auth.active",
-    havingValue = "false")
 public class EventMessageServiceNoAuthDecorator<T extends EventMessage> implements MessageService<T> {
   private final EventMessageService<T> eventMessageService;
 
-  @Autowired
   public EventMessageServiceNoAuthDecorator(EventServiceIF<GenericEvent> eventService, ClientResponseService okResponseService) {
     this.eventMessageService = new EventMessageService<>(eventService, okResponseService);
   }

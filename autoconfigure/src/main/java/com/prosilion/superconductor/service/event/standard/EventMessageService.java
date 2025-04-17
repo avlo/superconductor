@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.service.message.event;
+package com.prosilion.superconductor.service.event.standard;
 
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.event.EventServiceIF;
@@ -25,11 +25,11 @@ public class EventMessageService<T extends EventMessage> implements MessageServi
     eventService.processIncomingEvent(eventMessage);
   }
 
-  protected void processOkClientResponse(@NonNull T eventMessage, @NonNull String sessionId) {
+  public void processOkClientResponse(@NonNull T eventMessage, @NonNull String sessionId) {
     clientResponseService.processOkClientResponse(sessionId, eventMessage);
   }
 
-  protected void processNotOkClientResponse(@NonNull T eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
+  public void processNotOkClientResponse(@NonNull T eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
     clientResponseService.processNotOkClientResponse(sessionId, new EventMessage(eventMessage.getEvent()), errorMessage);
   }
 }

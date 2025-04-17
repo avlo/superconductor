@@ -7,7 +7,7 @@ buildscript {
     }
 }
 
-rootProject.name = 'superconductor'
+rootProject.name = 'superconductor_starter'
 
 include ':lib'
 project(':lib').setProjectDir(file("lib"))

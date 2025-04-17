@@ -4,9 +4,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.prosilion</groupId>
-  <artifactId>superconductor</artifactId>
+  <artifactId>superconductor_starter</artifactId>
   <version>1.11.0</version>
-  <name>superconductor</name>
+  <name>superconductor_starter</name>
   <description>SuperConductor Java Nostr-Relay Framework and Web Application</description>
   <packaging>war</packaging>
 

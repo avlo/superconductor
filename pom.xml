@@ -3,22 +3,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.prosilion</groupId>
-  <artifactId>superconductor_starter</artifactId>
-  <version>1.11.0</version>
-  <name>superconductor_starter</name>
+  <groupId>com.prosilion.superconductor</groupId>
+  <artifactId>parent</artifactId>
+  <version>1.12.0</version>
+  <name>superconductor</name>
   <description>SuperConductor Java Nostr-Relay Framework and Web Application</description>
-  <packaging>war</packaging>
+  <packaging>pom</packaging>
 
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.3</version>
-  </parent>
-
+  <modules>
+    <module>autoconfigure</module>
+    <module>lib</module>
+    <module>starter</module>
+  </modules>
+  
   <properties>
     <java.version>21</java.version>
-    <spring-boot.version>${parent.version}</spring-boot.version>
+    <project.version>${version}</project.version>
+    <spring-boot.version>3.4.3</spring-boot.version>
     <nostr-java.version>0.6.5-SNAPSHOT</nostr-java.version>
 
     <awaitility.version>4.2.0</awaitility.version>
@@ -31,6 +32,7 @@
     <junit-jupiter.version>5.10.2</junit-jupiter.version>
     <lombok.version>1.18.34</lombok.version>
     <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
+    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <mysql-connector-j.version>9.1.0</mysql-connector-j.version>
@@ -49,9 +51,24 @@
   </dependencyManagement>
 
   <dependencies>
+<!--    <dependency>-->
+<!--      <groupId>org.springframework.boot</groupId>-->
+<!--      <artifactId>spring-boot-starter</artifactId>-->
+<!--      <version>${spring-boot.version}</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
+      <artifactId>spring-boot</artifactId>
+      <version>${spring-boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <version>${spring-boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
       <version>${spring-boot.version}</version>
     </dependency>
     <dependency>
@@ -201,38 +218,39 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
         <configuration>
           <image>
             <builder>paketobuildpacks/builder-jammy-base:latest</builder>
           </image>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${maven-failsafe-plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-              <configuration>
-                  <rerunFailingTestsCount>1</rerunFailingTestsCount>
-              </configuration>
-          </execution>
-        </executions>
-      </plugin>
+<!--      <plugin>-->
+<!--        <artifactId>maven-surefire-plugin</artifactId>-->
+<!--        <version>${maven-surefire-plugin.version}</version>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <goals>-->
+<!--              <goal>test</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
+<!--      <plugin>-->
+<!--        <artifactId>maven-failsafe-plugin</artifactId>-->
+<!--&lt;!&ndash;        <version>${maven-failsafe-plugin.version}</version>&ndash;&gt;-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <goals>-->
+<!--              <goal>integration-test</goal>-->
+<!--              <goal>verify</goal>-->
+<!--            </goals>-->
+<!--              <configuration>-->
+<!--                  <rerunFailingTestsCount>1</rerunFailingTestsCount>-->
+<!--              </configuration>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -249,6 +267,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>

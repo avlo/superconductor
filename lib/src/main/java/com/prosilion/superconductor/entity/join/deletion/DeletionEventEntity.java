@@ -15,6 +15,6 @@ import lombok.Setter;
 @Table(name = "deletion_event")
 public class DeletionEventEntity extends EventEntityAbstractEntity {
   public DeletionEventEntity(@NonNull Long eventId) {
-    super.setEventId(eventId);
+    super(eventId);
   }
 }

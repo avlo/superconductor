@@ -19,4 +19,8 @@ public abstract class EventEntityAbstractEntity implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private Long eventId;
+
+  public EventEntityAbstractEntity(Long eventId) {
+    this.eventId = eventId;
+  }
 }

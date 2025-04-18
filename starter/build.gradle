@@ -1,5 +1,5 @@
 plugins {
-    id 'superconductor_starter.java-conventions'
+    id 'superconductor.java-conventions'
 }
 
 dependencies {

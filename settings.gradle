@@ -9,9 +9,11 @@ buildscript {
 
 rootProject.name = 'superconductor'
 
-include ':lib'
-project(':lib').setProjectDir(file("lib"))
+include ':app'
+project(':app').setProjectDir(file("app"))
 include ':autoconfigure'
 project(':autoconfigure').setProjectDir(file("autoconfigure"))
+include ':lib'
+project(':lib').setProjectDir(file("lib"))
 include ':starter'
 project(':starter').setProjectDir(file("starter"))

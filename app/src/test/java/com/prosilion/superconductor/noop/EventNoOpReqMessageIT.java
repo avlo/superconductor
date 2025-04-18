@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Sql(scripts = {"/event.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("test-noop")
+@ActiveProfiles("testnoop")
 class EventNoOpReqMessageIT {
   private final NostrRelayService nostrRelayService;
 

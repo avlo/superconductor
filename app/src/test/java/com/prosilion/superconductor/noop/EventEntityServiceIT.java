@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("test-noop")
+@ActiveProfiles("test")
 class EventEntityServiceIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
   private static final PublicKey EVENT_PUBKEY = IDENTITY.getPublicKey();

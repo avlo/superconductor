@@ -23,7 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("test-noop")
+@ActiveProfiles("test")
 class SubscriberEventIT {
   public static final String EVENT_ID = Factory.generateRandomHex64String();
   public static final PublicKey EVENT_PUBKEY = Factory.createNewIdentity().getPublicKey();

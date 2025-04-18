@@ -18,9 +18,9 @@ dependencies {
     def logger = '4.0.0'
 
     implementation 'org.springframework.boot:spring-boot:' + springBootVersion
-    implementation 'org.springframework.boot:spring-boot-autoconfigure'
-    implementation 'org.springframework.boot:spring-boot-configuration-processor'
-    implementation 'org.springframework.boot:spring-boot-gradle-plugin'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+    implementation 'org.springframework.boot:spring-boot-configuration-processor:' + springBootVersion
+    implementation 'org.springframework.boot:spring-boot-gradle-plugin:' + springBootVersion
     implementation 'org.yaml:snakeyaml:' + snakeYamlVersion
     implementation 'org.gradle.test-retry:org.gradle.test-retry.gradle.plugin:' + retry
     testImplementation 'com.adarshr:gradle-test-logger-plugin:' + logger

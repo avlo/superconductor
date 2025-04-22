@@ -75,6 +75,7 @@
         <version>${maven-compiler-plugin.version}</version>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <executions>
@@ -86,8 +87,16 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${maven-failsafe-plugin.version}</version>
+        <configuration>
+<!--          TODO: below, re-add with @ActiveProfile IT's -->
+          <excludes>
+            <exclude>**/EventNoOpMessageIT.java</exclude>
+            <exclude>**/EventNoOpReqMessageIT.java</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <goals>

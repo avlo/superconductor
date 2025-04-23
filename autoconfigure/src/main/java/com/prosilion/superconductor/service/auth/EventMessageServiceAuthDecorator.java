@@ -1,19 +1,18 @@
 package com.prosilion.superconductor.service.auth;
 
-import com.prosilion.superconductor.service.event.standard.EventMessageService;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.event.AuthEntityService;
+import com.prosilion.superconductor.service.event.EventMessageServiceIF;
 import com.prosilion.superconductor.service.event.EventServiceIF;
-import com.prosilion.superconductor.service.message.MessageService;
+import com.prosilion.superconductor.service.event.standard.EventMessageService;
+import java.util.NoSuchElementException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
 
-import java.util.NoSuchElementException;
-
 @Slf4j
-public class EventMessageServiceAuthDecorator<T extends EventMessage> implements MessageService<T> {
+public class EventMessageServiceAuthDecorator<T extends EventMessage> implements EventMessageServiceIF<T> {
   private final EventMessageService<T> eventMessageService;
   private final AuthEntityService authEntityService;
 

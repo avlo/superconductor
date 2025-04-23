@@ -26,6 +26,18 @@
       <version>1.12.0</version>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <version>${spring-boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-docker-compose</artifactId>
+      <version>${spring-boot.version}</version>
+      <!--      <optional>true</optional>-->
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>${junit-jupiter.version}</version>
@@ -125,41 +137,56 @@
     </plugins>
   </build>
   <profiles>
+
     <profile>
       <id>local_ws</id>
       <properties>
         <spring.profiles.active>local_ws</spring.profiles.active>
       </properties>
-    </profile>
-    <profile>
-      <id>local_wss</id>
-      <properties>
-        <spring.profiles.active>local_wss</spring.profiles.active>
-      </properties>
-    </profile>
-    <profile>
-      <id>dev_ws</id>
-      <properties>
-        <spring.profiles.active>dev_ws</spring.profiles.active>
-      </properties>
-    </profile>
-    <profile>
-      <id>dev_wss</id>
-      <properties>
-        <spring.profiles.active>dev_wss</spring.profiles.active>
-      </properties>
-    </profile>
-    <profile>
-      <id>prod_ws</id>
-      <properties>
-        <spring.profiles.active>prod_ws</spring.profiles.active>
-      </properties>
-    </profile>
-    <profile>
-      <id>prod_wss</id>
-      <properties>
-        <spring.profiles.active>prod_wss</spring.profiles.active>
-      </properties>
-    </profile>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <profiles>
+                <profile>local_ws</profile>
+              </profiles>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>    
+    
+<!--    <profile>-->
+<!--      <id>local_wss</id>-->
+<!--      <properties>-->
+<!--        <spring.profiles.active>local_wss</spring.profiles.active>-->
+<!--      </properties>-->
+<!--    </profile>-->
+<!--    <profile>-->
+<!--      <id>dev_ws</id>-->
+<!--      <properties>-->
+<!--        <spring.profiles.active>dev_ws</spring.profiles.active>-->
+<!--      </properties>-->
+<!--    </profile>-->
+<!--    <profile>-->
+<!--      <id>dev_wss</id>-->
+<!--      <properties>-->
+<!--        <spring.profiles.active>dev_wss</spring.profiles.active>-->
+<!--      </properties>-->
+<!--    </profile>-->
+<!--    <profile>-->
+<!--      <id>prod_ws</id>-->
+<!--      <properties>-->
+<!--        <spring.profiles.active>prod_ws</spring.profiles.active>-->
+<!--      </properties>-->
+<!--    </profile>-->
+<!--    <profile>-->
+<!--      <id>prod_wss</id>-->
+<!--      <properties>-->
+<!--        <spring.profiles.active>prod_wss</spring.profiles.active>-->
+<!--      </properties>-->
+<!--    </profile>-->
   </profiles>
 </project>

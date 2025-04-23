@@ -126,14 +126,6 @@
       <version>${spring-boot.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-docker-compose</artifactId>
-      <version>${spring-boot.version}</version>
-      <!--      <optional>true</optional>-->
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
       <version>${mysql-connector-j.version}</version>
@@ -175,11 +167,11 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${spring-boot.version}</version>
-        <configuration>
-          <image>
-            <builder>paketobuildpacks/builder-jammy-base:latest</builder>
-          </image>
-        </configuration>
+<!--        <configuration>-->
+<!--          <image>-->
+<!--            <builder>paketobuildpacks/builder-jammy-base:latest</builder>-->
+<!--          </image>-->
+<!--        </configuration>-->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

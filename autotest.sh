@@ -144,7 +144,7 @@ run_superconductor() {
     gradle app:bootRunLocalWs &
     SUPER_PID=$!
   else
-    { mvn spring-boot:run -P local_ws; } &
+    { mvn spring-boot:run -f app/pom.xml -P local_ws; } &
     SUPER_PID=$!
   fi
   return $!

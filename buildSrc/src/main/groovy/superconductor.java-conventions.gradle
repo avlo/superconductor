@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'war'
     id 'java-library'
     id 'maven-publish'
     id 'org.springframework.boot'
@@ -23,8 +24,14 @@ repositories {
 
 publishing {
     publications {
-        superconductor(MavenPublication) {
+        mavenJar(MavenPublication) {
             from components.java
+            groupId 'com.prosilion.superconductor'
+        }
+    }
+    publications {
+        mavenWar(MavenPublication) {
+            from components.web
             groupId 'com.prosilion.superconductor'
         }
     }
@@ -127,6 +134,14 @@ tasks.bootJar {
 }
 
 tasks.named("jar") {
+    archiveClassifier = ''
+}
+
+tasks.bootWar {
+    enabled = false
+}
+
+tasks.named("war") {
     archiveClassifier = ''
 }
 

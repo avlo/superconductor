@@ -1,26 +1,24 @@
-package com.prosilion.superconductor.service.auth;
+package com.prosilion.superconductor.service.event.auth;
 
-import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.event.AuthEntityService;
+import com.prosilion.superconductor.service.event.EventMessageServiceBean;
 import com.prosilion.superconductor.service.event.EventMessageServiceIF;
-import com.prosilion.superconductor.service.event.EventServiceIF;
-import com.prosilion.superconductor.service.event.standard.EventMessageService;
 import java.util.NoSuchElementException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
 
 @Slf4j
 public class EventMessageServiceAuthDecorator<T extends EventMessage> implements EventMessageServiceIF<T> {
-  private final EventMessageService<T> eventMessageService;
+  public final String command = "EVENT";
+
+  private final EventMessageServiceBean<T> eventMessageServiceBean;
   private final AuthEntityService authEntityService;
 
   public EventMessageServiceAuthDecorator(
-      EventServiceIF<GenericEvent> eventService,
-      ClientResponseService clientResponseService,
-      AuthEntityService authEntityService) {
-    this.eventMessageService = new EventMessageService<>(eventService, clientResponseService);
+      @NonNull EventMessageServiceBean<T> eventMessageServiceBean,
+      @NonNull AuthEntityService authEntityService) {
+    this.eventMessageServiceBean = eventMessageServiceBean;
     this.authEntityService = authEntityService;
   }
 
@@ -31,15 +29,24 @@ public class EventMessageServiceAuthDecorator<T extends EventMessage> implements
       authEntityService.findAuthEntityBySessionId(sessionId).orElseThrow();
     } catch (NoSuchElementException e) {
       log.debug("AUTHENTICATED EVENT message failed session authentication");
-      eventMessageService.processNotOkClientResponse(eventMessage, sessionId, String.format("restricted: session [%s] has not been authenticated", sessionId));
+      processNotOkClientResponse(eventMessage, sessionId, String.format("restricted: session [%s] has not been authenticated", sessionId));
       return;
     }
-    eventMessageService.processIncoming(eventMessage, sessionId);
-    eventMessageService.processOkClientResponse(eventMessage, sessionId);
+    eventMessageServiceBean.processIncoming(eventMessage, sessionId);
   }
 
   @Override
   public String getCommand() {
-    return eventMessageService.getCommand();
+    return command;
+  }
+
+  @Override
+  public void processOkClientResponse(T eventMessage, @NonNull String sessionId) {
+    eventMessageServiceBean.processOkClientResponse(eventMessage, sessionId);
+  }
+
+  @Override
+  public void processNotOkClientResponse(T eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
+    eventMessageServiceBean.processNotOkClientResponse(eventMessage, sessionId, errorMessage);
   }
 }

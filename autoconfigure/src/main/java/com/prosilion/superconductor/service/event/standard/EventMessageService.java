@@ -1,22 +1,19 @@
 package com.prosilion.superconductor.service.event.standard;
 
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.event.EventMessageServiceIF;
+import com.prosilion.superconductor.service.event.EventMessageServiceBean;
 import com.prosilion.superconductor.service.event.EventServiceIF;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
 
 @Slf4j
-public class EventMessageService<T extends EventMessage> implements EventMessageServiceIF<T> {
-  @Getter
-  public final String command = "EVENT";
+public class EventMessageService<T extends EventMessage> implements EventMessageServiceBean<T> {
   private final EventServiceIF<GenericEvent> eventService;
   private final ClientResponseService clientResponseService;
 
-  public EventMessageService(EventServiceIF<GenericEvent> eventService, ClientResponseService clientResponseService) {
+  public EventMessageService(@NonNull EventServiceIF<GenericEvent> eventService, @NonNull ClientResponseService clientResponseService) {
     this.eventService = eventService;
     this.clientResponseService = clientResponseService;
   }
@@ -24,6 +21,7 @@ public class EventMessageService<T extends EventMessage> implements EventMessage
   @Override
   public void processIncoming(@NonNull T eventMessage, @NonNull String sessionId) {
     eventService.processIncomingEvent(eventMessage);
+    processOkClientResponse(eventMessage, sessionId);
   }
 
   public void processOkClientResponse(@NonNull T eventMessage, @NonNull String sessionId) {

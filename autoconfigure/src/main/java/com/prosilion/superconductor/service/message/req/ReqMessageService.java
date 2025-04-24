@@ -1,15 +1,14 @@
 package com.prosilion.superconductor.service.message.req;
 
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.message.MessageService;
-import com.prosilion.superconductor.util.EmptyFiltersException;
 import com.prosilion.superconductor.service.request.ReqService;
+import com.prosilion.superconductor.util.EmptyFiltersException;
 import lombok.Getter;
 import lombok.NonNull;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.ReqMessage;
 
-public class ReqMessageService<T extends ReqMessage> implements MessageService<T> {
+public class ReqMessageService<T extends ReqMessage> implements ReqMessageServiceIF<T> {
   @Getter
   public final String command = "REQ";
   private final ReqService<T, GenericEvent> reqService;

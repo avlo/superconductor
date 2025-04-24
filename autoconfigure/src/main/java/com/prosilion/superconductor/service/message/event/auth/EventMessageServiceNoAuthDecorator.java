@@ -1,7 +1,7 @@
-package com.prosilion.superconductor.service.event.auth;
+package com.prosilion.superconductor.service.message.event.auth;
 
-import com.prosilion.superconductor.service.event.EventMessageServiceBean;
-import com.prosilion.superconductor.service.event.EventMessageServiceIF;
+import com.prosilion.superconductor.service.message.event.EventMessageServiceBean;
+import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.message.EventMessage;

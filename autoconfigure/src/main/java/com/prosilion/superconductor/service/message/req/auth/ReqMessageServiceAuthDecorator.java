@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.service.message.auth;
+package com.prosilion.superconductor.service.message.req.auth;
 
 import com.prosilion.superconductor.service.event.AuthEntityService;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;

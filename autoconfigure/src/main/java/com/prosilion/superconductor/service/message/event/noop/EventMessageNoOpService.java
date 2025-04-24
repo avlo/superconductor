@@ -20,7 +20,7 @@ public class EventMessageNoOpService<T extends EventMessage> implements EventMes
   @Override
   public void processIncoming(@NonNull T eventMessage, @NonNull String sessionId) {
     log.debug("processing incoming NOOP-EVENT: [{}]", eventMessage);
-    processNotOkClientResponse((T) new EventMessage(eventMessage.getEvent()), sessionId, noOp);
+    processNotOkClientResponse(eventMessage, sessionId, noOp);
     clientResponseService.processCloseClientResponse(sessionId);
   }
 

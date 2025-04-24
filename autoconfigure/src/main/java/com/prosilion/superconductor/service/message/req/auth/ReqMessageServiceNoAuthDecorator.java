@@ -1,30 +1,18 @@
 package com.prosilion.superconductor.service.message.req.auth;
 
-import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.message.MessageService;
-import com.prosilion.superconductor.service.message.req.ReqMessageService;
-import com.prosilion.superconductor.service.request.ReqService;
+import com.prosilion.superconductor.service.message.req.ReqMessageServiceBean;
+import com.prosilion.superconductor.service.message.req.ReqMessageServiceIF;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.impl.GenericEvent;
 import nostr.event.message.ReqMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
-@ConditionalOnProperty(
-    name = "superconductor.auth.active",
-    havingValue = "false")
-public class ReqMessageServiceNoAuthDecorator<T extends ReqMessage> implements MessageService<T> {
-  private final ReqMessageService<T> reqMessageService;
+public class ReqMessageServiceNoAuthDecorator<T extends ReqMessage> implements ReqMessageServiceIF<T> {
+  public final String command = "REQ";
+  private final ReqMessageServiceBean<T> reqMessageService;
 
-  @Autowired
-  public ReqMessageServiceNoAuthDecorator(
-      ReqService<T, GenericEvent> reqService,
-      ClientResponseService clientResponseService) {
-    this.reqMessageService = new ReqMessageService<>(reqService, clientResponseService);
+  public ReqMessageServiceNoAuthDecorator(@NonNull ReqMessageServiceBean<T> reqMessageService) {
+    this.reqMessageService = reqMessageService;
   }
 
   @Override
@@ -35,6 +23,6 @@ public class ReqMessageServiceNoAuthDecorator<T extends ReqMessage> implements M
 
   @Override
   public String getCommand() {
-    return reqMessageService.getCommand();
+    return command;
   }
 }

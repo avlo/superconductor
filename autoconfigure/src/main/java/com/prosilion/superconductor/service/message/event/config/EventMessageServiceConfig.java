@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.config;
+package com.prosilion.superconductor.service.message.event.config;
 
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.event.AuthEntityService;

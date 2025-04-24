@@ -3,19 +3,17 @@ package com.prosilion.superconductor.service.message.req;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.request.ReqService;
 import com.prosilion.superconductor.util.EmptyFiltersException;
-import lombok.Getter;
 import lombok.NonNull;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.ReqMessage;
 
-public class ReqMessageService<T extends ReqMessage> implements ReqMessageServiceIF<T> {
-  @Getter
-  public final String command = "REQ";
-  private final ReqService<T, GenericEvent> reqService;
+public class ReqMessageService<T extends ReqMessage> implements ReqMessageServiceBean<T> {
+
+  private final ReqService<GenericEvent> reqService;
   private final ClientResponseService clientResponseService;
 
   public ReqMessageService(
-      @NonNull ReqService<T, GenericEvent> reqService,
+      @NonNull ReqService<GenericEvent> reqService,
       @NonNull ClientResponseService clientResponseService) {
     this.reqService = reqService;
     this.clientResponseService = clientResponseService;
@@ -30,6 +28,7 @@ public class ReqMessageService<T extends ReqMessage> implements ReqMessageServic
     }
   }
 
+  @Override
   public void processNoticeClientResponse(@NonNull T reqMessage, @NonNull String sessionId, @NonNull String errorMessage) {
     clientResponseService.processNoticeClientResponse(reqMessage, sessionId, errorMessage, false);
   }

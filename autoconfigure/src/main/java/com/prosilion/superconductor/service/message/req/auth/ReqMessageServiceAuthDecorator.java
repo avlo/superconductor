@@ -1,35 +1,23 @@
 package com.prosilion.superconductor.service.message.req.auth;
 
 import com.prosilion.superconductor.service.event.AuthEntityService;
-import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.message.MessageService;
-import com.prosilion.superconductor.service.message.req.ReqMessageService;
-import com.prosilion.superconductor.service.request.ReqService;
+import com.prosilion.superconductor.service.message.req.ReqMessageServiceBean;
+import com.prosilion.superconductor.service.message.req.ReqMessageServiceIF;
+import java.util.NoSuchElementException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.impl.GenericEvent;
 import nostr.event.message.ReqMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
 
 @Slf4j
-@Service
-@ConditionalOnProperty(
-    name = "superconductor.auth.active",
-    havingValue = "true")
-public class ReqMessageServiceAuthDecorator<T extends ReqMessage> implements MessageService<T> {
-  private final ReqMessageService<T> reqMessageService;
+public class ReqMessageServiceAuthDecorator<T extends ReqMessage> implements ReqMessageServiceIF<T> {
+  public final String command = "REQ";
+  private final ReqMessageServiceBean<T> reqMessageService;
   private final AuthEntityService authEntityService;
 
-  @Autowired
   public ReqMessageServiceAuthDecorator(
-      ReqService<T, GenericEvent> reqService,
-      AuthEntityService authEntityService,
-      ClientResponseService clientResponseService) {
-    this.reqMessageService = new ReqMessageService<>(reqService, clientResponseService);
+      @NonNull ReqMessageServiceBean<T> reqMessageService,
+      @NonNull AuthEntityService authEntityService) {
+    this.reqMessageService = reqMessageService;
     this.authEntityService = authEntityService;
   }
 
@@ -49,6 +37,6 @@ public class ReqMessageServiceAuthDecorator<T extends ReqMessage> implements Mes
 
   @Override
   public String getCommand() {
-    return reqMessageService.getCommand();
+    return command;
   }
 }

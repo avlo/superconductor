@@ -192,7 +192,6 @@ rm_maven_local() {
 
 build_nostr_java() {
   cd_nostr_java
-  rm_maven_local
   banner "building nostr-java..."
   invoke_builder || exit_with_code $FAILURE_EXIT_CODE
   banner "...nostr-java unit tests, next..."
@@ -208,7 +207,8 @@ build_superconductor() {
 }
 
 publish_nostr_java_to_m2_local() {
-  banner "publishing to m2/local local:" "" "       [$M2_NOSTR_JAVA_REPO]"  
+  rm_maven_local  
+  banner "publishing to m2/local local:" "" "       [$M2_NOSTR_JAVA_REPO]"
   publish || exit_with_code $FAILURE_EXIT_CODE
   banner "...completed publishing to m2/local"
   banner "$M2_NOSTR_JAVA_REPO contents:"

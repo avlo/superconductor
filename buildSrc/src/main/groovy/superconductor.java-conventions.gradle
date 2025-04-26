@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'war'
+//    id 'war'
     id 'java-library'
     id 'maven-publish'
     id 'org.springframework.boot'
@@ -10,7 +10,7 @@ plugins {
 }
 
 group = 'com.prosilion'
-version = '1.12.0'
+version = '1.13.0'
 //description = 'superconductor'
 
 java.sourceCompatibility = JavaVersion.VERSION_21
@@ -29,12 +29,12 @@ publishing {
             groupId 'com.prosilion.superconductor'
         }
     }
-    publications {
-        mavenWar(MavenPublication) {
-            from components.web
-            groupId 'com.prosilion.superconductor'
-        }
-    }
+//    publications {
+//        mavenWar(MavenPublication) {
+//            from components.web
+//            groupId 'com.prosilion.superconductor'
+//        }
+//    }
 }
 
 dependencies {
@@ -137,13 +137,13 @@ tasks.named("jar") {
     archiveClassifier = ''
 }
 
-tasks.bootWar {
-    enabled = false
-}
-
-tasks.named("war") {
-    archiveClassifier = ''
-}
+//tasks.bootWar {
+//    enabled = false
+//}
+//
+//tasks.named("war") {
+//    archiveClassifier = ''
+//}
 
 tasks.register("bootRunLocalWs") {
     group = "application"

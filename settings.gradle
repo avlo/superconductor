@@ -1,0 +1,19 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'com.adarshr:gradle-test-logger-plugin:4.0.0'
+    }
+}
+
+rootProject.name = 'superconductor'
+
+include ':app'
+project(':app').setProjectDir(file("app"))
+include ':autoconfigure'
+project(':autoconfigure').setProjectDir(file("autoconfigure"))
+include ':lib'
+project(':lib').setProjectDir(file("lib"))
+include ':starter'
+project(':starter').setProjectDir(file("starter"))

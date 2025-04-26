@@ -1,0 +1,205 @@
+plugins {
+    id 'java'
+//    id 'war'
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'com.adarshr.test-logger'
+    id 'org.gradle.test-retry'
+}
+
+group = 'com.prosilion'
+version = '1.13.0'
+//description = 'superconductor'
+
+java.sourceCompatibility = JavaVersion.VERSION_21
+java.targetCompatibility = JavaVersion.VERSION_21
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+publishing {
+    publications {
+        mavenJar(MavenPublication) {
+            from components.java
+            groupId 'com.prosilion.superconductor'
+        }
+    }
+//    publications {
+//        mavenWar(MavenPublication) {
+//            from components.web
+//            groupId 'com.prosilion.superconductor'
+//        }
+//    }
+}
+
+dependencies {
+    def springBootVersion = '3.4.3'
+    def nostrJavaVersion = '0.6.5-SNAPSHOT'
+    def apacheCommonsLang3 = '3.17.0'
+    def jacksonModuleAfterburner = '2.18.3'
+    def googleGuava = '33.2.1-jre'
+    def awaitility = '4.2.0'
+    def lombok = '1.18.36'
+    def subdivisionsVersion = '0.0.1'
+    def logger = '4.0.0'
+
+    implementation 'org.springframework.boot:spring-boot-devtools:' + springBootVersion
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'xyz.tcheeric:nostr-java-api:' + nostrJavaVersion
+
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    implementation 'com.prosilion:subdivisions:' + subdivisionsVersion
+
+    implementation 'org.apache.commons:commons-lang3:' + apacheCommonsLang3
+    implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:' + jacksonModuleAfterburner
+    implementation 'com.google.guava:guava:' + googleGuava
+    implementation 'com.h2database:h2'
+    implementation 'com.mysql:mysql-connector-j'
+    implementation 'org.projectlombok:lombok:' + lombok
+    annotationProcessor 'org.projectlombok:lombok:' + lombok
+
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.projectlombok:lombok:' + lombok
+    testImplementation 'org.awaitility:awaitility:' + awaitility
+    testImplementation 'com.adarshr:gradle-test-logger-plugin:' + logger
+    testAnnotationProcessor 'org.projectlombok:lombok:' + lombok
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    systemProperty("spring.profiles.active", "test")
+    useJUnitPlatform()
+}
+
+test {
+    filter {
+        excludeTestsMatching("*IT");
+    }
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'integration tests.'
+    group = 'verification'
+    systemProperty("spring.profiles.active", "test")
+    useJUnitPlatform()
+    filter {
+        excludeTestsMatching("*Test");
+        includeTestsMatching("*IT");
+        excludeTestsMatching("*NoOp*IT");
+    }
+}
+
+tasks.named('integrationTest') {
+    retry {
+        failOnPassedAfterRetry = false
+        maxRetries = 1
+    }
+}
+
+tasks.register('integrationNoOpTest', Test) {
+    description = 'integration no-op tests.'
+    group = 'verification'
+    systemProperty("spring.profiles.active", "testnoop")
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching("EventNoOpReqMessageIT");
+        includeTestsMatching("EventNoOpMessageIT");
+    }
+}
+
+tasks.named('integrationNoOpTest') {
+    retry {
+        failOnPassedAfterRetry = false
+        maxRetries = 1
+    }
+}
+
+check.dependsOn integrationNoOpTest
+integrationNoOpTest.dependsOn integrationTest
+
+tasks.bootJar {
+    enabled = false
+}
+
+tasks.named("jar") {
+    archiveClassifier = ''
+}
+
+//tasks.bootWar {
+//    enabled = false
+//}
+//
+//tasks.named("war") {
+//    archiveClassifier = ''
+//}
+
+tasks.register("bootRunLocalWs") {
+    group = "application"
+    description = "Superconductor STANDARD MODE: local_ws"
+    doFirst {
+        tasks.bootRun.configure {
+            systemProperty("spring.profiles.active", "local_ws")
+        }
+    }
+    finalizedBy("bootRun")
+}
+
+if (!project.hasProperty("server.port")) {
+    println("DOES NOT HAVE PROPERTY")
+//    project.ext.set("server.port", 5555)
+    println("000000000000000000000000 server.port allegedly should be blank: " + project.findProperty("server.port"))
+    println("000000000000000000000000 project.ext allegedly should be blank: " + project.ext.find("server.port"))
+//    project.setProperty("server.port", 5555)
+//    project.ext.set("server.port", 5555)
+    project.ext.setProperty("server.port", 5555)
+    println("PROPERTIES NOW SET")
+    println("111111111111111111111111 server.port: " + project.findProperty("server.port"))
+    println("111111111111111111111111 either project.ext.find should be populated: " + project.ext.find("server.port"))
+    println("111111111111111111111111 or project.ext.getProperty should be populated: " + project.ext.getProperty("server.port"))
+} else {
+    println("HAS PROPERTY")
+    println("222222222222222222222222 server.port: " + project.findProperty("server.port"))
+    println("222222222222222222222222 either project.ext.find should be populated: " + project.ext.find("server.port"))
+    println("222222222222222222222222 or project.ext.getProperty should be populated: " + project.ext.getProperty("server.port"))
+}
+
+bootRun {
+    args += ["--server.port=${project.properties["server.port"]}"]
+}
+
+tasks.register("bootRunLocalWss") {
+    group = "application"
+    description = "Superconductor SECURE MODE: local_wss"
+    doFirst {
+        tasks.bootRun.configure {
+            systemProperty("spring.profiles.active", "local_wss")
+        }
+    }
+    finalizedBy("bootRun")
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+}

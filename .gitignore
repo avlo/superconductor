@@ -3,6 +3,8 @@
 .project
 .gitattributes
 
+autotest.properties
+
 superconductor.iml
 target/
 

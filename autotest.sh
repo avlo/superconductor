@@ -13,11 +13,20 @@
 IT_WAIT=15
 # IT_WAIT > ( time @ superconductor service process in "running state" ) - ( time @ superconductor service process start )  
 
-M2_HOME='/home/nick/.m2/repository'
-NOSTR_JAVA_MAVEN_LOCAL_REPO=$M2_HOME/xyz/tcheeric
-GIT_HOME='/home/nick/git'
-NOSTR_HOME=$GIT_HOME/avlo-nostr-java-fork
-SUPER_HOME=$GIT_HOME/superconductor
+file="./autotest.properties"
+
+read_properties() {
+  echo "using autotest.properties key/value:"
+  while IFS='=' read -r key value
+  do
+  #  loops reads autotest.properties key/value into script variables:
+  #   M2_NOSTR_JAVA_REPO
+  #   NOSTR_JAVA_HOME
+  #   SUPERCONDUCTOR_HOME  
+    eval ${key}=\${value}
+    echo " " ${key} "=" ${value}
+  done < "$file"
+}
 
 # build tool mode defaults to gradle
 MODE="gradle"
@@ -132,10 +141,10 @@ publish() {
 
 run_superconductor() {
   if [ $MODE == "gradle" ]; then
-    gradle bootRunLocalWs &
+    gradle app:bootRunLocalWs &
     SUPER_PID=$!
   else
-    { mvn spring-boot:run -P local_ws; } &
+    { mvn spring-boot:run -f app/pom.xml -P local_ws; } &
     SUPER_PID=$!
   fi
   return $!
@@ -167,23 +176,22 @@ banner() {
 }
 
 cd_nostr_java() {
-  banner "cd to nostr-java:" "" "     [$NOSTR_HOME]"
-  cd $NOSTR_HOME || exit_with_code $FAILURE_EXIT_CODE 
+  banner "cd to nostr-java:" "" "     [$NOSTR_JAVA_HOME]"
+  cd $NOSTR_JAVA_HOME || exit_with_code $FAILURE_EXIT_CODE 
 }
 
 cd_superconductor() {
-  banner "cd to superconductor:" "" "     [$SUPER_HOME]"
-  cd $SUPER_HOME || exit_with_code $FAILURE_EXIT_CODE
+  banner "cd to superconductor:" "" "     [$SUPERCONDUCTOR_HOME]"
+  cd $SUPERCONDUCTOR_HOME || exit_with_code $FAILURE_EXIT_CODE
 }
 
 rm_maven_local() {
-  banner "clear nostr-java [$NOSTR_JAVA_MAVEN_LOCAL_REPO] repo"
-  rm -rf $NOSTR_JAVA_MAVEN_LOCAL_REPO || exit_with_code $FAILURE_EXIT_CODE   
+  banner "clear nostr-java [$M2_NOSTR_JAVA_REPO] repo"
+  rm -rf $M2_NOSTR_JAVA_REPO || exit_with_code $FAILURE_EXIT_CODE   
 }
 
 build_nostr_java() {
   cd_nostr_java
-  rm_maven_local
   banner "building nostr-java..."
   invoke_builder || exit_with_code $FAILURE_EXIT_CODE
   banner "...nostr-java unit tests, next..."
@@ -199,11 +207,12 @@ build_superconductor() {
 }
 
 publish_nostr_java_to_m2_local() {
-  banner "publishing to m2/local local:" "" "       [$NOSTR_JAVA_MAVEN_LOCAL_REPO]"  
+  rm_maven_local  
+  banner "publishing to m2/local local:" "" "       [$M2_NOSTR_JAVA_REPO]"
   publish || exit_with_code $FAILURE_EXIT_CODE
   banner "...completed publishing to m2/local"
-  banner "$NOSTR_JAVA_MAVEN_LOCAL_REPO contents:"
-  tree -D $NOSTR_JAVA_MAVEN_LOCAL_REPO
+  banner "$M2_NOSTR_JAVA_REPO contents:"
+  tree -D $M2_NOSTR_JAVA_REPO
 }
 
 kill_pids() {
@@ -293,6 +302,7 @@ user_prompt() {
 }
 
 ###########     main    ################
+read_properties
 user_prompt
 
 # unit tested nostr-java snapshot build 

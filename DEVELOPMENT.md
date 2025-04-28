@@ -18,8 +18,8 @@
 
 - Dependencies:
   - Java 21
-  - Spring [Boot](https://spring.io/projects/spring-boot) 3.3.4
-  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.3.4
+  - Spring [Boot](https://spring.io/projects/spring-boot) 3.4.3
+  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.4.3
   - Event/Message [nostr-java](https://github.com/avlo/nostr-java-avlo-fork/tree/develop)   (symmetric fork of tcheeric's [nostr-java](https://github.com/tcheeric/nostr-java/tree/develop)) API/library
 
 
@@ -107,9 +107,9 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([preferential over Dockerfile](https://reflectoring.io/spring-boot-docker/))
 
     $ mvn -N wrapper:wrapper
-    $ mvn spring-boot:build-image
+    $ mvn spring-boot:build-image -pl superconductor -Dmaven.test.skip=true
 
-(*optionally edit [docker-compose-dev_wss.yml](docker-compose-dev_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
+(*optionally edit [superconductor/docker-compose-dev_wss.yml](superconductor/docker-compose-dev_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
 
 ##### Start docker containers
 
@@ -118,15 +118,15 @@ Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([pr
 
 run without logging:
 
-    docker compose -f docker-compose-dev_wss.yml up 
+    docker compose -f superconductor/docker-compose-dev_wss.yml up 
 
 run with container logging displayed to console:
 
-    docker compose -f docker-compose-dev_wss.yml up --abort-on-container-failure --attach-dependencies
+    docker compose -f superconductor/docker-compose-dev_wss.yml up --abort-on-container-failure --attach-dependencies
 
 run with docker logging displayed to console:
 
-    docker compose -f docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
+    docker compose -f superconductor/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
 </details> 
 
 <details>
@@ -134,15 +134,15 @@ run with docker logging displayed to console:
 
 run without logging:
 
-    docker compose -f docker-compose-dev_ws.yml up 
+    docker compose -f superconductor/docker-compose-dev_ws.yml up 
 
 run with container logging displayed to console:
 
-    docker compose -f docker-compose-dev_ws.yml up --abort-on-container-failure --attach-dependencies
+    docker compose -f superconductor/docker-compose-dev_ws.yml up --abort-on-container-failure --attach-dependencies
 
 run with docker logging displayed to console:
 
-    docker compose -f docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
+    docker compose -f superconductor/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
 </details> 
 
 ----
@@ -152,13 +152,13 @@ run with docker logging displayed to console:
 <details>
   <summary>WSS/HTTPS</summary>
 
-    docker compose -f docker-compose-dev_wss.yml stop superconductor superconductor-db
+    docker compose -f superconductor/docker-compose-dev_wss.yml stop superconductor superconductor-db
 </details> 
 
 <details>
   <summary>WS/HTTP</summary>  
 
-    docker compose -f docker-compose-prod_ws.yml stop superconductor superconductor-db
+    docker compose -f superconductor/docker-compose-prod_ws.yml stop superconductor superconductor-db
 </details>
 
 ----  
@@ -168,13 +168,13 @@ run with docker logging displayed to console:
 <details>
   <summary>WSS/HTTPS</summary>
 
-    docker compose -f docker-compose-dev_wss.yml down --remove-orphans
+    docker compose -f superconductor/docker-compose-dev_wss.yml down --remove-orphans
 </details> 
 
 <details>
   <summary>WS/HTTP</summary>  
 
-    docker compose -f docker-compose-prod_ws.yml down --remove-orphans
+    docker compose -f superconductor/docker-compose-prod_ws.yml down --remove-orphans
 </details>  
 
 ----
@@ -186,14 +186,14 @@ run with docker logging displayed to console:
 
 
     cd <your_git_home_dir>/superconductor
-    mvn spring-boot:run -P local_wss
+    mvn spring-boot:run -pl superconductor -P local_wss
 </details> 
 
 <details>
   <summary>WS/HTTP</summary>
 
     cd <your_git_home_dir>/superconductor
-    mvn spring-boot:run -P local_ws
+    mvn spring-boot:run -pl superconductor -P local_ws
 </details>  
 
 ----
@@ -201,13 +201,13 @@ run with docker logging displayed to console:
 ### 3.  Run locally as executable jar
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar target/superconductor-1.13.0.war  
+    $ java -jar superconductor/target/superconductor-1.13.0.war  
 
 ----
 
 ### 4.  Run using pre-existing local application-server-container instance
 
-    $ cp <your_git_home_dir>/superconductor/target/superconductor-1.13.0.war <your_container/instance/deployment_directory>
+    $ cp <your_git_home_dir>/superconductor/superconductor/target/superconductor-1.13.0.war <your_container/instance/deployment_directory>
 
 ----
 
@@ -236,29 +236,33 @@ run with docker logging displayed to console:
 
 Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
-    select id, pub_key, session_id, challenge from auth;
-    select id, concat(left(event_id_string,10), '...') as event_id_string, kind, nip, created_at, concat(left(pub_key,10), '...') as pub_key, content from event;
-    select id, event_id, event_tag_id from "event-event_tag-join";
-    select id, event_id_string, recommended_relay_url, marker from event_tag;
-    select id, event_id, pubkey_id from "event-pubkey_tag-join";
-    select id, event_id from deletion_event;
-    select id, concat(left(public_key,10), '...') as public_key, main_relay_url, pet_name from pubkey_tag;
-    select id, event_id, subject_tag_id from "event-subject_tag-join";
-    select id, subject from subject_tag;
-    select id, hashtag_tag from hashtag_tag;
-    select id, location from geohash_tag;
-    select id, identifier from identifier_tag;
-    select id, event_id, geohash_tag_id from "event-geohash_tag-join";
-    select id, event_id, hash_tag_id from "event-hashtag_tag-join";
-    select id, event_id, generic_tag_id from "event-generic_tag-join";
-    select id, event_id, identifier_tag_id from "event-identifier_tag-join";
-    select id, code from generic_tag;
-    select id, generic_tag_id, element_attribute_id from "generic_tag-element_attribute-join";
-    select id, name, "value" from element_attribute;
-    select id, event_id, price_tag_id from "event-price_tag-join";
-    select id, uri from relays_tag;
-    select id, event_id, relays_id from "event-relays_tag-join";
-    select id, number, currency, frequency from price_tag;
+	select id, pub_key, session_id, challenge from auth;
+	select id, concat(left(event_id_string,10), '...') as event_id_string, kind, nip, created_at, concat(left(pub_key,10), '...') as pub_key, content from event;
+	select id, event_id, event_tag_id from "event-event_tag-join";
+	select id, event_id_string, recommended_relay_url, marker from event_tag;
+	select id, event_id, pubkey_id from "event-pubkey_tag-join";
+	select id, event_id from deletion_event;
+	select id, concat(left(public_key,10), '...') as public_key, main_relay_url, pet_name from pubkey_tag;
+	select id, event_id, subject_tag_id from "event-subject_tag-join";
+	select id, kind, pub_key, uuid, relay_uri from address_tag;
+	select id, uuid from identifier_tag;
+	select id, vote from vote_tag;
+	select id, subject from subject_tag;
+	select id, hashtag_tag from hashtag_tag;
+	select id, location from geohash_tag;
+	select id, uuid from identifier_tag;
+	select id, kind, pub_key, uuid, relay_uri, code from address_tag;
+	select id, event_id, geohash_tag_id from "event-geohash_tag-join";
+	select id, event_id, hash_tag_id from "event-hashtag_tag-join";
+	select id, event_id, generic_tag_id from "event-generic_tag-join";
+	select id, event_id, identifier_tag_id from "event-identifier_tag-join";
+	select id, code from generic_tag;
+	select id, generic_tag_id, element_attribute_id from "generic_tag-element_attribute-join";
+	select id, name, "value" from element_attribute;
+	select id, event_id, price_tag_id from "event-price_tag-join";
+	select id, uri from relays_tag;
+	select id, event_id, relays_id from "event-relays_tag-join";
+	select id, number, currency, frequency from price_tag;
 
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 

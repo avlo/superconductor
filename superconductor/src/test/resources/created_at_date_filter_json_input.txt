@@ -1,0 +1,34 @@
+[
+  "EVENT",
+  {
+    "content": "created at test",
+    "id":"aaabbb6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc",
+    "kind": 1,
+    "created_at": 1111111111111,
+    "pubkey": "aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984",
+    "tags": [
+      [
+        "a",
+        "30023:aaabbbd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd",
+        "wss://nostr.example.com"
+      ],
+      [
+        "custom-tag",
+        "created at date custom-tag random value"
+      ],
+      [
+        "p",
+        "bbbcccf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+      ],
+      [
+        "e",
+        "aaabbbac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"
+      ],
+      [
+        "g",
+        "created at date textnote geo-tag-1"
+      ]
+    ],
+    "sig": "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"
+  }
+]

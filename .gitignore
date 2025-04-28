@@ -1,8 +1,15 @@
-.mvn
 .idea
 .project
+.gitattributes
+
+autotest.properties
 
 superconductor.iml
+parent.iml
+app/superconductor.iml
 target/
 
 pom.xml.versionsBackup
+
+.gradle/
+build/

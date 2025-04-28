@@ -1,0 +1,3 @@
+plugins {
+    id 'superconductor.java-conventions'
+}

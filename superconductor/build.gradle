@@ -1,7 +1,28 @@
 plugins {
+//    id 'java'
+//    id 'application'
     id 'superconductor.java-conventions'
 }
 
 dependencies {
     api project(':starter')
+
+//    def springBootVersion = '3.4.3'
+//    def mysqlConnectorJVersion = '9.1.0'
+//
+//    runtimeOnly 'org.springframework.boot:spring-boot-docker-compose:' + springBootVersion
+//    runtimeOnly 'com.mysql:mysql-connector-j:' + mysqlConnectorJVersion
 }
+
+//tasks.bootJar {
+//    enabled = true
+//}
+//
+//tasks.named("jar") {
+//    archiveClassifier = ''
+//}
+
+//tasks.named("bootBuildImage") {
+//    buildpacks = ["paketobuildpacks/builder-jammy-base"]
+//    dependsOn jar
+//}

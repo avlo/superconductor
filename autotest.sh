@@ -141,10 +141,10 @@ publish() {
 
 run_superconductor() {
   if [ $MODE == "gradle" ]; then
-    gradle app:bootRunLocalWs &
+    gradle superconductor:bootRunLocalWs &
     SUPER_PID=$!
   else
-    { mvn spring-boot:run -f app/pom.xml -P local_ws; } &
+    { mvn spring-boot:run -f superconductor/pom.xml -P local_ws; } &
     SUPER_PID=$!
   fi
   return $!

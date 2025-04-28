@@ -102,6 +102,7 @@ tasks.register('integrationTest', Test) {
 }
 
 tasks.named('integrationTest') {
+    getServerPort()
     retry {
         failOnPassedAfterRetry = false
         maxRetries = 1
@@ -120,6 +121,7 @@ tasks.register('integrationNoOpTest', Test) {
 }
 
 tasks.named('integrationNoOpTest') {
+    getServerPort()
     retry {
         failOnPassedAfterRetry = false
         maxRetries = 1
@@ -152,27 +154,20 @@ tasks.register("bootRunLocalWs") {
         tasks.bootRun.configure {
             systemProperty("spring.profiles.active", "local_ws")
         }
+        getServerPort()
     }
     finalizedBy("bootRun")
 }
 
-if (!project.hasProperty("server.port")) {
-    println("DOES NOT HAVE PROPERTY")
-//    project.ext.set("server.port", 5555)
-    println("000000000000000000000000 server.port allegedly should be blank: " + project.findProperty("server.port"))
-    println("000000000000000000000000 project.ext allegedly should be blank: " + project.ext.find("server.port"))
-//    project.setProperty("server.port", 5555)
-//    project.ext.set("server.port", 5555)
+void getServerPort() {
+    if (project.hasProperty("server.port")) {
+        println("using server.port [" + project.findProperty("server.port") + "]")
+        return
+    }
+
+    println("project default server.port not defined")
     project.ext.setProperty("server.port", 5555)
-    println("PROPERTIES NOW SET")
-    println("111111111111111111111111 server.port: " + project.findProperty("server.port"))
-    println("111111111111111111111111 either project.ext.find should be populated: " + project.ext.find("server.port"))
-    println("111111111111111111111111 or project.ext.getProperty should be populated: " + project.ext.getProperty("server.port"))
-} else {
-    println("HAS PROPERTY")
-    println("222222222222222222222222 server.port: " + project.findProperty("server.port"))
-    println("222222222222222222222222 either project.ext.find should be populated: " + project.ext.find("server.port"))
-    println("222222222222222222222222 or project.ext.getProperty should be populated: " + project.ext.getProperty("server.port"))
+    println("server.port set to 5555")
 }
 
 bootRun {
@@ -186,6 +181,7 @@ tasks.register("bootRunLocalWss") {
         tasks.bootRun.configure {
             systemProperty("spring.profiles.active", "local_wss")
         }
+        getServerPort()
     }
     finalizedBy("bootRun")
 }

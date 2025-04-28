@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>app</artifactId>
+  <artifactId>superconductor</artifactId>
   <version>1.13.0</version>
-  <name>app</name>
+  <name>superconductor</name>
   <packaging>war</packaging>
 
   <parent>
@@ -57,30 +57,18 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>${project.artifactId}-${project.version}</finalName>
+    <finalName>${project.name}-${project.version}</finalName>
     <plugins>
-      <!--      below:                                                      -->
-      <!--          superconductor as a non-executable fatJar/dependency    -->
-      <!--      if useful for you, simply uncomment below for inclusion     -->
-      <!--                                                                  -->
-      <!--      <plugin>-->
-      <!--        <groupId>org.apache.maven.plugins</groupId>-->
-      <!--        <artifactId>maven-assembly-plugin</artifactId>-->
-      <!--        <configuration>-->
-      <!--          <descriptorRefs>-->
-      <!--            <descriptorRef>jar-with-dependencies</descriptorRef>-->
-      <!--          </descriptorRefs>-->
-      <!--        </configuration>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <id>make-assembly</id>-->
-      <!--            <phase>package</phase>-->
-      <!--            <goals>-->
-      <!--              <goal>single</goal>-->
-      <!--            </goals>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--      </plugin>-->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
+        <configuration>
+          <image>
+            <builder>paketobuildpacks/builder-jammy-base:latest</builder>
+          </image>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -143,19 +131,19 @@
       <properties>
         <spring.profiles.active>local_ws</spring.profiles.active>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-              <profiles>
-                <profile>local_ws</profile>
-              </profiles>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
+<!--      <build>-->
+<!--        <plugins>-->
+<!--          <plugin>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--            <configuration>-->
+<!--              <profiles>-->
+<!--                <profile>local_ws</profile>-->
+<!--              </profiles>-->
+<!--            </configuration>-->
+<!--          </plugin>-->
+<!--        </plugins>-->
+<!--      </build>-->
     </profile>    
     
 <!--    <profile>-->
@@ -164,12 +152,39 @@
 <!--        <spring.profiles.active>local_wss</spring.profiles.active>-->
 <!--      </properties>-->
 <!--    </profile>-->
-<!--    <profile>-->
-<!--      <id>dev_ws</id>-->
-<!--      <properties>-->
-<!--        <spring.profiles.active>dev_ws</spring.profiles.active>-->
-<!--      </properties>-->
-<!--    </profile>-->
+
+  <profile>
+    <id>dev_ws</id>
+    <properties>
+      <spring.profiles.active>dev_ws</spring.profiles.active>
+    </properties>
+<!--    <build>-->
+<!--      <plugins>-->
+<!--        <plugin>-->
+<!--          <groupId>org.springframework.boot</groupId>-->
+<!--          <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--          <configuration>-->
+<!--            <profiles>-->
+<!--              <profile>dev_ws</profile>-->
+<!--            </profiles>-->
+<!--&lt;!&ndash;            <image>&ndash;&gt;-->
+<!--&lt;!&ndash;              <builder>paketobuildpacks/builder-jammy-base:latest</builder>&ndash;&gt;-->
+<!--&lt;!&ndash;            </image>&ndash;&gt;-->
+<!--          </configuration>-->
+<!--        </plugin>-->
+<!--      </plugins>-->
+<!--    </build>-->
+    <dependencies>
+      <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>${mysql-connector-j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+    </dependencies>
+  </profile>
+    
+    
 <!--    <profile>-->
 <!--      <id>dev_wss</id>-->
 <!--      <properties>-->

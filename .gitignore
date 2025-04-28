@@ -4,7 +4,7 @@
 
 autotest.properties
 
-superconductor.iml
+parent.iml
 target/
 
 pom.xml.versionsBackup

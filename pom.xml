@@ -5,16 +5,16 @@
 
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>parent</artifactId>
-  <version>1.13.0</version>
   <name>superconductor</name>
+  <version>1.13.0</version>
   <description>SuperConductor Java Nostr-Relay Framework and Web Application</description>
   <packaging>pom</packaging>
 
   <modules>
-    <module>app</module>
     <module>autoconfigure</module>
     <module>lib</module>
     <module>starter</module>
+    <module>superconductor</module>
   </modules>
   
   <properties>
@@ -162,6 +162,7 @@
     </dependency>
   </dependencies>
   <build>
+<!--    <finalName>${project.name}-${project.version}</finalName>-->
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>

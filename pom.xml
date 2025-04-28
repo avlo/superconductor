@@ -162,17 +162,11 @@
     </dependency>
   </dependencies>
   <build>
-<!--    <finalName>${project.name}-${project.version}</finalName>-->
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${spring-boot.version}</version>
-<!--        <configuration>-->
-<!--          <image>-->
-<!--            <builder>paketobuildpacks/builder-jammy-base:latest</builder>-->
-<!--          </image>-->
-<!--        </configuration>-->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

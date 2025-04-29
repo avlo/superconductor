@@ -45,7 +45,7 @@ dependencies {
     def googleGuava = '33.2.1-jre'
     def awaitility = '4.2.0'
     def lombok = '1.18.36'
-    def subdivisionsVersion = '0.0.1'
+    def subdivisionsVersion = '1.0.0'
     def logger = '4.0.0'
 
     implementation 'org.springframework.boot:spring-boot-devtools:' + springBootVersion

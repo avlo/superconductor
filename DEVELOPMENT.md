@@ -37,60 +37,86 @@
 >     Java(TM) SE Runtime Environment (build 21.0.5+9-LTS-239)
 >     Java HotSpot(TM) 64-Bit Server VM (build 21.0.5+9-LTS-239, mixed mode, sharing)
 
+<details>
+  <summary>maven</summary>
+
     $ mvn -version
 >     Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
 >     Java version: 21.0.5, vendor: Oracle Corporation
+</details>
+<details>
+  <summary>gradle</summary>
+
+    $ gradle -version
+>     ------------------------------------------------------------
+>     Gradle 8.13
+>     ------------------------------------------------------------
+</details>
 
 ----
 
 ### Build Superconductor
-#### Build and install nostr-java dependency library
+#### 1. Check-out nostr-java dependency library
 
     $ cd <your_git_home_dir>
     $ git clone git@github.com:avlo/nostr-java-avlo-fork.git
     $ cd nostr-java-avlo-fork
     $ git checkout develop
-    $ mvn clean install
 
-#### Build and install SuperConductor
+#### 2. Check-out SuperConductor
 
     $ cd <your_git_home_dir>
     $ git clone https://github.com/avlo/superconductor
     $ cd superconductor
-    $ mvn clean install
 
-----
+#### 3. Configure JUnit / SpringBootTest security mode via [appication-test.properties](src/test/resources/application-test.properties) file
+<details>
+  <summary>Default: Non-Secure (WS) tests mode</summary>
 
-### JUnit / SpringBootTest Superconductor
-##### Two test modes, configurable via [appication-test.properties](src/test/resources/application-test.properties) file
-#### 1. Non-Secure (WS) tests mode
+    # ws autoconfigure
+    # security test (ws) disabled ('false') by default.
+    server.ssl.enabled=false                                           <--------  "false" for ws/non-secure
+    # ...
+    superconductor.relay.url=ws://localhost:5555                       <--------  "ws" protocol for ws/non-secure
+</details>
+<details>
+  <summary>Custom: Secure (WSS/TLS) tests mode</summary>
+
+    # wss autoconfigure
+    # to enable secure tests (wss), change below value to 'true' and...
+    server.ssl.enabled=true                                            <--------  "true" for wss/secure
+    # ...also for secure (wss), change below value to 'wss'...
+    superconductor.relay.url=wss://localhost:5555                      <--------  "wss" protocol for wss/secure
+
+   Configure SuperConductor run-time security, 3 options:
+
+  | SecurityLevel | Specification                                                        | Details                                                                                                                                                                                                                                                                                                                                                                                 |
+  |---------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | Highest       | SSL Certificate WSS/HTTPS<br>(industry standard secure encrypted)    | 1. [Obtain](https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/) an SSL certificate.<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file. |
+  | Medium        | Self-Signed Certificate WSS/HTTPS (locally created secure encrypted) | 1. Create a [Self-Signed Certificate](https://www.baeldung.com/openssl-self-signed-cert).<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file.                      |
+  | None/Default  | WS/HTTP<br>non-secure / non-encrypted                                | Security-related configuration(s) not required                                                                                                                                                                                                                                                                                                                                          |  
+
+</details>
+
+#### 4. Configure project properties
+supply required values in [autotest.properties](autotest.properties) file:
+```xml
+M2_NOSTR_JAVA_REPO=<your_local_m2_nostr_java_repo>
+NOSTR_JAVA_HOME=<your_local_nostr_java_home>
+SUPERCONDUCTOR_HOME=<your_local_superconductor_home>  
 ```
-# ws autoconfigure
-# security test (ws) disabled ('false') by default.
-server.ssl.enabled=false                                           <--------  "false" for ws/non-secure
-# ...
-superconductor.relay.url=ws://localhost:5555                       <--------  "ws" protocol for ws/non-secure 
+for example:
+```bash
+M2_NOSTR_JAVA_REPO=/home/nick/.m2/repository/xyz/tcheeric
+NOSTR_JAVA_HOME=/home/nick/git/avlo-nostr-java-fork
+SUPERCONDUCTOR_HOME=/home/nick/git/superconductor
 ```
-
-##### 2. Secure (WSS/TLS) tests mode
+#### 5.  Build application (both unit-test and integration-test included)
+```bash
+$ cd <your_git_home_dir>
+$ cd superconductor
+$ . ./autotest.sh
 ```
-# wss autoconfigure
-# to enable secure tests (wss), change below value to 'true' and...
-server.ssl.enabled=true                                            <--------  "true" for wss/secure
-# ...also for secure (wss), change below value to 'wss'...
-superconductor.relay.url=wss://localhost:5555                      <--------  "wss" protocol for wss/secure 
-```
-
-----
-
-#### Configure SuperConductor run-time security, 3 options:
-
-| SecurityLevel | Specification                                                        | Details                                                                                                                                                                                                                                                                                                                                                                                 |
-|---------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Highest       | SSL Certificate WSS/HTTPS<br>(industry standard secure encrypted)    | 1. [Obtain](https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/) an SSL certificate.<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file. |
-| Medium        | Self-Signed Certificate WSS/HTTPS (locally created secure encrypted) | 1. Create a [Self-Signed Certificate](https://www.baeldung.com/openssl-self-signed-cert).<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file.                      |
-| None/Default  | WS/HTTP<br>non-secure / non-encrypted                                | Security-related configuration(s) not required                                                                                                                                                                                                                                                                                                                                          |  
-
 ----
 
 ### Run SuperConductor (4 options)

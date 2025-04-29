@@ -21,6 +21,7 @@
   - Spring [Boot](https://spring.io/projects/spring-boot) 3.4.3
   - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.4.3
   - Event/Message [nostr-java](https://github.com/avlo/nostr-java-avlo-fork/tree/develop)   (symmetric fork of tcheeric's [nostr-java](https://github.com/tcheeric/nostr-java/tree/develop)) API/library
+  - [SubDivisions](https://github.com/avlo/subdivisions) nostr-relay client
 
 
 - Containerized deployment:

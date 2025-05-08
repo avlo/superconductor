@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.subdivisions.service.NostrRelayClient;
+import com.prosilion.subdivisions.client.standard.StandardNostrRelayClient;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +20,11 @@ import org.springframework.boot.ssl.SslBundles;
 
 @Slf4j
 public class NostrRelayService {
-  private final NostrRelayClient nostrRelayService;
+  private final StandardNostrRelayClient nostrRelayService;
 
   public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUri) throws ExecutionException, InterruptedException {
     log.debug("relayUri: \n{}", relayUri);
-    this.nostrRelayService = new NostrRelayClient(relayUri);
+    this.nostrRelayService = new StandardNostrRelayClient(relayUri);
   }
 
   public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUri, @NonNull SslBundles sslBundles) throws ExecutionException, InterruptedException {
@@ -34,7 +34,7 @@ public class NostrRelayService {
     log.debug("sslBundles name: \n{}", server);
     log.debug("sslBundles key: \n{}", server.getKey());
     log.debug("sslBundles protocol: \n{}", server.getProtocol());
-    this.nostrRelayService = new NostrRelayClient(relayUri, sslBundles);
+    this.nostrRelayService = new StandardNostrRelayClient(relayUri, sslBundles);
   }
 
   public OkMessage sendEvent(@NonNull String eventJson) throws IOException {

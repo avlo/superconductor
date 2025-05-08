@@ -10,7 +10,7 @@ plugins {
 }
 
 group = 'com.prosilion'
-version = '1.13.0'
+version = '1.13.1'
 //description = 'superconductor'
 
 java.sourceCompatibility = JavaVersion.VERSION_21

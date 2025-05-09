@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.entity;
 
 import com.prosilion.superconductor.dto.EventDto;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,12 +31,14 @@ public class EventEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  private String signature;
+  @Column(unique = true)
   private String eventIdString;
+
   private String pubKey;
   private Integer kind;
   private Integer nip;
   private Long createdAt;
+  private String signature;
 
   @Lob
   private String content;

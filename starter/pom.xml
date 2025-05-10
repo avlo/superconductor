@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>starter</artifactId>
-  <version>1.13.1</version>
+  <version>1.13.2</version>
   <name>starter</name>
   <packaging>jar</packaging>
 
   <parent>
     <groupId>com.prosilion.superconductor</groupId>
     <artifactId>parent</artifactId>
-    <version>1.13.1</version>
+    <version>1.13.2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -18,12 +18,12 @@
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
       <artifactId>lib</artifactId>
-      <version>1.13.1</version>
+      <version>1.13.2</version>
     </dependency>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
       <artifactId>autoconfigure</artifactId>
-      <version>1.13.1</version>
+      <version>1.13.2</version>
     </dependency>
   </dependencies>
 </project>

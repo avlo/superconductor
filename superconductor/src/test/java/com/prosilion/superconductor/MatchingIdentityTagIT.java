@@ -41,7 +41,7 @@ class MatchingIdentityTagIT {
       String textMessageEventJson = lines.collect(Collectors.joining("\n"));
       log.debug("setup() send event:\n  {}", textMessageEventJson);
       assertTrue(
-          nostrRelayService.sendEvent(
+          nostrRelayService.send(
                   new BaseMessageDecoder<EventMessage>().decode(textMessageEventJson))
               .getFlag());
     }
@@ -55,7 +55,7 @@ class MatchingIdentityTagIT {
     identifierTag.setUuid(D_TAG_VALUE_FROM_FILE);
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new IdentifierTagFilter<>(identifierTag)));
-    List<GenericEvent> returnedEvents = nostrRelayService.sendRequestReturnEvents(reqMessage);
+    List<GenericEvent> returnedEvents = nostrRelayService.send(reqMessage);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
 

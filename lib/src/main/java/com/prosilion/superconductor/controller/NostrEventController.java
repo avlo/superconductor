@@ -2,7 +2,7 @@ package com.prosilion.superconductor.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.service.clientresponse.ClientResponse;
-import com.prosilion.superconductor.service.message.MessageService;
+import com.prosilion.superconductor.service.message.MessageServiceIF;
 import com.prosilion.superconductor.service.message.RelayInfoDocService;
 import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.service.request.pubsub.TerminatedSocket;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @Controller
 @EnableWebSocket
 public class NostrEventController<T extends BaseMessage> extends TextWebSocketHandler implements WebSocketConfigurer {
-  private final Map<String, MessageService<T>> messageServiceMap;
+  private final Map<String, MessageServiceIF<T>> messageServiceMap;
   private final RelayInfoDocService relayInfoDocService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
   private final ApplicationEventPublisher publisher;
@@ -49,12 +49,12 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
 
   @Autowired
   public NostrEventController(
-      List<MessageService<T>> messageServices,
+      List<MessageServiceIF<T>> messageServices,
       RelayInfoDocService relayInfoDocService,
       ApplicationEventPublisher publisher) {
     this.messageServiceMap = messageServices.stream().collect(
         Collectors.toMap(
-            MessageService<T>::getCommand,
+            MessageServiceIF<T>::getCommand,
             Function.identity()));
     this.relayInfoDocService = relayInfoDocService;
     this.publisher = publisher;

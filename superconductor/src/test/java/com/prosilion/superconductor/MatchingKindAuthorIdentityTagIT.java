@@ -6,7 +6,6 @@ import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.PublicKey;
-import nostr.event.BaseTag;
 import nostr.event.Kind;
 import nostr.event.filter.AuthorFilter;
 import nostr.event.filter.Filters;
@@ -50,7 +49,7 @@ class MatchingKindAuthorIdentityTagIT {
       String textMessageEventJson = lines.collect(Collectors.joining("\n"));
       log.debug("setup() send event:\n  {}", textMessageEventJson);
       assertTrue(
-          nostrRelayService.sendEvent(
+          nostrRelayService.send(
                   new BaseMessageDecoder<EventMessage>().decode(textMessageEventJson))
               .getFlag());
     }
@@ -69,7 +68,7 @@ class MatchingKindAuthorIdentityTagIT {
         new Filters(
             kindFilter, authorFilter, identifierTagFilter));
 
-    List<GenericEvent> returnedEvents = nostrRelayService.sendRequestReturnEvents(reqMessage);
+    List<GenericEvent> returnedEvents = nostrRelayService.send(reqMessage);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
 

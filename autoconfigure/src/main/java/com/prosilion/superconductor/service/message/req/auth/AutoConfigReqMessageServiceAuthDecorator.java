@@ -1,21 +1,21 @@
 package com.prosilion.superconductor.service.message.req.auth;
 
 import com.prosilion.superconductor.service.event.AuthEntityService;
-import com.prosilion.superconductor.service.message.req.ReqMessageServiceBean;
 import com.prosilion.superconductor.service.message.req.ReqMessageServiceIF;
+import com.prosilion.superconductor.service.message.req.AutoConfigReqMessageService;
 import java.util.NoSuchElementException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.message.ReqMessage;
 
 @Slf4j
-public class ReqMessageServiceAuthDecorator<T extends ReqMessage> implements ReqMessageServiceIF<T> {
+public class AutoConfigReqMessageServiceAuthDecorator<T extends ReqMessage> implements AutoConfigReqMessageService<T> {
   public final String command = "REQ";
-  private final ReqMessageServiceBean<T> reqMessageService;
+  private final ReqMessageServiceIF<T> reqMessageService;
   private final AuthEntityService authEntityService;
 
-  public ReqMessageServiceAuthDecorator(
-      @NonNull ReqMessageServiceBean<T> reqMessageService,
+  public AutoConfigReqMessageServiceAuthDecorator(
+      @NonNull ReqMessageServiceIF<T> reqMessageService,
       @NonNull AuthEntityService authEntityService) {
     this.reqMessageService = reqMessageService;
     this.authEntityService = authEntityService;

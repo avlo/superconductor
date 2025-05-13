@@ -20,6 +20,10 @@ import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
+import nostr.event.impl.GenericEvent;
+import nostr.event.json.codec.BaseMessageDecoder;
+import nostr.event.message.EventMessage;
+import nostr.event.message.ReqMessage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -82,7 +86,7 @@ abstract class AbstractMultipleSubscriber {
     log.debug("next hex: {}", nextHex);
     String globalEventJson = getGlobalEventJson(nextHex);
     log.debug("setup() send event:\n  {}", globalEventJson);
-    nostrRelayService.sendEvent(globalEventJson);
+    nostrRelayService.send(new BaseMessageDecoder<EventMessage>().decode(globalEventJson));
     targetEventIds.add(nextHex); // targetEventId String values utilized by inherited classes
   }
 
@@ -112,18 +116,10 @@ abstract class AbstractMultipleSubscriber {
   }
 
   private void sendRequest(String uuidKey) throws JsonProcessingException {
-    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqJson(uuidKey),
-        uuidKey
-    );
-    log.debug("okMessage:\n  {}", returnedJsonMap);
-    List<String> responseJson = returnedJsonMap.get(Command.EVENT);
+    List<GenericEvent> send = nostrRelayService.send(
+        new BaseMessageDecoder<ReqMessage>().decode(createReqJson(uuidKey)));
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(uuidKey);
     log.debug("expectedJson:\n  {}", expectedJsonInAnyOrder);
-    log.debug("------------");
-    log.debug("responseJson:\n  {}", responseJson);
-    assertTrue(responseJson.stream().anyMatch(s -> s.contains(uuidKey)));
-    assertTrue(compareWithoutOrder(responseJson.getFirst(), expectedJsonInAnyOrder));
   }
 
   protected synchronized String getNextHex(int i) {

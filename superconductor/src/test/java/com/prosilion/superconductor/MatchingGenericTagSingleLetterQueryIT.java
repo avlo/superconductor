@@ -1,18 +1,21 @@
 package com.prosilion.superconductor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.Command;
+import nostr.api.NIP01;
+import nostr.event.NIP01Event;
+import nostr.event.filter.Filters;
+import nostr.event.filter.HashtagTagFilter;
+import nostr.event.impl.GenericEvent;
+import nostr.event.message.EventMessage;
+import nostr.event.message.ReqMessage;
+import nostr.event.tag.HashtagTag;
+import nostr.id.Identity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,53 +31,47 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MatchingGenericTagSingleLetterQueryIT {
   private final NostrRelayService nostrRelayService;
 
+  Identity identity = Factory.createNewIdentity();
+  String content = Factory.lorumIpsum(getClass());
+
   @Autowired
   MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_generic_tag_query_filter_single_letter_json_input.txt"))) {
-      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
-      log.debug("setup() send event:\n  {}", textMessageEventJson);
-      assertTrue(nostrRelayService.sendEvent(textMessageEventJson).getFlag());
-    }
+    NIP01<NIP01Event> textNoteEvent = new NIP01<>(identity).createTextNoteEvent(content);
+    textNoteEvent.addTag(new HashtagTag("h-tag-1"));
+    assertTrue(
+        nostrRelayService
+            .send(
+                new EventMessage(textNoteEvent.sign().getEvent()))
+            .getFlag());
   }
 
   @Test
-  void testReqMessagesNoGenericMatch() {
+  void testReqMessagesNoGenericMatch() throws JsonProcessingException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String genericTagString = "textnote-geo-tag-2";
-    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqJson(subscriberId, genericTagString),
-        subscriberId
-    );
-    log.debug("okMessage:");
-    log.debug("  " + returnedJsonMap);
+    String hashTagString = "textnote-geo-tag-2";
 
-    assertTrue(returnedJsonMap.get(Command.EVENT).isEmpty());
-    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
+    assertTrue(nostrRelayService
+        .send(new ReqMessage(subscriberId, new Filters(
+            new HashtagTagFilter<>(new HashtagTag(hashTagString)))))
+        .isEmpty());
   }
 
   @Test
-  void testReqMessagesMatchesGeneric() {
+  void testReqMessagesMatchesGeneric() throws JsonProcessingException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String genericTagString = "h-tag-1";
-    Map<Command, List<String>> returnedJsonMap = nostrRelayService.sendRequest(
-        createReqJson(subscriberId, genericTagString),
-        subscriberId
-    );
-    log.debug("okMessage:");
-    log.debug("  " + returnedJsonMap);
+    String hashTagString = "h-tag-1";
 
-    assertFalse(returnedJsonMap.get(Command.EVENT).isEmpty());
+    List<GenericEvent> events = nostrRelayService
+        .send(
+            new ReqMessage(subscriberId, new Filters(
+                new HashtagTagFilter<>(new HashtagTag(hashTagString)))));
+
+    assertFalse(events.isEmpty());
     //    associated event
-    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
-    assertTrue(returnedJsonMap.get(Command.EVENT).stream().anyMatch(s -> s.contains("h-tag-1")));
-    assertFalse(returnedJsonMap.get(Command.EOSE).isEmpty());
-  }
-
-  private String createReqJson(@NonNull String uuid, String genericTagString) {
-    return "[\"REQ\",\"" + uuid + "\",{\"#h\":[\"" + genericTagString + "\"]}]";
+    assertTrue(events.stream().anyMatch(s -> s.getPubKey().toHexString().equals(identity.getPublicKey().toHexString())));
+    assertTrue(events.stream().anyMatch(s -> s.getTags().stream().anyMatch(tag -> tag.toString().contains(hashTagString))));
   }
 }

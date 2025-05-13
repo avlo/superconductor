@@ -3,7 +3,7 @@ package com.prosilion.superconductor.service.message.auth;
 import com.prosilion.superconductor.entity.auth.AuthEntity;
 import com.prosilion.superconductor.service.event.AuthEntityService;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.message.MessageService;
+import com.prosilion.superconductor.service.message.MessageServiceIF;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.time.Instant;
 @ConditionalOnProperty(
     name = "superconductor.auth.active",
     havingValue = "true")
-public class AuthMessageService<T extends CanonicalAuthenticationMessage> implements MessageService<T> {
+public class AuthMessageService<T extends CanonicalAuthenticationMessage> implements MessageServiceIF<T> {
   @Getter
   public final String command = "AUTH";
   private final AuthEntityService authEntityService;

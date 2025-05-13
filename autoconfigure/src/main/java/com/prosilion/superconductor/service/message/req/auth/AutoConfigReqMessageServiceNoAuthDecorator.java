@@ -1,17 +1,17 @@
 package com.prosilion.superconductor.service.message.req.auth;
 
-import com.prosilion.superconductor.service.message.req.ReqMessageServiceBean;
 import com.prosilion.superconductor.service.message.req.ReqMessageServiceIF;
+import com.prosilion.superconductor.service.message.req.AutoConfigReqMessageService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.message.ReqMessage;
 
 @Slf4j
-public class ReqMessageServiceNoAuthDecorator<T extends ReqMessage> implements ReqMessageServiceIF<T> {
+public class AutoConfigReqMessageServiceNoAuthDecorator<T extends ReqMessage> implements AutoConfigReqMessageService<T> {
   public final String command = "REQ";
-  private final ReqMessageServiceBean<T> reqMessageService;
+  private final ReqMessageServiceIF<T> reqMessageService;
 
-  public ReqMessageServiceNoAuthDecorator(@NonNull ReqMessageServiceBean<T> reqMessageService) {
+  public AutoConfigReqMessageServiceNoAuthDecorator(@NonNull ReqMessageServiceIF<T> reqMessageService) {
     this.reqMessageService = reqMessageService;
   }
 

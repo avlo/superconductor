@@ -3,13 +3,17 @@ package com.prosilion.superconductor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
+import java.io.IOException;
+import java.util.List;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.api.NIP01;
 import nostr.base.PublicKey;
 import nostr.event.filter.AuthorFilter;
 import nostr.event.filter.EventFilter;
 import nostr.event.filter.Filters;
 import nostr.event.impl.GenericEvent;
+import nostr.event.message.EventMessage;
 import nostr.event.message.ReqMessage;
 import nostr.id.Identity;
 import org.junit.jupiter.api.Test;
@@ -17,9 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.io.IOException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EventMessageIT {
   private final NostrRelayService nostrRelayService;
 
-  private final static PublicKey authorPubKey = Identity.generateRandomIdentity().getPublicKey();
+  private final static Identity identity = Identity.generateRandomIdentity();
   private final static String eventId = Factory.generateRandomHex64String();
   private final static String globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
   private final String content;
@@ -40,10 +41,12 @@ class EventMessageIT {
     this.nostrRelayService = nostrRelayService;
     this.content = Factory.lorumIpsum(getClass());
 
-    String globalEventJson = "[\"EVENT\",{\"id\":\"" + eventId + "\",\"kind\":1,\"content\":\"" + content + "\",\"pubkey\":\"" + authorPubKey + "\",\"created_at\":1717357053050,\"tags\":[],\"sig\":\"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
-    log.debug("setup() send event:\n  {}", globalEventJson);
-
-    assertTrue(this.nostrRelayService.sendEvent(globalEventJson).getFlag());
+    assertTrue(
+        this.nostrRelayService
+            .send(
+                new EventMessage(
+                    new NIP01<>(identity).createTextNoteEvent(content).sign().getEvent()))
+            .getFlag());
   }
 
   @Test
@@ -51,25 +54,25 @@ class EventMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     EventFilter<GenericEvent> eventFilter = new EventFilter<>(new GenericEvent(eventId));
-    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(authorPubKey);
+    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
-    List<GenericEvent> returnedEvents = nostrRelayService.sendRequestReturnEvents(reqMessage);
+    List<GenericEvent> returnedEvents = nostrRelayService.send(reqMessage);
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedEvents);
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.getPubKey().equals(authorPubKey)));
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.getPubKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter, authorFilter));
-    List<GenericEvent> returnedEvents2 = nostrRelayService.sendRequestReturnEvents(reqMessage2);
+    List<GenericEvent> returnedEvents2 = nostrRelayService.send(reqMessage2);
 
     log.debug("okMessage:");
     log.debug("  " + returnedEvents2);
     assertTrue(returnedEvents2.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEvents2.stream().anyMatch(event -> event.getContent().equals(content)));
-    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getPubKey().equals(authorPubKey)));
+    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getPubKey().equals(identity.getPublicKey())));
   }
 
   @Test
@@ -79,7 +82,7 @@ class EventMessageIT {
     EventFilter<GenericEvent> eventFilter = new EventFilter<>(new GenericEvent(eventId));
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    List<GenericEvent> returnedEvents = nostrRelayService.sendRequestReturnEvents(reqMessage);
+    List<GenericEvent> returnedEvents = nostrRelayService.send(reqMessage);
 
     log.debug("okMessage to testReqFilteredByEventId:");
     log.debug("  " + returnedEvents);
@@ -87,7 +90,7 @@ class EventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter));
-    List<GenericEvent> returnedEvents2 = nostrRelayService.sendRequestReturnEvents(reqMessage2);
+    List<GenericEvent> returnedEvents2 = nostrRelayService.send(reqMessage2);
 
     log.debug("okMessage:");
     log.debug("  " + returnedEvents2);
@@ -99,21 +102,21 @@ class EventMessageIT {
   void testReqFilteredByAuthor() throws JsonProcessingException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(authorPubKey);
+    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
-    List<GenericEvent> returnedEvents = nostrRelayService.sendRequestReturnEvents(reqMessage);
+    List<GenericEvent> returnedEvents = nostrRelayService.send(reqMessage);
 
     log.debug("okMessage to testReqFilteredByAuthor:");
     log.debug("  " + returnedEvents);
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.getPubKey().equals(authorPubKey)));
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.getPubKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(authorFilter));
-    List<GenericEvent> returnedEvents2 = nostrRelayService.sendRequestReturnEvents(reqMessage2);
+    List<GenericEvent> returnedEvents2 = nostrRelayService.send(reqMessage2);
 
     log.debug("okMessage:");
     log.debug("  " + returnedEvents2);
-    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getPubKey().equals(authorPubKey)));
+    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getPubKey().equals(identity.getPublicKey())));
   }
 
   @Test
@@ -125,7 +128,7 @@ class EventMessageIT {
 
     ReqMessage reqMessage = new ReqMessage(nonMatchingSubscriberId, new Filters(eventFilter));
 
-    List<GenericEvent> returnedEvents = nostrRelayService.sendRequestReturnEvents(reqMessage);
+    List<GenericEvent> returnedEvents = nostrRelayService.send(reqMessage);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
     assertFalse(returnedEvents.stream().anyMatch(event -> event.getId().equals(eventId)));

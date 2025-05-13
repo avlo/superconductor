@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.message.event.auth;
 
 import com.prosilion.superconductor.service.event.AuthEntityService;
-import com.prosilion.superconductor.service.message.event.EventMessageServiceBean;
+import com.prosilion.superconductor.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
 import java.util.NoSuchElementException;
 import lombok.NonNull;
@@ -9,16 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import nostr.event.message.EventMessage;
 
 @Slf4j
-public class EventMessageServiceAuthDecorator<T extends EventMessage> implements EventMessageServiceIF<T> {
+public class AutoConfigEventMessageServiceAuthDecorator<T extends EventMessage> implements AutoConfigEventMessageServiceIF<T> {
   public final String command = "EVENT";
 
-  private final EventMessageServiceBean<T> eventMessageServiceBean;
+  private final EventMessageServiceIF<T> eventMessageServiceIF;
   private final AuthEntityService authEntityService;
 
-  public EventMessageServiceAuthDecorator(
-      @NonNull EventMessageServiceBean<T> eventMessageServiceBean,
+  public AutoConfigEventMessageServiceAuthDecorator(
+      @NonNull EventMessageServiceIF<T> eventMessageServiceIF,
       @NonNull AuthEntityService authEntityService) {
-    this.eventMessageServiceBean = eventMessageServiceBean;
+    this.eventMessageServiceIF = eventMessageServiceIF;
     this.authEntityService = authEntityService;
   }
 
@@ -32,7 +32,7 @@ public class EventMessageServiceAuthDecorator<T extends EventMessage> implements
       processNotOkClientResponse(eventMessage, sessionId, String.format("restricted: session [%s] has not been authenticated", sessionId));
       return;
     }
-    eventMessageServiceBean.processIncoming(eventMessage, sessionId);
+    eventMessageServiceIF.processIncoming(eventMessage, sessionId);
   }
 
   @Override
@@ -42,11 +42,11 @@ public class EventMessageServiceAuthDecorator<T extends EventMessage> implements
 
   @Override
   public void processOkClientResponse(T eventMessage, @NonNull String sessionId) {
-    eventMessageServiceBean.processOkClientResponse(eventMessage, sessionId);
+    eventMessageServiceIF.processOkClientResponse(eventMessage, sessionId);
   }
 
   @Override
   public void processNotOkClientResponse(T eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
-    eventMessageServiceBean.processNotOkClientResponse(eventMessage, sessionId, errorMessage);
+    eventMessageServiceIF.processNotOkClientResponse(eventMessage, sessionId, errorMessage);
   }
 }

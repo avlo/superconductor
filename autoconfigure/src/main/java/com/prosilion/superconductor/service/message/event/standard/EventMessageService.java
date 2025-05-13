@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.message.event.standard;
 
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.message.event.EventMessageServiceBean;
+import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.service.event.EventServiceIF;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import nostr.event.impl.GenericEvent;
 import nostr.event.message.EventMessage;
 
 @Slf4j
-public class EventMessageService<T extends EventMessage> implements EventMessageServiceBean<T> {
+public class EventMessageService<T extends EventMessage> implements EventMessageServiceIF<T> {
   private final EventServiceIF<GenericEvent> eventService;
   private final ClientResponseService clientResponseService;
 

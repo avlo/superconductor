@@ -1,7 +1,10 @@
 package com.prosilion.superconductor.service.message.req;
 
-import com.prosilion.superconductor.service.message.MessageService;
+import lombok.NonNull;
 import nostr.event.message.ReqMessage;
 
-public interface ReqMessageServiceIF<T extends ReqMessage> extends MessageService<T> {
+public interface ReqMessageServiceIF<T extends ReqMessage> {
+  void processIncoming(T reqMessage, @NonNull String sessionId);
+
+  void processNoticeClientResponse(T reqMessage, @NonNull String sessionId, @NonNull String errorMessage);
 }

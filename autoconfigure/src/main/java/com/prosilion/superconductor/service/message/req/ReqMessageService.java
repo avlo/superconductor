@@ -7,7 +7,7 @@ import lombok.NonNull;
 import nostr.event.impl.GenericEvent;
 import nostr.event.message.ReqMessage;
 
-public class ReqMessageService<T extends ReqMessage> implements ReqMessageServiceBean<T> {
+public class ReqMessageService<T extends ReqMessage> implements ReqMessageServiceIF<T> {
 
   private final ReqService<GenericEvent> reqService;
   private final ClientResponseService clientResponseService;

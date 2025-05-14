@@ -23,15 +23,15 @@ public class TestSubscriber<T> extends BaseSubscriber<T> {
 
   @Override
   public void hookOnNext(@NonNull T value) {
-    completed.setRelease(false);
+    completed.set(false);
     subscription.request(1);
-    completed.setRelease(true);
+    completed.set(true);
     items.add(value);
   }
 
   public List<T> getItems() {
     Awaitility.await()
-        .timeout(5, TimeUnit.SECONDS)
+        .timeout(3, TimeUnit.SECONDS)
         .untilTrue(completed);
     List<T> eventList = List.copyOf(items);
     items.clear();
@@ -40,6 +40,6 @@ public class TestSubscriber<T> extends BaseSubscriber<T> {
 
   @Override
   protected void hookOnComplete() {
-    completed.setRelease(true);
+    completed.set(true);
   }
 }

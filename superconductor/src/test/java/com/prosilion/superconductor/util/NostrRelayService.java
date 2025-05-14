@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.impl.GenericEvent;
+import nostr.event.BaseMessage;
 import nostr.event.message.EventMessage;
 import nostr.event.message.OkMessage;
 import nostr.event.message.ReqMessage;
@@ -17,11 +17,11 @@ import org.springframework.boot.ssl.SslBundles;
 
 @Slf4j
 public class NostrRelayService {
-  private final ReactiveNostrRelayClient nostrRelayService;
+  private final ReactiveNostrRelayClient<BaseMessage> nostrRelayService;
 
-  public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUri) throws ExecutionException, InterruptedException {
+  public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUri) {
     log.debug("relayUri: \n{}", relayUri);
-    this.nostrRelayService = new ReactiveNostrRelayClient(relayUri);
+    this.nostrRelayService = new ReactiveNostrRelayClient<>(relayUri);
   }
 
   public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUri, @NonNull SslBundles sslBundles) throws ExecutionException, InterruptedException {
@@ -31,7 +31,7 @@ public class NostrRelayService {
     log.debug("sslBundles name: \n{}", server);
     log.debug("sslBundles key: \n{}", server.getKey());
     log.debug("sslBundles protocol: \n{}", server.getProtocol());
-    this.nostrRelayService = new ReactiveNostrRelayClient(relayUri, sslBundles);
+    this.nostrRelayService = new ReactiveNostrRelayClient<>(relayUri, sslBundles);
   }
 
   public OkMessage send(@NonNull EventMessage eventMessage) throws IOException {
@@ -40,8 +40,8 @@ public class NostrRelayService {
     return subscriber.getItems().getFirst();
   }
 
-  public List<GenericEvent> send(@NonNull ReqMessage reqMessage) throws JsonProcessingException {
-    TestSubscriber<GenericEvent> subscriber = new TestSubscriber<>();
+  public List<BaseMessage> send(@NonNull ReqMessage reqMessage) throws JsonProcessingException {
+    TestSubscriber<BaseMessage> subscriber = new TestSubscriber<>();
     nostrRelayService.send(reqMessage, subscriber);
     return subscriber.getItems();
   }

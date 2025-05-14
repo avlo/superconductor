@@ -5,6 +5,7 @@ import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.event.BaseMessage;
 import nostr.event.filter.Filters;
 import nostr.event.filter.IdentifierTagFilter;
 import nostr.event.impl.GenericEvent;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -55,10 +57,11 @@ class MatchingIdentityTagIT {
     identifierTag.setUuid(D_TAG_VALUE_FROM_FILE);
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new IdentifierTagFilter<>(identifierTag)));
-    List<GenericEvent> returnedEvents = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
-
     assertTrue(returnedEvents.stream().anyMatch(event ->
         event.getTags().stream().anyMatch(baseTag -> baseTag.equals(identifierTag))));
   }

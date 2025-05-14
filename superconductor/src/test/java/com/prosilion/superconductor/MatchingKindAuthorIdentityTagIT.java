@@ -3,9 +3,16 @@ package com.prosilion.superconductor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.PublicKey;
+import nostr.event.BaseMessage;
 import nostr.event.Kind;
 import nostr.event.filter.AuthorFilter;
 import nostr.event.filter.Filters;
@@ -22,13 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -68,8 +69,8 @@ class MatchingKindAuthorIdentityTagIT {
         new Filters(
             kindFilter, authorFilter, identifierTagFilter));
 
-    List<GenericEvent> returnedEvents = nostrRelayService.send(reqMessage);
-    log.debug("okMessage:");
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
     log.debug("  " + returnedEvents);
 
     assertTrue(returnedEvents.stream().anyMatch(event ->
@@ -78,6 +79,5 @@ class MatchingKindAuthorIdentityTagIT {
         event.getContent().equals(content)));
     assertTrue(returnedEvents.stream().anyMatch(event ->
         event.getTags().stream().anyMatch(baseTag -> baseTag.equals(identifierTag))));
-
   }
 }

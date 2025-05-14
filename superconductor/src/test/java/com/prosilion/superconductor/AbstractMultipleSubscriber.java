@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.Command;
+import nostr.event.BaseMessage;
 import nostr.event.impl.GenericEvent;
 import nostr.event.json.codec.BaseMessageDecoder;
 import nostr.event.message.EventMessage;
@@ -116,7 +117,7 @@ abstract class AbstractMultipleSubscriber {
   }
 
   private void sendRequest(String uuidKey) throws JsonProcessingException {
-    List<GenericEvent> send = nostrRelayService.send(
+    List<BaseMessage> send = nostrRelayService.send(
         new BaseMessageDecoder<ReqMessage>().decode(createReqJson(uuidKey)));
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(uuidKey);
     log.debug("expectedJson:\n  {}", expectedJsonInAnyOrder);

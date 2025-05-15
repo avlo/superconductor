@@ -22,6 +22,9 @@ read_properties() {
   #  loops reads autotest.properties key/value into script variables:
   #   M2_NOSTR_JAVA_REPO
   #   NOSTR_JAVA_HOME
+  #   M2_SUBDIVISIONS_REPO
+  #   SUBDIVISIONS_HOME
+  #   SUPERCONDUCTOR_REPO
   #   SUPERCONDUCTOR_HOME  
     eval ${key}=\${value}
     echo " " ${key} "=" ${value}
@@ -33,7 +36,6 @@ MODE="gradle"
 FAST_LABEL="fast (gradle-managed entities state)"
 # full re-run mode, default off
 CLEAN_AND_RERUN_MODE=0
-
 FAILURE_EXIT_CODE=1
 
 gradle_clean_build_no_tests() { 
@@ -139,6 +141,11 @@ publish() {
 # no explicit mvn install step as it's done after maven invoke_builder, above     
 }
 
+publish_superconductor() {
+  cd_superconductor
+  publish
+}
+
 run_superconductor() {
   if [ $MODE == "gradle" ]; then
     gradle superconductor:bootRunLocalWs &
@@ -180,24 +187,43 @@ cd_nostr_java() {
   cd $NOSTR_JAVA_HOME || exit_with_code $FAILURE_EXIT_CODE 
 }
 
+cd_subdivisions() {
+  banner "cd to subdivisions:" "" "     [$SUBDIVISIONS_HOME]"
+  cd $SUBDIVISIONS_HOME || exit_with_code $FAILURE_EXIT_CODE  
+}
+
 cd_superconductor() {
   banner "cd to superconductor:" "" "     [$SUPERCONDUCTOR_HOME]"
   cd $SUPERCONDUCTOR_HOME || exit_with_code $FAILURE_EXIT_CODE
 }
 
 rm_maven_local() {
+  is_clean_rerun_mode || [ $MODE != "gradle" ] && { banner "full rebuild mode, clearing all m2 repos:"; rm_maven_m2; return; }
+}
+
+rm_maven_m2() {
   banner "clear nostr-java [$M2_NOSTR_JAVA_REPO] repo"
   rm -rf $M2_NOSTR_JAVA_REPO || exit_with_code $FAILURE_EXIT_CODE   
+  banner "clear subdivisions [$M2_SUBDIVISIONS_REPO] repo"
+  rm -rf $M2_SUBDIVISIONS_REPO || exit_with_code $FAILURE_EXIT_CODE
+  banner "clear superconductor [$M2_SUPERCONDUCTOR_REPO] repo"
+  rm -rf $M2_SUPERCONDUCTOR_REPO || exit_with_code $FAILURE_EXIT_CODE
 }
 
 build_nostr_java() {
   cd_nostr_java
-  rm_maven_local
   banner "building nostr-java..."
   invoke_builder || exit_with_code $FAILURE_EXIT_CODE
   banner "...nostr-java unit tests, next..."
   invoke_unit_tests || exit_with_code $FAILURE_EXIT_CODE
   banner "...completed nostr-java build & unit tests" 
+}
+
+build_subdivisions() {
+  cd_subdivisions
+  banner "building subdivisions..."
+  invoke_builder || exit_with_code $FAILURE_EXIT_CODE
+  banner "...completed subdivisions build & unit tests"
 }
 
 build_superconductor() {
@@ -208,11 +234,21 @@ build_superconductor() {
 }
 
 publish_nostr_java_to_m2_local() {
-  banner "publishing to m2/local local:" "" "       [$M2_NOSTR_JAVA_REPO]"
+  cd_nostr_java
+  banner "publishing nostr-java to m2 local:" "" "       [$M2_NOSTR_JAVA_REPO]"
   publish || exit_with_code $FAILURE_EXIT_CODE
-  banner "...completed publishing to m2/local"
+  banner "...completed publishing nostr-java to m2"
   banner "$M2_NOSTR_JAVA_REPO contents:"
   tree -D $M2_NOSTR_JAVA_REPO
+}
+
+publish_subdivisions_to_m2_local() {
+  cd_subdivisions
+  banner "publishing subdivisions to m2 local:" "" "       [$M2_SUBDIVISIONS_REPO]"
+  publish || exit_with_code $FAILURE_EXIT_CODE
+  banner "...completed publishing subdivisions to m2"
+  banner "$M2_SUBDIVISIONS_REPO contents:"
+  tree -D $M2_SUBDIVISIONS_REPO
 }
 
 kill_pids() {
@@ -305,16 +341,23 @@ user_prompt() {
 read_properties
 user_prompt
 
+# clear local dependency repo's
+rm_maven_local
+
 # unit tested nostr-java snapshot build 
 build_nostr_java
 publish_nostr_java_to_m2_local
 
+# websocket/nostr-relay client
+build_subdivisions
+publish_subdivisions_to_m2_local
+
 # unit & integration tested superconductor snapshot build
-build_superconductor 
+build_superconductor
 run_superconductor_integration_tests
 
 # run nostr-java integration tests
 start_superconductor
-run_nostr_java_integration_tests || terminate_nostr_java $FAILURE_EXIT_CODE
+run_nostr_java_integration_tests && publish_superconductor || terminate_nostr_java $FAILURE_EXIT_CODE
 
 terminate_superconductor "0"

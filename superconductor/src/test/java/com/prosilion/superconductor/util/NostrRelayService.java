@@ -17,11 +17,11 @@ import org.springframework.boot.ssl.SslBundles;
 
 @Slf4j
 public class NostrRelayService {
-  private final ReactiveNostrRelayClient<BaseMessage> nostrRelayService;
+  private final ReactiveNostrRelayClient nostrRelayService;
 
   public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUri) {
     log.debug("relayUri: \n{}", relayUri);
-    this.nostrRelayService = new ReactiveNostrRelayClient<>(relayUri);
+    this.nostrRelayService = new ReactiveNostrRelayClient(relayUri);
   }
 
   public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUri, @NonNull SslBundles sslBundles) throws ExecutionException, InterruptedException {
@@ -31,7 +31,7 @@ public class NostrRelayService {
     log.debug("sslBundles name: \n{}", server);
     log.debug("sslBundles key: \n{}", server.getKey());
     log.debug("sslBundles protocol: \n{}", server.getProtocol());
-    this.nostrRelayService = new ReactiveNostrRelayClient<>(relayUri, sslBundles);
+    this.nostrRelayService = new ReactiveNostrRelayClient(relayUri, sslBundles);
   }
 
   public OkMessage send(@NonNull EventMessage eventMessage) throws IOException {

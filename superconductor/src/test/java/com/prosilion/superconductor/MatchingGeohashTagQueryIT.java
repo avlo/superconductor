@@ -6,25 +6,22 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.Command;
 import nostr.base.GenericTagQuery;
 import nostr.event.BaseMessage;
 import nostr.event.filter.Filters;
 import nostr.event.filter.GenericTagQueryFilter;
-import nostr.event.filter.IdentifierTagFilter;
+import nostr.event.filter.GeohashTagFilter;
 import nostr.event.impl.GenericEvent;
 import nostr.event.json.codec.BaseMessageDecoder;
 import nostr.event.message.EoseMessage;
 import nostr.event.message.EventMessage;
 import nostr.event.message.ReqMessage;
-import nostr.event.tag.GenericTag;
-import nostr.event.tag.IdentifierTag;
+import nostr.event.tag.GeohashTag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,7 +58,7 @@ class MatchingGeohashTagQueryIT {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagString = "textnote-geo-tag-non-existent";
 
-    ReqMessage reqMessage = new ReqMessage(subscriberId, 
+    ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(new GenericTagQueryFilter<>(
             new GenericTagQuery("#g", genericTagString))));
 
@@ -81,22 +78,45 @@ class MatchingGeohashTagQueryIT {
   void testReqMessagesMatchesGeneric() throws IOException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String genericTagString = "textnote-geo-tag-1";
+    String geohashTagString = "textnote-geo-tag-1";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(new GenericTagQueryFilter<>(
-            new GenericTagQuery("#g", genericTagString))));
+            new GenericTagQuery("#g", geohashTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
-    
+
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
     assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
-    assertTrue(returnedEvents.stream().map(event -> 
-        event.getTags().stream().anyMatch(s -> s.toString().equals("textnote-geo-tag-1"))).findAny().isPresent());
+    assertTrue(returnedEvents.stream().map(event ->
+        event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
+    assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
+  }
+
+  @Test
+  void testReqMessagesMatchesGeoHashTag() throws IOException {
+    String subscriberId = Factory.generateRandomHex64String();
+    //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
+    String geohashTagString = "textnote-geo-tag-1";
+    ReqMessage reqMessage = new ReqMessage(subscriberId,
+        new Filters(new GeohashTagFilter<>(
+            new GeohashTag(geohashTagString))));
+
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+
+    log.debug("okMessage:");
+    log.debug("  " + returnedBaseMessages);
+
+    assertFalse(returnedEvents.isEmpty());
+    //    associated event
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertTrue(returnedEvents.stream().map(event ->
+        event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
 }

@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-class EventMessageIT {
+public class EventMessageIT {
   private final NostrRelayService nostrRelayService;
 
   private final static Identity identity = Identity.generateRandomIdentity();

@@ -1,27 +1,33 @@
 //package com.prosilion.superconductor;
 //
+//import com.fasterxml.jackson.core.JsonProcessingException;
 //import com.prosilion.superconductor.util.Factory;
 //import com.prosilion.superconductor.util.NostrRelayService;
 //import java.util.List;
+//import java.util.concurrent.CompletableFuture;
+//import java.util.concurrent.TimeUnit;
+//import java.util.stream.IntStream;
 //import lombok.NonNull;
 //import lombok.extern.slf4j.Slf4j;
-//import nostr.base.Command;
+//import nostr.base.PublicKey;
+//import nostr.event.BaseMessage;
+//import nostr.event.filter.AuthorFilter;
+//import nostr.event.filter.Filters;
+//import nostr.event.impl.GenericEvent;
+//import nostr.event.message.EoseMessage;
+//import nostr.event.message.ReqMessage;
 //import org.junit.jupiter.api.Nested;
 //import org.junit.jupiter.api.Order;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.beans.factory.annotation.Value;
 //
-//import java.io.IOException;
-//import java.util.Map;
-//import java.util.Optional;
-//import java.util.concurrent.CompletableFuture;
-//import java.util.concurrent.ExecutionException;
-//import java.util.concurrent.TimeUnit;
-//import java.util.stream.IntStream;
-//
+//import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
 //import static org.awaitility.Awaitility.await;
-//import static org.junit.jupiter.api.Assertions.*;
+//import static org.junit.jupiter.api.Assertions.assertAll;
+//import static org.junit.jupiter.api.Assertions.assertEquals;
+//import static org.junit.jupiter.api.Assertions.assertFalse;
+//import static org.junit.jupiter.api.Assertions.assertTrue;
 //
 //@Slf4j
 //@Nested
@@ -55,32 +61,36 @@
 //    assertFalse(voidCompletableFuture.isCompletedExceptionally());
 //  }
 //
-//  private void sendRequestForAuthor(String uuid) {
-//    Map<Command, List<String>> authorMap = super.getNostrRelayService().sendRequest(
-//        createReqAuthorJson(uuid),
-//        uuid
-//    );
+//  private void sendRequestForAuthor(String uuid) throws JsonProcessingException {
+//    final String subscriberId = Factory.generateRandomHex64String();
 //
-//    log.debug("author okMessage:");
-//    log.debug("  " + authorMap);
-//    String responseJson = authorMap.get(Command.EVENT).getFirst();
+//    PublicKey publicKey = new PublicKey(uuid);
+//    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(publicKey);
+//
+//    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
+//    List<BaseMessage> returnedBaseMessages = super.getNostrRelayService().send(reqMessage);
+//    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+//
+//    assertEquals(2, returnedBaseMessages.size());
+//    assertTrue(returnedBaseMessages
+//        .stream()
+//        .filter(EoseMessage.class::isInstance)
+//        .map(EoseMessage.class::cast)
+//        .findAny().isPresent());
+//
+//    assertTrue(returnedEvents.stream().anyMatch(event -> event.getPubKey().toHexString().equals(publicKey.toHexString())));
+//
+//    String responseJson = returnedEvents.stream().map(event -> getExpectedJsonInAnyOrder(event.getId())).findFirst().orElseThrow();
 //    String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(authorPubKey);
 //    log.debug("author expectedJson:\n  {}", expectedJsonInAnyOrder);
 //    log.debug("------------");
-//    log.debug("author responseJson:\n  {}", responseJson);
 //    assertTrue(responseJson.contains(authorPubKey));
-////    assertTrue(super.compareWithoutOrder(responseJson, expectedJsonInAnyOrder));
+//    assertTrue(compareWithoutOrder(responseJson, expectedJsonInAnyOrder));
 //  }
 //
 //  public String createReqJson(@NonNull String uuid) {
 //    String reqJson = "[\"REQ\",\"" + uuid + "\",{\"ids\":[\"" + uuid + "\"]}]";
 //    log.debug("generated EVENT request json:\n  {}", reqJson);
-//    return reqJson;
-//  }
-//
-//  private String createReqAuthorJson(@NonNull String uuid) {
-//    String reqJson = "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"" + authorPubKey + "\"]}]";
-//    log.debug("generated AUTHOR request json:\n  {}", reqJson);
 //    return reqJson;
 //  }
 //

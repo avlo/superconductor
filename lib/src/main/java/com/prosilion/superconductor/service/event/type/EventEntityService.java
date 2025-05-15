@@ -11,11 +11,6 @@ import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntity
 import com.prosilion.superconductor.service.event.ConcreteTagEntitiesService;
 import com.prosilion.superconductor.service.event.join.generic.GenericTagEntitiesService;
 import jakarta.persistence.NoResultException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.BaseTag;
@@ -23,8 +18,13 @@ import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -68,15 +68,10 @@ public class EventEntityService<T extends GenericEvent> {
         event.getContent()
     );
 
-    try {
-      EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
-      concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
-      genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
-      return savedEntity.getId();
-    } catch (DataIntegrityViolationException e) {
-      log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
-      return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(NoResultException::new).getId();
-    }
+    EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
+    concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
+    genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
+    return savedEntity.getId();
   }
 
   public Map<Kind, Map<Long, T>> getAll() {

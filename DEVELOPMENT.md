@@ -57,20 +57,28 @@
 ----
 
 ### Build Superconductor
-#### 1. Check-out nostr-java dependency library
+#### 1 (of 6). Check-out nostr-java dependency library
 
     $ cd <your_git_home_dir>
     $ git clone git@github.com:avlo/nostr-java-avlo-fork.git
     $ cd nostr-java-avlo-fork
     $ git checkout develop
 
-#### 2. Check-out SuperConductor
+#### 2 (of 6). Check-out subdivisions dependency library
+
+    $ cd <your_git_home_dir>
+    $ git clone git@github.com:avlo/subdivisions.git
+    $ cd subdivisions
+    $ git checkout develop
+
+#### 3 (of 6). Check-out SuperConductor
 
     $ cd <your_git_home_dir>
     $ git clone https://github.com/avlo/superconductor
     $ cd superconductor
+    $ git checkout develop
 
-#### 3. Configure JUnit / SpringBootTest security mode via [appication-test.properties](src/test/resources/application-test.properties) file
+#### 4 (of 6). Configure JUnit / SpringBootTest security mode via [appication-test.properties](src/test/resources/application-test.properties) file
 <details>
   <summary>Default: Non-Secure (WS) tests mode</summary>
 
@@ -99,20 +107,26 @@
 
 </details>
 
-#### 4. Configure project properties
+#### 5 (of 6). Configure project properties
 supply required values in [autotest.properties](autotest.properties) file:
 ```xml
 M2_NOSTR_JAVA_REPO=<your_local_m2_nostr_java_repo>
+M2_SUBDIVISIONS_REPO=<your_local_m2_subdivisions_repo>
+M2_SUPERCONDUCTOR_REPO=<your_local_m2_superconductor_repo>
 NOSTR_JAVA_HOME=<your_local_nostr_java_home>
-SUPERCONDUCTOR_HOME=<your_local_superconductor_home>  
+SUBDIVISIONS_HOME=<your_local_subdivisions_home>
+SUPERCONDUCTOR_HOME=<your_local_superconductor_home>
 ```
 for example:
 ```bash
 M2_NOSTR_JAVA_REPO=/home/nick/.m2/repository/xyz/tcheeric
-NOSTR_JAVA_HOME=/home/nick/git/avlo-nostr-java-fork
+M2_SUBDIVISIONS_REPO=/home/nick/.m2/repository/com/prosilion/subdivisions
+M2_SUPERCONDUCTOR_REPO=/home/nick/.m2/repository/com/prosilion/superconductor
+NOSTR_JAVA_HOME=/home/nick/git/avlo-nostr-java-fork-maven
+SUBDIVISIONS_HOME=/home/nick/git/subdivisions-maven
 SUPERCONDUCTOR_HOME=/home/nick/git/superconductor
 ```
-#### 5.  Build application (both unit-test and integration-test included)
+#### 6 (of 6).  Build application (both unit-test and integration-test included)
 ```bash
 $ cd <your_git_home_dir>
 $ cd superconductor

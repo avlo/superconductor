@@ -207,21 +207,25 @@ run with docker logging displayed to console:
 
 ----
 
-### 2.  Run locally using maven spring-boot:run target
+### 2.  Run locally using spring-boot:run target
+      $ cd <your_git_home_dir>/superconductor
 
 <details>
   <summary>WSS/HTTPS</summary>
 
-
-    cd <your_git_home_dir>/superconductor
-    mvn spring-boot:run -pl superconductor -P local_wss
+###### maven
+      $ mvn spring-boot:run -pl superconductor -P local_wss
+###### gradle
+      $ gradle superconductor:bootRunLocalWss
 </details> 
 
 <details>
   <summary>WS/HTTP</summary>
 
-    cd <your_git_home_dir>/superconductor
-    mvn spring-boot:run -pl superconductor -P local_ws
+###### maven
+      $ mvn spring-boot:run -pl superconductor -P local_ws
+###### gradle
+      $ gradle superconductor:bootRunLocalWs
 </details>  
 
 ----

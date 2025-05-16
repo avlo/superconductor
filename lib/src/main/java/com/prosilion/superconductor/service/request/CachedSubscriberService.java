@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -59,7 +58,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   //  @Cacheable("subscriber")
   @Override
   public Subscriber get(@NonNull Long subscriberSessionHash) {
-    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().findFirst().get().getSubscriber();
+    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().findFirst().orElseThrow().getSubscriber();
   }
 
   @Override
@@ -104,8 +103,8 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     subscriberFilter.setSubscriberId(subscriberSessionHash);
     subscriberFilter.setLimit(filters.getLimit());
 
-    setBoundCriterion(filters, SinceFilter.FILTER_KEY, subscriberFilter::setSince);
-    setBoundCriterion(filters, UntilFilter.FILTER_KEY, subscriberFilter::setUntil);
+    setBoundCriterion(filters, SinceFilter.FILTER_KEY, subscriberFilter::setSince, Long.MIN_VALUE);
+    setBoundCriterion(filters, UntilFilter.FILTER_KEY, subscriberFilter::setUntil, Long.MAX_VALUE);
 
     Combo combo = new Combo(
         subscriber,
@@ -118,13 +117,14 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     }
     subscriberSessionHashComboMap.get(subscriberSessionHash).add(combo);
   }
-  private static void setBoundCriterion(Filters filters, String bound, Consumer<Long> longConsumer) {
-    Optional
-        .ofNullable(
-            filters.getFilterByType(bound))
-        .<Long>map(filterable ->
-            filterable.getFirst().getFilterable())
-        .ifPresent(longConsumer);
+
+  private static void setBoundCriterion(Filters filters, String bound, Consumer<Long> longConsumer, Long epoch) {
+    longConsumer.accept(
+        filters.getFilterByType(bound).stream()
+            .map(filterable ->
+                (Long) filterable.getFilterable())
+            .findFirst()
+            .orElse(epoch));
   }
 
   private long getHash(Subscriber subscriber) {

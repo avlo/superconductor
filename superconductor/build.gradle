@@ -4,9 +4,16 @@ plugins {
     id 'superconductor.java-conventions'
 }
 
+repositories {
+    flatDir {
+        dirs 'src/test/resources'
+    }
+}
 dependencies {
+    def subdivisionsVersion = '1.0.0'
     api project(':starter')
 
+    implementation 'com.prosilion:subdivisions:' + subdivisionsVersion
 //    def springBootVersion = '3.4.3'
 //    def mysqlConnectorJVersion = '9.1.0'
 //

@@ -24,12 +24,12 @@ public class AddressTagPlugin<
   }
 
   @Override
-  public AddressTagDto getTagDto(P addressTag) {
+  public AddressTagDto getTagDto(@NonNull P addressTag) {
     return new AddressTagDto(addressTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long addressTagId) {
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long addressTagId) {
     return (S) new EventEntityAddressTagEntity(eventId, addressTagId);
   }
 }

@@ -25,12 +25,12 @@ public class GeohashTagPlugin<
   }
 
   @Override
-  public GeohashTagDto getTagDto(P geohashTag) {
+  public GeohashTagDto getTagDto(@NonNull P geohashTag) {
     return new GeohashTagDto(geohashTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
     return (S) new EventEntityGeohashTagEntity(eventId, subjectTagId);
   }
 }

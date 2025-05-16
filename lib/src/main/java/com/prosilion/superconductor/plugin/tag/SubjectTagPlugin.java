@@ -24,12 +24,12 @@ public class SubjectTagPlugin<
   }
 
   @Override
-  public SubjectTagDto getTagDto(P subjectTag) {
+  public SubjectTagDto getTagDto(@NonNull P subjectTag) {
     return new SubjectTagDto(subjectTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
     return (S) new EventEntitySubjectTagEntity(eventId, subjectTagId);
   }
 }

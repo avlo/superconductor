@@ -25,12 +25,12 @@ public class HashtagTagPlugin<
   }
 
   @Override
-  public HashtagTagDto getTagDto(P hashtagTag) {
+  public HashtagTagDto getTagDto(@NonNull P hashtagTag) {
     return new HashtagTagDto(hashtagTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
     return (S) new EventEntityHashtagTagEntity(eventId, subjectTagId);
   }
 }

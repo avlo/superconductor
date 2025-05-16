@@ -25,12 +25,12 @@ public class PubkeyTagPlugin<
   }
 
   @Override
-  public PubkeyTagDto getTagDto(P pubkeyTag) {
+  public PubkeyTagDto getTagDto(@NonNull P pubkeyTag) {
     return new PubkeyTagDto(pubkeyTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long subjectTagId) {
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
     return (S) new EventEntityPubkeyTagEntity(eventId, subjectTagId);
   }
 }

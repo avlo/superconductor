@@ -25,12 +25,12 @@ public class RelaysTagPlugin<
   }
 
   @Override
-  public RelaysTagDto getTagDto(P relaysTag) {
+  public RelaysTagDto getTagDto(@NonNull P relaysTag) {
     return new RelaysTagDto(relaysTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long relaysTagId) {
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long relaysTagId) {
     return (S) new EventEntityRelaysTagEntity(eventId, relaysTagId);
   }
 }

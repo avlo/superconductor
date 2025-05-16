@@ -24,12 +24,12 @@ public class VoteTagPlugin<
   }
 
   @Override
-  public VoteTagDto getTagDto(P voteTag) {
+  public VoteTagDto getTagDto(@NonNull P voteTag) {
     return new VoteTagDto(voteTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long voteTagId) {
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long voteTagId) {
     return (S) new EventEntityVoteTagEntity(eventId, voteTagId);
   }
 }

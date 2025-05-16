@@ -5,6 +5,7 @@ import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.join.EventEntityAbstractEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
+import lombok.NonNull;
 import nostr.event.BaseTag;
 
 import java.util.Collection;
@@ -24,11 +25,11 @@ public interface TagPlugin<
   EventEntityAbstractTagEntityRepository<S> getJoin();
   S getEventEntityTagEntity(Long eventId, Long baseTagId);
 
-  default R convertDtoToEntity(P baseTag) {
+  default R convertDtoToEntity(@NonNull P baseTag) {
     return (R) getTagDto(baseTag).convertDtoToEntity();
   }
 
-  default List<R> getTags(Long eventId) {
+  default List<R> getTags(@NonNull Long eventId) {
     return getJoin()
         .findByEventId(eventId)
         .stream()
@@ -39,7 +40,7 @@ public interface TagPlugin<
         .flatMap(Collection::stream).distinct().toList();
   }
 
-  default void saveTag(Long eventId, P baseTag) {
+  default void saveTag(@NonNull Long eventId, @NonNull P baseTag) {
     getJoin().save(
         getEventEntityTagEntity(
             eventId,

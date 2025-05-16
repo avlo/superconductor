@@ -24,12 +24,12 @@ public class IdentifierTagPlugin<
   }
 
   @Override
-  public IdentifierTagDto getTagDto(P identifierTag) {
+  public IdentifierTagDto getTagDto(@NonNull P identifierTag) {
     return new IdentifierTagDto(identifierTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long identifierTagId) {
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long identifierTagId) {
     return (S) new EventEntityIdentifierTagEntity(eventId, identifierTagId);
   }
 }

@@ -25,12 +25,12 @@ public class PriceTagPlugin<
   }
 
   @Override
-  public PriceTagDto getTagDto(P priceTag) {
+  public PriceTagDto getTagDto(@NonNull P priceTag) {
     return new PriceTagDto(priceTag);
   }
 
   @Override
-  public S getEventEntityTagEntity(Long eventId, Long pricetagId) {
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long pricetagId) {
     return (S) new EventEntityPriceTagEntity(eventId, pricetagId);
   }
 }

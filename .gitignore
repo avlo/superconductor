@@ -5,7 +5,7 @@
 autotest.properties
 
 superconductor.iml
-parent.iml
+**/*.iml
 app/superconductor.iml
 target/
 

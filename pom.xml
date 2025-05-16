@@ -106,11 +106,6 @@
       <version>${nostr-java.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.prosilion</groupId>
-      <artifactId>subdivisions</artifactId>
-      <version>${subdivisions.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-afterburner</artifactId>
       <version>${jackson-module-afterburner.version}</version>

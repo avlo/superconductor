@@ -10,14 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import nostr.api.NIP42;
 import nostr.base.PublicKey;
-import nostr.base.Relay;
 import nostr.event.BaseTag;
 import nostr.event.impl.CanonicalAuthenticationEvent;
 import nostr.event.impl.GenericEvent;
-import nostr.event.tag.GenericTag;
-import nostr.event.tag.RelaysTag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 

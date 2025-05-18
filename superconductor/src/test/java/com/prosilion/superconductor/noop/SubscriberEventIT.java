@@ -9,7 +9,6 @@ import java.util.List;
 import nostr.base.Kind;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
-import nostr.event.entities.ClassifiedListing;
 import nostr.event.impl.ClassifiedListingEvent;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.EventTag;

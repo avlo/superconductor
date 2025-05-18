@@ -11,7 +11,6 @@ import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,9 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.Command;
 import nostr.event.BaseMessage;
-import nostr.event.impl.GenericEvent;
 import nostr.event.json.codec.BaseMessageDecoder;
 import nostr.event.message.EventMessage;
 import nostr.event.message.ReqMessage;
@@ -38,7 +35,6 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)

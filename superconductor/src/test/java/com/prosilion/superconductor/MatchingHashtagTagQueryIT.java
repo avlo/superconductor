@@ -6,13 +6,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.Command;
 import nostr.base.GenericTagQuery;
 import nostr.event.BaseMessage;
 import nostr.event.filter.Filters;
@@ -55,7 +53,7 @@ class MatchingHashtagTagQueryIT {
   }
 
   @Test
-  void testReqMessagesNoGenericMatch() throws IOException, ExecutionException, InterruptedException {
+  void testReqMessagesNoGenericMatch() throws IOException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String hashtagTagString = "textnote-hashtag-tag-2";

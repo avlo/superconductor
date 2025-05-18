@@ -9,7 +9,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.api.NIP01;
 import nostr.event.BaseMessage;
-import nostr.event.NIP01Event;
 import nostr.event.filter.Filters;
 import nostr.event.filter.HashtagTagFilter;
 import nostr.event.impl.GenericEvent;

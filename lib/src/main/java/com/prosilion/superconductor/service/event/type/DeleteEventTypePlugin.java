@@ -5,7 +5,7 @@ import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.Kind;
+import nostr.base.Kind;
 import nostr.event.filter.AddressTagFilter;
 import nostr.event.filter.Filters;
 import nostr.event.impl.DeletionEvent;

@@ -43,7 +43,7 @@ public class EventMessageIT {
     this.nostrRelayService = nostrRelayService;
     this.content = Factory.lorumIpsum(getClass());
 
-    GenericEvent event = new NIP01<>(identity).createTextNoteEvent(content).sign().getEvent();
+    GenericEvent event = new NIP01(identity).createTextNoteEvent(content).sign().getEvent();
     this.eventId = event.getId();
 
     assertTrue(

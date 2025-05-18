@@ -41,7 +41,7 @@ class MatchingGenericTagSingleLetterQueryIT {
   @Autowired
   MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-    NIP01<NIP01Event> textNoteEvent = new NIP01<>(identity).createTextNoteEvent(content);
+    NIP01 textNoteEvent = new NIP01(identity).createTextNoteEvent(content);
     textNoteEvent.addTag(new HashtagTag("h-tag-1"));
     assertTrue(
         nostrRelayService

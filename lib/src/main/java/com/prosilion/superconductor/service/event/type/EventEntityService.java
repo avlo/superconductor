@@ -13,8 +13,8 @@ import com.prosilion.superconductor.service.event.join.generic.GenericTagEntitie
 import jakarta.persistence.NoResultException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.base.Kind;
 import nostr.event.BaseTag;
-import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;

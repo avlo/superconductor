@@ -11,10 +11,10 @@ import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nostr.base.Kind;
 import nostr.base.PublicKey;
 import nostr.base.Signature;
 import nostr.event.BaseTag;
-import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.util.NostrUtil;
 

@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.superconductor.util.Factory;
+import nostr.base.Kind;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
-import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.*;
 import nostr.id.Identity;

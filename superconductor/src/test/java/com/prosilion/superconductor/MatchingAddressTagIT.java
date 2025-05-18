@@ -14,7 +14,6 @@ import nostr.event.json.codec.BaseMessageDecoder;
 import nostr.event.message.EventMessage;
 import nostr.event.message.ReqMessage;
 import nostr.event.tag.AddressTag;
-import nostr.event.tag.GeohashTag;
 import nostr.event.tag.IdentifierTag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.dto;
 
 import com.prosilion.superconductor.entity.EventEntity;
+import nostr.base.Kind;
 import nostr.base.PublicKey;
 import nostr.base.Signature;
 import nostr.event.BaseTag;
-import nostr.event.Kind;
 import nostr.event.NIP01Event;
 
 import java.util.List;

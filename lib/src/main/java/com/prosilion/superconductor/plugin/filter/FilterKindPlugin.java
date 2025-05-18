@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.plugin.filter;
 
-import nostr.event.Kind;
+import nostr.base.Kind;
 import nostr.event.filter.KindFilter;
 import nostr.event.impl.GenericEvent;
 import org.springframework.stereotype.Component;

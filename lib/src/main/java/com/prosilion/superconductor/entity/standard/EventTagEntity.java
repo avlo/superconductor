@@ -12,8 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import nostr.base.Marker;
 import nostr.event.BaseTag;
-import nostr.event.Marker;
 import nostr.event.tag.EventTag;
 
 @Setter

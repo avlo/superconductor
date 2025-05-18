@@ -3,7 +3,7 @@ package com.prosilion.superconductor.service.clientresponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Getter;
 import lombok.NonNull;
-import nostr.api.factory.impl.NIP20Impl;
+import nostr.api.NIP20;
 import nostr.event.impl.GenericEvent;
 import org.springframework.web.socket.TextMessage;
 
@@ -21,6 +21,6 @@ public class ClientOkResponse implements ClientResponse {
     this.valid = valid;
     this.sessionId = sessionId;
     this.textMessage = new TextMessage(
-        new NIP20Impl.OkMessageFactory(event, valid, message).create().encode());
+        NIP20.createOkMessage(event, valid, message).encode());
   }
 }

@@ -12,6 +12,7 @@
   <script src="/js/nip-01.js"></script>
   <script src="/js/nip-57.js"></script>
   <script src="/js/nip-99.js"></script>
+  <script src="/js/nip-2112.js"></script>
   <script src="/js/common.js"></script>
 </head>
 <body>
@@ -476,6 +477,37 @@
         </form>
       </div>
     </div>
+
+    <input class="radiotab" tabindex="1" name="tabs" type="radio" id="tabsix">
+    <label class="label" for="tabsix">NIP-2112</label>
+    <div class="panel">
+      <div class="col-md-6">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="2112-content">Send message:</label>
+            <input tabindex="1" type="text" value="IN PROGRESS: REPUTATION SCORE CONTENT" id="2112-content" class="form-control"
+                   placeholder="message...">
+          </div>
+          <div class="form-group">
+            <label for="2112-v_tag">VoteTag: </label>
+            <input tabindex="1" type="text" value="1" id="2112-v_tag" class="form-control"
+                   placeholder="vote-tag">
+          </div>
+          <input type="hidden" id="2112-kind" name="2112-kind" value=2112>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-inline">
+                <div class="center gap">
+                  <button id="send2112" class="btn btn-default" type="submit" disabled="disabled">Send Nip-2112 Event
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 
 

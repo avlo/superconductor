@@ -54,7 +54,7 @@ class MatchingGeohashTagQueryIT {
   }
 
   @Test
-  void testReqMessagesNoGenericMatch() throws IOException, ExecutionException, InterruptedException {
+  void testReqMessagesNoGenericMatch() throws IOException {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagString = "textnote-geo-tag-non-existent";
 

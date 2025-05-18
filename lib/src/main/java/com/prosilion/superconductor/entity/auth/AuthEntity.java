@@ -10,12 +10,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import nostr.api.NIP42;
 import nostr.base.PublicKey;
 import nostr.base.Relay;
+import nostr.event.BaseTag;
 import nostr.event.impl.CanonicalAuthenticationEvent;
 import nostr.event.impl.GenericEvent;
+import nostr.event.tag.GenericTag;
+import nostr.event.tag.RelaysTag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -48,6 +54,8 @@ public class AuthEntity {
   }
 
   public <T extends GenericEvent> T convertEntityToDto() {
-    return (T) new CanonicalAuthenticationEvent(new PublicKey(pubKey), challenge, new Relay(relayUrl));
+    BaseTag relayTag = BaseTag.create("relay",relayUrl);
+    BaseTag challengeTag = BaseTag.create("challenge", challenge);
+    return (T) new CanonicalAuthenticationEvent(new PublicKey(pubKey), List.of(relayTag, challengeTag), "");
   }
 }

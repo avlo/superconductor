@@ -67,8 +67,8 @@ class ZapRequestEventIT {
     tags.add(SUBJECT_TAG);
     tags.add(G_TAG);
     tags.add(T_TAG);
-    tags.add(GenericTag.create(AMOUNT_CODE, 57, AMOUNT));
-    tags.add(GenericTag.create(LNURL_CODE, 57, LN_URL));
+    tags.add(BaseTag.create(AMOUNT_CODE, 57, AMOUNT));
+    tags.add(BaseTag.create(LNURL_CODE, 57, LN_URL));
     tags.add(relaysTag);
     zapRequestEvent.setTags(tags);
 

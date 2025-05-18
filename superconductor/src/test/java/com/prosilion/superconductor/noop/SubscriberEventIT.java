@@ -5,9 +5,11 @@ import com.prosilion.superconductor.util.Factory;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import nostr.base.Kind;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
-import nostr.event.impl.ClassifiedListing;
+import nostr.event.entities.ClassifiedListing;
 import nostr.event.impl.ClassifiedListingEvent;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.EventTag;
@@ -47,23 +49,28 @@ class SubscriberEventIT {
     tags.add(new EventTag(EVENT_ID));
     tags.add(new PubKeyTag(EVENT_PUBKEY));
     tags.add(new SubjectTag("SUBJECT"));
+    tags.add(BaseTag.create("title", "classified title"));
+    tags.add(BaseTag.create("summary", "classified summary"));
+    tags.add(new PriceTag(new BigDecimal(2.71), "BTC", "frequency"));
     genericEvent.setTags(tags);
 
     genericEvent.setPubKey(EVENT_PUBKEY);
     genericEvent.setCreatedAt(CREATED_AT);
     genericEvent.setSignature(Identity.generateRandomIdentity().sign(genericEvent));
 
+/*
     ClassifiedListing classifiedListing = ClassifiedListing.builder(
             "classified title",
             "classified summary",
             new PriceTag(new BigDecimal(2.71), "BTC", "frequency"))
         .build();
+*/
 
     classifiedListingEvent = new ClassifiedListingEvent(
         genericEvent.getPubKey(),
+        Kind.CLASSIFIED_LISTING,
         genericEvent.getTags(),
-        genericEvent.getContent(),
-        classifiedListing
+        genericEvent.getContent()
     );
     classifiedListingEvent.setId(genericEvent.getId());
     classifiedListingEvent.setCreatedAt(genericEvent.getCreatedAt());

@@ -1,11 +1,13 @@
 package com.prosilion.superconductor.service.event.type;
 
+import nostr.base.Kind;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
-import nostr.event.impl.ClassifiedListing;
+import nostr.event.entities.ClassifiedListing;
 import nostr.event.impl.ClassifiedListingEvent;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.EventTag;
+import nostr.event.tag.GenericTag;
 import nostr.event.tag.PriceTag;
 import nostr.event.tag.PubKeyTag;
 import nostr.event.tag.SubjectTag;
@@ -46,23 +48,28 @@ class SubscriberEventIT {
     tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"));
     tags.add(new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")));
     tags.add(new SubjectTag("SUBJECT"));
+    tags.add(BaseTag.create("title", "classified title"));
+    tags.add(BaseTag.create("summary", "classified summary"));
+    tags.add(new PriceTag(new BigDecimal(2.71), "BTC", "frequency"));
     genericEvent.setTags(tags);
 
     genericEvent.setPubKey(EVENT_PUBKEY);
     genericEvent.setCreatedAt(CREATED_AT);
     genericEvent.setSignature(Identity.generateRandomIdentity().sign(genericEvent));
 
+/*
     ClassifiedListing classifiedListing = ClassifiedListing.builder(
             "classified title",
             "classified summary",
             new PriceTag(new BigDecimal(2.71), "BTC", "frequency"))
         .build();
+*/
 
     classifiedListingEvent = new ClassifiedListingEvent(
         genericEvent.getPubKey(),
+        Kind.CLASSIFIED_LISTING,
         genericEvent.getTags(),
-        genericEvent.getContent(),
-        classifiedListing
+        genericEvent.getContent()
     );
     classifiedListingEvent.setId(genericEvent.getId());
     classifiedListingEvent.setCreatedAt(genericEvent.getCreatedAt());

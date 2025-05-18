@@ -53,7 +53,7 @@ class MatchingOneOfMultipleFilterAttributesIT {
   }
 
   @Test
-  void testMatchingOneOfMultipleReferencedEvents() throws IOException, ExecutionException, InterruptedException {
+  void testMatchingOneOfMultipleReferencedEvents() throws IOException {
     String subscriberId = Factory.generateRandomHex64String();
 
     String referencedEventIdMatch = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
@@ -79,7 +79,7 @@ class MatchingOneOfMultipleFilterAttributesIT {
   }
 
   @Test
-  void testMatchingOneOfMultipleReferencedPublicKeys() throws IOException, ExecutionException, InterruptedException {
+  void testMatchingOneOfMultipleReferencedPublicKeys() throws IOException {
     String subscriberId = Factory.generateRandomHex64String();
 
     String referencedPubkeyMatch = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";

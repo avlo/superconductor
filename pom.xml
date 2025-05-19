@@ -21,7 +21,7 @@
     <java.version>21</java.version>
     <project.version>${version}</project.version>
     <spring-boot.version>3.4.3</spring-boot.version>
-    <nostr-java.version>0.6.6-SNAPSHOT</nostr-java.version>
+    <nostr-java.version>0.7-SNAPSHOT</nostr-java.version>
 
     <awaitility.version>4.2.0</awaitility.version>
     <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>

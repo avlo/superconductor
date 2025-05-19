@@ -10,7 +10,7 @@ repositories {
     }
 }
 dependencies {
-    def subdivisionsVersion = '1.0.0'
+    def subdivisionsVersion = '1.1.0'
     api project(':starter')
 
     implementation 'com.prosilion:subdivisions:' + subdivisionsVersion

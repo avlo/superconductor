@@ -11,11 +11,11 @@ import nostr.event.impl.GenericEvent;
 public abstract class AbstractEventTypePlugin<T extends GenericEvent> implements EventTypePlugin<T> {
   private final RedisCache<T> redisCache;
 
-  public AbstractEventTypePlugin(RedisCache<T> redisCache) {
+  public AbstractEventTypePlugin(@NonNull RedisCache<T> redisCache) {
     this.redisCache = redisCache;
   }
 
-  protected void save(T event) {
+  protected void save(@NonNull T event) {
     redisCache.saveEventEntity(event);
   }
 

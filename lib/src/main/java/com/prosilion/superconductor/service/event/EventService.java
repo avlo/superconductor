@@ -18,8 +18,8 @@ public class EventService<T extends GenericEvent> implements EventServiceIF<T> {
 
   @Autowired
   public EventService(
-      NotifierService<T> notifierService,
-      EventTypeServiceIF<T> eventTypeService) {
+      @NonNull NotifierService<T> notifierService,
+      @NonNull EventTypeServiceIF<T> eventTypeService) {
     this.notifierService = notifierService;
     this.eventTypeService = eventTypeService;
   }

@@ -30,7 +30,7 @@ public class PubkeyTagPlugin<
   }
 
   @Override
-  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
-    return (S) new EventEntityPubkeyTagEntity(eventId, subjectTagId);
+  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long pubkeyId) {
+    return (S) new EventEntityPubkeyTagEntity(eventId, pubkeyId);
   }
 }

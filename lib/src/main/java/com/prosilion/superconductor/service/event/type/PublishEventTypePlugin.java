@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class PublishEventTypePlugin<T extends GenericEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
 
   @Autowired
-  public PublishEventTypePlugin(RedisCache<T> redisCache) {
+  public PublishEventTypePlugin(@NonNull RedisCache<T> redisCache) {
     super(redisCache);
   }
 

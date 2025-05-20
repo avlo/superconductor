@@ -23,9 +23,9 @@ public class RedisCache<T extends GenericEvent> {
   private final DeletionEventEntityService deletionEventEntityService;
 
   @Autowired
-  public RedisCache(@NonNull
-      EventEntityService<T> eventEntityService,
-      DeletionEventEntityService deletionEventEntityService) {
+  public RedisCache(
+      @NonNull EventEntityService<T> eventEntityService,
+      @NonNull DeletionEventEntityService deletionEventEntityService) {
     this.eventEntityService = eventEntityService;
     this.deletionEventEntityService = deletionEventEntityService;
   }

@@ -18,7 +18,7 @@ public interface EventEntityRepository extends JpaRepository<EventEntity, Long> 
 
   //  @Cacheable("events")
 //  @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-  List<EventEntity> findByContent(String content);
-
-  Optional<EventEntity> findByEventIdString(String eventIdString);
+  List<EventEntity> findByContent(@NonNull String content);
+  Optional<EventEntity> findByEventIdString(@NonNull String eventIdString);
+  List<EventEntity> findByPubKey(@NonNull String pubKey);
 }

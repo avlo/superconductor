@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.superconductor.util.Factory;
+import lombok.NonNull;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.Kind;
@@ -13,11 +14,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class EventEntityServiceIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
   private static final PublicKey EVENT_PUBKEY = IDENTITY.getPublicKey();
@@ -32,12 +35,14 @@ class EventEntityServiceIT {
   private final static String CONTENT = Factory.lorumIpsum(EventEntityServiceIT.class);
   private final static int KIND = Kind.TEXT_NOTE.getValue();
 
+  private final EventEntityService<GenericEvent> eventEntityService;
+
+  private final GenericEvent textNoteEvent;
+  private final Long savedEventId;
+  
   @Autowired
-  EventEntityService<GenericEvent> eventEntityService;
-
-  private static GenericEvent textNoteEvent;
-
-  public EventEntityServiceIT() {
+  public EventEntityServiceIT(@NonNull EventEntityService<GenericEvent> eventEntityService) {
+    this.eventEntityService = eventEntityService;
     List<BaseTag> tags = new ArrayList<>();
     tags.add(E_TAG);
     tags.add(P_TAG);
@@ -51,13 +56,20 @@ class EventEntityServiceIT {
     System.out.println("textNoteEvent getPubKey().toString(): " + textNoteEvent.getPubKey().toString());
     System.out.println("textNoteEvent getPubKey().toHexString(): " + textNoteEvent.getPubKey().toHexString());
     System.out.println("textNoteEvent getPubKey().toBech32String(): " + textNoteEvent.getPubKey().toBech32String());
+    savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
   }
 
   @Test
+  void saveAndGetEventWithPublicKey() {
+    assertTrue(
+        eventEntityService.findByPublicKey(textNoteEvent.getPubKey())
+            .stream().anyMatch(eventEntity -> 
+                eventEntity.getPubKey().toHexString().equals(textNoteEvent.getPubKey().toHexString())));
+  }
+  
+  @Test
   void saveAndGetEventWithGeohash() {
-    Long savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
     GenericEvent savedEvent = eventEntityService.getEventById(savedEventId);
-
     System.out.println("savedEvent getPubKey().toString(): " + savedEvent.getPubKey().toString());
     System.out.println("savedEvent getPubKey().toHexString(): " + savedEvent.getPubKey().toHexString());
     System.out.println("savedEvent getPubKey().toBech32String(): " + savedEvent.getPubKey().toBech32String());

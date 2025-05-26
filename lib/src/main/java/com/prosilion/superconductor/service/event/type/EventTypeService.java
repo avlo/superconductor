@@ -27,7 +27,7 @@ public class EventTypeService<T extends GenericEvent> implements EventTypeServic
   public void processIncomingEvent(@NonNull T event) {
     Optional.ofNullable(
             eventTypePluginsMap.get(
-                Kind.valueOf(event.getKind()))) // currently should only match DELETE kind
+                Kind.valueOf(event.getKind())))
         .orElse(
             eventTypePluginsMap.get(Kind.TEXT_NOTE)).processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
   }

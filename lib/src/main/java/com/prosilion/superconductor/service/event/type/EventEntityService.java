@@ -13,6 +13,7 @@ import com.prosilion.superconductor.service.event.join.generic.GenericTagEntitie
 import jakarta.persistence.NoResultException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
@@ -81,8 +82,16 @@ public class EventEntityService<T extends GenericEvent> {
             Collectors.toMap(EventEntity::getId, EventEntity::convertEntityToDto)));
   }
 
-  public Optional<EventEntity> findByEventIdString(String eventIdString) {
+  public Optional<EventEntity> findByEventIdString(@NonNull String eventIdString) {
     return eventEntityRepository.findByEventIdString(eventIdString);
+  }
+
+  public List<T> findByPublicKey(@NonNull PublicKey publicKey) {
+    return eventEntityRepository
+        .findByPubKey(
+            publicKey.toHexString())
+        .stream().map(pk -> 
+            getEventById(pk.getId())).toList();
   }
 
   public T getEventById(@NonNull Long id) {

@@ -19,6 +19,7 @@ import nostr.event.Kind;
 import nostr.event.impl.GenericEvent;
 import nostr.event.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,12 +70,17 @@ public class EventEntityService<T extends GenericEvent> {
         event.getContent()
     );
 
-    EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
-    concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
-    genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
-    return savedEntity.getId();
+    try {
+      EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
+      concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
+      genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
+      return savedEntity.getId();
+    } catch (DataIntegrityViolationException e) {
+      log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
+      return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(NoResultException::new).getId();
+    }
   }
-
+  
   public Map<Kind, Map<Long, T>> getAll() {
     return eventEntityRepository.findAll().stream()
         .map(this::populateEventEntity)
@@ -86,7 +92,7 @@ public class EventEntityService<T extends GenericEvent> {
     return eventEntityRepository.findByEventIdString(eventIdString);
   }
 
-  public List<T> findByPublicKey(@NonNull PublicKey publicKey) {
+  public List<T> getEventsByPublicKey(@NonNull PublicKey publicKey) {
     return eventEntityRepository
         .findByPubKey(
             publicKey.toHexString())

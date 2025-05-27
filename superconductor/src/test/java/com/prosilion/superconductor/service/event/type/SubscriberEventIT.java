@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.event.type;
 
+import com.prosilion.superconductor.util.Factory;
 import nostr.base.PublicKey;
 import nostr.event.BaseTag;
 import nostr.event.impl.ClassifiedListing;
@@ -24,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 class SubscriberEventIT {
-  public static final String EVENT_ID = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
-  public static final PublicKey EVENT_PUBKEY = new PublicKey("bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984");
+  public static final String EVENT_ID = Factory.generateRandomHex64String();
+  public static final PublicKey EVENT_PUBKEY = Factory.createNewIdentity().getPublicKey();
   public static final String CONTENT = "1111111111";
   public static final Integer KIND = 1;
   public static final Integer NIP = 1;

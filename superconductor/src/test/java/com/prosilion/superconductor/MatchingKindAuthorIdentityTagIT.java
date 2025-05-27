@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MatchingKindAuthorIdentityTagIT {
   private final NostrRelayService nostrRelayService;
   private final static String uuidFromFile = "superconductor_subscriber_id-0";
-  private final static String eventId = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
+  private final static String eventId = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590001";
   private final static String authorPubKey = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
   private final static String content = "matching kind, author, identity-tag filter test";
 

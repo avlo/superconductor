@@ -62,7 +62,7 @@ class EventEntityServiceIT {
   @Test
   void saveAndGetEventWithPublicKey() {
     assertTrue(
-        eventEntityService.findByPublicKey(textNoteEvent.getPubKey())
+        eventEntityService.getEventsByPublicKey(textNoteEvent.getPubKey())
             .stream().anyMatch(eventEntity -> 
                 eventEntity.getPubKey().toHexString().equals(textNoteEvent.getPubKey().toHexString())));
   }
@@ -110,10 +110,6 @@ class EventEntityServiceIT {
         .filter(HashtagTag.class::isInstance)
         .map(HashtagTag.class::cast)
         .map(HashtagTag::toString).findFirst().orElseThrow());
-
-    assertEquals(PRICE_TAG.getNumber(), PRICE_TAG.getNumber());
-    assertEquals(PRICE_TAG.getCurrency(), PRICE_TAG.getCurrency());
-    assertEquals(PRICE_TAG.getFrequency(), PRICE_TAG.getFrequency());
 
     assertEquals(PRICE_TAG.getNumber(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("price"))

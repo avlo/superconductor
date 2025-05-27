@@ -75,7 +75,7 @@ class MatchingOneOfMultipleFilterAttributesIT {
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
 
-    assertTrue(returnedEvents.stream().map(GenericEvent::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertTrue(returnedEvents.stream().map(GenericEvent::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590002")));
   }
 
   @Test
@@ -101,6 +101,6 @@ class MatchingOneOfMultipleFilterAttributesIT {
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
 
-    assertTrue(returnedEvents.stream().map(GenericEvent::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertTrue(returnedEvents.stream().map(GenericEvent::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590002")));
   }
 }

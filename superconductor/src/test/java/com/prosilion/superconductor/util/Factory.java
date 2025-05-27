@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.util;
 
 import lombok.Getter;
+import lombok.NonNull;
 import nostr.api.factory.impl.NIP01Impl;
 import nostr.api.factory.impl.NIP99Impl;
 import nostr.event.BaseTag;
@@ -22,12 +23,22 @@ public class Factory {
     return Identity.generateRandomIdentity();
   }
 
-  public static <T extends GenericEvent> T createTextNoteEvent(Identity identity, List<BaseTag> tags, String content) {
+  public static <T extends GenericEvent> T createTextNoteEvent(
+      @NonNull Identity identity,
+      @NonNull List<BaseTag> tags,
+      @NonNull String content) {
     TextNoteEvent textNoteEvent = new NIP01Impl.TextNoteEventFactory(identity, tags, content).create();
 //    NIP01<NIP01Event> nip01_1 = new NIP01<>(identity);
 //    EventNostr sign = nip01_1.createTextNoteEvent(tags, content).sign();
 //    return sign;
     return (T) textNoteEvent;
+  }
+
+  public static <T extends GenericEvent> T createTextNoteEvent(
+      @NonNull Identity identity, 
+      @NonNull String content, 
+      @NonNull BaseTag... tag) {
+    return createTextNoteEvent(identity, List.of(tag), content);
   }
 
   public static <T extends GenericEvent> T createClassifiedListingEvent(

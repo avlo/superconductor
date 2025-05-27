@@ -134,7 +134,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     assertFalse(returnedBaseMessages.isEmpty());
 
     //    associated event
-    assertTrue(returnedEvents.stream().map(GenericEvent::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertTrue(returnedEvents.stream().map(GenericEvent::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590005")));
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
 
@@ -161,19 +161,19 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc"))));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590005"))));
     assertTrue(returnedEvents.stream().anyMatch(s -> s.getTags().stream()
         .filter(GeohashTag.class::isInstance)
         .map(GeohashTag.class::cast)
         .anyMatch(tag -> tag.getLocation().equals(genericTagStringG))));
 
-    assertEquals(4, returnedEvents.stream().map(s -> s.getTags().stream()
+    assertEquals(1, returnedEvents.stream().map(s -> s.getTags().stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast)
         .map(tag -> tag.getAttributes().stream().map(attribute -> Stream.of(attribute.getValue().toString())
                 .filter(s1 -> s1.equals(genericTagStringH))))).count());
 
-    assertEquals(4, returnedEvents.stream().map(s -> s.getTags().stream()
+    assertEquals(1, returnedEvents.stream().map(s -> s.getTags().stream()
         .filter(GenericTag.class::isInstance)
         .map(GenericTag.class::cast)
         .map(tag -> tag.getAttributes().stream().map(attribute -> Stream.of(attribute.getValue().toString())

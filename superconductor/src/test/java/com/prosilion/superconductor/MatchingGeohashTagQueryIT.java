@@ -91,7 +91,7 @@ class MatchingGeohashTagQueryIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590004")));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
@@ -114,7 +114,7 @@ class MatchingGeohashTagQueryIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590004")));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));

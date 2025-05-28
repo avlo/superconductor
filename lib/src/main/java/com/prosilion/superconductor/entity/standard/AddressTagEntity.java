@@ -35,6 +35,7 @@ public class AddressTagEntity extends AbstractTagEntity {
     this.kind = addressTag.getKind();
     this.pubKey = addressTag.getPublicKey().toHexString();
     this.uuid = addressTag.getIdentifierTag().getUuid();
+    Optional.ofNullable(addressTag.getIdentifierTag()).ifPresent(uuid -> this.uuid = uuid.getUuid());
     Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.relayUri = relay.getUri());
   }
 
@@ -55,7 +56,7 @@ public class AddressTagEntity extends AbstractTagEntity {
     return Stream.of(
             kind.toString(),
             pubKey,
-            uuid,
+            Optional.ofNullable(uuid).toString(),
             Optional.ofNullable(relayUri).toString())
         .toList();
   }
@@ -64,7 +65,8 @@ public class AddressTagEntity extends AbstractTagEntity {
     AddressTag addressTag = new AddressTag();
     addressTag.setKind(kind);
     addressTag.setPublicKey(new PublicKey(pubKey));
-    addressTag.setIdentifierTag(new IdentifierTag(uuid));
+    Optional.ofNullable(uuid).ifPresent(uuid ->
+        addressTag.setIdentifierTag(new IdentifierTag(uuid)));
     Optional.ofNullable(relayUri).ifPresent(relayUri ->
         addressTag.setRelay(new Relay(relayUri)));
     return addressTag;

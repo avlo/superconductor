@@ -24,7 +24,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Sql(scripts = {"/event.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
+@Sql(scripts = {"/reqmessageit.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")

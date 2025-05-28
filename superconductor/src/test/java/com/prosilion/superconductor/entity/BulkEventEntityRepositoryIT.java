@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
     type = FilterType.ASSIGNABLE_TYPE,
     classes = EventEntityRepository.class)
 )
-@Sql(scripts = {"/event.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
+@Sql(scripts = {"/bulkevent.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
 @ActiveProfiles("test")
 //@Sql(scripts = {"/cleanup_event.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class BulkEventEntityRepositoryIT {

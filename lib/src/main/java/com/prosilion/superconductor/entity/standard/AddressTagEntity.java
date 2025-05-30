@@ -34,7 +34,6 @@ public class AddressTagEntity extends AbstractTagEntity {
     super("a");
     this.kind = addressTag.getKind();
     this.pubKey = addressTag.getPublicKey().toHexString();
-    this.uuid = addressTag.getIdentifierTag().getUuid();
     Optional.ofNullable(addressTag.getIdentifierTag()).ifPresent(uuid -> this.uuid = uuid.getUuid());
     Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.relayUri = relay.getUri());
   }

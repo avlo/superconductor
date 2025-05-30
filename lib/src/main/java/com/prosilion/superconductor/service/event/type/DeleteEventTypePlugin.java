@@ -3,27 +3,24 @@ package com.prosilion.superconductor.service.event.type;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
 import nostr.event.filter.AddressTagFilter;
 import nostr.event.filter.Filters;
 import nostr.event.impl.DeletionEvent;
-import nostr.event.impl.GenericEvent;
 import nostr.event.tag.AddressTag;
 import nostr.event.tag.EventTag;
 import nostr.event.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-// TODO: complete this class
 @Slf4j
 @Component
-public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
+public class DeleteEventTypePlugin<T extends DeletionEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
   private final DeletionEventEntityService deletionEventEntityService;
   private final FilterMatcher<T> filterMatcher;
 
@@ -40,16 +37,6 @@ public class DeleteEventTypePlugin<T extends GenericEvent> extends AbstractEvent
   @Override
   public void processIncomingEvent(@NonNull T event) {
     log.debug("processing incoming DELETE EVENT: [{}]", event);
-
-    DeletionEvent deletionEvent = new DeletionEvent(
-        event.getPubKey(),
-        event.getTags(),
-        event.getContent()
-    );
-    deletionEvent.setId(event.getId());
-    deletionEvent.setCreatedAt(event.getCreatedAt());
-    deletionEvent.setSignature(event.getSignature());
-
     save(event); // NIP-09 req's saving of event itself
     saveDeletionEvent(event);
   }

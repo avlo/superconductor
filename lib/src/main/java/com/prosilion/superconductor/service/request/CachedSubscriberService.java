@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.request;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.hash.Hashing;
@@ -7,6 +8,13 @@ import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
 import com.prosilion.superconductor.service.request.pubsub.TerminatedSocket;
 import com.prosilion.superconductor.util.EmptyFiltersException;
+import jakarta.validation.constraints.NotEmpty;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
 @Slf4j
 @Service
@@ -37,9 +38,15 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   }
 
   @Override
-  public Long save(@NonNull Subscriber subscriber, @NonNull List<Filters> filtersList) throws EmptyFiltersException {
-    removeSubscriberBySessionId(subscriber.getSessionId());
+  public Long save(@NonNull Subscriber subscriber, @NotEmpty List<Filters> filtersList) {
+    Preconditions.checkArgument(!filtersList.isEmpty());
     long subscriberSessionHash = getHash(subscriber);
+    
+//    TODO: below quick impl, needs cleanup
+    if (checkIdenticalFilters(subscriberSessionHash, filtersList))
+      return subscriberSessionHash;
+    
+    removeSubscriberBySessionId(subscriber.getSessionId());
     subscriber.setSubscriberSessionHash(subscriberSessionHash);
     for (Filters filters : filtersList) {
       put(subscriber, filters);
@@ -69,6 +76,14 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   @EventListener
   public void terminateSocket(@NonNull TerminatedSocket terminatedSocket) {
     removeSubscriberBySessionId(terminatedSocket.sessionId());
+  }
+
+  public boolean checkIdenticalFilters(@NonNull Long subscriberSessionHash, @NotEmpty List<Filters> filtersList) {
+//    TODO: below quick impl, needs cleanup    
+    if (!subscriberSessionHashComboMap.containsKey(subscriberSessionHash))
+      return false;
+    return subscriberSessionHashComboMap
+        .get(subscriberSessionHash).stream().map(Combo::getFilters).toList().equals(filtersList);
   }
 
   @Override

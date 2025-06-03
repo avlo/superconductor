@@ -11,6 +11,11 @@ import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntity
 import com.prosilion.superconductor.service.event.ConcreteTagEntitiesService;
 import com.prosilion.superconductor.service.event.join.generic.GenericTagEntitiesService;
 import jakarta.persistence.NoResultException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.base.PublicKey;
@@ -21,12 +26,6 @@ import nostr.event.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -80,7 +79,7 @@ public class EventEntityService<T extends GenericEvent> {
       return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(NoResultException::new).getId();
     }
   }
-  
+
   public Map<Kind, Map<Long, T>> getAll() {
     return eventEntityRepository.findAll().stream()
         .map(this::populateEventEntity)
@@ -96,8 +95,16 @@ public class EventEntityService<T extends GenericEvent> {
     return eventEntityRepository
         .findByPubKey(
             publicKey.toHexString())
-        .stream().map(pk -> 
-            getEventById(pk.getId())).toList();
+        .stream().map(ee ->
+            getEventById(ee.getId())).toList();
+  }
+
+  public List<T> getEventsByKind(@NonNull Kind kind) {
+    return eventEntityRepository
+        .findByKind(
+            kind.getValue())
+        .stream().map(ee ->
+            getEventById(ee.getId())).toList();
   }
 
   public T getEventById(@NonNull Long id) {

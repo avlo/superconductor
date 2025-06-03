@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.superconductor.entity.EventEntity;
+import com.prosilion.superconductor.service.request.NotifierService;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
 import java.util.List;
@@ -20,22 +21,23 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class DeleteEventTypePlugin<T extends DeletionEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
+public class DeleteEventTypePlugin<T extends DeletionEvent> extends AbstractPublishingEventTypePlugin<T> {
   private final DeletionEventEntityService deletionEventEntityService;
   private final FilterMatcher<T> filterMatcher;
 
   @Autowired
   public DeleteEventTypePlugin(
-      RedisCache<T> redisCache,
-      DeletionEventEntityService deletionEventEntityService,
-      FilterMatcher<T> filterMatcher) {
-    super(redisCache);
+      @NonNull RedisCache<T> redisCache,
+      @NonNull NotifierService<T> notifierService,
+      @NonNull DeletionEventEntityService deletionEventEntityService,
+      @NonNull FilterMatcher<T> filterMatcher) {
+    super(redisCache, notifierService);
     this.deletionEventEntityService = deletionEventEntityService;
     this.filterMatcher = filterMatcher;
   }
 
   @Override
-  public void processIncomingEvent(@NonNull T event) {
+  public void processIncomingPublishingEventType(@NonNull T event) {
     log.debug("processing incoming DELETE EVENT: [{}]", event);
     save(event); // NIP-09 req's saving of event itself
     saveDeletionEvent(event);

@@ -21,4 +21,5 @@ public interface EventEntityRepository extends JpaRepository<EventEntity, Long> 
   List<EventEntity> findByContent(@NonNull String content);
   Optional<EventEntity> findByEventIdString(@NonNull String eventIdString);
   List<EventEntity> findByPubKey(@NonNull String pubKey);
+  List<EventEntity> findByKind(Integer kind);
 }

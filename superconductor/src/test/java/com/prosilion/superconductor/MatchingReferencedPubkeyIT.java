@@ -41,7 +41,7 @@ class MatchingReferencedPubkeyIT {
   MatchingReferencedPubkeyIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
 
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_reference_event_filter_json_input.txt"))) {
+    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_reference_pubkey_filter_json_input.txt"))) {
       String textMessageEventJson = lines.collect(Collectors.joining("\n"));
       log.debug("setup() send event:\n  {}", textMessageEventJson);
       assertTrue(
@@ -54,7 +54,7 @@ class MatchingReferencedPubkeyIT {
   @Test
   void testReqMessages() throws JsonProcessingException {
     String subscriberId = Factory.generateRandomHex64String();
-    String referencedPubKey = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+    String referencedPubKey = "2bff79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
 
     PublicKey publicKey = new PublicKey(referencedPubKey);
     PubKeyTag pubKeyTag = new PubKeyTag(publicKey);

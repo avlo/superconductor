@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.event.type;
 
+import com.prosilion.superconductor.service.request.NotifierService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import nostr.event.Kind;
@@ -9,15 +10,15 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class PublishEventTypePlugin<T extends GenericEvent> extends AbstractEventTypePlugin<T> implements EventTypePlugin<T> {
+public class CanonicalEventTypePlugin<T extends GenericEvent> extends AbstractPublishingEventTypePlugin<T> {
 
   @Autowired
-  public PublishEventTypePlugin(@NonNull RedisCache<T> redisCache) {
-    super(redisCache);
+  public CanonicalEventTypePlugin(@NonNull RedisCache<T> redisCache, @NonNull NotifierService<T> notifierService) {
+    super(redisCache, notifierService);
   }
 
   @Override
-  public void processIncomingEvent(@NonNull T event) {
+  public void processIncomingPublishingEventType(@NonNull T event) {
     log.debug("processing incoming CANONICAL EVENT: [{}]", event);
 //    TODO: below necessary/useful?
 //    TextNoteEvent textNoteEvent = new TextNoteEvent(

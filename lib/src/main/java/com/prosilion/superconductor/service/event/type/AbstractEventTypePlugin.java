@@ -8,7 +8,7 @@ import nostr.event.impl.GenericEvent;
 
 @Slf4j
 @Getter
-public abstract class AbstractEventTypePlugin<T extends GenericEvent> implements EventTypePlugin<T> {
+abstract class AbstractEventTypePlugin<T extends GenericEvent> implements EventTypePlugin<T> {
   private final RedisCache<T> redisCache;
 
   public AbstractEventTypePlugin(@NonNull RedisCache<T> redisCache) {

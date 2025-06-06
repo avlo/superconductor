@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ReqService<T extends GenericEvent> {
+public class ReqService<T extends GenericEvent> implements ReqServiceIF<T> {
   private final AbstractSubscriberService abstractSubscriberService;
   private final NotifierService<T> notifierService;
 
@@ -19,6 +19,7 @@ public class ReqService<T extends GenericEvent> {
     this.notifierService = notifierService;
   }
 
+  @Override
   public <U extends ReqMessage> void processIncoming(@NonNull U reqMessage, @NonNull String sessionId) throws EmptyFiltersException {
     notifierService.subscriptionEventHandler(
         abstractSubscriberService.save(

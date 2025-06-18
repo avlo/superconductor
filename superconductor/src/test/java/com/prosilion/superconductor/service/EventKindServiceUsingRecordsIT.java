@@ -12,8 +12,6 @@ import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.service.event.service.EventKindTypeServiceIF;
 import java.security.NoSuchAlgorithmException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,14 +19,12 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class EventKindServiceUsingRecordsTest {
-  private static final Log log = LogFactory.getLog(EventKindServiceUsingRecordsTest.class);
-
+class EventKindServiceUsingRecordsIT {
   private final EventKindTypeServiceIF<Type, AbstractBadgeAwardEvent<Type>> eventKindTypeService;
   private final EventKindServiceIF<GenericEventDtoIF> eventKindService;
 
   @Autowired
-  public EventKindServiceUsingRecordsTest(
+  public EventKindServiceUsingRecordsIT(
       EventKindTypeServiceIF<Type, AbstractBadgeAwardEvent<Type>> eventKindTypeService,
       EventKindServiceIF<GenericEventDtoIF> eventKindService) {
     this.eventKindTypeService = eventKindTypeService;

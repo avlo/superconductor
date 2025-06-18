@@ -1,30 +1,33 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.TextNoteEvent;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.tag.HashtagTagFilter;
+import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.message.EoseMessage;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.HashtagTag;
+import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.api.NIP01;
-import nostr.event.BaseMessage;
-import nostr.event.NIP01Event;
-import nostr.event.filter.Filters;
-import nostr.event.filter.HashtagTagFilter;
-import nostr.event.impl.GenericEvent;
-import nostr.event.message.EoseMessage;
-import nostr.event.message.EventMessage;
-import nostr.event.message.ReqMessage;
-import nostr.event.tag.HashtagTag;
-import nostr.id.Identity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
+import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,26 +42,25 @@ class MatchingGenericTagSingleLetterQueryIT {
   String content = Factory.lorumIpsum(getClass());
 
   @Autowired
-  MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
+  MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
-    NIP01<NIP01Event> textNoteEvent = new NIP01<>(identity).createTextNoteEvent(content);
-    textNoteEvent.addTag(new HashtagTag("h-tag-1"));
+    BaseEvent textNoteEvent = new TextNoteEvent(identity, List.of(new HashtagTag("h-tag-1")), content);
     assertTrue(
         nostrRelayService
             .send(
-                new EventMessage(textNoteEvent.sign().getEvent()))
+                new EventMessage(new EventDto(textNoteEvent).convertBaseEventToDto()))
             .getFlag());
   }
 
   @Test
-  void testReqMessagesNoGenericMatch() throws JsonProcessingException {
+  void testReqMessagesNoGenericMatch() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String hashTagString = "textnote-geo-tag-2";
 
     List<BaseMessage> baseMessages = nostrRelayService.send(
         new ReqMessage(subscriberId, new Filters(
-        new HashtagTagFilter<>(new HashtagTag(hashTagString)))));
+            new HashtagTagFilter<>(new HashtagTag(hashTagString)))));
     assertEquals(1, baseMessages.size());
     assertTrue(baseMessages
         .stream()
@@ -68,7 +70,7 @@ class MatchingGenericTagSingleLetterQueryIT {
   }
 
   @Test
-  void testReqMessagesMatchesGeneric() throws JsonProcessingException {
+  void testReqMessagesMatchesGeneric() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String hashTagString = "h-tag-1";
@@ -78,11 +80,11 @@ class MatchingGenericTagSingleLetterQueryIT {
             new ReqMessage(subscriberId, new Filters(
                 new HashtagTagFilter<>(new HashtagTag(hashTagString)))));
 
-    List<GenericEvent> events = getGenericEvents(returnedBaseMessages);
-    
+    List<GenericEventDtoIF> events = getGenericEventDtoIFs(returnedBaseMessages);
+
     assertFalse(events.isEmpty());
     //    associated event
-    assertTrue(events.stream().anyMatch(s -> s.getPubKey().toHexString().equals(identity.getPublicKey().toHexString())));
+    assertTrue(events.stream().anyMatch(s -> s.getPublicKey().toHexString().equals(identity.getPublicKey().toHexString())));
     assertTrue(events.stream().anyMatch(s -> s.getTags().stream().anyMatch(tag -> tag.toString().contains(hashTagString))));
   }
 }

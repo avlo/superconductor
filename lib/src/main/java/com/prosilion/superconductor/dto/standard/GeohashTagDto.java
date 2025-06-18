@@ -2,8 +2,8 @@ package com.prosilion.superconductor.dto.standard;
 
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.standard.GeohashTagEntity;
-import lombok.NonNull;
-import nostr.event.tag.GeohashTag;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.tag.GeohashTag;
 
 public class GeohashTagDto implements AbstractTagDto {
   private final GeohashTag geohashTag;

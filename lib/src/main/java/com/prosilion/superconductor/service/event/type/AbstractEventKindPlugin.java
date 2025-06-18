@@ -1,17 +1,18 @@
 package com.prosilion.superconductor.service.event.type;
 
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.superconductor.service.event.service.plugin.EventKindPluginIF;
 import lombok.Getter;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.Kind;
-import nostr.event.impl.GenericEvent;
 
 @Slf4j
 @Getter
-abstract class AbstractEventTypePlugin<T extends GenericEvent> implements EventTypePlugin<T> {
+abstract class AbstractEventKindPlugin<T extends GenericEventDtoIF> implements EventKindPluginIF<T> {
   private final RedisCache<T> redisCache;
 
-  public AbstractEventTypePlugin(@NonNull RedisCache<T> redisCache) {
+  public AbstractEventKindPlugin(@NonNull RedisCache<T> redisCache) {
     this.redisCache = redisCache;
   }
 
@@ -20,5 +21,6 @@ abstract class AbstractEventTypePlugin<T extends GenericEvent> implements EventT
   }
 
   abstract public void processIncomingEvent(@NonNull T event);
+
   abstract public Kind getKind();
 }

@@ -6,7 +6,7 @@ import com.prosilion.superconductor.entity.join.generic.GenericTagEntityElementA
 import com.prosilion.superconductor.repository.generic.ElementAttributeEntityRepository;
 import com.prosilion.superconductor.repository.join.generic.GenericTagEntityElementAttributeEntityRepository;
 import jakarta.transaction.Transactional;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

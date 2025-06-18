@@ -1,11 +1,11 @@
 package com.prosilion.superconductor.service.request;
 
+import com.prosilion.nostr.filter.Filters;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.util.EmptyFiltersException;
 import com.prosilion.superconductor.util.NoExistingUserException;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.NonNull;
-import nostr.event.filter.Filters;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Map;

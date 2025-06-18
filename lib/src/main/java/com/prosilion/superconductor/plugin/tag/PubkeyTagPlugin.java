@@ -6,8 +6,8 @@ import com.prosilion.superconductor.entity.standard.PubkeyTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityPubkeyTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.PubkeyTagEntityRepository;
 import jakarta.annotation.Nonnull;
-import lombok.NonNull;
-import nostr.event.tag.PubKeyTag;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.tag.PubKeyTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

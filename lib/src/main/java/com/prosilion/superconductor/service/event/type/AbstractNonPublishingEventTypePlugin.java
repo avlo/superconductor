@@ -1,13 +1,13 @@
 package com.prosilion.superconductor.service.event.type;
 
+import com.prosilion.nostr.event.GenericEventDtoIF;
 import lombok.Getter;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.impl.GenericEvent;
 
 @Slf4j
 @Getter
-public abstract class AbstractNonPublishingEventTypePlugin<T extends GenericEvent> extends AbstractEventTypePlugin<T> {
+public abstract class AbstractNonPublishingEventTypePlugin<T extends GenericEventDtoIF> extends AbstractEventKindPlugin<T> {
   public AbstractNonPublishingEventTypePlugin(@NonNull RedisCache<T> redisCache) {
     super(redisCache);
   }

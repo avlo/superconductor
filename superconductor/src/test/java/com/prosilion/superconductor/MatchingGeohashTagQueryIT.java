@@ -1,5 +1,17 @@
 package com.prosilion.superconductor;
 
+import com.prosilion.nostr.codec.BaseMessageDecoder;
+import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.GenericTagQuery;
+import com.prosilion.nostr.filter.tag.GenericTagQueryFilter;
+import com.prosilion.nostr.filter.tag.GeohashTagFilter;
+import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.message.EoseMessage;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.GeohashTag;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
@@ -9,26 +21,15 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.GenericTagQuery;
-import nostr.event.BaseMessage;
-import nostr.event.filter.Filters;
-import nostr.event.filter.GenericTagQueryFilter;
-import nostr.event.filter.GeohashTagFilter;
-import nostr.event.impl.GenericEvent;
-import nostr.event.json.codec.BaseMessageDecoder;
-import nostr.event.message.EoseMessage;
-import nostr.event.message.EventMessage;
-import nostr.event.message.ReqMessage;
-import nostr.event.tag.GeohashTag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
+import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -48,13 +49,13 @@ class MatchingGeohashTagQueryIT {
       String textMessageEventJson = lines.collect(Collectors.joining("\n"));
       log.debug("setup() send event:\n  {}", textMessageEventJson);
       assertTrue(nostrRelayService.send(
-              new BaseMessageDecoder<EventMessage>().decode(textMessageEventJson))
+              (EventMessage) BaseMessageDecoder.decode(textMessageEventJson))
           .getFlag());
     }
   }
 
   @Test
-  void testReqMessagesNoGenericMatch() throws IOException, ExecutionException, InterruptedException {
+  void testReqMessagesNoGenericMatch() throws IOException, ExecutionException, InterruptedException, NostrException {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagString = "textnote-geo-tag-non-existent";
 
@@ -75,7 +76,7 @@ class MatchingGeohashTagQueryIT {
   }
 
   @Test
-  void testReqMessagesMatchesGeneric() throws IOException {
+  void testReqMessagesMatchesGeneric() throws IOException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String geohashTagString = "textnote-geo-tag-1";
@@ -84,7 +85,7 @@ class MatchingGeohashTagQueryIT {
             new GenericTagQuery("#g", geohashTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
@@ -98,7 +99,7 @@ class MatchingGeohashTagQueryIT {
   }
 
   @Test
-  void testReqMessagesMatchesGeoHashTag() throws IOException {
+  void testReqMessagesMatchesGeoHashTag() throws IOException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String geohashTagString = "textnote-geo-tag-1";
@@ -107,7 +108,7 @@ class MatchingGeohashTagQueryIT {
             new GeohashTag(geohashTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);

@@ -1,12 +1,13 @@
 package com.prosilion.superconductor.service.message.close;
 
+import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.message.CloseMessage;
 import com.prosilion.superconductor.service.request.AbstractSubscriberService;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.message.CloseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -45,7 +46,7 @@ public class CloseMessageServiceNoAuthDecorator<T extends CloseMessage> implemen
   }
 
   @Override
-  public String getCommand() {
+  public Command getCommand() {
     return closeMessageService.getCommand();
   }
 }

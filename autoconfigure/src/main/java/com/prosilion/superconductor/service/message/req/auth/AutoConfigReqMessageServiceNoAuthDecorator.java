@@ -1,14 +1,14 @@
 package com.prosilion.superconductor.service.message.req.auth;
 
-import com.prosilion.superconductor.service.message.req.ReqMessageServiceIF;
+import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.service.message.req.AutoConfigReqMessageServiceIF;
-import lombok.NonNull;
+import com.prosilion.superconductor.service.message.req.ReqMessageServiceIF;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.message.ReqMessage;
+import org.springframework.lang.NonNull;
 
 @Slf4j
 public class AutoConfigReqMessageServiceNoAuthDecorator<T extends ReqMessage> implements AutoConfigReqMessageServiceIF<T> {
-  public final String command = "REQ";
   private final ReqMessageServiceIF<T> reqMessageService;
 
   public AutoConfigReqMessageServiceNoAuthDecorator(@NonNull ReqMessageServiceIF<T> reqMessageService) {
@@ -22,7 +22,7 @@ public class AutoConfigReqMessageServiceNoAuthDecorator<T extends ReqMessage> im
   }
 
   @Override
-  public String getCommand() {
-    return command;
+  public Command getCommand() {
+    return Command.REQ;
   }
 }

@@ -1,5 +1,11 @@
 package com.prosilion.superconductor.service.event.type;
 
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.GenericTag;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
@@ -16,20 +22,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.PublicKey;
-import nostr.event.BaseTag;
-import nostr.event.Kind;
-import nostr.event.impl.GenericEvent;
-import nostr.event.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class EventEntityService<T extends GenericEvent> {
+public class EventEntityService<T extends GenericEventDtoIF> {
   private final ConcreteTagEntitiesService<
       BaseTag,
       AbstractTagEntityRepository<AbstractTagEntity>,
@@ -57,20 +58,23 @@ public class EventEntityService<T extends GenericEvent> {
     this.eventEntityRepository = eventEntityRepository;
   }
 
-  public Long saveEventEntity(@NonNull GenericEvent event) {
-    EventDto eventToSave = new EventDto(
-        event.getPubKey(),
-        event.getId(),
-        Kind.valueOf(event.getKind()),
-        event.getNip(),
-        event.getCreatedAt(),
-        event.getSignature(),
-        event.getTags(),
-        event.getContent()
-    );
-
+  public Long saveEventEntity(@NonNull BaseEvent event) {
     try {
-      EventEntity savedEntity = Optional.of(eventEntityRepository.save(eventToSave.convertDtoToEntity())).orElseThrow(NoResultException::new);
+      EventEntity savedEntity = Optional.of(
+          eventEntityRepository.save(
+              new EventDto(event).convertDtoToEntity())).orElseThrow(NoResultException::new);
+      concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
+      genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
+      return savedEntity.getId();
+    } catch (DataIntegrityViolationException e) {
+      log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
+      return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(NoResultException::new).getId();
+    }
+  }
+
+  public Long saveEventEntity(@NonNull GenericEventDtoIF event) {
+    try {
+      EventEntity savedEntity = Optional.of(eventEntityRepository.save(convertDtoToEntity(event))).orElseThrow(NoResultException::new);
       concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
       genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
       return savedEntity.getId();
@@ -139,5 +143,15 @@ public class EventEntityService<T extends GenericEvent> {
 
     eventEntity.setTags(Stream.concat(concreteTags.stream(), genericTags.stream()).toList());
     return eventEntity;
+  }
+
+  public static EventEntity convertDtoToEntity(GenericEventDtoIF dto) {
+    return new EventEntity(
+        dto.getId(),
+        dto.getKind().getValue(),
+        dto.getPublicKey().toString(),
+        dto.getCreatedAt(),
+        dto.getSignature().toString(),
+        dto.getContent());
   }
 }

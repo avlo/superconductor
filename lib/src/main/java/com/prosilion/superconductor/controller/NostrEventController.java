@@ -1,14 +1,23 @@
 package com.prosilion.superconductor.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.codec.BaseMessageDecoder;
+import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.superconductor.service.clientresponse.ClientResponse;
 import com.prosilion.superconductor.service.message.MessageServiceIF;
 import com.prosilion.superconductor.service.message.RelayInfoDocService;
 import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.service.request.pubsub.TerminatedSocket;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.BaseMessage;
-import nostr.event.json.codec.BaseMessageDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,20 +35,11 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 @Slf4j
 @Controller
 @EnableWebSocket
 public class NostrEventController<T extends BaseMessage> extends TextWebSocketHandler implements WebSocketConfigurer {
-  private final Map<String, MessageServiceIF<T>> messageServiceMap;
+  private final Map<Command, MessageServiceIF<T>> messageServiceMap;
   private final RelayInfoDocService relayInfoDocService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
   private final ApplicationEventPublisher publisher;
@@ -108,7 +108,8 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   public void handleTextMessage(WebSocketSession session, TextMessage baseMessage) throws JsonProcessingException {
     log.debug("Message from session [{}]", session.getId());
     log.debug("Message content [{}]", baseMessage.getPayload());
-    T message = (T) new BaseMessageDecoder<>().decode(baseMessage.getPayload());
+//    BaseMessage message = BaseMessageDecoder.decode(baseMessage.getPayload());
+    T message = (T) BaseMessageDecoder.decode(baseMessage.getPayload());
     messageServiceMap.get(message.getCommand()).processIncoming(message, session.getId());
   }
 

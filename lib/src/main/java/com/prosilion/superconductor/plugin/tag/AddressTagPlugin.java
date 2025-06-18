@@ -5,8 +5,8 @@ import com.prosilion.superconductor.entity.join.standard.EventEntityAddressTagEn
 import com.prosilion.superconductor.entity.standard.AddressTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityAddressTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.AddressTagEntityRepository;
-import lombok.NonNull;
-import nostr.event.tag.AddressTag;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.tag.AddressTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

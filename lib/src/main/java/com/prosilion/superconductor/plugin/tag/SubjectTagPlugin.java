@@ -5,8 +5,8 @@ import com.prosilion.superconductor.entity.join.standard.EventEntitySubjectTagEn
 import com.prosilion.superconductor.entity.standard.SubjectTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntitySubjectTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.SubjectTagEntityRepository;
-import lombok.NonNull;
-import nostr.event.tag.SubjectTag;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.tag.SubjectTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

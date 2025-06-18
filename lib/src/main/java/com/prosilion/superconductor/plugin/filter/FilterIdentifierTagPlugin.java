@@ -1,12 +1,12 @@
 package com.prosilion.superconductor.plugin.filter;
 
-import nostr.event.filter.IdentifierTagFilter;
-import nostr.event.impl.GenericEvent;
-import nostr.event.tag.IdentifierTag;
+import com.prosilion.nostr.filter.tag.IdentifierTagFilter;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.tag.IdentifierTag;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilterIdentifierTagPlugin<T extends IdentifierTagFilter<IdentifierTag>, U extends GenericEvent> extends AbstractTagFilterPlugin<T, U, IdentifierTag> {
+public class FilterIdentifierTagPlugin<T extends IdentifierTagFilter<IdentifierTag>, U extends GenericEventDtoIF> extends AbstractTagFilterPlugin<T, U, IdentifierTag> {
   public FilterIdentifierTagPlugin() {
     super(IdentifierTagFilter.FILTER_KEY, IdentifierTag.class);
   }

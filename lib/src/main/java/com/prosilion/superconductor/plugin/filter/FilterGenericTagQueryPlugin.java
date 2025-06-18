@@ -1,16 +1,16 @@
 package com.prosilion.superconductor.plugin.filter;
 
+import com.prosilion.nostr.filter.GenericTagQuery;
+import com.prosilion.nostr.filter.tag.GenericTagQueryFilter;
+import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import nostr.base.GenericTagQuery;
-import nostr.event.filter.GenericTagQueryFilter;
-import nostr.event.impl.GenericEvent;
-import nostr.event.tag.GenericTag;
+import com.prosilion.nostr.event.GenericEventDtoIF;
 import org.springframework.stereotype.Component;
 
 import java.util.function.BiPredicate;
 
 @Component
-public class FilterGenericTagQueryPlugin<T extends GenericTagQueryFilter<GenericTagQuery>, U extends GenericEvent> implements FilterBiPredicate<T, U> {
+public class FilterGenericTagQueryPlugin<T extends GenericTagQueryFilter<GenericTagQuery>, U extends GenericEventDtoIF> implements FilterBiPredicate<T, U> {
   public static final String BLANK = "";
 
   @Override

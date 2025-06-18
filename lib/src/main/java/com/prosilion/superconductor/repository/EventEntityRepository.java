@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.repository;
 
 import com.prosilion.superconductor.entity.EventEntity;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

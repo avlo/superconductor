@@ -1,16 +1,17 @@
 package com.prosilion.superconductor.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.enums.NostrException;
 import com.prosilion.subdivisions.client.reactive.ReactiveNostrRelayClient;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.BaseMessage;
-import nostr.event.message.EventMessage;
-import nostr.event.message.OkMessage;
-import nostr.event.message.ReqMessage;
+import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.OkMessage;
+import com.prosilion.nostr.message.ReqMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -40,7 +41,7 @@ public class NostrRelayService {
     return subscriber.getItems().getFirst();
   }
 
-  public List<BaseMessage> send(@NonNull ReqMessage reqMessage) throws JsonProcessingException {
+  public List<BaseMessage> send(@NonNull ReqMessage reqMessage) throws JsonProcessingException, NostrException {
     TestSubscriber<BaseMessage> subscriber = new TestSubscriber<>();
     nostrRelayService.send(reqMessage, subscriber);
     return subscriber.getItems();

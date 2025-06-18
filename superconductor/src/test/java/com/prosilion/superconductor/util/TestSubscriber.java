@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import org.awaitility.Awaitility;
 import org.reactivestreams.Subscription;
 import reactor.core.publisher.BaseSubscriber;

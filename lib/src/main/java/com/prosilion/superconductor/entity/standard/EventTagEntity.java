@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.entity.standard;
 
+import com.prosilion.nostr.enums.Marker;
 import com.prosilion.superconductor.dto.standard.EventTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
@@ -10,11 +11,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.Setter;
-import nostr.event.BaseTag;
-import nostr.event.Marker;
-import nostr.event.tag.EventTag;
+import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.EventTag;
 
 @Setter
 @Getter
@@ -27,7 +27,7 @@ public class EventTagEntity extends AbstractTagEntity {
   private String recommendedRelayUrl;
 
   public EventTagEntity(@NonNull EventTag eventTag) {
-    this(eventTag.getIdEvent(), eventTag.getMarker(), eventTag.getRecommendedRelayUrl());
+    this(eventTag.getIdEvent(), eventTag.getMarker(), eventTag.getRecommendedUrl());
   }
 
   public EventTagEntity(@NonNull String eventIdString, Marker marker, String recommendedRelayUrl) {

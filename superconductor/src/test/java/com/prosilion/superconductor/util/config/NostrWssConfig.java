@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.util.config;
 
 import com.prosilion.superconductor.util.NostrRelayService;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

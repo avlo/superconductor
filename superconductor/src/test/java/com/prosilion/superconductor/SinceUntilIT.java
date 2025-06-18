@@ -1,6 +1,13 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.codec.BaseMessageDecoder;
+import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.message.EoseMessage;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
@@ -9,21 +16,15 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.BaseMessage;
-import nostr.event.impl.GenericEvent;
-import nostr.event.json.codec.BaseMessageDecoder;
-import nostr.event.message.EoseMessage;
-import nostr.event.message.EventMessage;
-import nostr.event.message.ReqMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
+import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,18 +43,18 @@ class SinceUntilIT {
       log.debug("setup() send event:\n  {}", textMessageEventJson);
       assertTrue(
           nostrRelayService.send(
-                  new BaseMessageDecoder<EventMessage>().decode(textMessageEventJson))
+                  (EventMessage) BaseMessageDecoder.decode(textMessageEventJson))
               .getFlag());
     }
   }
 
   @Test
-  void testReqCreatedDateAfterSinceUntilDatesMessages() throws JsonProcessingException {
+  void testReqCreatedDateAfterSinceUntilDatesMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqCreatedDateAfterSinceUntilDatesJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
     
     /*
       since 1111111111112 and until 1111111111113 should yield empty, since target time (1111111111111) is before the two
@@ -70,12 +71,12 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqCreatedDateBeforeSinceUntilDatesMessages() throws JsonProcessingException {
+  void testReqCreatedDateBeforeSinceUntilDatesMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqCreatedDateBeforeSinceUntilDatesJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     /*
      * since 1111111111109 and until 1111111111110 should yield empty, since target time (1111111111111) is not between the two
@@ -92,12 +93,12 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqCreatedDateBetweenSinceUntilDatesMessages() throws JsonProcessingException {
+  void testReqCreatedDateBetweenSinceUntilDatesMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqCreatedDateBetweenSinceUntilDatesJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     assertTrue(returnedBaseMessages.stream()
@@ -121,13 +122,13 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqUntilDateGreaterThanCreatedDateMessages() throws JsonProcessingException {
+  void testReqUntilDateGreaterThanCreatedDateMessages() throws JsonProcessingException, NostrException {
     String until = "1111111111112";
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqUntilDateGreaterThanCreatedDateJson(subscriberId, until));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     assertTrue(returnedBaseMessages.stream()
@@ -146,13 +147,13 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages() throws JsonProcessingException {
+  void testReqUntilDateGreaterThanCreatedDatePubKeyTagMessages() throws JsonProcessingException, NostrException {
     String uuid = "1111111111112";
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(subscriberId, uuid));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     assertTrue(returnedBaseMessages.stream()
@@ -171,12 +172,12 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqUntilDateLessThanCreatedDateMessages() throws JsonProcessingException {
+  void testReqUntilDateLessThanCreatedDateMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqUntilDateLessThanCreatedDateJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     /*
      * until 1111111111110 should yield empty, since target time (1111111111111) is after it
@@ -193,12 +194,12 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqSinceDateGreaterThanCreatedDateMessages() throws JsonProcessingException {
+  void testReqSinceDateGreaterThanCreatedDateMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqSinceDateGreaterThanCreatedDateJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     /*
      * since 1111111111112 should yield empty, since target time (1111111111111) is before it
@@ -215,13 +216,13 @@ class SinceUntilIT {
   }
 
   @Test
-  void testReqSinceDateLessThanCreatedDateMessages() throws JsonProcessingException {
+  void testReqSinceDateLessThanCreatedDateMessages() throws JsonProcessingException, NostrException {
     String since = "1111111111110";
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqSinceDateLessThanCreatedDateJson(subscriberId, since));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     /*
      * "since" 1111111111110 should yield present, as target time (1111111111111) is after it

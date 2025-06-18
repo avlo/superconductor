@@ -2,7 +2,7 @@ package com.prosilion.superconductor.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.Setter;
 
 import java.io.Serializable;

@@ -5,8 +5,8 @@ import com.prosilion.superconductor.entity.join.standard.EventEntityEventTagEnti
 import com.prosilion.superconductor.entity.standard.EventTagEntity;
 import com.prosilion.superconductor.repository.join.standard.EventEntityEventTagEntityRepository;
 import com.prosilion.superconductor.repository.standard.EventTagEntityRepository;
-import lombok.NonNull;
-import nostr.event.tag.EventTag;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.tag.EventTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

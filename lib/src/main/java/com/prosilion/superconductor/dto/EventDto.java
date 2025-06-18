@@ -1,26 +1,31 @@
 package com.prosilion.superconductor.dto;
 
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.GenericEventDto;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.user.Signature;
 import com.prosilion.superconductor.entity.EventEntity;
-import nostr.base.PublicKey;
-import nostr.base.Signature;
-import nostr.event.BaseTag;
-import nostr.event.Kind;
-import nostr.event.NIP01Event;
 
-import java.util.List;
-
-public class EventDto extends NIP01Event {
-
-  public EventDto(PublicKey pubKey, String eventId, Kind kind, Integer nip, Long createdAt, Signature signature, List<BaseTag> tags, String content) {
-    super(pubKey, kind, tags);
-    setId(eventId);
-    setNip(nip);
-    setCreatedAt(createdAt);
-    setSignature(signature);
-    setContent(content);
-  }
+public record EventDto(BaseEvent event) {
 
   public EventEntity convertDtoToEntity() {
-    return new EventEntity(getId(), getKind(), getNip(), getPubKey().toString(), getCreatedAt(), getSignature().toString(), getContent());
+    return new EventEntity(
+        event.getId(),
+        event.getKind().getValue(),
+        event.getPublicKey().toString(),
+        event.getCreatedAt(),
+        event.getSignature(),
+        event.getContent());
+  }
+
+  public GenericEventDtoIF convertBaseEventToDto() {
+    return new GenericEventDto(
+        event.getId(),
+        event.getPublicKey(),
+        event.getCreatedAt(),
+        event.getKind(),
+        event.getTags(),
+        event.getContent(),
+        Signature.fromString(event.getSignature()));
   }
 }

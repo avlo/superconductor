@@ -2,7 +2,7 @@ package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.superconductor.entity.join.deletion.DeletionEventEntity;
 import com.prosilion.superconductor.repository.deletion.DeletionEventEntityRepository;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+import com.prosilion.nostr.codec.BaseMessageDecoder;
+import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,12 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.Command;
-import nostr.event.BaseMessage;
-import nostr.event.impl.GenericEvent;
-import nostr.event.json.codec.BaseMessageDecoder;
-import nostr.event.message.EventMessage;
-import nostr.event.message.ReqMessage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -38,7 +36,6 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -87,7 +84,8 @@ abstract class AbstractMultipleSubscriber {
     log.debug("next hex: {}", nextHex);
     String globalEventJson = getGlobalEventJson(nextHex);
     log.debug("setup() send event:\n  {}", globalEventJson);
-    nostrRelayService.send(new BaseMessageDecoder<EventMessage>().decode(globalEventJson));
+//    TODO: update cast
+    nostrRelayService.send((EventMessage) BaseMessageDecoder.decode(globalEventJson));
     targetEventIds.add(nextHex); // targetEventId String values utilized by inherited classes
   }
 
@@ -116,9 +114,9 @@ abstract class AbstractMultipleSubscriber {
     log.debug("testReqMessageWithExecutor requests completed after elapsed time [{}]", System.currentTimeMillis() - start);
   }
 
-  private void sendRequest(String uuidKey) throws JsonProcessingException {
+  private void sendRequest(String uuidKey) throws JsonProcessingException, NostrException {
     List<BaseMessage> send = nostrRelayService.send(
-        new BaseMessageDecoder<ReqMessage>().decode(createReqJson(uuidKey)));
+        (ReqMessage) BaseMessageDecoder.decode(createReqJson(uuidKey)));
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(uuidKey);
     log.debug("expectedJson:\n  {}", expectedJsonInAnyOrder);
   }

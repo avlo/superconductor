@@ -7,22 +7,22 @@
 //import java.util.concurrent.CompletableFuture;
 //import java.util.concurrent.TimeUnit;
 //import java.util.stream.IntStream;
-//import lombok.NonNull;
+//import org.springframework.lang.NonNull;
 //import lombok.extern.slf4j.Slf4j;
-//import nostr.base.PublicKey;
-//import nostr.event.BaseMessage;
-//import nostr.event.filter.AuthorFilter;
-//import nostr.event.filter.Filters;
-//import nostr.event.impl.GenericEvent;
-//import nostr.event.message.EoseMessage;
-//import nostr.event.message.ReqMessage;
+//import com.prosilion.nostr.user.PublicKey;
+//import com.prosilion.nostr.message.BaseMessage;
+//import com.prosilion.nostr.filter.event.AuthorFilter;
+//import com.prosilion.nostr.filter.Filters;
+//import com.prosilion.nostr.event.GenericEventDtoIF;
+//import com.prosilion.nostr.message.EoseMessage;
+//import com.prosilion.nostr.message.ReqMessage;
 //import org.junit.jupiter.api.Nested;
 //import org.junit.jupiter.api.Order;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.beans.factory.annotation.Value;
 //
-//import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
+//import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
 //import static org.awaitility.Awaitility.await;
 //import static org.junit.jupiter.api.Assertions.assertAll;
 //import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,7 +69,7 @@
 //
 //    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
 //    List<BaseMessage> returnedBaseMessages = super.getNostrRelayService().send(reqMessage);
-//    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+//    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 //
 //    assertEquals(2, returnedBaseMessages.size());
 //    assertTrue(returnedBaseMessages

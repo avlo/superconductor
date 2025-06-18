@@ -1,14 +1,15 @@
 package com.prosilion.superconductor.service.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.message.EoseMessage;
+import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.service.request.pubsub.EoseNotice;
 import com.prosilion.superconductor.service.request.pubsub.FireNostrEvent;
-import lombok.NonNull;
-import nostr.api.NIP01;
-import nostr.event.impl.GenericEvent;
-import nostr.event.message.EoseMessage;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 
 public abstract class AbstractSubscriberService implements SubscriberService {
   private final ApplicationEventPublisher publisher;
@@ -17,14 +18,14 @@ public abstract class AbstractSubscriberService implements SubscriberService {
     this.publisher = publisher;
   }
 
-  public <T extends GenericEvent> void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) throws JsonProcessingException {
+  public <T extends GenericEventDtoIF> void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) throws JsonProcessingException, NostrException {
     publisher.publishEvent(
         new BroadcastMessageEvent<>(
             get(fireNostrEvent.subscriptionHash()).getSessionId(),
-            NIP01.createEventMessage(fireNostrEvent.event(), fireNostrEvent.subscriberId())));
+            new EventMessage(fireNostrEvent.event(), fireNostrEvent.subscriberId())));
   }
 
-  public void broadcastToClients(@NonNull EoseNotice eoseNotice) throws JsonProcessingException {
+  public void broadcastToClients(@NonNull EoseNotice eoseNotice) throws JsonProcessingException, NostrException {
     publisher.publishEvent(
         new BroadcastMessageEvent<>(
             get(eoseNotice.subscriptionHash()).getSessionId(),

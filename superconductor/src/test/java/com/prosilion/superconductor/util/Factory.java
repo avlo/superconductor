@@ -1,58 +1,37 @@
 package com.prosilion.superconductor.util;
 
-import lombok.Getter;
-import lombok.NonNull;
-import nostr.api.factory.impl.NIP01Impl;
-import nostr.api.factory.impl.NIP99Impl;
-import nostr.event.BaseTag;
-import nostr.event.impl.ClassifiedListing;
-import nostr.event.impl.GenericEvent;
-import nostr.event.impl.TextNoteEvent;
-import nostr.event.tag.*;
-import nostr.id.Identity;
-import org.apache.commons.lang3.RandomStringUtils;
-
+import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventId;
+import com.prosilion.nostr.event.TextNoteEvent;
+import com.prosilion.nostr.event.internal.ClassifiedListing;
+import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.GeohashTag;
+import com.prosilion.nostr.tag.HashtagTag;
+import com.prosilion.nostr.tag.PriceTag;
+import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.SubjectTag;
+import com.prosilion.nostr.user.Identity;
 import java.math.BigDecimal;
-import java.util.List;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
+import lombok.Getter;
+import org.apache.commons.lang3.RandomStringUtils;
 
 public class Factory {
+
+  public static EventIF createEvent() throws NostrException, NoSuchAlgorithmException {
+    return new TextNoteEvent(createNewIdentity(), lorumIpsum());
+  }
 
   public static Identity createNewIdentity() {
     return Identity.generateRandomIdentity();
   }
 
-  public static <T extends GenericEvent> T createTextNoteEvent(
-      @NonNull Identity identity,
-      @NonNull List<BaseTag> tags,
-      @NonNull String content) {
-    TextNoteEvent textNoteEvent = new NIP01Impl.TextNoteEventFactory(identity, tags, content).create();
-//    NIP01<NIP01Event> nip01_1 = new NIP01<>(identity);
-//    EventNostr sign = nip01_1.createTextNoteEvent(tags, content).sign();
-//    return sign;
-    return (T) textNoteEvent;
-  }
-
-  public static <T extends GenericEvent> T createTextNoteEvent(
-      @NonNull Identity identity, 
-      @NonNull String content, 
-      @NonNull BaseTag... tag) {
-    return createTextNoteEvent(identity, List.of(tag), content);
-  }
-
-  public static <T extends GenericEvent> T createClassifiedListingEvent(
-      Identity identity,
-      List<BaseTag> tags,
-      String content,
-      ClassifiedListing cl) {
-
-    return (T) new NIP99Impl.ClassifiedListingEventFactory(identity, tags, content, cl).create();
-  }
-
-  public static GenericEvent createGenericEvent() {
+  public static GenericEventId createGenericEventId() {
     String concat = generateRandomHex64String();
-    return new GenericEvent(concat.substring(0, 64));
+    return new GenericEventId(concat.substring(0, 64));
   }
 
   public static <T> SubjectTag createSubjectTag(Class<T> clazz) {
@@ -72,11 +51,11 @@ public class Factory {
   }
 
   public static <T> EventTag createEventTag(Class<T> clazz) {
-    return new EventTag(createGenericEvent().getId());
+    return new EventTag(createGenericEventId().getId());
   }
 
   public static PriceTag createPriceTag() {
-    Factory.PriceComposite pc = new Factory.PriceComposite();
+    PriceComposite pc = new PriceComposite();
     BigDecimal NUMBER = pc.getPrice();
     String CURRENCY = pc.getCurrency();
     String FREQUENCY = pc.getFrequency();
@@ -84,7 +63,7 @@ public class Factory {
   }
 
   public static ClassifiedListing createClassifiedListing(String title, String summary) {
-    return new Factory.ClassifiedListingComposite(title, summary, createPriceTag()).getClassifiedListing();
+    return new ClassifiedListingComposite(title, summary, createPriceTag()).getClassifiedListing();
   }
 
   public static <T> String lorumIpsum() {
@@ -113,7 +92,7 @@ public class Factory {
     return cullStringLength("lnurl" + generateRandomHex64String(), 84);
   }
 
-  private static String cullStringLength(String s, int x) {
+  public static String cullStringLength(String s, int x) {
     return s.length() > x ? s.substring(0, x) : s;
   }
 
@@ -149,11 +128,7 @@ public class Factory {
     private final ClassifiedListing classifiedListing;
 
     private ClassifiedListingComposite(String title, String summary, PriceTag priceTag) {
-      this.classifiedListing = ClassifiedListing.builder(
-              title,
-              summary,
-              priceTag)
-          .build();
+      this.classifiedListing = new ClassifiedListing(title, summary, priceTag);
     }
   }
 }

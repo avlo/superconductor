@@ -2,8 +2,8 @@ package com.prosilion.superconductor.dto.standard;
 
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.standard.EventTagEntity;
-import lombok.NonNull;
-import nostr.event.tag.EventTag;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.tag.EventTag;
 
 public class EventTagDto implements AbstractTagDto {
   private final EventTag eventTag;

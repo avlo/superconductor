@@ -30,7 +30,6 @@ class EventEntityRepositoryIT {
   public static final String PUB_KEY = Factory.createNewIdentity().getPublicKey().toHexString();
   public static final String CONTENT = "1112221111";
   public static final Integer KIND = 1;
-  public static final Integer NIP = 1;
   public static final long CREATED_AT = 1717357053050L;
 
   @Autowired
@@ -38,7 +37,7 @@ class EventEntityRepositoryIT {
 
   @BeforeEach
   void setUp() {
-    eventEntityRepository.save(new EventEntity(EVENT_ID, KIND, NIP, PUB_KEY, CREATED_AT, SIGNATURE, CONTENT));
+    eventEntityRepository.save(new EventEntity(EVENT_ID, KIND, PUB_KEY, CREATED_AT, SIGNATURE, CONTENT));
   }
 
   @Test
@@ -56,7 +55,6 @@ class EventEntityRepositoryIT {
     assertEquals(PUB_KEY, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getPubKey());
     assertEquals(CONTENT, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getContent());
     assertEquals(KIND, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getKind());
-    assertEquals(NIP, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getNip());
     assertEquals(CREATED_AT, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getCreatedAt());
   }
 

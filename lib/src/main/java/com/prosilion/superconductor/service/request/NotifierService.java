@@ -2,13 +2,13 @@ package com.prosilion.superconductor.service.request;
 
 import com.prosilion.superconductor.service.event.type.RedisCache;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import lombok.NonNull;
-import nostr.event.impl.GenericEvent;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.event.GenericEventDtoIF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NotifierService<T extends GenericEvent> {
+public class NotifierService<T extends GenericEventDtoIF> {
   private final SubscriberNotifierService<T> subscriberNotifierService;
   private final RedisCache<T> redisCache;
 

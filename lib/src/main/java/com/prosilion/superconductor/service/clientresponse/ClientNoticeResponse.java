@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.service.clientresponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.message.NoticeMessage;
 import lombok.Getter;
-import lombok.NonNull;
-import nostr.api.factory.impl.NIP01Impl;
+import org.springframework.lang.NonNull;
 import org.springframework.web.socket.TextMessage;
 
 @Getter
@@ -14,8 +14,7 @@ public class ClientNoticeResponse implements ClientResponse {
 
   public ClientNoticeResponse(@NonNull String sessionId, @NonNull String noticeMessage, boolean valid) throws JsonProcessingException {
     this.sessionId = sessionId;
-    this.textMessage = new TextMessage(
-        new NIP01Impl.NoticeMessageFactory(noticeMessage).create().encode());
+    this.textMessage = new TextMessage(new NoticeMessage(noticeMessage).encode());
     this.valid = valid;
   }
 }

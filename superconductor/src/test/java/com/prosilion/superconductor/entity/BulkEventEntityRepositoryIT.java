@@ -33,7 +33,6 @@ class BulkEventEntityRepositoryIT {
   public static final String PUB_KEY = "dddeeef81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76985";
   public static final String CONTENT = "abcdefgfedcba";
   public static final Integer KIND = 1;
-  public static final Integer NIP = 1;
   public static final long CREATED_AT = 1717357053050L;
 
   @Autowired
@@ -60,8 +59,7 @@ class BulkEventEntityRepositoryIT {
     assertEquals(PUB_KEY, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getPubKey());
     assertEquals(CONTENT, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getContent());
     assertEquals(KIND, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getKind());
-    assertEquals(NIP, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getNip());
-    
+
     assertEquals(CREATED_AT, eventEntityRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getCreatedAt());
   }
 }

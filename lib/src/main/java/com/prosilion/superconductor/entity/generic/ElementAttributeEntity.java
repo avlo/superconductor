@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.entity.generic;
 
+import com.prosilion.nostr.event.internal.ElementAttribute;
 import com.prosilion.superconductor.dto.generic.ElementAttributeDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +11,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nostr.base.ElementAttribute;
 
 import java.io.Serializable;
 

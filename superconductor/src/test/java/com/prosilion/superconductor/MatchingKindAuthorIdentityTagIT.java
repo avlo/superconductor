@@ -1,6 +1,19 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.codec.BaseMessageDecoder;
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.event.AuthorFilter;
+import com.prosilion.nostr.filter.event.KindFilter;
+import com.prosilion.nostr.filter.tag.IdentifierTagFilter;
+import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
@@ -9,27 +22,15 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.base.PublicKey;
-import nostr.event.BaseMessage;
-import nostr.event.Kind;
-import nostr.event.filter.AuthorFilter;
-import nostr.event.filter.Filters;
-import nostr.event.filter.IdentifierTagFilter;
-import nostr.event.filter.KindFilter;
-import nostr.event.impl.GenericEvent;
-import nostr.event.json.codec.BaseMessageDecoder;
-import nostr.event.message.EventMessage;
-import nostr.event.message.ReqMessage;
-import nostr.event.tag.IdentifierTag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
+import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -51,13 +52,13 @@ class MatchingKindAuthorIdentityTagIT {
       log.debug("setup() send event:\n  {}", textMessageEventJson);
       assertTrue(
           nostrRelayService.send(
-                  new BaseMessageDecoder<EventMessage>().decode(textMessageEventJson))
+                  (EventMessage) BaseMessageDecoder.decode(textMessageEventJson))
               .getFlag());
     }
   }
 
   @Test
-  void testReqMessagesViaReqMessage() throws JsonProcessingException {
+  void testReqMessagesViaReqMessage() throws JsonProcessingException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     KindFilter<Kind> kindFilter = new KindFilter<>(Kind.CALENDAR_TIME_BASED_EVENT);
@@ -70,7 +71,7 @@ class MatchingKindAuthorIdentityTagIT {
             kindFilter, authorFilter, identifierTagFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
     log.debug("  " + returnedEvents);
 
     assertTrue(returnedEvents.stream().anyMatch(event ->

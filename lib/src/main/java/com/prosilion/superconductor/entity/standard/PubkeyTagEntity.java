@@ -11,11 +11,11 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.Setter;
-import nostr.base.PublicKey;
-import nostr.event.BaseTag;
-import nostr.event.tag.PubKeyTag;
+import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 
 @Setter
 @Getter

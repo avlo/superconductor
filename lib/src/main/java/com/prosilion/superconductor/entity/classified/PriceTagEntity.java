@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.Setter;
-import nostr.event.BaseTag;
-import nostr.event.tag.PriceTag;
+import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.PriceTag;
 
 @Setter
 @Getter

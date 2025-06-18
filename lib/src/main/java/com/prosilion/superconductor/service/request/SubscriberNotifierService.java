@@ -4,16 +4,16 @@ import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.service.request.pubsub.EoseNotice;
 import com.prosilion.superconductor.service.request.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.SneakyThrows;
-import nostr.event.impl.GenericEvent;
+import com.prosilion.nostr.event.GenericEventDtoIF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class SubscriberNotifierService<T extends GenericEvent> {
+public class SubscriberNotifierService<T extends GenericEventDtoIF> {
   private final AbstractSubscriberService abstractSubscriberService;
   private final FilterMatcher<T> filterMatcher;
 

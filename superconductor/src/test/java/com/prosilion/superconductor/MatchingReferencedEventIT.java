@@ -1,6 +1,16 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.codec.BaseMessageDecoder;
+import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.tag.ReferencedEventFilter;
+import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.message.EoseMessage;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
@@ -9,24 +19,15 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.BaseMessage;
-import nostr.event.filter.Filters;
-import nostr.event.filter.ReferencedEventFilter;
-import nostr.event.impl.GenericEvent;
-import nostr.event.json.codec.BaseMessageDecoder;
-import nostr.event.message.EoseMessage;
-import nostr.event.message.EventMessage;
-import nostr.event.message.ReqMessage;
-import nostr.event.tag.EventTag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.EventMessageIT.getGenericEvents;
+import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -45,13 +46,13 @@ class MatchingReferencedEventIT {
       log.debug("setup() send event:\n  {}", textMessageEventJson);
       assertTrue(
           nostrRelayService.send(
-                  new BaseMessageDecoder<EventMessage>().decode(textMessageEventJson))
+                  (EventMessage) BaseMessageDecoder.decode(textMessageEventJson))
               .getFlag());
     }
   }
 
   @Test
-  void testReqMessages() throws JsonProcessingException {
+  void testReqMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     String referencedEventId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
 
@@ -61,7 +62,7 @@ class MatchingReferencedEventIT {
             new ReferencedEventFilter<>(eventTag)));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
@@ -76,7 +77,7 @@ class MatchingReferencedEventIT {
   }
 
   @Test
-  void testReqNonMatchingReferencedEvent() throws JsonProcessingException {
+  void testReqNonMatchingReferencedEvent() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     String nonMatchingReferencedEventId = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
 
@@ -85,7 +86,7 @@ class MatchingReferencedEventIT {
             new ReferencedEventFilter<>(new EventTag(nonMatchingReferencedEventId))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEvent> returnedEvents = getGenericEvents(returnedBaseMessages);
+    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
 
     assertTrue(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());

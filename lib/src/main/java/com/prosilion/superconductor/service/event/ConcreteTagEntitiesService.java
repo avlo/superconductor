@@ -5,9 +5,9 @@ import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.join.EventEntityAbstractEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.BaseTag;
+import com.prosilion.nostr.tag.BaseTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

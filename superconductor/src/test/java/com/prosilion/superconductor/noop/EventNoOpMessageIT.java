@@ -1,17 +1,17 @@
 package com.prosilion.superconductor.noop;
 
+import com.prosilion.nostr.codec.BaseMessageDecoder;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.json.codec.BaseMessageDecoder;
-import nostr.event.message.EventMessage;
-import nostr.event.message.OkMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +48,7 @@ class EventNoOpMessageIT {
     log.debug("setup() send event:\n  {}", globalEventJson);
 
     OkMessage okMessage = nostrRelayService.send(
-        new BaseMessageDecoder<EventMessage>().decode(globalEventJson));
+        (EventMessage) BaseMessageDecoder.decode(globalEventJson));
 
     final String noOpResponse = "application-testnoop.properties afterimage is a nostr-reputation authority relay.  it does not accept events, only requests";
 

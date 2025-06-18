@@ -1,16 +1,16 @@
 package com.prosilion.superconductor.service.request;
 
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.tag.AddressTagFilter;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.util.EmptyFiltersException;
 import com.prosilion.superconductor.util.Factory;
 import java.util.List;
-import nostr.base.PublicKey;
-import nostr.base.Relay;
-import nostr.event.Kind;
-import nostr.event.filter.AddressTagFilter;
-import nostr.event.filter.Filters;
-import nostr.event.tag.AddressTag;
-import nostr.event.tag.IdentifierTag;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -41,9 +41,9 @@ public class CachedSubscriberServiceTest {
     String subscriberId = Factory.generateRandomHex64String();
     String sessionId = Factory.generateRandomHex64String();
 
-    AddressTag addressTag = new AddressTag();
-    addressTag.setKind(kind.getValue());
-    addressTag.setPublicKey(publicKey);
+    AddressTag addressTag = new AddressTag(
+        kind, publicKey
+    );
 
     Filters filters = new Filters(
         new AddressTagFilter<>(addressTag));
@@ -57,9 +57,9 @@ public class CachedSubscriberServiceTest {
     assertEquals(subscriberSessionHash, subscriberSessionHashSame);
 
 //  new and identical filters
-    AddressTag addressTagDup = new AddressTag();
-    addressTagDup.setKind(kind.getValue());
-    addressTagDup.setPublicKey(publicKey);
+    AddressTag addressTagDup = new AddressTag(
+        kind, publicKey
+    );
 
     Filters filtersDup = new Filters(
         new AddressTagFilter<>(addressTagDup));
@@ -70,9 +70,7 @@ public class CachedSubscriberServiceTest {
     assertEquals(subscriberSessionHash, subscriberSessionHashDup);
 
 //    change minor variant, should fail
-    AddressTag addressTagVariant = new AddressTag();
-    addressTagVariant.setKind(kind.getValue() + 1);
-    addressTagVariant.setPublicKey(publicKey);
+    AddressTag addressTagVariant = new AddressTag(Kind.RECOMMEND_SERVER, publicKey);
 
     Filters filtersVariant = new Filters(
         new AddressTagFilter<>(addressTagVariant));
@@ -83,11 +81,7 @@ public class CachedSubscriberServiceTest {
     assertEquals(subscriberSessionHash, subscriberSessionHashVariant);
 
 //    non matching
-    AddressTag addressTag3 = new AddressTag();
-    addressTag3.setKind(kind.getValue());
-    addressTag3.setPublicKey(publicKey);
-    IdentifierTag identifierTag3 = new IdentifierTag("UUID-A");
-    addressTag3.setIdentifierTag(identifierTag3);
+    AddressTag addressTag3 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-A"));
 
     Filters filtersNew = new Filters(
         new AddressTagFilter<>(addressTag3));
@@ -104,13 +98,9 @@ public class CachedSubscriberServiceTest {
     String sessionId = Factory.generateRandomHex64String();
 
     //  same list, diff order, should pass
-    AddressTag addressTagList1A = new AddressTag();
-    addressTagList1A.setKind(kind.getValue());
-    addressTagList1A.setPublicKey(publicKey);
+    AddressTag addressTagList1A = new AddressTag(kind, publicKey);
 
-    AddressTag addressTagList1B = new AddressTag();
-    addressTagList1B.setKind(kind.getValue() + 1);
-    addressTagList1B.setPublicKey(publicKey);
+    AddressTag addressTagList1B = new AddressTag(Kind.RECOMMEND_SERVER, publicKey);
 
     Filters filters1 = new Filters(
         new AddressTagFilter<>(addressTagList1A),
@@ -126,7 +116,7 @@ public class CachedSubscriberServiceTest {
 
     Long subscriberSessionHashSame = cachedSubscriberService.save(subscriber, List.of(filters2));
     assertEquals(subscriberSessionHash, subscriberSessionHashSame);
-    
+
 //    non match, missing one list item
     Filters filters3 = new Filters(
         new AddressTagFilter<>(addressTagList1B));

@@ -1,20 +1,17 @@
 package com.prosilion.superconductor.service.message.close;
 
-import com.prosilion.superconductor.service.request.pubsub.RemoveSubscriberFilter;
+import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.message.CloseMessage;
 import com.prosilion.superconductor.service.request.AbstractSubscriberService;
+import com.prosilion.superconductor.service.request.pubsub.RemoveSubscriberFilter;
 import com.prosilion.superconductor.util.NoExistingUserException;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
-import nostr.event.message.CloseMessage;
-import org.springframework.context.ApplicationEventPublisher;
-
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 
 @Slf4j
 public class CloseMessageService<T extends CloseMessage> implements CloseMessageServiceIF<T> {
-  @Getter
-  public final String command = "CLOSE";
   private final ApplicationEventPublisher publisher;
   private final AbstractSubscriberService abstractSubscriberService;
 
@@ -51,6 +48,11 @@ public class CloseMessageService<T extends CloseMessage> implements CloseMessage
     } catch (NoExistingUserException e) {
       log.debug("no match to remove for subscriptionHash [{}]", subscriberId);
     }
+  }
+
+  @Override
+  public Command getCommand() {
+    return Command.CLOSE;
   }
 //  public void deactivateSubscriberBySessionId(String sessionId) throws NoResultException {
 //    subscriberService.deactivateSubscriberBySessionId(sessionId);

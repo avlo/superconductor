@@ -1,14 +1,14 @@
 package com.prosilion.superconductor.service.message.event.auth;
 
+import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.message.EventMessage;
+import org.springframework.lang.NonNull;
 
 @Slf4j
 public class AutoConfigEventMessageServiceNoAuthDecorator<T extends EventMessage> implements AutoConfigEventMessageServiceIF<T> {
-  public final String command = "EVENT";
   private final EventMessageServiceIF<T> eventMessageServiceIF;
 
   public AutoConfigEventMessageServiceNoAuthDecorator(@NonNull EventMessageServiceIF<T> eventMessageServiceIF) {
@@ -16,14 +16,8 @@ public class AutoConfigEventMessageServiceNoAuthDecorator<T extends EventMessage
   }
 
   public void processIncoming(@NonNull T eventMessage, @NonNull String sessionId) {
-    log.debug("EVENT message NIP: {}", eventMessage.getNip());
     log.debug("EVENT message type: {}", eventMessage.getEvent());
     eventMessageServiceIF.processIncoming(eventMessage, sessionId);
-  }
-
-  @Override
-  public String getCommand() {
-    return command;
   }
 
   @Override
@@ -34,5 +28,10 @@ public class AutoConfigEventMessageServiceNoAuthDecorator<T extends EventMessage
   @Override
   public void processNotOkClientResponse(T eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
     eventMessageServiceIF.processNotOkClientResponse(eventMessage, sessionId, errorMessage);
+  }
+
+  @Override
+  public Command getCommand() {
+    return Command.EVENT;
   }
 }

@@ -2,9 +2,9 @@ package com.prosilion.superconductor.service.message.event.noop;
 
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.message.EventMessage;
+import com.prosilion.nostr.message.EventMessage;
 
 @Slf4j
 public class EventMessageNoOpService<T extends EventMessage> implements EventMessageServiceIF<T> {

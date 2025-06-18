@@ -7,10 +7,10 @@ import com.prosilion.superconductor.entity.join.generic.EventEntityGenericTagEnt
 import com.prosilion.superconductor.repository.generic.GenericTagEntityRepository;
 import com.prosilion.superconductor.repository.join.generic.EventEntityGenericTagEntityRepository;
 import jakarta.transaction.Transactional;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.BaseTag;
-import nostr.event.tag.GenericTag;
+import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.GenericTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

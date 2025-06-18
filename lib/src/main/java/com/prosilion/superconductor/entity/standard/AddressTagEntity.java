@@ -1,5 +1,11 @@
 package com.prosilion.superconductor.entity.standard;
 
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.dto.standard.AddressTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
@@ -11,13 +17,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
-import nostr.base.PublicKey;
-import nostr.base.Relay;
-import nostr.event.BaseTag;
-import nostr.event.tag.AddressTag;
-import nostr.event.tag.IdentifierTag;
+import org.springframework.lang.NonNull;
 
 @Setter
 @Getter
@@ -32,7 +33,7 @@ public class AddressTagEntity extends AbstractTagEntity {
 
   public AddressTagEntity(@NonNull AddressTag addressTag) {
     super("a");
-    this.kind = addressTag.getKind();
+    this.kind = addressTag.getKind().getValue();
     this.pubKey = addressTag.getPublicKey().toHexString();
     Optional.ofNullable(addressTag.getIdentifierTag()).ifPresent(uuid -> this.uuid = uuid.getUuid());
     Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.relayUri = relay.getUri());
@@ -60,14 +61,31 @@ public class AddressTagEntity extends AbstractTagEntity {
         .toList();
   }
 
+//  TODO: stream-ify below
   private AddressTag createAddressTag() {
-    AddressTag addressTag = new AddressTag();
-    addressTag.setKind(kind);
-    addressTag.setPublicKey(new PublicKey(pubKey));
-    Optional.ofNullable(uuid).ifPresent(uuid ->
-        addressTag.setIdentifierTag(new IdentifierTag(uuid)));
-    Optional.ofNullable(relayUri).ifPresent(relayUri ->
-        addressTag.setRelay(new Relay(relayUri)));
-    return addressTag;
+    Optional<IdentifierTag> identifierTag = Optional.ofNullable(uuid).map(IdentifierTag::new);
+    Optional<Relay> relayTag = Optional.ofNullable(relayUri).map(Relay::new);
+
+    if (identifierTag.isPresent() && relayTag.isPresent()) {
+      return new AddressTag(
+          Kind.valueOf(kind),
+          new PublicKey(pubKey),
+          identifierTag.orElseThrow(),
+          relayTag.orElseThrow()
+      );
+    }
+
+    if (identifierTag.isPresent()) {
+      return new AddressTag(
+          Kind.valueOf(kind),
+          new PublicKey(pubKey),
+          identifierTag.orElseThrow()
+      );
+    }
+
+    return new AddressTag(
+        Kind.valueOf(kind),
+        new PublicKey(pubKey)
+    );
   }
 }

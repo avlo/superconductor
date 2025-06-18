@@ -1,13 +1,13 @@
 package com.prosilion.superconductor.service.clientresponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.NonNull;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.ReqMessage;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.impl.GenericEvent;
-import nostr.event.message.EventMessage;
-import nostr.event.message.ReqMessage;
+import com.prosilion.nostr.event.GenericEventDtoIF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 
@@ -28,7 +28,7 @@ public class ClientResponseService {
   public void processOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
     log.debug("Processing event message: {}, reason: {}", eventMessage.getEvent(), reason);
     try {
-      publisher.publishEvent(new ClientOkResponse(sessionId, (GenericEvent) eventMessage.getEvent(), true, reason));
+      publisher.publishEvent(new ClientOkResponse(sessionId, (GenericEventDtoIF) eventMessage.getEvent(), true, reason));
     } catch (JsonProcessingException e) {
       processNotOkClientResponse(sessionId, eventMessage, e.getMessage());
     }
@@ -48,7 +48,7 @@ public class ClientResponseService {
   public void processNotOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
     log.debug("Processing failed event message: {}, reason: {}", eventMessage.getEvent(), reason);
     try {
-      publisher.publishEvent(new ClientOkResponse(sessionId, (GenericEvent) eventMessage.getEvent(), false, reason));
+      publisher.publishEvent(new ClientOkResponse(sessionId, (GenericEventDtoIF) eventMessage.getEvent(), false, reason));
     } catch (JsonProcessingException e) {
       publisher.publishEvent(new TextMessage(
           "[\"OK\", \"" + eventMessage.getEvent().getId() + "\", false, \"" + e.getMessage() + "\"]"

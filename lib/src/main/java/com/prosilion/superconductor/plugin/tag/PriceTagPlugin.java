@@ -6,8 +6,8 @@ import com.prosilion.superconductor.entity.join.classified.EventEntityPriceTagEn
 import com.prosilion.superconductor.repository.classified.PriceTagEntityRepository;
 import com.prosilion.superconductor.repository.join.classified.EventEntityPriceTagEntityRepository;
 import jakarta.annotation.Nonnull;
-import lombok.NonNull;
-import nostr.event.tag.PriceTag;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.tag.PriceTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

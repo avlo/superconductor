@@ -2,14 +2,14 @@ package com.prosilion.superconductor.service.request;
 
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.util.EmptyFiltersException;
-import lombok.NonNull;
-import nostr.event.impl.GenericEvent;
-import nostr.event.message.ReqMessage;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.message.ReqMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ReqService<T extends GenericEvent> implements ReqServiceIF<T> {
+public class ReqService<T extends GenericEventDtoIF> implements ReqServiceIF<T> {
   private final AbstractSubscriberService abstractSubscriberService;
   private final NotifierService<T> notifierService;
 

@@ -39,7 +39,7 @@ publishing {
 
 dependencies {
     def springBootVersion = '3.4.3'
-    def nostrJavaVersion = '0.6.6-SNAPSHOT'
+    def nostrJavaCoreVersion = '0.0.1'
     def apacheCommonsLang3 = '3.17.0'
     def jacksonModuleAfterburner = '2.18.3'
     def googleGuava = '33.2.1-jre'
@@ -54,7 +54,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'xyz.tcheeric:nostr-java-api:' + nostrJavaVersion
+
+    implementation 'com.prosilion:nostr-java-core:' + nostrJavaCoreVersion
 
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.message.req;
 
-import lombok.NonNull;
-import nostr.event.message.ReqMessage;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.message.ReqMessage;
 
 public interface ReqMessageServiceIF<T extends ReqMessage> {
   void processIncoming(T reqMessage, @NonNull String sessionId);

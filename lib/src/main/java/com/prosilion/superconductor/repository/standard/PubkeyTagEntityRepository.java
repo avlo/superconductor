@@ -3,7 +3,7 @@ package com.prosilion.superconductor.repository.standard;
 import com.prosilion.superconductor.entity.standard.PubkeyTagEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import java.util.List;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @Repository

@@ -3,8 +3,8 @@ package com.prosilion.superconductor.dto.classified;
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.entity.classified.PriceTagEntity;
 import lombok.Getter;
-import lombok.NonNull;
-import nostr.event.tag.PriceTag;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.tag.PriceTag;
 
 @Getter
 public class PriceTagDto implements AbstractTagDto {

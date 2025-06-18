@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.request.pubsub;
 
-import lombok.NonNull;
-import nostr.event.impl.GenericEvent;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.event.GenericEventDtoIF;
 
-public record AddNostrEvent<T extends GenericEvent>(@NonNull T event) {}
+public record AddNostrEvent<T extends GenericEventDtoIF>(@NonNull T event) {}

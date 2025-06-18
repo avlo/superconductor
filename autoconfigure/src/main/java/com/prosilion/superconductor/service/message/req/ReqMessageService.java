@@ -3,11 +3,11 @@ package com.prosilion.superconductor.service.message.req;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.request.ReqServiceIF;
 import com.prosilion.superconductor.util.EmptyFiltersException;
-import lombok.NonNull;
-import nostr.event.impl.GenericEvent;
-import nostr.event.message.ReqMessage;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.message.ReqMessage;
 
-public class ReqMessageService<T extends ReqMessage, U extends GenericEvent> implements ReqMessageServiceIF<T> {
+public class ReqMessageService<T extends ReqMessage, U extends GenericEventDtoIF> implements ReqMessageServiceIF<T> {
 
   private final ReqServiceIF<U> reqService;
   private final ClientResponseService clientResponseService;

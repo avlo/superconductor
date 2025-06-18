@@ -2,7 +2,7 @@ package com.prosilion.superconductor;
 
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ class MultipleSubcsriberClassifiedListingEventMessageIT extends AbstractMultiple
 //    tags.add(G_TAG);
 //    tags.add(T_TAG);
 //
-//    GenericEvent classifiedListingEvent = Factory.createClassifiedListingEvent(
+//    GenericEventDtoIF classifiedListingEvent = Factory.createClassifiedListingEvent(
 //        IDENTITY,
 //        tags,
 //        content,

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.request.pubsub;
 
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 
 public record TerminatedSocket(@NonNull String sessionId) {
 }

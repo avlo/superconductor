@@ -3,17 +3,17 @@ package com.prosilion.superconductor.service.message.event.standard;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.service.event.EventServiceIF;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.impl.GenericEvent;
-import nostr.event.message.EventMessage;
+import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.message.EventMessage;
 
 @Slf4j
 public class EventMessageService<T extends EventMessage> implements EventMessageServiceIF<T> {
-  private final EventServiceIF<GenericEvent> eventService;
+  private final EventServiceIF<GenericEventDtoIF> eventService;
   private final ClientResponseService clientResponseService;
 
-  public EventMessageService(@NonNull EventServiceIF<GenericEvent> eventService, @NonNull ClientResponseService clientResponseService) {
+  public EventMessageService(@NonNull EventServiceIF<GenericEventDtoIF> eventService, @NonNull ClientResponseService clientResponseService) {
     this.eventService = eventService;
     this.clientResponseService = clientResponseService;
   }

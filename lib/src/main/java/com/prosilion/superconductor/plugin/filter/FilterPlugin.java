@@ -1,12 +1,12 @@
 package com.prosilion.superconductor.plugin.filter;
 
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import nostr.event.filter.Filterable;
-import nostr.event.impl.GenericEvent;
+import com.prosilion.nostr.filter.Filterable;
+import com.prosilion.nostr.event.GenericEventDtoIF;
 
 import java.util.function.BiPredicate;
 
-public interface FilterPlugin<T extends Filterable, U extends GenericEvent> {
+public interface FilterPlugin<T extends Filterable, U extends GenericEventDtoIF> {
 
   String getCode();
 

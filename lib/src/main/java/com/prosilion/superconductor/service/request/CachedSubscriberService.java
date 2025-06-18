@@ -4,10 +4,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.hash.Hashing;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.event.SinceFilter;
+import com.prosilion.nostr.filter.event.UntilFilter;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.entity.join.subscriber.SubscriberFilter;
 import com.prosilion.superconductor.service.request.pubsub.TerminatedSocket;
-import com.prosilion.superconductor.util.EmptyFiltersException;
 import jakarta.validation.constraints.NotEmpty;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -16,11 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import lombok.Getter;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import nostr.event.filter.Filters;
-import nostr.event.filter.SinceFilter;
-import nostr.event.filter.UntilFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -41,11 +40,11 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   public Long save(@NonNull Subscriber subscriber, @NotEmpty List<Filters> filtersList) {
     Preconditions.checkArgument(!filtersList.isEmpty());
     long subscriberSessionHash = getHash(subscriber);
-    
+
 //    TODO: below quick impl, needs cleanup
     if (checkIdenticalFilters(subscriberSessionHash, filtersList))
       return subscriberSessionHash;
-    
+
     removeSubscriberBySessionId(subscriber.getSessionId());
     subscriber.setSubscriberSessionHash(subscriberSessionHash);
     for (Filters filters : filtersList) {

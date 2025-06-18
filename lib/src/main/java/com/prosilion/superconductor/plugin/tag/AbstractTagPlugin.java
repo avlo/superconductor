@@ -5,8 +5,8 @@ import com.prosilion.superconductor.entity.join.EventEntityAbstractEntity;
 import com.prosilion.superconductor.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
 import lombok.Getter;
-import lombok.NonNull;
-import nostr.event.BaseTag;
+import org.springframework.lang.NonNull;
+import com.prosilion.nostr.tag.BaseTag;
 
 @Getter
 public abstract class AbstractTagPlugin<

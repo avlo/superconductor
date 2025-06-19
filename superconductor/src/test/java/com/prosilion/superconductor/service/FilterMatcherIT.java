@@ -4,7 +4,6 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.NostrException;
 import com.prosilion.nostr.event.GenericEventDtoIF;
 import com.prosilion.nostr.event.TextNoteEvent;
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.AddressTagFilter;
 import com.prosilion.nostr.tag.AddressTag;
@@ -34,8 +33,6 @@ public class FilterMatcherIT {
   String author = "f1b419a95cb0233a11d431423b41a42734e7165fcab16081cd08ef1c90e0be75";
   Identity identity = Identity.generateRandomIdentity();
   PublicKey publicKey = new PublicKey(author);
-  IdentifierTag identifierTag = new IdentifierTag("UUID-1");
-  Relay relay = new Relay("ws://localhost:8080");
 
   FilterMatcher<GenericEventDtoIF> filterMatcher;
 

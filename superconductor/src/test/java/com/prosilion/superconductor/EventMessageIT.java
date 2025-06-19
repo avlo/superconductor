@@ -51,16 +51,13 @@ public class EventMessageIT {
     BaseEvent event = new TextNoteEvent(identity, content);
     this.eventId = event.getId();
 
+    GenericEventDtoIF genericEventDtoIF = new EventDto(event).convertBaseEventToDto();
+    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
     assertTrue(
         this.nostrRelayService
             .send(
-                new EventMessage(new EventDto(event).convertBaseEventToDto()))
+                eventMessage)
             .getFlag());
-  }
-
-  @Test
-  void testPass() {
-    assertTrue(true);
   }
 
   @Test
@@ -163,7 +160,7 @@ public class EventMessageIT {
     String nonMatchingSubscriberId = Factory.generateRandomHex64String();
     String nonMatchingEventId = Factory.generateRandomHex64String();
 
-    EventFilter<GenericEventId> eventFilter = new EventFilter<>(new GenericEventId(eventId));
+    EventFilter<GenericEventId> eventFilter = new EventFilter<>(new GenericEventId(nonMatchingEventId));
 
     ReqMessage reqMessage = new ReqMessage(nonMatchingSubscriberId, new Filters(eventFilter));
 
@@ -184,7 +181,6 @@ public class EventMessageIT {
         .filter(EventMessage.class::isInstance)
         .map(EventMessage.class::cast)
         .map(EventMessage::getEvent)
-        .map(GenericEventDtoIF.class::cast)
         .toList();
   }
 }

@@ -10,7 +10,6 @@ class EventEntityTest {
   public static final String PUB_KEY = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
   public static final String CONTENT = "1111111111";
   public static final Integer KIND = 1;
-  public static final Integer NIP = 1;
   public static final long CREATED_AT = 1717357053050L;
   EventEntity event = new EventEntity();
 

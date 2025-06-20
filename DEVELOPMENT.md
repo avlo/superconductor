@@ -20,7 +20,7 @@
   - Java 21
   - Spring [Boot](https://spring.io/projects/spring-boot) 3.4.3
   - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.4.3
-  - Event/Message [nostr-java](https://github.com/avlo/nostr-java-avlo-fork/tree/develop)   (symmetric fork of tcheeric's [nostr-java](https://github.com/tcheeric/nostr-java/tree/develop)) API/library
+  - Event/Request/Message/Filters [nostr-java-core](https://github.com/avlo/nostr-java-core) 
   - [SubDivisions](https://github.com/avlo/subdivisions) nostr-relay client
 
 
@@ -57,11 +57,11 @@
 ----
 
 ### Build Superconductor
-#### 1. Check-out nostr-java dependency library
+#### 1. Check-out nostr-java-core dependency library
 
     $ cd <your_git_home_dir>
-    $ git clone git@github.com:avlo/nostr-java-avlo-fork.git
-    $ cd nostr-java-avlo-fork
+    $ git clone git@github.com:avlo/nostr-java-core.git
+    $ cd nostr-java-core
     $ git checkout develop
 
 #### 2. Check-out SuperConductor
@@ -109,8 +109,8 @@ SUPERCONDUCTOR_HOME=<your_local_superconductor_home>
 ```
 for example:
 ```bash
-M2_NOSTR_JAVA_REPO=/home/nick/.m2/repository/xyz/tcheeric
-NOSTR_JAVA_HOME=/home/nick/git/avlo-nostr-java-fork
+M2_NOSTR_JAVA_REPO=/home/nick/.m2/repository/com/prosilion
+NOSTR_JAVA_HOME=/home/nick/git/nostr-java-core
 SUPERCONDUCTOR_HOME=/home/nick/git/superconductor
 ```
 #### 5.  Build application (both unit-test and integration-test included)

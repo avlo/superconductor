@@ -11,7 +11,7 @@ plugins {
 
 group = 'com.prosilion'
 version = '1.14.1'
-//description = 'superconductor'
+description = 'superconductor'
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21

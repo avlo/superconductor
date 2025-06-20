@@ -4,9 +4,9 @@ import com.prosilion.nostr.filter.event.SinceFilter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilterSincePlugin<T extends SinceFilter> extends AbstractFilterPlugin {
+public class FilterSincePlugin extends AbstractFilterPlugin {
 
   public FilterSincePlugin() {
-    super(T.FILTER_KEY);
+    super(SinceFilter.FILTER_KEY);
   }
 }

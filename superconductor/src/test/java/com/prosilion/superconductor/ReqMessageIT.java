@@ -45,8 +45,8 @@ class ReqMessageIT {
     String eventId = "dddeee6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
     String authorPubkey = "dddeeef81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
 
-    EventFilter<GenericEventId> eventFilter = new EventFilter<>(new GenericEventId(eventId));
-    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(new PublicKey(authorPubkey));
+    EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
+    AuthorFilter authorFilter = new AuthorFilter(new PublicKey(authorPubkey));
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
 
@@ -61,7 +61,7 @@ class ReqMessageIT {
   void testReqFilteredByEventId() throws JsonProcessingException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
     String eventId = "dddeee6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
-    EventFilter<GenericEventId> eventFilter = new EventFilter<>(new GenericEventId(eventId));
+    EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -75,7 +75,7 @@ class ReqMessageIT {
     String authorPubkey = "dddeeef81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
     String subscriberId = Factory.generateRandomHex64String();
 
-    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(new PublicKey(authorPubkey));
+    AuthorFilter authorFilter = new AuthorFilter(new PublicKey(authorPubkey));
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
 

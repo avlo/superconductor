@@ -61,8 +61,8 @@ class MatchingKindAuthorIdentityTagIT {
   void testReqMessagesViaReqMessage() throws JsonProcessingException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    KindFilter<Kind> kindFilter = new KindFilter<>(Kind.CALENDAR_TIME_BASED_EVENT);
-    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(new PublicKey(authorPubKey));
+    KindFilter kindFilter = new KindFilter(Kind.CALENDAR_TIME_BASED_EVENT);
+    AuthorFilter authorFilter = new AuthorFilter(new PublicKey(authorPubKey));
     IdentifierTag identifierTag = new IdentifierTag(uuidFromFile);
     IdentifierTagFilter identifierTagFilter = new IdentifierTagFilter(identifierTag);
 

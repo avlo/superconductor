@@ -3,8 +3,8 @@ package com.prosilion.superconductor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.enums.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.GenericEventId;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
@@ -14,7 +14,6 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.dto.EventDto;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
@@ -64,8 +63,8 @@ public class EventMessageIT {
   void testReqSingleSubscriberFilteredByEventAndAuthorViaReqMessage() throws JsonProcessingException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    EventFilter<GenericEventId> eventFilter = new EventFilter<>(new GenericEventId(eventId));
-    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(identity.getPublicKey());
+    EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
+    AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -82,8 +81,8 @@ public class EventMessageIT {
   void testReqTwoSubscribersFilteredByEventAndAuthorViaReqMessage() throws JsonProcessingException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    EventFilter<GenericEventId> eventFilter = new EventFilter<>(new GenericEventId(eventId));
-    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(identity.getPublicKey());
+    EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
+    AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -110,7 +109,7 @@ public class EventMessageIT {
   void testReqFilteredByEventId() throws JsonProcessingException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    EventFilter<GenericEventId> eventFilter = new EventFilter<>(new GenericEventId(eventId));
+    EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -135,7 +134,7 @@ public class EventMessageIT {
   void testReqFilteredByAuthor() throws JsonProcessingException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(identity.getPublicKey());
+    AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -160,7 +159,7 @@ public class EventMessageIT {
     String nonMatchingSubscriberId = Factory.generateRandomHex64String();
     String nonMatchingEventId = Factory.generateRandomHex64String();
 
-    EventFilter<GenericEventId> eventFilter = new EventFilter<>(new GenericEventId(nonMatchingEventId));
+    EventFilter eventFilter = new EventFilter(new GenericEventId(nonMatchingEventId));
 
     ReqMessage reqMessage = new ReqMessage(nonMatchingSubscriberId, new Filters(eventFilter));
 

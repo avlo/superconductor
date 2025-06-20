@@ -62,7 +62,7 @@ class MatchingAddressTagIT {
         Kind.TEXT_NOTE, publicKey, identifierTag
     );
 
-    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new AddressTagFilter<>(addressTag)));
+    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new AddressTagFilter(addressTag)));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
     log.debug("okMessage:");

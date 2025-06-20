@@ -5,7 +5,7 @@ import com.prosilion.nostr.tag.AddressTag;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilterAddressTagPlugin<T extends AddressTagFilter<AddressTag>> extends AbstractTagFilterPlugin<T, AddressTag> {
+public class FilterAddressTagPlugin extends AbstractTagFilterPlugin<AddressTag> {
   public FilterAddressTagPlugin() {
     super(AddressTagFilter.FILTER_KEY, AddressTag.class);
   }

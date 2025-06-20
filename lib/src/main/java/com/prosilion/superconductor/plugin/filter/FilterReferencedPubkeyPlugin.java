@@ -5,7 +5,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilterReferencedPubkeyPlugin<T extends ReferencedPublicKeyFilter<PubKeyTag>> extends AbstractTagFilterPlugin<T, PubKeyTag> {
+public class FilterReferencedPubkeyPlugin extends AbstractTagFilterPlugin<PubKeyTag> {
   public FilterReferencedPubkeyPlugin() {
     super(ReferencedPublicKeyFilter.FILTER_KEY, PubKeyTag.class);
   }

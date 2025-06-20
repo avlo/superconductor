@@ -8,7 +8,6 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.entity.Subscriber;
-import com.prosilion.superconductor.util.EmptyFiltersException;
 import com.prosilion.superconductor.util.Factory;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -37,7 +36,7 @@ public class CachedSubscriberServiceTest {
   }
 
   @Test
-  void testCheckIdenticalFilters() throws EmptyFiltersException {
+  void testCheckIdenticalFilters() {
     String subscriberId = Factory.generateRandomHex64String();
     String sessionId = Factory.generateRandomHex64String();
 
@@ -46,7 +45,7 @@ public class CachedSubscriberServiceTest {
     );
 
     Filters filters = new Filters(
-        new AddressTagFilter<>(addressTag));
+        new AddressTagFilter(addressTag));
     List<Filters> filtersList = List.of(filters);
 
     Subscriber subscriber = new Subscriber(subscriberId, sessionId, true);
@@ -62,7 +61,7 @@ public class CachedSubscriberServiceTest {
     );
 
     Filters filtersDup = new Filters(
-        new AddressTagFilter<>(addressTagDup));
+        new AddressTagFilter(addressTagDup));
     List<Filters> filtersListDup = List.of(filtersDup);
 
     assertTrue(cachedSubscriberService.checkIdenticalFilters(subscriberSessionHash, filtersListDup));
@@ -73,7 +72,7 @@ public class CachedSubscriberServiceTest {
     AddressTag addressTagVariant = new AddressTag(Kind.RECOMMEND_SERVER, publicKey);
 
     Filters filtersVariant = new Filters(
-        new AddressTagFilter<>(addressTagVariant));
+        new AddressTagFilter(addressTagVariant));
     List<Filters> filtersListVariant = List.of(filtersVariant);
 
     assertFalse(cachedSubscriberService.checkIdenticalFilters(subscriberSessionHash, filtersListVariant));
@@ -84,7 +83,7 @@ public class CachedSubscriberServiceTest {
     AddressTag addressTag3 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-A"));
 
     Filters filtersNew = new Filters(
-        new AddressTagFilter<>(addressTag3));
+        new AddressTagFilter(addressTag3));
 
     List<Filters> filtersNewList = List.of(filtersNew);
     assertFalse(cachedSubscriberService.checkIdenticalFilters(subscriberSessionHash, filtersNewList));
@@ -103,12 +102,12 @@ public class CachedSubscriberServiceTest {
     AddressTag addressTagList1B = new AddressTag(Kind.RECOMMEND_SERVER, publicKey);
 
     Filters filters1 = new Filters(
-        new AddressTagFilter<>(addressTagList1A),
-        new AddressTagFilter<>(addressTagList1B));
+        new AddressTagFilter(addressTagList1A),
+        new AddressTagFilter(addressTagList1B));
 
     Filters filters2 = new Filters(
-        new AddressTagFilter<>(addressTagList1B),
-        new AddressTagFilter<>(addressTagList1A));
+        new AddressTagFilter(addressTagList1B),
+        new AddressTagFilter(addressTagList1A));
 
     Subscriber subscriber = new Subscriber(subscriberId, sessionId, true);
     Long subscriberSessionHash = cachedSubscriberService.save(subscriber, List.of(filters1));
@@ -119,7 +118,7 @@ public class CachedSubscriberServiceTest {
 
 //    non match, missing one list item
     Filters filters3 = new Filters(
-        new AddressTagFilter<>(addressTagList1B));
+        new AddressTagFilter(addressTagList1B));
     assertFalse(cachedSubscriberService.checkIdenticalFilters(subscriberSessionHash, List.of(filters3)));
     Long subscriberSessionHashMatch = cachedSubscriberService.save(subscriber, List.of(filters3));
     assertEquals(subscriberSessionHash, subscriberSessionHashMatch);

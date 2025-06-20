@@ -1,13 +1,12 @@
 package com.prosilion.superconductor.plugin.filter;
 
-import com.prosilion.nostr.filter.AbstractFilterable;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import java.util.function.BiPredicate;
 import org.springframework.lang.NonNull;
 
-abstract class AbstractTagFilterPlugin<T extends AbstractFilterable<U>, U extends BaseTag> extends AbstractFilterPlugin implements FilterBiPredicate<U> {
+abstract class AbstractTagFilterPlugin<U extends BaseTag> extends AbstractFilterPlugin implements FilterBiPredicate<U> {
 
   private final Class<U> tagClazz;
 

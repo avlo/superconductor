@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -54,12 +53,12 @@ class MatchingHashtagTagQueryIT {
   }
 
   @Test
-  void testReqMessagesNoGenericMatch() throws IOException, ExecutionException, InterruptedException, NostrException {
+  void testReqMessagesNoGenericMatch() throws IOException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String hashtagTagString = "textnote-hashtag-tag-2";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
-        new Filters(new HashtagTagFilter<>(
+        new Filters(new HashtagTagFilter(
             new HashtagTag(hashtagTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -80,7 +79,7 @@ class MatchingHashtagTagQueryIT {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagString = "textnote-hashtag-tag-1";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
-        new Filters(new GenericTagQueryFilter<>(
+        new Filters(new GenericTagQueryFilter(
             new GenericTagQuery("#t", genericTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -103,7 +102,7 @@ class MatchingHashtagTagQueryIT {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String hashtagTagString = "textnote-hashtag-tag-1";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
-        new Filters(new HashtagTagFilter<>(
+        new Filters(new HashtagTagFilter(
             new HashtagTag(hashtagTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);

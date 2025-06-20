@@ -60,7 +60,7 @@ class MatchingGenericTagSingleLetterQueryIT {
 
     List<BaseMessage> baseMessages = nostrRelayService.send(
         new ReqMessage(subscriberId, new Filters(
-            new HashtagTagFilter<>(new HashtagTag(hashTagString)))));
+            new HashtagTagFilter(new HashtagTag(hashTagString)))));
     assertEquals(1, baseMessages.size());
     assertTrue(baseMessages
         .stream()
@@ -78,7 +78,7 @@ class MatchingGenericTagSingleLetterQueryIT {
     List<BaseMessage> returnedBaseMessages = nostrRelayService
         .send(
             new ReqMessage(subscriberId, new Filters(
-                new HashtagTagFilter<>(new HashtagTag(hashTagString)))));
+                new HashtagTagFilter(new HashtagTag(hashTagString)))));
 
     List<GenericEventKindIF> events = getGenericEventKindIFs(returnedBaseMessages);
 

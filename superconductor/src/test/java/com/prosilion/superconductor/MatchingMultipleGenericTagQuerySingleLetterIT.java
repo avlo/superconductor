@@ -68,9 +68,9 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new GenericTagQueryFilter<>(
+            new GenericTagQueryFilter(
                 new GenericTagQuery("#g", genericTagStringGMissing)),
-            new GenericTagQueryFilter<>(
+            new GenericTagQueryFilter(
                 new GenericTagQuery("#h", genericTagStringHPresent))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -93,9 +93,9 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new GenericTagQueryFilter<>(
+            new GenericTagQueryFilter(
                 new GenericTagQuery("#g", genericTagStringGMissing)),
-            new GenericTagQueryFilter<>(
+            new GenericTagQueryFilter(
                 new GenericTagQuery("#h", genericTagStringHPresent))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -117,9 +117,9 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     String genericTagStringH = "hash-tag-1";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new GenericTagQueryFilter<>(
+            new GenericTagQueryFilter(
                 new GenericTagQuery("#g", genericTagStringG)),
-            new GenericTagQueryFilter<>(
+            new GenericTagQueryFilter(
                 new GenericTagQuery("#h", genericTagStringH))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -147,11 +147,11 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new GenericTagQueryFilter<>(
+            new GenericTagQueryFilter(
                 new GenericTagQuery("#g", genericTagStringG)),
-            new GenericTagQueryFilter<>(
+            new GenericTagQueryFilter(
                 new GenericTagQuery("#h", genericTagStringH)),
-            new GenericTagQueryFilter<>(
+            new GenericTagQueryFilter(
                 new GenericTagQuery("#i", genericTagStringI))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);

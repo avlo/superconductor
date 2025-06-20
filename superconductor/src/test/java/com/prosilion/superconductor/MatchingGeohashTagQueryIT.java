@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -55,12 +54,12 @@ class MatchingGeohashTagQueryIT {
   }
 
   @Test
-  void testReqMessagesNoGenericMatch() throws IOException, ExecutionException, InterruptedException, NostrException {
+  void testReqMessagesNoGenericMatch() throws IOException, NostrException {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String genericTagString = "textnote-geo-tag-non-existent";
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
-        new Filters(new GenericTagQueryFilter<>(
+        new Filters(new GenericTagQueryFilter(
             new GenericTagQuery("#g", genericTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -81,7 +80,7 @@ class MatchingGeohashTagQueryIT {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String geohashTagString = "textnote-geo-tag-1";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
-        new Filters(new GenericTagQueryFilter<>(
+        new Filters(new GenericTagQueryFilter(
             new GenericTagQuery("#g", geohashTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -104,7 +103,7 @@ class MatchingGeohashTagQueryIT {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String geohashTagString = "textnote-geo-tag-1";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
-        new Filters(new GeohashTagFilter<>(
+        new Filters(new GeohashTagFilter(
             new GeohashTag(geohashTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);

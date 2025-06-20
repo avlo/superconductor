@@ -5,7 +5,7 @@ import com.prosilion.nostr.tag.HashtagTag;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilterHashtagTagPlugin<T extends HashtagTagFilter<HashtagTag>> extends AbstractTagFilterPlugin<T, HashtagTag> {
+public class FilterHashtagTagPlugin extends AbstractTagFilterPlugin<HashtagTag> {
   public FilterHashtagTagPlugin() {
     super(HashtagTagFilter.FILTER_KEY, HashtagTag.class);
   }

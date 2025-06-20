@@ -62,9 +62,9 @@ class MatchingOneOfMultipleFilterAttributesIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedEventFilter<>(
+            new ReferencedEventFilter(
                 new EventTag(referencedEventIdMatch)),
-            new ReferencedEventFilter<>(
+            new ReferencedEventFilter(
                 new EventTag(referencedEventIdNoMatch))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -88,9 +88,9 @@ class MatchingOneOfMultipleFilterAttributesIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedPublicKeyFilter<>(
+            new ReferencedPublicKeyFilter(
                 new PubKeyTag(new PublicKey(referencedPubkeyMatch))),
-            new ReferencedPublicKeyFilter<>(
+            new ReferencedPublicKeyFilter(
                 new PubKeyTag(new PublicKey(referencedPubkeyNoMatch)))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);

@@ -64,7 +64,7 @@ class MatchingKindAuthorIdentityTagIT {
     KindFilter<Kind> kindFilter = new KindFilter<>(Kind.CALENDAR_TIME_BASED_EVENT);
     AuthorFilter<PublicKey> authorFilter = new AuthorFilter<>(new PublicKey(authorPubKey));
     IdentifierTag identifierTag = new IdentifierTag(uuidFromFile);
-    IdentifierTagFilter<IdentifierTag> identifierTagFilter = new IdentifierTagFilter<>(identifierTag);
+    IdentifierTagFilter identifierTagFilter = new IdentifierTagFilter(identifierTag);
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(

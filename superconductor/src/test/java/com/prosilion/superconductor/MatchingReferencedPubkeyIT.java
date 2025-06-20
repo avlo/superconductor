@@ -61,7 +61,7 @@ class MatchingReferencedPubkeyIT {
     PubKeyTag pubKeyTag = new PubKeyTag(publicKey);
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedPublicKeyFilter<>(pubKeyTag)));
+            new ReferencedPublicKeyFilter(pubKeyTag)));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
@@ -87,7 +87,7 @@ class MatchingReferencedPubkeyIT {
     PubKeyTag pubKeyTag = new PubKeyTag(publicKey);
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedPublicKeyFilter<>(pubKeyTag)));
+            new ReferencedPublicKeyFilter(pubKeyTag)));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);

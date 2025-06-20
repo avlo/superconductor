@@ -46,7 +46,7 @@ public class FilterMatcherIT {
     AddressTag addressTag = new AddressTag(kind, publicKey);
 
     Filters filters = new Filters(
-        new AddressTagFilter<>(addressTag));
+        new AddressTagFilter(addressTag));
 
     GenericEventKindIF event = new EventDto(new TextNoteEvent(identity, List.of(addressTag), "content")).convertBaseEventToDto();
     AddNostrEvent one = new AddNostrEvent(event);
@@ -60,7 +60,7 @@ public class FilterMatcherIT {
     AddressTag addressTag2 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-B"));
 
     Filters filters2 = new Filters(
-        new AddressTagFilter<>(addressTag2));
+        new AddressTagFilter(addressTag2));
 
     GenericEventKindIF event2 = new EventDto(new TextNoteEvent(identity, List.of(addressTag2), "content")).convertBaseEventToDto();
     AddNostrEvent two = new AddNostrEvent(event2);
@@ -74,7 +74,7 @@ public class FilterMatcherIT {
     AddressTag addressTag3 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-A"));
 
     Filters filters3 = new Filters(
-        new AddressTagFilter<>(addressTag3));
+        new AddressTagFilter(addressTag3));
 
     GenericEventKindIF event3 = new EventDto(new TextNoteEvent(identity, List.of(addressTag3), "content")).convertBaseEventToDto();
     AddNostrEvent three = new AddNostrEvent(event3);

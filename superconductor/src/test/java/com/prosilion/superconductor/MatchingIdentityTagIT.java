@@ -57,7 +57,7 @@ class MatchingIdentityTagIT {
         D_TAG_VALUE_FROM_FILE
     );
 
-    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new IdentifierTagFilter<>(identifierTag)));
+    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new IdentifierTagFilter(identifierTag)));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 

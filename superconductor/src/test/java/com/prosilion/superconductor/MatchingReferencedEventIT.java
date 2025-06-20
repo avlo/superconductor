@@ -59,7 +59,7 @@ class MatchingReferencedEventIT {
     EventTag eventTag = new EventTag(referencedEventId);
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedEventFilter<>(eventTag)));
+            new ReferencedEventFilter(eventTag)));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
@@ -83,7 +83,7 @@ class MatchingReferencedEventIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedEventFilter<>(new EventTag(nonMatchingReferencedEventId))));
+            new ReferencedEventFilter(new EventTag(nonMatchingReferencedEventId))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);

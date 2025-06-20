@@ -1,7 +1,8 @@
 package com.prosilion.superconductor.service.event.service;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindPluginIF;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindService<T extends GenericEventDtoIF> implements EventKindServiceIF<T> {
+public class EventKindService<T extends GenericEventKindIF> implements EventKindServiceIF<T> {
   private final Map<Kind, EventKindPluginIF<T>> eventTypePluginsMap;
 
   @Autowired

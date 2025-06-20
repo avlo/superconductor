@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.NostrException;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
 import com.prosilion.nostr.filter.event.KindFilter;
@@ -30,7 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
+import static com.prosilion.superconductor.EventMessageIT.getGenericEventKindIFs;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -71,7 +71,7 @@ class MatchingKindAuthorIdentityTagIT {
             kindFilter, authorFilter, identifierTagFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
     log.debug("  " + returnedEvents);
 
     assertTrue(returnedEvents.stream().anyMatch(event ->

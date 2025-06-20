@@ -2,7 +2,7 @@ package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.user.PublicKey;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class EventEntityService<T extends GenericEventDtoIF> {
+public class EventEntityService<T extends GenericEventKindIF> {
   private final ConcreteTagEntitiesService<
       BaseTag,
       AbstractTagEntityRepository<AbstractTagEntity>,
@@ -72,7 +72,7 @@ public class EventEntityService<T extends GenericEventDtoIF> {
     }
   }
 
-  public Long saveEventEntity(@NonNull GenericEventDtoIF event) {
+  public Long saveEventEntity(@NonNull GenericEventKindIF event) {
     try {
       EventEntity savedEntity = Optional.of(eventEntityRepository.save(convertDtoToEntity(event))).orElseThrow(NoResultException::new);
       concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
@@ -145,7 +145,7 @@ public class EventEntityService<T extends GenericEventDtoIF> {
     return eventEntity;
   }
 
-  public static EventEntity convertDtoToEntity(GenericEventDtoIF dto) {
+  public static EventEntity convertDtoToEntity(GenericEventKindIF dto) {
     return new EventEntity(
         dto.getId(),
         dto.getKind().getValue(),

@@ -2,7 +2,7 @@ package com.prosilion.superconductor.service.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.enums.NostrException;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent;
@@ -18,7 +18,7 @@ public abstract class AbstractSubscriberService implements SubscriberService {
     this.publisher = publisher;
   }
 
-  public <T extends GenericEventDtoIF> void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) throws JsonProcessingException, NostrException {
+  public <T extends GenericEventKindIF> void broadcastToClients(@NonNull FireNostrEvent<T> fireNostrEvent) throws JsonProcessingException, NostrException {
     publisher.publishEvent(
         new BroadcastMessageEvent<>(
             get(fireNostrEvent.subscriptionHash()).getSessionId(),

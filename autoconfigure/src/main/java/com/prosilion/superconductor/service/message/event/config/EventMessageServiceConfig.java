@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.message.event.config;
 
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.event.EventServiceIF;
@@ -26,7 +26,7 @@ public class EventMessageServiceConfig {
   @ConditionalOnMissingBean
   @ConditionalOnProperty(name = "superconductor.noop.event", havingValue = "false", matchIfMissing = true)
   EventMessageServiceIF<EventMessage> getEventMessageService(
-      @NonNull EventServiceIF<GenericEventDtoIF> eventService,
+      @NonNull EventServiceIF<GenericEventKindIF> eventService,
       @NonNull ClientResponseService clientResponseService) {
     log.debug("loaded EventMessageNoOpService bean (NO_OP_EVENT)");
     return new EventMessageService<>(eventService, clientResponseService);

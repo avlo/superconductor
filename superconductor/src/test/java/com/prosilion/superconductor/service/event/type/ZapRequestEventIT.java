@@ -3,7 +3,7 @@
 //import com.prosilion.nostr.user.PublicKey;
 //import com.prosilion.nostr.event.internal.Relay;
 //import com.prosilion.nostr.tag.BaseTag;
-//import com.prosilion.nostr.event.GenericEventDtoIF;
+//import com.prosilion.nostr.event.GenericEventKindIF;
 //import com.prosilion.nostr.tag.GenericTag;
 //import com.prosilion.nostr.tag.*;
 //import org.junit.jupiter.api.Test;
@@ -47,15 +47,15 @@
 //  private final String websocketUrl;
 //
 //  @Autowired
-//  EventEntityService<GenericEventDtoIF> eventEntityService;
+//  EventEntityService<GenericEventKindIF> eventEntityService;
 //
-//  GenericEventDtoIF zapRequestEvent;
+//  GenericEventKindIF zapRequestEvent;
 //
 //  public ZapRequestEventIT(@Value("${superconductor.relay.url}") String relayUri) {
 //    this.websocketUrl = relayUri;
 //    relaysTag = new RelaysTag(new Relay(relayUri));
 //
-//    zapRequestEvent = new GenericEventDtoIF();
+//    zapRequestEvent = new GenericEventKindIF();
 //
 //    zapRequestEvent.setKind(ZAP_REQUEST_KIND);
 //    zapRequestEvent.setContent(CONTENT);
@@ -78,7 +78,7 @@
 //  @Test
 //  void saveAndGetZapRequestEvent() {
 //    Long savedEventId = eventEntityService.saveEventEntity(zapRequestEvent);
-//    GenericEventDtoIF savedEvent = eventEntityService.getEventById(savedEventId);
+//    GenericEventKindIF savedEvent = eventEntityService.getEventById(savedEventId);
 //
 //    assertEquals(CONTENT, savedEvent.getContent());
 //    assertEquals(ZAP_REQUEST_KIND, savedEvent.getKind());

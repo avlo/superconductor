@@ -3,7 +3,7 @@ package com.prosilion.superconductor.service.event.type;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -43,13 +43,13 @@ class EventEntityServiceIT {
   private final static String CONTENT = Factory.lorumIpsum(EventEntityServiceIT.class);
   private final static Kind KIND = Kind.TEXT_NOTE;
 
-  private final EventEntityService<GenericEventDtoIF> eventEntityService;
+  private final EventEntityService<GenericEventKindIF> eventEntityService;
 
   private final BaseEvent textNoteEvent;
   private final Long savedEventId;
 
   @Autowired
-  public EventEntityServiceIT(@NonNull EventEntityService<GenericEventDtoIF> eventEntityService) throws NostrException, NoSuchAlgorithmException {
+  public EventEntityServiceIT(@NonNull EventEntityService<GenericEventKindIF> eventEntityService) throws NostrException, NoSuchAlgorithmException {
     this.eventEntityService = eventEntityService;
     List<BaseTag> tags = new ArrayList<>();
     tags.add(E_TAG);
@@ -76,7 +76,7 @@ class EventEntityServiceIT {
 
   @Test
   void saveAndGetEventWithGeohash() {
-    GenericEventDtoIF savedEvent = eventEntityService.getEventById(savedEventId);
+    GenericEventKindIF savedEvent = eventEntityService.getEventById(savedEventId);
     System.out.println("savedEvent getPubKey().toString(): " + savedEvent.getPublicKey().toString());
     System.out.println("savedEvent getPubKey().toHexString(): " + savedEvent.getPublicKey().toHexString());
     System.out.println("savedEvent getPubKey().toBech32String(): " + savedEvent.getPublicKey().toBech32String());

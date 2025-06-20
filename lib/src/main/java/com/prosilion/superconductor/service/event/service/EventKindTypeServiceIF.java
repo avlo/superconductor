@@ -1,8 +1,7 @@
 package com.prosilion.superconductor.service.event.service;
 
-import com.prosilion.nostr.enums.Type;
-import com.prosilion.nostr.event.AbstractBadgeAwardEventIF;
+import com.prosilion.nostr.event.GenericEventKindTypeIF;
 
-public interface EventKindTypeServiceIF<T extends Type, U extends AbstractBadgeAwardEventIF<T>> {
+public interface EventKindTypeServiceIF<KindType, U extends GenericEventKindTypeIF> {
   void processIncomingEvent(U event);
 }

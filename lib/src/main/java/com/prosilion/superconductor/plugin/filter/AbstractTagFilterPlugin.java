@@ -4,11 +4,11 @@ import com.prosilion.nostr.filter.AbstractFilterable;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import org.springframework.lang.NonNull;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 
 import java.util.function.BiPredicate;
 
-abstract class AbstractTagFilterPlugin<T extends AbstractFilterable<V>, U extends GenericEventDtoIF, V extends BaseTag> extends AbstractFilterPlugin<T, U> implements FilterBiPredicate<T, U> {
+abstract class AbstractTagFilterPlugin<T extends AbstractFilterable<V>, U extends GenericEventKindIF, V extends BaseTag> extends AbstractFilterPlugin<T, U> implements FilterBiPredicate<T, U> {
 
   private final Class<V> tagClazz;
 

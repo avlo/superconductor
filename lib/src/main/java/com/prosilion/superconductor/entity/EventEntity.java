@@ -2,8 +2,8 @@ package com.prosilion.superconductor.entity;
 
 import com.prosilion.nostr.crypto.NostrUtil;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.GenericEventDto;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKind;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.nostr.user.Signature;
@@ -57,11 +57,11 @@ public class EventEntity {
     this.id = id;
   }
 
-  public <T extends GenericEventDtoIF> T convertEntityToDto() {
+  public <T extends GenericEventKindIF> T convertEntityToDto() {
     byte[] rawData = NostrUtil.hex128ToBytes(signature);
     final Signature signature = new Signature();
     signature.setRawData(rawData);
-    return (T) new GenericEventDto(
+    return (T) new GenericEventKind(
         eventIdString,
         new PublicKey(pubKey),
         createdAt,

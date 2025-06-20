@@ -13,7 +13,7 @@
 //import com.prosilion.nostr.message.BaseMessage;
 //import com.prosilion.nostr.filter.event.AuthorFilter;
 //import com.prosilion.nostr.filter.Filters;
-//import com.prosilion.nostr.event.GenericEventDtoIF;
+//import com.prosilion.nostr.event.GenericEventKindIF;
 //import com.prosilion.nostr.message.EoseMessage;
 //import com.prosilion.nostr.message.ReqMessage;
 //import org.junit.jupiter.api.Nested;
@@ -22,7 +22,7 @@
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.beans.factory.annotation.Value;
 //
-//import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
+//import static com.prosilion.superconductor.EventMessageIT.getGenericEventKindIFs;
 //import static org.awaitility.Awaitility.await;
 //import static org.junit.jupiter.api.Assertions.assertAll;
 //import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,7 +69,7 @@
 //
 //    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
 //    List<BaseMessage> returnedBaseMessages = super.getNostrRelayService().send(reqMessage);
-//    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+//    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 //
 //    assertEquals(2, returnedBaseMessages.size());
 //    assertTrue(returnedBaseMessages

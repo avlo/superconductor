@@ -5,7 +5,7 @@
 //import com.prosilion.nostr.tag.BaseTag;
 //import nostr.event.impl.ClassifiedListing;
 //import nostr.event.impl.ClassifiedListingEvent;
-//import com.prosilion.nostr.event.GenericEventDtoIF;
+//import com.prosilion.nostr.event.GenericEventKindIF;
 //import com.prosilion.nostr.tag.EventTag;
 //import com.prosilion.nostr.tag.PriceTag;
 //import com.prosilion.nostr.tag.PubKeyTag;
@@ -33,11 +33,11 @@
 //  public static final long CREATED_AT = 1717633851743L;
 //
 //  @Autowired
-//  EventEntityService<GenericEventDtoIF> eventEntityService;
+//  EventEntityService<GenericEventKindIF> eventEntityService;
 //  ClassifiedListingEvent classifiedListingEvent;
 //
 //  SubscriberEventIT() {
-//    GenericEventDtoIF genericEvent = new GenericEventDtoIF();
+//    GenericEventKindIF genericEvent = new GenericEventKindIF();
 //    genericEvent.setNip(NIP); // superfluous?
 //    genericEvent.setId(EVENT_ID);
 //    genericEvent.setKind(KIND);
@@ -75,7 +75,7 @@
 ////    String newContent = "2222";
 ////    textNoteEvent.setContent(newContent);
 //    Long savedEventId = eventEntityService.saveEventEntity(classifiedListingEvent);
-//    GenericEventDtoIF eventDto = eventEntityService.getEventById(savedEventId);
+//    GenericEventKindIF eventDto = eventEntityService.getEventById(savedEventId);
 //    assertEquals(CONTENT, eventDto.getContent());
 //    assertEquals(6, eventDto.getTags().size());
 //  }

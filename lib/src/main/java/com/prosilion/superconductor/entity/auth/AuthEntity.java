@@ -14,7 +14,7 @@
 //import org.springframework.lang.NonNull;
 //import lombok.Setter;
 //import com.prosilion.nostr.user.PublicKey;
-//import com.prosilion.nostr.event.GenericEventDtoIF;
+//import com.prosilion.nostr.event.GenericEventKindIF;
 //import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 //
@@ -48,8 +48,8 @@
 //    this.createdAt = createdAt;
 //  }
 //
-//  public <T extends GenericEventDtoIF> T convertEntityToDto() {
-//    GenericEventDtoIF dtoIF = new GenericEventDto(
+//  public <T extends GenericEventKindIF> T convertEntityToDto() {
+//    GenericEventKindIF dtoIF = new GenericEventDto(
 //        id, new PublicKey(pubKey), challenge, new Relay(relayUrl)
 //    );
 //    return (T) new CanonicalAuthenticationEvent(new PublicKey(pubKey), challenge, new Relay(relayUrl));

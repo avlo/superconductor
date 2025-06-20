@@ -6,14 +6,14 @@ import com.prosilion.superconductor.service.request.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
 import org.springframework.lang.NonNull;
 import lombok.SneakyThrows;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class SubscriberNotifierService<T extends GenericEventDtoIF> {
+public class SubscriberNotifierService<T extends GenericEventKindIF> {
   private final AbstractSubscriberService abstractSubscriberService;
   private final FilterMatcher<T> filterMatcher;
 

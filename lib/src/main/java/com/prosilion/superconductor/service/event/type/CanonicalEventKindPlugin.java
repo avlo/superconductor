@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.request.NotifierService;
 import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CanonicalEventKindPlugin<T extends GenericEventDtoIF> extends AbstractPublishingEventKindPlugin<T> {
+public class CanonicalEventKindPlugin<T extends GenericEventKindIF> extends AbstractPublishingEventKindPlugin<T> {
 
 
   @Autowired

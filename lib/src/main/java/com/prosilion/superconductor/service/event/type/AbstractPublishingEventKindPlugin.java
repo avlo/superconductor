@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.event.type;
 
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.request.NotifierService;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
-public abstract class AbstractPublishingEventKindPlugin<T extends GenericEventDtoIF> extends AbstractEventKindPlugin<T> {
+public abstract class AbstractPublishingEventKindPlugin<T extends GenericEventKindIF> extends AbstractEventKindPlugin<T> {
   private final NotifierService<T> notifierService;
 
   public AbstractPublishingEventKindPlugin(

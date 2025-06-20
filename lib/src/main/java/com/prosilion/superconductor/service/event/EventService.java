@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.event;
 
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.event.service.EventKindServiceIF;
 import org.springframework.lang.NonNull;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class EventService<T extends GenericEventDtoIF> implements EventServiceIF<T> {
+public class EventService<T extends GenericEventKindIF> implements EventServiceIF<T> {
   private final EventKindServiceIF<T> eventKindService;
 
   @Autowired

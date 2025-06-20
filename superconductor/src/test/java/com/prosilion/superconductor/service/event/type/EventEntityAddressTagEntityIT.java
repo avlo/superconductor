@@ -3,7 +3,7 @@ package com.prosilion.superconductor.service.event.type;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
@@ -32,12 +32,12 @@ class EventEntityAddressTagEntityIT {
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(
       "REPUTATION_UUID-needs_proper_attention");
 
-  private final EventEntityService<GenericEventDtoIF> eventEntityService;
+  private final EventEntityService<GenericEventKindIF> eventEntityService;
 
   private final Long savedEventId;
 
   @Autowired
-  public EventEntityAddressTagEntityIT(@NonNull EventEntityService<GenericEventDtoIF> eventEntityService) throws NostrException, NoSuchAlgorithmException {
+  public EventEntityAddressTagEntityIT(@NonNull EventEntityService<GenericEventKindIF> eventEntityService) throws NostrException, NoSuchAlgorithmException {
     this.eventEntityService = eventEntityService;
 
     AddressTag addressTag = new AddressTag(

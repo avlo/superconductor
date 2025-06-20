@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.service.message.req.config;
 
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.message.req.AutoConfigReqMessageServiceIF;
@@ -16,7 +16,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 @AutoConfiguration
-public class ReqMessageServiceConfig<T extends ReqMessage, U extends GenericEventDtoIF> {
+public class ReqMessageServiceConfig<T extends ReqMessage, U extends GenericEventKindIF> {
 
   @Bean
   ReqMessageServiceIF<T> reqMessageService(

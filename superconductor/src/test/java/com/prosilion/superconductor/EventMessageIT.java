@@ -3,7 +3,7 @@ package com.prosilion.superconductor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.enums.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
@@ -51,7 +51,7 @@ public class EventMessageIT {
     BaseEvent event = new TextNoteEvent(identity, content);
     this.eventId = event.getId();
 
-    GenericEventDtoIF genericEventDtoIF = new EventDto(event).convertBaseEventToDto();
+    GenericEventKindIF genericEventDtoIF = new EventDto(event).convertBaseEventToDto();
     EventMessage eventMessage = new EventMessage(genericEventDtoIF);
     assertTrue(
         this.nostrRelayService
@@ -69,13 +69,13 @@ public class EventMessageIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedGenericEventDtoIFs = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedBaseMessages);
-    assertTrue(returnedGenericEventDtoIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
-    assertTrue(returnedGenericEventDtoIFs.stream().anyMatch(event -> event.getContent().equals(content)));
-    assertTrue(returnedGenericEventDtoIFs.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
+    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
+    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getContent().equals(content)));
+    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
   }
 
   @Test
@@ -87,7 +87,7 @@ public class EventMessageIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedEvents);
@@ -97,7 +97,7 @@ public class EventMessageIT {
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter, authorFilter));
     List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
-    List<GenericEventDtoIF> returnedEvents2 = getGenericEventDtoIFs(returnedBaseMessages2);
+    List<GenericEventKindIF> returnedEvents2 = getGenericEventKindIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
     log.debug("  " + returnedEvents2);
@@ -114,7 +114,7 @@ public class EventMessageIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     log.debug("okMessage to testReqFilteredByEventId:");
     log.debug("  " + returnedEvents);
@@ -123,7 +123,7 @@ public class EventMessageIT {
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter));
     List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
-    List<GenericEventDtoIF> returnedEvents2 = getGenericEventDtoIFs(returnedBaseMessages2);
+    List<GenericEventKindIF> returnedEvents2 = getGenericEventKindIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
     log.debug("  " + returnedEvents2);
@@ -142,13 +142,13 @@ public class EventMessageIT {
 
     log.debug("okMessage to testReqFilteredByAuthor:");
     log.debug("  " + returnedBaseMessages);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(authorFilter));
     List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
-    List<GenericEventDtoIF> returnedEvents2 = getGenericEventDtoIFs(returnedBaseMessages2);
+    List<GenericEventKindIF> returnedEvents2 = getGenericEventKindIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
     log.debug("  " + returnedEvents2);
@@ -165,7 +165,7 @@ public class EventMessageIT {
     ReqMessage reqMessage = new ReqMessage(nonMatchingSubscriberId, new Filters(eventFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
     assertEquals(1, returnedBaseMessages.size());
@@ -176,7 +176,7 @@ public class EventMessageIT {
     assertTrue(returnedEvents.isEmpty());
   }
 
-  public static List<GenericEventDtoIF> getGenericEventDtoIFs(List<BaseMessage> returnedBaseMessages) {
+  public static List<GenericEventKindIF> getGenericEventKindIFs(List<BaseMessage> returnedBaseMessages) {
     return returnedBaseMessages.stream()
         .filter(EventMessage.class::isInstance)
         .map(EventMessage.class::cast)

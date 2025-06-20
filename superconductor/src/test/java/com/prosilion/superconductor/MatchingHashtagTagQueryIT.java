@@ -2,7 +2,7 @@ package com.prosilion.superconductor;
 
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.NostrException;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.GenericTagQuery;
 import com.prosilion.nostr.filter.tag.GenericTagQueryFilter;
@@ -29,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
+import static com.prosilion.superconductor.EventMessageIT.getGenericEventKindIFs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -84,7 +84,7 @@ class MatchingHashtagTagQueryIT {
             new GenericTagQuery("#t", genericTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
@@ -107,7 +107,7 @@ class MatchingHashtagTagQueryIT {
             new HashtagTag(hashtagTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);

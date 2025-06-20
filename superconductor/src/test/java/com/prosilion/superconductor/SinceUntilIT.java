@@ -3,7 +3,7 @@ package com.prosilion.superconductor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.NostrException;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
@@ -24,7 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
+import static com.prosilion.superconductor.EventMessageIT.getGenericEventKindIFs;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,7 +54,7 @@ class SinceUntilIT {
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqCreatedDateAfterSinceUntilDatesJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
     
     /*
       since 1111111111112 and until 1111111111113 should yield empty, since target time (1111111111111) is before the two
@@ -76,7 +76,7 @@ class SinceUntilIT {
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqCreatedDateBeforeSinceUntilDatesJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     /*
      * since 1111111111109 and until 1111111111110 should yield empty, since target time (1111111111111) is not between the two
@@ -98,7 +98,7 @@ class SinceUntilIT {
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqCreatedDateBetweenSinceUntilDatesJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     assertTrue(returnedBaseMessages.stream()
@@ -128,7 +128,7 @@ class SinceUntilIT {
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqUntilDateGreaterThanCreatedDateJson(subscriberId, until));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     assertTrue(returnedBaseMessages.stream()
@@ -153,7 +153,7 @@ class SinceUntilIT {
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(subscriberId, uuid));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     assertTrue(returnedBaseMessages.stream()
@@ -177,7 +177,7 @@ class SinceUntilIT {
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqUntilDateLessThanCreatedDateJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     /*
      * until 1111111111110 should yield empty, since target time (1111111111111) is after it
@@ -199,7 +199,7 @@ class SinceUntilIT {
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqSinceDateGreaterThanCreatedDateJson(subscriberId));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     /*
      * since 1111111111112 should yield empty, since target time (1111111111111) is before it
@@ -222,7 +222,7 @@ class SinceUntilIT {
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqSinceDateLessThanCreatedDateJson(subscriberId, since));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     /*
      * "since" 1111111111110 should yield present, as target time (1111111111111) is after it

@@ -5,7 +5,7 @@ import com.prosilion.superconductor.entity.join.deletion.DeletionEventEntity;
 import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 // TODO: caching currently non-critical although ready for implementation anytime
-public class RedisCache<T extends GenericEventDtoIF> {
+public class RedisCache<T extends GenericEventKindIF> {
   private final EventEntityService<T> eventEntityService;
   private final DeletionEventEntityService deletionEventEntityService;
 
@@ -58,7 +58,7 @@ public class RedisCache<T extends GenericEventDtoIF> {
     return eventEntityService.getEventById(id);
   }
 
-  public void saveEventEntity(@NonNull GenericEventDtoIF event) {
+  public void saveEventEntity(@NonNull GenericEventKindIF event) {
     eventEntityService.saveEventEntity(event);
   }
 

@@ -2,7 +2,7 @@
 //
 //import com.prosilion.nostr.user.PublicKey;
 //import com.prosilion.nostr.tag.BaseTag;
-//import com.prosilion.nostr.event.GenericEventDtoIF;
+//import com.prosilion.nostr.event.GenericEventKindIF;
 //import com.prosilion.nostr.tag.GenericTag;
 //import com.prosilion.nostr.tag.*;
 //import nostr.id.Identity;
@@ -54,12 +54,12 @@
 //  public static final String LOCATION_CODE = "location";
 //
 //  @Autowired
-//  EventEntityService<GenericEventDtoIF> eventEntityService;
+//  EventEntityService<GenericEventKindIF> eventEntityService;
 //
-//  GenericEventDtoIF classifiedListingEvent;
+//  GenericEventKindIF classifiedListingEvent;
 //
 //  public ClassifiedListingEventIT() {
-//    classifiedListingEvent = new GenericEventDtoIF();
+//    classifiedListingEvent = new GenericEventKindIF();
 //    classifiedListingEvent.setKind(CLASSIFIED_LISTING_KIND);
 //    classifiedListingEvent.setContent(CONTENT);
 //
@@ -83,7 +83,7 @@
 //  @Test
 //  void saveAndGetClassifiedListingEvent() {
 //    Long savedEventId = eventEntityService.saveEventEntity(classifiedListingEvent);
-//    GenericEventDtoIF savedEvent = eventEntityService.getEventById(savedEventId);
+//    GenericEventKindIF savedEvent = eventEntityService.getEventById(savedEventId);
 //
 //    assertEquals(CONTENT, savedEvent.getContent());
 //    assertEquals(CLASSIFIED_LISTING_KIND, savedEvent.getKind());

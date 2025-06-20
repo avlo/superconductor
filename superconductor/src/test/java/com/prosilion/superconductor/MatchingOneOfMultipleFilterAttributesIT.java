@@ -2,7 +2,7 @@ package com.prosilion.superconductor;
 
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.NostrException;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.ReferencedEventFilter;
 import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
@@ -29,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.EventMessageIT.getGenericEventDtoIFs;
+import static com.prosilion.superconductor.EventMessageIT.getGenericEventKindIFs;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -68,7 +68,7 @@ class MatchingOneOfMultipleFilterAttributesIT {
                 new EventTag(referencedEventIdNoMatch))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
@@ -76,7 +76,7 @@ class MatchingOneOfMultipleFilterAttributesIT {
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
 
-    assertTrue(returnedEvents.stream().map(GenericEventDtoIF::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590002")));
+    assertTrue(returnedEvents.stream().map(GenericEventKindIF::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590002")));
   }
 
   @Test
@@ -94,7 +94,7 @@ class MatchingOneOfMultipleFilterAttributesIT {
                 new PubKeyTag(new PublicKey(referencedPubkeyNoMatch)))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventDtoIF> returnedEvents = getGenericEventDtoIFs(returnedBaseMessages);
+    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
@@ -102,6 +102,6 @@ class MatchingOneOfMultipleFilterAttributesIT {
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
 
-    assertTrue(returnedEvents.stream().map(GenericEventDtoIF::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590002")));
+    assertTrue(returnedEvents.stream().map(GenericEventKindIF::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590002")));
   }
 }

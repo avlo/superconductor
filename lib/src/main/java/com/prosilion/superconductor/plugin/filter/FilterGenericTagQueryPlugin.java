@@ -4,13 +4,13 @@ import com.prosilion.nostr.filter.GenericTagQuery;
 import com.prosilion.nostr.filter.tag.GenericTagQueryFilter;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import org.springframework.stereotype.Component;
 
 import java.util.function.BiPredicate;
 
 @Component
-public class FilterGenericTagQueryPlugin<T extends GenericTagQueryFilter<GenericTagQuery>, U extends GenericEventDtoIF> implements FilterBiPredicate<T, U> {
+public class FilterGenericTagQueryPlugin<T extends GenericTagQueryFilter<GenericTagQuery>, U extends GenericEventKindIF> implements FilterBiPredicate<T, U> {
   public static final String BLANK = "";
 
   @Override

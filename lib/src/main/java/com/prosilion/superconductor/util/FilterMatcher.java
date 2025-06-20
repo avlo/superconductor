@@ -5,7 +5,7 @@ import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.Getter;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
-import com.prosilion.nostr.event.GenericEventDtoIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 
 @Component
-public class FilterMatcher<T extends GenericEventDtoIF> {
+public class FilterMatcher<T extends GenericEventKindIF> {
   private final Map<String, FilterPlugin<Filterable, T>> filterPluginsMap = new HashMap<>();
 
   @Autowired

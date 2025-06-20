@@ -8,22 +8,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.lang.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindService<T extends GenericEventKindIF> implements EventKindServiceIF<T> {
-  private final Map<Kind, EventKindPluginIF<T>> eventKindPluginsMap;
+public class EventKindService implements EventKindServiceIF {
+  private final Map<Kind, EventKindPluginIF> eventKindPluginsMap;
 
   @Autowired
-  public EventKindService(List<EventKindPluginIF<T>> eventKindPlugins) {
+  public EventKindService(List<EventKindPluginIF> eventKindPlugins) {
     this.eventKindPluginsMap = eventKindPlugins.stream().collect(
         Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
   }
 
   @Override
-  public void processIncomingEvent(@NonNull T event) {
+  public void processIncomingEvent(@NonNull GenericEventKindIF event) {
     Optional.ofNullable(
             eventKindPluginsMap.get(
                 event.getKind()))

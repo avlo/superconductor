@@ -3,23 +3,23 @@ package com.prosilion.superconductor.service.event.type;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.request.NotifierService;
-import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CanonicalEventKindPlugin<T extends GenericEventKindIF> extends AbstractPublishingEventKindPlugin<T> {
+public class CanonicalEventKindPlugin extends AbstractPublishingEventKindPlugin {
 
 
   @Autowired
-  public CanonicalEventKindPlugin(@NonNull RedisCache<T> redisCache, @NonNull NotifierService<T> notifierService) {
+  public CanonicalEventKindPlugin(@NonNull RedisCache redisCache, @NonNull NotifierService notifierService) {
     super(redisCache, notifierService);
   }
 
   @Override
-  public void processIncomingPublishingEventType(@NonNull T event) {
+  public void processIncomingPublishingEventType(@NonNull GenericEventKindIF event) {
     log.debug("processing incoming CANONICAL EVENT: [{}]", event);
 //    TODO: below necessary/useful?
 //    TextNoteEvent textNoteEvent = new TextNoteEvent(

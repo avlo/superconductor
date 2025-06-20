@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.request.pubsub;
 
-import org.springframework.lang.NonNull;
 import com.prosilion.nostr.event.GenericEventKindIF;
+import org.springframework.lang.NonNull;
 
-public record FireNostrEvent<T extends GenericEventKindIF>(@NonNull Long subscriptionHash, @NonNull String subscriberId, @NonNull T event) {
+public record FireNostrEvent(@NonNull Long subscriptionHash, @NonNull String subscriberId, @NonNull GenericEventKindIF event) {
 }

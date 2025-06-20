@@ -1,7 +1,5 @@
 package com.prosilion.superconductor.service.message.event.config;
 
-import com.prosilion.nostr.event.GenericEventKindIF;
-import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.message.event.AutoConfigEventMessageServiceIF;
@@ -25,29 +23,29 @@ public class EventMessageServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   @ConditionalOnProperty(name = "superconductor.noop.event", havingValue = "false", matchIfMissing = true)
-  EventMessageServiceIF<EventMessage> getEventMessageService(
-      @NonNull EventServiceIF<GenericEventKindIF> eventService,
+  EventMessageServiceIF getEventMessageService(
+      @NonNull EventServiceIF eventService,
       @NonNull ClientResponseService clientResponseService) {
     log.debug("loaded EventMessageNoOpService bean (NO_OP_EVENT)");
-    return new EventMessageService<>(eventService, clientResponseService);
+    return new EventMessageService(eventService, clientResponseService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   @ConditionalOnProperty(name = "superconductor.noop.event", havingValue = "true")
-  EventMessageServiceIF<EventMessage> getEventMessageNoOpService(
+  EventMessageServiceIF getEventMessageNoOpService(
       @NonNull ClientResponseService clientResponseService,
       @NonNull @Value("${superconductor.noop.event.description}") String noOp) {
     log.debug("loaded EventMessageNoOpService bean (NO_OP_EVENT)");
-    return new EventMessageNoOpService<>(clientResponseService, noOp);
+    return new EventMessageNoOpService(clientResponseService, noOp);
   }
 
   @Bean
   @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "false", matchIfMissing = true)
-  AutoConfigEventMessageServiceIF<EventMessage> getEventMessageServiceNoAuthDecorator(
-      @NonNull EventMessageServiceIF<EventMessage> eventMessageService) {
+  AutoConfigEventMessageServiceIF getEventMessageServiceNoAuthDecorator(
+      @NonNull EventMessageServiceIF eventMessageService) {
     log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
-    return new AutoConfigEventMessageServiceNoAuthDecorator<>(eventMessageService);
+    return new AutoConfigEventMessageServiceNoAuthDecorator(eventMessageService);
   }
 
 //  @Bean

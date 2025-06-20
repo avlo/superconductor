@@ -2,19 +2,19 @@ package com.prosilion.superconductor.service.event.type;
 
 import com.prosilion.nostr.event.GenericEventKindIF;
 import lombok.Getter;
-import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 
 @Slf4j
 @Getter
-public abstract class AbstractNonPublishingEventKindPlugin<T extends GenericEventKindIF> extends AbstractEventKindPlugin<T> {
-  public AbstractNonPublishingEventKindPlugin(@NonNull RedisCache<T> redisCache) {
+public abstract class AbstractNonPublishingEventKindPlugin extends AbstractEventKindPlugin {
+  public AbstractNonPublishingEventKindPlugin(@NonNull RedisCache redisCache) {
     super(redisCache);
   }
 
-  public void processIncomingEvent(@NonNull T event) {
+  public void processIncomingEvent(@NonNull GenericEventKindIF event) {
     processIncomingNonPublishingEventType(event);
   }
 
-  abstract public void processIncomingNonPublishingEventType(@NonNull T event);
+  abstract public void processIncomingNonPublishingEventType(@NonNull GenericEventKindIF event);
 }

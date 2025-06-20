@@ -43,13 +43,13 @@ class EventEntityServiceIT {
   private final static String CONTENT = Factory.lorumIpsum(EventEntityServiceIT.class);
   private final static Kind KIND = Kind.TEXT_NOTE;
 
-  private final EventEntityService<GenericEventKindIF> eventEntityService;
+  private final EventEntityService eventEntityService;
 
   private final BaseEvent textNoteEvent;
   private final Long savedEventId;
 
   @Autowired
-  public EventEntityServiceIT(@NonNull EventEntityService<GenericEventKindIF> eventEntityService) throws NostrException, NoSuchAlgorithmException {
+  public EventEntityServiceIT(@NonNull EventEntityService eventEntityService) throws NostrException, NoSuchAlgorithmException {
     this.eventEntityService = eventEntityService;
     List<BaseTag> tags = new ArrayList<>();
     tags.add(E_TAG);

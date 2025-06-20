@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,7 +71,10 @@ class MatchingAddressTagIT {
     assertTrue(returnedEvents.stream().anyMatch(s -> s.getTags().stream()
         .filter(AddressTag.class::isInstance)
         .map(AddressTag.class::cast)
-        .anyMatch(tag -> tag.getIdentifierTag().equals(identifierTag))));
+        .anyMatch(tag -> {
+          Assertions.assertNotNull(tag.getIdentifierTag());
+          return tag.getIdentifierTag().equals(identifierTag);
+        })));
 
     assertTrue(returnedEvents.stream().anyMatch(event ->
         event.getTags().stream().anyMatch(baseTag -> baseTag.equals(addressTag))));

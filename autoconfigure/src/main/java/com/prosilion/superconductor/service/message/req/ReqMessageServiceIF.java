@@ -1,10 +1,10 @@
 package com.prosilion.superconductor.service.message.req;
 
-import org.springframework.lang.NonNull;
 import com.prosilion.nostr.message.ReqMessage;
+import org.springframework.lang.NonNull;
 
-public interface ReqMessageServiceIF<T extends ReqMessage> {
-  void processIncoming(T reqMessage, @NonNull String sessionId);
+public interface ReqMessageServiceIF {
+  void processIncoming(ReqMessage reqMessage, @NonNull String sessionId);
 
-  void processNoticeClientResponse(T reqMessage, @NonNull String sessionId, @NonNull String errorMessage);
+  void processNoticeClientResponse(ReqMessage reqMessage, @NonNull String sessionId, @NonNull String errorMessage);
 }

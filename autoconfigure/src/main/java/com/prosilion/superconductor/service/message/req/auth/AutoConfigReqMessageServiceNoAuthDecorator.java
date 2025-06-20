@@ -8,15 +8,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class AutoConfigReqMessageServiceNoAuthDecorator<T extends ReqMessage> implements AutoConfigReqMessageServiceIF<T> {
-  private final ReqMessageServiceIF<T> reqMessageService;
+public class AutoConfigReqMessageServiceNoAuthDecorator implements AutoConfigReqMessageServiceIF<ReqMessage> {
+  private final ReqMessageServiceIF reqMessageService;
 
-  public AutoConfigReqMessageServiceNoAuthDecorator(@NonNull ReqMessageServiceIF<T> reqMessageService) {
+  public AutoConfigReqMessageServiceNoAuthDecorator(@NonNull ReqMessageServiceIF reqMessageService) {
     this.reqMessageService = reqMessageService;
   }
 
   @Override
-  public void processIncoming(@NonNull T reqMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull ReqMessage reqMessage, @NonNull String sessionId) {
     log.debug("REQ decoded, contents: {}", reqMessage);
     reqMessageService.processIncoming(reqMessage, sessionId);
   }

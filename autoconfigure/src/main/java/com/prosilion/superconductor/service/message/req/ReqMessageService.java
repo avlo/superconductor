@@ -1,26 +1,25 @@
 package com.prosilion.superconductor.service.message.req;
 
+import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.request.ReqServiceIF;
 import com.prosilion.superconductor.util.EmptyFiltersException;
 import org.springframework.lang.NonNull;
-import com.prosilion.nostr.event.GenericEventKindIF;
-import com.prosilion.nostr.message.ReqMessage;
 
-public class ReqMessageService<T extends ReqMessage, U extends GenericEventKindIF> implements ReqMessageServiceIF<T> {
+public class ReqMessageService implements ReqMessageServiceIF {
 
-  private final ReqServiceIF<U> reqService;
+  private final ReqServiceIF reqService;
   private final ClientResponseService clientResponseService;
 
   public ReqMessageService(
-      @NonNull ReqServiceIF<U> reqService,
+      @NonNull ReqServiceIF reqService,
       @NonNull ClientResponseService clientResponseService) {
     this.reqService = reqService;
     this.clientResponseService = clientResponseService;
   }
 
   @Override
-  public void processIncoming(@NonNull T reqMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull ReqMessage reqMessage, @NonNull String sessionId) {
     try {
       reqService.processIncoming(reqMessage, sessionId);
     } catch (EmptyFiltersException e) {
@@ -29,7 +28,7 @@ public class ReqMessageService<T extends ReqMessage, U extends GenericEventKindI
   }
 
   @Override
-  public void processNoticeClientResponse(@NonNull T reqMessage, @NonNull String sessionId, @NonNull String errorMessage) {
+  public void processNoticeClientResponse(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull String errorMessage) {
     clientResponseService.processNoticeClientResponse(reqMessage, sessionId, errorMessage, false);
   }
 }

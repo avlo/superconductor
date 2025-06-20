@@ -8,11 +8,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BadgeAwardUpvoteEventKindTypePlugin<T extends GenericEventKindTypeIF> implements AbstractEventKindTypePluginIF<T> {
+public class BadgeAwardUpvoteEventKindTypePlugin implements AbstractEventKindTypePluginIF {
   private static final Log log = LogFactory.getLog(BadgeAwardUpvoteEventKindTypePlugin.class);
 
   @Override
-  public void processIncomingEvent(T event) {
+  public void processIncomingEvent(GenericEventKindTypeIF event) {
     log.debug(String.format("processing incoming UPVOTE EVENT: [%s]", event.getKind()));
   }
 

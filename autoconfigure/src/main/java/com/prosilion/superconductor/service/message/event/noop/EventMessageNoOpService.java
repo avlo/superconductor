@@ -1,13 +1,13 @@
 package com.prosilion.superconductor.service.message.event.noop;
 
+import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
-import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import com.prosilion.nostr.message.EventMessage;
+import org.springframework.lang.NonNull;
 
 @Slf4j
-public class EventMessageNoOpService<T extends EventMessage> implements EventMessageServiceIF<T> {
+public class EventMessageNoOpService implements EventMessageServiceIF {
   public final String noOp;
 
   private final ClientResponseService clientResponseService;
@@ -18,19 +18,19 @@ public class EventMessageNoOpService<T extends EventMessage> implements EventMes
   }
 
   @Override
-  public void processIncoming(@NonNull T eventMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
     log.debug("processing incoming NOOP-EVENT: [{}]", eventMessage);
     processNotOkClientResponse(eventMessage, sessionId, noOp);
     clientResponseService.processCloseClientResponse(sessionId);
   }
 
   @Override
-  public void processOkClientResponse(T eventMessage, @NonNull String sessionId) {
+  public void processOkClientResponse(EventMessage eventMessage, @NonNull String sessionId) {
     clientResponseService.processOkClientResponse(sessionId, new EventMessage(eventMessage.getEvent()));
   }
 
   @Override
-  public void processNotOkClientResponse(T eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
+  public void processNotOkClientResponse(EventMessage eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
     clientResponseService.processNotOkClientResponse(sessionId, new EventMessage(eventMessage.getEvent()), errorMessage);
   }
 }

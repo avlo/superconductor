@@ -17,12 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import lombok.Getter;
-import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -57,19 +56,19 @@ public class CachedSubscriberService extends AbstractSubscriberService {
   @Override
   public Map<Long, List<Filters>> getAllFiltersOfAllSubscribers() {
     Map<Long, List<Filters>> map = new HashMap<>();
-    subscriberSessionHashComboMap.forEach((key, value) -> map.put(key, value.stream().map(Combo::getFilters).toList()));
+    subscriberSessionHashComboMap.forEach((key, value) -> map.put(key, value.stream().map(Combo::filters).toList()));
     return map;
   }
 
   //  @Cacheable("subscriber")
   @Override
   public Subscriber get(@NonNull Long subscriberSessionHash) {
-    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().findFirst().orElseThrow().getSubscriber();
+    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().findFirst().orElseThrow().subscriber();
   }
 
   @Override
   public List<Filters> getFiltersList(@NonNull Long subscriberSessionHash) {
-    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().map(Combo::getFilters).toList();
+    return subscriberSessionHashComboMap.get(subscriberSessionHash).stream().map(Combo::filters).toList();
   }
 
   @EventListener
@@ -82,7 +81,7 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     if (!subscriberSessionHashComboMap.containsKey(subscriberSessionHash))
       return false;
     return subscriberSessionHashComboMap
-        .get(subscriberSessionHash).stream().map(Combo::getFilters).toList().equals(filtersList);
+        .get(subscriberSessionHash).stream().map(Combo::filters).toList().equals(filtersList);
   }
 
   @Override
@@ -153,16 +152,6 @@ public class CachedSubscriberService extends AbstractSubscriberService {
     return Hashing.murmur3_128().hashString(string, StandardCharsets.UTF_8).asLong();
   }
 
-  @Getter
-  private static class Combo {
-    private final Subscriber subscriber;
-    private final SubscriberFilter subscriberFilter;
-    private final Filters filters;
-
-    public Combo(Subscriber subscriber, SubscriberFilter subscriberFilter, Filters filters) {
-      this.subscriber = subscriber;
-      this.subscriberFilter = subscriberFilter;
-      this.filters = filters;
-    }
+  private record Combo(Subscriber subscriber, SubscriberFilter subscriberFilter, Filters filters) {
   }
 }

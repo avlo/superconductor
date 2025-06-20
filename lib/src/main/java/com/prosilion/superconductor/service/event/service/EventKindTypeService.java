@@ -15,23 +15,23 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindTypeService<T extends GenericEventKindTypeIF> implements EventKindTypeServiceIF<T> {
-  private final Map<Kind, Map<KindType, AbstractEventKindTypePluginIF<T>>> eventKindTypePluginsMap;
+public class EventKindTypeService implements EventKindTypeServiceIF {
+  private final Map<Kind, Map<KindType, AbstractEventKindTypePluginIF>> eventKindTypePluginsMap;
 
   @Autowired
-  public EventKindTypeService(List<EventKindTypePluginIF<T>> eventKindTypePlugins) {
+  public EventKindTypeService(List<EventKindTypePluginIF> eventKindTypePlugins) {
     eventKindTypePluginsMap = eventKindTypePlugins.stream()
         .filter(AbstractEventKindTypePluginIF.class::isInstance)
-        .map(eventKindTypePlugin -> (AbstractEventKindTypePluginIF<T>) eventKindTypePlugin)
+        .map(eventKindTypePlugin -> (AbstractEventKindTypePluginIF) eventKindTypePlugin)
         .collect(Collectors.groupingBy(AbstractEventKindTypePluginIF::getKind, Collectors.toMap(
             AbstractEventKindTypePluginIF::getKindType, Function.identity())));
   }
 
   @Override
-  public void processIncomingEvent(@NonNull T event) {
-    Map<KindType, AbstractEventKindTypePluginIF<T>> value = Optional.ofNullable(
+  public void processIncomingEvent(@NonNull GenericEventKindTypeIF event) {
+    Map<KindType, AbstractEventKindTypePluginIF> value = Optional.ofNullable(
         eventKindTypePluginsMap.get(event.getKind())).orElseThrow();
-    AbstractEventKindTypePluginIF<T> tuvAbstractEventTypePluginIF = Optional.ofNullable(value.get(event.getKindType())).orElseThrow();
+    AbstractEventKindTypePluginIF tuvAbstractEventTypePluginIF = Optional.ofNullable(value.get(event.getKindType())).orElseThrow();
     tuvAbstractEventTypePluginIF.processIncomingEvent(event);
   }
 }

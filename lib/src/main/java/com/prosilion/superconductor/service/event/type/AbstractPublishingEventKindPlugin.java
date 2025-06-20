@@ -4,25 +4,25 @@ import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.request.NotifierService;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import lombok.Getter;
-import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 
 @Slf4j
 @Getter
-public abstract class AbstractPublishingEventKindPlugin<T extends GenericEventKindIF> extends AbstractEventKindPlugin<T> {
-  private final NotifierService<T> notifierService;
+public abstract class AbstractPublishingEventKindPlugin extends AbstractEventKindPlugin {
+  private final NotifierService notifierService;
 
   public AbstractPublishingEventKindPlugin(
-      @NonNull RedisCache<T> redisCache,
-      @NonNull NotifierService<T> notifierService) {
+      @NonNull RedisCache redisCache,
+      @NonNull NotifierService notifierService) {
     super(redisCache);
     this.notifierService = notifierService;
   }
 
-  public void processIncomingEvent(@NonNull T event) {
+  public void processIncomingEvent(@NonNull GenericEventKindIF event) {
     processIncomingPublishingEventType(event);
-    notifierService.nostrEventHandler(new AddNostrEvent<>(event));
+    notifierService.nostrEventHandler(new AddNostrEvent(event));
   }
 
-  abstract public void processIncomingPublishingEventType(@NonNull T event);
+  abstract public void processIncomingPublishingEventType(@NonNull GenericEventKindIF event);
 }

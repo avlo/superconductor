@@ -45,7 +45,6 @@ public record EventDto(BaseEvent event) {
     if (typeSpecificTags.isEmpty())
       return genericEventKind;
 
-    GenericEventKindIF genericEventKindIF = new GenericEventKindType(genericEventKind);
-    return genericEventKindIF;
+    return new GenericEventKindType(genericEventKind);
   }
 }

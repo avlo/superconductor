@@ -1,7 +1,5 @@
 package com.prosilion.superconductor.service.message.req.config;
 
-import com.prosilion.nostr.event.GenericEventKindIF;
-import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.message.req.AutoConfigReqMessageServiceIF;
 import com.prosilion.superconductor.service.message.req.ReqMessageService;
@@ -16,22 +14,22 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 @AutoConfiguration
-public class ReqMessageServiceConfig<T extends ReqMessage, U extends GenericEventKindIF> {
+public class ReqMessageServiceConfig {
 
   @Bean
-  ReqMessageServiceIF<T> reqMessageService(
-      @NonNull ReqServiceIF<U> reqService,
+  ReqMessageServiceIF reqMessageService(
+      @NonNull ReqServiceIF reqService,
       @NonNull ClientResponseService clientResponseService) {
     log.debug("loaded EventMessageNoOpService bean (NO_OP_EVENT)");
-    return new ReqMessageService<>(reqService, clientResponseService);
+    return new ReqMessageService(reqService, clientResponseService);
   }
 
   @Bean
   @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "false", matchIfMissing = true)
-  AutoConfigReqMessageServiceIF<T> autoConfigReqMessageServiceNoAuthDecorator(
-      @NonNull ReqMessageServiceIF<T> reqMessageServiceIF) {
+  AutoConfigReqMessageServiceIF autoConfigReqMessageServiceNoAuthDecorator(
+      @NonNull ReqMessageServiceIF reqMessageServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
-    return new AutoConfigReqMessageServiceNoAuthDecorator<>(reqMessageServiceIF);
+    return new AutoConfigReqMessageServiceNoAuthDecorator(reqMessageServiceIF);
   }
 
 //  @Bean

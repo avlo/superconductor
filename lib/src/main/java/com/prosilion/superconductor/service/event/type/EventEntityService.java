@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class EventEntityService<T extends GenericEventKindIF> {
+public class EventEntityService {
   private final ConcreteTagEntitiesService<
       BaseTag,
       AbstractTagEntityRepository<AbstractTagEntity>,
@@ -84,7 +84,7 @@ public class EventEntityService<T extends GenericEventKindIF> {
     }
   }
 
-  public Map<Kind, Map<Long, T>> getAll() {
+  public Map<Kind, Map<Long, GenericEventKindIF>> getAll() {
     return eventEntityRepository.findAll().stream()
         .map(this::populateEventEntity)
         .collect(Collectors.groupingBy(eventEntity -> Kind.valueOf(eventEntity.getKind()),
@@ -95,7 +95,7 @@ public class EventEntityService<T extends GenericEventKindIF> {
     return eventEntityRepository.findByEventIdString(eventIdString);
   }
 
-  public List<T> getEventsByPublicKey(@NonNull PublicKey publicKey) {
+  public List<GenericEventKindIF> getEventsByPublicKey(@NonNull PublicKey publicKey) {
     return eventEntityRepository
         .findByPubKey(
             publicKey.toHexString())
@@ -103,7 +103,7 @@ public class EventEntityService<T extends GenericEventKindIF> {
             getEventById(ee.getId())).toList();
   }
 
-  public List<T> getEventsByKind(@NonNull Kind kind) {
+  public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
     return eventEntityRepository
         .findByKind(
             kind.getValue())
@@ -111,7 +111,7 @@ public class EventEntityService<T extends GenericEventKindIF> {
             getEventById(ee.getId())).toList();
   }
 
-  public T getEventById(@NonNull Long id) {
+  public GenericEventKindIF getEventById(@NonNull Long id) {
     return populateEventEntity(
         getById(id)
             .orElseThrow())

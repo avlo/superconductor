@@ -34,10 +34,10 @@ public class FilterMatcherIT {
   Identity identity = Identity.generateRandomIdentity();
   PublicKey publicKey = new PublicKey(author);
 
-  FilterMatcher<GenericEventKindIF> filterMatcher;
+  FilterMatcher filterMatcher;
 
   @Autowired
-  public FilterMatcherIT(FilterMatcher<GenericEventKindIF> filterMatcher) {
+  public FilterMatcherIT(FilterMatcher filterMatcher) {
     this.filterMatcher = filterMatcher;
   }
 
@@ -49,9 +49,9 @@ public class FilterMatcherIT {
         new AddressTagFilter<>(addressTag));
 
     GenericEventKindIF event = new EventDto(new TextNoteEvent(identity, List.of(addressTag), "content")).convertBaseEventToDto();
-    AddNostrEvent<GenericEventKindIF> one = new AddNostrEvent<>(event);
+    AddNostrEvent one = new AddNostrEvent(event);
 
-    Optional<AddNostrEvent<GenericEventKindIF>> resultOne = filterMatcher.intersectFilterMatches(filters, one);
+    Optional<AddNostrEvent> resultOne = filterMatcher.intersectFilterMatches(filters, one);
     assertDoesNotThrow(resultOne::get);
     assertEquals(resultOne.orElseThrow().event(), event);
     assertTrue(resultOne.orElseThrow().event().getTags().contains(addressTag));
@@ -63,9 +63,9 @@ public class FilterMatcherIT {
         new AddressTagFilter<>(addressTag2));
 
     GenericEventKindIF event2 = new EventDto(new TextNoteEvent(identity, List.of(addressTag2), "content")).convertBaseEventToDto();
-    AddNostrEvent<GenericEventKindIF> two = new AddNostrEvent<>(event2);
+    AddNostrEvent two = new AddNostrEvent(event2);
 
-    Optional<AddNostrEvent<GenericEventKindIF>> resultTwo = filterMatcher.intersectFilterMatches(filters2, two);
+    Optional<AddNostrEvent> resultTwo = filterMatcher.intersectFilterMatches(filters2, two);
     assertDoesNotThrow(resultTwo::get);
     assertEquals(resultTwo.orElseThrow().event(), event2);
     assertTrue(resultTwo.orElseThrow().event().getTags().contains(addressTag2));
@@ -77,22 +77,22 @@ public class FilterMatcherIT {
         new AddressTagFilter<>(addressTag3));
 
     GenericEventKindIF event3 = new EventDto(new TextNoteEvent(identity, List.of(addressTag3), "content")).convertBaseEventToDto();
-    AddNostrEvent<GenericEventKindIF> three = new AddNostrEvent<>(event3);
+    AddNostrEvent three = new AddNostrEvent(event3);
 
-    Optional<AddNostrEvent<GenericEventKindIF>> resultThree = filterMatcher.intersectFilterMatches(filters3, three);
+    Optional<AddNostrEvent> resultThree = filterMatcher.intersectFilterMatches(filters3, three);
     assertDoesNotThrow(resultThree::get);
     assertEquals(resultThree.orElseThrow().event(), event3);
     assertTrue(resultThree.orElseThrow().event().getTags().contains(addressTag3));
 
 //    test non-matching
-    Optional<AddNostrEvent<GenericEventKindIF>> resultFailThreeNonMatch = filterMatcher.intersectFilterMatches(filters3, one);
+    Optional<AddNostrEvent> resultFailThreeNonMatch = filterMatcher.intersectFilterMatches(filters3, one);
     assertThrows(Exception.class, resultFailThreeNonMatch::get);
 
     AddressTag addressTag4 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-B"));
 
     GenericEventKindIF event4 = new EventDto(new TextNoteEvent(identity, List.of(addressTag4), "content")).convertBaseEventToDto();
-    AddNostrEvent<GenericEventKindIF> four = new AddNostrEvent<>(event4);
-    Optional<AddNostrEvent<GenericEventKindIF>> resultFour = filterMatcher.intersectFilterMatches(filters3, four);
+    AddNostrEvent four = new AddNostrEvent(event4);
+    Optional<AddNostrEvent> resultFour = filterMatcher.intersectFilterMatches(filters3, four);
 
     assertThrows(Exception.class, resultFour::get);
     assertThrows(Exception.class, resultFour::orElseThrow);

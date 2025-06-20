@@ -3,7 +3,6 @@ package com.prosilion.superconductor.service;
 import com.prosilion.nostr.enums.NostrException;
 import com.prosilion.nostr.event.BadgeAwardDownvoteEvent;
 import com.prosilion.nostr.event.BadgeAwardUpvoteEvent;
-import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.user.Identity;
@@ -19,13 +18,13 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("test")
 class EventKindTypeServiceIT {
-  private final EventKindServiceIF<GenericEventKindIF> eventKindService;
-  private final EventKindTypeServiceIF<GenericEventKindTypeIF> eventKindTypeService;
+  private final EventKindServiceIF eventKindService;
+  private final EventKindTypeServiceIF eventKindTypeService;
 
   @Autowired
   public EventKindTypeServiceIT(
-      EventKindServiceIF<GenericEventKindIF> eventKindService,
-      EventKindTypeServiceIF<GenericEventKindTypeIF> eventKindTypeService) {
+      EventKindServiceIF eventKindService,
+      EventKindTypeServiceIF eventKindTypeService) {
     this.eventKindTypeService = eventKindTypeService;
     this.eventKindService = eventKindService;
   }

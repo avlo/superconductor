@@ -1,16 +1,14 @@
 package com.prosilion.superconductor.plugin.filter;
 
-import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import com.prosilion.nostr.filter.Filterable;
-import com.prosilion.nostr.event.GenericEventKindIF;
-
+import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import java.util.function.BiPredicate;
 
-public interface FilterPlugin<T extends Filterable, U extends GenericEventKindIF> {
+public interface FilterPlugin {
 
   String getCode();
 
-  default BiPredicate<T, AddNostrEvent<U>> getBiPredicate() {
+  default BiPredicate<Filterable, AddNostrEvent> getBiPredicate() {
     return (filterable, addNostrEvent) ->
         filterable.getPredicate().test(addNostrEvent.event());
   }

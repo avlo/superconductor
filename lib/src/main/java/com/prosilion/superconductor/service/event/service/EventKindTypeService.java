@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.event.service;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.enums.KindType;
+import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.superconductor.service.event.service.plugin.AbstractEventKindTypePluginIF;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindTypePluginIF;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EventKindTypeService implements EventKindTypeServiceIF {
-  private final Map<Kind, Map<KindType, AbstractEventKindTypePluginIF>> eventKindTypePluginsMap;
+  private final Map<Kind, Map<KindTypeIF, AbstractEventKindTypePluginIF>> eventKindTypePluginsMap;
 
   @Autowired
   public EventKindTypeService(List<EventKindTypePluginIF> eventKindTypePlugins) {
@@ -29,7 +29,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
 
   @Override
   public void processIncomingEvent(@NonNull GenericEventKindTypeIF event) {
-    Map<KindType, AbstractEventKindTypePluginIF> value = Optional.ofNullable(
+    Map<KindTypeIF, AbstractEventKindTypePluginIF> value = Optional.ofNullable(
         eventKindTypePluginsMap.get(event.getKind())).orElseThrow();
     AbstractEventKindTypePluginIF tuvAbstractEventTypePluginIF = Optional.ofNullable(value.get(event.getKindType())).orElseThrow();
     tuvAbstractEventTypePluginIF.processIncomingEvent(event);

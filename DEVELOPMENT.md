@@ -16,18 +16,18 @@
   - customization
 
 
-- Dependencies:
-  - Java 21
+### Dependencies:
+- Java 21 (or higher)
+- [nostr-java-core](https://github.com/avlo/nostr-java-core) (nostr events & tags, event messages, request messages & filters)
+  
+  #### Internal implementation (auto-imported):
   - Spring [Boot](https://spring.io/projects/spring-boot) 3.4.3
-  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)  3.4.3
-  - [nostr-java-core](https://github.com/avlo/nostr-java-core) (nostr events & tags, event messages, request messages & filters) 
-  - [SubDivisions](https://github.com/avlo/subdivisions) nostr-relay client
+  - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)
+  - Spring [WebFlux](https://docs.spring.io/spring-framework/reference/web/webflux.html) Reactive Web-Socket Client
 
-
-- Containerized deployment:
-  - [Docker](https://hub.docker.com/_/docker) 27.5.0
-  - [Docker Compose](https://docs.docker.com/compose/install/) v2.32.4
-
+### Containerized deployment:
+- [Docker](https://hub.docker.com/_/docker) 27.5.0
+- [Docker Compose](https://docs.docker.com/compose/install/) v2.32.4
 ----
 
 ### Requirements

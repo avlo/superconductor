@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.service;
 
-import com.prosilion.nostr.enums.KindType;
 import com.prosilion.nostr.enums.NostrException;
 import com.prosilion.nostr.event.BadgeAwardDownvoteEvent;
 import com.prosilion.nostr.event.BadgeAwardUpvoteEvent;
@@ -21,12 +20,12 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class EventKindTypeServiceIT {
   private final EventKindServiceIF<GenericEventKindIF> eventKindService;
-  private final EventKindTypeServiceIF<KindType, GenericEventKindTypeIF> eventKindTypeService;
+  private final EventKindTypeServiceIF<GenericEventKindTypeIF> eventKindTypeService;
 
   @Autowired
   public EventKindTypeServiceIT(
       EventKindServiceIF<GenericEventKindIF> eventKindService,
-      EventKindTypeServiceIF<KindType, GenericEventKindTypeIF> eventKindTypeService) {
+      EventKindTypeServiceIF<GenericEventKindTypeIF> eventKindTypeService) {
     this.eventKindTypeService = eventKindTypeService;
     this.eventKindService = eventKindService;
   }

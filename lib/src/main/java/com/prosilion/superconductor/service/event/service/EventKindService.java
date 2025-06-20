@@ -2,7 +2,6 @@ package com.prosilion.superconductor.service.event.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
-import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindPluginIF;
 import java.util.List;
 import java.util.Map;
@@ -15,20 +14,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EventKindService<T extends GenericEventKindIF> implements EventKindServiceIF<T> {
-  private final Map<Kind, EventKindPluginIF<T>> eventTypePluginsMap;
+  private final Map<Kind, EventKindPluginIF<T>> eventKindPluginsMap;
 
   @Autowired
-  public EventKindService(List<EventKindPluginIF<T>> eventTypePlugins) {
-    this.eventTypePluginsMap = eventTypePlugins.stream().collect(
+  public EventKindService(List<EventKindPluginIF<T>> eventKindPlugins) {
+    this.eventKindPluginsMap = eventKindPlugins.stream().collect(
         Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
   }
 
   @Override
   public void processIncomingEvent(@NonNull T event) {
     Optional.ofNullable(
-            eventTypePluginsMap.get(
+            eventKindPluginsMap.get(
                 event.getKind()))
         .orElse(
-            eventTypePluginsMap.get(Kind.TEXT_NOTE)).processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
+            eventKindPluginsMap.get(Kind.TEXT_NOTE)).processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
   }
 }

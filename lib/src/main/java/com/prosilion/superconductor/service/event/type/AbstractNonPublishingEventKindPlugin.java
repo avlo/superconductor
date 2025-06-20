@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
-public abstract class AbstractNonPublishingEventTypePlugin<T extends GenericEventKindIF> extends AbstractEventKindPlugin<T> {
-  public AbstractNonPublishingEventTypePlugin(@NonNull RedisCache<T> redisCache) {
+public abstract class AbstractNonPublishingEventKindPlugin<T extends GenericEventKindIF> extends AbstractEventKindPlugin<T> {
+  public AbstractNonPublishingEventKindPlugin(@NonNull RedisCache<T> redisCache) {
     super(redisCache);
   }
 

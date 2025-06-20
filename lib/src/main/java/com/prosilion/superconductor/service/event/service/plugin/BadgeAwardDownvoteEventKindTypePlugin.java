@@ -8,24 +8,21 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BadgeAwardUpvoteEventTypePlugin<
-    U extends Kind,
-    T extends GenericEventKindTypeIF>
-    implements AbstractEventTypePluginIF<U, KindType, T> {
-  private static final Log log = LogFactory.getLog(BadgeAwardUpvoteEventTypePlugin.class);
+public class BadgeAwardDownvoteEventKindTypePlugin<T extends GenericEventKindTypeIF> implements AbstractEventKindTypePluginIF<T> {
+  private static final Log log = LogFactory.getLog(BadgeAwardDownvoteEventKindTypePlugin.class);
 
   @Override
   public void processIncomingEvent(T event) {
-    log.debug(String.format("processing incoming UPVOTE EVENT: [%s]", event.getKind()));
+    log.debug(String.format("processing incoming DOWNVOTE EVENT: [%s]", event.getKind()));
   }
 
   @Override
-  public U getKind() {
-    return (U) Kind.BADGE_AWARD_EVENT;
+  public Kind getKind() {
+    return Kind.BADGE_AWARD_EVENT;
   }
 
   @Override
   public KindType getKindType() {
-    return KindType.UPVOTE;
+    return KindType.DOWNVOTE;
   }
 }

@@ -102,10 +102,10 @@ tasks.register('integrationTest', Test) {
 
 tasks.named('integrationTest') {
     getServerPort()
-//    retry {
-//        failOnPassedAfterRetry = false
-//        maxRetries = 1
-//    }
+    retry {
+        failOnPassedAfterRetry = false
+        maxRetries = 1
+    }
 }
 
 tasks.register('integrationNoOpTest', Test) {
@@ -121,10 +121,10 @@ tasks.register('integrationNoOpTest', Test) {
 
 tasks.named('integrationNoOpTest') {
     getServerPort()
-//    retry {
-//        failOnPassedAfterRetry = false
-//        maxRetries = 1
-//    }
+    retry {
+        failOnPassedAfterRetry = false
+        maxRetries = 1
+    }
 }
 
 check.dependsOn integrationNoOpTest

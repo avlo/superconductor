@@ -109,9 +109,9 @@ SUPERCONDUCTOR_HOME=<your_local_superconductor_home>
 ```
 for example:
 ```bash
-M2_NOSTR_JAVA_REPO=/home/nick/.m2/repository/com/prosilion
-NOSTR_JAVA_HOME=/home/nick/git/nostr-java-core
-SUPERCONDUCTOR_HOME=/home/nick/git/superconductor
+M2_NOSTR_JAVA_REPO=/home/<username>/.m2/repository/com/prosilion
+NOSTR_JAVA_HOME=/home/<username>/git/nostr-java-core
+SUPERCONDUCTOR_HOME=/home/<username>/git/superconductor
 ```
 #### 5.  Build application (both unit-test and integration-test included)
 ```bash

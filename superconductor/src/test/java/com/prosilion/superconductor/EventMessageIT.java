@@ -14,7 +14,7 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.dto.EventDto;
+import com.prosilion.superconductor.dto.GenericEventKindDto;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class EventMessageIT {
     BaseEvent event = new TextNoteEvent(identity, content);
     this.eventId = event.getId();
 
-    GenericEventKindIF genericEventDtoIF = new EventDto(event).convertBaseEventToDto();
+    GenericEventKindIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToGenericEventKindIF();
     EventMessage eventMessage = new EventMessage(genericEventDtoIF);
     assertTrue(
         this.nostrRelayService

@@ -19,7 +19,7 @@ public class CanonicalEventKindPlugin extends AbstractPublishingEventKindPlugin 
   }
 
   @Override
-  public void processIncomingPublishingEventType(@NonNull GenericEventKindIF event) {
+  public void processIncomingPublishingEventKind(@NonNull GenericEventKindIF event) {
     log.debug("processing incoming CANONICAL EVENT: [{}]", event);
 //    TODO: below necessary/useful?
 //    TextNoteEvent textNoteEvent = new TextNoteEvent(

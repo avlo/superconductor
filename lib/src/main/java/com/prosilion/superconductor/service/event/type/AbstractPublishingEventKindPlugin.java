@@ -3,15 +3,17 @@ package com.prosilion.superconductor.service.event.type;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.request.NotifierService;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Getter
+@Component
 public abstract class AbstractPublishingEventKindPlugin extends AbstractEventKindPlugin {
   private final NotifierService notifierService;
 
+  @Autowired
   public AbstractPublishingEventKindPlugin(
       @NonNull RedisCache redisCache,
       @NonNull NotifierService notifierService) {
@@ -20,9 +22,9 @@ public abstract class AbstractPublishingEventKindPlugin extends AbstractEventKin
   }
 
   public void processIncomingEvent(@NonNull GenericEventKindIF event) {
-    processIncomingPublishingEventType(event);
+    processIncomingPublishingEventKind(event);
     notifierService.nostrEventHandler(new AddNostrEvent(event));
   }
 
-  abstract public void processIncomingPublishingEventType(@NonNull GenericEventKindIF event);
+  abstract public void processIncomingPublishingEventKind(@NonNull GenericEventKindIF event);
 }

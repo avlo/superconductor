@@ -10,7 +10,7 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.dto.EventDto;
+import com.prosilion.superconductor.dto.GenericEventKindDto;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
 import java.security.NoSuchAlgorithmException;
@@ -48,7 +48,7 @@ public class FilterMatcherIT {
     Filters filters = new Filters(
         new AddressTagFilter(addressTag));
 
-    GenericEventKindIF event = new EventDto(new TextNoteEvent(identity, List.of(addressTag), "content")).convertBaseEventToDto();
+    GenericEventKindIF event = new GenericEventKindDto(new TextNoteEvent(identity, List.of(addressTag), "content")).convertBaseEventToGenericEventKindIF();
     AddNostrEvent one = new AddNostrEvent(event);
 
     Optional<AddNostrEvent> resultOne = filterMatcher.intersectFilterMatches(filters, one);
@@ -62,7 +62,7 @@ public class FilterMatcherIT {
     Filters filters2 = new Filters(
         new AddressTagFilter(addressTag2));
 
-    GenericEventKindIF event2 = new EventDto(new TextNoteEvent(identity, List.of(addressTag2), "content")).convertBaseEventToDto();
+    GenericEventKindIF event2 = new GenericEventKindDto(new TextNoteEvent(identity, List.of(addressTag2), "content")).convertBaseEventToGenericEventKindIF();
     AddNostrEvent two = new AddNostrEvent(event2);
 
     Optional<AddNostrEvent> resultTwo = filterMatcher.intersectFilterMatches(filters2, two);
@@ -76,7 +76,7 @@ public class FilterMatcherIT {
     Filters filters3 = new Filters(
         new AddressTagFilter(addressTag3));
 
-    GenericEventKindIF event3 = new EventDto(new TextNoteEvent(identity, List.of(addressTag3), "content")).convertBaseEventToDto();
+    GenericEventKindIF event3 = new GenericEventKindDto(new TextNoteEvent(identity, List.of(addressTag3), "content")).convertBaseEventToGenericEventKindIF();
     AddNostrEvent three = new AddNostrEvent(event3);
 
     Optional<AddNostrEvent> resultThree = filterMatcher.intersectFilterMatches(filters3, three);
@@ -90,7 +90,7 @@ public class FilterMatcherIT {
 
     AddressTag addressTag4 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-B"));
 
-    GenericEventKindIF event4 = new EventDto(new TextNoteEvent(identity, List.of(addressTag4), "content")).convertBaseEventToDto();
+    GenericEventKindIF event4 = new GenericEventKindDto(new TextNoteEvent(identity, List.of(addressTag4), "content")).convertBaseEventToGenericEventKindIF();
     AddNostrEvent four = new AddNostrEvent(event4);
     Optional<AddNostrEvent> resultFour = filterMatcher.intersectFilterMatches(filters3, four);
 

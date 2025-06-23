@@ -3,6 +3,7 @@ package com.prosilion.superconductor.service.event.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindPluginIF;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,5 +30,15 @@ public class EventKindService implements EventKindServiceIF {
                 event.getKind()))
         .orElse(
             eventKindPluginsMap.get(Kind.TEXT_NOTE)).processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
+  }
+
+  @Override
+  public Kind[] getKindArray() {
+    return eventKindPluginsMap.keySet().toArray(Kind[]::new);
+  }
+
+  @Override
+  public List<Kind> getKinds() {
+    return new ArrayList<>(eventKindPluginsMap.keySet());
   }
 }

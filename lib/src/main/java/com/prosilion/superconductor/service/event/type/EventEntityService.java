@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.dto.EventDto;
+import com.prosilion.superconductor.dto.GenericEventKindDto;
 import com.prosilion.superconductor.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import com.prosilion.superconductor.entity.EventEntity;
@@ -62,7 +62,7 @@ public class EventEntityService {
     try {
       EventEntity savedEntity = Optional.of(
           eventEntityRepository.save(
-              new EventDto(event).convertDtoToEntity())).orElseThrow(NoResultException::new);
+              new GenericEventKindDto(event).convertDtoToEntity())).orElseThrow(NoResultException::new);
       concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
       genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
       return savedEntity.getId();

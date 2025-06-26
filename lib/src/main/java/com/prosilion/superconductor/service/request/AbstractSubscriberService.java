@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent;

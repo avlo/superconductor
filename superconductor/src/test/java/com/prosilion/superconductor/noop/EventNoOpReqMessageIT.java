@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.noop;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.filter.Filters;

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;

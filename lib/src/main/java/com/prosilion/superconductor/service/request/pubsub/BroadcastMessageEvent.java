@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.request.pubsub;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.nostr.enums.NostrException;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.message.BaseMessage;
 import lombok.Getter;
 import org.springframework.lang.NonNull;

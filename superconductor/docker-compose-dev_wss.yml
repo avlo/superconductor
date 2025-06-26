@@ -22,7 +22,7 @@ services:
       timeout: 30s
   superconductor:
     container_name: superconductor-app
-    image: superconductor:1.14.1
+    image: superconductor:1.15.0
     ports:
       - "5555:5555"
       - "443:443"

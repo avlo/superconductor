@@ -27,7 +27,7 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 ----
 
 #### Download Superconductor Docker Image from [hub.docker](https://hub.docker.com/repository/docker/avlo/superconductor/tags)
-    $ docker pull avlo/superconductor:1.14.1
+    $ docker pull avlo/superconductor:1.15.0
 
 ----
 

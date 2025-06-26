@@ -233,13 +233,13 @@ run with docker logging displayed to console:
 ### 3.  Run locally as executable jar
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar superconductor/target/superconductor-1.14.1.war  
+    $ java -jar superconductor/target/superconductor-1.15.0.war  
 
 ----
 
 ### 4.  Run using pre-existing local application-server-container instance
 
-    $ cp <your_git_home_dir>/superconductor/superconductor/target/superconductor-1.14.1.war <your_container/instance/deployment_directory>
+    $ cp <your_git_home_dir>/superconductor/superconductor/target/superconductor-1.15.0.war <your_container/instance/deployment_directory>
 
 ----
 

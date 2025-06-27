@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.event.type;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindPluginIF;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public abstract class AbstractEventKindPlugin implements EventKindPluginIF {
+public abstract class AbstractEventKindPlugin<T extends Kind> implements EventKindPluginIF<T> {
   private final RedisCache redisCache;
 
   @Autowired

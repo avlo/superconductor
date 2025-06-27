@@ -4,8 +4,8 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import java.util.List;
 
-public interface EventKindServiceIF {
+public interface EventKindServiceIF<T extends Kind> {
   void processIncomingEvent(GenericEventKindIF event);
-  Kind[] getKindArray();
-  List<Kind> getKinds();
+  T[] getKindArray();
+  List<T> getKinds();
 }

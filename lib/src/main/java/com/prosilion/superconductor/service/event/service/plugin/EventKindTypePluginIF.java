@@ -5,8 +5,8 @@ import com.prosilion.nostr.enums.KindType;
 import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 
-public interface EventKindTypePluginIF {
+public interface EventKindTypePluginIF<T, U> {
   void processIncomingEvent(GenericEventKindTypeIF event);
-  Kind getKind();
-  KindTypeIF getKindType();
+  T getKind();
+  U getKindType();
 }

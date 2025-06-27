@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.event.type;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.request.NotifierService;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public abstract class AbstractPublishingEventKindPlugin extends AbstractEventKindPlugin {
+public abstract class AbstractPublishingEventKindPlugin<T extends Kind> extends AbstractEventKindPlugin<T> {
   private final NotifierService notifierService;
 
   @Autowired

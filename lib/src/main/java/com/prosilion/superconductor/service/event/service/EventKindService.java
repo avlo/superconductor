@@ -14,11 +14,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindService implements EventKindServiceIF {
-  private final Map<Kind, EventKindPluginIF> eventKindPluginsMap;
+public class EventKindService<T extends Kind> implements EventKindServiceIF<T> {
+  private final Map<T, EventKindPluginIF<T>> eventKindPluginsMap;
 
   @Autowired
-  public EventKindService(List<EventKindPluginIF> eventKindPlugins) {
+  public EventKindService(List<EventKindPluginIF<T>> eventKindPlugins) {
     this.eventKindPluginsMap = eventKindPlugins.stream().collect(
         Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
   }
@@ -33,12 +33,12 @@ public class EventKindService implements EventKindServiceIF {
   }
 
   @Override
-  public Kind[] getKindArray() {
-    return eventKindPluginsMap.keySet().toArray(Kind[]::new);
+  public T[] getKindArray() {
+    return (T[]) eventKindPluginsMap.keySet().toArray(Kind[]::new);
   }
 
   @Override
-  public List<Kind> getKinds() {
+  public List<T> getKinds() {
     return new ArrayList<>(eventKindPluginsMap.keySet());
   }
 }

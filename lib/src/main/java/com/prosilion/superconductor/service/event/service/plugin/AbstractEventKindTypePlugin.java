@@ -1,5 +1,7 @@
 package com.prosilion.superconductor.service.event.service.plugin;
 
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.superconductor.service.event.type.AbstractEventKindPlugin;
@@ -8,11 +10,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
-public abstract class AbstractEventKindTypePlugin implements EventKindTypePluginIF {
-  private final AbstractEventKindPlugin abstractEventKindPlugin;
+public abstract class AbstractEventKindTypePlugin<T extends Kind, U extends KindTypeIF> implements EventKindTypePluginIF<T, U> {
+  private final AbstractEventKindPlugin<T> abstractEventKindPlugin;
 
   @Autowired
-  public AbstractEventKindTypePlugin(AbstractEventKindPlugin abstractEventKindPlugin) {
+  public AbstractEventKindTypePlugin(AbstractEventKindPlugin<T> abstractEventKindPlugin) {
     this.abstractEventKindPlugin = abstractEventKindPlugin;
   }
 
@@ -25,7 +27,7 @@ public abstract class AbstractEventKindTypePlugin implements EventKindTypePlugin
     abstractEventKindPlugin.save(event);
   }
 
-  public AbstractEventKindPlugin getAbstractEventKindPlugin() {
+  public AbstractEventKindPlugin<T> getAbstractEventKindPlugin() {
     return abstractEventKindPlugin;
   }
 }

@@ -18,39 +18,39 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindTypeService implements EventKindTypeServiceIF {
-  private final Map<Kind, Map<KindTypeIF, AbstractEventKindTypePlugin>> eventKindTypePluginsMap;
+public class EventKindTypeService<T extends Kind, U extends KindTypeIF> implements EventKindTypeServiceIF<T, U> {
+  private final Map<T, Map<U, AbstractEventKindTypePlugin<T, U>>> eventKindTypePluginsMap;
 
   @Autowired
-  public EventKindTypeService(List<EventKindTypePluginIF> eventKindTypePlugins) {
+  public EventKindTypeService(List<EventKindTypePluginIF<T, U>> eventKindTypePlugins) {
     eventKindTypePluginsMap = eventKindTypePlugins.stream()
         .filter(AbstractEventKindTypePlugin.class::isInstance)
-        .map(eventKindTypePlugin -> (AbstractEventKindTypePlugin) eventKindTypePlugin)
+        .map(eventKindTypePlugin -> (AbstractEventKindTypePlugin<T, U>) eventKindTypePlugin)
         .collect(Collectors.groupingBy(AbstractEventKindTypePlugin::getKind, Collectors.toMap(
             AbstractEventKindTypePlugin::getKindType, Function.identity())));
   }
 
   @Override
   public void processIncomingKindTypeEvent(@NonNull GenericEventKindTypeIF event) {
-    Map<KindTypeIF, AbstractEventKindTypePlugin> value = Optional.ofNullable(
+    Map<U, AbstractEventKindTypePlugin<T, U>> value = Optional.ofNullable(
         eventKindTypePluginsMap.get(event.getKind())).orElseThrow();
-    List<KindTypeIF> definedKindTypes = event.getDefinedKindTypes();
-    AbstractEventKindTypePlugin abstractEventKindTypePluginIF = definedKindTypes.stream().map(value::get).findFirst().orElseThrow();
+    List<U> definedKindTypes = (List<U>) event.getDefinedKindTypes();
+    AbstractEventKindTypePlugin<T, U> abstractEventKindTypePluginIF = definedKindTypes.stream().map(value::get).findFirst().orElseThrow();
     abstractEventKindTypePluginIF.processIncomingEvent(event);
   }
 
   @Override
-  public KindTypeIF[] getKindTypesArray() {
+  public U[] getKindTypesArray() {
     KindTypeIF[] array = eventKindTypePluginsMap.values().stream()
         .map(Map::keySet)
         .flatMap(Collection::stream)
         .toArray(KindTypeIF[]::new);
-    return array;
+    return (U[]) array;
   }
 
   @Override
-  public List<KindTypeIF> getKindTypes() {
-    List<KindTypeIF> list = eventKindTypePluginsMap.values().stream()
+  public List<U> getKindTypes() {
+    List<U> list = eventKindTypePluginsMap.values().stream()
         .map(Map::keySet)
         .flatMap(Collection::stream)
         .collect(Collectors.toList());
@@ -64,12 +64,12 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
   }
 
   @Override
-  public Kind[] getKindArray() {
-    return eventKindTypePluginsMap.keySet().toArray(Kind[]::new);
+  public T[] getKindArray() {
+    return (T[]) eventKindTypePluginsMap.keySet().toArray(Kind[]::new);
   }
 
   @Override
-  public List<Kind> getKinds() {
+  public List<T> getKinds() {
     return new ArrayList<>(eventKindTypePluginsMap.keySet());
   }
 }

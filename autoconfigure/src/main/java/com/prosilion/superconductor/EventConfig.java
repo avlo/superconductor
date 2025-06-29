@@ -14,6 +14,8 @@ import org.springframework.lang.NonNull;
 public class EventConfig {
 
   @Bean
+//      TODO: conditional missing bean below needs review
+//  @ConditionalOnMissingBean
   EventKindPluginIF<Kind> textNoteEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventPluginIF eventPlugin) {

@@ -2,8 +2,6 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
-import com.prosilion.nostr.event.GenericEventKindIF;
-import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.service.event.service.EventKindTypeServiceIF;
@@ -24,34 +22,15 @@ public class EventService implements EventServiceIF {
     this.eventKindTypeService = eventKindTypeService;
   }
 
-  //  TODO: stream variant, check works proper and replace OG
-//  public void processIncomingEventRxR(@NonNull EventMessage eventMessage) {
-//    log.debug("processing incoming TEXT_NOTE: [{}]", eventMessage);
-//    KindType[] kindTypes = KindTypeIF.kindTypes;
-//    Kind kind = eventMessage.getEvent().getKind();
-//
-//    Stream.of(kindTypes)
-//        .map(KindType::getKind)
-//        .filter(kind::equals)
-//        .findFirst()
-//        .ifPresentOrElse(
-//            kindType ->
-//                eventKindTypeService.processIncomingKindTypeEvent((GenericEventKindTypeIF) eventMessage.getEvent()),
-//            () ->
-//                eventKindService.processIncomingEvent(eventMessage.getEvent()));
-//  }
-
   @Override
   public void processIncomingEvent(@NonNull EventMessage eventMessage) {
     log.debug("processing incoming TEXT_NOTE: [{}]", eventMessage);
 
-    if (eventKindService.getKinds().stream().anyMatch(eventMessage.getEvent().getKind()::equals)) {
-      eventKindService.processIncomingEvent(eventMessage.getEvent());
+    if (eventKindTypeService.getKinds().stream().anyMatch(eventMessage.getEvent().getKind()::equals)) {
+      eventKindTypeService.processIncomingEvent(eventMessage.getEvent());
       return;
     }
 
-    GenericEventKindIF genericEventKindIF = eventMessage.getEvent();
-    GenericEventKindTypeIF genericEventKindType = (GenericEventKindTypeIF) genericEventKindIF;
-    eventKindTypeService.processIncomingEvent(genericEventKindType);
+    eventKindService.processIncomingEvent(eventMessage.getEvent());
   }
 }

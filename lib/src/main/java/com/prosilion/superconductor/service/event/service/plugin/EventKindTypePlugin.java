@@ -4,7 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
-import lombok.Getter;
+import com.prosilion.superconductor.service.event.type.EventPluginIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -12,18 +12,18 @@ import org.springframework.lang.NonNull;
 // DECORATOR BASE
 public class EventKindTypePlugin implements EventKindTypePluginIF<KindTypeIF> {
   private final KindTypeIF kindType;
+  private final EventPluginIF eventPlugin;
 
-  private final EventKindPluginIF<Kind> eventKindPlugin;
   public EventKindTypePlugin(
       @NonNull KindTypeIF kindType,
-      @NonNull EventKindPluginIF<Kind> eventKindPlugin) {
+      @NonNull EventPluginIF eventPlugin) {
     this.kindType = kindType;
-    this.eventKindPlugin = eventKindPlugin;
+    this.eventPlugin = eventPlugin;
   }
 
   @Override
   public Kind getKind() {
-    return eventKindPlugin.getKind();
+    return kindType.getKind();
   }
 
   @Override
@@ -33,11 +33,11 @@ public class EventKindTypePlugin implements EventKindTypePluginIF<KindTypeIF> {
 
   @Override
   public void processIncomingEvent(GenericEventKindTypeIF event) {
-    eventKindPlugin.processIncomingEvent(event);
+    eventPlugin.processIncomingEvent(event);
   }
 
   @Override
   public void processIncomingEvent(GenericEventKindIF event) {
-    eventKindPlugin.processIncomingEvent(event);
+    eventPlugin.processIncomingEvent(event);
   }
 }

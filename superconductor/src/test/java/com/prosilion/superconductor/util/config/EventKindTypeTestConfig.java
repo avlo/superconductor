@@ -13,6 +13,7 @@ import com.prosilion.superconductor.util.BadgeAwardEventKindTypePlugin;
 import com.prosilion.superconductor.util.TestKindType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.lang.NonNull;
 
 @Configuration
@@ -30,7 +31,6 @@ public class EventKindTypeTestConfig {
   }
 
   @Bean
-//  @ConditionalOnMissingBean
   EventKindTypePluginIF<KindTypeIF> badgeAwardUpvoteEventKindTypePlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventPluginIF eventPlugin) {
@@ -38,8 +38,6 @@ public class EventKindTypeTestConfig {
         notifierService,
         new EventKindTypePlugin(
             TestKindType.UPVOTE,
-            new EventKindPlugin(
-                Kind.BADGE_AWARD_EVENT,
-                eventPlugin)));
+            eventPlugin));
   }
 }

@@ -6,9 +6,8 @@ import com.prosilion.nostr.event.GenericEventKindType;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.user.Signature;
 import com.prosilion.superconductor.entity.EventEntity;
-import java.util.List;
 
-public record GenericEventKindTypeDto(BaseEvent event, List<KindTypeIF> kindTypes) {
+public record GenericEventKindTypeDto(BaseEvent event, KindTypeIF kindType) {
 
   public EventEntity convertDtoToEntity() {
     return new EventEntity(
@@ -29,6 +28,6 @@ public record GenericEventKindTypeDto(BaseEvent event, List<KindTypeIF> kindType
         event.getTags(),
         event.getContent(),
         Signature.fromString(event.getSignature()),
-        kindTypes);
+        kindType);
   }
 }

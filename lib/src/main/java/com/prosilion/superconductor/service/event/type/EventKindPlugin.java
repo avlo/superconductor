@@ -13,7 +13,7 @@ public class EventKindPlugin implements EventKindPluginIF<Kind> {
   @Getter
   private final Kind kind;
   private final EventPluginIF eventPlugin;
-
+  
   public EventKindPlugin(@NonNull Kind kind, @NonNull EventPluginIF eventPlugin) {
     this.kind = kind;
     this.eventPlugin = eventPlugin;

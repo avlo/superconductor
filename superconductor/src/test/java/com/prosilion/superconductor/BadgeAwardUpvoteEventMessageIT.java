@@ -56,7 +56,7 @@ public class BadgeAwardUpvoteEventMessageIT {
             new BadgeAwardUpvoteEvent(
                 authorIdentity,
                 upvotedUserPubKey),
-            List.of(TestKindType.values()))
+            TestKindType.UPVOTE)
             .convertBaseEventToGenericEventKindTypeIF();
 
     eventId = upvoteEvent.getId();

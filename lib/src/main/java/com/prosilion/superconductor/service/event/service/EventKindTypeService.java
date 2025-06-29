@@ -3,13 +3,15 @@ package com.prosilion.superconductor.service.event.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.GenericEventKindType;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
+import com.prosilion.nostr.filter.Filterable;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindTypePlugin;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindTypePluginIF;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +33,23 @@ public class EventKindTypeService implements EventKindTypeServiceIF<KindTypeIF> 
 
   @Override
   public void processIncomingEvent(GenericEventKindIF event) {
-    throw new UnsupportedOperationException("shouldn't be here");
-//    processIncomingKindTypeEvent(event);
+    processIncomingEvent(
+        new GenericEventKindType(
+            event.getId(),
+            event.getPublicKey(),
+            event.getCreatedAt(),
+            event.getKind(),
+            event.getTags(),
+            event.getContent(),
+            event.getSignature(),
+            getKindType(event)));
   }
 
   @Override
   public void processIncomingEvent(@NonNull GenericEventKindTypeIF event) {
-    event.getDefinedKindTypes().stream()
-        .map(Optional.ofNullable(
-            eventKindTypePluginsMap.get(
-                event.getKind())).orElseThrow()::get)
-        .findFirst().orElseThrow()
+    eventKindTypePluginsMap
+        .get(event.getKind())
+        .get(event.getKindType())
         .processIncomingEvent(event);
   }
 
@@ -56,5 +64,14 @@ public class EventKindTypeService implements EventKindTypeServiceIF<KindTypeIF> 
   @Override
   public final List<Kind> getKinds() {
     return List.copyOf(eventKindTypePluginsMap.keySet());
+  }
+
+  private KindTypeIF getKindType(GenericEventKindIF event) {
+    return getKindTypes().stream().filter(kindTypeIF ->
+        kindTypeIF.getName().equals(Filterable.getTypeSpecificTags(AddressTag.class, event)
+            .stream()
+            .findFirst()
+            .map(AddressTag::getIdentifierTag).orElseThrow()
+            .getUuid())).findFirst().orElseThrow();
   }
 }

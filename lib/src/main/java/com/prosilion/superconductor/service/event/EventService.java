@@ -2,11 +2,11 @@ package com.prosilion.superconductor.service.event;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.service.event.service.EventKindTypeServiceIF;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class EventService implements EventServiceIF {
-  private final EventKindServiceIF eventKindService;
-  private final EventKindTypeServiceIF eventKindTypeService;
+  private final EventKindServiceIF<Kind> eventKindService;
+  private final EventKindTypeServiceIF<KindTypeIF> eventKindTypeService;
 
   @Autowired
-  public EventService(@NonNull EventKindServiceIF eventKindService, @NonNull EventKindTypeServiceIF eventKindTypeService) {
+  public EventService(@NonNull EventKindServiceIF<Kind> eventKindService, @NonNull EventKindTypeServiceIF<KindTypeIF> eventKindTypeService) {
     this.eventKindService = eventKindService;
     this.eventKindTypeService = eventKindTypeService;
   }
@@ -45,19 +45,13 @@ public class EventService implements EventServiceIF {
   public void processIncomingEvent(@NonNull EventMessage eventMessage) {
     log.debug("processing incoming TEXT_NOTE: [{}]", eventMessage);
 
-    Kind[] kindArray = eventKindTypeService.getKindArray();
-    List<Kind> kindList = eventKindTypeService.getKinds();
-
-    Kind eventMessageKind = eventMessage.getEvent().getKind();
-
-    if (kindList.stream().noneMatch(eventMessageKind::equals)) {
+    if (eventKindService.getKinds().stream().anyMatch(eventMessage.getEvent().getKind()::equals)) {
       eventKindService.processIncomingEvent(eventMessage.getEvent());
       return;
     }
 
-    KindTypeIF[] kindTypesArray = eventKindTypeService.getKindTypesArray();
-    List<KindTypeIF> kindTypesList = eventKindTypeService.getKindTypes();
-
-    eventKindTypeService.processIncomingKindTypeEvent((GenericEventKindTypeIF) eventMessage.getEvent());
+    GenericEventKindIF genericEventKindIF = eventMessage.getEvent();
+    GenericEventKindTypeIF genericEventKindType = (GenericEventKindTypeIF) genericEventKindIF;
+    eventKindTypeService.processIncomingEvent(genericEventKindType);
   }
 }

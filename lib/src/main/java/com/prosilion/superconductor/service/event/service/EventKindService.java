@@ -4,6 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindPluginIF;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,11 +15,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindService<T extends Kind> implements EventKindServiceIF<T> {
-  private final Map<T, EventKindPluginIF<T>> eventKindPluginsMap;
+public class EventKindService implements EventKindServiceIF<Kind> {
+  private final Map<Kind, EventKindPluginIF<Kind>> eventKindPluginsMap;
 
   @Autowired
-  public EventKindService(List<EventKindPluginIF<T>> eventKindPlugins) {
+  public EventKindService(List<EventKindPluginIF<Kind>> eventKindPlugins) {
     this.eventKindPluginsMap = eventKindPlugins.stream().collect(
         Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
   }
@@ -33,12 +34,7 @@ public class EventKindService<T extends Kind> implements EventKindServiceIF<T> {
   }
 
   @Override
-  public T[] getKindArray() {
-    return (T[]) eventKindPluginsMap.keySet().toArray(Kind[]::new);
-  }
-
-  @Override
-  public List<T> getKinds() {
-    return new ArrayList<>(eventKindPluginsMap.keySet());
+  public final List<Kind> getKinds() {
+    return List.copyOf(eventKindPluginsMap.keySet());
   }
 }

@@ -2,10 +2,12 @@ package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.ClassifiedListingEvent;
 import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.GenericEventKindIF;
-import com.prosilion.nostr.event.TextNoteEvent;
+import com.prosilion.nostr.event.internal.ClassifiedListing;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
 import com.prosilion.nostr.filter.event.EventFilter;
@@ -13,12 +15,22 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.GeohashTag;
+import com.prosilion.nostr.tag.HashtagTag;
+import com.prosilion.nostr.tag.PriceTag;
+import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.dto.GenericEventKindDto;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -34,8 +46,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class EventMessageIT {
+public class ClassifiedListingEventMessageIT {
   private final NostrRelayService nostrRelayService;
+  public final PublicKey senderPubkey;
+
+  public static final String PTAG_HEX = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76985";
+  public static final String ETAG_HEX = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4347";
+
+  public static final PubKeyTag P_TAG = new PubKeyTag(new PublicKey(PTAG_HEX));
+  public static final EventTag E_TAG = new EventTag(ETAG_HEX);
+
+  public static final String SUBJECT = "Classified Listing Test Subject Tag";
+  public static final SubjectTag SUBJECT_TAG = new SubjectTag(SUBJECT);
+  public static final GeohashTag G_TAG = new GeohashTag("Classified Listing Test Geohash Tag");
+  public static final HashtagTag T_TAG = new HashtagTag("Classified Listing Test Hashtag Tag");
+
+  public static final BigDecimal NUMBER = new BigDecimal("2.71");
+  public static final String FREQUENCY = "NANOSECOND";
+  public static final String CURRENCY = "BTC";
+  public static final PriceTag PRICE_TAG = new PriceTag(NUMBER, CURRENCY, FREQUENCY);
+
+  public static final String CLASSIFIED_LISTING_TITLE = "classified listing title";
+  public static final String CLASSIFIED_LISTING_SUMMARY = "classified listing summary";
+  public static final String CLASSIFIED_LISTING_LOCATION = "classified listing location";
 
   private final static Identity identity = Identity.generateRandomIdentity();
   private final String eventId;
@@ -43,11 +76,23 @@ public class EventMessageIT {
   private final String content;
 
   @Autowired
-  EventMessageIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
+  ClassifiedListingEventMessageIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
     this.content = Factory.lorumIpsum(getClass());
 
-    BaseEvent event = new TextNoteEvent(identity, content);
+    senderPubkey = new PublicKey(identity.getPublicKey().toString());
+
+    List<BaseTag> tags = new ArrayList<>();
+    tags.add(E_TAG);
+    tags.add(P_TAG);
+    tags.add(SUBJECT_TAG);
+    tags.add(G_TAG);
+    tags.add(T_TAG);
+
+    ClassifiedListing classifiedListing = new ClassifiedListing(
+        CLASSIFIED_LISTING_TITLE, CLASSIFIED_LISTING_SUMMARY, PRICE_TAG, CLASSIFIED_LISTING_LOCATION);
+
+    BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, classifiedListing, tags, content);
     this.eventId = event.getId();
 
     GenericEventKindIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToGenericEventKindIF();

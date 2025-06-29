@@ -18,11 +18,13 @@ public class BadgeAwardEventKindTypePlugin extends PublishingEventKindTypePlugin
     super(notifierService, eventKindTypePlugin);
   }
 
+//  TODO: below may/should be superfluous
   @Override
   public void processIncomingEvent(@NonNull GenericEventKindIF event) {
     super.processIncomingEvent(event);
   }
 
+  //  TODO: below may/should be superfluous  
   @Override
   public void processIncomingEvent(@NonNull GenericEventKindTypeIF event) {
     super.processIncomingEvent(event);

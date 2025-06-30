@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class EventService implements EventServiceIF {
-  private final EventKindServiceIF<Kind> eventKindService;
-  private final EventKindTypeServiceIF<KindTypeIF> eventKindTypeService;
+  private final EventKindServiceIF eventKindService;
+  private final EventKindTypeServiceIF eventKindTypeService;
 
   @Autowired
-  public EventService(@NonNull EventKindServiceIF<Kind> eventKindService, @NonNull EventKindTypeServiceIF<KindTypeIF> eventKindTypeService) {
+  public EventService(@NonNull EventKindServiceIF eventKindService, @NonNull EventKindTypeServiceIF eventKindTypeService) {
     this.eventKindService = eventKindService;
     this.eventKindTypeService = eventKindTypeService;
   }

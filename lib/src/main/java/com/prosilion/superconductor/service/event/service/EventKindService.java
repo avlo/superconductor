@@ -15,7 +15,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindService implements EventKindServiceIF<Kind> {
+public class EventKindService implements EventKindServiceIF {
   private final Map<Kind, EventKindPluginIF<Kind>> eventKindPluginsMap;
 
   @Autowired

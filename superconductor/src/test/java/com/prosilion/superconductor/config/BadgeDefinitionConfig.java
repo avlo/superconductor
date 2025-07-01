@@ -3,7 +3,6 @@ package com.prosilion.superconductor.config;
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +18,7 @@ public class BadgeDefinitionConfig {
   }
 
   @Bean
-  BadgeDefinitionEvent upvoteBadgeDefinitionEvent(@NonNull Identity superconductorInstanceIdentity) throws NoSuchAlgorithmException, IOException {
+  BadgeDefinitionEvent upvoteBadgeDefinitionEvent(@NonNull Identity superconductorInstanceIdentity) throws NoSuchAlgorithmException {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag("UPVOTE"),
@@ -27,7 +26,7 @@ public class BadgeDefinitionConfig {
   }
 
   @Bean
-  BadgeDefinitionEvent downvoteBadgeDefinitionEvent(@NonNull Identity superconductorInstanceIdentity) throws NoSuchAlgorithmException, IOException {
+  BadgeDefinitionEvent downvoteBadgeDefinitionEvent(@NonNull Identity superconductorInstanceIdentity) throws NoSuchAlgorithmException {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag("DOWNVOTE"),

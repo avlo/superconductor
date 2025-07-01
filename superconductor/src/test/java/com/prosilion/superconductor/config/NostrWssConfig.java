@@ -1,9 +1,11 @@
-package com.prosilion.superconductor.util.config;
+package com.prosilion.superconductor.config;
 
 import com.prosilion.superconductor.util.NostrRelayService;
+import org.springframework.lang.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -15,12 +17,15 @@ import java.util.concurrent.ExecutionException;
 @Configuration
 @ConditionalOnProperty(
     name = "server.ssl.enabled",
-    havingValue = "false")
-public class NostrWsConfig {
+    havingValue = "true")
+public class NostrWssConfig {
 
   @Bean
   @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-  public NostrRelayService nostrRelayService(@Value("${superconductor.relay.url}") String relayUri) throws ExecutionException, InterruptedException {
-    return new NostrRelayService(relayUri);
+  public NostrRelayService nostrRelayService(
+      @NonNull @Value("${superconductor.relay.url}") String relayUri,
+      @NonNull SslBundles sslBundles
+  ) throws ExecutionException, InterruptedException {
+    return new NostrRelayService(relayUri, sslBundles);
   }
 }

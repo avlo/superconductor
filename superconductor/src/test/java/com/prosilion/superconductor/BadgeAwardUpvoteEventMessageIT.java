@@ -2,6 +2,7 @@ package com.prosilion.superconductor;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.filter.Filterable;
@@ -17,6 +18,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.dto.GenericEventKindDto;
 import com.prosilion.superconductor.dto.GenericEventKindTypeDto;
 import com.prosilion.superconductor.util.BadgeAwardUpvoteEvent;
 import com.prosilion.superconductor.util.Factory;
@@ -42,20 +44,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BadgeAwardUpvoteEventMessageIT {
   private final NostrRelayService nostrRelayService;
 
-  private final static Identity authorIdentity = Identity.generateRandomIdentity();
+  private final Identity authorIdentity = Identity.generateRandomIdentity();
   private final PublicKey upvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
+  private final Identity superconductorInstanceIdentity;
 
   private final String eventId;
 
   @Autowired
-  BadgeAwardUpvoteEventMessageIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
+  BadgeAwardUpvoteEventMessageIT(
+      @NonNull NostrRelayService nostrRelayService,
+      @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
+      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
+    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
+
+    assertTrue(
+        this.nostrRelayService
+            .send(
+                new EventMessage(
+                    new GenericEventKindDto(
+                        upvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF()))
+            .getFlag());
 
     GenericEventKindTypeIF upvoteEvent =
         new GenericEventKindTypeDto(
             new BadgeAwardUpvoteEvent(
                 authorIdentity,
-                upvotedUserPubKey),
+                upvotedUserPubKey,
+                upvoteBadgeDefinitionEvent),
             TestKindType.UPVOTE)
             .convertBaseEventToGenericEventKindTypeIF();
 
@@ -86,7 +102,7 @@ public class BadgeAwardUpvoteEventMessageIT {
                     new AddressTagFilter(
                         new AddressTag(
                             Kind.BADGE_DEFINITION_EVENT,
-                            authorIdentity.getPublicKey(),
+                            superconductorInstanceIdentity.getPublicKey(),
                             new IdentifierTag(
                                 TestKindType.UPVOTE.getName())))))));
 

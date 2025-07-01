@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.util.config;
+package com.prosilion.superconductor.config;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;

@@ -1,4 +1,4 @@
 com.prosilion.superconductor.service.message.event.config.EventMessageServiceConfig
+com.prosilion.superconductor.service.message.event.config.EventKindServiceConfig
 com.prosilion.superconductor.service.message.req.config.ReqMessageServiceConfig
 com.prosilion.superconductor.service.message.req.config.ReqServiceConfig
-com.prosilion.superconductor.service.message.event.config.EventServiceConfig

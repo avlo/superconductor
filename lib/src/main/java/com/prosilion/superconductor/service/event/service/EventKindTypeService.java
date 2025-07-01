@@ -14,15 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
-@Service
 public class EventKindTypeService implements EventKindTypeServiceIF {
   private final Map<Kind, Map<KindTypeIF, EventKindTypePlugin>> eventKindTypePluginsMap;
 
-  @Autowired
   public EventKindTypeService(List<EventKindTypePluginIF<KindTypeIF>> eventKindTypePlugins) {
     eventKindTypePluginsMap = eventKindTypePlugins.stream()
         .filter(EventKindTypePlugin.class::isInstance)

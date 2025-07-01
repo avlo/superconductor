@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.service.message.req;
 
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.service.request.ReqServiceIF;
@@ -22,7 +23,7 @@ public class ReqMessageService implements ReqMessageServiceIF {
   public void processIncoming(@NonNull ReqMessage reqMessage, @NonNull String sessionId) {
     try {
       reqService.processIncoming(reqMessage, sessionId);
-    } catch (EmptyFiltersException e) {
+    } catch (NostrException e) {
       clientResponseService.processNoticeClientResponse(reqMessage, sessionId, e.getMessage(), true);
     }
   }

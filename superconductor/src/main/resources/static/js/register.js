@@ -20,6 +20,7 @@ function hashThenSendRegister() {
     createDigest(text).then((hash) => sendContentRegister(hash));
 }
 
+// TODO: fix signature
 function replaceHashRegister(id_hash) {
     return "["
         + "\"AUTH\","

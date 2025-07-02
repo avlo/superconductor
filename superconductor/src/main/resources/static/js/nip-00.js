@@ -18,6 +18,7 @@ function hashThenSend00() {
     createDigest(text).then((hash) => sendContent00(hash));
 }
 
+// TODO: fix signature
 function replaceHash00(id_hash) {
     return "["
         + "\"EVENT\","

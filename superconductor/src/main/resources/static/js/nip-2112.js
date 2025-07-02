@@ -6,7 +6,7 @@ function generate2112TypeScriptEvent() {
     let voteSelection = $("#2112-content").val();
     
     const tags = [
-        ['a', '30009:2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984:' + voteSelection],
+        ['a', '30009:e04e1c1c30df6058433f61681644fd24914f2e02e420496086c61f53eb504c04:' + voteSelection],
     ];
     
     let voteIntegerAsString = voteSelection === 'UPVOTE' ? '1' : '-1'; 

@@ -1,7 +1,9 @@
 package com.prosilion.superconductor.service.message.event.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.RelaysTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.dto.GenericEventKindDto;
 import com.prosilion.superconductor.service.event.type.EventPluginIF;
@@ -17,6 +19,12 @@ public class BadgeDefinitionConfig {
 
   @Bean
   @ConditionalOnMissingBean
+  String superconductorRelayUrl(@NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl) {
+    return superconductorRelayUrl;
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   Identity superconductorInstanceIdentity(@NonNull @Value("${superconductor.key.private}") String privateKey) {
     return Identity.create(privateKey);
   }
@@ -24,11 +32,13 @@ public class BadgeDefinitionConfig {
   @Bean
   BadgeDefinitionEvent upvoteBadgeDefinitionEvent(
       @NonNull EventPluginIF eventPlugin,
-      @NonNull Identity superconductorInstanceIdentity) throws NoSuchAlgorithmException {
+      @NonNull Identity superconductorInstanceIdentity,
+      @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
 
     BadgeDefinitionEvent upvateBadgeDefinitionEvent = new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag("UPVOTE"),
+        new RelaysTag(new Relay(superconductorRelayUrl)),
         "1");
 
     eventPlugin.processIncomingEvent(
@@ -40,11 +50,13 @@ public class BadgeDefinitionConfig {
   @Bean
   BadgeDefinitionEvent downvoteBadgeDefinitionEvent(
       @NonNull EventPluginIF eventPlugin,
-      @NonNull Identity superconductorInstanceIdentity) throws NoSuchAlgorithmException {
+      @NonNull Identity superconductorInstanceIdentity,
+      @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
 
     BadgeDefinitionEvent badgeDefinitionEvent = new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag("DOWNVOTE"),
+        new RelaysTag(new Relay(superconductorRelayUrl)),
         "-1");
 
     eventPlugin.processIncomingEvent(

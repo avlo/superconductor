@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;

@@ -84,7 +84,7 @@ tasks.named('test') {
 
 test {
     filter {
-        excludeTestsMatching("*IT");
+        excludeTestsMatching("*IT")
     }
 }
 
@@ -94,18 +94,18 @@ tasks.register('integrationTest', Test) {
     systemProperty("spring.profiles.active", "test")
     useJUnitPlatform()
     filter {
-        excludeTestsMatching("*Test");
-        includeTestsMatching("*IT");
-        excludeTestsMatching("*NoOp*IT");
+        excludeTestsMatching("*Test")
+        includeTestsMatching("*IT")
+        excludeTestsMatching("*NoOp*IT")
     }
 }
 
 tasks.named('integrationTest') {
     getServerPort()
-//    retry {
-//        failOnPassedAfterRetry = false
-//        maxRetries = 1
-//    }
+    retry {
+        failOnPassedAfterRetry = false
+        maxRetries = 1
+    }
 }
 
 tasks.register('integrationNoOpTest', Test) {
@@ -114,17 +114,17 @@ tasks.register('integrationNoOpTest', Test) {
     systemProperty("spring.profiles.active", "testnoop")
     useJUnitPlatform()
     filter {
-        includeTestsMatching("EventNoOpReqMessageIT");
-        includeTestsMatching("EventNoOpMessageIT");
+        includeTestsMatching("EventNoOpReqMessageIT")
+        includeTestsMatching("EventNoOpMessageIT")
     }
 }
 
 tasks.named('integrationNoOpTest') {
     getServerPort()
-//    retry {
-//        failOnPassedAfterRetry = false
-//        maxRetries = 1
-//    }
+    retry {
+        failOnPassedAfterRetry = false
+        maxRetries = 1
+    }
 }
 
 check.dependsOn integrationNoOpTest

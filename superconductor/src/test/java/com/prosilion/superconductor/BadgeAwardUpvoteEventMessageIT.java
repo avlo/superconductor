@@ -18,7 +18,6 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.dto.GenericEventKindDto;
 import com.prosilion.superconductor.dto.GenericEventKindTypeDto;
 import com.prosilion.superconductor.util.BadgeAwardUpvoteEvent;
 import com.prosilion.superconductor.util.Factory;
@@ -57,14 +56,6 @@ public class BadgeAwardUpvoteEventMessageIT {
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
-
-    assertTrue(
-        this.nostrRelayService
-            .send(
-                new EventMessage(
-                    new GenericEventKindDto(
-                        upvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF()))
-            .getFlag());
 
     GenericEventKindTypeIF upvoteEvent =
         new GenericEventKindTypeDto(

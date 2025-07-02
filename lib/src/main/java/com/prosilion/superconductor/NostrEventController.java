@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,9 +50,9 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
 
   @Autowired
   public NostrEventController(
-      List<MessageServiceIF<T>> messageServices,
-      RelayInfoDocService relayInfoDocService,
-      ApplicationEventPublisher publisher) {
+      @NonNull List<MessageServiceIF<T>> messageServices,
+      @NonNull RelayInfoDocService relayInfoDocService,
+      @NonNull ApplicationEventPublisher publisher) {
     this.messageServiceMap = messageServices.stream().collect(
         Collectors.toMap(
             MessageServiceIF<T>::getCommand,

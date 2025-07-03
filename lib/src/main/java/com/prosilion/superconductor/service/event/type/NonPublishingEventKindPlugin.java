@@ -7,18 +7,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-// DECORATOR 
-public class NonPublishingEventKindPlugin extends EventKindPlugin {
-  
+// our CarDecorator for NonPublishingEventKind hierarchy
+public class NonPublishingEventKindPlugin implements EventKindPluginIF<Kind> {
+  private final EventKindPluginIF<Kind> eventKindPlugin;
+
   public NonPublishingEventKindPlugin(@NonNull EventKindPluginIF<Kind> eventKindPlugin) {
-    super(eventKindPlugin.getKind(), eventKindPlugin);
+    this.eventKindPlugin = eventKindPlugin;
   }
 
-  
   @Override
   public void processIncomingEvent(GenericEventKindIF event) {
-//    TODO: as per below debug comment  
-    log.debug("publishing should not occur.  confirm correct then remove this method");
-    super.processIncomingEvent(event);
+    eventKindPlugin.processIncomingEvent(event);
+  }
+
+  @Override
+  public Kind getKind() {
+    return eventKindPlugin.getKind();
   }
 }

@@ -1,23 +1,33 @@
 package com.prosilion.superconductor.service.event.type;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
-import com.prosilion.nostr.event.GenericEventKindTypeIF;
-import com.prosilion.superconductor.service.event.service.plugin.EventKindTypePlugin;
+import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindTypePluginIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class NonPublishingEventKindTypePlugin extends EventKindTypePlugin {
+// our CarDecorator for NonPublishingEventKindType hierarchy
+public class NonPublishingEventKindTypePlugin implements EventKindTypePluginIF<KindTypeIF> {
+  private final EventKindTypePluginIF<KindTypeIF> eventKindTypePlugin;
 
   public NonPublishingEventKindTypePlugin(@NonNull EventKindTypePluginIF<KindTypeIF> eventKindTypePlugin) {
-    super(eventKindTypePlugin.getKindType(), eventKindTypePlugin);
+    this.eventKindTypePlugin = eventKindTypePlugin;
   }
 
   @Override
-  public void processIncomingEvent(GenericEventKindTypeIF event) {
-//    TODO: as per below debug comment    
-    log.debug("publishing should not occur.  confirm correct then remove this method");
-    super.processIncomingEvent(event);
+  public void processIncomingEvent(GenericEventKindIF event) {
+    eventKindTypePlugin.processIncomingEvent(event);
+  }
+
+  @Override
+  public Kind getKind() {
+    return eventKindTypePlugin.getKind();
+  }
+
+  @Override
+  public KindTypeIF getKindType() {
+    return eventKindTypePlugin.getKindType();
   }
 }

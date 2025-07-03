@@ -20,7 +20,7 @@ public class EventKindTypeTestConfig {
 
   @Bean
 //  @ConditionalOnMissingBean
-  EventKindPluginIF<Kind> contactListEventKindPlugin(
+  EventKindPluginIF<Kind> classifiedListingEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventPluginIF eventPlugin) {
     return new CanonicalEventKindPlugin(

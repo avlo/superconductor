@@ -9,14 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-// DECORATOR
+// our CarDecorator for PublishingEventKind hierarchy
 public class PublishingEventKindPlugin implements EventKindPluginIF<Kind> {
   private final NotifierService notifierService;
   private final EventKindPluginIF<Kind> eventKindPlugin;
 
-  public PublishingEventKindPlugin(
-      @NonNull NotifierService notifierService,
-      @NonNull EventKindPluginIF<Kind> eventKindPlugin) {
+  public PublishingEventKindPlugin(@NonNull NotifierService notifierService, @NonNull EventKindPluginIF<Kind> eventKindPlugin) {
     this.notifierService = notifierService;
     this.eventKindPlugin = eventKindPlugin;
   }

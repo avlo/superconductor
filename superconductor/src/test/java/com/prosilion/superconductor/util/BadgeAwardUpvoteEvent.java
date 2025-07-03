@@ -13,20 +13,26 @@ import org.springframework.lang.NonNull;
 
 public class BadgeAwardUpvoteEvent extends AbstractBadgeAwardEvent<KindTypeIF> {
   public BadgeAwardUpvoteEvent(
-      @NonNull Identity identity,
+      @NonNull Identity authorIdentity,
       @NonNull PublicKey upvotedUser,
       @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent) throws NostrException, NoSuchAlgorithmException {
-    super(TestKindType.UPVOTE, identity,
-        new Vote(upvotedUser, upvoteBadgeDefinitionEvent).getAwardEvent(),
+    super(
+        TestKindType.UPVOTE,
+        authorIdentity,
+        new Vote(
+            upvotedUser,
+            upvoteBadgeDefinitionEvent).getAwardEvent(),
         upvoteBadgeDefinitionEvent.getContent());
   }
 
   public BadgeAwardUpvoteEvent(
-      @NonNull Identity identity,
+      @NonNull Identity authorIdentity,
       @NonNull PublicKey upvotedUser,
       @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
       @NonNull List<BaseTag> tags) throws NostrException, NoSuchAlgorithmException {
-    super(TestKindType.UPVOTE, identity,
+    super(
+        TestKindType.UPVOTE,
+        authorIdentity,
         new Vote(
             upvotedUser,
             upvoteBadgeDefinitionEvent).getAwardEvent(),

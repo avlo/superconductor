@@ -3,20 +3,20 @@ package com.prosilion.superconductor.service.event.service.plugin;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.GenericEventKindIF;
-import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.superconductor.service.event.type.EventPluginIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-// DECORATOR BASE
+// our BasicCar
 public class EventKindTypePlugin implements EventKindTypePluginIF<KindTypeIF> {
   private final KindTypeIF kindType;
+  //  TODO: review below, potential candidate for replacement with EventKindPlugin/IF
+//    considerations: only current avail candidate bean is TextNote/Canonical
+//                    but maybe a BadgeAwardEvent/etc base class fills that role
   private final EventPluginIF eventPlugin;
 
-  public EventKindTypePlugin(
-      @NonNull KindTypeIF kindType,
-      @NonNull EventPluginIF eventPlugin) {
+  public EventKindTypePlugin(@NonNull KindTypeIF kindType, @NonNull EventPluginIF eventPlugin) {
     this.kindType = kindType;
     this.eventPlugin = eventPlugin;
   }
@@ -29,11 +29,6 @@ public class EventKindTypePlugin implements EventKindTypePluginIF<KindTypeIF> {
   @Override
   public KindTypeIF getKindType() {
     return kindType;
-  }
-
-  @Override
-  public void processIncomingEvent(GenericEventKindTypeIF event) {
-    eventPlugin.processIncomingEvent(event);
   }
 
   @Override

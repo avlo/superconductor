@@ -7,7 +7,6 @@ import com.prosilion.nostr.event.GenericEventKindType;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.superconductor.service.event.service.plugin.EventKindTypePlugin;
 import com.prosilion.superconductor.service.event.service.plugin.EventKindTypePluginIF;
 import java.util.Collection;
 import java.util.List;
@@ -17,14 +16,15 @@ import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
 
 public class EventKindTypeService implements EventKindTypeServiceIF {
-  private final Map<Kind, Map<KindTypeIF, EventKindTypePlugin>> eventKindTypePluginsMap;
+  private final Map<Kind, Map<KindTypeIF, EventKindTypePluginIF<KindTypeIF>>> eventKindTypePluginsMap;
 
   public EventKindTypeService(List<EventKindTypePluginIF<KindTypeIF>> eventKindTypePlugins) {
     eventKindTypePluginsMap = eventKindTypePlugins.stream()
-        .filter(EventKindTypePlugin.class::isInstance)
-        .map(eventKindTypePlugin -> (EventKindTypePlugin) eventKindTypePlugin)
-        .collect(Collectors.groupingBy(EventKindTypePlugin::getKind, Collectors.toMap(
-            EventKindTypePlugin::getKindType, Function.identity())));
+        .collect(Collectors.groupingBy(
+            EventKindTypePluginIF::getKind,
+            Collectors.toMap(
+                EventKindTypePluginIF::getKindType,
+                Function.identity())));
   }
 
   @Override

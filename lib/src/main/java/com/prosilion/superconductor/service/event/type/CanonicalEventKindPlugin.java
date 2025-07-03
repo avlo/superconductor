@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
+// our SportsCar extends CarDecorator
 public class CanonicalEventKindPlugin extends PublishingEventKindPlugin {
 
   public CanonicalEventKindPlugin(

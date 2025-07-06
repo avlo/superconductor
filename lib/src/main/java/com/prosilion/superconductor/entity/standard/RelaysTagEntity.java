@@ -1,19 +1,20 @@
 package com.prosilion.superconductor.entity.standard;
 
+import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.RelaysTag;
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.dto.standard.RelaysTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.net.URI;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
 import lombok.Setter;
-import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.nostr.tag.RelaysTag;
+import org.springframework.lang.NonNull;
 
 @Setter
 @Getter
@@ -26,18 +27,18 @@ public class RelaysTagEntity extends AbstractTagEntity {
 
   public RelaysTagEntity(@NonNull RelaysTag relaysTag) {
     super("relays");
-    this.uri = relaysTag.getRelays().getFirst().getUri();
+    this.uri = relaysTag.getRelays().getFirst().getUri().toString();
   }
 
   @Override
   @Transient
   public BaseTag getAsBaseTag() {
-    return new RelaysTag(new Relay(uri));
+    return new RelaysTag(new Relay(URI.create(uri)));
   }
 
   @Override
   public AbstractTagDto convertEntityToDto() {
-    return new RelaysTagDto(new RelaysTag(new Relay(uri)));
+    return new RelaysTagDto(new RelaysTag(new Relay(URI.create(uri))));
   }
 
   @Override

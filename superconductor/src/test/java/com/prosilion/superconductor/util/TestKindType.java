@@ -10,7 +10,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TestKindType implements KindTypeIF {
+//  TODO: add KindTypeIF UPVOTE definition to SC
   UPVOTE(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "UPVOTE"),
+  //  TODO: add KindTypeIF UPVOTE definition to SC  
   DOWNVOTE(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "DOWNVOTE"),
   REPUTATION(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "REPUTATION");
 

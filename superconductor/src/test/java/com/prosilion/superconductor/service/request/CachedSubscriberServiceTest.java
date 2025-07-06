@@ -9,6 +9,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.entity.Subscriber;
 import com.prosilion.superconductor.util.Factory;
+import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,7 +25,7 @@ public class CachedSubscriberServiceTest {
   String author = "f1b419a95cb0233a11d431423b41a42734e7165fcab16081cd08ef1c90e0be75";
   PublicKey publicKey = new PublicKey(author);
   IdentifierTag identifierTag = new IdentifierTag("UUID-1");
-  Relay relay = new Relay("ws://localhost:8080");
+  Relay relay = new Relay(URI.create("ws://localhost:8080"));
 
   CachedSubscriberService cachedSubscriberService;
 

@@ -1,9 +1,10 @@
 package com.prosilion.superconductor.service;
 
-import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.TextNoteEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.AddressTagFilter;
 import com.prosilion.nostr.tag.AddressTag;
@@ -13,6 +14,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.dto.GenericEventKindDto;
 import com.prosilion.superconductor.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.util.FilterMatcher;
+import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +73,7 @@ public class FilterMatcherIT {
     assertTrue(resultTwo.orElseThrow().event().getTags().contains(addressTag2));
 
 //    with Relay
-    AddressTag addressTag3 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-A"));
+    AddressTag addressTag3 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-A"), new Relay(URI.create("ws://localhost:5555")));
 
     Filters filters3 = new Filters(
         new AddressTagFilter(addressTag3));

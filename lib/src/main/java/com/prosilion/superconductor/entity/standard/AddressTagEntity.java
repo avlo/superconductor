@@ -12,6 +12,7 @@ import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -36,7 +37,7 @@ public class AddressTagEntity extends AbstractTagEntity {
     this.kind = addressTag.getKind().getValue();
     this.pubKey = addressTag.getPublicKey().toHexString();
     Optional.ofNullable(addressTag.getIdentifierTag()).ifPresent(uuid -> this.uuid = uuid.getUuid());
-    Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.relayUri = relay.getUri());
+    Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.relayUri = relay.getUri().toString());
   }
 
   @Override
@@ -53,25 +54,26 @@ public class AddressTagEntity extends AbstractTagEntity {
   @Override
   @Transient
   public List<String> get() {
-    return Stream.of(
+    List<String> list = Stream.of(
             kind.toString(),
             pubKey,
             Optional.ofNullable(uuid).toString(),
-            Optional.ofNullable(relayUri).toString())
+            relayUri)
         .toList();
+    return list;
   }
 
 //  TODO: stream-ify below
   private AddressTag createAddressTag() {
     Optional<IdentifierTag> identifierTag = Optional.ofNullable(uuid).map(IdentifierTag::new);
-    Optional<Relay> relayTag = Optional.ofNullable(relayUri).map(Relay::new);
+    Optional<Relay> relayTag = Optional.ofNullable(relayUri).map(s -> new Relay(URI.create(s)));
 
     if (identifierTag.isPresent() && relayTag.isPresent()) {
       return new AddressTag(
           Kind.valueOf(kind),
           new PublicKey(pubKey),
           identifierTag.orElseThrow(),
-          relayTag.orElseThrow()
+          relayTag.get()
       );
     }
 

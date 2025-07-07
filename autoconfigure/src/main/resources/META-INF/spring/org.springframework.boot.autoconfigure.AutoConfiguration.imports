@@ -1,6 +1,5 @@
 com.prosilion.superconductor.service.message.event.config.EventMessageServiceConfig
 com.prosilion.superconductor.service.message.event.config.EventKindServiceConfig
-com.prosilion.superconductor.service.message.event.config.BadgeAwardEventConfig
 com.prosilion.superconductor.service.message.event.config.BadgeDefinitionConfig
 com.prosilion.superconductor.service.message.req.config.ReqMessageServiceConfig
 com.prosilion.superconductor.service.message.req.config.ReqServiceConfig

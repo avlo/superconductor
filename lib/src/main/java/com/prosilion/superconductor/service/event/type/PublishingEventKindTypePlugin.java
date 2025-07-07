@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-// our CarDecorator for NonPublishingEventKindType hierarchy
+// our CarDecorator for PublishingEventKindType hierarchy
 public class PublishingEventKindTypePlugin implements EventKindTypePluginIF<KindTypeIF> {
   private final NotifierService notifierService;
   private final EventKindTypePluginIF<KindTypeIF> eventKindTypePlugin;

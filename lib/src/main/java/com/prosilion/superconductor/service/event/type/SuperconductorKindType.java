@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.util;
+package com.prosilion.superconductor.service.event.type;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.prosilion.nostr.enums.Kind;
@@ -9,12 +9,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TestKindType implements KindTypeIF {
-//  TODO: add KindTypeIF UPVOTE definition to SC
+public enum SuperconductorKindType implements KindTypeIF {
   UPVOTE(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "UPVOTE"),
-  //  TODO: add KindTypeIF UPVOTE definition to SC  
-  DOWNVOTE(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "DOWNVOTE"),
-  REPUTATION(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "REPUTATION");
+  DOWNVOTE(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "DOWNVOTE");
 
   private final Kind kind;
   private final Kind kindDefinition;
@@ -25,7 +22,7 @@ public enum TestKindType implements KindTypeIF {
 
   @Override
   public KindTypeIF[] getValues() {
-    return TestKindType.values();
+    return SuperconductorKindType.values();
   }
 
   @Generated

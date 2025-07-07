@@ -22,7 +22,7 @@ import com.prosilion.superconductor.dto.GenericEventKindTypeDto;
 import com.prosilion.superconductor.util.BadgeAwardUpvoteEvent;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
-import com.prosilion.superconductor.util.TestKindType;
+import com.prosilion.superconductor.service.event.type.SuperconductorKindType;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -63,7 +63,7 @@ public class BadgeAwardUpvoteEventMessageIT {
                 authorIdentity,
                 upvotedUserPubKey,
                 upvoteBadgeDefinitionEvent),
-            TestKindType.UPVOTE)
+            SuperconductorKindType.UPVOTE)
             .convertBaseEventToGenericEventKindTypeIF();
 
     eventId = upvoteEvent.getId();
@@ -95,7 +95,7 @@ public class BadgeAwardUpvoteEventMessageIT {
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
                             new IdentifierTag(
-                                TestKindType.UPVOTE.getName())))))));
+                                SuperconductorKindType.UPVOTE.getName())))))));
 
     log.debug("returned events:");
     log.debug("  {}", returnedGenericEventKindIFs);
@@ -106,7 +106,7 @@ public class BadgeAwardUpvoteEventMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedGenericEventKindIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(TestKindType.UPVOTE.getName(), addressTag.getIdentifierTag().getUuid());
+    assertEquals(SuperconductorKindType.UPVOTE.getName(), addressTag.getIdentifierTag().getUuid());
   }
 
   public static List<GenericEventKindIF> getGenericEventKindIFs(List<BaseMessage> returnedBaseMessages) {

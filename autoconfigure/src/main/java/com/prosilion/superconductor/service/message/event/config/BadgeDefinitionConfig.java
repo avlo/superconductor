@@ -7,6 +7,7 @@ import com.prosilion.nostr.tag.RelaysTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.dto.GenericEventKindDto;
 import com.prosilion.superconductor.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.service.event.type.SuperconductorKindType;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,8 +39,7 @@ public class BadgeDefinitionConfig {
 
     BadgeDefinitionEvent upvateBadgeDefinitionEvent = new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
-//  TODO: add KindTypeIF UPVOTE definition to SC, see test class TestKindType        
-        new IdentifierTag("UPVOTE"),
+        new IdentifierTag(SuperconductorKindType.UPVOTE.getName()),
         new RelaysTag(new Relay(URI.create(superconductorRelayUrl))),
         "1");
 
@@ -57,8 +57,7 @@ public class BadgeDefinitionConfig {
 
     BadgeDefinitionEvent badgeDefinitionEvent = new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
-//  TODO: add KindTypeIF DOWNVOTE definition to SC, see test class TestKindType        
-        new IdentifierTag("DOWNVOTE"),
+        new IdentifierTag(SuperconductorKindType.DOWNVOTE.getName()),
         new RelaysTag(new Relay(URI.create(superconductorRelayUrl))),
         "-1");
 

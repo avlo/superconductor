@@ -269,32 +269,30 @@ run with docker logging displayed to console:
 Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
 	select id, pub_key, session_id, challenge from auth;
-	select id, concat(left(event_id_string,10), '...') as event_id_string, kind, nip, created_at, concat(left(pub_key,10), '...') as pub_key, content from event;
+	select id, event_id_string, kind, created_at, pub_key, content, concat(left(signature,20), '...') as signature from event;
 	select id, event_id, event_tag_id from "event-event_tag-join";
 	select id, event_id_string, recommended_relay_url, marker from event_tag;
 	select id, event_id, pubkey_id from "event-pubkey_tag-join";
-	select id, event_id from deletion_event;
-	select id, concat(left(public_key,10), '...') as public_key, main_relay_url, pet_name from pubkey_tag;
-	select id, event_id, subject_tag_id from "event-subject_tag-join";
-	select id, kind, pub_key, uuid, relay_uri from address_tag;
-	select id, uuid from identifier_tag;
-	select id, vote from vote_tag;
-	select id, subject from subject_tag;
-	select id, hashtag_tag from hashtag_tag;
-	select id, location from geohash_tag;
-	select id, uuid from identifier_tag;
-	select id, kind, pub_key, uuid, relay_uri, code from address_tag;
-	select id, event_id, geohash_tag_id from "event-geohash_tag-join";
-	select id, event_id, hash_tag_id from "event-hashtag_tag-join";
-	select id, event_id, generic_tag_id from "event-generic_tag-join";
+	select id, public_key, main_relay_url, pet_name from pubkey_tag;
 	select id, event_id, identifier_tag_id from "event-identifier_tag-join";
+	select id, uuid from identifier_tag;
+	select id, event_id, address_tag_id from "event-address_tag-join";
+	select id, kind, pub_key, uuid, relay_uri, code from address_tag;
+	select id, event_id, relays_id from "event-relays_tag-join";
+	select id, uri from relays_tag;
+	select id, event_id, subject_tag_id from "event-subject_tag-join";
+	select id, subject from subject_tag;
+	select id, event_id, hash_tag_id from "event-hashtag_tag-join";
+	select id, hashtag_tag from hashtag_tag;
+	select id, event_id, geohash_tag_id from "event-geohash_tag-join";
+	select id, location from geohash_tag;
+	select id, event_id, generic_tag_id  FROM "event-generic_tag-join";
 	select id, code from generic_tag;
 	select id, generic_tag_id, element_attribute_id from "generic_tag-element_attribute-join";
 	select id, name, "value" from element_attribute;
 	select id, event_id, price_tag_id from "event-price_tag-join";
-	select id, uri from relays_tag;
-	select id, event_id, relays_id from "event-relays_tag-join";
 	select id, number, currency, frequency from price_tag;
+	select id, event_id from deletion_event;
 
 ##### (Optional Use) bundled web-client URLs for convenience/dev-testing/etc
 

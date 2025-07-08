@@ -1,10 +1,9 @@
 package com.prosilion.superconductor.entity.standard;
 
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.nostr.tag.RelaysTag;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.dto.AbstractTagDto;
-import com.prosilion.superconductor.dto.standard.RelaysTagDto;
+import com.prosilion.superconductor.dto.standard.ReferenceTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -20,25 +19,25 @@ import org.springframework.lang.NonNull;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "relays_tag")
+@Table(name = "reference_tag")
 // TODO: comprehensive unit test all parameter variants
-public class RelaysTagEntity extends AbstractTagEntity {
+public class ReferenceTagEntity extends AbstractTagEntity {
   private String uri;
 
-  public RelaysTagEntity(@NonNull RelaysTag relaysTag) {
-    super("relays");
-    this.uri = relaysTag.getRelays().getFirst().getUri().toString();
+  public ReferenceTagEntity(@NonNull ReferenceTag referenceTag) {
+    super("r");
+    this.uri = referenceTag.getUri().toString();
   }
 
   @Override
   @Transient
   public BaseTag getAsBaseTag() {
-    return new RelaysTag(new Relay(URI.create(uri)));
+    return new ReferenceTag(URI.create(uri));
   }
 
   @Override
   public AbstractTagDto convertEntityToDto() {
-    return new RelaysTagDto(new RelaysTag(new Relay(URI.create(uri))));
+    return new ReferenceTagDto(new ReferenceTag(URI.create(uri)));
   }
 
   @Override

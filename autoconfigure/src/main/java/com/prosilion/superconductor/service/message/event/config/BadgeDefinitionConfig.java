@@ -1,9 +1,8 @@
 package com.prosilion.superconductor.service.message.event.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.RelaysTag;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.service.event.type.SuperconductorKindType;
 import java.net.URI;
@@ -36,7 +35,7 @@ public class BadgeDefinitionConfig {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(SuperconductorKindType.UPVOTE.getName()),
-        new RelaysTag(new Relay(URI.create(superconductorRelayUrl))),
+        new ReferenceTag(URI.create(superconductorRelayUrl)),
         "1");
   }
 
@@ -47,7 +46,7 @@ public class BadgeDefinitionConfig {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(SuperconductorKindType.DOWNVOTE.getName()),
-        new RelaysTag(new Relay(URI.create(superconductorRelayUrl))),
+        new ReferenceTag(URI.create(superconductorRelayUrl)),
         "-1");
   }
 }

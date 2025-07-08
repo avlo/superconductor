@@ -5,8 +5,6 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.RelaysTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.dto.GenericEventKindDto;
-import com.prosilion.superconductor.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.service.event.type.SuperconductorKindType;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
@@ -33,37 +31,23 @@ public class BadgeDefinitionConfig {
 
   @Bean
   BadgeDefinitionEvent upvoteBadgeDefinitionEvent(
-      @NonNull EventPluginIF eventPlugin,
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
-
-    BadgeDefinitionEvent upvateBadgeDefinitionEvent = new BadgeDefinitionEvent(
+    return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(SuperconductorKindType.UPVOTE.getName()),
         new RelaysTag(new Relay(URI.create(superconductorRelayUrl))),
         "1");
-
-    eventPlugin.processIncomingEvent(
-        new GenericEventKindDto(upvateBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF());
-
-    return upvateBadgeDefinitionEvent;
   }
 
   @Bean
   BadgeDefinitionEvent downvoteBadgeDefinitionEvent(
-      @NonNull EventPluginIF eventPlugin,
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
-
-    BadgeDefinitionEvent badgeDefinitionEvent = new BadgeDefinitionEvent(
+    return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(SuperconductorKindType.DOWNVOTE.getName()),
         new RelaysTag(new Relay(URI.create(superconductorRelayUrl))),
         "-1");
-
-    eventPlugin.processIncomingEvent(
-        new GenericEventKindDto(badgeDefinitionEvent).convertBaseEventToGenericEventKindIF());
-
-    return badgeDefinitionEvent;
   }
 }

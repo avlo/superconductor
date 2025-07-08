@@ -6,7 +6,7 @@ import com.prosilion.nostr.enums.Command;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.superconductor.service.clientresponse.ClientResponse;
 import com.prosilion.superconductor.service.message.MessageServiceIF;
-import com.prosilion.superconductor.service.message.RelayInfoDocService;
+import com.prosilion.superconductor.service.message.RelayInfoDocServiceIF;
 import com.prosilion.superconductor.service.request.pubsub.BroadcastMessageEvent;
 import com.prosilion.superconductor.service.request.pubsub.TerminatedSocket;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 @EnableWebSocket
 public class NostrEventController<T extends BaseMessage> extends TextWebSocketHandler implements WebSocketConfigurer {
   private final Map<Command, MessageServiceIF<T>> messageServiceMap;
-  private final RelayInfoDocService relayInfoDocService;
+  private final RelayInfoDocServiceIF relayInfoDocService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
   private final ApplicationEventPublisher publisher;
 
@@ -51,7 +51,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   @Autowired
   public NostrEventController(
       @NonNull List<MessageServiceIF<T>> messageServices,
-      @NonNull RelayInfoDocService relayInfoDocService,
+      @NonNull RelayInfoDocServiceIF relayInfoDocService,
       @NonNull ApplicationEventPublisher publisher) {
     this.messageServiceMap = messageServices.stream().collect(
         Collectors.toMap(
@@ -150,7 +150,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   }
 
   private boolean isRelayInformationDocumentRequest(WebSocketSession session) throws IOException {
-    if (!RelayInfoDocService.isRelayInformationDocumentRequest(session))
+    if (!RelayInfoDocServiceIF.isRelayInformationDocumentRequest(session))
       return false;
     session.sendMessage(relayInfoDocService.processIncoming());
     closeSession(session);

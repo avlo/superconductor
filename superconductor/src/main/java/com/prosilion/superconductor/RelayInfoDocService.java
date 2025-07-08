@@ -1,16 +1,20 @@
-package com.prosilion.superconductor.service.message;
+package com.prosilion.superconductor;
 
-import com.prosilion.superconductor.util.NostrMediaType;
+import com.prosilion.nostr.event.BadgeDefinitionEvent;
+import com.prosilion.superconductor.dto.GenericEventKindDto;
+import com.prosilion.superconductor.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.service.message.RelayInfoDocServiceIF;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
 
 @Slf4j
 @Service
-public class RelayInfoDocService {
+public class RelayInfoDocService implements RelayInfoDocServiceIF {
 
   public static final String DESCRIPTION_KEY = "description";
   public final String descriptionValue;
@@ -64,7 +68,11 @@ public class RelayInfoDocService {
 
   private final String nip11Json;
 
+  @Autowired
   public RelayInfoDocService(
+      @NonNull EventPluginIF eventPlugin,
+      @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
+      @NonNull BadgeDefinitionEvent downvoteBadgeDefinitionEvent,
       @Value("${nostr.relay.description}") String descriptionValue,
       @Value("${nostr.relay.name}") String relayNameValue,
       @Value("${nostr.relay.pubkey}") String pubKeyValue,
@@ -79,8 +87,16 @@ public class RelayInfoDocService {
       @Value("${nostr.relay.payments.url}") String paymentsUrlValue,
       @Value("${nostr.relay.payments.amount}") String amountValue,
       @Value("${nostr.relay.payments.units}") String unitValue,
-      @Value("${nostr.relay.payments.period}") String periodValue
-  ) {
+      @Value("${nostr.relay.payments.period}") String periodValue) {
+
+//    TODO: relocate below badge definition DB entry creation to better location
+    eventPlugin.processIncomingEvent(
+        new GenericEventKindDto(upvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF());
+    
+//    TODO: relocate below badge definition DB entry creation to better location
+    eventPlugin.processIncomingEvent(
+        new GenericEventKindDto(downvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF());
+
     this.descriptionValue = descriptionValue;
     this.relayNameValue = relayNameValue;
     this.pubKeyValue = pubKeyValue;
@@ -123,11 +139,7 @@ public class RelayInfoDocService {
     return String.format("\"%s\":\"%s\",", key, value);
   }
 
-  public static boolean isRelayInformationDocumentRequest(WebSocketSession session) {
-    return session.getHandshakeHeaders().getAccept().stream().anyMatch(mediaType ->
-        mediaType.equalsTypeAndSubtype(NostrMediaType.APPLICATION_NOSTR_JSON));
-  }
-
+  @Override
   public WebSocketMessage<String> processIncoming() {
     log.debug("Send RelayInformationDocument: {}", nip11Json);
     return new TextMessage(nip11Json);

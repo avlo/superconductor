@@ -6,7 +6,7 @@
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>parent</artifactId>
   <name>superconductor</name>
-  <version>1.15.0</version>
+  <version>1.15.1</version>
   <description>SuperConductor Java Nostr-Relay Framework and Web Application</description>
   <packaging>pom</packaging>
 

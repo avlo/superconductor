@@ -268,7 +268,7 @@ run with docker logging displayed to console:
 
 Display all framework table contents (case-sensitive quoted fields/tables when querying):
 
-	select id, pub_key, session_id, challenge from auth;
+	-- select id, pub_key, session_id, challenge from auth;
 	select id, event_id_string, kind, created_at, pub_key, content, concat(left(signature,20), '...') as signature from event;
 	select id, event_id, event_tag_id from "event-event_tag-join";
 	select id, event_id_string, recommended_relay_url, marker from event_tag;
@@ -278,8 +278,8 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 	select id, uuid from identifier_tag;
 	select id, event_id, address_tag_id from "event-address_tag-join";
 	select id, kind, pub_key, uuid, relay_uri, code from address_tag;
-	select id, event_id, relays_id from "event-relays_tag-join";
-	select id, uri from relays_tag;
+	select id, event_id, reference_tag_id from "event-reference_tag-join";
+	select id, uri from reference_tag;
 	select id, event_id, subject_tag_id from "event-subject_tag-join";
 	select id, subject from subject_tag;
 	select id, event_id, hash_tag_id from "event-hashtag_tag-join";

@@ -2,17 +2,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>superconductor</artifactId>
-  <version>1.15.1</version>
-  <name>superconductor</name>
-  <packaging>war</packaging>
-
   <parent>
     <groupId>com.prosilion.superconductor</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>superconductor-parent</artifactId>
     <version>1.15.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+  
+  <artifactId>superconductor-webapp</artifactId>
+  <version>${parent.version}</version>
+  <name>superconductor-webapp</name>
+  <packaging>war</packaging>
 
   <dependencies>
     <dependency>
@@ -22,8 +22,8 @@
     </dependency>    
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>starter</artifactId>
-      <version>1.15.1</version>
+      <artifactId>superconductor-spring-boot-starter</artifactId>
+      <version>${version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

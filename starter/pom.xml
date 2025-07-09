@@ -2,28 +2,43 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>starter</artifactId>
-  <version>1.15.1</version>
-  <name>starter</name>
-  <packaging>jar</packaging>
-
   <parent>
     <groupId>com.prosilion.superconductor</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>superconductor-parent</artifactId>
     <version>1.15.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
+  <artifactId>superconductor-spring-boot-starter</artifactId>
+  <version>${parent.version}</version>
+  <name>superconductor-spring-boot-starter</name>
+  <packaging>jar</packaging>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub OWNER Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/avlo/superconductor</url>
+    </repository>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:git://github.com/avlo/superconductor.git</connection>
+    <developerConnection>scm:git:ssh://github.com:avlo/superconductor.git</developerConnection>
+    <url>https://github.com/avlo/superconductor</url>
+    <tag>${version}</tag>
+  </scm>
+  
   <dependencies>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>lib</artifactId>
-      <version>1.15.1</version>
+      <artifactId>superconductor-lib</artifactId>
+      <version>${version}</version>
     </dependency>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>autoconfigure</artifactId>
-      <version>1.15.1</version>
+      <artifactId>superconductor-autoconfigure</artifactId>
+      <version>${version}</version>
     </dependency>
   </dependencies>
 </project>

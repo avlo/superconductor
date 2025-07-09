@@ -9,9 +9,8 @@ plugins {
     id 'org.gradle.test-retry'
 }
 
-group = 'com.prosilion'
+group = 'com.prosilion.superconductor'
 version = '1.15.1'
-description = 'superconductor'
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21

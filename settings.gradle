@@ -9,11 +9,11 @@ buildscript {
 
 rootProject.name = 'superconductor'
 
-include ':autoconfigure'
-project(':autoconfigure').setProjectDir(file("autoconfigure"))
-include ':lib'
-project(':lib').setProjectDir(file("lib"))
-include ':starter'
-project(':starter').setProjectDir(file("starter"))
-include ':superconductor'
-project(':superconductor').setProjectDir(file("superconductor"))
+include ':superconductor-autoconfigure'
+project(':superconductor-autoconfigure').setProjectDir(file("autoconfigure"))
+include ':superconductor-lib'
+project(':superconductor-lib').setProjectDir(file("lib"))
+include ':superconductor-spring-boot-starter'
+project(':superconductor-spring-boot-starter').setProjectDir(file("starter"))
+include ':superconductor-webapp'
+project(':superconductor-webapp').setProjectDir(file("superconductor"))

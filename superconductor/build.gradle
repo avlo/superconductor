@@ -11,7 +11,7 @@ repositories {
 }
 dependencies {
     def subdivisionsVersion = '1.3.0'
-    api project(':starter')
+    api project(':superconductor-spring-boot-starter')
 
     implementation 'com.prosilion:subdivisions:' + subdivisionsVersion
 //    def springBootVersion = '3.4.3'

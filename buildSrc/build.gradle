@@ -3,7 +3,7 @@ plugins {
     id 'groovy-gradle-plugin'
 }
 
-group = 'com.prosilion'
+group = 'com.prosilion.superconductor'
 version = '1.15.1'
 
 repositories {

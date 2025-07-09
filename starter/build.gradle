@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    api project(':autoconfigure')
-    api project(':lib')
+    api project(':superconductor-autoconfigure')
+    api project(':superconductor-lib')
 }

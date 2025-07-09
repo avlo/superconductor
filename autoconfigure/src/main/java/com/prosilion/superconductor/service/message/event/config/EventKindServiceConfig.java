@@ -10,7 +10,9 @@ import com.prosilion.superconductor.service.event.service.plugin.EventKindPlugin
 import com.prosilion.superconductor.service.event.service.plugin.EventKindTypePluginIF;
 import com.prosilion.superconductor.service.event.type.CanonicalEventKindPlugin;
 import com.prosilion.superconductor.service.event.type.EventKindPlugin;
+import com.prosilion.superconductor.service.event.type.EventPlugin;
 import com.prosilion.superconductor.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.service.event.type.RedisCache;
 import com.prosilion.superconductor.service.request.NotifierService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,11 @@ public class EventKindServiceConfig {
   @ConditionalOnMissingBean
   EventKindTypeServiceIF eventKindTypeServiceIF(@NonNull List<EventKindTypePluginIF<KindTypeIF>> eventKindTypePlugins) {
     return new EventKindTypeService(eventKindTypePlugins);
+  }
+
+  @Bean
+  EventPluginIF eventPlugin(@NonNull RedisCache redisCache) {
+    return new EventPlugin(redisCache);
   }
 
   @Bean

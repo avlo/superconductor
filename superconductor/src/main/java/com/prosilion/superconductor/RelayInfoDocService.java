@@ -6,6 +6,7 @@ import com.prosilion.superconductor.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.service.message.RelayInfoDocServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -70,9 +71,9 @@ public class RelayInfoDocService implements RelayInfoDocServiceIF {
 
   @Autowired
   public RelayInfoDocService(
-      @NonNull EventPluginIF eventPlugin,
-      @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
-      @NonNull BadgeDefinitionEvent downvoteBadgeDefinitionEvent,
+      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
+      @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeDefinitionEvent downvoteBadgeDefinitionEvent,
       @Value("${nostr.relay.description}") String descriptionValue,
       @Value("${nostr.relay.name}") String relayNameValue,
       @Value("${nostr.relay.pubkey}") String pubKeyValue,
@@ -92,7 +93,7 @@ public class RelayInfoDocService implements RelayInfoDocServiceIF {
 //    TODO: relocate below badge definition DB entry creation to better location
     eventPlugin.processIncomingEvent(
         new GenericEventKindDto(upvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF());
-    
+
 //    TODO: relocate below badge definition DB entry creation to better location
     eventPlugin.processIncomingEvent(
         new GenericEventKindDto(downvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF());

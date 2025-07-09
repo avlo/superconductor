@@ -216,7 +216,7 @@ run with docker logging displayed to console:
 ###### maven
       $ mvn spring-boot:run -pl superconductor -P local_wss
 ###### gradle
-      $ gradle superconductor:bootRunLocalWss
+      $ gradle superconductor-webapp:bootRunLocalWss
 </details> 
 
 <details>
@@ -225,7 +225,7 @@ run with docker logging displayed to console:
 ###### maven
       $ mvn spring-boot:run -pl superconductor -P local_ws
 ###### gradle
-      $ gradle superconductor:bootRunLocalWs
+      $ gradle superconductor-webapp:bootRunLocalWs
 </details>  
 
 ----

@@ -9,7 +9,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 
 @Slf4j
-@Service
 public class RelayInfoDocService implements RelayInfoDocServiceIF {
 
   public static final String DESCRIPTION_KEY = "description";
@@ -64,7 +63,6 @@ public class RelayInfoDocService implements RelayInfoDocServiceIF {
 
   private final String nip11Json;
 
-  @Autowired
   public RelayInfoDocService(
       @Value("${nostr.relay.description}") String descriptionValue,
       @Value("${nostr.relay.name}") String relayNameValue,

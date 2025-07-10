@@ -1,9 +1,9 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.AddressTagFilter;
@@ -12,15 +12,12 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,28 +35,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class MatchingAddressTagIT {
   private final NostrRelayService nostrRelayService;
+  private final String eventId = Factory.generateRandomHex64String();
+  private final PublicKey publicKey = Identity.generateRandomIdentity().getPublicKey();
+  private final PublicKey aTagPubkey = Identity.generateRandomIdentity().getPublicKey();
+  private final String uuid = Factory.generateRandomHex64String();
 
   @Autowired
   MatchingAddressTagIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_address_tag_single_filter_json_input.txt"))) {
-      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
-      log.debug("setup() send event:\n  {}", textMessageEventJson);
-      assertTrue(
-          nostrRelayService.send(
-                  (EventMessage) BaseMessageDecoder.decode(textMessageEventJson))
-              .getFlag());
-    }
+    assertTrue(
+        nostrRelayService.send(
+                (EventMessage) BaseMessageDecoder.decode(getEvent()))
+            .getFlag());
   }
 
   @Test
   void testReqMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
-    PublicKey publicKey = new PublicKey("babc22b02998a4a5600ecb6203e6efbe550074348a49d921060ff3225a123dc1");
-    IdentifierTag identifierTag = new IdentifierTag("UUID-1");
+    IdentifierTag identifierTag = new IdentifierTag(uuid);
 
     AddressTag addressTag = new AddressTag(
-        Kind.TEXT_NOTE, publicKey, identifierTag
+        Kind.TEXT_NOTE, aTagPubkey, identifierTag
     );
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new AddressTagFilter(addressTag)));
@@ -68,6 +64,9 @@ class MatchingAddressTagIT {
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
 
+    assertTrue(returnedEvents.stream().anyMatch(event ->
+        event.getTags().stream().anyMatch(baseTag -> baseTag.equals(addressTag))));
+
     assertTrue(returnedEvents.stream().anyMatch(s -> s.getTags().stream()
         .filter(AddressTag.class::isInstance)
         .map(AddressTag.class::cast)
@@ -75,8 +74,25 @@ class MatchingAddressTagIT {
           Assertions.assertNotNull(tag.getIdentifierTag());
           return tag.getIdentifierTag().equals(identifierTag);
         })));
+  }
 
-    assertTrue(returnedEvents.stream().anyMatch(event ->
-        event.getTags().stream().anyMatch(baseTag -> baseTag.equals(addressTag))));
+  private String getEvent() {
+    return "[\n" +
+        "  \"EVENT\",\n" +
+        "  {\n" +
+        "    \"content\": \"matching address tag filter test\",\n" +
+        "    \"id\": \"" + eventId + "\",\n" +
+        "    \"kind\": 1,\n" +
+        "    \"created_at\": 1111111111111,\n" +
+        "    \"pubkey\": \"" + publicKey + "\",\n" +
+        "    \"tags\": [\n" +
+        "      [\n" +
+        "        \"a\",\n" +
+        "        \"1:" + aTagPubkey + ":" + uuid + "\"\n" +
+        "      ]\n" +
+        "    ],\n" +
+        "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"\n" +
+        "  }\n" +
+        "]\n";
   }
 }

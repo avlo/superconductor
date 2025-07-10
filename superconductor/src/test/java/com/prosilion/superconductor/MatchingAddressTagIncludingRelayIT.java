@@ -14,6 +14,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.entity.EventEntity;
 import com.prosilion.superconductor.service.event.type.EventEntityService;
@@ -21,13 +22,9 @@ import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -47,49 +44,50 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MatchingAddressTagIncludingRelayIT {
   public static final String WS_LOCALHOST_5555 = "ws://localhost:5555";
   private final NostrRelayService nostrRelayService;
+  private final String eventId = Factory.generateRandomHex64String();
+  private final PublicKey publicKey = Identity.generateRandomIdentity().getPublicKey();
+  private final PublicKey aTagPubkey = Identity.generateRandomIdentity().getPublicKey();
+  private final String uuid = Factory.generateRandomHex64String();
 
   @Autowired
   MatchingAddressTagIncludingRelayIT(
       @NonNull NostrRelayService nostrRelayService,
       @NonNull EventEntityService eventEntityService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_address_tag_with_relay_single_filter_json_input.txt"))) {
-      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
-      log.debug("setup() send event:\n  {}", textMessageEventJson);
-      EventMessage decode = (EventMessage) BaseMessageDecoder.decode(textMessageEventJson);
-      assertTrue(
-          nostrRelayService.send(
-                  decode)
-              .getFlag());
+    assertTrue(
+        nostrRelayService.send(
+                (EventMessage) BaseMessageDecoder.decode(getEvent()))
+            .getFlag());
 
-      Optional<EventEntity> byEventIdString = eventEntityService.findByEventIdString("6e77a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc");
-      GenericEventKindIF eventById = eventEntityService.getEventById(byEventIdString.orElseThrow().getId());
+    Optional<EventEntity> byEventIdString = eventEntityService.findByEventIdString(eventId);
+    GenericEventKindIF eventById = eventEntityService.getEventById(byEventIdString.orElseThrow().getId());
 
-      String string = Objects.requireNonNull(Filterable.getTypeSpecificTags(AddressTag.class, eventById)
-          .stream()
-          .findFirst().orElseThrow()
-          .getRelay().getUri().toString());
-      
-      assertEquals(
-          WS_LOCALHOST_5555,
-          string);
-    }
+    String string = Objects.requireNonNull(Filterable.getTypeSpecificTags(AddressTag.class, eventById)
+        .stream()
+        .findFirst().orElseThrow()
+        .getRelay().getUri().toString());
+
+    assertEquals(
+        WS_LOCALHOST_5555,
+        string);
   }
 
   @Test
   void testReqMessages() throws JsonProcessingException, NostrException, URISyntaxException {
     String subscriberId = Factory.generateRandomHex64String();
-    PublicKey publicKey = new PublicKey("babc33b02998a4a5600ecb6203e6efbe550074348a49d921060ff3225a123dc1");
-    IdentifierTag identifierTag = new IdentifierTag("UUID-1");
+    IdentifierTag identifierTag = new IdentifierTag(uuid);
 
     AddressTag addressTag = new AddressTag(
-        Kind.TEXT_NOTE, publicKey, identifierTag, new Relay(WS_LOCALHOST_5555));
+        Kind.TEXT_NOTE, aTagPubkey, identifierTag, new Relay(WS_LOCALHOST_5555));
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new AddressTagFilter(addressTag)));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
+
+    assertTrue(returnedEvents.stream().anyMatch(event ->
+        event.getTags().stream().anyMatch(baseTag -> baseTag.equals(addressTag))));
 
     assertTrue(returnedEvents.stream().anyMatch(s -> s.getTags().stream()
         .filter(AddressTag.class::isInstance)
@@ -98,8 +96,25 @@ class MatchingAddressTagIncludingRelayIT {
           Assertions.assertNotNull(tag.getIdentifierTag());
           return tag.getIdentifierTag().equals(identifierTag);
         })));
+  }
 
-    assertTrue(returnedEvents.stream().anyMatch(event ->
-        event.getTags().stream().anyMatch(baseTag -> baseTag.equals(addressTag))));
+  private String getEvent() {
+    return "[\n" +
+        "  \"EVENT\",\n" +
+        "  {\n" +
+        "    \"content\": \"matching address tag filter test\",\n" +
+        "    \"id\": \"" + eventId + "\",\n" +
+        "    \"kind\": 1,\n" +
+        "    \"created_at\": 1111111111111,\n" +
+        "    \"pubkey\": \"" + publicKey + "\",\n" +
+        "    \"tags\": [\n" +
+        "      [\n" +
+        "        \"a\",\n" +
+        "        \"1:" + aTagPubkey + ":" + uuid + "\",\"ws://localhost:5555\"\n" +
+        "      ]\n" +
+        "    ],\n" +
+        "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"\n" +
+        "  }\n" +
+        "]\n";
   }
 }

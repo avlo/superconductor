@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class MatchingGenericTagSingleLetterQueryIT {
   private final NostrRelayService nostrRelayService;
-
   Identity identity = Factory.createNewIdentity();
   String content = Factory.lorumIpsum(getClass());
 

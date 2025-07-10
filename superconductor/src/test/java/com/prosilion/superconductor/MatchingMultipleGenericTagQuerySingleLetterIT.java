@@ -1,8 +1,8 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.GenericTagQuery;
@@ -16,10 +16,7 @@ import com.prosilion.nostr.tag.GeohashTag;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -43,19 +40,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(OrderAnnotation.class)
 class MatchingMultipleGenericTagQuerySingleLetterIT {
   private final NostrRelayService nostrRelayService;
+  private final String eventId = Factory.generateRandomHex64String();
+  private final String genericTagStringG = Factory.generateRandomHex64String();
+  private final String genericTagStringH = Factory.generateRandomHex64String();
+  private final String genericTagStringI = Factory.generateRandomHex64String();
 
   @Autowired
   MatchingMultipleGenericTagQuerySingleLetterIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_multiple_generic_tag_query_filter_single_letter_json_input.txt"))) {
-      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
-      log.debug("setup() send event:\n  {}", textMessageEventJson);
-      assertTrue(
-          nostrRelayService.send(
-                  (EventMessage) BaseMessageDecoder.decode(textMessageEventJson))
-              .getFlag());
-    }
+    assertTrue(
+        nostrRelayService.send(
+                (EventMessage) BaseMessageDecoder.decode(getEvent()))
+            .getFlag());
   }
 
   @Test
@@ -113,8 +109,6 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   void testReqMessagesMatchesGeneric() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String genericTagStringG = "textnote-geo-tag-1";
-    String genericTagStringH = "hash-tag-1";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
             new GenericTagQueryFilter(
@@ -132,7 +126,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     assertFalse(returnedBaseMessages.isEmpty());
 
     //    associated event
-    assertTrue(returnedEvents.stream().map(GenericEventKindIF::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590005")));
+    assertTrue(returnedEvents.stream().map(GenericEventKindIF::getId).anyMatch(s -> s.contains(eventId)));
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
 
@@ -141,9 +135,6 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   void testReqMessagesMatchesGenericWithSpaces() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String genericTagStringG = "textnote-geo-tag-1";
-    String genericTagStringH = "hash-tag-1";
-    String genericTagStringI = "random i tag with spaces";
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
@@ -159,7 +150,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590005"))));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals((eventId))));
     assertTrue(returnedEvents.stream().anyMatch(s -> s.getTags().stream()
         .filter(GeohashTag.class::isInstance)
         .map(GeohashTag.class::cast)
@@ -178,5 +169,33 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
             .filter(s1 -> s1.equals(genericTagStringI))))).count());
 
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
+  }
+
+  private String getEvent() {
+    return "[\n" +
+        "  \"EVENT\",\n" +
+        "  {\n" +
+        "    \"content\": \"matching generic tag query filter test\",\n" +
+        "    \"id\": \"" + eventId + "\",\n" +
+        "    \"kind\": 1,\n" +
+        "    \"created_at\": 1111111111111,\n" +
+        "    \"pubkey\": \"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\n" +
+        "    \"tags\": [\n" +
+        "      [\n" +
+        "        \"g\",\n" +
+        "        \"" + genericTagStringG + "\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"h\",\n" +
+        "        \"" + genericTagStringH + "\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"i\",\n" +
+        "        \"" + genericTagStringI + "\"\n" +
+        "      ]\n" +
+        "    ],\n" +
+        "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"\n" +
+        "  }\n" +
+        "]\n";
   }
 }

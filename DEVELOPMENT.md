@@ -28,34 +28,8 @@
 ### Containerized deployment:
 - [Docker](https://hub.docker.com/_/docker) 27.5.0
 - [Docker Compose](https://docs.docker.com/compose/install/) v2.32.4
-----
 
-### Requirements
-
-    $ java -version
-
->     java version "21.0.5" 2024-10-15 LTS
->     Java(TM) SE Runtime Environment (build 21.0.5+9-LTS-239)
->     Java HotSpot(TM) 64-Bit Server VM (build 21.0.5+9-LTS-239, mixed mode, sharing)
-
-<details>
-  <summary>maven</summary>
-
-    $ mvn -version
->     Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
->     Java version: 21.0.5, vendor: Oracle Corporation
-</details>
-<details>
-  <summary>gradle</summary>
-
-    $ gradle -version
->     ------------------------------------------------------------
->     Gradle 8.13
->     ------------------------------------------------------------
-</details>
-
-----
-### Superconductor Spring-Boot Starter
+### Spring-Boot Starter
 
 <details>
   <summary>maven</summary>  
@@ -91,6 +65,32 @@ repositories {
 ```groovy
 implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter:' + 1.15.1
 ```
+</details>
+
+----
+
+### Requirements
+
+    $ java -version
+
+>     java version "21.0.5" 2024-10-15 LTS
+>     Java(TM) SE Runtime Environment (build 21.0.5+9-LTS-239)
+>     Java HotSpot(TM) 64-Bit Server VM (build 21.0.5+9-LTS-239, mixed mode, sharing)
+
+<details>
+  <summary>maven</summary>
+
+    $ mvn -version
+>     Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+>     Java version: 21.0.5, vendor: Oracle Corporation
+</details>
+<details>
+  <summary>gradle</summary>
+
+    $ gradle -version
+>     ------------------------------------------------------------
+>     Gradle 8.13
+>     ------------------------------------------------------------
 </details>
 
 ----

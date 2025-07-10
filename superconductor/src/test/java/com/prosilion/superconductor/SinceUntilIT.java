@@ -1,8 +1,8 @@
 package com.prosilion.superconductor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EoseMessage;
@@ -11,11 +11,7 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +29,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class SinceUntilIT {
   private final NostrRelayService nostrRelayService;
+  private final String eventId = Factory.generateRandomHex64String();
+  private final String publicKey = Factory.generateRandomHex64String();
 
   @Autowired
   SinceUntilIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/created_at_date_filter_json_input.txt"))) {
-      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
-      log.debug("setup() send event:\n  {}", textMessageEventJson);
-      assertTrue(
-          nostrRelayService.send(
-                  (EventMessage) BaseMessageDecoder.decode(textMessageEventJson))
-              .getFlag());
-    }
+    assertTrue(
+        nostrRelayService.send(
+                (EventMessage) BaseMessageDecoder.decode(getEvent()))
+            .getFlag());
   }
 
   @Test
@@ -67,7 +60,7 @@ class SinceUntilIT {
   }
 
   private String createReqCreatedDateAfterSinceUntilDatesJson(@NonNull String uuid) {
-    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111112,\"until\": 1111111111113}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"" + publicKey + "\"],\"since\": 1111111111112,\"until\": 1111111111113}]";
   }
 
   @Test
@@ -89,7 +82,7 @@ class SinceUntilIT {
   }
 
   private String createReqCreatedDateBeforeSinceUntilDatesJson(@NonNull String uuid) {
-    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111109,\"until\": 1111111111110}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"" + publicKey + "\"],\"since\": 1111111111109,\"until\": 1111111111110}]";
   }
 
   @Test
@@ -112,13 +105,13 @@ class SinceUntilIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getCreatedAt().equals(1111111111111L)));
 
 //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.getId().equals("aaabbb6101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc")));
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.getId().equals(eventId)));
 //    TODO: investigate below EOSE missing, causes test failure
 //    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }
 
   private String createReqCreatedDateBetweenSinceUntilDatesJson(@NonNull String uuid) {
-    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111110,\"until\": 1111111111112}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"" + publicKey + "\"],\"since\": 1111111111110,\"until\": 1111111111112}]";
   }
 
   @Test
@@ -143,7 +136,7 @@ class SinceUntilIT {
   }
 
   private String createReqUntilDateGreaterThanCreatedDateJson(String subscriberId, @NonNull String until) {
-    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + until + "}]";
+    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"" + publicKey + "\"],\"until\": " + until + "}]";
   }
 
   @Test
@@ -168,7 +161,7 @@ class SinceUntilIT {
   }
 
   private String createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(String subscriberId, @NonNull String until) {
-    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": " + until + "}]";
+    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"" + publicKey + "\"],\"until\": " + until + "}]";
   }
 
   @Test
@@ -190,7 +183,7 @@ class SinceUntilIT {
   }
 
   private String createReqUntilDateLessThanCreatedDateJson(@NonNull String uuid) {
-    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"until\": 1111111111110}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"" + publicKey + "\"],\"until\": 1111111111110}]";
   }
 
   @Test
@@ -212,7 +205,7 @@ class SinceUntilIT {
   }
 
   private String createReqSinceDateGreaterThanCreatedDateJson(@NonNull String uuid) {
-    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": 1111111111112}]";
+    return "[\"REQ\",\"" + uuid + "\",{\"authors\":[\"" + publicKey + "\"],\"since\": 1111111111112}]";
   }
 
   @Test
@@ -235,6 +228,43 @@ class SinceUntilIT {
   }
 
   private String createReqSinceDateLessThanCreatedDateJson(String subscriberId, @NonNull String since) {
-    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"aaabbbf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"],\"since\": " + since + "}]";
+    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"" + publicKey + "\"],\"since\": " + since + "}]";
+  }
+
+  private String getEvent() {
+    return "[\n" +
+        "  \"EVENT\",\n" +
+        "  {\n" +
+        "    \"content\": \"created at test\",\n" +
+        "    \"id\":\"" + eventId + "\",\n" +
+        "    \"kind\": 1,\n" +
+        "    \"created_at\": 1111111111111,\n" +
+        "    \"pubkey\": \"" + publicKey + "\",\n" +
+        "    \"tags\": [\n" +
+        "      [\n" +
+        "        \"a\",\n" +
+        "        \"30023:aaabbbd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd\",\n" +
+        "        \"wss://nostr.example.com\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"custom-tag\",\n" +
+        "        \"created at date custom-tag random value\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"p\",\n" +
+        "        \"bbbcccf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"e\",\n" +
+        "        \"aaabbbac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"g\",\n" +
+        "        \"created at date textnote geo-tag-1\"\n" +
+        "      ]\n" +
+        "    ],\n" +
+        "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"\n" +
+        "  }\n" +
+        "]\n";
   }
 }

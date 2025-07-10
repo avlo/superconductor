@@ -13,7 +13,7 @@ dependencies {
     def subdivisionsVersion = '1.3.0'
     api project(':superconductor-spring-boot-starter')
 
-    implementation 'com.prosilion:subdivisions:' + subdivisionsVersion
+    testImplementation 'com.prosilion:subdivisions:' + subdivisionsVersion
 //    def springBootVersion = '3.4.3'
 //    def mysqlConnectorJVersion = '9.1.0'
 //

@@ -58,7 +58,7 @@
 
 ```groovy
 repositories {
-    github {
+    maven {
         url = uri("https://maven.pkg.github.com/avlo/superconductor")
     }
 }

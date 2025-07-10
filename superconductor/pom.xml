@@ -34,8 +34,7 @@
       <groupId>com.prosilion</groupId>
       <artifactId>subdivisions</artifactId>
       <version>${subdivisions.version}</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/src/test/resources/subdivisions-${subdivisions.version}.jar</systemPath>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>

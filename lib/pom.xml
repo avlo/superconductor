@@ -10,7 +10,7 @@
   </parent>
   
   <artifactId>superconductor-lib</artifactId>
-  <version>${parent.version}</version>
+<!--  <version>${project.parent.version}</version>-->
   <name>superconductor-lib</name>
   <packaging>jar</packaging>
 

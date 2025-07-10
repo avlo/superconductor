@@ -10,7 +10,6 @@
   </parent>
   
   <artifactId>superconductor-autoconfigure</artifactId>
-  <version>${parent.version}</version>
   <name>superconductor-autoconfigure</name>
   <packaging>jar</packaging>
 
@@ -18,7 +17,7 @@
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
       <artifactId>superconductor-lib</artifactId>
-      <version>${version}</version>
+      <version>${project.parent.version}</version>
     </dependency>
   </dependencies>
 

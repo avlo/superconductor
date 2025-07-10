@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>superconductor-spring-boot-starter</artifactId>
-  <version>${parent.version}</version>
+<!--  <version>${project.parent.version}</version>-->
   <name>superconductor-spring-boot-starter</name>
   <packaging>jar</packaging>
 
@@ -26,19 +26,19 @@
     <connection>scm:git:git://github.com/avlo/superconductor.git</connection>
     <developerConnection>scm:git:ssh://github.com:avlo/superconductor.git</developerConnection>
     <url>https://github.com/avlo/superconductor</url>
-    <tag>${version}</tag>
+<!--    <tag>${version}</tag>-->
   </scm>
   
   <dependencies>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
       <artifactId>superconductor-lib</artifactId>
-      <version>${version}</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
       <artifactId>superconductor-autoconfigure</artifactId>
-      <version>${version}</version>
+      <version>${project.parent.version}</version>
     </dependency>
   </dependencies>
 </project>

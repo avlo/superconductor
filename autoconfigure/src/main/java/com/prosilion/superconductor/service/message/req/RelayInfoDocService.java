@@ -1,14 +1,9 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.service.message.req;
 
-import com.prosilion.nostr.event.BadgeDefinitionEvent;
-import com.prosilion.superconductor.dto.GenericEventKindDto;
-import com.prosilion.superconductor.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.service.message.RelayInfoDocServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
@@ -71,9 +66,6 @@ public class RelayInfoDocService implements RelayInfoDocServiceIF {
 
   @Autowired
   public RelayInfoDocService(
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
-      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
-      @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeDefinitionEvent downvoteBadgeDefinitionEvent,
       @Value("${nostr.relay.description}") String descriptionValue,
       @Value("${nostr.relay.name}") String relayNameValue,
       @Value("${nostr.relay.pubkey}") String pubKeyValue,
@@ -89,14 +81,6 @@ public class RelayInfoDocService implements RelayInfoDocServiceIF {
       @Value("${nostr.relay.payments.amount}") String amountValue,
       @Value("${nostr.relay.payments.units}") String unitValue,
       @Value("${nostr.relay.payments.period}") String periodValue) {
-
-//    TODO: relocate below badge definition DB entry creation to better location
-    eventPlugin.processIncomingEvent(
-        new GenericEventKindDto(upvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF());
-
-//    TODO: relocate below badge definition DB entry creation to better location
-    eventPlugin.processIncomingEvent(
-        new GenericEventKindDto(downvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF());
 
     this.descriptionValue = descriptionValue;
     this.relayNameValue = relayNameValue;

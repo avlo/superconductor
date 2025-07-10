@@ -29,6 +29,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
@@ -52,7 +53,7 @@ public class BadgeAwardUpvoteEventMessageIT {
   @Autowired
   BadgeAwardUpvoteEventMessageIT(
       @NonNull NostrRelayService nostrRelayService,
-      @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
+      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;

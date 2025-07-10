@@ -1,15 +1,21 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.superconductor.util.NostrMediaType;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@SpringBootTest
+@Slf4j
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
 class RelayDocumentIT {
   public static final String HTTP_LOCALHOST_5555 = "http://localhost:5555/";
   @Autowired

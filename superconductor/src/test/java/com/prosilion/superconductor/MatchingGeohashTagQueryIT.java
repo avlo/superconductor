@@ -1,7 +1,7 @@
 package com.prosilion.superconductor;
 
-import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.GenericTagQuery;
@@ -15,11 +15,7 @@ import com.prosilion.nostr.tag.GeohashTag;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,28 +35,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MatchingGeohashTagQueryIT {
   private final NostrRelayService nostrRelayService;
   private final static String subscriberId = Factory.generateRandomHex64String();
+  private final String eventId = Factory.generateRandomHex64String();
+  private final String geohashTagString = Factory.generateRandomHex64String();
 
   @Autowired
   MatchingGeohashTagQueryIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
-
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_geohash_tag_query_filter_input.txt"))) {
-      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
-      log.debug("setup() send event:\n  {}", textMessageEventJson);
-      assertTrue(nostrRelayService.send(
-              (EventMessage) BaseMessageDecoder.decode(textMessageEventJson))
-          .getFlag());
-    }
+    assertTrue(nostrRelayService.send(
+            (EventMessage) BaseMessageDecoder.decode(getEvent()))
+        .getFlag());
   }
 
   @Test
   void testReqMessagesNoGenericMatch() throws IOException, NostrException {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String genericTagString = "textnote-geo-tag-non-existent";
-
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(new GenericTagQueryFilter(
-            new GenericTagQuery("#g", genericTagString))));
+            new GenericTagQuery("#g", "textnote-geo-tag-non-existent"))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     log.debug("okMessage:");
@@ -78,7 +69,6 @@ class MatchingGeohashTagQueryIT {
   void testReqMessagesMatchesGeneric() throws IOException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String geohashTagString = "textnote-geo-tag-1";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(new GenericTagQueryFilter(
             new GenericTagQuery("#g", geohashTagString))));
@@ -91,7 +81,7 @@ class MatchingGeohashTagQueryIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590004")));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
@@ -101,7 +91,6 @@ class MatchingGeohashTagQueryIT {
   void testReqMessagesMatchesGeoHashTag() throws IOException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String geohashTagString = "textnote-geo-tag-1";
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(new GeohashTagFilter(
             new GeohashTag(geohashTagString))));
@@ -114,9 +103,29 @@ class MatchingGeohashTagQueryIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590004")));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
+  }
+
+  private String getEvent() {
+    return "[\n" +
+        "  \"EVENT\",\n" +
+        "  {\n" +
+        "    \"content\": \"matching generic tag query filter test\",\n" +
+        "    \"id\": \"" + eventId + "\",\n" +
+        "    \"kind\": 1,\n" +
+        "    \"created_at\": 1111111111111,\n" +
+        "    \"pubkey\": \"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\n" +
+        "    \"tags\": [\n" +
+        "      [\n" +
+        "        \"g\",\n" +
+        "        \"" + geohashTagString + "\"\n" +
+        "      ]\n" +
+        "    ],\n" +
+        "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"\n" +
+        "  }\n" +
+        "]\n";
   }
 }

@@ -56,8 +56,18 @@
 
 ----
 ### Superconductor Spring-Boot Starter
+
 <details>
   <summary>maven</summary>  
+
+```xml
+<repositories>
+  <repository>
+    <id>github</id>
+    <url>https://maven.pkg.github.com/avlo/superconductor</url>
+  </repository>
+</repositories>
+```
 
 ```xml
 <dependency>
@@ -69,6 +79,14 @@
 </details>
 <details>
   <summary>gradle</summary>  
+
+```groovy
+repositories {
+    github {
+        url = uri("https://maven.pkg.github.com/avlo/superconductor")
+    }
+}
+```
 
 ```groovy
 implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter:' + 1.15.1

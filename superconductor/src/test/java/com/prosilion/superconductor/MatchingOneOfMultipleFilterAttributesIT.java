@@ -1,7 +1,6 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.nostr.codec.BaseMessageDecoder;
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.ReferencedEventFilter;
@@ -15,12 +14,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,32 +32,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class MatchingOneOfMultipleFilterAttributesIT {
   private final NostrRelayService nostrRelayService;
+  private final String eventId = Factory.generateRandomHex64String();
+  private final String referenceEventId = Factory.generateRandomHex64String();
+  private final String referencePubKey = Factory.generateRandomHex64String();
 
   @Autowired
   MatchingOneOfMultipleFilterAttributesIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
 
-    try (Stream<String> lines = Files.lines(Paths.get("src/test/resources/matching_reference_event_filter_json_input.txt"))) {
-      String textMessageEventJson = lines.collect(Collectors.joining("\n"));
-      log.debug("setup() send event:\n  {}", textMessageEventJson);
-      assertTrue(
-          nostrRelayService.send(
-                  (EventMessage) BaseMessageDecoder.decode(textMessageEventJson))
-              .getFlag());
-    }
+    assertTrue(
+        nostrRelayService.send(
+                (EventMessage) BaseMessageDecoder.decode(getEvent()))
+            .getFlag());
   }
 
   @Test
-  void testMatchingOneOfMultipleReferencedEvents() throws IOException, ExecutionException, InterruptedException, NostrException {
+  void testMatchingOneOfMultipleReferencedEvents() throws IOException {
     String subscriberId = Factory.generateRandomHex64String();
 
-    String referencedEventIdMatch = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
     String referencedEventIdNoMatch = "0000000000000000000000000000000000000000000000000000000000000000";
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
             new ReferencedEventFilter(
-                new EventTag(referencedEventIdMatch)),
+                new EventTag(referenceEventId)),
             new ReferencedEventFilter(
                 new EventTag(referencedEventIdNoMatch))));
 
@@ -76,20 +68,18 @@ class MatchingOneOfMultipleFilterAttributesIT {
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
 
-    assertTrue(returnedEvents.stream().map(GenericEventKindIF::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590002")));
+    assertTrue(returnedEvents.stream().map(GenericEventKindIF::getId).anyMatch(s -> s.contains(eventId)));
   }
 
   @Test
-  void testMatchingOneOfMultipleReferencedPublicKeys() throws IOException, ExecutionException, InterruptedException, NostrException {
+  void testMatchingOneOfMultipleReferencedPublicKeys() throws IOException {
     String subscriberId = Factory.generateRandomHex64String();
-
-    String referencedPubkeyMatch = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
     String referencedPubkeyNoMatch = "0000000000000000000000000000000000000000000000000000000000000000";
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
             new ReferencedPublicKeyFilter(
-                new PubKeyTag(new PublicKey(referencedPubkeyMatch))),
+                new PubKeyTag(new PublicKey(referencePubKey))),
             new ReferencedPublicKeyFilter(
                 new PubKeyTag(new PublicKey(referencedPubkeyNoMatch)))));
 
@@ -102,6 +92,43 @@ class MatchingOneOfMultipleFilterAttributesIT {
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
 
-    assertTrue(returnedEvents.stream().map(GenericEventKindIF::getId).anyMatch(s -> s.contains("5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e590002")));
+    assertTrue(returnedEvents.stream().map(GenericEventKindIF::getId).anyMatch(s -> s.contains(eventId)));
+  }
+
+  private String getEvent() {
+    return "[\n" +
+        "  \"EVENT\",\n" +
+        "  {\n" +
+        "    \"content\": \"matching identity filter test\",\n" +
+        "    \"id\":\"" + eventId + "\",\n" +
+        "    \"kind\": 1,\n" +
+        "    \"created_at\": 1111111111111,\n" +
+        "    \"pubkey\": \"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\n" +
+        "    \"tags\": [\n" +
+        "      [\n" +
+        "        \"a\",\n" +
+        "        \"30023:f7234bd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd\",\n" +
+        "        \"wss://nostr.example.com\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"custom-tag\",\n" +
+        "        \"custom-tag random value\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"p\",\n" +
+        "        \"" + referencePubKey + "\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"e\",\n" +
+        "        \"" + referenceEventId + "\"\n" +
+        "      ],\n" +
+        "      [\n" +
+        "        \"g\",\n" +
+        "        \"textnote geo-tag-1\"\n" +
+        "      ]\n" +
+        "    ],\n" +
+        "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"\n" +
+        "  }\n" +
+        "]\n";
   }
 }

@@ -15,5 +15,5 @@ include ':superconductor-lib'
 project(':superconductor-lib').setProjectDir(file("lib"))
 include ':superconductor-spring-boot-starter'
 project(':superconductor-spring-boot-starter').setProjectDir(file("starter"))
-include ':superconductor-webapp'
-project(':superconductor-webapp').setProjectDir(file("superconductor"))
+include ':superconductor'
+project(':superconductor').setProjectDir(file("superconductor"))

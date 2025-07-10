@@ -55,6 +55,27 @@
 </details>
 
 ----
+### Superconductor Spring-Boot Starter
+<details>
+  <summary>maven</summary>  
+
+```xml
+<dependency>
+  <groupId>com.prosilion.superconductor</groupId>
+  <artifactId>superconductor-spring-boot-starter</artifactId>
+  <version>1.15.1</version>
+</dependency>
+```
+</details>
+<details>
+  <summary>gradle</summary>  
+
+```groovy
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter:' + 1.15.1
+```
+</details>
+
+----
 
 ### Build Superconductor
 #### 1. Check-out nostr-java-core dependency library
@@ -63,6 +84,26 @@
     $ git clone git@github.com:avlo/nostr-java-core.git
     $ cd nostr-java-core
     $ git checkout develop
+<details>
+  <summary>maven</summary>  
+
+    (unix)
+      $ ./mvnw clean install
+
+    (windows)
+      $ ./mvnw.cmd clean install
+</details>
+<details>
+  <summary>gradle</summary>
+
+    (unix)
+      $ ./gradlew clean test
+      $ ./gradlew publishToMavenLocal
+
+    (windows)
+      $ ./gradlew.bat clean test
+      $ ./gradlew.bat publishToMavenLocal
+</details>
 
 #### 2. Check-out SuperConductor
 
@@ -100,25 +141,32 @@
 
 </details>
 
-#### 4. Configure project properties
-supply required values in [autotest.properties](autotest.properties) file:
-```xml
-M2_NOSTR_JAVA_REPO=<your_local_m2_nostr_java_repo>
-NOSTR_JAVA_HOME=<your_local_nostr_java_home>
-SUPERCONDUCTOR_HOME=<your_local_superconductor_home>  
-```
-for example:
-```bash
-M2_NOSTR_JAVA_REPO=/home/<username>/.m2/repository/com/prosilion
-NOSTR_JAVA_HOME=/home/<username>/git/nostr-java-core
-SUPERCONDUCTOR_HOME=/home/<username>/git/superconductor
-```
-#### 5.  Build application (both unit-test and integration-test included)
+#### 4.  Build application (both unit-test and integration-test included)
 ```bash
 $ cd <your_git_home_dir>
 $ cd superconductor
-$ . ./autotest.sh
 ```
+<details>
+  <summary>maven</summary>  
+
+    (unix)
+      $ ./mvnw clean install
+
+    (windows)
+      $ ./mvnw.cmd clean install
+</details>
+<details>
+  <summary>gradle</summary>
+
+    (unix)
+      $ ./gradlew clean verify
+      $ ./gradlew publishToMavenLocal
+
+    (windows)
+      $ ./gradlew.bat clean verify
+      $ ./gradlew.bat publishToMavenLocal
+</details>
+
 ----
 
 ### Run SuperConductor (4 options)
@@ -216,7 +264,7 @@ run with docker logging displayed to console:
 ###### maven
       $ mvn spring-boot:run -pl superconductor -P local_wss
 ###### gradle
-      $ gradle superconductor-webapp:bootRunLocalWss
+      $ gradle superconductor:bootRunLocalWss
 </details> 
 
 <details>
@@ -225,7 +273,7 @@ run with docker logging displayed to console:
 ###### maven
       $ mvn spring-boot:run -pl superconductor -P local_ws
 ###### gradle
-      $ gradle superconductor-webapp:bootRunLocalWs
+      $ gradle superconductor:bootRunLocalWs
 </details>  
 
 ----

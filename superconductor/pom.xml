@@ -9,9 +9,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   
-  <artifactId>superconductor-webapp</artifactId>
+  <artifactId>superconductor</artifactId>
 <!--  <version>${project.parent.version}</version>-->
-  <name>superconductor-webapp</name>
+  <name>superconductor nostr-relay webapp</name>
   <packaging>war</packaging>
 
   <dependencies>

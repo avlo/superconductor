@@ -36,15 +36,26 @@
 <details>
   <summary>maven</summary>  
 
+###### ~/.m2/settings.xml (typically) 
 ```xml
 <repositories>
   <repository>
-    <id>github</id>
+    <id>github-superconductor</id>
     <url>https://maven.pkg.github.com/avlo/superconductor</url>
   </repository>
 </repositories>
+...
+...
+</servers>
+  <server>
+    <id>github-superconductor</id>
+    <username>YOUR_GITHUB_USERNAME</username>
+    <password>YOUR_GITHUB_ACCESS_TOKEN/PASSWORD</password>
+  </server>
+</servers>
 ```
 
+###### pom.xml
 ```xml
 <dependency>
   <groupId>com.prosilion.superconductor</groupId>

@@ -29,7 +29,9 @@
 - [Docker](https://hub.docker.com/_/docker) 27.5.0
 - [Docker Compose](https://docs.docker.com/compose/install/) v2.32.4
 
-### Spring-Boot Starter
+----
+
+### Spring-Boot Starter, rapid nostr-relay customization & extensibility
 
 <details>
   <summary>maven</summary>  
@@ -65,7 +67,9 @@ repositories {
 ```groovy
 implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter:' + 1.15.1
 ```
-</details>
+</details>  
+
+See [Afterimage Nostr-Reputation-Authority Relay](https://github.com/avlo/afterimage) for a reference implementation  
 
 ----
 

@@ -19,6 +19,9 @@ project(':superconductor-base').setProjectDir(file("base"))
 
 include ':superconductor-lib-h2db'
 project(':superconductor-lib-h2db').setProjectDir(file("lib/h2db"))
+include ':superconductor-lib-jpa'
+project(':superconductor-lib-jpa').setProjectDir(file("lib/jpa"))
+
 
 include ':superconductor-spring-boot-starter'
 project(':superconductor-spring-boot-starter').setProjectDir(file("starter"))

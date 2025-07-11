@@ -1,0 +1,8 @@
+plugins {
+    id 'superconductor.java-conventions'
+}
+
+//name = "superconductor-lib-h2db"
+
+dependencies {
+}

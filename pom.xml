@@ -15,6 +15,7 @@
     <module>autoconfigure/h2db</module>
     <module>base</module>
     <module>lib/h2db</module>
+    <module>lib/jpa</module>
     <module>starter</module>
     <module>superconductor</module>
   </modules>

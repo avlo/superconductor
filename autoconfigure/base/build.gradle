@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    api project(':superconductor-base')
+    api project(':superconductor-autoconfigure-base')
 }

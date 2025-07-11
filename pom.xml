@@ -11,8 +11,9 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>autoconfigure</module>
+    <module>autoconfigure/base</module>
     <module>base</module>
+    <module>lib/h2db</module>
     <module>starter</module>
     <module>superconductor</module>
   </modules>

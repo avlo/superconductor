@@ -9,11 +9,17 @@ buildscript {
 
 rootProject.name = 'superconductor'
 
-include ':superconductor-autoconfigure'
-project(':superconductor-autoconfigure').setProjectDir(file("autoconfigure"))
+include ':superconductor-autoconfigure-base'
+project(':superconductor-autoconfigure-base').setProjectDir(file("autoconfigure/base"))
+
 include ':superconductor-base'
 project(':superconductor-base').setProjectDir(file("base"))
+
+include ':superconductor-lib-h2db'
+project(':superconductor-lib-h2db').setProjectDir(file("lib/h2db"))
+
 include ':superconductor-spring-boot-starter'
 project(':superconductor-spring-boot-starter').setProjectDir(file("starter"))
+
 include ':superconductor'
 project(':superconductor').setProjectDir(file("superconductor"))

@@ -6,11 +6,11 @@
     <groupId>com.prosilion.superconductor</groupId>
     <artifactId>superconductor-parent</artifactId>
     <version>1.15.1</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
   
-  <artifactId>superconductor-autoconfigure</artifactId>
-  <name>superconductor-autoconfigure</name>
+  <artifactId>superconductor-autoconfigure-base</artifactId>
+  <name>superconductor-autoconfigure-base</name>
   <packaging>jar</packaging>
 
   <dependencies>

@@ -1,0 +1,10 @@
+plugins {
+    id 'superconductor.java-conventions'
+}
+
+//name = "superconductor-lib-h2db"
+
+dependencies {
+    def h2Version = '2.2.224'
+    runtimeOnly 'com.h2database:h2:' + h2Version
+}

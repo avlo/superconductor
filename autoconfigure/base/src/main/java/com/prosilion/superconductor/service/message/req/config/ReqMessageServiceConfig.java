@@ -1,13 +1,13 @@
 package com.prosilion.superconductor.service.message.req.config;
 
-import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.message.RelayInfoDocServiceIF;
+import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.base.service.message.RelayInfoDocServiceIF;
 import com.prosilion.superconductor.service.message.req.AutoConfigReqMessageServiceIF;
 import com.prosilion.superconductor.service.message.req.RelayInfoDocService;
 import com.prosilion.superconductor.service.message.req.ReqMessageService;
 import com.prosilion.superconductor.service.message.req.ReqMessageServiceIF;
 import com.prosilion.superconductor.service.message.req.auth.AutoConfigReqMessageServiceNoAuthDecorator;
-import com.prosilion.superconductor.service.request.ReqServiceIF;
+import com.prosilion.superconductor.base.service.request.ReqServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;

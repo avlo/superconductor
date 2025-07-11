@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.entity;
 
+import com.prosilion.superconductor.base.entity.EventEntity;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

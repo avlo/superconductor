@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.service.message.event.standard;
 
 import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.event.EventServiceIF;
+import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;

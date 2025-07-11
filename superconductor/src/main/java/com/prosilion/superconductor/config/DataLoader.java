@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
-import com.prosilion.superconductor.dto.GenericEventKindDto;
-import com.prosilion.superconductor.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.base.dto.GenericEventKindDto;
+import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.lang.NonNull;

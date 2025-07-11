@@ -3,7 +3,7 @@
 //import com.prosilion.nostr.event.ClassifiedListingEvent;
 //import com.prosilion.nostr.event.internal.ClassifiedListing;
 //import com.prosilion.nostr.user.Identity;
-//import com.prosilion.superconductor.service.event.type.EventEntityService;
+//import com.prosilion.superconductor.base.type.event.service.EventEntityService;
 //import com.prosilion.superconductor.util.Factory;
 //import java.math.BigDecimal;
 //import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.message.event.config;
 
-import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.event.EventServiceIF;
+import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.service.message.event.auth.AutoConfigEventMessageServiceNoAuthDecorator;

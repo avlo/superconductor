@@ -2,9 +2,8 @@ package com.prosilion.superconductor.service.message.req;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.service.request.ReqServiceIF;
-import com.prosilion.superconductor.util.EmptyFiltersException;
+import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.base.service.request.ReqServiceIF;
 import org.springframework.lang.NonNull;
 
 public class ReqMessageService implements ReqMessageServiceIF {

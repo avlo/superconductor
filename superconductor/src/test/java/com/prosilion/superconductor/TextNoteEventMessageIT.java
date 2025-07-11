@@ -14,7 +14,7 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.dto.GenericEventKindDto;
+import com.prosilion.superconductor.base.dto.GenericEventKindDto;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;

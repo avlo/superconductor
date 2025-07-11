@@ -1,6 +1,6 @@
 package com.prosilion.superconductor;
 
-import com.prosilion.superconductor.util.NostrMediaType;
+import com.prosilion.superconductor.base.util.NostrMediaType;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.entity;
 
-import com.prosilion.superconductor.repository.EventEntityRepository;
+import com.prosilion.superconductor.base.entity.EventEntity;
+import com.prosilion.superconductor.base.repository.EventEntityRepository;
 import com.prosilion.superconductor.util.Factory;
 import java.util.List;
 import java.util.NoSuchElementException;

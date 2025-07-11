@@ -4,11 +4,11 @@
 //import com.prosilion.nostr.event.AbstractBadgeAwardEvent;
 //import com.prosilion.nostr.event.GenericEventKindIF;
 //import com.prosilion.nostr.message.EventMessage;
-//import com.prosilion.superconductor.service.clientresponse.ClientResponseService;
-//import com.prosilion.superconductor.service.event.service.EventKindServiceIF;
-//import com.prosilion.superconductor.service.event.service.EventKindTypeServiceIF;
+//import com.prosilion.superconductor.base.clientresponse.service.ClientResponseService;
+//import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
+//import com.prosilion.superconductor.base.service.event.service.EventKindTypeServiceIF;
 //import com.prosilion.superconductor.service.event.service.plugin.AbstractEventKindTypePluginIF;
-//import com.prosilion.superconductor.service.event.service.plugin.EventKindTypePluginIF;
+//import com.prosilion.superconductor.base.plugin.service.event.service.EventKindTypePluginIF;
 //import com.prosilion.superconductor.service.message.event.EventMessageServiceIF;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.lang.NonNull;

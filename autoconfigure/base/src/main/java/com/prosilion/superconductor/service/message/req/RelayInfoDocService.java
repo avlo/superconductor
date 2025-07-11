@@ -1,10 +1,8 @@
 package com.prosilion.superconductor.service.message.req;
 
-import com.prosilion.superconductor.service.message.RelayInfoDocServiceIF;
+import com.prosilion.superconductor.base.service.message.RelayInfoDocServiceIF;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 

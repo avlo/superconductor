@@ -1,8 +1,8 @@
 package com.prosilion.superconductor;
 
-import com.prosilion.superconductor.h2db.H2Database;
-import com.prosilion.superconductor.h2db.H2DatabaseConfigParams;
-import com.prosilion.superconductor.h2db.H2DatabaseConfigProperties;
+import com.prosilion.superconductor.lib.h2db.H2Database;
+import com.prosilion.superconductor.lib.h2db.H2DatabaseConfigParams;
+import com.prosilion.superconductor.lib.h2db.H2DatabaseConfigProperties;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

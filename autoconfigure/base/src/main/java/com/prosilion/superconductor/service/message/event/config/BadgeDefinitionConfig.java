@@ -4,7 +4,7 @@ import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.service.event.type.SuperconductorKindType;
+import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import org.springframework.beans.factory.annotation.Value;

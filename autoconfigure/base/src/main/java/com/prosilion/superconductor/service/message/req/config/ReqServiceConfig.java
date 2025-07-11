@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.service.message.req.config;
 
-import com.prosilion.superconductor.service.request.AbstractSubscriberService;
-import com.prosilion.superconductor.service.request.NotifierService;
-import com.prosilion.superconductor.service.request.ReqService;
-import com.prosilion.superconductor.service.request.ReqServiceIF;
+import com.prosilion.superconductor.base.service.request.AbstractSubscriberService;
+import com.prosilion.superconductor.base.service.request.NotifierService;
+import com.prosilion.superconductor.base.service.request.ReqService;
+import com.prosilion.superconductor.base.service.request.ReqServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;

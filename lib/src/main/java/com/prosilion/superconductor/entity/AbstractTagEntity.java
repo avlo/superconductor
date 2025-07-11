@@ -21,7 +21,6 @@ import com.prosilion.nostr.tag.BaseTag;
 @Setter
 @Getter
 @NoArgsConstructor
-@MappedSuperclass
 public abstract class AbstractTagEntity implements Supplier<List<String>>, Serializable {
   @Id
   private Long id;

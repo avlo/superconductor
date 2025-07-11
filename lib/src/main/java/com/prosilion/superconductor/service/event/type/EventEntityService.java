@@ -16,7 +16,6 @@ import com.prosilion.superconductor.repository.EventEntityRepository;
 import com.prosilion.superconductor.repository.join.EventEntityAbstractTagEntityRepository;
 import com.prosilion.superconductor.service.event.ConcreteTagEntitiesService;
 import com.prosilion.superconductor.service.event.join.generic.GenericTagEntitiesService;
-import jakarta.persistence.NoResultException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,25 +61,25 @@ public class EventEntityService {
     try {
       EventEntity savedEntity = Optional.of(
           eventEntityRepository.save(
-              new GenericEventKindDto(event).convertDtoToEntity())).orElseThrow(NoResultException::new);
+              new GenericEventKindDto(event).convertDtoToEntity())).orElseThrow(() -> new RuntimeException("Event not found"));
       concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
       genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
       return savedEntity.getId();
     } catch (DataIntegrityViolationException e) {
       log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
-      return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(NoResultException::new).getId();
+      return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(() -> new RuntimeException("Event not found")).getId();
     }
   }
 
   public Long saveEventEntity(@NonNull GenericEventKindIF event) {
     try {
-      EventEntity savedEntity = Optional.of(eventEntityRepository.save(convertDtoToEntity(event))).orElseThrow(NoResultException::new);
+      EventEntity savedEntity = Optional.of(eventEntityRepository.save(convertDtoToEntity(event))).orElseThrow(() -> new RuntimeException("Event not found"));
       concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
       genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
       return savedEntity.getId();
     } catch (DataIntegrityViolationException e) {
       log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
-      return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(NoResultException::new).getId();
+      return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(() -> new RuntimeException("Event not found")).getId();
     }
   }
 

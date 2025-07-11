@@ -1,6 +1,9 @@
 package com.prosilion.superconductor.entity.join.generic;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,11 +13,9 @@ import java.io.Serializable;
 @Setter
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "generic_tag-element_attribute-join")
+@RedisHash("generic_tag-element_attribute-join")
 public class GenericTagEntityElementAttributeEntity implements Serializable {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private Long genericTagId;
   private Long elementAttributeId;

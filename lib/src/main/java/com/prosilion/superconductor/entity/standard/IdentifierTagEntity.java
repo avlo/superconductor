@@ -1,11 +1,14 @@
 package com.prosilion.superconductor.entity.standard;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.dto.standard.IdentifierTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+
+
+
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +20,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 @Setter
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "identifier_tag")
+@RedisHash("identifier_tag")
 public class IdentifierTagEntity extends AbstractTagEntity {
   private String uuid;
 
@@ -28,7 +30,7 @@ public class IdentifierTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  @Transient
+  @org.springframework.data.annotation.Transient
   public BaseTag getAsBaseTag() {
     return new IdentifierTag(uuid);
   }
@@ -39,7 +41,7 @@ public class IdentifierTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  @Transient
+  @org.springframework.data.annotation.Transient
   public List<String> get() {
     return List.of(uuid);
   }

@@ -1,11 +1,14 @@
 package com.prosilion.superconductor.entity.classified;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.dto.classified.PriceTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+
+
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +22,7 @@ import com.prosilion.nostr.tag.PriceTag;
 @Setter
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "price_tag")
+@RedisHash("price_tag")
 // TODO: comprehensive unit test all parameter variants
 public class PriceTagEntity extends AbstractTagEntity {
   private BigDecimal number;
@@ -35,7 +37,7 @@ public class PriceTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  @Transient
+  @org.springframework.data.annotation.Transient
   public BaseTag getAsBaseTag() {
     return new PriceTag(number, currency, frequency);
   }
@@ -46,7 +48,7 @@ public class PriceTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  @Transient
+  @org.springframework.data.annotation.Transient
   public List<String> get() {
     return List.of(number.toString(),
         Optional.ofNullable(currency).toString(),

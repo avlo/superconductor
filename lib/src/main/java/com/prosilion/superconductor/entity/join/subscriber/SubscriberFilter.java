@@ -1,9 +1,12 @@
 package com.prosilion.superconductor.entity.join.subscriber;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
+
+
+
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,18 +21,14 @@ import java.util.Objects;
 @Component
 public class SubscriberFilter implements Serializable {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Long subscriberId;
 
-  @Column(name = "\"since\"")
   private Long since;
 
-  @Column(name = "\"until\"")
   private Long until;
 
-  @Column(name = "\"limit\"")
   private Integer limit;
 
   public SubscriberFilter(Long subscriberId, Long since, Long until, Integer limit) {

@@ -7,14 +7,10 @@ import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.nostr.user.Signature;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,20 +19,18 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "event")
+@RedisHash("event")
 public class EventEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  @Column(unique = true)
+  @Indexed
   private String eventIdString;
+  @Indexed
   private String pubKey;
   private Integer kind;
   private Long createdAt;
 
-  @Lob
   private String content;
 
   @Transient

@@ -163,20 +163,6 @@
         </plugin>
       </plugins>
     </build>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-docker-compose</artifactId>
-        <version>${spring-boot.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.mysql</groupId>
-        <artifactId>mysql-connector-j</artifactId>
-        <version>${mysql-connector-j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-    </dependencies>
   </profile>
 
   <profile>
@@ -200,20 +186,6 @@
         </plugin>
       </plugins>
     </build>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-docker-compose</artifactId>
-        <version>${spring-boot.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.mysql</groupId>
-        <artifactId>mysql-connector-j</artifactId>
-        <version>${mysql-connector-j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-    </dependencies>
   </profile>
     
     <profile>
@@ -237,20 +209,6 @@
           </plugin>
         </plugins>
       </build>
-      <dependencies>
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-docker-compose</artifactId>
-          <version>${spring-boot.version}</version>
-          <scope>runtime</scope>
-        </dependency>
-        <dependency>
-          <groupId>com.mysql</groupId>
-          <artifactId>mysql-connector-j</artifactId>
-          <version>${mysql-connector-j.version}</version>
-          <scope>runtime</scope>
-        </dependency>
-      </dependencies>
     </profile>
     
     <profile>
@@ -274,20 +232,6 @@
           </plugin>
         </plugins>
       </build>
-      <dependencies>
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-docker-compose</artifactId>
-          <version>${spring-boot.version}</version>
-          <scope>runtime</scope>
-        </dependency>
-        <dependency>
-          <groupId>com.mysql</groupId>
-          <artifactId>mysql-connector-j</artifactId>
-          <version>${mysql-connector-j.version}</version>
-          <scope>runtime</scope>
-        </dependency>
-      </dependencies>
     </profile>
     
   </profiles>

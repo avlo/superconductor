@@ -1,11 +1,14 @@
 package com.prosilion.superconductor.entity.standard;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.dto.standard.HashtagTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+
+
+
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +20,7 @@ import com.prosilion.nostr.tag.HashtagTag;
 @Setter
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "hashtag_tag")
+@RedisHash("hashtag_tag")
 public class HashtagTagEntity extends AbstractTagEntity {
   private String hashtagTag;
 
@@ -28,7 +30,7 @@ public class HashtagTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  @Transient
+  @org.springframework.data.annotation.Transient
   public BaseTag getAsBaseTag() {
     return new HashtagTag(hashtagTag);
   }
@@ -39,7 +41,7 @@ public class HashtagTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  @Transient
+  @org.springframework.data.annotation.Transient
   public List<String> get() {
     return List.of(hashtagTag);
   }

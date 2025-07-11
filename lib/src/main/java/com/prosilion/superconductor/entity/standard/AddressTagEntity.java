@@ -1,5 +1,8 @@
 package com.prosilion.superconductor.entity.standard;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
@@ -9,9 +12,9 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.dto.AbstractTagDto;
 import com.prosilion.superconductor.dto.standard.AddressTagDto;
 import com.prosilion.superconductor.entity.AbstractTagEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+
+
+
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +27,7 @@ import org.springframework.lang.NonNull;
 @Setter
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "address_tag")
+@RedisHash("address_tag")
 public class AddressTagEntity extends AbstractTagEntity {
   private Integer kind;
   private String pubKey;
@@ -41,7 +43,7 @@ public class AddressTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  @Transient
+  @org.springframework.data.annotation.Transient
   public BaseTag getAsBaseTag() {
     return createAddressTag();
   }
@@ -52,7 +54,7 @@ public class AddressTagEntity extends AbstractTagEntity {
   }
 
   @Override
-  @Transient
+  @org.springframework.data.annotation.Transient
   public List<String> get() {
     List<String> list = Stream.of(
             kind.toString(),

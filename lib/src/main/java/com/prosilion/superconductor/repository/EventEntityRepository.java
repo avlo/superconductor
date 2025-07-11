@@ -2,14 +2,14 @@ package com.prosilion.superconductor.repository;
 
 import com.prosilion.superconductor.entity.EventEntity;
 import org.springframework.lang.NonNull;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EventEntityRepository extends JpaRepository<EventEntity, Long> {
+public interface EventEntityRepository extends CrudRepository<EventEntity, Long> {
 
   //  @Cacheable("events")
 //  @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

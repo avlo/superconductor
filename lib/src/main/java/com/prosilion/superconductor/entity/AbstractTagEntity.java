@@ -1,10 +1,13 @@
 package com.prosilion.superconductor.entity;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
 import com.prosilion.superconductor.dto.AbstractTagDto;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+
+
+
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +24,6 @@ import com.prosilion.nostr.tag.BaseTag;
 @MappedSuperclass
 public abstract class AbstractTagEntity implements Supplier<List<String>>, Serializable {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String code;
 

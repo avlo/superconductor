@@ -11,8 +11,8 @@ rootProject.name = 'superconductor'
 
 include ':superconductor-autoconfigure'
 project(':superconductor-autoconfigure').setProjectDir(file("autoconfigure"))
-include ':superconductor-lib'
-project(':superconductor-lib').setProjectDir(file("lib"))
+include ':superconductor-base'
+project(':superconductor-base').setProjectDir(file("base"))
 include ':superconductor-spring-boot-starter'
 project(':superconductor-spring-boot-starter').setProjectDir(file("starter"))
 include ':superconductor'

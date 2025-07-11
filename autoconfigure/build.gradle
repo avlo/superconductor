@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    api project(':superconductor-lib')
+    api project(':superconductor-base')
 }

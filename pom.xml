@@ -12,7 +12,7 @@
 
   <modules>
     <module>autoconfigure</module>
-    <module>lib</module>
+    <module>base</module>
     <module>starter</module>
     <module>superconductor</module>
   </modules>

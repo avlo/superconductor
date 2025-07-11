@@ -9,9 +9,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   
-  <artifactId>superconductor-lib</artifactId>
+  <artifactId>superconductor-base</artifactId>
 <!--  <version>${project.parent.version}</version>-->
-  <name>superconductor-lib</name>
+  <name>superconductor-base</name>
   <packaging>jar</packaging>
 
 <!--  <build>-->

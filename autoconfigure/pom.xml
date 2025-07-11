@@ -16,7 +16,7 @@
   <dependencies>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-lib</artifactId>
+      <artifactId>superconductor-base</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
   </dependencies>

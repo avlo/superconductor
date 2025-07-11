@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.base.service.request;
 
-import com.prosilion.superconductor.base.service.event.type.RedisCache;
+import com.prosilion.superconductor.base.service.event.type.CacheIF;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -9,14 +9,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotifierService {
   private final SubscriberNotifierService subscriberNotifierService;
-  private final RedisCache redisCache;
+  private final CacheIF cacheIF;
 
   @Autowired
   public NotifierService(
       SubscriberNotifierService subscriberNotifierService,
-      RedisCache redisCache) {
+      CacheIF cacheIF) {
     this.subscriberNotifierService = subscriberNotifierService;
-    this.redisCache = redisCache;
+    this.cacheIF = cacheIF;
   }
 
   public void nostrEventHandler(@NonNull AddNostrEvent addNostrEvent) {
@@ -25,7 +25,7 @@ public class NotifierService {
 
   public void subscriptionEventHandler(@NonNull Long subscriberSessionHash) {
 //    TODO: below getAll should be cached/Redis
-    redisCache.getAll()
+    cacheIF.getAll()
         .forEach((kind, eventMap) ->
             eventMap.forEach((eventId, event) ->
                 subscriberNotifierService.newSubscriptionHandler(subscriberSessionHash, new AddNostrEvent(event))));

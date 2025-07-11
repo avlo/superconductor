@@ -17,18 +17,19 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 // TODO: caching currently non-critical although ready for implementation anytime
-public class RedisCache {
+public class JpaCache implements CacheIF {
   private final EventEntityService eventEntityService;
   private final DeletionEventEntityService deletionEventEntityService;
 
   @Autowired
-  public RedisCache(
+  public JpaCache(
       @NonNull EventEntityService eventEntityService,
       @NonNull DeletionEventEntityService deletionEventEntityService) {
     this.eventEntityService = eventEntityService;
     this.deletionEventEntityService = deletionEventEntityService;
   }
 
+  @Override
   public Map<Kind, Map<Long, GenericEventKindIF>> getAll() {
     final List<DeletionEventEntity> allDeletionEventEntities = getAllDeletionEventEntities(); // do up front
     Map<Kind, Map<Long, GenericEventKindIF>> returnedSet = getAllEventEntities().entrySet().stream()
@@ -44,24 +45,28 @@ public class RedisCache {
     return returnedSet;
   }
 
-
-  protected Optional<EventEntity> getByEventIdString(@NonNull String eventId) {
+  @Override
+  public Optional<EventEntity> getByEventIdString(@NonNull String eventId) {
     return eventEntityService.findByEventIdString(eventId);
   }
 
-  protected Optional<EventEntity> getByMatchingAddressableTags(@NonNull String eventId) {
+  @Override
+  public Optional<EventEntity> getByMatchingAddressableTags(@NonNull String eventId) {
     return eventEntityService.findByEventIdString(eventId);
   }
 
-  protected GenericEventKindIF getEventById(@NonNull Long id) {
+  @Override
+  public GenericEventKindIF getEventById(@NonNull Long id) {
     return eventEntityService.getEventById(id);
   }
 
+  @Override
   public void saveEventEntity(@NonNull GenericEventKindIF event) {
     eventEntityService.saveEventEntity(event);
   }
 
-  protected void deleteEventEntity(@NonNull EventEntity event) {
+  @Override
+  public void deleteEventEntity(@NonNull EventEntity event) {
     eventEntityService.deleteEventEntity(event);
   }
 
@@ -73,9 +78,5 @@ public class RedisCache {
   //  TODO: deletionEvent entity cache-location candidate
   private List<DeletionEventEntity> getAllDeletionEventEntities() {
     return deletionEventEntityService.findAll();
-  }
-
-  private boolean checkEventIdMatchesAnyDeletionEventEntityId(Long eventId, List<DeletionEventEntity> deletionEventEntities) {
-    return deletionEventEntities.stream().map(DeletionEventEntity::getEventId).anyMatch(eventId::equals);
   }
 }

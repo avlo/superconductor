@@ -8,11 +8,11 @@ import com.prosilion.superconductor.base.service.event.service.EventKindTypeServ
 import com.prosilion.superconductor.base.service.event.service.EventKindTypeServiceIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
+import com.prosilion.superconductor.base.service.event.type.CacheIF;
 import com.prosilion.superconductor.base.service.event.type.CanonicalEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.base.service.event.type.RedisCache;
 import com.prosilion.superconductor.base.service.request.NotifierService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +38,8 @@ public class EventKindServiceConfig {
   }
 
   @Bean
-  EventPluginIF eventPlugin(@NonNull RedisCache redisCache) {
-    return new EventPlugin(redisCache);
+  EventPluginIF eventPlugin(@NonNull CacheIF cacheIF) {
+    return new EventPlugin(cacheIF);
   }
 
   @Bean

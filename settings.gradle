@@ -11,6 +11,8 @@ rootProject.name = 'superconductor'
 
 include ':superconductor-autoconfigure-base'
 project(':superconductor-autoconfigure-base').setProjectDir(file("autoconfigure/base"))
+include ':superconductor-autoconfigure-h2db'
+project(':superconductor-autoconfigure-h2db').setProjectDir(file("autoconfigure/h2db"))
 
 include ':superconductor-base'
 project(':superconductor-base').setProjectDir(file("base"))

@@ -12,6 +12,7 @@
 
   <modules>
     <module>autoconfigure/base</module>
+    <module>autoconfigure/h2db</module>
     <module>base</module>
     <module>lib/h2db</module>
     <module>starter</module>

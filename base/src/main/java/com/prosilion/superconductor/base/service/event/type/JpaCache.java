@@ -10,18 +10,14 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
 // TODO: caching currently non-critical although ready for implementation anytime
 public class JpaCache implements CacheIF {
   private final EventEntityService eventEntityService;
   private final DeletionEventEntityService deletionEventEntityService;
 
-  @Autowired
   public JpaCache(
       @NonNull EventEntityService eventEntityService,
       @NonNull DeletionEventEntityService deletionEventEntityService) {

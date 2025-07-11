@@ -10,9 +10,12 @@ import com.prosilion.superconductor.base.service.event.service.plugin.EventKindP
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.type.CacheIF;
 import com.prosilion.superconductor.base.service.event.type.CanonicalEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.type.DeletionEventEntityService;
+import com.prosilion.superconductor.base.service.event.type.EventEntityService;
 import com.prosilion.superconductor.base.service.event.type.EventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.type.JpaCache;
 import com.prosilion.superconductor.base.service.request.NotifierService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,15 @@ public class EventKindServiceConfig {
   @ConditionalOnMissingBean
   EventKindTypeServiceIF eventKindTypeServiceIF(@NonNull List<EventKindTypePluginIF<KindTypeIF>> eventKindTypePlugins) {
     return new EventKindTypeService(eventKindTypePlugins);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+//  TODO: this should be moved into db-specific config for jpa & another should exist for redis
+  CacheIF jpaCache(
+      @NonNull EventEntityService eventEntityService,
+      @NonNull DeletionEventEntityService deletionEventEntityService) {
+    return new JpaCache(eventEntityService, deletionEventEntityService);
   }
 
   @Bean

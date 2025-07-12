@@ -32,13 +32,24 @@ public class NostrWsConfig {
   }
 
   @Bean
-  EventKindTypePluginIF<KindTypeIF> badgeAwardEventKindTypePlugin(
+  EventKindTypePluginIF<KindTypeIF> badgeAwardUpvoteEventKindTypePlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventPluginIF eventPlugin) {
     return new BadgeAwardEventKindTypePlugin(
         notifierService,
         new EventKindTypePlugin(
             SuperconductorKindType.UPVOTE,
+            eventPlugin));
+  }
+
+  @Bean
+  EventKindTypePluginIF<KindTypeIF> badgeAwardDownvoteEventKindTypePlugin(
+      @NonNull NotifierService notifierService,
+      @NonNull EventPluginIF eventPlugin) {
+    return new BadgeAwardEventKindTypePlugin(
+        notifierService,
+        new EventKindTypePlugin(
+            SuperconductorKindType.DOWNVOTE,
             eventPlugin));
   }
 }

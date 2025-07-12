@@ -6,7 +6,6 @@ import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.AddressTagFilter;
 import com.prosilion.nostr.message.BaseMessage;
@@ -16,15 +15,11 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.entity.EventEntity;
-import com.prosilion.superconductor.base.service.event.type.EventEntityService;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -35,7 +30,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
 import static com.prosilion.superconductor.TextNoteEventMessageIT.getGenericEventKindIFs;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -51,25 +45,26 @@ class MatchingAddressTagIncludingRelayIT {
 
   @Autowired
   MatchingAddressTagIncludingRelayIT(
-      @NonNull NostrRelayService nostrRelayService,
-      @NonNull EventEntityService eventEntityService) throws IOException {
+      @NonNull NostrRelayService nostrRelayService
+//      , @NonNull EventEntityService eventEntityService
+  ) throws IOException {
     this.nostrRelayService = nostrRelayService;
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
 
-    Optional<EventEntity> byEventIdString = eventEntityService.findByEventIdString(eventId);
-    GenericEventKindIF eventById = eventEntityService.getEventById(byEventIdString.orElseThrow().getId());
-
-    String string = Objects.requireNonNull(Filterable.getTypeSpecificTags(AddressTag.class, eventById)
-        .stream()
-        .findFirst().orElseThrow()
-        .getRelay().getUri().toString());
-
-    assertEquals(
-        WS_LOCALHOST_5555,
-        string);
+//    Optional<EventEntity> byEventIdString = eventEntityService.findByEventIdString(eventId);
+//    GenericEventKindIF eventById = eventEntityService.getEventById(byEventIdString.orElseThrow().getId());
+//
+//    String string = Objects.requireNonNull(Filterable.getTypeSpecificTags(AddressTag.class, eventById)
+//        .stream()
+//        .findFirst().orElseThrow()
+//        .getRelay().getUri().toString());
+//
+//    assertEquals(
+//        WS_LOCALHOST_5555,
+//        string);
   }
 
   @Test

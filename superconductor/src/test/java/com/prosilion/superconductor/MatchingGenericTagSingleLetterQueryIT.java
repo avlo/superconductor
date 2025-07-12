@@ -13,7 +13,6 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.HashtagTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.dto.GenericEventKindDto;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
@@ -26,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
+import prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
 import static com.prosilion.superconductor.TextNoteEventMessageIT.getGenericEventKindIFs;
 import static org.junit.jupiter.api.Assertions.assertEquals;

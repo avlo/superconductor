@@ -11,7 +11,6 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.dto.GenericEventKindDto;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.base.util.FilterMatcher;
 import java.net.URI;
@@ -22,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;

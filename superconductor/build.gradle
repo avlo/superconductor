@@ -19,6 +19,9 @@ dependencies {
 //
 //    runtimeOnly 'org.springframework.boot:spring-boot-docker-compose:' + springBootVersion
 //    runtimeOnly 'com.mysql:mysql-connector-j:' + mysqlConnectorJVersion
+
+//    TODO: temp testing hack, likely instead tests need moved to lib/jpa
+    api project(':superconductor-lib-jpa')
 }
 
 //tasks.bootJar {

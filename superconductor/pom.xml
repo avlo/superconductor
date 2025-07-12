@@ -11,7 +11,7 @@
   
   <artifactId>superconductor</artifactId>
 <!--  <version>${project.parent.version}</version>-->
-  <name>superconductor nostr-relay webapp</name>
+  <name>superconductor</name>
   <packaging>war</packaging>
 
   <dependencies>

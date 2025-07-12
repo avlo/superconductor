@@ -16,7 +16,12 @@
   <dependencies>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-base</artifactId>
+      <artifactId>superconductor-autoconfigure-base</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-lib-jpa</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
   </dependencies>

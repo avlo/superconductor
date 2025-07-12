@@ -10,7 +10,6 @@
     </parent>
 
     <artifactId>superconductor-spring-boot-starter-jpa</artifactId>
-    <!--  <version>${project.parent.version}</version>-->
     <name>superconductor-spring-boot-starter-jpa</name>
     <packaging>jar</packaging>
 

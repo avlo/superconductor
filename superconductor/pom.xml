@@ -10,7 +10,6 @@
   </parent>
   
   <artifactId>superconductor</artifactId>
-<!--  <version>${project.parent.version}</version>-->
   <name>superconductor</name>
   <packaging>war</packaging>
 
@@ -22,7 +21,7 @@
     </dependency>    
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-spring-boot-starter</artifactId>
+      <artifactId>superconductor-spring-boot-starter-jpa</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>

@@ -11,6 +11,7 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MatchingReferencedPubkeyIT {
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
+  private final PublicKey referencedPubkey = Identity.generateRandomIdentity().getPublicKey();
 
   @Autowired
   MatchingReferencedPubkeyIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
@@ -47,10 +49,8 @@ class MatchingReferencedPubkeyIT {
   @Test
   void testReqMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
-    String referencedPubKey = "2bff79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
 
-    PublicKey publicKey = new PublicKey(referencedPubKey);
-    PubKeyTag pubKeyTag = new PubKeyTag(publicKey);
+    PubKeyTag pubKeyTag = new PubKeyTag(referencedPubkey);
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
             new ReferencedPublicKeyFilter(pubKeyTag)));
@@ -65,7 +65,7 @@ class MatchingReferencedPubkeyIT {
         .map(event -> event.getTags().stream()
             .filter(PubKeyTag.class::isInstance)
             .map(PubKeyTag.class::cast)
-            .anyMatch(pk -> pk.getPublicKey().toHexString().equals(referencedPubKey))).findFirst().orElseThrow());
+            .anyMatch(pk -> pk.getPublicKey().equals(referencedPubkey))).findFirst().orElseThrow());
 
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
@@ -73,7 +73,7 @@ class MatchingReferencedPubkeyIT {
   @Test
   void testReqNonMatchingReferencedPubkey() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
-    String nonMatchingReferencedPubKey = "cccd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+    String nonMatchingReferencedPubKey = Factory.generateRandomHex64String();
 
     PublicKey publicKey = new PublicKey(nonMatchingReferencedPubKey);
     PubKeyTag pubKeyTag = new PubKeyTag(publicKey);
@@ -96,7 +96,7 @@ class MatchingReferencedPubkeyIT {
         "    \"id\":\"" + eventId + "\",\n" +
         "    \"kind\": 1,\n" +
         "    \"created_at\": 1111111111111,\n" +
-        "    \"pubkey\": \"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\n" +
+        "    \"pubkey\": \"" + Factory.generateRandomHex64String() + "\",\n" +
         "    \"tags\": [\n" +
         "      [\n" +
         "        \"a\",\n" +
@@ -109,7 +109,7 @@ class MatchingReferencedPubkeyIT {
         "      ],\n" +
         "      [\n" +
         "        \"p\",\n" +
-        "        \"2bff79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"\n" +
+        "        \"" + referencedPubkey.toHexString() + "\"\n" +
         "      ],\n" +
         "      [\n" +
         "        \"e\",\n" +

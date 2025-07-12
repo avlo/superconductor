@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.jpa.config;
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -16,9 +17,9 @@ public class DataLoader implements CommandLineRunner {
 
   @Autowired
   public DataLoader(
-      @NonNull EventPluginIF eventPlugin,
-      @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
-      @NonNull BadgeDefinitionEvent downvoteBadgeDefinitionEvent) {
+      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
+      @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeDefinitionEvent downvoteBadgeDefinitionEvent) {
     this.eventPlugin = eventPlugin;
     this.upvoteBadgeDefinitionEvent = upvoteBadgeDefinitionEvent;
     this.downvoteBadgeDefinitionEvent = downvoteBadgeDefinitionEvent;

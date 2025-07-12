@@ -16,6 +16,7 @@ import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.base.service.request.NotifierService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +42,7 @@ public class EventKindServiceConfig {
 //  @ConditionalOnMissingBean
   EventKindPluginIF<Kind> textNoteEventKindPlugin(
       @NonNull NotifierService notifierService,
-      @NonNull EventPluginIF eventPlugin) {
+      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     log.debug("loaded canonical textNoteEventKindPlugin bean");
     return new CanonicalEventKindPlugin(
         notifierService,
@@ -51,7 +52,9 @@ public class EventKindServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  EventServiceIF eventService(@NonNull EventKindServiceIF eventKindService, @NonNull EventKindTypeServiceIF eventKindTypeService) {
+  EventServiceIF eventService(
+      @NonNull @Qualifier("eventKindService") EventKindServiceIF eventKindService, 
+      @NonNull EventKindTypeServiceIF eventKindTypeService) {
     return new EventService(eventKindService, eventKindTypeService);
   }
 }

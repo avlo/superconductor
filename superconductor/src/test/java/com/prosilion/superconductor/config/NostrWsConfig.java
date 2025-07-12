@@ -9,6 +9,7 @@ import com.prosilion.superconductor.base.service.request.NotifierService;
 import com.prosilion.superconductor.util.BadgeAwardEventKindTypePlugin;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.util.concurrent.ExecutionException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -34,7 +35,7 @@ public class NostrWsConfig {
   @Bean
   EventKindTypePluginIF<KindTypeIF> badgeAwardUpvoteEventKindTypePlugin(
       @NonNull NotifierService notifierService,
-      @NonNull EventPluginIF eventPlugin) {
+      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     return new BadgeAwardEventKindTypePlugin(
         notifierService,
         new EventKindTypePlugin(
@@ -45,7 +46,7 @@ public class NostrWsConfig {
   @Bean
   EventKindTypePluginIF<KindTypeIF> badgeAwardDownvoteEventKindTypePlugin(
       @NonNull NotifierService notifierService,
-      @NonNull EventPluginIF eventPlugin) {
+      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     return new BadgeAwardEventKindTypePlugin(
         notifierService,
         new EventKindTypePlugin(

@@ -15,6 +15,8 @@ include ':superconductor-autoconfigure-h2db'
 project(':superconductor-autoconfigure-h2db').setProjectDir(file("autoconfigure/h2db"))
 include ':superconductor-autoconfigure-jpa'
 project(':superconductor-autoconfigure-jpa').setProjectDir(file("autoconfigure/jpa"))
+include ':superconductor-autoconfigure-redis'
+project(':superconductor-autoconfigure-redis').setProjectDir(file("autoconfigure/redis"))
 
 include ':superconductor-base'
 project(':superconductor-base').setProjectDir(file("base"))
@@ -23,6 +25,8 @@ include ':superconductor-lib-h2db'
 project(':superconductor-lib-h2db').setProjectDir(file("lib/h2db"))
 include ':superconductor-lib-jpa'
 project(':superconductor-lib-jpa').setProjectDir(file("lib/jpa"))
+include ':superconductor-lib-redis'
+project(':superconductor-lib-redis').setProjectDir(file("lib/redis"))
 
 
 include ':superconductor-spring-boot-starter-jpa'

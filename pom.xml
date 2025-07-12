@@ -14,9 +14,11 @@
     <module>autoconfigure/base</module>
     <module>autoconfigure/h2db</module>
     <module>autoconfigure/jpa</module>
+    <module>autoconfigure/redis</module>
     <module>base</module>
     <module>lib/h2db</module>
     <module>lib/jpa</module>
+    <module>lib/redis</module>
     <module>starter/jpa</module>
     <module>superconductor</module>
   </modules>

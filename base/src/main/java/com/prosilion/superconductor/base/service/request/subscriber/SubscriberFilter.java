@@ -1,35 +1,22 @@
 package com.prosilion.superconductor.base.service.request.subscriber;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import java.io.Serializable;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
-
-import java.io.Serializable;
-import java.util.Objects;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @Component
 public class SubscriberFilter implements Serializable {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Long subscriberId;
-
-  @Column(name = "\"since\"")
   private Long since;
-
-  @Column(name = "\"until\"")
   private Long until;
-
-  @Column(name = "\"limit\"")
   private Integer limit;
 
   public SubscriberFilter(Long subscriberId, Long since, Long until, Integer limit) {

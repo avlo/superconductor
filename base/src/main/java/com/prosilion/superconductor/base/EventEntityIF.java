@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.base;
 
 import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.tag.BaseTag;
+import java.util.List;
 
 public interface EventEntityIF {
   <T extends GenericEventKindIF> T convertEntityToDto();
@@ -17,7 +19,7 @@ public interface EventEntityIF {
 
   String getContent();
 
-  java.util.List<com.prosilion.nostr.tag.BaseTag> getTags();
+  List<BaseTag> getTags();
 
   String getSignature();
 
@@ -33,7 +35,7 @@ public interface EventEntityIF {
 
   void setContent(String content);
 
-  void setTags(java.util.List<com.prosilion.nostr.tag.BaseTag> tags);
+  void setTags(List<BaseTag> tags);
 
   void setSignature(String signature);
 }

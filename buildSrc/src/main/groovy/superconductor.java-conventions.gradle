@@ -54,7 +54,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-devtools:' + springBootVersion
     implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -69,7 +69,6 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:' + apacheCommonsLang3
     implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:' + jacksonModuleAfterburner
     implementation 'com.google.guava:guava:' + googleGuava
-    implementation 'com.h2database:h2'
     implementation 'com.mysql:mysql-connector-j'
     implementation 'org.projectlombok:lombok:' + lombok
     annotationProcessor 'org.projectlombok:lombok:' + lombok

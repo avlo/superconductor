@@ -1,0 +1,14 @@
+plugins {
+    id 'superconductor.java-conventions'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api project(':superconductor-base')
+
+    def redisVersion = '1.0.0-RC3'
+    implementation 'com.redis.om:redis-om-spring:' + redisVersion
+}

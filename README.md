@@ -6,7 +6,7 @@
  88b    dP88    .d888   888o      888oo,__ 888b "88bo,`88bo,__,o,"888,_ _,88P888    Y88  888_,o8P'88    .d888`88bo,__,o,    88,   "888,_ _,88P888b "88bo,
   "YMmMY"  "YmmMMMM""   YMMMb     """"YUMMMMMMM   "W"   "YUMMMMMP" "YMMMMMP" MMM     YM  MMMMP"`   "YmmMMMM""  "YUMMMMMP"   MMM     "YMMMMMP" MMMM   "W"
 ```
-# Java Nostr-Relay Framework & WebSocket Application Server
+# Java Nostr-Relay, Relay Framework & WebSocket Application Server
 
 ----
 

@@ -21,7 +21,7 @@ public class ConcreteTagEntitiesService<
   private final List<TagPlugin<P, Q, R, S, T>> tagPlugins;
 
   public ConcreteTagEntitiesService(List<TagPlugin<P, Q, R, S, T>> tagPlugins) {
-    this.tagPlugins = tagPlugins;
+   this.tagPlugins = tagPlugins;
   }
 
   public List<AbstractTagEntity> getTags(@NonNull Long eventId) {

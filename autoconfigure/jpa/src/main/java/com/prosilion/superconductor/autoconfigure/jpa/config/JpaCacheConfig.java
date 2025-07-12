@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.lang.NonNull;
 import prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
@@ -33,6 +34,7 @@ import prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = "prosilion.superconductor.lib.jpa.repository")
 @EntityScan(basePackages = "prosilion.superconductor.lib.jpa.entity")
+@ComponentScan(basePackages = "prosilion.superconductor.lib.jpa.plugin.tag")
 @ConditionalOnClass(JpaCache.class)
 public class JpaCacheConfig<
     P extends BaseTag,

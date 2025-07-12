@@ -18,17 +18,16 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
 import com.prosilion.superconductor.util.BadgeAwardUpvoteEvent;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
-import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
@@ -53,7 +52,7 @@ public class BadgeAwardUpvoteEventMessageIT {
   @Autowired
   BadgeAwardUpvoteEventMessageIT(
       @NonNull NostrRelayService nostrRelayService,
-      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
+      @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;

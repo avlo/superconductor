@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.service.event.type;
+package com.prosilion.superconductor.util;
 
 import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.GenericEventKindIF;

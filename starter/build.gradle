@@ -1,8 +1,0 @@
-plugins {
-    id 'superconductor.java-conventions'
-}
-
-dependencies {
-    api project(':superconductor-autoconfigure-base')
-    api project(':superconductor-base')
-}

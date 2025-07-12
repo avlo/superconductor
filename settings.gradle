@@ -25,8 +25,8 @@ include ':superconductor-lib-jpa'
 project(':superconductor-lib-jpa').setProjectDir(file("lib/jpa"))
 
 
-include ':superconductor-spring-boot-starter'
-project(':superconductor-spring-boot-starter').setProjectDir(file("starter"))
+include ':superconductor-spring-boot-starter-jpa'
+project(':superconductor-spring-boot-starter-jpa').setProjectDir(file("starter/jpa"))
 
 include ':superconductor'
 project(':superconductor').setProjectDir(file("superconductor"))

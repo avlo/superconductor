@@ -9,9 +9,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>superconductor-spring-boot-starter</artifactId>
+    <artifactId>superconductor-spring-boot-starter-jpa</artifactId>
     <!--  <version>${project.parent.version}</version>-->
-    <name>superconductor-spring-boot-starter</name>
+    <name>superconductor-spring-boot-starter-jpa</name>
     <packaging>jar</packaging>
 
     <distributionManagement>
@@ -32,12 +32,7 @@
     <dependencies>
         <dependency>
             <groupId>com.prosilion.superconductor</groupId>
-            <artifactId>superconductor-base</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.prosilion.superconductor</groupId>
-            <artifactId>superconductor-autoconfigure</artifactId>
+            <artifactId>superconductor-autoconfigure-jpa</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>

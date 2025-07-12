@@ -10,9 +10,10 @@ repositories {
     }
 }
 dependencies {
-    def subdivisionsVersion = '1.3.0'
-    api project(':superconductor-spring-boot-starter')
+//    TODO: temp testing hack, likely instead tests need moved to lib/jpa
+    api project(':superconductor-spring-boot-starter-jpa')
 
+    def subdivisionsVersion = '1.3.0'
     testImplementation 'com.prosilion:subdivisions:' + subdivisionsVersion
 //    def springBootVersion = '3.4.3'
 //    def mysqlConnectorJVersion = '9.1.0'
@@ -20,8 +21,6 @@ dependencies {
 //    runtimeOnly 'org.springframework.boot:spring-boot-docker-compose:' + springBootVersion
 //    runtimeOnly 'com.mysql:mysql-connector-j:' + mysqlConnectorJVersion
 
-//    TODO: temp testing hack, likely instead tests need moved to lib/jpa
-    api project(':superconductor-lib-jpa')
 }
 
 //tasks.bootJar {

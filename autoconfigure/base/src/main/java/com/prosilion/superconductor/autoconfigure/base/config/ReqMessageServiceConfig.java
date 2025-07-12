@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.autoconfigure.base.service.message.req.config;
+package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.message.RelayInfoDocServiceIF;

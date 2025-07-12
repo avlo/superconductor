@@ -11,18 +11,16 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 import prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 
 @Slf4j
-@Component
+//@Component
 public class JpaCache implements CacheIF {
   private final EventEntityService eventEntityService;
   private final DeletionEventEntityService deletionEventEntityService;
 
-  @Autowired
+  //  @Autowired
   public JpaCache(
       @NonNull EventEntityService eventEntityService,
       @NonNull DeletionEventEntityService deletionEventEntityService) {

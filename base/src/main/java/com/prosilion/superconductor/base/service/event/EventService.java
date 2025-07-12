@@ -4,17 +4,13 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindTypeServiceIF;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
 public class EventService implements EventServiceIF {
   private final EventKindServiceIF eventKindService;
   private final EventKindTypeServiceIF eventKindTypeService;
 
-  @Autowired
   public EventService(@NonNull EventKindServiceIF eventKindService, @NonNull EventKindTypeServiceIF eventKindTypeService) {
     this.eventKindService = eventKindService;
     this.eventKindTypeService = eventKindTypeService;

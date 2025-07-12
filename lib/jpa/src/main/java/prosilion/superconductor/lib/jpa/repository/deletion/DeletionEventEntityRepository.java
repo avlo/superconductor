@@ -1,6 +1,5 @@
 package prosilion.superconductor.lib.jpa.repository.deletion;
 
-import com.prosilion.superconductor.base.DeletionEventEntityIF;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
@@ -9,8 +8,6 @@ import prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntity
 
 @Repository
 public interface DeletionEventEntityRepository extends JpaRepository<DeletionEventEntity, Long> {
-//  List<DeletionEventEntityIF> findAll();
-
-  @NonNull
-  List<DeletionEventEntityIF> findAll(Class<DeletionEventEntityIF> clazz);
+  @NonNull List<DeletionEventEntity> findAll();
+//  @NonNull List<DeletionEventEntityIF> findAll(Class<DeletionEventEntityIF> clazz);
 }

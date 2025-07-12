@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.autoconfigure.base.service.message.event.config;
+package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.IdentifierTag;

@@ -1,7 +1,9 @@
-package com.prosilion.superconductor.autoconfigure.base.service.message.event.config;
+package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
+import com.prosilion.superconductor.base.service.event.EventService;
+import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindService;
 import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindTypeService;
@@ -45,5 +47,11 @@ public class EventKindServiceConfig {
         notifierService,
         new EventKindPlugin(
             Kind.TEXT_NOTE, eventPlugin));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  EventServiceIF eventService(@NonNull EventKindServiceIF eventKindService, @NonNull EventKindTypeServiceIF eventKindTypeService) {
+    return new EventService(eventKindService, eventKindTypeService);
   }
 }

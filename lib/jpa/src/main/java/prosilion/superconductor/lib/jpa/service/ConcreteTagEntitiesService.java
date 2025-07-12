@@ -1,13 +1,10 @@
 package prosilion.superconductor.lib.jpa.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import com.prosilion.nostr.tag.BaseTag;
-
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
 import prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractEntity;
 import prosilion.superconductor.lib.jpa.plugin.tag.TagPlugin;
@@ -15,7 +12,6 @@ import prosilion.superconductor.lib.jpa.repository.AbstractTagEntityRepository;
 import prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
 
 @Slf4j
-@Service
 public class ConcreteTagEntitiesService<
     P extends BaseTag,
     Q extends AbstractTagEntityRepository<R>,
@@ -24,7 +20,6 @@ public class ConcreteTagEntitiesService<
     T extends EventEntityAbstractTagEntityRepository<S>> {
   private final List<TagPlugin<P, Q, R, S, T>> tagPlugins;
 
-  @Autowired
   public ConcreteTagEntitiesService(List<TagPlugin<P, Q, R, S, T>> tagPlugins) {
     this.tagPlugins = tagPlugins;
   }

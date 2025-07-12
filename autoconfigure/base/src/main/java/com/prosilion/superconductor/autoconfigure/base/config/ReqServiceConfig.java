@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.autoconfigure.base.service.message.req.config;
+package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.superconductor.base.service.request.AbstractSubscriberService;
 import com.prosilion.superconductor.base.service.request.NotifierService;

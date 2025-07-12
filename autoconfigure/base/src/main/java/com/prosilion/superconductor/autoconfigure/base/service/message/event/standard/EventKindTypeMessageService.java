@@ -5,8 +5,8 @@
 //import com.prosilion.nostr.event.GenericEventKindIF;
 //import com.prosilion.nostr.message.EventMessage;
 //import com.prosilion.superconductor.base.clientresponse.service.ClientResponseService;
-//import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
-//import com.prosilion.superconductor.base.service.event.service.EventKindTypeServiceIF;
+//import com.prosilion.superconductor.autoconfigure.service.event.service.base.EventKindServiceIF;
+//import com.prosilion.superconductor.autoconfigure.service.event.service.base.EventKindTypeServiceIF;
 //import com.prosilion.superconductor.service.event.service.plugin.AbstractEventKindTypePluginIF;
 //import com.prosilion.superconductor.base.plugin.service.event.service.EventKindTypePluginIF;
 //import com.prosilion.superconductor.autoconfigure.base.event.message.service.EventMessageServiceIF;

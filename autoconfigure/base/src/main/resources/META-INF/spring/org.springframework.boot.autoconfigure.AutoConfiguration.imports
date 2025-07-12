@@ -1,4 +1,5 @@
-com.prosilion.superconductor.autoconfigure.base.service.message.event.config.EventMessageServiceConfig
-com.prosilion.superconductor.autoconfigure.base.service.message.event.config.BadgeDefinitionConfig
-com.prosilion.superconductor.autoconfigure.base.service.message.req.config.ReqMessageServiceConfig
-com.prosilion.superconductor.autoconfigure.base.service.message.req.config.ReqServiceConfig
+com.prosilion.superconductor.autoconfigure.base.config.BadgeDefinitionConfig
+com.prosilion.superconductor.autoconfigure.base.config.EventKindServiceConfig
+com.prosilion.superconductor.autoconfigure.base.config.EventMessageServiceConfig
+com.prosilion.superconductor.autoconfigure.base.config.ReqMessageServiceConfig
+com.prosilion.superconductor.autoconfigure.base.config.ReqServiceConfig

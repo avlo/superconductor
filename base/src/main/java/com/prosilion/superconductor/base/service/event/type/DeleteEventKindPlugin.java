@@ -3,7 +3,7 @@
 //import prosilion.superconductor.lib.jpa.entity.EventEntity;
 //import com.prosilion.superconductor.base.request.service.NotifierService;
 //import com.prosilion.superconductor.base.pubsub.request.service.AddNostrEvent;
-//import com.prosilion.superconductor.base.util.FilterMatcher;
+//import com.prosilion.superconductor.autoconfigure.util.base.FilterMatcher;
 //import java.util.List;
 //import java.util.Optional;
 //import java.util.stream.Stream;

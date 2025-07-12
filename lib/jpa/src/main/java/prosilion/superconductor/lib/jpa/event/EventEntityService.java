@@ -8,16 +8,15 @@ import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.EventEntityIF;
 import jakarta.persistence.NoResultException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 import prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
 import prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
@@ -30,15 +29,20 @@ import prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEn
 import prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
 
 @Slf4j
-@Service
 public class EventEntityService {
   private final ConcreteTagEntitiesService<BaseTag, AbstractTagEntityRepository<AbstractTagEntity>, AbstractTagEntity, EventEntityAbstractEntity, EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService;
   private final GenericTagEntitiesService genericTagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
-  @Autowired
-  public EventEntityService(ConcreteTagEntitiesService<BaseTag, AbstractTagEntityRepository<AbstractTagEntity>, AbstractTagEntity, EventEntityAbstractEntity, EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService, GenericTagEntitiesService genericTagEntitiesService, EventEntityRepository eventEntityRepository) {
-
+  public EventEntityService(
+      @NonNull ConcreteTagEntitiesService<
+          BaseTag,
+          AbstractTagEntityRepository<AbstractTagEntity>,
+          AbstractTagEntity,
+          EventEntityAbstractEntity,
+          EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService,
+      @NonNull GenericTagEntitiesService genericTagEntitiesService,
+      @NonNull EventEntityRepository eventEntityRepository) {
     this.concreteTagEntitiesService = concreteTagEntitiesService;
     this.genericTagEntitiesService = genericTagEntitiesService;
     this.eventEntityRepository = eventEntityRepository;
@@ -73,7 +77,8 @@ public class EventEntityService {
   }
 
   private List<EventEntityIF> getEventEntityRepositoryAll() {
-    return eventEntityRepository.findAll(EventEntityIF.class);
+//    return eventEntityRepository.findAll(EventEntityIF.class);
+    return Collections.unmodifiableList(eventEntityRepository.findAll());
   }
 
   public Optional<EventEntityIF> findByEventIdString(@NonNull String eventIdString) {
@@ -100,7 +105,8 @@ public class EventEntityService {
   }
 
   private Optional<EventEntityIF> getById(Long id) {
-    return eventEntityRepository.findById(EventEntityIF.class, id);
+//    return eventEntityRepository.findById(EventEntityIF.class, id);
+    return eventEntityRepository.findById(id).map(EventEntityIF.class::cast);
   }
 
   private EventEntityIF populateEventEntity(EventEntityIF eventEntity) {

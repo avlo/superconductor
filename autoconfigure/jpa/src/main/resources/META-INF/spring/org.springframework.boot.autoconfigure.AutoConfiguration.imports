@@ -1,1 +1,1 @@
-com.prosilion.superconductor.autoconfigure.jpa.config.EventKindServiceConfig
+com.prosilion.superconductor.autoconfigure.jpa.config.JpaCacheConfig

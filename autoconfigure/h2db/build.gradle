@@ -3,8 +3,6 @@ plugins {
 }
 
 dependencies {
-    def h2Version = '2.2.224'
-
     api project(':superconductor-lib-h2db')
-    implementation 'com.h2database:h2:' + h2Version
+    implementation 'com.h2database:h2:2.2.224'
 }

@@ -7,7 +7,7 @@ import com.prosilion.nostr.filter.tag.AddressTagFilter;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.entity.Subscriber;
+import com.prosilion.superconductor.base.Subscriber;
 import com.prosilion.superconductor.base.service.request.CachedSubscriberService;
 import com.prosilion.superconductor.util.Factory;
 import java.net.URI;

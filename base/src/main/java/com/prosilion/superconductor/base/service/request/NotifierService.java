@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.base.service.request;
 
-import com.prosilion.superconductor.base.service.event.type.CacheIF;
+import com.prosilion.superconductor.base.service.event.CacheIF;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;

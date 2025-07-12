@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.base.service.request;
 
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.superconductor.base.entity.Subscriber;
+import com.prosilion.superconductor.base.Subscriber;
 import com.prosilion.superconductor.base.util.EmptyFiltersException;
 import org.springframework.lang.NonNull;
 

@@ -1,6 +1,6 @@
 //package com.prosilion.superconductor.service.event.type;
 //
-//import com.prosilion.superconductor.base.entity.EventEntity;
+//import prosilion.superconductor.lib.jpa.entity.EventEntity;
 //import com.prosilion.superconductor.base.request.service.NotifierService;
 //import com.prosilion.superconductor.base.pubsub.request.service.AddNostrEvent;
 //import com.prosilion.superconductor.base.util.FilterMatcher;

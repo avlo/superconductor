@@ -1,8 +1,9 @@
 package com.prosilion.superconductor.base.service.event.type;
 
 import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.superconductor.base.service.event.CacheIF;
 
-final public class EventPlugin implements EventPluginIF {
+public class EventPlugin implements EventPluginIF {
   private final CacheIF cacheIF;
 
   public EventPlugin(CacheIF cacheIF) {

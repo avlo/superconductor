@@ -5,4 +5,5 @@ plugins {
 //name = "superconductor-lib-h2db"
 
 dependencies {
+    api project(':superconductor-base')
 }

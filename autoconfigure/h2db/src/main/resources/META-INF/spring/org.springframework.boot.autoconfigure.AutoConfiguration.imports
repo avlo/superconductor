@@ -1,1 +1,1 @@
-com.prosilion.superconductor.H2DatabaseAutoConfiguration
+com.prosilion.superconductor.autoconfigure.h2db.config.H2DatabaseAutoConfiguration

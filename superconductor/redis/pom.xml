@@ -6,11 +6,11 @@
     <groupId>com.prosilion.superconductor</groupId>
     <artifactId>superconductor-parent</artifactId>
     <version>1.15.1</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
   
-  <artifactId>superconductor</artifactId>
-  <name>superconductor</name>
+  <artifactId>superconductor-redis</artifactId>
+  <name>superconductor-redis</name>
   <packaging>war</packaging>
 
   <dependencies>
@@ -21,7 +21,7 @@
     </dependency>    
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-spring-boot-starter-jpa</artifactId>
+      <artifactId>superconductor-spring-boot-starter-redis</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
@@ -169,12 +169,12 @@
         <version>${spring-boot.version}</version>
         <scope>runtime</scope>
       </dependency>
-      <dependency>
-        <groupId>com.mysql</groupId>
-        <artifactId>mysql-connector-j</artifactId>
-        <version>${mysql-connector-j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
+<!--      <dependency>-->
+<!--        <groupId>com.mysql</groupId>-->
+<!--        <artifactId>mysql-connector-j</artifactId>-->
+<!--        <version>${mysql-connector-j.version}</version>-->
+<!--        <scope>runtime</scope>-->
+<!--      </dependency>-->
     </dependencies>
   </profile>
 
@@ -206,12 +206,12 @@
         <version>${spring-boot.version}</version>
         <scope>runtime</scope>
       </dependency>
-      <dependency>
-        <groupId>com.mysql</groupId>
-        <artifactId>mysql-connector-j</artifactId>
-        <version>${mysql-connector-j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
+<!--      <dependency>-->
+<!--        <groupId>com.mysql</groupId>-->
+<!--        <artifactId>mysql-connector-j</artifactId>-->
+<!--        <version>${mysql-connector-j.version}</version>-->
+<!--        <scope>runtime</scope>-->
+<!--      </dependency>-->
     </dependencies>
   </profile>
     
@@ -243,12 +243,12 @@
           <version>${spring-boot.version}</version>
           <scope>runtime</scope>
         </dependency>
-        <dependency>
-          <groupId>com.mysql</groupId>
-          <artifactId>mysql-connector-j</artifactId>
-          <version>${mysql-connector-j.version}</version>
-          <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--          <groupId>com.mysql</groupId>-->
+<!--          <artifactId>mysql-connector-j</artifactId>-->
+<!--          <version>${mysql-connector-j.version}</version>-->
+<!--          <scope>runtime</scope>-->
+<!--        </dependency>-->
       </dependencies>
     </profile>
     
@@ -280,12 +280,12 @@
           <version>${spring-boot.version}</version>
           <scope>runtime</scope>
         </dependency>
-        <dependency>
-          <groupId>com.mysql</groupId>
-          <artifactId>mysql-connector-j</artifactId>
-          <version>${mysql-connector-j.version}</version>
-          <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--          <groupId>com.mysql</groupId>-->
+<!--          <artifactId>mysql-connector-j</artifactId>-->
+<!--          <version>${mysql-connector-j.version}</version>-->
+<!--          <scope>runtime</scope>-->
+<!--        </dependency>-->
       </dependencies>
     </profile>
     

@@ -21,7 +21,9 @@
     <module>lib/redis</module>
     <module>starter/jpa</module>
     <module>starter/h2db</module>
-    <module>superconductor</module>
+    <module>starter/redis</module>
+    <module>superconductor/jpa</module>
+    <module>superconductor/redis</module>
   </modules>
 
   <properties>

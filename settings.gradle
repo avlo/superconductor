@@ -32,6 +32,10 @@ include ':superconductor-spring-boot-starter-h2db'
 project(':superconductor-spring-boot-starter-h2db').setProjectDir(file("starter/h2db"))
 include ':superconductor-spring-boot-starter-jpa'
 project(':superconductor-spring-boot-starter-jpa').setProjectDir(file("starter/jpa"))
+include ':superconductor-spring-boot-starter-redis'
+project(':superconductor-spring-boot-starter-redis').setProjectDir(file("starter/redis"))
 
-include ':superconductor'
-project(':superconductor').setProjectDir(file("superconductor"))
+include ':superconductor-jpa'
+project(':superconductor-jpa').setProjectDir(file("superconductor/jpa"))
+include ':superconductor-redis'
+project(':superconductor-redis').setProjectDir(file("superconductor/redis"))

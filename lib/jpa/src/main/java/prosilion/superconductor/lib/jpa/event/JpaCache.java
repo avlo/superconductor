@@ -60,7 +60,7 @@ public class JpaCache implements CacheIF {
   }
 
   @Override
-  public void saveEventEntity(@NonNull GenericEventKindIF event) {
+  public void saveEventEntityOrDocument(@NonNull GenericEventKindIF event) {
     eventEntityService.saveEventEntity(event);
   }
 

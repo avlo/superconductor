@@ -1,25 +1,13 @@
-#services:
-#  superconductor-db:
-#    container_name: superconductor-mysqldb
-#    image: mysql:9.1.0
-#    ports:
-#      - "3316:3316"
-#    labels:
-#      org.springframework.boot.service-connection: mysql
-#    environment:
-#      MYSQL_DATABASE: superconductor
-##      set below db name and credentials as desired
-#      MYSQL_USER: mysqluser
-#      MYSQL_PASSWORD: mysqluserpass
-#      MYSQL_ROOT_PASSWORD: mysqlrootuserpass
-#      MYSQL_TCP_PORT: 3316
-#    networks:
-#      docker-network:
-#    healthcheck:
-#      test: ["CMD", "mysqladmin" ,"ping", "-h", "superconductor-mysqldb"]
-#      retries: 10
-#      interval: 3s
-#      timeout: 30s
+services:
+  superconductor-redis:
+    container_name: superconductor-redis
+    image: "redis:8.0.0"
+    ports:
+      - "6379:6379"
+    environment:
+      - "REDIS_ARGS=--appendonly yes"
+    volumes:
+      - ./data:/data
 #  superconductor:
 #    container_name: superconductor-app
 #    image: superconductor:1.15.1
@@ -28,7 +16,7 @@
 ##      docker debug port, note: requires image re-build
 ##      - '5005:5005'
 #    depends_on:
-#      superconductor-db:
+#      superconductor-redis:
 #        condition: service_healthy
 #    environment:
 ##      docker VM debug option
@@ -36,15 +24,12 @@
 ##        -Xdebug
 ##        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 #      SPRING_PROFILES_ACTIVE: dev_ws
-#      SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3316/superconductor
-##      set below spring datasource parameters and credentials as desired
-#      SPRING_DATASOURCE_USERNAME: mysqluser
-#      SPRING_DATASOURCE_PASSWORD: mysqluserpass
+##      SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3316/superconductor
+###      set below spring datasource parameters and credentials as desired
+##      SPRING_DATASOURCE_USERNAME: mysqluser
+##      SPRING_DATASOURCE_PASSWORD: mysqluserpass
 #    networks:
 #      docker-network:
-#volumes:
-#  superconductor-db:
-#    driver: local
 #networks:
 #  docker-network:
 #    driver: bridge

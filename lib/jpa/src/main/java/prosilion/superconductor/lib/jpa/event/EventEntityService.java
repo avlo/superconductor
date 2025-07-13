@@ -48,27 +48,27 @@ public class EventEntityService {
     this.eventEntityRepository = eventEntityRepository;
   }
 
-  public Long saveEventEntity(@NonNull BaseEvent event) {
+  public Long saveEventEntity(@NonNull BaseEvent baseEvent) {
     try {
-      EventEntityIF savedEntity = Optional.of(eventEntityRepository.save(new GenericEventKindDto(event).convertDtoToEntity())).orElseThrow(NoResultException::new);
-      concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
-      genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
+      EventEntityIF savedEntity = Optional.of(eventEntityRepository.save(new GenericEventKindDto(baseEvent).convertDtoToEntity())).orElseThrow(NoResultException::new);
+      concreteTagEntitiesService.saveTags(savedEntity.getId(), baseEvent.getTags());
+      genericTagEntitiesService.saveGenericTags(savedEntity.getId(), baseEvent.getTags());
       return savedEntity.getId();
     } catch (DataIntegrityViolationException e) {
       log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
-      return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(NoResultException::new).getId();
+      return eventEntityRepository.findByEventIdString(baseEvent.getId()).orElseThrow(NoResultException::new).getId();
     }
   }
 
-  public Long saveEventEntity(@NonNull GenericEventKindIF event) {
+  public Long saveEventEntity(@NonNull GenericEventKindIF genericEventKindIF) {
     try {
-      EventEntityIF savedEntity = Optional.of(eventEntityRepository.save(convertDtoToEntity(event))).orElseThrow(NoResultException::new);
-      concreteTagEntitiesService.saveTags(savedEntity.getId(), event.getTags());
-      genericTagEntitiesService.saveGenericTags(savedEntity.getId(), event.getTags());
+      EventEntityIF savedEntity = Optional.of(eventEntityRepository.save(convertDtoToEntity(genericEventKindIF))).orElseThrow(NoResultException::new);
+      concreteTagEntitiesService.saveTags(savedEntity.getId(), genericEventKindIF.getTags());
+      genericTagEntitiesService.saveGenericTags(savedEntity.getId(), genericEventKindIF.getTags());
       return savedEntity.getId();
     } catch (DataIntegrityViolationException e) {
       log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
-      return eventEntityRepository.findByEventIdString(event.getId()).orElseThrow(NoResultException::new).getId();
+      return eventEntityRepository.findByEventIdString(genericEventKindIF.getId()).orElseThrow(NoResultException::new).getId();
     }
   }
 

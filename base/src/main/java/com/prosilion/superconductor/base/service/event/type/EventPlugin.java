@@ -12,6 +12,6 @@ public class EventPlugin implements EventPluginIF {
 
   @Override
   public void processIncomingEvent(GenericEventKindIF event) {
-    cacheIF.saveEventEntity(event);
+    cacheIF.saveEventEntityOrDocument(event);
   }
 }

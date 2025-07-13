@@ -32,7 +32,9 @@ import prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
 import prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 
 @AutoConfiguration
+// TODO: below should be "com.pro...", discover what's up
 @EnableJpaRepositories(basePackages = "prosilion.superconductor.lib.jpa.repository")
+//@EnableJpaRepositories(basePackages = "com.prosilion.superconductor.lib.jpa.repository")
 @EntityScan(basePackages = "prosilion.superconductor.lib.jpa.entity")
 @ComponentScan(basePackages = "prosilion.superconductor.lib.jpa.plugin.tag")
 @ConditionalOnClass(JpaCache.class)

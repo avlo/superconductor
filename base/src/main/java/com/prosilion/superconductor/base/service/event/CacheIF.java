@@ -18,7 +18,7 @@ public interface CacheIF {
 
   GenericEventKindIF getEventById(@NonNull Long id);
 
-  void saveEventEntity(@NonNull GenericEventKindIF event);
+  void saveEventEntityOrDocument(@NonNull GenericEventKindIF event);
 
   void deleteEventEntity(@NonNull EventEntityIF event);
 

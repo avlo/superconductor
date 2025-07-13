@@ -57,19 +57,4 @@ public class EventEntity implements EventEntityIF {
     this(eventIdString, kind, pubKey, createdAt, signature, content);
     this.id = id;
   }
-
-  @Override
-  public <T extends GenericEventKindIF> T convertEntityToDto() {
-    byte[] rawData = NostrUtil.hex128ToBytes(signature);
-    final Signature signature = new Signature();
-    signature.setRawData(rawData);
-    return (T) new GenericEventKind(
-        eventIdString,
-        new PublicKey(pubKey),
-        createdAt,
-        Kind.valueOf(kind),
-        tags,
-        content,
-        signature);
-  }
 }

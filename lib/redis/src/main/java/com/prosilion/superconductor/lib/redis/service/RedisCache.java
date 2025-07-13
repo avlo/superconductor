@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.lib.redis.event;
+package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
@@ -9,42 +9,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-//@Component
+@Component
 public class RedisCache implements CacheIF {
+  private final EventDocumentService eventDocumentService;
 
-  //  @Autowired
+  @Autowired
   public RedisCache(
-//      @NonNull EventEntityService eventEntityService,
-//      @NonNull DeletionEventEntityService deletionEventEntityService
-  ) {
-//    this.eventEntityService = eventEntityService;
-//    this.deletionEventEntityService = deletionEventEntityService;
+      @NonNull EventDocumentService eventDocumentService) {
+    this.eventDocumentService = eventDocumentService;
   }
 
   @Override
   public Map<Kind, Map<Long, GenericEventKindIF>> getAll() {
-//    final List<DeletionEventEntityIF> allDeletionEventEntities = getAllDeletionEventEntities(); // do up front
-//    Map<Kind, Map<Long, GenericEventKindIF>> returnedSet = getAllEventEntities().entrySet().stream()
-//        .filter(
-//            eventMap ->
-//                eventMap.getValue().keySet().stream().noneMatch(eventId ->
-//                    checkEventIdMatchesAnyDeletionEventEntityId(eventId, allDeletionEventEntities)))
-//        .filter(kindMapEntry ->
-//            !kindMapEntry.getKey().equals(Kind.CLIENT_AUTH))
-//        .collect(
-//            Collectors.toMap(Entry::getKey, Entry::getValue));
-//    log.debug("returned events (per kind) after deletion event filtering and auth event filtering:\n  {}\n", returnedSet);
-//    return returnedSet;
     return null;
   }
 
   @Override
   public Optional<EventEntityIF> getByEventIdString(@NonNull String eventId) {
-//    return eventEntityService.findByEventIdString(eventId);
-    return null;
+    return eventDocumentService.findByEventIdString(eventId);
   }
 
   @Override
@@ -60,8 +47,8 @@ public class RedisCache implements CacheIF {
   }
 
   @Override
-  public void saveEventEntity(@NonNull GenericEventKindIF event) {
-//    eventEntityService.saveEventEntity(event);
+  public void saveEventEntityOrDocument(@NonNull GenericEventKindIF event) {
+    eventDocumentService.saveEventDocument(event);
   }
 
   @Override

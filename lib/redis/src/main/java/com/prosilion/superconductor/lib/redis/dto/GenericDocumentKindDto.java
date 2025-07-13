@@ -1,20 +1,23 @@
-package prosilion.superconductor.lib.jpa.dto;
+package com.prosilion.superconductor.lib.redis.dto;
 
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.GenericEventKind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.user.Signature;
-import prosilion.superconductor.lib.jpa.entity.EventEntity;
+import com.prosilion.superconductor.lib.redis.document.EventDocument;
 
-public record GenericEventKindDto(BaseEvent baseEvent) {
-  public EventEntity convertDtoToEntity() {
-    return new EventEntity(
+public record GenericDocumentKindDto(BaseEvent baseEvent) {
+  public EventDocument convertDtoToDocument() {
+    EventDocument eventDocument = EventDocument.of(
         baseEvent.getId(),
         baseEvent.getKind().getValue(),
         baseEvent.getPublicKey().toString(),
         baseEvent.getCreatedAt(),
-        baseEvent.getSignature(),
-        baseEvent.getContent());
+        baseEvent.getContent(),
+        baseEvent.getSignature());
+
+    eventDocument.setTags(baseEvent.getTags());
+    return eventDocument;
   }
 
   public GenericEventKindIF convertBaseEventToGenericEventKindIF() {

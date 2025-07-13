@@ -9,6 +9,33 @@ repositories {
 dependencies {
     api project(':superconductor-base')
 
-    def redisVersion = '1.0.0-RC3'
-    implementation 'com.redis.om:redis-om-spring:' + redisVersion
+//    def redisOmVersion = '1.0.0-RC3'
+//    implementation 'com.redis.om:redis-om-spring:' + redisOmVersion
+//    annotationProcessor 'com.redis.om:redis-om-spring:' + redisOmVersion
+}
+
+// Tell Gradle to include the generated sources directory
+sourceSets {
+    main {
+        java {
+            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/main")
+        }
+    }
+    test {
+        java {
+            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/test")
+        }
+    }
+}
+
+// Configure the Java compile task
+compileJava {
+    options.annotationProcessorPath = configurations.annotationProcessor
+    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/main")
+}
+
+// For test sources
+compileTestJava {
+    options.annotationProcessorPath = configurations.testAnnotationProcessor
+    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/test")
 }

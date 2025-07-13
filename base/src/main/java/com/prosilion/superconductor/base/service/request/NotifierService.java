@@ -24,7 +24,6 @@ public class NotifierService {
   }
 
   public void subscriptionEventHandler(@NonNull Long subscriberSessionHash) {
-//    TODO: below getAll should be cached/Redis
     cacheIF.getAll()
         .forEach((kind, eventMap) ->
             eventMap.forEach((eventId, event) ->

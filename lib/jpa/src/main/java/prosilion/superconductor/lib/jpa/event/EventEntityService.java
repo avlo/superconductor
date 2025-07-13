@@ -6,9 +6,7 @@ import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.EventEntityIF;
 import jakarta.persistence.NoResultException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +19,7 @@ import prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
 import prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
 import prosilion.superconductor.lib.jpa.entity.EventEntity;
+import prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractEntity;
 import prosilion.superconductor.lib.jpa.event.join.generic.GenericTagEntitiesService;
 import prosilion.superconductor.lib.jpa.repository.AbstractTagEntityRepository;
@@ -73,12 +72,19 @@ public class EventEntityService {
   }
 
   public Map<Kind, Map<Long, GenericEventKindIF>> getAll() {
-    return getEventEntityRepositoryAll().stream().map(this::populateEventEntity).collect(Collectors.groupingBy(eventEntity -> Kind.valueOf(eventEntity.getKind()), Collectors.toMap(EventEntityIF::getId, EventEntityIF::convertEntityToDto)));
+    return getEventEntityRepositoryAll().stream()
+        .map(
+            this::populateEventEntity)
+        .collect(
+            Collectors.groupingBy(eventEntity ->
+                    Kind.valueOf(eventEntity.getKind()),
+                Collectors.toMap(
+                    EventEntityIF::getId,
+                    EventEntityIF::convertEntityToDto)));
   }
 
-  private List<EventEntityIF> getEventEntityRepositoryAll() {
-//    return eventEntityRepository.findAll(EventEntityIF.class);
-    return Collections.unmodifiableList(eventEntityRepository.findAll());
+  private List<EventEntity> getEventEntityRepositoryAll() {
+    return eventEntityRepository.findAll();
   }
 
   public Optional<EventEntityIF> findByEventIdString(@NonNull String eventIdString) {
@@ -86,11 +92,16 @@ public class EventEntityService {
   }
 
   public List<GenericEventKindIF> getEventsByPublicKey(@NonNull PublicKey publicKey) {
-    return eventEntityRepository.findByPubKey(publicKey.toHexString()).stream().map(ee -> getEventById(ee.getId())).toList();
+    return eventEntityRepository.findByPubKey(
+            publicKey.toHexString()).stream()
+        .map(ee ->
+            getEventById(ee.getId())).toList();
   }
 
   public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
-    return eventEntityRepository.findByKind(kind.getValue()).stream().map(ee -> getEventById(ee.getId())).toList();
+    return eventEntityRepository.findByKind(kind.getValue())
+        .stream().map(ee ->
+            getEventById(ee.getId())).toList();
   }
 
   public GenericEventKindIF getEventById(@NonNull Long id) {
@@ -105,8 +116,8 @@ public class EventEntityService {
   }
 
   private Optional<EventEntityIF> getById(Long id) {
-//    return eventEntityRepository.findById(EventEntityIF.class, id);
-    return eventEntityRepository.findById(id).map(EventEntityIF.class::cast);
+    return eventEntityRepository.findById(id)
+        .map(EventEntityIF.class::cast);
   }
 
   private EventEntityIF populateEventEntity(EventEntityIF eventEntity) {

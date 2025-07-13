@@ -1,13 +1,6 @@
 package prosilion.superconductor.lib.jpa.entity;
 
-import com.prosilion.nostr.crypto.NostrUtil;
-import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.GenericEventKind;
-import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.nostr.user.Signature;
-import com.prosilion.superconductor.base.EventEntityIF;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +22,7 @@ import lombok.Setter;
 public class EventEntity implements EventEntityIF {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   @Column(unique = true)
   private String eventIdString;

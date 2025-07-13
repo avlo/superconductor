@@ -3,20 +3,18 @@ package prosilion.superconductor.lib.jpa.event;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.base.DeletionEventEntityIF;
-import com.prosilion.superconductor.base.EventEntityIF;
-import com.prosilion.superconductor.base.service.event.CacheIF;
+import com.prosilion.superconductor.base.EventIF;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
+import prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 
 @Slf4j
 //@Component
-public class JpaCache implements CacheIF {
+public class JpaCache implements JpaCacheIF {
   private final EventEntityService eventEntityService;
   private final DeletionEventEntityService deletionEventEntityService;
 
@@ -29,29 +27,15 @@ public class JpaCache implements CacheIF {
   }
 
   @Override
-  public Map<Kind, Map<Long, GenericEventKindIF>> getAll() {
-    final List<DeletionEventEntityIF> allDeletionEventEntities = getAllDeletionEventEntities(); // do up front
-    Map<Kind, Map<Long, GenericEventKindIF>> returnedSet = getAllEventEntities().entrySet().stream()
-        .filter(
-            eventMap ->
-                eventMap.getValue().keySet().stream().noneMatch(eventId ->
-                    checkEventIdMatchesAnyDeletionEventEntityId(eventId, allDeletionEventEntities)))
-        .filter(kindMapEntry ->
-            !kindMapEntry.getKey().equals(Kind.CLIENT_AUTH))
-        .collect(
-            Collectors.toMap(Entry::getKey, Entry::getValue));
-    log.debug("returned events (per kind) after deletion event filtering and auth event filtering:\n  {}\n", returnedSet);
-    return returnedSet;
+  public Optional<EventIF> getByEventIdString(@NonNull String eventId) {
+    return eventEntityService.findByEventIdString(eventId)
+        .map(EventIF::convertEntityToDto);
   }
 
   @Override
-  public Optional<EventEntityIF> getByEventIdString(@NonNull String eventId) {
-    return eventEntityService.findByEventIdString(eventId);
-  }
-
-  @Override
-  public Optional<EventEntityIF> getByMatchingAddressableTags(@NonNull String eventId) {
-    return eventEntityService.findByEventIdString(eventId);
+  public Optional<EventIF> getByMatchingAddressableTags(@NonNull String eventId) {
+//    return eventEntityService.findByEventIdString(eventId);
+    return null;
   }
 
   @Override
@@ -65,17 +49,17 @@ public class JpaCache implements CacheIF {
   }
 
   @Override
-  public void deleteEventEntity(@NonNull EventEntityIF event) {
-    eventEntityService.deleteEventEntity(event);
+  public void deleteEventEntity(@NonNull EventIF event) {
+    eventEntityService.deleteEventEntity((EventEntityIF) event);
   }
 
-  //  TODO: event entity cache-location candidate
-  private Map<Kind, Map<Long, GenericEventKindIF>> getAllEventEntities() {
+  @Override
+  public Map<Kind, Map<Long, GenericEventKindIF>> getAllEventEntities() {
     return eventEntityService.getAll();
   }
 
-  //  TODO: deletionEvent entity cache-location candidate
-  private List<DeletionEventEntityIF> getAllDeletionEventEntities() {
+  @Override
+  public List<DeletionEventEntityIF> getAllDeletionEventEntities() {
     return deletionEventEntityService.findAll();
   }
 }

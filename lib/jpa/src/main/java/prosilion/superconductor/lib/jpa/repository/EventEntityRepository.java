@@ -1,6 +1,6 @@
 package prosilion.superconductor.lib.jpa.repository;
 
-import com.prosilion.superconductor.base.EventEntityIF;
+import prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -20,6 +20,7 @@
     <module>lib/jpa</module>
     <module>lib/redis</module>
     <module>starter/jpa</module>
+    <module>starter/h2db</module>
     <module>superconductor</module>
   </modules>
 

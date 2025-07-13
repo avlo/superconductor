@@ -28,7 +28,8 @@ project(':superconductor-lib-jpa').setProjectDir(file("lib/jpa"))
 include ':superconductor-lib-redis'
 project(':superconductor-lib-redis').setProjectDir(file("lib/redis"))
 
-
+include ':superconductor-spring-boot-starter-h2db'
+project(':superconductor-spring-boot-starter-h2db').setProjectDir(file("starter/h2db"))
 include ':superconductor-spring-boot-starter-jpa'
 project(':superconductor-spring-boot-starter-jpa').setProjectDir(file("starter/jpa"))
 

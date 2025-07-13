@@ -43,10 +43,9 @@ public class EventDocumentService {
         .toList();
   }
 
-  public EventIF saveEventDocument(GenericEventKindIF genericEventKindIF) {
-    return eventDocumentRepository.save(
-            convertDtoToDocument(genericEventKindIF))
-        .convertEntityToDto();
+  public void saveEventDocument(GenericEventKindIF genericEventKindIF) {
+    eventDocumentRepository.save(
+        convertDtoToDocument(genericEventKindIF));
   }
 
   public static EventDocument convertDtoToDocument(GenericEventKindIF dto) {

@@ -8,9 +8,9 @@
     <version>1.15.1</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
-  
-  <artifactId>superconductor-jpa</artifactId>
-  <name>superconductor-jpa</name>
+
+  <artifactId>superconductor-app-jpa</artifactId>
+  <name>superconductor-app-jpa</name>
   <packaging>war</packaging>
 
   <dependencies>

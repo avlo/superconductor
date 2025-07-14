@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
+import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
 @Component
 public class DataLoader implements CommandLineRunner {

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.entity;
 
 import org.junit.jupiter.api.Test;
-import prosilion.superconductor.lib.jpa.entity.EventEntity;
+import com.prosilion.superconductor.lib.jpa.entity.EventEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

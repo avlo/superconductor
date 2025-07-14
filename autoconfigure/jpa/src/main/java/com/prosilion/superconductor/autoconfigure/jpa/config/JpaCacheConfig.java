@@ -4,6 +4,23 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.service.event.CacheIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractEntity;
+import com.prosilion.superconductor.lib.jpa.event.EventEntityService;
+import com.prosilion.superconductor.lib.jpa.event.JpaCache;
+import com.prosilion.superconductor.lib.jpa.event.join.generic.GenericTagEntitiesService;
+import com.prosilion.superconductor.lib.jpa.event.join.generic.GenericTagEntityElementAttributeEntityService;
+import com.prosilion.superconductor.lib.jpa.plugin.tag.TagPlugin;
+import com.prosilion.superconductor.lib.jpa.repository.AbstractTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.EventEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.deletion.DeletionEventEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.generic.ElementAttributeEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.generic.GenericTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.join.generic.EventEntityGenericTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.join.generic.GenericTagEntityElementAttributeEntityRepository;
+import com.prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
+import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 import java.util.List;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -13,30 +30,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.lang.NonNull;
-import prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
-import prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractEntity;
-import prosilion.superconductor.lib.jpa.event.EventEntityService;
-import prosilion.superconductor.lib.jpa.event.JpaCache;
-import prosilion.superconductor.lib.jpa.event.join.generic.GenericTagEntitiesService;
-import prosilion.superconductor.lib.jpa.event.join.generic.GenericTagEntityElementAttributeEntityService;
-import prosilion.superconductor.lib.jpa.plugin.tag.TagPlugin;
-import prosilion.superconductor.lib.jpa.repository.AbstractTagEntityRepository;
-import prosilion.superconductor.lib.jpa.repository.EventEntityRepository;
-import prosilion.superconductor.lib.jpa.repository.deletion.DeletionEventEntityRepository;
-import prosilion.superconductor.lib.jpa.repository.generic.ElementAttributeEntityRepository;
-import prosilion.superconductor.lib.jpa.repository.generic.GenericTagEntityRepository;
-import prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
-import prosilion.superconductor.lib.jpa.repository.join.generic.EventEntityGenericTagEntityRepository;
-import prosilion.superconductor.lib.jpa.repository.join.generic.GenericTagEntityElementAttributeEntityRepository;
-import prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
-import prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 
 @AutoConfiguration
-// TODO: below should be "com.pro...", discover what's up
-@EnableJpaRepositories(basePackages = "prosilion.superconductor.lib.jpa.repository")
-//@EnableJpaRepositories(basePackages = "com.prosilion.superconductor.lib.jpa.repository")
-@EntityScan(basePackages = "prosilion.superconductor.lib.jpa.entity")
-@ComponentScan(basePackages = "prosilion.superconductor.lib.jpa.plugin.tag")
+@EnableJpaRepositories(basePackages = "com.prosilion.superconductor.lib.jpa.repository")
+@EntityScan(basePackages = "com.prosilion.superconductor.lib.jpa.entity")
+@ComponentScan(basePackages = "com.prosilion.superconductor.lib.jpa.plugin.tag")
 @ConditionalOnClass(JpaCache.class)
 public class JpaCacheConfig<
     P extends BaseTag,

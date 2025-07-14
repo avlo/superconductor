@@ -12,7 +12,7 @@
 //import org.springframework.context.annotation.ComponentScan;
 //import org.springframework.context.annotation.FilterType;
 //import org.springframework.test.context.ActiveProfiles;
-//import prosilion.superconductor.lib.jpa.entity.EventEntity;
+//import com.entity.jpa.lib.superconductor.prosilion.EventEntity;
 //
 //import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 //import static org.junit.jupiter.api.Assertions.assertEquals;

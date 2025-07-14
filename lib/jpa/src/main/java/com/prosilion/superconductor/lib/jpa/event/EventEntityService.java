@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
@@ -26,13 +27,16 @@ import com.prosilion.superconductor.lib.jpa.repository.AbstractTagEntityReposito
 import com.prosilion.superconductor.lib.jpa.repository.EventEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
 import com.prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
+import org.springframework.stereotype.Service;
 
 @Slf4j
+@Service
 public class EventEntityService {
   private final ConcreteTagEntitiesService<BaseTag, AbstractTagEntityRepository<AbstractTagEntity>, AbstractTagEntity, EventEntityAbstractEntity, EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService;
   private final GenericTagEntitiesService genericTagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
+  @Autowired
   public EventEntityService(
       @NonNull ConcreteTagEntitiesService<
           BaseTag,

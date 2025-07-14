@@ -5,6 +5,7 @@ import com.prosilion.nostr.tag.GenericTag;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import com.prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.lib.jpa.dto.generic.GenericTagDto;
@@ -12,14 +13,17 @@ import com.prosilion.superconductor.lib.jpa.entity.generic.GenericTagEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.generic.EventEntityGenericTagEntity;
 import com.prosilion.superconductor.lib.jpa.repository.generic.GenericTagEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.join.generic.EventEntityGenericTagEntityRepository;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Transactional
+@Service
 public class GenericTagEntitiesService {
   private final GenericTagEntityElementAttributeEntityService service;
   private final GenericTagEntityRepository repo;
   private final EventEntityGenericTagEntityRepository join;
 
+  @Autowired
   public GenericTagEntitiesService(
       GenericTagEntityElementAttributeEntityService genericTagEntityElementAttributeEntityService,
       GenericTagEntityRepository genericTagEntityRepository,

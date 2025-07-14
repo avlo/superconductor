@@ -5,14 +5,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntity;
 import com.prosilion.superconductor.lib.jpa.repository.deletion.DeletionEventEntityRepository;
+import org.springframework.stereotype.Service;
 
 @Slf4j
+@Service
 public class DeletionEventEntityService {
   private final DeletionEventEntityRepository repo;
 
+  @Autowired
   public DeletionEventEntityService(@NonNull DeletionEventEntityRepository repo) {
     this.repo = repo;
   }

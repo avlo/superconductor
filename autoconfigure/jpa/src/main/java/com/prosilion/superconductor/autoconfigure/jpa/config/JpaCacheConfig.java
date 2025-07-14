@@ -1,27 +1,11 @@
 package com.prosilion.superconductor.autoconfigure.jpa.config;
 
-import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.service.event.CacheIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
-import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractEntity;
 import com.prosilion.superconductor.lib.jpa.event.EventEntityService;
 import com.prosilion.superconductor.lib.jpa.event.JpaCache;
-import com.prosilion.superconductor.lib.jpa.event.join.generic.GenericTagEntitiesService;
-import com.prosilion.superconductor.lib.jpa.event.join.generic.GenericTagEntityElementAttributeEntityService;
-import com.prosilion.superconductor.lib.jpa.plugin.tag.TagPlugin;
-import com.prosilion.superconductor.lib.jpa.repository.AbstractTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.EventEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.deletion.DeletionEventEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.generic.ElementAttributeEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.generic.GenericTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.join.generic.EventEntityGenericTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.join.generic.GenericTagEntityElementAttributeEntityRepository;
-import com.prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
-import java.util.List;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,60 +18,17 @@ import org.springframework.lang.NonNull;
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.prosilion.superconductor.lib.jpa.repository")
 @EntityScan(basePackages = "com.prosilion.superconductor.lib.jpa.entity")
-@ComponentScan(basePackages = "com.prosilion.superconductor.lib.jpa.plugin.tag")
+@ComponentScan(basePackages = {
+    "com.prosilion.superconductor.base.service.clientresponse",
+    "com.prosilion.superconductor.base.service.request",
+    "com.prosilion.superconductor.base.util",
+    "com.prosilion.superconductor.lib.jpa.event",
+    "com.prosilion.superconductor.lib.jpa.event.join.generic",
+    "com.prosilion.superconductor.lib.jpa.plugin.tag",
+    "com.prosilion.superconductor.lib.jpa.service"
+})
 @ConditionalOnClass(JpaCache.class)
-public class JpaCacheConfig<
-    P extends BaseTag,
-    Q extends AbstractTagEntityRepository<R>,
-    R extends AbstractTagEntity,
-    S extends EventEntityAbstractEntity,
-    T extends EventEntityAbstractTagEntityRepository<S>> {
-
-  @Bean
-  @ConditionalOnMissingBean
-  ConcreteTagEntitiesService<P, Q, R, S, T> concreteTagEntitiesService(@NonNull List<TagPlugin<P, Q, R, S, T>> tagPlugins) {
-    return new ConcreteTagEntitiesService<>(tagPlugins);
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  GenericTagEntityElementAttributeEntityService genericTagEntityElementAttributeEntityService(
-      @NonNull ElementAttributeEntityRepository repo,
-      @NonNull GenericTagEntityElementAttributeEntityRepository join) {
-    return new GenericTagEntityElementAttributeEntityService(repo, join);
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  GenericTagEntitiesService genericTagEntitiesService(
-      @NonNull GenericTagEntityElementAttributeEntityService genericTagEntityElementAttributeEntityService,
-      @NonNull GenericTagEntityRepository genericTagEntityRepository,
-      @NonNull EventEntityGenericTagEntityRepository join) {
-    return new GenericTagEntitiesService(
-        genericTagEntityElementAttributeEntityService,
-        genericTagEntityRepository,
-        join);
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  EventEntityService eventEntityService(
-      @NonNull ConcreteTagEntitiesService<
-          BaseTag,
-          AbstractTagEntityRepository<AbstractTagEntity>,
-          AbstractTagEntity,
-          EventEntityAbstractEntity,
-          EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService,
-      @NonNull GenericTagEntitiesService genericTagEntitiesService,
-      @NonNull EventEntityRepository eventEntityRepository) {
-    return new EventEntityService(concreteTagEntitiesService, genericTagEntitiesService, eventEntityRepository);
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  DeletionEventEntityService deletionEventEntityService(@NonNull DeletionEventEntityRepository deletionEventEntityRepository) {
-    return new DeletionEventEntityService(deletionEventEntityRepository);
-  }
+public class JpaCacheConfig {
 
   @Bean
   @ConditionalOnMissingBean

@@ -3,19 +3,23 @@ package com.prosilion.superconductor.lib.jpa.event.join.generic;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import com.prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.lib.jpa.entity.generic.ElementAttributeEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.generic.GenericTagEntityElementAttributeEntity;
 import com.prosilion.superconductor.lib.jpa.repository.generic.ElementAttributeEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.join.generic.GenericTagEntityElementAttributeEntityRepository;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Transactional
+@Service
 public class GenericTagEntityElementAttributeEntityService {
   private final ElementAttributeEntityRepository repo;
   private final GenericTagEntityElementAttributeEntityRepository join;
 
+  @Autowired
   public GenericTagEntityElementAttributeEntityService(
       @NonNull ElementAttributeEntityRepository repo,
       @NonNull GenericTagEntityElementAttributeEntityRepository join) {

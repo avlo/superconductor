@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.autoconfigure.h2db.config;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -12,13 +12,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @EnableConfigurationProperties(H2DatabaseProperties.class) in H2DatabaseAutoConfiguration.java
  */
+@Slf4j
 @ConfigurationProperties(prefix = "spring.datasource")
 @Getter
 @Setter
-@NoArgsConstructor
 public class H2DatabaseProperties {
   private String url;
   private String driverClassName;
   private String username;
   private String password;
+
+  public H2DatabaseProperties() {
+    log.info("H2DatabaseProperties no-arg Ctor() initialized");
+  }
+
+  public H2DatabaseProperties(String driverClassName, String password, String url, String username) {
+    this.driverClassName = driverClassName;
+    this.password = password;
+    this.url = url;
+    this.username = username;
+    log.info("H2DatabaseProperties full-args Ctor() initialized");
+  }
 }

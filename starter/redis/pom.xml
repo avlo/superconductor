@@ -6,7 +6,7 @@
         <groupId>com.prosilion.superconductor</groupId>
         <artifactId>superconductor-parent</artifactId>
         <version>1.15.1</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>superconductor-spring-boot-starter-redis</artifactId>

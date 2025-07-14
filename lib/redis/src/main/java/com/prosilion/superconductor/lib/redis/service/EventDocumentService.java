@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.base.EventIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
+import com.redis.om.spring.annotations.EnableRedisDocumentRepositories;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
+//@EnableRedisDocumentRepositories(basePackages = "com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository")
 public class EventDocumentService {
   private final EventDocumentRepository eventDocumentRepository;
 

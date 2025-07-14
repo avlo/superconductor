@@ -19,11 +19,19 @@
       <artifactId>superconductor-autoconfigure-base</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
+    
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
       <artifactId>superconductor-lib-jpa</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
+      <optional>true</optional>
+    </dependency>
+    
   </dependencies>
 
   <build>

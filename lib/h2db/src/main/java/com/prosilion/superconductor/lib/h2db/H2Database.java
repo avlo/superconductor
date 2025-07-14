@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.lib.h2db;
 
 import javax.sql.DataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
@@ -22,14 +21,13 @@ public class H2Database {
   }
 
   public DataSource getDataSource() {
-    EmbeddedDatabaseBuilder embeddedDatabaseBuilder = new EmbeddedDatabaseBuilder();
-//  TODO: below appears superfluous, causes tests to fail, comment for now and review    
+    //  TODO: below appears superfluous, causes tests to fail, comment for now and review    
 //    String property = h2DatabaseConfigProperties.getProperty(H2DatabaseConfigParams.USERS_DDL);
-    EmbeddedDatabaseBuilder b1 = embeddedDatabaseBuilder.setType(EmbeddedDatabaseType.H2);
-//  TODO: below appears superfluous, causes tests to fail, comment for now and review    
+    //  TODO: below appears superfluous, causes tests to fail, comment for now and review    
 //    EmbeddedDatabaseBuilder b2 = b1.addScript(property);
-    EmbeddedDatabase build = b1.build();
-    return build;
+    return new EmbeddedDatabaseBuilder().setType(
+            EmbeddedDatabaseType.H2)
+        .build();
   }
 
 //  public DataSource getDataSource() {

@@ -22,7 +22,7 @@
     <module>starter/jpa</module>
     <module>starter/h2db</module>
     <module>starter/redis</module>
-    <module>superconductor/jpa</module>
+    <module>superconductor/h2db</module>
     <module>superconductor/redis</module>
   </modules>
 
@@ -125,7 +125,7 @@
     
 <!--    <dependency>-->
 <!--      <groupId>org.springframework.boot</groupId>-->
-<!--      <artifactId>spring-boot-starter-data-jpa</artifactId>-->
+<!--      <artifactId>spring-boot-starter-data-h2db</artifactId>-->
 <!--      <version>${spring-boot.version}</version>-->
 <!--    </dependency>-->
     

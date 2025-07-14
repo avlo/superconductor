@@ -79,16 +79,6 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure</artifactId>
-      <version>${spring-boot.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-configuration-processor</artifactId>
-      <version>${spring-boot.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <version>${spring-boot.version}</version>
     </dependency>
@@ -122,12 +112,6 @@
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
     </dependency>
-    
-<!--    <dependency>-->
-<!--      <groupId>org.springframework.boot</groupId>-->
-<!--      <artifactId>spring-boot-starter-data-h2db</artifactId>-->
-<!--      <version>${spring-boot.version}</version>-->
-<!--    </dependency>-->
     
 <!--    <dependency>-->
 <!--      <groupId>com.mysql</groupId>-->

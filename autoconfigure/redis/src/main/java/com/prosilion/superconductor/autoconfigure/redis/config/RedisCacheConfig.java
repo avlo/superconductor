@@ -18,10 +18,10 @@ import org.springframework.lang.NonNull;
 @EnableRedisDocumentRepositories(basePackages = "com.prosilion.superconductor.lib.redis.repository")
 @EntityScan(basePackages = "com.prosilion.superconductor.lib.redis.document")
 @ComponentScan(basePackages = {
-    "com.prosilion.superconductor.lib.redis.service",
+    "com.prosilion.superconductor.base.service.clientresponse",
     "com.prosilion.superconductor.base.service.request",
     "com.prosilion.superconductor.base.util",
-    "com.prosilion.superconductor.base.service.clientresponse",
+    "com.prosilion.superconductor.lib.redis.service",
     "com.prosilion.superconductor.autoconfigure.redis.config"
 })
 @ConditionalOnClass(RedisCache.class)

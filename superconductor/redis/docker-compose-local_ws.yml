@@ -1,6 +1,6 @@
 services:
   superconductor-redis:
-    container_name: superconductor-redis
+    container_name: superconductor-redis-local_ws
     image: "redis:8.0.0"
     hostname: localhost
     ports:

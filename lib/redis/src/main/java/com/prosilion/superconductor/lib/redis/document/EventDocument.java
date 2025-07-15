@@ -4,7 +4,6 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.EventIF;
 import com.redis.om.spring.annotations.Document;
 import com.redis.om.spring.annotations.Indexed;
-import com.redis.om.spring.annotations.Searchable;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
@@ -38,7 +37,7 @@ public class EventDocument implements EventIF {
   private String content;
 
   @Indexed
-  @Searchable
+//  @Searchable
   private List<BaseTag> tags = new ArrayList<>();
 
   @NonNull

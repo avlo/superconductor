@@ -5,6 +5,5 @@ plugins {
 dependencies {
     api project(':superconductor-autoconfigure-base')
     api project(':superconductor-lib-jpa')
-
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 }

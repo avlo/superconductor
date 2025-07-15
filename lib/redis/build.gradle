@@ -9,9 +9,9 @@ repositories {
 dependencies {
     api project(':superconductor-base')
 
-//    def redisOmVersion = '1.0.0-RC3'
-//    implementation 'com.redis.om:redis-om-spring:' + redisOmVersion
-//    annotationProcessor 'com.redis.om:redis-om-spring:' + redisOmVersion
+    def redisOmVersion = '1.0.0-RC3'
+    implementation 'com.redis.om:redis-om-spring:' + redisOmVersion
+    annotationProcessor 'com.redis.om:redis-om-spring:' + redisOmVersion
 }
 
 // Tell Gradle to include the generated sources directory

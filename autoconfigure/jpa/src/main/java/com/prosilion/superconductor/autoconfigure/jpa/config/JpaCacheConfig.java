@@ -19,6 +19,7 @@ import org.springframework.lang.NonNull;
 @EnableJpaRepositories(basePackages = "com.prosilion.superconductor.lib.jpa.repository")
 @EntityScan(basePackages = "com.prosilion.superconductor.lib.jpa.entity")
 @ComponentScan(basePackages = {
+    "com.prosilion.superconductor.autoconfigure.jpa.config",
     "com.prosilion.superconductor.base.service.clientresponse",
     "com.prosilion.superconductor.base.service.request",
     "com.prosilion.superconductor.base.util",

@@ -1,0 +1,12 @@
+services:
+  superconductor-redis:
+    container_name: superconductor-redis
+    image: "redis:8.0.0"
+    hostname: localhost
+    ports:
+      - "6379:6379"
+    environment:
+      - "REDIS_ARGS=--appendonly yes"
+volumes:
+  superconductor-redis:
+    driver: local

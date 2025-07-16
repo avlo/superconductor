@@ -9,15 +9,19 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>superconductor-app-h2db</artifactId>
-  <name>superconductor-app-h2db</name>
+  <artifactId>superconductor-app-mysql</artifactId>
+  <name>superconductor-app-mysql</name>
   <packaging>war</packaging>
+
+  <properties>
+    <mysql-connector-j.version>9.1.0</mysql-connector-j.version>
+  </properties>
 
   <dependencies>
 
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-spring-boot-starter-h2db</artifactId>
+      <artifactId>superconductor-spring-boot-starter-mysql</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
@@ -31,10 +35,16 @@
       <version>${spring-boot.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>${h2.version}</version>
-      <scope>test</scope>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-docker-compose</artifactId>
+      <version>${spring-boot.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>${mysql-connector-j.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.prosilion</groupId>
@@ -122,9 +132,9 @@
   <profiles>
 
     <profile>
-      <id>local_ws</id>
+      <id>dev_ws</id>
       <properties>
-        <spring.profiles.active>local_ws</spring.profiles.active>
+        <spring.profiles.active>dev_ws</spring.profiles.active>
       </properties>
       <build>
         <plugins>
@@ -139,14 +149,6 @@
           </plugin>
         </plugins>
       </build>
-      <dependencies>
-        <dependency>
-          <groupId>com.h2database</groupId>
-          <artifactId>h2</artifactId>
-          <version>${h2.version}</version>
-          <scope>runtime</scope>
-        </dependency>
-      </dependencies>
     </profile>
 
     <profile>

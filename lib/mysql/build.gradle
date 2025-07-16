@@ -1,0 +1,10 @@
+plugins {
+    id 'superconductor.java-conventions'
+}
+
+dependencies {
+    api project(':superconductor-lib-jpa')
+
+    def mysqlConnectorJVersion = '9.1.0'
+    implementation 'com.mysql:mysql-connector-j:' + mysqlConnectorJVersion
+}

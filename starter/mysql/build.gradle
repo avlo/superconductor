@@ -1,0 +1,8 @@
+plugins {
+    id 'superconductor.java-conventions'
+}
+
+dependencies {
+    api project(':superconductor-autoconfigure-mysql')
+    api project(':superconductor-autoconfigure-jpa')
+}

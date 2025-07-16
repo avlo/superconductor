@@ -15,6 +15,8 @@ include ':superconductor-autoconfigure-h2db'
 project(':superconductor-autoconfigure-h2db').setProjectDir(file("autoconfigure/h2db"))
 include ':superconductor-autoconfigure-jpa'
 project(':superconductor-autoconfigure-jpa').setProjectDir(file("autoconfigure/jpa"))
+include ':superconductor-autoconfigure-mysql'
+project(':superconductor-autoconfigure-mysql').setProjectDir(file("autoconfigure/mysql"))
 include ':superconductor-autoconfigure-redis'
 project(':superconductor-autoconfigure-redis').setProjectDir(file("autoconfigure/redis"))
 
@@ -25,6 +27,8 @@ include ':superconductor-lib-h2db'
 project(':superconductor-lib-h2db').setProjectDir(file("lib/h2db"))
 include ':superconductor-lib-jpa'
 project(':superconductor-lib-jpa').setProjectDir(file("lib/jpa"))
+include ':superconductor-lib-mysql'
+project(':superconductor-lib-mysql').setProjectDir(file("lib/mysql"))
 include ':superconductor-lib-redis'
 project(':superconductor-lib-redis').setProjectDir(file("lib/redis"))
 
@@ -32,10 +36,14 @@ include ':superconductor-spring-boot-starter-h2db'
 project(':superconductor-spring-boot-starter-h2db').setProjectDir(file("starter/h2db"))
 include ':superconductor-spring-boot-starter-jpa'
 project(':superconductor-spring-boot-starter-jpa').setProjectDir(file("starter/jpa"))
+include ':superconductor-spring-boot-starter-mysql'
+project(':superconductor-spring-boot-starter-mysql').setProjectDir(file("starter/mysql"))
 include ':superconductor-spring-boot-starter-redis'
 project(':superconductor-spring-boot-starter-redis').setProjectDir(file("starter/redis"))
 
 include ':superconductor-app-h2db'
 project(':superconductor-app-h2db').setProjectDir(file("superconductor/h2db"))
+include ':superconductor-app-mysql'
+project(':superconductor-app-mysql').setProjectDir(file("superconductor/mysql"))
 include ':superconductor-app-redis'
 project(':superconductor-app-redis').setProjectDir(file("superconductor/redis"))

@@ -1,13 +1,11 @@
 package com.prosilion.superconductor.redis;
 
-import com.redis.om.spring.annotations.EnableRedisDocumentRepositories;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-@EnableRedisDocumentRepositories(basePackages = "com.prosilion.superconductor.lib.redis.repository")
 public class SuperConductorRedisApplication extends SpringBootServletInitializer {
 
   /**

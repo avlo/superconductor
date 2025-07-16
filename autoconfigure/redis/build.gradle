@@ -3,6 +3,5 @@ plugins {
 }
 
 dependencies {
-    api project(':superconductor-autoconfigure-base')
-    api project(':superconductor-lib-redis')
+    implementation project(':superconductor-lib-redis')
 }

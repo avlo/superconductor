@@ -1,3 +1,5 @@
+import org.gradle.api.plugins.internal.DefaultJavaPluginExtension
+
 plugins {
     id 'superconductor.java-conventions'
 }
@@ -7,35 +9,47 @@ repositories {
 }
 
 dependencies {
-    api project(':superconductor-base')
+    api project(':superconductor-autoconfigure-base')
 
     def redisOmVersion = '1.0.0-RC3'
     implementation 'com.redis.om:redis-om-spring:' + redisOmVersion
     annotationProcessor 'com.redis.om:redis-om-spring:' + redisOmVersion
+
+//    java {
+//        file("${buildDir}/generated/sources/annotationProcessor/java/main")
+//    }
 }
 
 // Tell Gradle to include the generated sources directory
-sourceSets {
-    main {
-        java {
-            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/main")
-        }
-    }
-    test {
-        java {
-            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/test")
-        }
+//sourceSets {
+main {
+    java {
+        srcDir file("${buildDir}/generated/sources/annotationProcessor/java/main")
     }
 }
+//}
+
+//tasks.named('main') {
+//    java {
+//        srcDir file("${buildDir}/generated/sources/annotationProcessor/java/main")
+//    }
+//}
 
 // Configure the Java compile task
-compileJava {
+//compileJava {
+//    options.annotationProcessorPath = configurations.annotationProcessor
+//    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/main")
+//}
+tasks.withType(JavaCompile).configureEach {
     options.annotationProcessorPath = configurations.annotationProcessor
     options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/main")
 }
 
 // For test sources
-compileTestJava {
-    options.annotationProcessorPath = configurations.testAnnotationProcessor
-    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/test")
+//compileTestJava {
+//    options.annotationProcessorPath = configurations.testAnnotationProcessor
+//    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/test")
+//}
+void main(Closure<DefaultJavaPluginExtension> defaultJavaPluginExtensionClosure) {
+    
 }

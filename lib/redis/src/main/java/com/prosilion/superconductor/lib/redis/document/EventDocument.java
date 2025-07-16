@@ -7,14 +7,16 @@ import com.redis.om.spring.annotations.Indexed;
 import com.redis.om.spring.annotations.Searchable;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.lang.NonNull;
 
 @Data
-@NoArgsConstructor
+//@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor(staticName = "of")
 @Document
 public class EventDocument implements EventIF {

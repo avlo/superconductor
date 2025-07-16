@@ -69,7 +69,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:' + apacheCommonsLang3
     implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:' + jacksonModuleAfterburner
     implementation 'com.google.guava:guava:' + googleGuava
-    implementation 'com.mysql:mysql-connector-j'
+//    implementation 'com.mysql:mysql-connector-j'
     implementation 'org.projectlombok:lombok:' + lombok
     annotationProcessor 'org.projectlombok:lombok:' + lombok
 
@@ -88,31 +88,30 @@ dependencies {
     annotationProcessor 'com.redis.om:redis-om-spring:' + redisOmVersion
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/main")
-        }
-    }
-    test {
-        java {
-            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/test")
-        }
-    }
-}
+//sourceSets {
+//    main {
+//        java {
+//            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/main")
+//        }
+//    }
+//    test {
+//        java {
+//            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/test")
+//        }
+//    }
+//}
 
 // Configure the Java compile task
-compileJava {
-    options.annotationProcessorPath = configurations.annotationProcessor
-    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/main")
-}
-
-// For test sources
-compileTestJava {
-    options.annotationProcessorPath = configurations.testAnnotationProcessor
-    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/test")
-}
-
+//compileJava {
+//    options.annotationProcessorPath = configurations.annotationProcessor
+//    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/main")
+//}
+//
+//// For test sources
+//compileTestJava {
+//    options.annotationProcessorPath = configurations.testAnnotationProcessor
+//    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/test")
+//}
 
 tasks.named('test') {
     systemProperty("spring.profiles.active", "test")

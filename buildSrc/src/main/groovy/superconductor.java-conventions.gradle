@@ -52,7 +52,7 @@ dependencies {
     def lombok = '1.18.36'
     def logger = '4.0.0'
 
-    implementation 'org.springframework.boot:spring-boot-devtools:' + springBootVersion
+//    implementation 'org.springframework.boot:spring-boot-devtools:' + springBootVersion
     implementation 'org.springframework.boot:spring-boot-starter'
 //    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

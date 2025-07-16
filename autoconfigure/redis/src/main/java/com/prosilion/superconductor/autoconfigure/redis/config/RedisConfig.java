@@ -7,7 +7,7 @@ import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
 import com.prosilion.superconductor.lib.redis.service.RedisCache;
-import com.redis.om.spring.annotations.EnableRedisEnhancedRepositories;
+import com.redis.om.spring.annotations.EnableRedisDocumentRepositories;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -18,8 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.lang.NonNull;
 
 @AutoConfiguration
-@EnableRedisEnhancedRepositories(
-//@EnableRedisDocumentRepositories(
+@EnableRedisDocumentRepositories(
     basePackageClasses = {
         com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository.class
         ,
@@ -39,7 +38,6 @@ import org.springframework.lang.NonNull;
 //        , "com.prosilion.superconductor.lib.redis.service"
     })
 @ConditionalOnClass(RedisCache.class)
-//@Configuration
 public class RedisConfig {
 
   @Bean

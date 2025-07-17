@@ -7,7 +7,6 @@ import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
 import com.prosilion.superconductor.lib.redis.service.RedisCache;
-import com.redis.om.spring.annotations.EnableRedisDocumentRepositories;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -15,19 +14,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.lang.NonNull;
 
 @AutoConfiguration
-@EnableRedisDocumentRepositories(
+@EnableRedisRepositories(
     basePackageClasses = {
         com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository.class
-        ,
-        com.prosilion.superconductor.lib.redis.document.EventDocument.class
     })
 @EntityScan(
     basePackageClasses = {
-        com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository.class
-        ,
         com.prosilion.superconductor.lib.redis.document.EventDocument.class
     })
 @ComponentScan(
@@ -35,7 +31,6 @@ import org.springframework.lang.NonNull;
         "com.prosilion.superconductor.base.service.clientresponse",
         "com.prosilion.superconductor.base.service.request",
         "com.prosilion.superconductor.base.util"
-//        , "com.prosilion.superconductor.lib.redis.service"
     })
 @ConditionalOnClass(RedisCache.class)
 public class RedisConfig {

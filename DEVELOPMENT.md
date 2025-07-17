@@ -110,42 +110,41 @@ See [Afterimage Nostr-Reputation-Authority Relay](https://github.com/avlo/afteri
 
 ----
 
-### Build Superconductor
-#### 1. Check-out nostr-java-core dependency library
-
-    $ cd <your_git_home_dir>
-    $ git clone git@github.com:avlo/nostr-java-core.git
-    $ cd nostr-java-core
-    $ git checkout develop
-<details>
-  <summary>maven</summary>  
-
-    (unix)
-      $ ./mvnw clean install
-
-    (windows)
-      $ ./mvnw.cmd clean install
-</details>
-<details>
-  <summary>gradle</summary>
-
-    (unix)
-      $ ./gradlew clean test
-      $ ./gradlew publishToMavenLocal
-
-    (windows)
-      $ ./gradlew.bat clean test
-      $ ./gradlew.bat publishToMavenLocal
-</details>
-
-#### 2. Check-out SuperConductor
+### Build Superconductor 
+#### 1. Check-out superconductor
 
     $ cd <your_git_home_dir>
     $ git clone https://github.com/avlo/superconductor
     $ cd superconductor
     $ git checkout develop
 
-#### 3. Configure JUnit / SpringBootTest security mode via [appication-test.properties](src/test/resources/application-test.properties) file
+#### 2.  Build superconductor
+<details>
+  <summary>maven</summary>  
+
+      $ cd <your_git_home_dir>
+      $ cd superconductor
+
+    (unix)
+      $ ./mvnw clean compile
+
+    (windows)
+      $ ./mvnw.cmd clean compile
+</details>
+<details>
+  <summary>gradle</summary>
+
+      $ cd <your_git_home_dir>
+      $ cd superconductor
+
+    (unix)
+      $ ./gradlew clean build
+
+    (windows)
+      $ ./gradlew.bat clean build
+</details>
+
+#### 3. (Optional) Configure JUnit / SpringBootTest security mode via [appication-test.properties](src/test/resources/application-test.properties) file
 <details>
   <summary>Default: Non-Secure (WS) tests mode</summary>
 
@@ -164,40 +163,81 @@ See [Afterimage Nostr-Reputation-Authority Relay](https://github.com/avlo/afteri
     # ...also for secure (wss), change below value to 'wss'...
     superconductor.relay.url=wss://localhost:5555                      <--------  "wss" protocol for wss/secure
 
-   Configure SuperConductor run-time security, 3 options:
+Configure SuperConductor run-time security, 3 options:
 
-  | SecurityLevel | Specification                                                        | Details                                                                                                                                                                                                                                                                                                                                                                                 |
+| SecurityLevel | Specification                                                        | Details                                                                                                                                                                                                                                                                                                                                                                                 |
   |---------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-  | Highest       | SSL Certificate WSS/HTTPS<br>(industry standard secure encrypted)    | 1. [Obtain](https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/) an SSL certificate.<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file. |
-  | Medium        | Self-Signed Certificate WSS/HTTPS (locally created secure encrypted) | 1. Create a [Self-Signed Certificate](https://www.baeldung.com/openssl-self-signed-cert).<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file.                      |
-  | None/Default  | WS/HTTP<br>non-secure / non-encrypted                                | Security-related configuration(s) not required                                                                                                                                                                                                                                                                                                                                          |  
+| Highest       | SSL Certificate WSS/HTTPS<br>(industry standard secure encrypted)    | 1. [Obtain](https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/) an SSL certificate.<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file. |
+| Medium        | Self-Signed Certificate WSS/HTTPS (locally created secure encrypted) | 1. Create a [Self-Signed Certificate](https://www.baeldung.com/openssl-self-signed-cert).<br>2. [Install](https://www.baeldung.com/java-import-cer-certificate-into-keystore) the certificate<br>3. Enable [SSL configuration options](src/main/resources/application-local_wss.properties?plain=1#L6,8,L11-L15) in application-local_wss/dev_wss.properties file.                      |
+| None/Default  | WS/HTTP<br>non-secure / non-encrypted                                | Security-related configuration(s) not required                                                                                                                                                                                                                                                                                                                                          |  
 
 </details>
 
-#### 4.  Build application (both unit-test and integration-test included)
-```bash
-$ cd <your_git_home_dir>
-$ cd superconductor
-```
-<details>
-  <summary>maven</summary>  
+#### 4. (Optional, recommended) Run unit and integration tests
 
-    (unix)
-      $ ./mvnw clean install
-
-    (windows)
-      $ ./mvnw.cmd clean install
+<details><summary>h2db</summary>
+    <blockquote>
+        <details><summary>maven</summary>
+            <blockquote>
+                <details><summary>unix</summary>
+                    <blockquote>
+                        $ ./mvnw verify -f superconductor/h2db/pom.xml
+                    </blockquote>
+                </details>
+                <details><summary>windows</summary>
+                    <blockquote>
+                        $ ./mvnw.cmd verify -f superconductor/h2db/pom.xml
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+        <details><summary>gradle</summary>
+            <blockquote>
+                <details><summary>unix</summary>
+                    <blockquote>
+                        $ ./gradlew :superconductor-app-h2db:test :superconductor-app-h2db:check --rerun-tasks
+                    </blockquote>
+                </details>
+                <details><summary>windows</summary>
+                    <blockquote>
+                        $ ./gradlew.cmd :superconductor-app-h2db:test :superconductor-app-h2db:check --rerun-tasks
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+    </blockquote>
 </details>
-<details>
-  <summary>gradle</summary>
-
-    (unix)
-      $ ./gradlew clean verify
-      $ ./gradlew publishToMavenLocal
-
-    (windows)
-      $ ./gradlew.bat clean verify
-      $ ./gradlew.bat publishToMavenLocal
+<details><summary>redis</summary>
+    <blockquote>
+        <details><summary>maven</summary>
+            <blockquote>
+                <details><summary>unix</summary>
+                    <blockquote>
+                        $ ./mvnw verify -f superconductor/redis/pom.xml
+                    </blockquote>
+                </details>
+                <details><summary>windows</summary>
+                    <blockquote>
+                        $ ./mvnw.cmd verify -f superconductor/redis/pom.xml
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+        <details><summary>gradle</summary>
+            <blockquote>
+                <details><summary>unix</summary>
+                    <blockquote>
+                        $ ./gradlew :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+                    </blockquote>
+                </details>
+                <details><summary>windows</summary>
+                    <blockquote>
+                        $ ./gradlew.cmd :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+    </blockquote>
 </details>
 
 ----

@@ -13,7 +13,7 @@ services:
 #      - ./data:/data
   superconductor-app-redis:
     container_name: superconductor-app-redis
-    image: superconductor-app-redis:1.15.1
+    image: superconductor-app-redis:1.16.0
     ports:
       - "5555:5555"
 #      docker debug port, note: requires image re-build

@@ -60,7 +60,7 @@
 <dependency>
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>superconductor-spring-boot-starter</artifactId>
-  <version>1.15.1</version>
+  <version>1.16.0</version>
 </dependency>
 ```
 </details>
@@ -76,7 +76,7 @@ repositories {
 ```
 
 ```groovy
-implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter:' + 1.15.1
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter:' + 1.16.0
 ```
 </details>  
 
@@ -314,13 +314,13 @@ run with docker logging displayed to console:
 ### 3.  Run locally as executable jar
 
     $ cd <your_git_home_dir>/superconductor
-    $ java -jar superconductor/target/superconductor-1.15.1.war  
+    $ java -jar superconductor/target/superconductor-1.16.0.war  
 
 ----
 
 ### 4.  Run using pre-existing local application-server-container instance
 
-    $ cp <your_git_home_dir>/superconductor/superconductor/target/superconductor-1.15.1.war <your_container/instance/deployment_directory>
+    $ cp <your_git_home_dir>/superconductor/superconductor/target/superconductor-1.16.0.war <your_container/instance/deployment_directory>
 
 ----
 

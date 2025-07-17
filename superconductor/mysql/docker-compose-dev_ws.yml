@@ -22,7 +22,7 @@ services:
       timeout: 30s
   superconductor:
     container_name: superconductor-app-mysql
-    image: superconductor-app-mysql:1.15.1
+    image: superconductor-app-mysql:1.16.0
     ports:
       - "5555:5555"
     #      docker debug port, note: requires image re-build

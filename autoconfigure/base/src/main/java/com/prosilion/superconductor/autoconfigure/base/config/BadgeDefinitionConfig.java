@@ -5,7 +5,6 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
-import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -35,7 +34,7 @@ public class BadgeDefinitionConfig {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(SuperconductorKindType.UPVOTE.getName()),
-        new ReferenceTag(URI.create(superconductorRelayUrl)),
+        new ReferenceTag(superconductorRelayUrl),
         "1");
   }
 
@@ -46,7 +45,7 @@ public class BadgeDefinitionConfig {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(SuperconductorKindType.DOWNVOTE.getName()),
-        new ReferenceTag(URI.create(superconductorRelayUrl)),
+        new ReferenceTag(superconductorRelayUrl),
         "-1");
   }
 }

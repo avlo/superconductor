@@ -25,13 +25,8 @@ public class RedisCache implements CacheIF {
   }
 
   @Override
-  public Optional<EventIF> getByEventIdString(@NonNull String eventId) {
+  public Optional<GenericEventKindIF> getByEventIdString(@NonNull String eventId) {
     return eventDocumentService.findByEventIdString(eventId);
-  }
-
-  @Override
-  public Optional<EventIF> getByMatchingAddressableTags(@NonNull String eventId) {
-    return Optional.empty();
   }
 
   @Override
@@ -48,11 +43,6 @@ public class RedisCache implements CacheIF {
   public Map<Kind, Map<String, GenericEventKindIF>> getAllEventEntities() {
     return eventDocumentService.getAll();
   }
-
-  //  @Override
-//  public Map<Kind, Map<String, GenericEventKindIF>> getAllEventEntities() {
-//    return eventDocumentService.getAll();
-//  }
 
   @Override
   public List<DeletionEventEntityIF> getAllDeletionEventEntities() {

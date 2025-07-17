@@ -6,16 +6,7 @@ import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.user.PublicKey;
-import jakarta.persistence.NoResultException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.lang.NonNull;
+import com.prosilion.superconductor.base.EventIF;
 import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import com.prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
@@ -27,6 +18,16 @@ import com.prosilion.superconductor.lib.jpa.repository.AbstractTagEntityReposito
 import com.prosilion.superconductor.lib.jpa.repository.EventEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
 import com.prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
+import jakarta.persistence.NoResultException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -91,8 +92,8 @@ public class EventEntityService {
     return eventEntityRepository.findAll();
   }
 
-  public Optional<EventEntityIF> findByEventIdString(@NonNull String eventIdString) {
-    return eventEntityRepository.findByEventIdString(eventIdString);
+  public Optional<GenericEventKindIF> findByEventIdString(@NonNull String eventIdString) {
+    return eventEntityRepository.findByEventIdString(eventIdString).map(EventIF::convertEntityToDto);
   }
 
   public List<GenericEventKindIF> getEventsByPublicKey(@NonNull PublicKey publicKey) {

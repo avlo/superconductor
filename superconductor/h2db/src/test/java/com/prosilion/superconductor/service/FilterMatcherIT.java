@@ -13,7 +13,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.base.util.FilterMatcher;
-import java.net.URI;
+import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,7 +72,7 @@ public class FilterMatcherIT {
     assertTrue(resultTwo.orElseThrow().event().getTags().contains(addressTag2));
 
 //    with Relay
-    AddressTag addressTag3 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-A"), new Relay(URI.create("ws://localhost:5555")));
+    AddressTag addressTag3 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-A"), new Relay("ws://localhost:5555"));
 
     Filters filters3 = new Filters(
         new AddressTagFilter(addressTag3));

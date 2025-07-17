@@ -8,7 +8,6 @@ import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import java.net.URI;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,6 @@ import org.springframework.lang.NonNull;
 @NoArgsConstructor
 @Entity
 @Table(name = "reference_tag")
-// TODO: comprehensive unit test all parameter variants
 public class ReferenceTagEntity extends AbstractTagEntity {
   private String uri;
 
@@ -32,12 +30,12 @@ public class ReferenceTagEntity extends AbstractTagEntity {
   @Override
   @Transient
   public BaseTag getAsBaseTag() {
-    return new ReferenceTag(URI.create(uri));
+    return new ReferenceTag(uri);
   }
 
   @Override
   public AbstractTagDto convertEntityToDto() {
-    return new ReferenceTagDto(new ReferenceTag(URI.create(uri)));
+    return new ReferenceTagDto(new ReferenceTag(uri));
   }
 
   @Override

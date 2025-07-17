@@ -8,6 +8,7 @@ import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
 
@@ -18,25 +19,29 @@ public class EventDocumentService {
     this.eventDocumentRepository = eventDocumentRepository;
   }
 
-  public Optional<EventIF> findByEventIdString(@NonNull String eventIdString) {
-    return eventDocumentRepository.findByEventIdString(eventIdString).map(EventIF::convertEntityToDto);
+  public Optional<GenericEventKindIF> findByEventIdString(@NonNull String eventIdString) {
+    return eventDocumentRepository
+        .findByEventIdString(eventIdString)
+        .map(EventIF::convertEntityToDto);
   }
 
   public Map<Kind, Map<String, GenericEventKindIF>> getAll() {
-    return getEventEntityRepositoryAll().stream()
+    return getEventEntityRepositoryAll()
+        .stream()
         .collect(
-            Collectors.groupingBy(eventEntity ->
-                    Kind.valueOf(eventEntity.getKind()),
+            Collectors.groupingBy(
+                GenericEventKindIF::getKind,
                 Collectors.toMap(
-                    EventIF::getEventIdString,
-                    EventIF::convertEntityToDto)));
+                    GenericEventKindIF::getId,
+                    Function.identity(),
+                    (prev, next) -> next)));
   }
 
-  private List<EventIF> getEventEntityRepositoryAll() {
-    return eventDocumentRepository.findAll().stream()
-        .map(EventIF::convertEntityToDto)
-        .map(EventIF.class::cast)
-        .toList();
+  private List<GenericEventKindIF> getEventEntityRepositoryAll() {
+    return eventDocumentRepository
+        .findAll()
+        .stream()
+        .map(EventIF::convertEntityToDto).toList();
   }
 
   public void saveEventDocument(GenericEventKindIF genericEventKindIF) {

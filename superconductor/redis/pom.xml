@@ -13,10 +13,6 @@
   <name>superconductor-app-redis</name>
   <packaging>war</packaging>
 
-  <properties>
-    <redis-om-spring.version>1.0.0-RC3</redis-om-spring.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>

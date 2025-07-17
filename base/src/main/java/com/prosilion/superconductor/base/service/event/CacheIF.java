@@ -11,8 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
 
 public interface CacheIF {
-  Optional<EventIF> getByEventIdString(@NonNull String eventId);
-  Optional<EventIF> getByMatchingAddressableTags(@NonNull String eventId);
+  Optional<GenericEventKindIF> getByEventIdString(@NonNull String eventId);
   void saveEventEntityOrDocument(@NonNull GenericEventKindIF event);
   void deleteEventEntity(@NonNull EventIF eventIF);
   List<DeletionEventEntityIF> getAllDeletionEventEntities();
@@ -32,6 +31,8 @@ public interface CacheIF {
   }
 
   default <T> boolean checkEventIdMatchesAnyDeletionEventEntityId(T eventId, List<DeletionEventEntityIF> deletionEventEntities) {
-    return deletionEventEntities.stream().map(DeletionEventEntityIF::getEventId).anyMatch(eventId::equals);
+//    TODO: readd delete
+//    return deletionEventEntities.stream().map(DeletionEventEntityIF::getEventId).anyMatch(eventId::equals);
+    return false;
   }
 }

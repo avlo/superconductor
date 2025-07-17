@@ -10,11 +10,11 @@ import com.prosilion.nostr.user.Signature;
 import java.util.List;
 
 public interface EventIF {
-  default <T extends GenericEventKindIF> T convertEntityToDto() {
+  default GenericEventKindIF convertEntityToDto() {
     byte[] rawData = NostrUtil.hex128ToBytes(getSignature());
     final Signature signature = new Signature();
     signature.setRawData(rawData);
-    return (T) new GenericEventKind(
+    return new GenericEventKind(
         getEventIdString(),
         new PublicKey(getPubKey()),
         getCreatedAt(),

@@ -43,7 +43,7 @@ publishing {
 }
 
 dependencies {
-    def springBootVersion = '3.4.3'
+    def springBootVersion = '3.5.1'
     def nostrJavaCoreVersion = '1.0.0'
     def apacheCommonsLang3 = '3.17.0'
     def jacksonModuleAfterburner = '2.18.3'
@@ -52,9 +52,7 @@ dependencies {
     def lombok = '1.18.36'
     def logger = '4.0.0'
 
-//    implementation 'org.springframework.boot:spring-boot-devtools:' + springBootVersion
     implementation 'org.springframework.boot:spring-boot-starter'
-//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -69,7 +67,6 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:' + apacheCommonsLang3
     implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:' + jacksonModuleAfterburner
     implementation 'com.google.guava:guava:' + googleGuava
-//    implementation 'com.mysql:mysql-connector-j'
     implementation 'org.projectlombok:lombok:' + lombok
     annotationProcessor 'org.projectlombok:lombok:' + lombok
 
@@ -81,37 +78,7 @@ dependencies {
     testImplementation 'com.adarshr:gradle-test-logger-plugin:' + logger
     testAnnotationProcessor 'org.projectlombok:lombok:' + lombok
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-
-    def redisOmVersion = '1.0.0-RC3'
-    implementation 'com.redis.om:redis-om-spring:' + redisOmVersion
-    annotationProcessor 'com.redis.om:redis-om-spring:' + redisOmVersion
 }
-
-//sourceSets {
-//    main {
-//        java {
-//            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/main")
-//        }
-//    }
-//    test {
-//        java {
-//            srcDir file("${buildDir}/generated/sources/annotationProcessor/java/test")
-//        }
-//    }
-//}
-
-// Configure the Java compile task
-//compileJava {
-//    options.annotationProcessorPath = configurations.annotationProcessor
-//    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/main")
-//}
-//
-//// For test sources
-//compileTestJava {
-//    options.annotationProcessorPath = configurations.testAnnotationProcessor
-//    options.annotationProcessorGeneratedSourcesDirectory = file("${buildDir}/generated/sources/annotationProcessor/java/test")
-//}
 
 tasks.named('test') {
     systemProperty("spring.profiles.active", "test")

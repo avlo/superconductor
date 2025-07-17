@@ -4,21 +4,19 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.base.DeletionEventEntityIF;
 import com.prosilion.superconductor.base.EventIF;
+import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
+import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
-import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 
 @Slf4j
-//@Component
 public class JpaCache implements JpaCacheIF {
   private final EventEntityService eventEntityService;
   private final DeletionEventEntityService deletionEventEntityService;
 
-  //  @Autowired
   public JpaCache(
       @NonNull EventEntityService eventEntityService,
       @NonNull DeletionEventEntityService deletionEventEntityService) {
@@ -27,15 +25,8 @@ public class JpaCache implements JpaCacheIF {
   }
 
   @Override
-  public Optional<EventIF> getByEventIdString(@NonNull String eventId) {
-    return eventEntityService.findByEventIdString(eventId)
-        .map(EventIF::convertEntityToDto);
-  }
-
-  @Override
-  public Optional<EventIF> getByMatchingAddressableTags(@NonNull String eventId) {
-//    return eventEntityService.findByEventIdString(eventId);
-    return null;
+  public Optional<GenericEventKindIF> getByEventIdString(@NonNull String eventId) {
+    return eventEntityService.findByEventIdString(eventId);
   }
 
   @Override

@@ -1,10 +1,13 @@
 package com.prosilion.superconductor.lib.redis.repository;
 
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
-import com.redis.om.spring.repository.RedisDocumentRepository;
 import java.util.Optional;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
 
-public interface EventDocumentRepository extends RedisDocumentRepository<EventDocument, String> {
+@Repository
+// TODO: candidate replace below extends with CrudRepository for iterable streaming...
+public interface EventDocumentRepository extends ListCrudRepository<EventDocument, String> {
   Optional<EventDocument> findByEventIdString(@NonNull String eventIdString);
 }

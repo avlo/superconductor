@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    def springBootVersion = '3.4.3'
+    def springBootVersion = '3.5.1'
     def snakeYamlVersion = '2.2'
     def retry = '1.6.2'
     def logger = '4.0.0'

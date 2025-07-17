@@ -1,7 +1,5 @@
 plugins {
     id 'superconductor.java-conventions'
-//    id 'org.springframework.boot'
-//    id 'io.spring.dependency-management'
 }
 
 repositories {
@@ -10,7 +8,6 @@ repositories {
     }
 }
 dependencies {
-//    TODO: temp testing hack, likely instead tests need moved to lib/jpa
     api project(':superconductor-spring-boot-starter-redis')
 
     def subdivisionsVersion = '1.3.0'

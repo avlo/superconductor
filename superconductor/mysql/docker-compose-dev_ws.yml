@@ -1,6 +1,6 @@
 services:
   superconductor-db:
-    container_name: superconductor-mysqldb-dev-ws
+    container_name: superconductor-db-mysql-dev_ws
     image: mysql:9.1.0
     ports:
       - "3316:3316"
@@ -16,12 +16,12 @@ services:
     networks:
       docker-network-mysql-dev:
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "superconductor-mysqldb-dev-ws"]
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "superconductor-db-mysql-dev_ws"]
       retries: 10
       interval: 3s
       timeout: 30s
-  superconductor:
-    container_name: superconductor-app-mysql
+  superconductor-app:
+    container_name: superconductor-app-mysql-dev_ws
     image: superconductor-app-mysql:1.16.0
     ports:
       - "5555:5555"
@@ -36,7 +36,7 @@ services:
       #        -Xdebug
       #        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       SPRING_PROFILES_ACTIVE: dev_ws
-      SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb-dev-ws:3316/superconductor
+      SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-db-mysql-dev_ws:3316/superconductor
       #      set below spring datasource parameters and credentials as desired
       SPRING_DATASOURCE_USERNAME: mysqluser
       SPRING_DATASOURCE_PASSWORD: mysqluserpass

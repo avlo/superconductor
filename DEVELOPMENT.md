@@ -46,7 +46,7 @@
 <details>
   <summary>maven</summary>
 
-    $ mvn -version
+    $ ./mvnw -version
 >     Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
 >     Java version: 21.0.5, vendor: Oracle Corporation
 </details>
@@ -419,19 +419,46 @@ $ ./gradlew.cmd :superconductor-app-redis:test :superconductor-app-redis:check -
 
 ##### Dockerize project / Build Supercondcutor Docker images
 
-<details>
-  <summary>mysql</summary>
+<details><summary>redis</summary>
+    <blockquote>
+        <details><summary>unix</summary>
+            <blockquote>
 
-    $ mvn clean install -Dmaven.test.skip=true
-    $ mvn -N wrapper:wrapper
-    $ mvn spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
+    $ ./mvnw clean install -Dmaven.test.skip=true
+    $ ./mvnw -N wrapper:wrapper
+    $ ./mvnw spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+</blockquote>
+        </details>
+        <details><summary>windows</summary>
+            <blockquote>
+
+    $ ./mvnw.cmd clean install -Dmaven.test.skip=true
+    $ ./mvnw.cmd -N wrapper:wrapper
+    $ ./mvnw.cmd spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+</blockquote>
+        </details>
+    </blockquote>
 </details>
-<details>
-  <summary>redis</summary>
 
-    $ mvn clean install -Dmaven.test.skip=true
-    $ mvn -N wrapper:wrapper
-    $ mvn spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true 
+<details><summary>mysql</summary>
+    <blockquote>
+        <details><summary>unix</summary>
+            <blockquote>
+
+    $ ./mvnw clean install -Dmaven.test.skip=true
+    $ ./mvnw -N wrapper:wrapper
+    $ ./mvnw spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
+</blockquote>
+        </details>
+        <details><summary>windows</summary>
+            <blockquote>
+
+    $ ./mvnw.cmd clean install -Dmaven.test.skip=true
+    $ ./mvnw.cmd -N wrapper:wrapper
+    $ ./mvnw.cmd spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
+</blockquote>
+        </details>
+    </blockquote>
 </details>
 
 ###### _note: Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([preferential over Dockerfile](https://reflectoring.io/spring-boot-docker/))_

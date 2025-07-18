@@ -48,8 +48,8 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
   <ul>
     <li><a href="https://www.websitebuilderexpert.com/building-websites/how-to-get-an-ssl-certificate/">Obtain</a> an SSL certificate</li>
     <li><a href="https://www.baeldung.com/java-import-cer-certificate-into-keystore">Install</a> the certificate</li>
-    <li>Download <a href="src/main/resources/application-prod_wss.properties.properties">application-prod_wss.properties</a> file & configure <a href="src/main/resources/application-prod_wss.properties.properties?plain=1#L6,8,L11-L15"> SSL settings</a></li>
-    <li>Download <a href="superconductor/docker-compose-prod_wss.yml">docker-compose-prod_wss.yml</a> file <i>(and optionally <a href="superconductor/docker-compose-prod_wss.yml?plain=1#L10,32,L36-L37">edit relevant parameters</a> as applicable)</i></li>
+    <li>Download <a href="superconductor/redis/src/main/resources/application-prod_wss.properties">application-prod_wss.properties</a> file & configure <a href="superconductor/redis/src/main/resources/application-prod_wss.properties"> SSL settings</a></li>
+    <li>Download <a href="superconductor/redis/docker-compose-prod_wss.yml">docker-compose-prod_wss.yml</a> file <i>(and optionally <a href="superconductor/redis/docker-compose-prod_wss.yml">edit relevant parameters</a> as applicable)</i></li>
   </ul>
 </details>
 
@@ -58,8 +58,8 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
   <ul>
     <li><a href="https://www.baeldung.com/openssl-self-signed-cert">Create </a>a Self-Signed Certificate</li>
 	<li><a href="https://www.baeldung.com/java-import-cer-certificate-into-keystore">Install</a> the certificate</li>
-	<li>Download <a href="src/main/resources/application-prod_wss.properties.properties">application-prod_wss.properties</a> file & configure <a href="src/main/resources/application-prod_wss.properties.properties?plain=1#L6,8,L11-L15"> SSL settings</a></li>
-    <li>Download <a href="superconductor/docker-compose-prod_wss.yml">docker-compose-prod_wss.yml</a> file <i>(and optionally <a href="superconductor/docker-compose-prod_wss.yml?plain=1#L10,32,L36-L37">edit relevant parameters</a> as applicable)</i></li>
+	<li>Download <a href="superconductor/redis/src/main/resources/application-prod_wss.properties">application-prod_wss.properties</a> file & configure <a href="superconductor/redis/src/main/resources/application-prod_wss.properties"> SSL settings</a></li>
+    <li>Download <a href="superconductor/redis/docker-compose-prod_wss.yml">docker-compose-prod_wss.yml</a> file <i>(and optionally <a href="superconductor/redis/docker-compose-prod_wss.yml">edit relevant parameters</a> as applicable)</i></li>
   </ul>
 </details> 
 
@@ -67,7 +67,7 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
   <summary>Lowest | Non-secure / Non-encrypted (WS/HTTP)</summary>
   <ul>
     <li>Security-related configuration(s) not required</li>
-    <li>Download <a href="superconductor/docker-compose-prod_ws.yml">docker-compose-prod_ws.yml</a> file <i>(and optionally <a href="superconductor/docker-compose-prod_ws.yml?plain=1#L10,32,L36-L37">edit relevant parameters</a> as applicable)</i></li>
+    <li>Download <a href="superconductor/redis/docker-compose-prod_ws.yml">docker-compose-prod_ws.yml</a> file <i>(and optionally <a href="superconductor/redis/docker-compose-prod_ws.yml">edit relevant parameters</a> as applicable)</i></li>
   </ul>
 </details>
 

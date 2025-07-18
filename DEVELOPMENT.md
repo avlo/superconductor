@@ -820,8 +820,8 @@ $ ./mvnw spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmave
 (start superconductor mysql)
 $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
 
-(stop redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+(stop mysql docker container)
+$ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml stop && docker compose -f superconductor/mysql/docker-compose-dev_ws.yml down --remove-orphans
 ```
 </blockquote>
 </blockquote>
@@ -838,7 +838,7 @@ $ ./mvn.cmd spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dm
 (start superconductor mysql)
 $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d
 
-(stop redis docker container)
+(stop mysql docker container)
 $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 $ docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
 ```
@@ -1038,8 +1038,8 @@ $ ./mvnw spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_wss -Dmav
 (start superconductor mysql)
 $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
 
-(stop redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop && docker compose -f superconductor/redis/docker-compose-local_wss.yml down --remove-orphans
+(stop mysql docker container)
+$ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml stop && docker compose -f superconductor/mysql/docker-compose-dev_wss.yml down --remove-orphans
 ```
 </blockquote>
 </blockquote>
@@ -1056,9 +1056,9 @@ $ ./mvn.cmd spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_wss -D
 (start superconductor mysql)
 $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml up -d
 
-(stop redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop
-$ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --remove-orphans
+(stop mysql docker container)
+$ docker compose -f superconductor/mysql/docker-compose-local_wss.yml stop
+$ docker compose -f superconductor/mysql/docker-compose-local_wss.yml down --remove-orphans
 ```
 </blockquote>
 </blockquote>
@@ -1136,17 +1136,17 @@ $ ./gradlew.bat superconductor-app-mysql:bootRunLocalWss -Pserver.port=5555 -Psu
 ```
 </details>
 <details>
-  <summary>mysql</summary>
-
-```bash
-  $ cp <your_git_home_dir>/superconductor/superconductor/mysql/target/superconductor-app-mysql-1.16.0.war <your_container/instance/deployment_directory>
-```
-</details> 
-<details>
   <summary>redis</summary>
 
 ```bash
   $ cp <your_git_home_dir>/superconductor/superconductor/redis/target/superconductor-app-redis-1.16.0.war <your_container/instance/deployment_directory>
+```
+</details>
+<details>
+  <summary>mysql</summary>
+
+```bash
+  $ cp <your_git_home_dir>/superconductor/superconductor/mysql/target/superconductor-app-mysql-1.16.0.war <your_container/instance/deployment_directory>
 ```
 </details>
 

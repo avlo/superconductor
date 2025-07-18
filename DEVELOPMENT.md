@@ -82,7 +82,7 @@ Gradle 8.13
 ###### (windows)
 
 ```bash
-$ ./gradlew.cmd -version
+$ ./gradlew.bat -version
 ------------------------------------------------------------
 Gradle 8.13
 ------------------------------------------------------------
@@ -371,7 +371,7 @@ $ ./gradlew :superconductor-app-h2db:test :superconductor-app-h2db:check --rerun
 <blockquote>
 
 ```bash
-$ ./gradlew.cmd :superconductor-app-h2db:test :superconductor-app-h2db:check --rerun-tasks
+$ ./gradlew.bat :superconductor-app-h2db:test :superconductor-app-h2db:check --rerun-tasks
 ```
 </blockquote>
                     </blockquote>
@@ -423,7 +423,7 @@ $ ./gradlew :superconductor-app-redis:test :superconductor-app-redis:check --rer
 <blockquote>
 
 ```bash
-$ ./gradlew.cmd :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+$ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
 ```
 </blockquote>
                     </blockquote>
@@ -709,7 +709,7 @@ $ ./gradlew superconductor-app-h2db:bootRunLocalws -Pserver.port=5555 -Psupercon
 <blockquote>
 
 ```bash
-$ ./gradlew.cmd superconductor-app-h2db:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+$ ./gradlew.bat superconductor-app-h2db:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
 ```
 </blockquote>
 </blockquote>
@@ -791,7 +791,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && doc
 $ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d
 
 (start superconductor redis)
-$ ./gradlew.cmd superconductor-app-redis:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+$ ./gradlew.bat superconductor-app-redis:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
 
 (stop redis docker container) 
 $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
@@ -872,7 +872,7 @@ $ ./gradlew superconductor-app-mysql:bootRunLocalws -Pserver.port=5555 -Psuperco
 <blockquote>
 
 ```bash
-$ ./gradlew.cmd superconductor-app-mysql:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+$ ./gradlew.bat superconductor-app-mysql:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
 ```
 </blockquote>
 </blockquote>
@@ -933,7 +933,7 @@ $ ./gradlew superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperco
 <blockquote>
 
 ```bash
-$ ./gradlew.cmd superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+$ ./gradlew.bat superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
 ```
 </blockquote>
 </blockquote>
@@ -1015,7 +1015,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop && do
 $ docker compose -f superconductor/redis/docker-compose-local_wss.yml up -d && dcls | grep 'superconductor-redis' | awk '{print $1}' | xargs docker logs -f
 
 (start superconductor redis)
-$ ./gradlew.cmd superconductor-app-redis:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+$ ./gradlew.bat superconductor-app-redis:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
 
 (stop redis docker container) 
 $ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop
@@ -1096,7 +1096,7 @@ $ ./gradlew superconductor-app-mysql:bootRunLocalWss -Pserver.port=5555 -Psuperc
 <blockquote>
 
 ```bash
-$ ./gradlew.cmd superconductor-app-mysql:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+$ ./gradlew.bat superconductor-app-mysql:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
 ```
 </blockquote>
 </blockquote>

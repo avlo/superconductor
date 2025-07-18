@@ -1,46 +1,21 @@
-#services:
-#  superconductor-db:
-#    container_name: superconductor-mysqldb
-#    image: mysql:9.1.0
-#    ports:
-#      - "3316:3316"
-#    labels:
-#      org.springframework.boot.service-connection: mysql
-#    environment:
-#      MYSQL_DATABASE: superconductor
-##      set below db name and credentials as desired
-#      MYSQL_USER: mysqluser
-#      MYSQL_PASSWORD: mysqluserpass
-#      MYSQL_ROOT_PASSWORD: mysqlrootuserpass
-#      MYSQL_TCP_PORT: 3316
-#    networks:
-#      docker-network:
-#    healthcheck:
-#      test: ["CMD", "mysqladmin" ,"ping", "-h", "superconductor-mysqldb"]
-#      retries: 10
-#      interval: 3s
-#      timeout: 30s
-#  superconductor:
-#    container_name: superconductor-app
-#    image: avlo/superconductor:1.16.0
-#    ports:
-#      - "5555:5555"
-#    depends_on:
-#      superconductor-db:
-#        condition: service_healthy
-#    environment:
-#      SPRING_PROFILES_ACTIVE: prod_ws
-#      SPRING_DATASOURCE_URL: jdbc:mysql://superconductor-mysqldb:3316/superconductor
-##      set below spring datasource credentials as desired
-#      SPRING_DATASOURCE_USERNAME: mysqluser
-#      SPRING_DATASOURCE_PASSWORD: mysqluserpass
-##      authentication is off by default.  update below with "true" to activate
-#      superconductor.auth.active: false
-#    networks:
-#      docker-network:
-#volumes:
-#  superconductor-db:
-#    driver: local
-#networks:
-#  docker-network:
-#    driver: bridge
+services:
+  superconductor-redis:
+    container_name: superconductor-redis
+    image: "redis:8.0.0"
+    hostname: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - "REDIS_ARGS=--appendonly yes"
+  superconductor-app-redis:
+    container_name: superconductor-app-redis
+    image: superconductor-app-redis:1.16.0
+    ports:
+      - "5555:5555"
+    links:
+      - superconductor-redis
+    environment:
+      SPRING_PROFILES_ACTIVE: prod_ws
+volumes:
+  superconductor-redis:
+    driver: local

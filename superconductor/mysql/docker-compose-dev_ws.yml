@@ -14,7 +14,7 @@ services:
       MYSQL_ROOT_PASSWORD: mysqlrootuserpass
       MYSQL_TCP_PORT: 3316
     networks:
-      docker-network:
+      docker-network-mysql-dev:
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "superconductor-mysqldb-dev-ws"]
       retries: 10
@@ -41,10 +41,10 @@ services:
       SPRING_DATASOURCE_USERNAME: mysqluser
       SPRING_DATASOURCE_PASSWORD: mysqluserpass
     networks:
-      docker-network:
+      docker-network-mysql-dev:
 volumes:
   superconductor-db:
     driver: local
 networks:
-  docker-network:
+  docker-network-mysql-dev:
     driver: bridge

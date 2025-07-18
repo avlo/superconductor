@@ -1,21 +1,21 @@
 services:
-  superconductor-redis:
-    container_name: superconductor-redis
+  superconductor-db-redis-dev_ws:
+    container_name: superconductor-db-redis-dev_ws
     image: "redis:8.0.0"
     hostname: redis
     ports:
       - "6379:6379"
     environment:
       - "REDIS_ARGS=--appendonly yes"
-  superconductor-app-redis:
-    container_name: superconductor-app-redis
+  superconductor-app-dev-redis:
+    container_name: superconductor-app-dev-redis
     image: superconductor-app-redis:1.16.0
     ports:
       - "5555:5555"
     links:
-      - superconductor-redis
+      - superconductor-db-redis-dev_ws
     environment:
       SPRING_PROFILES_ACTIVE: dev_ws
 volumes:
-  superconductor-redis:
+  superconductor-db-redis-dev_ws:
     driver: local

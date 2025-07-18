@@ -18,20 +18,53 @@
 
 ### Dependencies:
 - Java 21 (or higher)
-- [nostr-java-core](https://github.com/avlo/nostr-java-core) (nostr events & tags, event messages, request messages & filters)
   
-  #### Internal implementation (auto-imported):
-  - Spring [Boot](https://spring.io/projects/spring-boot) 3.4.3
+  #### Implementation dependencies (auto-imported):
+  - [nostr-java-core](https://github.com/avlo/nostr-java-core) (nostr events & tags, event messages, request messages & filters)
+  - Spring [Boot](https://spring.io/projects/spring-boot) 3.5.1
   - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)
   - Spring [WebFlux](https://docs.spring.io/spring-framework/reference/web/webflux.html) Reactive Web-Socket Client
+  #### Test dependencies (auto-imported):
+  - [Subdivisions](https://github.com/avlo/subdivisions) (Reactive java web-socket client)
+  - [Spring Boot Test](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html)
+  - [Spring JUnit Jupiter](https://docs.spring.io/spring-framework/reference/testing/annotations/integration-junit-jupiter.html)
 
-### Containerized deployment:
+### (Optional, recommended) Containerized deployment:
 - [Docker](https://hub.docker.com/_/docker) 27.5.0
 - [Docker Compose](https://docs.docker.com/compose/install/) v2.32.4
 
 ----
 
-### Spring-Boot Starters, rapid nostr-relay customization & extensibility
+### Development Requirements
+
+    $ java -version
+
+>     java version "21.0.5" 2024-10-15 LTS
+>     Java(TM) SE Runtime Environment (build 21.0.5+9-LTS-239)
+>     Java HotSpot(TM) 64-Bit Server VM (build 21.0.5+9-LTS-239, mixed mode, sharing)
+
+<details>
+  <summary>maven</summary>
+
+    $ mvn -version
+>     Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+>     Java version: 21.0.5, vendor: Oracle Corporation
+</details>
+
+<details>
+  <summary>gradle</summary>
+
+    $ gradle -version
+>     ------------------------------------------------------------
+>     Gradle 8.13
+>     ------------------------------------------------------------
+</details>
+
+_likely to work with maven 3.8.x and/or gradle 8.x_, with above specified versions (or higher) guaranteed to work 
+
+----
+
+### [Spring-Boot Starter](https://docs.spring.io/spring-boot/tutorial/first-application/index.html) development: for rapid nostr-relay customization & extensibility
 
 #### Repositories configuration
 
@@ -71,9 +104,9 @@ repositories {
 ```
 </details>
 
-#### Import Starter
+#### Spring-boot-starter dependency variants for your own Spring-Boot Starter project...
 
-<details><summary>h2db</summary>
+<details><summary>superconductor-spring-boot-starter-h2db</summary>
     <blockquote>
         <details><summary>maven</summary>
             <blockquote>
@@ -101,7 +134,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
         </details>
     </blockquote>
 </details>
-<details><summary>mysql</summary>
+<details><summary>superconductor-spring-boot-starter-mysql</summary>
     <blockquote>
         <details><summary>maven</summary>
             <blockquote>
@@ -129,7 +162,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
         </details>
     </blockquote>
 </details>
-<details><summary>redis</summary>
+<details><summary>superconductor-spring-boot-starter-redis</summary>
     <blockquote>
         <details><summary>maven</summary>
             <blockquote>
@@ -158,38 +191,48 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
     </blockquote>
 </details>
 
-See [Afterimage Nostr-Reputation-Authority Relay](https://github.com/avlo/afterimage) for a reference implementation
+###### included reference implementations:
+- [superconductor/h2db](superconductor/h2db)
+- [superconductor/mysql](superconductor/mysql)
+- [superconductor/redis](superconductor/redis)
+- (external / standalone) [Afterimage](https://github.com/avlo/afterimage) Nostr Reputation-Authority Relay (aka, reputation mesh network)
+
+#### ... or core auto-configuration for lower-level extension / customization
+
+<details><summary>superconductor-base</summary>
+    <blockquote>
+        <details><summary>maven</summary>
+            <blockquote>
+
+###### pom.xml
+```xml
+<dependency>
+  <groupId>com.prosilion.superconductor</groupId>
+  <artifactId>superconductor-base</artifactId>
+  <version>1.16.0</version>
+</dependency>
+```
+</blockquote>            
+        </details>
+    </blockquote>
+    <blockquote>
+        <details><summary>gradle</summary>
+            <blockquote>
+
+###### build.gradle
+```groovy
+implementation 'com.prosilion.superconductor:superconductor-base:' + 1.16.0
+```
+</blockquote>            
+        </details>
+    </blockquote>
+</details>
 
 ----
 
-### Requirements
-
-    $ java -version
-
->     java version "21.0.5" 2024-10-15 LTS
->     Java(TM) SE Runtime Environment (build 21.0.5+9-LTS-239)
->     Java HotSpot(TM) 64-Bit Server VM (build 21.0.5+9-LTS-239, mixed mode, sharing)
-
-<details>
-  <summary>maven</summary>
-
-    $ mvn -version
->     Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
->     Java version: 21.0.5, vendor: Oracle Corporation
-</details>
-<details>
-  <summary>gradle</summary>
-
-    $ gradle -version
->     ------------------------------------------------------------
->     Gradle 8.13
->     ------------------------------------------------------------
-</details>
-
-----
-
-### Build Superconductor 
-#### 1. Check-out superconductor
+### Standard Development
+#### Build Superconductor 
+##### 1. Check-out superconductor
 
     $ cd <your_git_home_dir>
     $ git clone https://github.com/avlo/superconductor
@@ -209,6 +252,7 @@ See [Afterimage Nostr-Reputation-Authority Relay](https://github.com/avlo/afteri
     (windows)
       $ ./mvnw.cmd clean compile
 </details>
+
 <details>
   <summary>gradle</summary>
 
@@ -259,12 +303,22 @@ Configure SuperConductor run-time security, 3 options:
             <blockquote>
                 <details><summary>unix</summary>
                     <blockquote>
-                        $ ./mvnw verify -f superconductor/h2db/pom.xml
+<blockquote>
+
+```bash
+$ ./mvnw verify -f superconductor/h2db/pom.xml
+```
+</blockquote>
                     </blockquote>
                 </details>
                 <details><summary>windows</summary>
                     <blockquote>
-                        $ ./mvnw.cmd verify -f superconductor/h2db/pom.xml
+<blockquote>
+
+```bash
+$ ./mvnw.cmd verify -f superconductor/h2db/pom.xml
+```
+</blockquote>
                     </blockquote>
                 </details>
             </blockquote>
@@ -273,12 +327,22 @@ Configure SuperConductor run-time security, 3 options:
             <blockquote>
                 <details><summary>unix</summary>
                     <blockquote>
-                        $ ./gradlew :superconductor-app-h2db:test :superconductor-app-h2db:check --rerun-tasks
+<blockquote>
+
+```bash
+$ ./gradlew :superconductor-app-h2db:test :superconductor-app-h2db:check --rerun-tasks
+```
+</blockquote>
                     </blockquote>
                 </details>
                 <details><summary>windows</summary>
                     <blockquote>
-                        $ ./gradlew.cmd :superconductor-app-h2db:test :superconductor-app-h2db:check --rerun-tasks
+<blockquote>
+
+```bash
+$ ./gradlew.cmd :superconductor-app-h2db:test :superconductor-app-h2db:check --rerun-tasks
+```
+</blockquote>
                     </blockquote>
                 </details>
             </blockquote>
@@ -291,12 +355,22 @@ Configure SuperConductor run-time security, 3 options:
             <blockquote>
                 <details><summary>unix</summary>
                     <blockquote>
-                        $ ./mvnw verify -f superconductor/redis/pom.xml
+<blockquote>
+
+```bash
+$ ./mvnw verify -f superconductor/redis/pom.xml
+```
+</blockquote>
                     </blockquote>
                 </details>
                 <details><summary>windows</summary>
                     <blockquote>
-                        $ ./mvnw.cmd verify -f superconductor/redis/pom.xml
+<blockquote>
+
+```bash
+$ ./mvnw.cmd verify -f superconductor/redis/pom.xml
+```
+</blockquote>
                     </blockquote>
                 </details>
             </blockquote>
@@ -305,12 +379,22 @@ Configure SuperConductor run-time security, 3 options:
             <blockquote>
                 <details><summary>unix</summary>
                     <blockquote>
-                        $ ./gradlew :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+<blockquote>
+
+```bash
+$ ./gradlew :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+```
+</blockquote>
                     </blockquote>
                 </details>
                 <details><summary>windows</summary>
                     <blockquote>
-                        $ ./gradlew.cmd :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+<blockquote>
+
+```bash
+$ ./gradlew.cmd :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+```
+</blockquote>
                     </blockquote>
                 </details>
             </blockquote>
@@ -329,116 +413,269 @@ Configure SuperConductor run-time security, 3 options:
     $ docker compose version
 >     Docker Compose version v2.32.4
 
-_(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28.1 or higher.  Earlier versions are at the liability of the developer/administrator)_
-##### Dockerize project
-Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([preferential over Dockerfile](https://reflectoring.io/spring-boot-docker/))
+###### _note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28.1 or higher.  Earlier versions are at the liability of the developer/administrator_
 
+----
+
+##### Dockerize project / Build Supercondcutor Docker images
+
+<details>
+  <summary>mysql</summary>
+
+    $ mvn clean install -Dmaven.test.skip=true
     $ mvn -N wrapper:wrapper
-    $ mvn spring-boot:build-image -pl superconductor -Dmaven.test.skip=true
+    $ mvn spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
+</details>
+<details>
+  <summary>redis</summary>
 
-(*optionally edit [superconductor/docker-compose-dev_wss.yml](superconductor/docker-compose-dev_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
+    $ mvn clean install -Dmaven.test.skip=true
+    $ mvn -N wrapper:wrapper
+    $ mvn spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true 
+</details>
+
+###### _note: Superconductor spring boot docker uses [buildpacks](https://buildpacks.io/) ([preferential over Dockerfile](https://reflectoring.io/spring-boot-docker/))_
+
+----
 
 ##### Start docker containers
 
-<details>
-  <summary>WSS/HTTPS</summary>  
+<details><summary>WS/HTTP</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
 
-run without logging:
+###### run without logging:
 
-    docker compose -f superconductor/docker-compose-dev_wss.yml up 
+    $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up 
 
-run with container logging displayed to console:
+###### run with container logging displayed to console:
 
-    docker compose -f superconductor/docker-compose-dev_wss.yml up --abort-on-container-failure --attach-dependencies
+    $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up --abort-on-container-failure --attach-dependencies
 
-run with docker logging displayed to console:
+###### run with docker logging displayed to console:
 
-    docker compose -f superconductor/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
-</details> 
+    $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
 
-<details>
-  <summary>WS/HTTP</summary>  
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
 
-run without logging:
+###### run without logging:
 
-    docker compose -f superconductor/docker-compose-dev_ws.yml up 
+    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml up 
 
-run with container logging displayed to console:
+###### run with container logging displayed to console:
 
-    docker compose -f superconductor/docker-compose-dev_ws.yml up --abort-on-container-failure --attach-dependencies
+    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml up --abort-on-container-failure --attach-dependencies
 
-run with docker logging displayed to console:
+###### run with docker logging displayed to console:
 
-    docker compose -f superconductor/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
-</details> 
+    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
+    </blockquote>
+</details>
+
+<details><summary>WSS/HTTPS</summary>
+    <blockquote>
+
+###### (*optionally edit [superconductor/docker-compose-dev_wss.yml](superconductor/docker-compose-dev_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
+</blockquote>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
+
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
+    </blockquote>
+</details>
 
 ----
 
 ##### Stop docker containers
 
-<details>
-  <summary>WSS/HTTPS</summary>
+<details><summary>WS/HTTP</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
 
-    docker compose -f superconductor/docker-compose-dev_wss.yml stop superconductor superconductor-db
-</details> 
+    $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml stop 
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
 
-<details>
-  <summary>WS/HTTP</summary>  
+    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml stop 
+</blockquote>
+        </details>
+    </blockquote>
+</details>
 
-    docker compose -f superconductor/docker-compose-prod_ws.yml stop superconductor superconductor-db
+<details><summary>WSS/HTTPS</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml stop 
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml stop 
+</blockquote>
+        </details>
+    </blockquote>
 </details>
 
 ----  
 
 ##### Remove docker containers
 
-<details>
-  <summary>WSS/HTTPS</summary>
+<details><summary>WS/HTTP</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
 
-    docker compose -f superconductor/docker-compose-dev_wss.yml down --remove-orphans
-</details> 
+    $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml down --remove-orphans
 
-<details>
-  <summary>WS/HTTP</summary>  
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
 
-    docker compose -f superconductor/docker-compose-prod_ws.yml down --remove-orphans
+    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml down --remove-orphans
+</blockquote>
+        </details>
+    </blockquote>
+</details>
+
+<details><summary>WSS/HTTPS</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml down --remove-orphans
+
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml down --remove-orphans
+</blockquote>
+        </details>
+    </blockquote>
 </details>  
 
 ----
 
 ### 2.  Run locally using spring-boot:run target
-      $ cd <your_git_home_dir>/superconductor
-
 <details>
   <summary>WSS/HTTPS</summary>
 
 ###### maven
-      $ mvn spring-boot:run -pl superconductor -P local_wss
+    $ cd <your_git_home_dir>/superconductor
+    $ mvn spring-boot:run -f superconductor/h2db/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
 ###### gradle
-      $ gradle superconductor:bootRunLocalWss
+    $ cd <your_git_home_dir>/superconductor
+    $ gradle superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
 </details> 
 
 <details>
   <summary>WS/HTTP</summary>
 
 ###### maven
-      $ mvn spring-boot:run -pl superconductor -P local_ws
+    $ cd <your_git_home_dir>/superconductor
+    $ mvn spring-boot:run -f superconductor/h2db/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
 ###### gradle
-      $ gradle superconductor:bootRunLocalWs
+    $ cd <your_git_home_dir>/superconductor
+    $ gradle superconductor-app-h2db:bootRunLocalWs -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
 </details>  
 
 ----
 
 ### 3.  Run locally as executable jar
 
-    $ cd <your_git_home_dir>/superconductor
-    $ java -jar superconductor/target/superconductor-1.16.0.war  
+<details>
+  <summary>h2db</summary>
+
+```bash
+  $ cd <your_git_home_dir>/superconductor
+  $ java -jar superconductor/h2db/target/superconductor-app-h2db-1.16.0.war
+```
+</details>
+<details>
+  <summary>mysql</summary>
+
+```bash
+  $ cd <your_git_home_dir>/superconductor
+  $ java -jar superconductor/mysql/target/superconductor-app-mysql-1.16.0.war
+```
+</details> 
+<details>
+  <summary>redis</summary>
+
+```bash
+  $ cd <your_git_home_dir>/superconductor
+  $ java -jar superconductor/redis/target/superconductor-app-redis-1.16.0.war
+```
+</details>
 
 ----
 
-### 4.  Run using pre-existing local application-server-container instance
+### 4.  Run using pre-existing local application-server-container instance (tomcat, etc)
+<details>
+  <summary>h2db</summary>
 
-    $ cp <your_git_home_dir>/superconductor/superconductor/target/superconductor-1.16.0.war <your_container/instance/deployment_directory>
+```bash
+  $ cp <your_git_home_dir>/superconductor/superconductor/h2db/target/superconductor-app-h2db-1.16.0.war <your_container/instance/deployment_directory>
+```
+</details>
+<details>
+  <summary>mysql</summary>
+
+```bash
+  $ cp <your_git_home_dir>/superconductor/superconductor/mysql/target/superconductor-app-mysql-1.16.0.war <your_container/instance/deployment_directory>
+```
+</details> 
+<details>
+  <summary>redis</summary>
+
+```bash
+  $ cp <your_git_home_dir>/superconductor/superconductor/redis/target/superconductor-app-redis-1.16.0.war <your_container/instance/deployment_directory>
+```
+</details>
 
 ----
 
@@ -458,9 +695,14 @@ run with docker logging displayed to console:
 
 <hr style="border:2px solid grey">
 
-### Default/embedded H2 DB console (local non-docker development mode): ##
+### Viewing stored/saved events 
 
-    localhost:5555/h2-console/
+<details>
+  <summary>h2db</summary>
+
+#### H2 DB console (local non-docker development mode): ##
+
+    http://localhost:5555/h2-console/
 
 *user: sa*  
 *password: // blank*
@@ -498,7 +740,33 @@ Display all framework table contents (case-sensitive quoted fields/tables when q
 http://localhost:5555/api-tests.html <sup>_(nostr **events** web-client)_</sup>
 
 http://localhost:5555/request-test.html <sup>_(nostr **request** web-client)_</sup>
-<br>
+
+</details>
+
+<details><summary>redis</summary>
+    <blockquote>
+        <details><summary>local docker insight-browser instance</summary>
+            <blockquote>
+
+```bash
+  $ docker pull redis/redisinsight
+  $ docker run -d --name redisinsight -p 5540:5540 redis/redisinsight:latest
+```
+
+Next, open browser URL http://localhost:5540 and configure a connection to http://localhost:8081
+</blockquote>
+        </details>
+    </blockquote>
+    <blockquote>
+        <details><summary>Download insight</summary>
+            <blockquote>
+
+Download [redis insight](https://redis.io/downloads/#insight) standalone application and configure a connection to http://localhost:8081
+</blockquote>
+        </details>
+    </blockquote>
+</details>
+
 <hr style="border:2px solid grey">
 
 ### Adding new/custom events to SuperConductor

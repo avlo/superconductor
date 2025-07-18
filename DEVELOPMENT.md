@@ -500,6 +500,22 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
         <details><summary>mysql</summary>
             <blockquote>
 
@@ -517,22 +533,6 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
 
 </blockquote>
         </details>
-        <details><summary>redis</summary>
-            <blockquote>
-
-###### run without logging:
-
-    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml up 
-
-###### run with container logging displayed to console:
-
-    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml up --abort-on-container-failure --attach-dependencies
-
-###### run with docker logging displayed to console:
-
-    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
-</blockquote>
-        </details>
     </blockquote>
 </details>
 
@@ -542,6 +542,22 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
 ###### (*optionally edit [superconductor/docker-compose-dev_wss.yml](superconductor/docker-compose-dev_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
 </blockquote>
     <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
         <details><summary>mysql</summary>
             <blockquote>
 
@@ -559,22 +575,6 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
 
 </blockquote>
         </details>
-        <details><summary>redis</summary>
-            <blockquote>
-
-###### run without logging:
-
-    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml up 
-
-###### run with container logging displayed to console:
-
-    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml up --abort-on-container-failure --attach-dependencies
-
-###### run with docker logging displayed to console:
-
-    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
-</blockquote>
-        </details>
     </blockquote>
 </details>
 
@@ -584,16 +584,16 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
-        <details><summary>mysql</summary>
-            <blockquote>
-
-    $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml stop 
-</blockquote>
-        </details>
         <details><summary>redis</summary>
             <blockquote>
 
     $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml stop 
+</blockquote>
+        </details>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml stop 
 </blockquote>
         </details>
     </blockquote>
@@ -601,16 +601,16 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
 
 <details><summary>WSS/HTTPS</summary>
     <blockquote>
-        <details><summary>mysql</summary>
-            <blockquote>
-
-    $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml stop 
-</blockquote>
-        </details>
         <details><summary>redis</summary>
             <blockquote>
 
     $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml stop 
+</blockquote>
+        </details>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml stop 
 </blockquote>
         </details>
     </blockquote>
@@ -622,6 +622,12 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml down --remove-orphans
+</blockquote>
+        </details>
         <details><summary>mysql</summary>
             <blockquote>
 
@@ -629,28 +635,22 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
 
 </blockquote>
         </details>
-        <details><summary>redis</summary>
-            <blockquote>
-
-    $ docker compose -f superconductor/redis/docker-compose-dev_ws.yml down --remove-orphans
-</blockquote>
-        </details>
     </blockquote>
 </details>
 
 <details><summary>WSS/HTTPS</summary>
     <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml down --remove-orphans
+</blockquote>
+        </details>
         <details><summary>mysql</summary>
             <blockquote>
 
     $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml down --remove-orphans
 
-</blockquote>
-        </details>
-        <details><summary>redis</summary>
-            <blockquote>
-
-    $ docker compose -f superconductor/redis/docker-compose-dev_wss.yml down --remove-orphans
 </blockquote>
         </details>
     </blockquote>

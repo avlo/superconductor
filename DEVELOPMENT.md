@@ -805,6 +805,8 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remo
             </blockquote>
         </details>
     </blockquote>
+
+###### _note: MySql does not have local mode, only dev (see above section [Start docker containers](#start-docker-containers))_
 </details>
 
 <details><summary>WSS/HTTPS</summary>
@@ -952,6 +954,8 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
             </blockquote>
         </details>
     </blockquote>
+
+###### _note: MySql does not have local mode, only dev (see above section [Start docker containers](#start-docker-containers))_
 </details>
 
 ----

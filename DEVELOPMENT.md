@@ -43,21 +43,52 @@
 >     Java(TM) SE Runtime Environment (build 21.0.5+9-LTS-239)
 >     Java HotSpot(TM) 64-Bit Server VM (build 21.0.5+9-LTS-239, mixed mode, sharing)
 
-<details>
-  <summary>maven</summary>
+<details><summary>maven</summary>
+    <blockquote>
 
-    $ ./mvnw -version
->     Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
->     Java version: 21.0.5, vendor: Oracle Corporation
+###### (unix)
+
+```bash
+$ ./mvnw -version
+
+Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+Java version: 21.0.5, vendor: Oracle Corporation
+```
+
+###### (windows)
+
+```bash
+$ ./mvnw.cmd -version
+
+Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+Java version: 21.0.5, vendor: Oracle Corporation
+``` 
+
+</blockquote>
 </details>
 
-<details>
-  <summary>gradle</summary>
+<details><summary>gradle</summary>
+    <blockquote>
 
-    $ gradle -version
->     ------------------------------------------------------------
->     Gradle 8.13
->     ------------------------------------------------------------
+###### (unix)
+
+```bash
+$ ./gradlew -version
+------------------------------------------------------------
+Gradle 8.13
+------------------------------------------------------------
+```
+
+###### (windows)
+
+```bash
+$ ./gradlew.cmd -version
+------------------------------------------------------------
+Gradle 8.13
+------------------------------------------------------------
+```
+
+</blockquote>
 </details>
 
 _likely to work with maven 3.8.x and/or gradle 8.x_, with above specified versions (or higher) guaranteed to work 
@@ -1059,7 +1090,7 @@ $ ./gradlew superconductor-app-mysql:bootRunLocalWss -Pserver.port=5555 -Psuperc
 </blockquote>
 </blockquote>
                         </details>
-                        <details><summary>windowss</summary>
+                        <details><summary>windows</summary>
                             <blockquote>
 
 <blockquote>

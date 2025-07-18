@@ -604,7 +604,7 @@ $ ./gradlew.cmd :superconductor-app-redis:test :superconductor-app-redis:check -
 
 <details><summary>WS/HTTPS</summary>
     <blockquote>
-        <details><summary>redis</summary>
+        <details><summary>h2db</summary>
             <blockquote>
                 <details><summary>maven</summary>
                     <blockquote>
@@ -660,11 +660,6 @@ $ ./gradlew.cmd superconductor-app-h2db:bootRunLocalws -Pserver.port=5555 -Psupe
                 </details>
             </blockquote>
         </details>
-    </blockquote>
-</details> 
-
-<details><summary>WSS/HTTPS</summary>
-    <blockquote>
         <details><summary>redis</summary>
             <blockquote>
                 <details><summary>maven</summary>
@@ -672,13 +667,38 @@ $ ./gradlew.cmd superconductor-app-h2db:bootRunLocalws -Pserver.port=5555 -Psupe
                         <details><summary>unix</summary>
                             <blockquote>
 
-$ ./mvnw spring-boot:run -f superconductor/h2db/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+<blockquote>
+
+```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-redis' | awk '{print $1}' | xargs docker logs -f
+
+(start superconductor redis)
+$ ./mvnw spring-boot:run -f superconductor/redis/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+```
+</blockquote>
 </blockquote>
                         </details>
                         <details><summary>windows</summary>
                             <blockquote>
 
-$ ./mvnw.cmd spring-boot:run -f superconductor/h2db/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+<blockquote>
+
+```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d
+
+(start superconductor redis)
+$ ./mvnw.cmd spring-boot:run -f superconductor/redis/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
+
+(stop redis docker container) 
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+```
+</blockquote>
 </blockquote>
                         </details>
                     </blockquote>
@@ -688,13 +708,339 @@ $ ./mvnw.cmd spring-boot:run -f superconductor/h2db/pom.xml -P local_wss -Dsprin
                         <details><summary>unix</summary>
                             <blockquote>
 
-$ ./gradlew superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+<blockquote>
+
+```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-redis' | awk '{print $1}' | xargs docker logs -f
+
+(start superconductor redis)
+$ ./gradlew superconductor-app-redis:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+```
+</blockquote>
 </blockquote>
                         </details>
                         <details><summary>windows</summary>
                             <blockquote>
 
+<blockquote>
+
+```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-redis' | awk '{print $1}' | xargs docker logs -f
+
+(start superconductor redis)
+$ ./gradlew.cmd superconductor-app-redis:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+
+(stop redis docker container) 
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+        <details><summary>mysql</summary>
+            <blockquote>
+                <details><summary>maven</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+(build mysql docker dev image)
+$ ./mvnw spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
+
+(start mysql docker container)
+$ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
+
+(start superconductor redis)
+$ ./mvnw spring-boot:run -f superconductor/redis/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+(build mysql docker dev image)
+$ ./mvn.cmd spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
+
+(start mysql docker container)
+$ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d
+
+(start superconductor redis)
+$ ./mvn.cmd spring-boot:run -f superconductor/redis/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+                <details><summary>gradle</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./gradlew superconductor-app-mysql:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./gradlew.cmd superconductor-app-mysql:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+    </blockquote>
+</details>
+
+<details><summary>WS/HTTPS</summary>
+    <blockquote>
+        <details><summary>h2db</summary>
+            <blockquote>
+                <details><summary>maven</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./mvnw spring-boot:run -f superconductor/h2db/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./mvnw.cmd spring-boot:run -f superconductor/h2db/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+                <details><summary>gradle</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./gradlew superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
 $ ./gradlew.cmd superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
+                <details><summary>maven</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml up -d && dcls | grep 'superconductor-redis' | awk '{print $1}' | xargs docker logs -f
+
+(start superconductor redis)
+$ ./mvnw spring-boot:run -f superconductor/redis/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop && docker compose -f superconductor/redis/docker-compose-local_wss.yml down --remove-orphans
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml up -d
+
+(start superconductor redis)
+$ ./mvnw.cmd spring-boot:run -f superconductor/redis/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+
+(stop redis docker container) 
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --remove-orphans
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+                <details><summary>gradle</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml up -d && dcls | grep 'superconductor-redis' | awk '{print $1}' | xargs docker logs -f
+
+(start superconductor redis)
+$ ./gradlew superconductor-app-redis:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop && docker compose -f superconductor/redis/docker-compose-local_wss.yml down --remove-orphans
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml up -d && dcls | grep 'superconductor-redis' | awk '{print $1}' | xargs docker logs -f
+
+(start superconductor redis)
+$ ./gradlew.cmd superconductor-app-redis:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+
+(stop redis docker container) 
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --remove-orphans
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+        <details><summary>mysql</summary>
+            <blockquote>
+                <details><summary>maven</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+(build mysql docker dev image)
+$ ./mvnw spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_wss -Dmaven.test.skip=true
+
+(start mysql docker container)
+$ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
+
+(start superconductor redis)
+$ ./mvnw spring-boot:run -f superconductor/redis/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop && docker compose -f superconductor/redis/docker-compose-local_wss.yml down --remove-orphans
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+(build mysql docker dev image)
+$ ./mvn.cmd spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_wss -Dmaven.test.skip=true
+
+(start mysql docker container)
+$ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml up -d
+
+(start superconductor redis)
+$ ./mvn.cmd spring-boot:run -f superconductor/redis/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop
+$ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --remove-orphans
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+                <details><summary>gradle</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./gradlew superconductor-app-mysql:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windowss</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./gradlew.cmd superconductor-app-mysql:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+```
+</blockquote>
 </blockquote>
                         </details>
                     </blockquote>

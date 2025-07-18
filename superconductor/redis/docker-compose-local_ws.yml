@@ -1,6 +1,6 @@
 services:
-  superconductor-db-redis-local:
-    container_name: superconductor-db-redis-local
+  superconductor-db:
+    container_name: superconductor-redis-db-local
     image: "redis:8.0.0"
     hostname: localhost
     ports:
@@ -8,5 +8,5 @@ services:
     environment:
       - "REDIS_ARGS=--appendonly yes"
 volumes:
-  superconductor-db-redis-local:
+  superconductor-db:
     driver: local

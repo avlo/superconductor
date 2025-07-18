@@ -31,12 +31,14 @@
 
 ----
 
-### Spring-Boot Starter, rapid nostr-relay customization & extensibility
+### Spring-Boot Starters, rapid nostr-relay customization & extensibility
 
-<details>
-  <summary>maven</summary>  
+#### Repositories configuration
 
-###### ~/.m2/settings.xml (typically) 
+<details><summary>maven</summary>
+
+###### ~/.m2/settings.xml (typically)
+
 ```xml
 <repositories>
   <repository>
@@ -54,18 +56,11 @@
   </server>
 </servers>
 ```
-
-###### pom.xml
-```xml
-<dependency>
-  <groupId>com.prosilion.superconductor</groupId>
-  <artifactId>superconductor-spring-boot-starter</artifactId>
-  <version>1.16.0</version>
-</dependency>
-```
 </details>
-<details>
-  <summary>gradle</summary>  
+
+<details><summary>gradle</summary>
+
+###### build.gradle (typically)
 
 ```groovy
 repositories {
@@ -74,13 +69,96 @@ repositories {
     }
 }
 ```
+</details>
 
-```groovy
-implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter:' + 1.16.0
+#### Import Starter
+
+<details><summary>h2db</summary>
+    <blockquote>
+        <details><summary>maven</summary>
+            <blockquote>
+
+###### pom.xml
+```xml
+<dependency>
+  <groupId>com.prosilion.superconductor</groupId>
+  <artifactId>superconductor-spring-boot-starter-h2db</artifactId>
+  <version>1.16.0</version>
+</dependency>
 ```
-</details>  
+</blockquote>            
+        </details>
+    </blockquote>
+    <blockquote>
+        <details><summary>gradle</summary>
+            <blockquote>
 
-See [Afterimage Nostr-Reputation-Authority Relay](https://github.com/avlo/afterimage) for a reference implementation  
+###### build.gradle
+```groovy
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-h2db:' + 1.16.0
+```
+</blockquote>            
+        </details>
+    </blockquote>
+</details>
+<details><summary>mysql</summary>
+    <blockquote>
+        <details><summary>maven</summary>
+            <blockquote>
+
+###### pom.xml
+```xml
+<dependency>
+  <groupId>com.prosilion.superconductor</groupId>
+  <artifactId>superconductor-spring-boot-starter-mysql</artifactId>
+  <version>1.16.0</version>
+</dependency>
+```
+</blockquote>            
+        </details>
+    </blockquote>
+    <blockquote>
+        <details><summary>gradle</summary>
+            <blockquote>
+
+###### build.gradle
+```groovy
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-mysql:' + 1.16.0
+```
+</blockquote>            
+        </details>
+    </blockquote>
+</details>
+<details><summary>redis</summary>
+    <blockquote>
+        <details><summary>maven</summary>
+            <blockquote>
+
+###### pom.xml
+```xml
+<dependency>
+  <groupId>com.prosilion.superconductor</groupId>
+  <artifactId>superconductor-spring-boot-starter-redis</artifactId>
+  <version>1.16.0</version>
+</dependency>
+```
+</blockquote>            
+        </details>
+    </blockquote>
+    <blockquote>
+        <details><summary>gradle</summary>
+            <blockquote>
+
+###### build.gradle
+```groovy
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-redis:' + 1.16.0
+```
+</blockquote>            
+        </details>
+    </blockquote>
+</details>
+
+See [Afterimage Nostr-Reputation-Authority Relay](https://github.com/avlo/afterimage) for a reference implementation
 
 ----
 

@@ -27,7 +27,17 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 ----
 
 #### Download Superconductor Docker Image from [hub.docker](https://hub.docker.com/repository/docker/avlo/superconductor/tags)
-    $ docker pull avlo/superconductor:1.16.0
+
+<details>
+  <summary>redis</summary>  
+
+      $ docker pull avlo/superconductor-app-redis:1.16.0
+</details>
+<details>
+  <summary>mysql</summary>  
+
+      $ docker pull avlo/superconductor-app-mysql:1.16.0
+</details>
 
 ----
 
@@ -65,69 +75,163 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 
 #### Run SuperConductor
 
-<details>
-  <summary>WSS/HTTPS</summary>  
+<details><summary>WS/HTTP</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
 
-run without logging:
+###### run without logging:
 
-    docker compose -f superconductor/docker-compose-prod_wss.yml up 
+    $ docker compose -f superconductor/mysql/docker-compose-prod_ws.yml up 
 
-run with container logging displayed to console:  
+###### run with container logging displayed to console:
 
-    docker compose -f superconductor/docker-compose-prod_wss.yml up --abort-on-container-failure --attach-dependencies
+    $ docker compose -f superconductor/mysql/docker-compose-prod_ws.yml up --abort-on-container-failure --attach-dependencies
 
-run with docker logging displayed to console:  
+###### run with docker logging displayed to console:
 
-    docker compose -f superconductor/docker-compose-prod_wss.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
-</details> 
+    $ docker compose -f superconductor/mysql/docker-compose-prod_ws.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
 
-<details>
-  <summary>WS/HTTP</summary>  
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
 
-run without logging:
+###### run without logging:
 
-    docker compose -f superconductor/docker-compose-prod_ws.yml up 
+    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml up 
 
-run with container logging displayed to console:
+###### run with container logging displayed to console:
 
-    docker compose -f superconductor/docker-compose-prod_ws.yml up --abort-on-container-failure --attach-dependencies
+    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml up --abort-on-container-failure --attach-dependencies
 
-run with docker logging displayed to console:
+###### run with docker logging displayed to console:
 
-    docker compose -f superconductor/docker-compose-prod_ws.yml up -d && dcls | grep 'superconductor-app' | awk '{print $1}' | xargs docker logs -f
-</details> 
+    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
+    </blockquote>
+</details>
+
+<details><summary>WSS/HTTPS</summary>
+    <blockquote>
+
+###### (*optionally edit [superconductor/docker-compose-prod_wss.yml](superconductor/docker-compose-prod_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
+</blockquote>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/mysql/docker-compose-prod_wss.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/mysql/docker-compose-prod_wss.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/mysql/docker-compose-prod_wss.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
+
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
+    </blockquote>
+</details>
 
 ----
 
 ##### Stop SuperConductor
 
-<details>
-  <summary>WSS/HTTPS</summary>
+<details><summary>WS/HTTP</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
 
-    docker compose -f superconductor/docker-compose-prod_wss.yml stop superconductor superconductor-db
-</details> 
+    $ docker compose -f superconductor/mysql/docker-compose-prod_ws.yml stop 
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
 
-<details>
-  <summary>WS/HTTP</summary>  
+    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml stop 
+</blockquote>
+        </details>
+    </blockquote>
+</details>
 
-    docker compose -f superconductor/docker-compose-prod_ws.yml stop superconductor superconductor-db
+<details><summary>WSS/HTTPS</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/mysql/docker-compose-prod_wss.yml stop 
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml stop 
+</blockquote>
+        </details>
+    </blockquote>
 </details>
 
 ----  
 
 ##### Remove SuperConductor docker containers
 
-<details>
-  <summary>WSS/HTTPS</summary>
+<details><summary>WS/HTTP</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
 
-    docker compose -f superconductor/docker-compose-prod_wss.yml down --remove-orphans
-</details> 
+    $ docker compose -f superconductor/mysql/docker-compose-prod_ws.yml down --remove-orphans
 
-<details>
-  <summary>WS/HTTP</summary>  
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
 
-    docker compose -f superconductor/docker-compose-prod_ws.yml down --remove-orphans
+    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml down --remove-orphans
+</blockquote>
+        </details>
+    </blockquote>
 </details>
+
+<details><summary>WSS/HTTPS</summary>
+    <blockquote>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/mysql/docker-compose-prod_wss.yml down --remove-orphans
+
+</blockquote>
+        </details>
+        <details><summary>redis</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml down --remove-orphans
+</blockquote>
+        </details>
+    </blockquote>
+</details>  
 
 <hr style="border:2px solid grey">
 

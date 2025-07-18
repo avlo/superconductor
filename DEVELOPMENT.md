@@ -600,28 +600,109 @@ $ ./gradlew.cmd :superconductor-app-redis:test :superconductor-app-redis:check -
 
 ----
 
-### 2.  Run locally using spring-boot:run target
-<details>
-  <summary>WSS/HTTPS</summary>
+### 2.  Run locally using maven spring-boot:run
 
-###### maven
-    $ cd <your_git_home_dir>/superconductor
-    $ mvn spring-boot:run -f superconductor/h2db/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
-###### gradle
-    $ cd <your_git_home_dir>/superconductor
-    $ gradle superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+<details><summary>WS/HTTPS</summary>
+    <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+                <details><summary>maven</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./mvnw spring-boot:run -f superconductor/h2db/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./mvnw.cmd spring-boot:run -f superconductor/h2db/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+                <details><summary>gradle</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./gradlew superconductor-app-h2db:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./gradlew.cmd superconductor-app-h2db:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+    </blockquote>
 </details> 
 
-<details>
-  <summary>WS/HTTP</summary>
+<details><summary>WSS/HTTPS</summary>
+    <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+                <details><summary>maven</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
 
-###### maven
-    $ cd <your_git_home_dir>/superconductor
-    $ mvn spring-boot:run -f superconductor/h2db/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
-###### gradle
-    $ cd <your_git_home_dir>/superconductor
-    $ gradle superconductor-app-h2db:bootRunLocalWs -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
-</details>  
+$ ./mvnw spring-boot:run -f superconductor/h2db/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+$ ./mvnw.cmd spring-boot:run -f superconductor/h2db/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+                <details><summary>gradle</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+$ ./gradlew superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+$ ./gradlew.cmd superconductor-app-h2db:bootRunLocalWss -Pserver.port=5555 -Psuperconductor.relay.url=wss://localhost:5555
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+    </blockquote>
+</details>
 
 ----
 

@@ -817,11 +817,8 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remo
 (build mysql docker dev image)
 $ ./mvnw spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
 
-(start mysql docker container)
+(start superconductor mysql)
 $ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
-
-(start superconductor redis)
-$ ./mvnw spring-boot:run -f superconductor/redis/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
 
 (stop redis docker container)
 $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
@@ -838,11 +835,8 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && doc
 (build mysql docker dev image)
 $ ./mvn.cmd spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
 
-(start mysql docker container)
-$ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d
-
-(start superconductor redis)
-$ ./mvn.cmd spring-boot:run -f superconductor/redis/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
+(start superconductor mysql)
+$ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
 
 (stop redis docker container)
 $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop

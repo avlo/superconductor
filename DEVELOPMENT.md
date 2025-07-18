@@ -836,7 +836,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && doc
 $ ./mvn.cmd spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
 
 (start superconductor mysql)
-$ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
+$ docker compose -f superconductor/mysql/docker-compose-dev_ws.yml up -d
 
 (stop redis docker container)
 $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
@@ -1035,11 +1035,8 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 (build mysql docker dev image)
 $ ./mvnw spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_wss -Dmaven.test.skip=true
 
-(start mysql docker container)
+(start superconductor mysql)
 $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app-mysql' | awk '{print $1}' | xargs docker logs -f
-
-(start superconductor redis)
-$ ./mvnw spring-boot:run -f superconductor/redis/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
 
 (stop redis docker container)
 $ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop && docker compose -f superconductor/redis/docker-compose-local_wss.yml down --remove-orphans
@@ -1056,11 +1053,8 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop && do
 (build mysql docker dev image)
 $ ./mvn.cmd spring-boot:build-image -f superconductor/mysql/pom.xml -Pdev_wss -Dmaven.test.skip=true
 
-(start mysql docker container)
+(start superconductor mysql)
 $ docker compose -f superconductor/mysql/docker-compose-dev_wss.yml up -d
-
-(start superconductor redis)
-$ ./mvn.cmd spring-boot:run -f superconductor/redis/pom.xml -P local_wss -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=wss://localhost:5555"
 
 (stop redis docker container)
 $ docker compose -f superconductor/redis/docker-compose-local_wss.yml stop

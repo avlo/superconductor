@@ -671,7 +671,7 @@ $ ./gradlew.cmd superconductor-app-h2db:bootRunLocalws -Pserver.port=5555 -Psupe
 
 ```bash
 (start redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-redis-db-local' | awk '{print $1}' | xargs docker logs -f
 
 (start superconductor redis)
 $ ./mvnw spring-boot:run -f superconductor/redis/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
@@ -712,7 +712,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remo
 
 ```bash
 (start redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-redis-db-local' | awk '{print $1}' | xargs docker logs -f
 
 (start superconductor redis)
 $ ./gradlew superconductor-app-redis:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
@@ -730,7 +730,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && doc
 
 ```bash
 (start redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-redis' | awk '{print $1}' | xargs docker logs -f
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d
 
 (start superconductor redis)
 $ ./gradlew.cmd superconductor-app-redis:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555

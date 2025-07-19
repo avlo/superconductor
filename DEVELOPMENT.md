@@ -1015,28 +1015,8 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 </details>
 
 <details><summary>mysql</summary>
-    <blockquote>
-        <details><summary>unix</summary>
-            <blockquote>
 
-```bash
-  $ cd <your_git_home_dir>/superconductor
-  $ ./mvnw package spring-boot:repackage -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
-  $ java -jar -Dspring.profiles.active=dev_ws superconductor/mysql/target/superconductor-app-mysql-1.16.0.war
-```
-</blockquote>
-        </details>
-        <details><summary>microsoft</summary>
-            <blockquote>
-
-```bash
-  $ cd <your_git_home_dir>/superconductor
-  $ ./mvnw.cmd package spring-boot:repackage -f superconductor/mysql/pom.xml -Pdev_ws -Dmaven.test.skip=true
-  $ java -jar -Dspring.profiles.active=dev_ws superconductor/mysql/target/superconductor-app-mysql-1.16.0.war
-```
-</blockquote>
-        </details>
-    </blockquote>
+###### _MySql does not have local mode, only dev (see above section [Start docker containers](#start-docker-containers))_
 </details>
 
 ----

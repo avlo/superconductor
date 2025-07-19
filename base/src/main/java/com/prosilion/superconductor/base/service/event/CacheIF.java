@@ -12,9 +12,15 @@ import org.springframework.lang.NonNull;
 
 public interface CacheIF {
   Optional<GenericEventKindIF> getByEventIdString(@NonNull String eventId);
+
+  List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind);
+
   void saveEventEntityOrDocument(@NonNull GenericEventKindIF event);
+
   void deleteEventEntity(@NonNull EventIF eventIF);
+
   List<DeletionEventEntityIF> getAllDeletionEventEntities();
+
   <T> Map<Kind, Map<T, GenericEventKindIF>> getAllEventEntities();
 
   default <T> Map<Kind, Map<T, GenericEventKindIF>> getAll() {

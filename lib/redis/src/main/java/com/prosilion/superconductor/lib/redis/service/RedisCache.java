@@ -30,6 +30,11 @@ public class RedisCache implements CacheIF {
   }
 
   @Override
+  public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
+    return eventDocumentService.getEventsByKind(kind);
+  }
+  
+  @Override
   public void saveEventEntityOrDocument(@NonNull GenericEventKindIF event) {
     eventDocumentService.saveEventDocument(event);
   }

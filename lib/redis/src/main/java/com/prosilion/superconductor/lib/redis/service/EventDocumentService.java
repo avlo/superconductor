@@ -25,6 +25,12 @@ public class EventDocumentService {
         .map(EventIF::convertEntityToDto);
   }
 
+  public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
+    return eventDocumentRepository
+        .findAllByKind(kind.getValue())
+        .stream().map(EventIF::convertEntityToDto).toList();
+  }
+
   public Map<Kind, Map<String, GenericEventKindIF>> getAll() {
     return getEventEntityRepositoryAll()
         .stream()

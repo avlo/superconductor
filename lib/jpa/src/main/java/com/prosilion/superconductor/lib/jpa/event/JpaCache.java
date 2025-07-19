@@ -35,6 +35,11 @@ public class JpaCache implements JpaCacheIF {
   }
 
   @Override
+  public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
+    return eventEntityService.getEventsByKind(kind);
+  }
+    
+  @Override
   public void saveEventEntityOrDocument(@NonNull GenericEventKindIF event) {
     eventEntityService.saveEventEntity(event);
   }

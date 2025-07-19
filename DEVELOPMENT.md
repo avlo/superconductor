@@ -971,19 +971,19 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 ```
 </details>
 <details>
-  <summary>mysql</summary>
-
-```bash
-  $ cd <your_git_home_dir>/superconductor
-  $ java -jar superconductor/mysql/target/superconductor-app-mysql-1.16.0.war
-```
-</details> 
-<details>
   <summary>redis</summary>
 
 ```bash
   $ cd <your_git_home_dir>/superconductor
   $ java -jar superconductor/redis/target/superconductor-app-redis-1.16.0.war
+```
+</details>
+<details>
+  <summary>mysql</summary>
+
+```bash
+  $ cd <your_git_home_dir>/superconductor
+  $ java -jar superconductor/mysql/target/superconductor-app-mysql-1.16.0.war
 ```
 </details>
 

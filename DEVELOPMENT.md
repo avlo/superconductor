@@ -857,6 +857,62 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
+        <details><summary>sqlite</summary>
+            <blockquote>
+                <details><summary>maven</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./mvnw spring-boot:run -f superconductor/sqlite/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./mvnw.cmd spring-boot:run -f superconductor/sqlite/pom.xml -P local_ws -Dspring-boot.run.arguments="--server.port=5555 --superconductor.relay.url=ws://localhost:5555"
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+                <details><summary>gradle</summary>
+                    <blockquote>
+                        <details><summary>unix</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./gradlew superconductor-app-sqlite:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+```
+</blockquote>
+</blockquote>
+                        </details>
+                        <details><summary>windows</summary>
+                            <blockquote>
+
+<blockquote>
+
+```bash
+$ ./gradlew.bat superconductor-app-sqlite:bootRunLocalws -Pserver.port=5555 -Psuperconductor.relay.url=ws://localhost:5555
+```
+</blockquote>
+</blockquote>
+                        </details>
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
         <details><summary>h2db</summary>
             <blockquote>
                 <details><summary>maven</summary>
@@ -1183,7 +1239,31 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
         </details>
     </blockquote>
 </details>
+<details><summary>sqlite</summary>
+    <blockquote>
+        <details><summary>unix</summary>
+            <blockquote>
 
+```bash
+  $ cd <your_git_home_dir>/superconductor
+  $ ./mvnw package spring-boot:repackage -f superconductor/sqlite/pom.xml -Plocal_ws -Dmaven.test.skip=true
+  $ java -jar -Dspring.profiles.active=local_ws superconductor/sqlite/target/superconductor-app-sqlite-1.16.0.war
+```
+</blockquote>
+        </details>
+        <details><summary>microsoft</summary>
+            <blockquote>
+
+###### first, start sqlite docker container as per section [2. Run locally using maven spring-boot:run](#2--run-locally-using-maven-spring-bootrun), then:
+```bash
+  $ cd <your_git_home_dir>/superconductor
+  $ ./mvnw.cmd package spring-boot:repackage -f superconductor/sqlite/pom.xml -Plocal_ws -Dmaven.test.skip=true
+  $ java -jar -Dspring.profiles.active=local_ws superconductor/sqlite/target/superconductor-app-sqlite-1.16.0.war
+```
+</blockquote>
+        </details>
+    </blockquote>
+</details>
 <details><summary>h2db</summary>
     <blockquote>
         <details><summary>unix</summary>
@@ -1218,17 +1298,24 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 
 ### 4.  Run using pre-existing local application-server-container instance (tomcat, etc)
 <details>
-  <summary>h2db</summary>
-
-```bash
-  $ cp <your_git_home_dir>/superconductor/superconductor/h2db/target/superconductor-app-h2db-1.16.0.war <your_container/instance/deployment_directory>
-```
-</details>
-<details>
   <summary>redis</summary>
 
 ```bash
   $ cp <your_git_home_dir>/superconductor/superconductor/redis/target/superconductor-app-redis-1.16.0.war <your_container/instance/deployment_directory>
+```
+</details>
+<details>
+  <summary>sqlite</summary>
+
+```bash
+  $ cp <your_git_home_dir>/superconductor/superconductor/sqlite/target/superconductor-app-sqlite-1.16.0.war <your_container/instance/deployment_directory>
+```
+</details>
+<details>
+  <summary>h2db</summary>
+
+```bash
+  $ cp <your_git_home_dir>/superconductor/superconductor/h2db/target/superconductor-app-h2db-1.16.0.war <your_container/instance/deployment_directory>
 ```
 </details>
 <details>

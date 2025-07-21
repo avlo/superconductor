@@ -1,50 +1,20 @@
 services:
-#  sqlite:
-#  image: hibitdev/sqlite:latest
-#  container_name: sqlite
-#  hostname: sqlite.hibit
-#  ports:
-#    - "8191:8191"
-#  volumes:
-#    - ./sqlite:/db
-#  command: ["tail", "-f", "/dev/null"]  # Keeps the container running
   superconductor-db:
     container_name: superconductor-db-sqlite-dev_ws
     image: hibitdev/sqlite:latest
     ports:
       - "8191:8191"
     command: ["tail", "-f", "/dev/null"]  # seems hacky, confirm to remove
-    labels:
-      org.springframework.boot.service-connection: sqlite
-#    environment:
-#      MYSQL_DATABASE: superconductor
-#      #      set below db name and credentials as desired
-#      MYSQL_USER: sqliteuser
-#      MYSQL_PASSWORD: sqliteuserpass
-#      MYSQL_ROOT_PASSWORD: sqliterootuserpass
-#      MYSQL_TCP_PORT: 3316
     networks:
       docker-network-sqlite-dev:
-#    healthcheck:
-#      test: ["CMD", "sqliteadmin" ,"ping", "-h", "superconductor-db-sqlite-dev_ws"]
-#      retries: 10
-#      interval: 3s
-#      timeout: 30s
   superconductor-app:
     container_name: superconductor-app-sqlite-dev_ws
     image: superconductor-app-sqlite:1.16.0
     ports:
       - "5555:5555"
-    #      docker debug port, note: requires image re-build
-    #      - '5005:5005'
-    depends_on:
-      superconductor-db:
-#        condition: service_healthy
+    links:
+      - superconductor-db
     environment:
-      #      docker VM debug option
-      #      _JAVA_OPTIONS: >
-      #        -Xdebug
-      #        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       SPRING_PROFILES_ACTIVE: dev_ws
       SPRING_DATASOURCE_URL: jdbc:sqlite://superconductor-db-sqlite-dev_ws:8191/superconductor
       #      set below spring datasource parameters and credentials as desired

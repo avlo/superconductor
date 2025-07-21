@@ -380,6 +380,58 @@ $ ./gradlew.bat :superconductor-app-h2db:test :superconductor-app-h2db:check --r
         </details>
     </blockquote>
 </details>
+<details><summary>sqlite</summary>
+    <blockquote>
+        <details><summary>maven</summary>
+            <blockquote>
+                <details><summary>unix</summary>
+                    <blockquote>
+<blockquote>
+
+```bash
+$ ./mvnw verify -f superconductor/sqlite/pom.xml
+```
+</blockquote>
+                    </blockquote>
+                </details>
+                <details><summary>windows</summary>
+                    <blockquote>
+<blockquote>
+
+```bash
+$ ./mvnw.cmd verify -f superconductor/sqlite/pom.xml
+```
+</blockquote>
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+        <details><summary>gradle</summary>
+            <blockquote>
+                <details><summary>unix</summary>
+                    <blockquote>
+<blockquote>
+
+```bash
+$ ./gradlew :superconductor-app-sqlite:test :superconductor-app-sqlite:check --rerun-tasks
+```
+</blockquote>
+                    </blockquote>
+                </details>
+                <details><summary>windows</summary>
+                    <blockquote>
+<blockquote>
+
+```bash
+$ ./gradlew.bat :superconductor-app-sqlite:test :superconductor-app-sqlite:check --rerun-tasks
+```
+</blockquote>
+                    </blockquote>
+                </details>
+            </blockquote>
+        </details>
+    </blockquote>
+</details>
 <details><summary>redis</summary>
     <blockquote>
         <details><summary>maven</summary>
@@ -517,6 +569,26 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 ##### Dockerize project / Build Supercondcutor Docker images
 
+<details><summary>sqlite</summary>
+    <blockquote>
+        <details><summary>unix</summary>
+            <blockquote>
+
+    $ ./mvnw clean install -Dmaven.test.skip=true
+    $ ./mvnw -N wrapper:wrapper
+    $ ./mvnw spring-boot:build-image -f superconductor/sqlite/pom.xml -Pdev_ws -Dmaven.test.skip=true
+</blockquote>
+        </details>
+        <details><summary>windows</summary>
+            <blockquote>
+
+    $ ./mvnw.cmd clean install -Dmaven.test.skip=true
+    $ ./mvnw.cmd -N wrapper:wrapper
+    $ ./mvnw.cmd spring-boot:build-image -f superconductor/sqlite/pom.xml -Pdev_ws -Dmaven.test.skip=true
+</blockquote>
+        </details>
+    </blockquote>
+</details>
 <details><summary>redis</summary>
     <blockquote>
         <details><summary>unix</summary>
@@ -567,6 +639,22 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_ws.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_ws.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_ws.yml up -d && dcls | grep 'superconductor-app-sqlite' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
         <details><summary>redis</summary>
             <blockquote>
 
@@ -609,6 +697,22 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 ###### (*optionally edit [superconductor/docker-compose-dev_wss.yml](superconductor/docker-compose-dev_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
 </blockquote>
     <blockquote>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_wss.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_wss.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_wss.yml up -d && dcls | grep 'superconductor-app-sqlite' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
         <details><summary>redis</summary>
             <blockquote>
 
@@ -651,6 +755,12 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_ws.yml stop 
+</blockquote>
+        </details>
         <details><summary>redis</summary>
             <blockquote>
 
@@ -668,6 +778,12 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 <details><summary>WSS/HTTPS</summary>
     <blockquote>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_wss.yml stop 
+</blockquote>
+        </details>
         <details><summary>redis</summary>
             <blockquote>
 
@@ -689,6 +805,12 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_ws.yml down --remove-orphans
+</blockquote>
+        </details>
         <details><summary>redis</summary>
             <blockquote>
 
@@ -707,6 +829,12 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 <details><summary>WSS/HTTPS</summary>
     <blockquote>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/sqlite/docker-compose-dev_wss.yml down --remove-orphans
+</blockquote>
+        </details>
         <details><summary>redis</summary>
             <blockquote>
 

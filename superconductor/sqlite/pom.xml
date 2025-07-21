@@ -137,9 +137,9 @@
   <profiles>
 
     <profile>
-      <id>dev_ws</id>
+      <id>local_ws</id>
       <properties>
-        <spring.profiles.active>dev_ws</spring.profiles.active>
+        <spring.profiles.active>local_ws</spring.profiles.active>
       </properties>
       <build>
         <plugins>

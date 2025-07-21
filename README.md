@@ -82,6 +82,39 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_ws.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_ws.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_ws.yml up -d && dcls | grep 'superconductor-app-sqlite' | awk '{print $1}' | xargs docker logs -f
+
+</blockquote>
+        </details>
         <details><summary>mysql</summary>
             <blockquote>
 
@@ -99,22 +132,6 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 
 </blockquote>
         </details>
-        <details><summary>redis</summary>
-            <blockquote>
-
-###### run without logging:
-
-    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml up 
-
-###### run with container logging displayed to console:
-
-    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml up --abort-on-container-failure --attach-dependencies
-
-###### run with docker logging displayed to console:
-
-    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
-</blockquote>
-        </details>
     </blockquote>
 </details>
 
@@ -124,6 +141,39 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 ###### (*optionally edit [superconductor/docker-compose-prod_wss.yml](superconductor/docker-compose-prod_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable.*)
 </blockquote>
     <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
+</blockquote>
+        </details>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+###### run without logging:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_wss.yml up 
+
+###### run with container logging displayed to console:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_wss.yml up --abort-on-container-failure --attach-dependencies
+
+###### run with docker logging displayed to console:
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_wss.yml up -d && dcls | grep 'superconductor-app-sqlite' | awk '{print $1}' | xargs docker logs -f
+
+</blockquote>
+        </details>
         <details><summary>mysql</summary>
             <blockquote>
 
@@ -141,22 +191,6 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 
 </blockquote>
         </details>
-        <details><summary>redis</summary>
-            <blockquote>
-
-###### run without logging:
-
-    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml up 
-
-###### run with container logging displayed to console:
-
-    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml up --abort-on-container-failure --attach-dependencies
-
-###### run with docker logging displayed to console:
-
-    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml up -d && dcls | grep 'superconductor-app-redis' | awk '{print $1}' | xargs docker logs -f
-</blockquote>
-        </details>
     </blockquote>
 </details>
 
@@ -166,16 +200,22 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
-        <details><summary>mysql</summary>
-            <blockquote>
-
-    $ docker compose -f superconductor/mysql/docker-compose-prod_ws.yml stop 
-</blockquote>
-        </details>
         <details><summary>redis</summary>
             <blockquote>
 
     $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml stop 
+</blockquote>
+        </details>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_ws.yml stop 
+</blockquote>
+        </details>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/mysql/docker-compose-prod_ws.yml stop 
 </blockquote>
         </details>
     </blockquote>
@@ -183,16 +223,22 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 
 <details><summary>WSS/HTTPS</summary>
     <blockquote>
-        <details><summary>mysql</summary>
-            <blockquote>
-
-    $ docker compose -f superconductor/mysql/docker-compose-prod_wss.yml stop 
-</blockquote>
-        </details>
         <details><summary>redis</summary>
             <blockquote>
 
     $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml stop 
+</blockquote>
+        </details>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_wss.yml stop 
+</blockquote>
+        </details>
+        <details><summary>mysql</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/mysql/docker-compose-prod_wss.yml stop 
 </blockquote>
         </details>
     </blockquote>
@@ -204,6 +250,19 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 
 <details><summary>WS/HTTP</summary>
     <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml down --remove-orphans
+</blockquote>
+        </details>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_ws.yml down --remove-orphans
+
+</blockquote>
+        </details>
         <details><summary>mysql</summary>
             <blockquote>
 
@@ -211,28 +270,29 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 
 </blockquote>
         </details>
-        <details><summary>redis</summary>
-            <blockquote>
-
-    $ docker compose -f superconductor/redis/docker-compose-prod_ws.yml down --remove-orphans
-</blockquote>
-        </details>
     </blockquote>
 </details>
 
 <details><summary>WSS/HTTPS</summary>
     <blockquote>
+        <details><summary>redis</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml down --remove-orphans
+</blockquote>
+        </details>
+        <details><summary>sqlite</summary>
+            <blockquote>
+
+    $ docker compose -f superconductor/sqlite/docker-compose-prod_wss.yml down --remove-orphans
+
+</blockquote>
+        </details>
         <details><summary>mysql</summary>
             <blockquote>
 
     $ docker compose -f superconductor/mysql/docker-compose-prod_wss.yml down --remove-orphans
 
-</blockquote>
-        </details>
-        <details><summary>redis</summary>
-            <blockquote>
-
-    $ docker compose -f superconductor/redis/docker-compose-prod_wss.yml down --remove-orphans
 </blockquote>
         </details>
     </blockquote>

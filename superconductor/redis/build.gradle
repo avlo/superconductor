@@ -2,11 +2,6 @@ plugins {
     id 'superconductor.java-conventions'
 }
 
-repositories {
-    flatDir {
-        dirs 'src/test/resources'
-    }
-}
 dependencies {
     api project(':superconductor-spring-boot-starter-redis')
 

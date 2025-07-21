@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    api project(':superconductor-autoconfigure-base')
+    api project(':superconductor-base')
 
     api('org.springframework.boot:spring-boot-starter-data-redis:3.5.1')
     annotationProcessor('org.springframework.boot:spring-boot-starter-data-redis:3.5.1')

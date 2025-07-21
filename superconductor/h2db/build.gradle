@@ -1,14 +1,7 @@
 plugins {
     id 'superconductor.java-conventions'
-    id 'org.springframework.boot'
-    id 'io.spring.dependency-management'
 }
 
-repositories {
-    flatDir {
-        dirs 'src/test/resources'
-    }
-}
 dependencies {
     api project(':superconductor-spring-boot-starter-h2db')
     

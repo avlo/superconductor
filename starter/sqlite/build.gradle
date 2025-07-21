@@ -1,0 +1,8 @@
+plugins {
+    id 'superconductor.java-conventions'
+}
+
+dependencies {
+    api project(':superconductor-autoconfigure-sqlite')
+    api project(':superconductor-autoconfigure-jpa')
+}

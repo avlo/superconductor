@@ -1,0 +1,8 @@
+plugins {
+    id 'superconductor.java-conventions'
+}
+
+dependencies {
+    api project(':superconductor-lib-sqlite')
+    annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure'
+}

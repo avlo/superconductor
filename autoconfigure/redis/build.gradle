@@ -3,5 +3,7 @@ plugins {
 }
 
 dependencies {
+    api project(':superconductor-autoconfigure-base')
     implementation project(':superconductor-lib-redis')
+    annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure'
 }

@@ -119,11 +119,11 @@ class EventEntityServiceIT {
         .map(HashtagTag.class::cast)
         .map(HashtagTag::toString).findFirst().orElseThrow());
 
-    assertEquals(PRICE_TAG.getNumber(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(0, PRICE_TAG.getNumber().compareTo(savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("price"))
         .filter(PriceTag.class::isInstance)
         .map(PriceTag.class::cast)
-        .map(PriceTag::getNumber).findFirst().orElseThrow());
+        .map(PriceTag::getNumber).findFirst().orElseThrow()));
 
     assertEquals(PRICE_TAG.getCurrency(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("price"))

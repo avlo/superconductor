@@ -16,18 +16,22 @@
     <module>autoconfigure/jpa</module>
     <module>autoconfigure/mysql</module>
     <module>autoconfigure/redis</module>
+    <module>autoconfigure/sqlite</module>
     <module>base</module>
     <module>lib/h2db</module>
     <module>lib/jpa</module>
     <module>lib/mysql</module>
     <module>lib/redis</module>
+    <module>lib/sqlite</module>
     <module>starter/h2db</module>
     <module>starter/jpa</module>
     <module>starter/mysql</module>
     <module>starter/redis</module>
+    <module>starter/sqlite</module>
     <module>superconductor/h2db</module>
     <module>superconductor/mysql</module>
     <module>superconductor/redis</module>
+    <module>superconductor/sqlite</module>
   </modules>
 
   <properties>

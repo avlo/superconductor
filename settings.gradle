@@ -19,6 +19,8 @@ include ':superconductor-autoconfigure-mysql'
 project(':superconductor-autoconfigure-mysql').setProjectDir(file("autoconfigure/mysql"))
 include ':superconductor-autoconfigure-redis'
 project(':superconductor-autoconfigure-redis').setProjectDir(file("autoconfigure/redis"))
+include ':superconductor-autoconfigure-sqlite'
+project(':superconductor-autoconfigure-sqlite').setProjectDir(file("autoconfigure/sqlite"))
 
 include ':superconductor-base'
 project(':superconductor-base').setProjectDir(file("base"))
@@ -31,6 +33,8 @@ include ':superconductor-lib-mysql'
 project(':superconductor-lib-mysql').setProjectDir(file("lib/mysql"))
 include ':superconductor-lib-redis'
 project(':superconductor-lib-redis').setProjectDir(file("lib/redis"))
+include ':superconductor-lib-sqlite'
+project(':superconductor-lib-sqlite').setProjectDir(file("lib/sqlite"))
 
 include ':superconductor-spring-boot-starter-h2db'
 project(':superconductor-spring-boot-starter-h2db').setProjectDir(file("starter/h2db"))
@@ -40,6 +44,8 @@ include ':superconductor-spring-boot-starter-mysql'
 project(':superconductor-spring-boot-starter-mysql').setProjectDir(file("starter/mysql"))
 include ':superconductor-spring-boot-starter-redis'
 project(':superconductor-spring-boot-starter-redis').setProjectDir(file("starter/redis"))
+include ':superconductor-spring-boot-starter-sqlite'
+project(':superconductor-spring-boot-starter-sqlite').setProjectDir(file("starter/sqlite"))
 
 include ':superconductor-app-h2db'
 project(':superconductor-app-h2db').setProjectDir(file("superconductor/h2db"))
@@ -47,3 +53,5 @@ include ':superconductor-app-mysql'
 project(':superconductor-app-mysql').setProjectDir(file("superconductor/mysql"))
 include ':superconductor-app-redis'
 project(':superconductor-app-redis').setProjectDir(file("superconductor/redis"))
+include ':superconductor-app-sqlite'
+project(':superconductor-app-sqlite').setProjectDir(file("superconductor/sqlite"))

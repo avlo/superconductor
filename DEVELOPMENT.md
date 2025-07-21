@@ -388,15 +388,24 @@ $ ./gradlew.bat :superconductor-app-h2db:test :superconductor-app-h2db:check --r
                     <blockquote>
 <blockquote>
 
+###### (start redis docker container)
 ```bash
-(start redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up
+```
+</blockquote>
+<blockquote>
 
-(run tests)
+###### (run tests)
+```bash
 $ ./mvnw verify -f superconductor/redis/pom.xml
+```
+</blockquote>
 
-(stop redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+<blockquote>
+
+###### (stop redis docker container)
+```bash
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 ```
 </blockquote>
                     </blockquote>
@@ -405,16 +414,28 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && doc
                     <blockquote>
 <blockquote>
 
+<blockquote>
+
+###### (start redis docker container)
 ```bash
-(start redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
-
-(run tests)
-$ ./mvnw.cmd verify -f superconductor/redis/pom.xml
-
-(stop redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up
 ```
+</blockquote>
+<blockquote>
+
+###### (run tests)
+```bash
+$ ./mvnw.cmd verify -f superconductor/redis/pom.xml
+```
+</blockquote>
+
+<blockquote>
+
+###### (stop redis docker container)
+```bash
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
+```
+</blockquote>
 </blockquote>
                     </blockquote>
                 </details>
@@ -426,15 +447,24 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && doc
                     <blockquote>
 <blockquote>
 
+###### (start redis docker container)
 ```bash
-(start redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up
+```
+</blockquote>
+<blockquote>
 
-(run tests)
+###### (run tests)
+```bash
 $ ./gradlew :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+```
+</blockquote>
 
-(stop redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+<blockquote>
+
+###### (stop redis docker container)
+```bash
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 ```
 </blockquote>
                     </blockquote>
@@ -443,15 +473,24 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && doc
                     <blockquote>
 <blockquote>
 
+###### (start redis docker container)
 ```bash
-(start redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up
+```
+</blockquote>
+<blockquote>
 
-(run tests)
+###### (run tests)
+```bash
 $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+```
+</blockquote>
 
-(stop redis docker container)
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
+<blockquote>
+
+###### (stop redis docker container)
+```bash
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 ```
 </blockquote>
                     </blockquote>

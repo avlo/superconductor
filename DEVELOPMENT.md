@@ -389,7 +389,14 @@ $ ./gradlew.bat :superconductor-app-h2db:test :superconductor-app-h2db:check --r
 <blockquote>
 
 ```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
+
+(run tests)
 $ ./mvnw verify -f superconductor/redis/pom.xml
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
 ```
 </blockquote>
                     </blockquote>
@@ -399,7 +406,14 @@ $ ./mvnw verify -f superconductor/redis/pom.xml
 <blockquote>
 
 ```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
+
+(run tests)
 $ ./mvnw.cmd verify -f superconductor/redis/pom.xml
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
 ```
 </blockquote>
                     </blockquote>
@@ -413,7 +427,14 @@ $ ./mvnw.cmd verify -f superconductor/redis/pom.xml
 <blockquote>
 
 ```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
+
+(run tests)
 $ ./gradlew :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
 ```
 </blockquote>
                     </blockquote>
@@ -423,7 +444,14 @@ $ ./gradlew :superconductor-app-redis:test :superconductor-app-redis:check --rer
 <blockquote>
 
 ```bash
+(start redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up -d && dcls | grep 'superconductor-db-redis-local' | awk '{print $1}' | xargs docker logs -f
+
+(run tests)
 $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
+
+(stop redis docker container)
+$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop && docker compose -f superconductor/redis/docker-compose-local_ws.yml down --remove-orphans
 ```
 </blockquote>
                     </blockquote>

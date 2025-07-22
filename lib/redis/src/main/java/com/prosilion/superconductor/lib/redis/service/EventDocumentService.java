@@ -32,7 +32,8 @@ public class EventDocumentService {
   }
 
   public Map<Kind, Map<String, GenericEventKindIF>> getAll() {
-    return getEventEntityRepositoryAll()
+    List<GenericEventKindIF> eventEntityRepositoryAll = getEventEntityRepositoryAll();
+    return eventEntityRepositoryAll
         .stream()
         .collect(
             Collectors.groupingBy(

@@ -53,23 +53,21 @@ public class EventEntityService {
   }
 
   public Long saveEventEntity(@NonNull BaseEvent baseEvent) {
-    try {
-      EventEntityIF savedEntity = Optional.of(eventEntityRepository.save(new GenericEventKindDto(baseEvent).convertDtoToEntity())).orElseThrow(NoResultException::new);
-      concreteTagEntitiesService.saveTags(savedEntity.getId(), baseEvent.getTags());
-      genericTagEntitiesService.saveGenericTags(savedEntity.getId(), baseEvent.getTags());
-      return savedEntity.getId();
-    } catch (DataIntegrityViolationException e) {
-      log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
-      return eventEntityRepository.findByEventIdString(baseEvent.getId()).orElseThrow(NoResultException::new).getId();
-    }
+    return saveEventEntity(
+        new GenericEventKindDto(baseEvent).convertBaseEventToGenericEventKindIF());
   }
 
   public Long saveEventEntity(@NonNull GenericEventKindIF genericEventKindIF) {
     try {
-      EventEntityIF savedEntity = Optional.of(eventEntityRepository.save(convertDtoToEntity(genericEventKindIF))).orElseThrow(NoResultException::new);
-      concreteTagEntitiesService.saveTags(savedEntity.getId(), genericEventKindIF.getTags());
-      genericTagEntitiesService.saveGenericTags(savedEntity.getId(), genericEventKindIF.getTags());
-      return savedEntity.getId();
+      Long savedEntityId = Optional.of(
+              eventEntityRepository.save(
+                  convertDtoToEntity(genericEventKindIF)))
+          .map(EventEntity::getId)  
+          .orElseThrow(NoResultException::new);
+      
+      concreteTagEntitiesService.saveTags(savedEntityId, genericEventKindIF.getTags());
+      genericTagEntitiesService.saveGenericTags(savedEntityId, genericEventKindIF.getTags());
+      return savedEntityId;
     } catch (DataIntegrityViolationException e) {
       log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
       return eventEntityRepository.findByEventIdString(genericEventKindIF.getId()).orElseThrow(NoResultException::new).getId();
@@ -77,7 +75,8 @@ public class EventEntityService {
   }
 
   public Map<Kind, Map<Long, GenericEventKindIF>> getAll() {
-    return getEventEntityRepositoryAll().stream()
+    List<EventEntity> eventEntityRepositoryAll = getEventEntityRepositoryAll();
+    return eventEntityRepositoryAll.stream()
         .map(
             this::populateEventEntity)
         .collect(

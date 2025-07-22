@@ -438,6 +438,15 @@ $ ./gradlew.bat :superconductor-app-sqlite:test :superconductor-app-sqlite:check
             <blockquote>
                 <details><summary>unix</summary>
                     <blockquote>
+                        <blockquote>
+
+###### (redis tests require a redis docker image)
+```bash
+$ ./mvnw -N wrapper:wrapper
+$ ./mvnw spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+```
+</blockquote>
+
 <blockquote>
 
 ###### (start redis docker container)
@@ -466,6 +475,12 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
                     <blockquote>
 <blockquote>
 
+###### (redis tests require a redis docker image)
+```bash
+$ ./mvnw.cmd -N wrapper:wrapper
+$ ./mvnw.cmd spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+```
+</blockquote>
 <blockquote>
 
 ###### (start redis docker container)
@@ -488,7 +503,6 @@ $ ./mvnw.cmd verify -f superconductor/redis/pom.xml
 $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 ```
 </blockquote>
-</blockquote>
                     </blockquote>
                 </details>
             </blockquote>
@@ -497,6 +511,13 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
             <blockquote>
                 <details><summary>unix</summary>
                     <blockquote>
+
+###### (redis tests require a redis docker image)
+```bash
+$ ./mvnw -N wrapper:wrapper
+$ ./mvnw spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+```
+</blockquote>
 <blockquote>
 
 ###### (start redis docker container)
@@ -519,10 +540,19 @@ $ ./gradlew :superconductor-app-redis:test :superconductor-app-redis:check --rer
 $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 ```
 </blockquote>
-                    </blockquote>
-                </details>
+
+</details>
                 <details><summary>windows</summary>
                     <blockquote>
+
+<blockquote>
+
+###### (redis tests require a redis docker image)
+```bash
+$ ./mvnw.cmd -N wrapper:wrapper
+$ ./mvnw.cmd spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+```
+</blockquote>
 <blockquote>
 
 ###### (start redis docker container)

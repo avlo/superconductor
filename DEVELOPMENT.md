@@ -442,8 +442,9 @@ $ ./gradlew.bat :superconductor-app-sqlite:test :superconductor-app-sqlite:check
 
 ###### (redis tests require a redis docker image)
 ```bash
+$ ./mvnw clean install -Dmaven.test.skip=true
 $ ./mvnw -N wrapper:wrapper
-$ ./mvnw spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+$ ./mvnw spring-boot:build-image -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
 ```
 </blockquote>
 
@@ -477,8 +478,9 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 ###### (redis tests require a redis docker image)
 ```bash
+$ ./mvnw clean install -Dmaven.test.skip=true
 $ ./mvnw.cmd -N wrapper:wrapper
-$ ./mvnw.cmd spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+$ ./mvnw.cmd spring-boot:build-image -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
 ```
 </blockquote>
 <blockquote>
@@ -514,8 +516,9 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 ###### (redis tests require a redis docker image)
 ```bash
+$ ./mvnw clean install -Dmaven.test.skip=true
 $ ./mvnw -N wrapper:wrapper
-$ ./mvnw spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+$ ./mvnw spring-boot:build-image -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
 ```
 </blockquote>
 <blockquote>
@@ -549,8 +552,9 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 
 ###### (redis tests require a redis docker image)
 ```bash
+$ ./mvnw clean install -Dmaven.test.skip=true
 $ ./mvnw.cmd -N wrapper:wrapper
-$ ./mvnw.cmd spring-boot:build-image -f superconductor/redis/pom.xml -Pdev_ws -Dmaven.test.skip=true
+$ ./mvnw.cmd spring-boot:build-image -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
 ```
 </blockquote>
 <blockquote>

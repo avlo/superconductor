@@ -12,6 +12,10 @@
   <artifactId>superconductor-app-redis</artifactId>
   <name>superconductor-app-redis</name>
   <packaging>war</packaging>
+  
+  <properties>
+    <spring-boot-embedded-redis.version>1.0.1</spring-boot-embedded-redis.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -34,12 +38,7 @@
       <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
       <version>${spring-boot.version}</version>
     </dependency>
-
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webflux</artifactId>
-    </dependency>
+    
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-test</artifactId>
@@ -55,7 +54,7 @@
     <dependency>
       <groupId>io.github.tobi-laa</groupId>
       <artifactId>spring-boot-embedded-redis</artifactId>
-      <version>1.0.1</version>
+      <version>${spring-boot-embedded-redis.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

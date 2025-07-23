@@ -7,16 +7,13 @@ import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisSta
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @EmbeddedRedisStandalone
@@ -35,10 +32,7 @@ class EventDocumentRepositoryIT {
   @Autowired
   EventDocumentRepositoryIT(EventDocumentRepository eventDocumentRepository) {
     this.eventDocumentRepository = eventDocumentRepository;
-  }
 
-  @BeforeEach
-  void setUp() {
     EventDocument savedAndFetchedDocument = eventDocumentRepository.save(
         EventDocument.of(
             EVENT_ID,
@@ -56,30 +50,20 @@ class EventDocumentRepositoryIT {
   }
 
   @Test
-  void testStarts() {
-    assertTrue(true);
+  void testGetAllFields() {
+    Optional<EventDocument> retrieved = eventDocumentRepository.findByEventIdString(EVENT_ID);
+    EventDocument byEventIdString = retrieved.orElseThrow();
+    assertEquals(EVENT_ID, byEventIdString.getEventIdString());
+    assertEquals(KIND, byEventIdString.getKind());
+    assertEquals(PUB_KEY, byEventIdString.getPubKey());
+    assertEquals(CREATED_AT, byEventIdString.getCreatedAt());
+    assertEquals(CONTENT, byEventIdString.getContent());
+    assertEquals(SIGNATURE, byEventIdString.getSignature());
   }
 
   @Test
   void testRecordNotExist() {
     Optional<EventDocument> eventEntity = eventDocumentRepository.findByEventIdString(Factory.generateRandomHex64String());
     assertThrows(NoSuchElementException.class, eventEntity::orElseThrow);
-  }
-
-  @Test
-  void testGetAllFields() {
-    Optional<EventDocument> byEventIdString = eventDocumentRepository.findByEventIdString(EVENT_ID);
-    assertDoesNotThrow(() -> byEventIdString.stream().findFirst());
-//    assertEquals(SIGNATURE, eventDocumentRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getSignature());
-//    assertEquals(EVENT_ID, eventDocumentRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getEventIdString());
-//    assertEquals(PUB_KEY, eventDocumentRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getPubKey());
-//    assertEquals(CONTENT, eventDocumentRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getContent());
-//    assertEquals(KIND, eventDocumentRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getKind());
-//    assertEquals(CREATED_AT, eventDocumentRepository.findByContent(CONTENT).stream().findFirst().orElseThrow().getCreatedAt());
-  }
-
-  @Test
-  void testTestClassCreatedEntity() {
-    assertDoesNotThrow(() -> eventDocumentRepository.findById(EVENT_ID));
   }
 }

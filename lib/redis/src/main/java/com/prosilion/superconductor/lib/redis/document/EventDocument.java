@@ -2,6 +2,7 @@ package com.prosilion.superconductor.lib.redis.document;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.EventIF;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,7 @@ public class EventDocument implements EventIF {
   private String content;
 
   @Indexed
-  private List<BaseTag> tags;
+  private List<BaseTag> tags = new ArrayList<>();
 
   @NonNull
   private String signature;

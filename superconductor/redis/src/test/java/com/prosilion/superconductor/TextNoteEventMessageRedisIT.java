@@ -49,6 +49,11 @@ public class TextNoteEventMessageRedisIT {
     this.nostrRelayServiceRedis = nostrRelayServiceRedis;
     this.content = Factory.lorumIpsum(getClass());
 
+//    List<BaseTag> tags = new ArrayList<>();
+//    EventTag E_TAG = Factory.createEventTag(TextNoteEventMessageRedisIT.class);
+//    tags.add(E_TAG);
+//    BaseEvent event = new TextNoteEvent(identity, tags, content);
+
     BaseEvent event = new TextNoteEvent(identity, content);
     this.eventId = event.getId();
 

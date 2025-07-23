@@ -67,19 +67,6 @@ public class EventDocumentService<T extends BaseTag> {
   }
 
   public EventDocument convertDtoToDocument(GenericEventKindIF dto) {
-
-    List<T> tags = (List<T>) dto.getTags();
-
-    List<T> interceptedTags = tags.stream().map(baseTag ->
-    {
-      List<InterceptorIF<T>> list = Optional.ofNullable(interceptors.get(baseTag.getClass())).stream().toList();
-      Stream<T> baseTagStream = (Stream<T>) list.stream().map(interceptor ->
-          interceptor.intercept(baseTag));
-      return baseTagStream.toList();
-    }).flatMap(Collection::stream).toList();
-
-    List<BaseTag> uninterceptedTags = dto.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getClass())).toList();
-
     EventDocument eventDocument = EventDocument.of(
         dto.getId(),
         dto.getKind().getValue(),
@@ -88,12 +75,16 @@ public class EventDocumentService<T extends BaseTag> {
         dto.getContent(),
         dto.getSignature().toString());
 
-    List<BaseTag> merged = Stream.concat(
-            interceptedTags.stream(),
-            uninterceptedTags.stream())
-        .collect(Collectors.toList());
+    eventDocument.setTags(
+        Stream.concat(
+                dto.getTags().stream().map(baseTag ->
+                    Optional.ofNullable(
+                            interceptors.get(baseTag.getClass()))
+                        .stream().map(interceptor ->
+                            interceptor.intercept((T) baseTag)).toList()).flatMap(Collection::stream),
+                dto.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getClass())))
+            .collect(Collectors.toList()));
 
-    eventDocument.setTags(merged);
     return eventDocument;
   }
 }

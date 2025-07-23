@@ -16,6 +16,8 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
+import com.prosilion.superconductor.lib.redis.taginterceptor.PubKeyTagInterceptor;
+import com.prosilion.superconductor.lib.redis.taginterceptor.RedisPubKeyTag;
 import com.prosilion.superconductor.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.security.NoSuchAlgorithmException;
@@ -132,11 +134,13 @@ class EventDocumentServiceIT {
         .map(PriceTag.class::cast)
         .map(PriceTag::getFrequency).findFirst().orElseThrow());
 
-    assertEquals(P_TAG.toString(), savedEventTags.stream().filter(baseTag ->
+    PubKeyTagInterceptor<PubKeyTag> pubKeyTagInterceptor = new PubKeyTagInterceptor<>();
+    RedisPubKeyTag intercept = pubKeyTagInterceptor.intercept(P_TAG);
+    assertEquals(intercept.toString(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("p"))
-        .filter(PubKeyTag.class::isInstance)
-        .map(PubKeyTag.class::cast)
-        .map(PubKeyTag::toString).findFirst().orElseThrow());
+        .filter(RedisPubKeyTag.class::isInstance)
+        .map(RedisPubKeyTag.class::cast)
+        .map(RedisPubKeyTag::toString).findFirst().orElseThrow());
   }
 }
 

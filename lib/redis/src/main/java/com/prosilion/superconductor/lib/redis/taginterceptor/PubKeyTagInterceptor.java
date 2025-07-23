@@ -4,7 +4,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PubKeyTagInterceptor<T extends PubKeyTag> implements InterceptorIF<T> {
+public class PubKeyTagInterceptor<T extends PubKeyTag> implements TagInterceptorIF<T> {
   @Override
   public RedisPubKeyTag intercept(T pubKeyTag) {
     return new RedisPubKeyTag(pubKeyTag.getPublicKey().toString(), pubKeyTag.getMainRelayUrl());

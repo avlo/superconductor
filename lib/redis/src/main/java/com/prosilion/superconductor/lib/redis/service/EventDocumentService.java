@@ -6,7 +6,7 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.EventIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
-import com.prosilion.superconductor.lib.redis.taginterceptor.InterceptorIF;
+import com.prosilion.superconductor.lib.redis.taginterceptor.TagInterceptorIF;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -18,15 +18,15 @@ import org.springframework.lang.NonNull;
 
 public class EventDocumentService<T extends BaseTag> {
   private final EventDocumentRepository eventDocumentRepository;
-  private final Map<Class<T>, InterceptorIF<T>> interceptors;
+  private final Map<Class<T>, TagInterceptorIF<T>> interceptors;
 
   public EventDocumentService(
       @NonNull EventDocumentRepository eventDocumentRepository,
-      @NonNull List<InterceptorIF<T>> interceptors) {
+      @NonNull List<TagInterceptorIF<T>> interceptors) {
     this.eventDocumentRepository = eventDocumentRepository;
     this.interceptors = interceptors.stream().collect(
         Collectors.toMap(
-            InterceptorIF::getInterceptorType,
+            TagInterceptorIF::getInterceptorType,
             Function.identity()));
   }
 

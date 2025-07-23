@@ -8,7 +8,7 @@ import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
 import com.prosilion.superconductor.lib.redis.service.RedisCache;
-import com.prosilion.superconductor.lib.redis.taginterceptor.InterceptorIF;
+import com.prosilion.superconductor.lib.redis.taginterceptor.TagInterceptorIF;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -43,7 +43,7 @@ public class RedisConfig {
 //  @ConditionalOnMissingBean
   <T extends BaseTag> EventDocumentService<T> eventDocumentService(
       @NonNull EventDocumentRepository eventDocumentRepository,
-      @NonNull List<InterceptorIF<T>> interceptors) {
+      @NonNull List<TagInterceptorIF<T>> interceptors) {
     return new EventDocumentService<T>(eventDocumentRepository, interceptors);
   }
 

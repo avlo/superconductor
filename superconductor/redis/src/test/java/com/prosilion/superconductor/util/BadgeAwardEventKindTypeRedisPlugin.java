@@ -10,9 +10,9 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 // our SportsCar extends CarDecorator
-public class BadgeAwardEventKindTypePlugin extends PublishingEventKindTypePlugin {
+public class BadgeAwardEventKindTypeRedisPlugin extends PublishingEventKindTypePlugin {
 
-  public BadgeAwardEventKindTypePlugin(
+  public BadgeAwardEventKindTypeRedisPlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventKindTypePluginIF<KindTypeIF> eventKindTypePlugin) {
     super(notifierService, eventKindTypePlugin);

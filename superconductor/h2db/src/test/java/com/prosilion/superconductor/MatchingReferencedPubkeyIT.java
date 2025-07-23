@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.TextNoteEventMessageIT.getGenericEventKindIFs;
+import static com.prosilion.superconductor.TextNoteEventMessageH2dbIT.getGenericEventKindIFs;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

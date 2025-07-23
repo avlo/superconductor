@@ -17,15 +17,15 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 
 @Slf4j
-public class NostrRelayService {
+public class NostrRelayServiceRedis {
   private final ReactiveNostrRelayClient nostrRelayService;
 
-  public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUri) {
+  public NostrRelayServiceRedis(@Value("${superconductor.relay.url}") @NonNull String relayUri) {
     log.debug("relayUri: \n{}", relayUri);
     this.nostrRelayService = new ReactiveNostrRelayClient(relayUri);
   }
 
-  public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUri, @NonNull SslBundles sslBundles) throws ExecutionException, InterruptedException {
+  public NostrRelayServiceRedis(@Value("${superconductor.relay.url}") @NonNull String relayUri, @NonNull SslBundles sslBundles) throws ExecutionException, InterruptedException {
     log.debug("relayUri: \n{}", relayUri);
     log.debug("sslBundles: \n{}", sslBundles);
     final SslBundle server = sslBundles.getBundle("server");
@@ -36,13 +36,13 @@ public class NostrRelayService {
   }
 
   public OkMessage send(@NonNull EventMessage eventMessage) throws IOException {
-    TestSubscriber<OkMessage> subscriber = new TestSubscriber<>();
+    TestSubscriberRedis<OkMessage> subscriber = new TestSubscriberRedis<>();
     nostrRelayService.send(eventMessage, subscriber);
     return subscriber.getItems().getFirst();
   }
 
   public List<BaseMessage> send(@NonNull ReqMessage reqMessage) throws JsonProcessingException, NostrException {
-    TestSubscriber<BaseMessage> subscriber = new TestSubscriber<>();
+    TestSubscriberRedis<BaseMessage> subscriber = new TestSubscriberRedis<>();
     nostrRelayService.send(reqMessage, subscriber);
     return subscriber.getItems();
   }

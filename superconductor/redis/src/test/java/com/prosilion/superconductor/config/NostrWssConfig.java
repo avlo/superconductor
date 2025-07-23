@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.config;
 
-import com.prosilion.superconductor.util.NostrRelayService;
+import com.prosilion.superconductor.util.NostrRelayServiceRedis;
 import org.springframework.lang.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -22,10 +22,10 @@ public class NostrWssConfig {
 
   @Bean
   @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-  public NostrRelayService nostrRelayService(
+  public NostrRelayServiceRedis nostrRelayService(
       @NonNull @Value("${superconductor.relay.url}") String relayUri,
       @NonNull SslBundles sslBundles
   ) throws ExecutionException, InterruptedException {
-    return new NostrRelayService(relayUri, sslBundles);
+    return new NostrRelayServiceRedis(relayUri, sslBundles);
   }
 }

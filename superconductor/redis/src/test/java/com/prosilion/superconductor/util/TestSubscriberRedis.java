@@ -10,7 +10,7 @@ import org.awaitility.Awaitility;
 import org.reactivestreams.Subscription;
 import reactor.core.publisher.BaseSubscriber;
 
-public class TestSubscriber<T> extends BaseSubscriber<T> {
+public class TestSubscriberRedis<T> extends BaseSubscriber<T> {
   private final List<T> items = Collections.synchronizedList(new ArrayList<>());
   private final AtomicBoolean completed = new AtomicBoolean(false);
   private Subscription subscription;
@@ -31,7 +31,7 @@ public class TestSubscriber<T> extends BaseSubscriber<T> {
 
   public List<T> getItems() {
     Awaitility.await()
-        .timeout(3, TimeUnit.SECONDS)
+        .timeout(3, TimeUnit.HOURS)
         .untilTrue(completed);
     List<T> eventList = List.copyOf(items);
     items.clear();

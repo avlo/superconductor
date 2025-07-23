@@ -6,8 +6,8 @@ import com.prosilion.superconductor.base.service.event.service.plugin.EventKindT
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
 import com.prosilion.superconductor.base.service.request.NotifierService;
-import com.prosilion.superconductor.util.BadgeAwardEventKindTypePlugin;
-import com.prosilion.superconductor.util.NostrRelayService;
+import com.prosilion.superconductor.util.BadgeAwardEventKindTypeRedisPlugin;
+import com.prosilion.superconductor.util.NostrRelayServiceRedis;
 import java.util.concurrent.ExecutionException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,19 +24,19 @@ import org.springframework.lang.NonNull;
 @ConditionalOnProperty(
     name = "server.ssl.enabled",
     havingValue = "false")
-public class NostrWsConfig {
+public class NostrRedisWsConfig {
 
   @Bean
   @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-  public NostrRelayService nostrRelayService(@Value("${superconductor.relay.url}") String relayUri) throws ExecutionException, InterruptedException {
-    return new NostrRelayService(relayUri);
+  public NostrRelayServiceRedis nostrRelayService(@Value("${superconductor.relay.url}") String relayUri) throws ExecutionException, InterruptedException {
+    return new NostrRelayServiceRedis(relayUri);
   }
 
   @Bean
-  EventKindTypePluginIF<KindTypeIF> badgeAwardUpvoteEventKindTypePlugin(
+  EventKindTypePluginIF<KindTypeIF> badgeAwardUpvoteEventKindTypeRedisPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
-    return new BadgeAwardEventKindTypePlugin(
+    return new BadgeAwardEventKindTypeRedisPlugin(
         notifierService,
         new EventKindTypePlugin(
             SuperconductorKindType.UPVOTE,
@@ -44,10 +44,10 @@ public class NostrWsConfig {
   }
 
   @Bean
-  EventKindTypePluginIF<KindTypeIF> badgeAwardDownvoteEventKindTypePlugin(
+  EventKindTypePluginIF<KindTypeIF> badgeAwardDownvoteEventKindTypeRedisPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
-    return new BadgeAwardEventKindTypePlugin(
+    return new BadgeAwardEventKindTypeRedisPlugin(
         notifierService,
         new EventKindTypePlugin(
             SuperconductorKindType.DOWNVOTE,

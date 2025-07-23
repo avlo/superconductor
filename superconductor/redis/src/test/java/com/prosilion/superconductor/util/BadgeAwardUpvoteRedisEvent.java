@@ -12,8 +12,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import org.springframework.lang.NonNull;
 
-public class BadgeAwardUpvoteEvent extends AbstractBadgeAwardEvent<KindTypeIF> {
-  public BadgeAwardUpvoteEvent(
+public class BadgeAwardUpvoteRedisEvent extends AbstractBadgeAwardEvent<KindTypeIF> {
+  public BadgeAwardUpvoteRedisEvent(
       @NonNull Identity authorIdentity,
       @NonNull PublicKey upvotedUser,
       @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent) throws NostrException, NoSuchAlgorithmException {
@@ -26,7 +26,7 @@ public class BadgeAwardUpvoteEvent extends AbstractBadgeAwardEvent<KindTypeIF> {
         upvoteBadgeDefinitionEvent.getContent());
   }
 
-  public BadgeAwardUpvoteEvent(
+  public BadgeAwardUpvoteRedisEvent(
       @NonNull Identity authorIdentity,
       @NonNull PublicKey upvotedUser,
       @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent,

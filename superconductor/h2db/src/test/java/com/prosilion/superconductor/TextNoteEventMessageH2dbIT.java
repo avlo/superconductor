@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class TextNoteEventMessageIT {
+public class TextNoteEventMessageH2dbIT {
   private final NostrRelayService nostrRelayService;
 
   private final static Identity identity = Identity.generateRandomIdentity();
@@ -43,7 +43,7 @@ public class TextNoteEventMessageIT {
   private final String content;
 
   @Autowired
-  TextNoteEventMessageIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
+  TextNoteEventMessageH2dbIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
     this.content = Factory.lorumIpsum(getClass());
 

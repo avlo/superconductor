@@ -1,10 +1,12 @@
 package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.EventIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
+import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
 import com.prosilion.superconductor.lib.redis.taginterceptor.TagInterceptorIF;
 import java.util.Collection;
@@ -43,7 +45,7 @@ public class EventDocumentService<T extends BaseTag> {
   }
 
   public Map<Kind, Map<String, GenericEventKindIF>> getAll() {
-    return getEventEntityRepositoryAll()
+    return getEventDocumentRepositoryAll()
         .stream()
         .collect(
             Collectors.groupingBy(
@@ -54,15 +56,20 @@ public class EventDocumentService<T extends BaseTag> {
                     (prev, next) -> next)));
   }
 
-  private List<GenericEventKindIF> getEventEntityRepositoryAll() {
+  private List<GenericEventKindIF> getEventDocumentRepositoryAll() {
     return eventDocumentRepository
         .findAll()
         .stream()
         .map(EventIF::convertEntityToDto).toList();
   }
 
-  public void saveEventDocument(GenericEventKindIF genericEventKindIF) {
-    eventDocumentRepository.save(
+  public EventDocument saveEventDocument(@NonNull BaseEvent baseEvent) {
+    return saveEventDocument(
+        new GenericDocumentKindDto(baseEvent).convertBaseEventToGenericEventKindIF());
+  }
+
+  public EventDocument saveEventDocument(GenericEventKindIF genericEventKindIF) {
+    return eventDocumentRepository.save(
         convertDtoToDocument(genericEventKindIF));
   }
 

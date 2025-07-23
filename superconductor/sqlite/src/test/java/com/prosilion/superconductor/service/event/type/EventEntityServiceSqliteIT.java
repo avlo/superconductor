@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service.event.type;
 
-import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.TextNoteEvent;
@@ -14,6 +14,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.lib.jpa.event.EventEntityService;
 import com.prosilion.superconductor.util.Factory;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -23,25 +24,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
-import com.prosilion.superconductor.lib.jpa.event.EventEntityService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class EventEntityServiceIT {
+class EventEntityServiceSqliteIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
   private static final PublicKey EVENT_PUBKEY = IDENTITY.getPublicKey();
   private static final PubKeyTag P_TAG = Factory.createPubKeyTag(IDENTITY);
 
-  private static final EventTag E_TAG = Factory.createEventTag(EventEntityServiceIT.class);
-  private static final GeohashTag G_TAG = Factory.createGeohashTag(EventEntityServiceIT.class);
-  private static final HashtagTag T_TAG = Factory.createHashtagTag(EventEntityServiceIT.class);
-  private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(EventEntityServiceIT.class);
+  private static final EventTag E_TAG = Factory.createEventTag(EventEntityServiceSqliteIT.class);
+  private static final GeohashTag G_TAG = Factory.createGeohashTag(EventEntityServiceSqliteIT.class);
+  private static final HashtagTag T_TAG = Factory.createHashtagTag(EventEntityServiceSqliteIT.class);
+  private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(EventEntityServiceSqliteIT.class);
   private static final PriceTag PRICE_TAG = Factory.createPriceTag();
 
-  private final static String CONTENT = Factory.lorumIpsum(EventEntityServiceIT.class);
+  private final static String CONTENT = Factory.lorumIpsum(EventEntityServiceSqliteIT.class);
   private final static Kind KIND = Kind.TEXT_NOTE;
 
   private final EventEntityService eventEntityService;
@@ -50,7 +50,7 @@ class EventEntityServiceIT {
   private final Long savedEventId;
 
   @Autowired
-  public EventEntityServiceIT(@NonNull EventEntityService eventEntityService) throws NostrException, NoSuchAlgorithmException {
+  public EventEntityServiceSqliteIT(@NonNull EventEntityService eventEntityService) throws NostrException, NoSuchAlgorithmException {
     this.eventEntityService = eventEntityService;
     List<BaseTag> tags = new ArrayList<>();
     tags.add(E_TAG);
@@ -61,9 +61,6 @@ class EventEntityServiceIT {
     tags.add(PRICE_TAG);
 
     textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-    System.out.println("textNoteEvent getPubKey().toString(): " + textNoteEvent.getPublicKey().toString());
-    System.out.println("textNoteEvent getPubKey().toHexString(): " + textNoteEvent.getPublicKey().toHexString());
-    System.out.println("textNoteEvent getPubKey().toBech32String(): " + textNoteEvent.getPublicKey().toBech32String());
     savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
   }
 
@@ -78,9 +75,6 @@ class EventEntityServiceIT {
   @Test
   void saveAndGetEventWithGeohash() {
     GenericEventKindIF savedEvent = eventEntityService.getEventById(savedEventId);
-    System.out.println("savedEvent getPubKey().toString(): " + savedEvent.getPublicKey().toString());
-    System.out.println("savedEvent getPubKey().toHexString(): " + savedEvent.getPublicKey().toHexString());
-    System.out.println("savedEvent getPubKey().toBech32String(): " + savedEvent.getPublicKey().toBech32String());
 
     assertEquals(CONTENT, savedEvent.getContent());
     assertEquals(KIND, savedEvent.getKind());

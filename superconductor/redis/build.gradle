@@ -7,4 +7,13 @@ dependencies {
 
     def subdivisionsVersion = '1.3.0'
     testImplementation 'com.prosilion:subdivisions:' + subdivisionsVersion
+
+    runtimeOnly('org.springframework.boot:spring-boot-starter-data-redis:3.5.1')
+    annotationProcessor('org.springframework.boot:spring-boot-starter-data-redis:3.5.1')
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive:3.5.1'
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+
+    testImplementation('io.github.tobi-laa:spring-boot-embedded-redis:1.0.1')
 }

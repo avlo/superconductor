@@ -440,69 +440,18 @@ $ ./gradlew.bat :superconductor-app-sqlite:test :superconductor-app-sqlite:check
                     <blockquote>
                         <blockquote>
 
-###### (redis tests require a redis docker image)
-```bash
-$ ./mvnw clean install -Dmaven.test.skip=true
-$ ./mvnw -N wrapper:wrapper
-$ ./mvnw spring-boot:build-image -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
-```
-</blockquote>
-
-<blockquote>
-
-###### (start redis docker container)
-```bash
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up
-```
-</blockquote>
-<blockquote>
-
-###### (run tests)
 ```bash
 $ ./mvnw verify -f superconductor/redis/pom.xml
-```
-</blockquote>
-
-<blockquote>
-
-###### (stop redis docker container)
-```bash
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 ```
 </blockquote>
                     </blockquote>
                 </details>
                 <details><summary>windows</summary>
                     <blockquote>
-<blockquote>
+                        <blockquote>
 
-###### (redis tests require a redis docker image)
-```bash
-$ ./mvnw clean install -Dmaven.test.skip=true
-$ ./mvnw.cmd -N wrapper:wrapper
-$ ./mvnw.cmd spring-boot:build-image -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
-```
-</blockquote>
-<blockquote>
-
-###### (start redis docker container)
-```bash
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up
-```
-</blockquote>
-<blockquote>
-
-###### (run tests)
 ```bash
 $ ./mvnw.cmd verify -f superconductor/redis/pom.xml
-```
-</blockquote>
-
-<blockquote>
-
-###### (stop redis docker container)
-```bash
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 ```
 </blockquote>
                     </blockquote>
@@ -514,33 +463,8 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
                 <details><summary>unix</summary>
                     <blockquote>
 
-###### (redis tests require a redis docker image)
-```bash
-$ ./mvnw clean install -Dmaven.test.skip=true
-$ ./mvnw -N wrapper:wrapper
-$ ./mvnw spring-boot:build-image -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
-```
-</blockquote>
-<blockquote>
-
-###### (start redis docker container)
-```bash
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up
-```
-</blockquote>
-<blockquote>
-
-###### (run tests)
 ```bash
 $ ./gradlew :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
-```
-</blockquote>
-
-<blockquote>
-
-###### (stop redis docker container)
-```bash
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
 ```
 </blockquote>
 
@@ -548,36 +472,11 @@ $ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
                 <details><summary>windows</summary>
                     <blockquote>
 
-<blockquote>
-
-###### (redis tests require a redis docker image)
-```bash
-$ ./mvnw clean install -Dmaven.test.skip=true
-$ ./mvnw.cmd -N wrapper:wrapper
-$ ./mvnw.cmd spring-boot:build-image -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
-```
-</blockquote>
-<blockquote>
-
-###### (start redis docker container)
-```bash
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml up
-```
-</blockquote>
-<blockquote>
-
-###### (run tests)
 ```bash
 $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check --rerun-tasks
 ```
-</blockquote>
-
 <blockquote>
 
-###### (stop redis docker container)
-```bash
-$ docker compose -f superconductor/redis/docker-compose-local_ws.yml stop
-```
 </blockquote>
                     </blockquote>
                 </details>

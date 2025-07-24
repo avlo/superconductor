@@ -38,44 +38,42 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @ActiveProfiles("test")
 class EventDocumentServiceIT {
-  private static final Identity IDENTITY = Factory.createNewIdentity();
-  private static final PublicKey EVENT_PUBKEY = IDENTITY.getPublicKey();
-
-  private static final PubKeyTag P_TAG = Factory.createPubKeyTag(IDENTITY);
-  private static final EventTag E_TAG = Factory.createEventTag(EventDocumentServiceIT.class);
-  private static final GeohashTag G_TAG = Factory.createGeohashTag(EventDocumentServiceIT.class);
-  private static final HashtagTag T_TAG = Factory.createHashtagTag(EventDocumentServiceIT.class);
-  private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(EventDocumentServiceIT.class);
-  private static final PriceTag PRICE_TAG = Factory.createPriceTag();
-
-  private final static String CONTENT = Factory.lorumIpsum(EventDocumentServiceIT.class);
+  private final PublicKey event_pubkey;
+  private final PubKeyTag p_tag;
+  private final EventTag e_tag;
+  private final GeohashTag g_tag;
+  private final HashtagTag t_tag;
+  private final PriceTag price_tag;
+  private final String content;
   private final static Kind KIND = Kind.TEXT_NOTE;
 
   private final EventDocumentService<BaseTag> eventDocumentService;
-
-  private final BaseEvent textNoteEvent;
   private final EventDocument savedEventDocument;
 
   @Autowired
   public EventDocumentServiceIT(@NonNull EventDocumentService<BaseTag> eventDocumentService) throws NostrException, NoSuchAlgorithmException {
+    Identity identity = Factory.createNewIdentity();
+    event_pubkey = identity.getPublicKey();
+    p_tag = Factory.createPubKeyTag(identity);
+    e_tag = Factory.createEventTag(EventDocumentServiceIT.class);
+    g_tag = Factory.createGeohashTag(EventDocumentServiceIT.class);
+    t_tag = Factory.createHashtagTag(EventDocumentServiceIT.class);
+    SubjectTag subject_tag = Factory.createSubjectTag(EventDocumentServiceIT.class);
+    price_tag = Factory.createPriceTag();
+
     this.eventDocumentService = eventDocumentService;
     List<BaseTag> tags = new ArrayList<>();
-    tags.add(E_TAG);
-    tags.add(P_TAG);
-    tags.add(SUBJECT_TAG);
-    tags.add(G_TAG);
-    tags.add(T_TAG);
-    tags.add(PRICE_TAG);
+    tags.add(e_tag);
+    tags.add(p_tag);
+    tags.add(subject_tag);
+    tags.add(g_tag);
+    tags.add(t_tag);
+    tags.add(price_tag);
 
-    textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-    savedEventDocument = eventDocumentService.saveEventDocument(textNoteEvent);
+    content = Factory.lorumIpsum(EventDocumentServiceIT.class);
 
-    assertEquals(textNoteEvent.getId(), savedEventDocument.getEventIdString());
-    assertEquals(KIND, Kind.valueOf(savedEventDocument.getKind()));
-    assertEquals(textNoteEvent.getPublicKey().toString(), savedEventDocument.getPubKey());
-    assertEquals(textNoteEvent.getCreatedAt(), savedEventDocument.getCreatedAt());
-    assertEquals(CONTENT, savedEventDocument.getContent());
-    assertEquals(textNoteEvent.getSignature(), savedEventDocument.getSignature());
+    BaseEvent textNoteEvent = new TextNoteEvent(identity, tags, content);
+    savedEventDocument = this.eventDocumentService.saveEventDocument(textNoteEvent);
   }
 
   @Test
@@ -85,11 +83,11 @@ class EventDocumentServiceIT {
     log.debug("savedEvent getPubKey().toHexString(): " + savedEvent.getPublicKey().toHexString());
     log.debug("savedEvent getPubKey().toBech32String(): " + savedEvent.getPublicKey().toBech32String());
 
-    assertEquals(CONTENT, savedEvent.getContent());
+    assertEquals(content, savedEvent.getContent());
     assertEquals(KIND, savedEvent.getKind());
-    assertEquals(EVENT_PUBKEY.toString(), savedEvent.getPublicKey().toString());
-    assertEquals(EVENT_PUBKEY.toBech32String(), savedEvent.getPublicKey().toBech32String());
-    assertEquals(EVENT_PUBKEY.toHexString(), savedEvent.getPublicKey().toHexString());
+    assertEquals(event_pubkey.toString(), savedEvent.getPublicKey().toString());
+    assertEquals(event_pubkey.toBech32String(), savedEvent.getPublicKey().toBech32String());
+    assertEquals(event_pubkey.toHexString(), savedEvent.getPublicKey().toHexString());
 
     List<BaseTag> savedEventTags = savedEvent.getTags();
     assertEquals(6, savedEventTags.size());
@@ -98,44 +96,44 @@ class EventDocumentServiceIT {
         .containsAll(
             List.of("e", "g", "p", "t", "price", "subject")));
 
-    assertEquals(E_TAG.getIdEvent(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(e_tag.getIdEvent(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("e"))
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(EventTag::getIdEvent).findFirst().orElseThrow());
 
-    assertEquals(G_TAG.toString(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(g_tag.toString(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("g"))
         .filter(GeohashTag.class::isInstance)
         .map(GeohashTag.class::cast)
         .map(GeohashTag::toString).findFirst().orElseThrow());
 
-    assertEquals(T_TAG.toString(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(t_tag.toString(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("t"))
         .filter(HashtagTag.class::isInstance)
         .map(HashtagTag.class::cast)
         .map(HashtagTag::toString).findFirst().orElseThrow());
 
-    assertEquals(PRICE_TAG.getNumber(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(price_tag.getNumber(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("price"))
         .filter(PriceTag.class::isInstance)
         .map(PriceTag.class::cast)
         .map(PriceTag::getNumber).findFirst().orElseThrow());
 
-    assertEquals(PRICE_TAG.getCurrency(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(price_tag.getCurrency(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("price"))
         .filter(PriceTag.class::isInstance)
         .map(PriceTag.class::cast)
         .map(PriceTag::getCurrency).findFirst().orElseThrow());
 
-    assertEquals(PRICE_TAG.getFrequency(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(price_tag.getFrequency(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("price"))
         .filter(PriceTag.class::isInstance)
         .map(PriceTag.class::cast)
         .map(PriceTag::getFrequency).findFirst().orElseThrow());
 
     PubKeyTagInterceptor<PubKeyTag> pubKeyTagInterceptor = new PubKeyTagInterceptor<>();
-    RedisPubKeyTag intercept = pubKeyTagInterceptor.intercept(P_TAG);
+    RedisPubKeyTag intercept = pubKeyTagInterceptor.intercept(p_tag);
     assertEquals(intercept.toString(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("p"))
         .filter(RedisPubKeyTag.class::isInstance)

@@ -16,36 +16,43 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
-public class EventDocumentService<T extends BaseTag> {
+@Slf4j
+public class EventDocumentService<T extends BaseTag, U extends BaseTag> {
   private final EventDocumentRepository eventDocumentRepository;
-  private final Map<Class<T>, TagInterceptorIF<T>> interceptors;
+  private final Map<Class<T>, TagInterceptorIF<T, U>> interceptors;
 
   public EventDocumentService(
       @NonNull EventDocumentRepository eventDocumentRepository,
-      @NonNull List<TagInterceptorIF<T>> interceptors) {
+      @NonNull List<TagInterceptorIF<T, U>> interceptors) {
     this.eventDocumentRepository = eventDocumentRepository;
     this.interceptors = interceptors.stream().collect(
         Collectors.toMap(
-            TagInterceptorIF::getInterceptorType,
+            TagInterceptorIF::getInterceptedType,
             Function.identity()));
+    log.debug("Created EventDocumentService with interceptors:\n");
+    interceptors.forEach(interceptor -> log.debug("  {}\n", interceptor));
   }
 
   public Optional<GenericEventKindIF> findByEventIdString(@NonNull String eventIdString) {
     return eventDocumentRepository
         .findByEventIdString(eventIdString)
+        .map(this::revertInterceptor)
         .map(EventIF::convertEntityToDto);
   }
 
   public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
     return eventDocumentRepository
-        .findAllByKind(kind.getValue())
-        .stream().map(EventIF::convertEntityToDto).toList();
+        .findAllByKind(kind.getValue()).stream()
+        .map(this::revertInterceptor)
+        .map(EventIF::convertEntityToDto).toList();
   }
 
   public Map<Kind, Map<String, GenericEventKindIF>> getAll() {
-    return getEventDocumentRepositoryAll()
+    List<GenericEventKindIF> eventDocumentRepositoryAll = getEventDocumentRepositoryAll();
+    return eventDocumentRepositoryAll
         .stream()
         .collect(
             Collectors.groupingBy(
@@ -58,8 +65,8 @@ public class EventDocumentService<T extends BaseTag> {
 
   private List<GenericEventKindIF> getEventDocumentRepositoryAll() {
     return eventDocumentRepository
-        .findAll()
-        .stream()
+        .findAll().stream()
+        .map(this::revertInterceptor)
         .map(EventIF::convertEntityToDto).toList();
   }
 
@@ -74,14 +81,18 @@ public class EventDocumentService<T extends BaseTag> {
   }
 
   public EventDocument convertDtoToDocument(GenericEventKindIF dto) {
-    EventDocument eventDocument = EventDocument.of(
-        dto.getId(),
-        dto.getKind().getValue(),
-        dto.getPublicKey().toString(),
-        dto.getCreatedAt(),
-        dto.getContent(),
-        dto.getSignature().toString());
+    return processInterceptors(
+        dto,
+        EventDocument.of(
+            dto.getId(),
+            dto.getKind().getValue(),
+            dto.getPublicKey().toString(),
+            dto.getCreatedAt(),
+            dto.getContent(),
+            dto.getSignature().toString()));
+  }
 
+  private EventDocument processInterceptors(GenericEventKindIF dto, EventDocument eventDocument) {
     eventDocument.setTags(
         Stream.concat(
                 dto.getTags().stream().map(baseTag ->
@@ -93,5 +104,40 @@ public class EventDocumentService<T extends BaseTag> {
             .collect(Collectors.toList()));
 
     return eventDocument;
+  }
+
+  private EventDocument revertInterceptor(EventDocument incomingDocument) {
+    EventDocument morphedDocument = EventDocument.of(
+        incomingDocument.getEventIdString(),
+        incomingDocument.getKind(),
+        incomingDocument.getPubKey(),
+        incomingDocument.getCreatedAt(),
+        incomingDocument.getContent(),
+        incomingDocument.getSignature());
+
+    List<BaseTag> incomingDocumentTags = incomingDocument.getTags();
+
+    List<Class<U>> registeredInterceptors = interceptors.values()
+        .stream().map(TagInterceptorIF::getMorphedType).toList();
+
+    List<BaseTag> matchedInterceptors = registeredInterceptors.stream().flatMap(registeredInterceptor ->
+        incomingDocumentTags.stream().filter(incomingTag -> incomingTag.getClass().equals(registeredInterceptor))).toList();
+
+    Map<? extends Class<? extends BaseTag>, BaseTag> collect = matchedInterceptors.stream().collect(
+        Collectors.toMap(
+            BaseTag::getClass,
+            Function.identity()));
+
+
+    incomingDocument.getTags().removeAll(matchedInterceptors);
+
+    List<BaseTag> collect1 = Stream.concat(
+            incomingDocument.getTags().stream(),
+            matchedInterceptors.stream().map(tagToMorph -> collect.get(tagToMorph.getClass())))
+        .collect(Collectors.toList());
+
+    morphedDocument.setTags(collect1);
+
+    return morphedDocument;
   }
 }

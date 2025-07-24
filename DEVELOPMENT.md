@@ -1341,7 +1341,7 @@ Next, open browser URL http://localhost:5540 and configure a connection to http:
         </details>
     </blockquote>
     <blockquote>
-        <details><summary>Download insight</summary>
+        <details><summary>redis-insight desktop application</summary>
             <blockquote>
 
 Download [redis insight](https://redis.io/downloads/#insight) standalone application and configure a connection to http://localhost:8081

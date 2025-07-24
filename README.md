@@ -143,7 +143,7 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 <details><summary>WSS/HTTPS</summary>
     <blockquote>
 
-###### [relay security keys](superconductor/redis/src/main/resources/application-prod_ws.properties?plain=1#L4-L5) required & [superconductor/docker-compose-prod_wss.yml](superconductor/docker-compose-prod_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable
+###### [relay security keys](superconductor/redis/src/main/resources/application-prod_wss.properties?plain=1#L4-L5) required & [superconductor/docker-compose-prod_wss.yml](superconductor/docker-compose-prod_wss.yml?plain=1#L10,L32,L36-L37) parameters as applicable
 </blockquote>
     <blockquote>
         <details><summary>redis</summary>

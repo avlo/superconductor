@@ -36,9 +36,4 @@ public record RedisAddressTag(
     this.identifierTag = identifierTag;
     this.relay = relay;
   }
-
-  @Override
-  public String getCode() {
-    return BaseTag.super.getCode();
-  }
 }

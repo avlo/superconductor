@@ -22,9 +22,4 @@ public record RedisPubKeyTag(
   public RedisPubKeyTag(String publicKey, String mainRelayUrl) {
     this(publicKey, mainRelayUrl, null);
   }
-
-  @Override
-  public String getCode() {
-    return BaseTag.super.getCode();
-  }
 }

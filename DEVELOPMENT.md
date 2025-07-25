@@ -137,7 +137,7 @@ repositories {
 
 #### Spring-boot-starter dependency variants for your own Spring-Boot Starter project...
 
-<details><summary>superconductor-spring-boot-starter-h2db</summary>
+<details><summary>superconductor-spring-boot-starter-redis</summary>
     <blockquote>
         <details><summary>maven</summary>
             <blockquote>
@@ -146,7 +146,7 @@ repositories {
 ```xml
 <dependency>
   <groupId>com.prosilion.superconductor</groupId>
-  <artifactId>superconductor-spring-boot-starter-h2db</artifactId>
+  <artifactId>superconductor-spring-boot-starter-redis</artifactId>
   <version>1.16.1</version>
 </dependency>
 ```
@@ -159,7 +159,35 @@ repositories {
 
 ###### build.gradle
 ```groovy
-implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-h2db:' + 1.16.1
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-redis:' + 1.16.1
+```
+</blockquote>            
+        </details>
+    </blockquote>
+</details>
+<details><summary>superconductor-spring-boot-starter-sqlite</summary>
+    <blockquote>
+        <details><summary>maven</summary>
+            <blockquote>
+
+###### pom.xml
+```xml
+<dependency>
+  <groupId>com.prosilion.superconductor</groupId>
+  <artifactId>superconductor-spring-boot-starter-sqlite</artifactId>
+  <version>1.16.1</version>
+</dependency>
+```
+</blockquote>            
+        </details>
+    </blockquote>
+    <blockquote>
+        <details><summary>gradle</summary>
+            <blockquote>
+
+###### build.gradle
+```groovy
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-sqlite:' + 1.16.1
 ```
 </blockquote>            
         </details>
@@ -193,7 +221,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
         </details>
     </blockquote>
 </details>
-<details><summary>superconductor-spring-boot-starter-redis</summary>
+<details><summary>superconductor-spring-boot-starter-h2db</summary>
     <blockquote>
         <details><summary>maven</summary>
             <blockquote>
@@ -202,7 +230,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 ```xml
 <dependency>
   <groupId>com.prosilion.superconductor</groupId>
-  <artifactId>superconductor-spring-boot-starter-redis</artifactId>
+  <artifactId>superconductor-spring-boot-starter-h2db</artifactId>
   <version>1.16.1</version>
 </dependency>
 ```
@@ -215,7 +243,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 
 ###### build.gradle
 ```groovy
-implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-redis:' + 1.16.1
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-h2db:' + 1.16.1
 ```
 </blockquote>            
         </details>
@@ -223,9 +251,10 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 </details>
 
 ###### included reference implementations:
-- [superconductor/h2db](superconductor/h2db)
-- [superconductor/mysql](superconductor/mysql)
 - [superconductor/redis](superconductor/redis)
+- [superconductor/sqlite](superconductor/sqlite)
+- [superconductor/mysql](superconductor/mysql)
+- [superconductor/h2db](superconductor/h2db)
 - (external / standalone) [Afterimage](https://github.com/avlo/afterimage) Nostr Reputation-Authority Relay (aka, reputation mesh network)
 
 #### ... or core auto-configuration for lower-level extension / customization
@@ -502,26 +531,6 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
 
 ##### Dockerize project / Build Supercondcutor Docker images
 
-<details><summary>sqlite</summary>
-    <blockquote>
-        <details><summary>unix</summary>
-            <blockquote>
-
-    $ ./mvnw clean install -Dmaven.test.skip=true
-    $ ./mvnw -N wrapper:wrapper
-    $ ./mvnw spring-boot:build-image -f superconductor/sqlite/pom.xml -Pdev_ws -Dmaven.test.skip=true
-</blockquote>
-        </details>
-        <details><summary>windows</summary>
-            <blockquote>
-
-    $ ./mvnw.cmd clean install -Dmaven.test.skip=true
-    $ ./mvnw.cmd -N wrapper:wrapper
-    $ ./mvnw.cmd spring-boot:build-image -f superconductor/sqlite/pom.xml -Pdev_ws -Dmaven.test.skip=true
-</blockquote>
-        </details>
-    </blockquote>
-</details>
 <details><summary>redis</summary>
     <blockquote>
         <details><summary>unix</summary>
@@ -542,7 +551,26 @@ $ ./gradlew.bat :superconductor-app-redis:test :superconductor-app-redis:check -
         </details>
     </blockquote>
 </details>
+<details><summary>sqlite</summary>
+    <blockquote>
+        <details><summary>unix</summary>
+            <blockquote>
 
+    $ ./mvnw clean install -Dmaven.test.skip=true
+    $ ./mvnw -N wrapper:wrapper
+    $ ./mvnw spring-boot:build-image -f superconductor/sqlite/pom.xml -Pdev_ws -Dmaven.test.skip=true
+</blockquote>
+        </details>
+        <details><summary>windows</summary>
+            <blockquote>
+
+    $ ./mvnw.cmd clean install -Dmaven.test.skip=true
+    $ ./mvnw.cmd -N wrapper:wrapper
+    $ ./mvnw.cmd spring-boot:build-image -f superconductor/sqlite/pom.xml -Pdev_ws -Dmaven.test.skip=true
+</blockquote>
+        </details>
+    </blockquote>
+</details>
 <details><summary>mysql</summary>
     <blockquote>
         <details><summary>unix</summary>

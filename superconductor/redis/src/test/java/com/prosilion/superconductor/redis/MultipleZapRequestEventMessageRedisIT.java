@@ -12,7 +12,7 @@ import org.springframework.lang.NonNull;
 @Slf4j
 @EmbeddedRedisStandalone
 @Nested
-class MultipleZapRequestEventMessageIT extends AbstractMultipleSubscriber {
+class MultipleZapRequestEventMessageRedisIT extends AbstractMultipleSubscriber {
   private final String authorPubKey;
   private final String content;
   private final String hashTagText;
@@ -24,7 +24,7 @@ class MultipleZapRequestEventMessageIT extends AbstractMultipleSubscriber {
   private final String geoTagText;
 
   @Autowired
-  MultipleZapRequestEventMessageIT(
+  MultipleZapRequestEventMessageRedisIT(
       @NonNull NostrRelayServiceRedis nostrRelayService,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.hexNumberOfBytes}") Integer hexNumberOfBytes,

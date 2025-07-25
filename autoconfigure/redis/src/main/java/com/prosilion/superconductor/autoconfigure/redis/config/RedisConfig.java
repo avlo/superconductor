@@ -5,10 +5,11 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.service.event.CacheIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
+import com.prosilion.superconductor.lib.redis.interceptor.TagInterceptor;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
 import com.prosilion.superconductor.lib.redis.service.RedisCache;
-import com.prosilion.superconductor.lib.redis.taginterceptor.TagInterceptorIF;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -34,22 +35,22 @@ import org.springframework.lang.NonNull;
         "com.prosilion.superconductor.base.service.clientresponse",
         "com.prosilion.superconductor.base.service.request",
         "com.prosilion.superconductor.base.util",
-        "com.prosilion.superconductor.lib.redis.taginterceptor"
+        "com.prosilion.superconductor.lib.redis.interceptor"
     })
 @ConditionalOnClass(RedisCache.class)
 public class RedisConfig {
 
   @Bean
 //  @ConditionalOnMissingBean
-  <T extends BaseTag> EventDocumentService<T> eventDocumentService(
+  EventDocumentService eventDocumentService(
       @NonNull EventDocumentRepository eventDocumentRepository,
-      @NonNull List<TagInterceptorIF<T>> interceptors) {
-    return new EventDocumentService<T>(eventDocumentRepository, interceptors);
+      @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
+    return new EventDocumentService(eventDocumentRepository, interceptors);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  <T extends BaseTag> CacheIF cacheIF(EventDocumentService<T> eventDocumentService) {
+  CacheIF cacheIF(EventDocumentService eventDocumentService) {
     return new RedisCache(eventDocumentService);
   }
 

@@ -3,12 +3,14 @@ package com.prosilion.superconductor.autoconfigure.redis.config;
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.lang.NonNull;
 
 public class DataLoader implements CommandLineRunner {
   private final EventPluginIF eventPlugin;
+  @Getter
   private final BadgeDefinitionEvent upvoteBadgeDefinitionEvent;
   private final BadgeDefinitionEvent downvoteBadgeDefinitionEvent;
 

@@ -7,8 +7,9 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.EventIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
 import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
+import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
+import com.prosilion.superconductor.lib.redis.interceptor.TagInterceptor;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
-import com.prosilion.superconductor.lib.redis.taginterceptor.TagInterceptorIF;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -20,17 +21,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class EventDocumentService<T extends BaseTag, U extends BaseTag> {
+public class EventDocumentService {
   private final EventDocumentRepository eventDocumentRepository;
-  private final Map<Class<T>, TagInterceptorIF<T, U>> interceptors;
+  private final Map<String, TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors;
 
   public EventDocumentService(
       @NonNull EventDocumentRepository eventDocumentRepository,
-      @NonNull List<TagInterceptorIF<T, U>> interceptors) {
+      @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
     this.eventDocumentRepository = eventDocumentRepository;
     this.interceptors = interceptors.stream().collect(
         Collectors.toMap(
-            TagInterceptorIF::getInterceptedType,
+            TagInterceptor::getCode,
             Function.identity()));
     log.debug("Created EventDocumentService with interceptors:\n");
     interceptors.forEach(interceptor -> log.debug("  {}\n", interceptor));
@@ -97,47 +98,34 @@ public class EventDocumentService<T extends BaseTag, U extends BaseTag> {
         Stream.concat(
                 dto.getTags().stream().map(baseTag ->
                     Optional.ofNullable(
-                            interceptors.get(baseTag.getClass()))
+                            interceptors.get(baseTag.getCode()))
                         .stream().map(interceptor ->
-                            interceptor.intercept((T) baseTag)).toList()).flatMap(Collection::stream),
-                dto.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getClass())))
+                            (BaseTag) interceptor.intercept(baseTag)).toList()).flatMap(Collection::stream),
+                dto.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
             .collect(Collectors.toList()));
 
     return eventDocument;
   }
 
-  private EventDocument revertInterceptor(EventDocument incomingDocument) {
-    EventDocument morphedDocument = EventDocument.of(
-        incomingDocument.getEventIdString(),
-        incomingDocument.getKind(),
-        incomingDocument.getPubKey(),
-        incomingDocument.getCreatedAt(),
-        incomingDocument.getContent(),
-        incomingDocument.getSignature());
+  private EventDocument revertInterceptor(EventDocument documentToRevert) {
+    EventDocument revertedDocument = EventDocument.of(
+        documentToRevert.getEventIdString(),
+        documentToRevert.getKind(),
+        documentToRevert.getPubKey(),
+        documentToRevert.getCreatedAt(),
+        documentToRevert.getContent(),
+        documentToRevert.getSignature());
 
-    List<BaseTag> incomingDocumentTags = incomingDocument.getTags();
+    revertedDocument.setTags(
+        Stream.concat(
+                documentToRevert.getTags().stream().map(baseTag ->
+                    Optional.ofNullable(
+                            interceptors.get(baseTag.getCode()))
+                        .stream().map(interceptor ->
+                            interceptor.revert((RedisBaseTagIF) baseTag)).toList()).flatMap(Collection::stream),
+                documentToRevert.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
+            .collect(Collectors.toList()));
 
-    List<Class<U>> registeredInterceptors = interceptors.values()
-        .stream().map(TagInterceptorIF::getMorphedType).toList();
-
-    List<BaseTag> matchedInterceptors = registeredInterceptors.stream().flatMap(registeredInterceptor ->
-        incomingDocumentTags.stream().filter(incomingTag -> incomingTag.getClass().equals(registeredInterceptor))).toList();
-
-    Map<? extends Class<? extends BaseTag>, BaseTag> collect = matchedInterceptors.stream().collect(
-        Collectors.toMap(
-            BaseTag::getClass,
-            Function.identity()));
-
-
-    incomingDocument.getTags().removeAll(matchedInterceptors);
-
-    List<BaseTag> collect1 = Stream.concat(
-            incomingDocument.getTags().stream(),
-            matchedInterceptors.stream().map(tagToMorph -> collect.get(tagToMorph.getClass())))
-        .collect(Collectors.toList());
-
-    morphedDocument.setTags(collect1);
-
-    return morphedDocument;
+    return revertedDocument;
   }
 }

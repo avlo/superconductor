@@ -29,21 +29,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EmbeddedRedisStandalone
 @SpringBootTest
 @ActiveProfiles("test")
-class EventEntityAddressTagEntityRedisIT {
+class EventDocumentAddressTagEntityRedisIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
   private static final PublicKey ADDRESS_TAG_PUBLIC_KEY = Factory.createNewIdentity().getPublicKey();
 
-  private final static String CONTENT = Factory.lorumIpsum(EventEntityAddressTagEntityRedisIT.class);
+  private final static String CONTENT = Factory.lorumIpsum(EventDocumentAddressTagEntityRedisIT.class);
   public static final Kind KIND = Kind.BADGE_AWARD_EVENT;
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(
       "REPUTATION_UUID-needs_proper_attention");
 
-  private final EventDocumentService<BaseTag> eventDocumentService;
+  private final EventDocumentService eventDocumentService;
 
   private final EventDocument savedEventDocument;
 
   @Autowired
-  public EventEntityAddressTagEntityRedisIT(@NonNull EventDocumentService<BaseTag> eventDocumentService) throws NostrException, NoSuchAlgorithmException {
+  public EventDocumentAddressTagEntityRedisIT(@NonNull EventDocumentService eventDocumentService) throws NostrException, NoSuchAlgorithmException {
     this.eventDocumentService = eventDocumentService;
 
     AddressTag addressTag = new AddressTag(

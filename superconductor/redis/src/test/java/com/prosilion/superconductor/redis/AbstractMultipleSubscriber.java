@@ -13,7 +13,6 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import com.prosilion.superconductor.redis.util.OrderAgnosticJsonComparator;
-import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
-@EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")

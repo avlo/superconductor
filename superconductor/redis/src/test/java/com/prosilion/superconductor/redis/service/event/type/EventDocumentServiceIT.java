@@ -16,8 +16,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
-import com.prosilion.superconductor.lib.redis.taginterceptor.PubKeyTagInterceptor;
-import com.prosilion.superconductor.lib.redis.taginterceptor.RedisPubKeyTag;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.security.NoSuchAlgorithmException;
@@ -47,11 +45,11 @@ class EventDocumentServiceIT {
   private final String content;
   private final static Kind KIND = Kind.TEXT_NOTE;
 
-  private final EventDocumentService<BaseTag> eventDocumentService;
+  private final EventDocumentService eventDocumentService;
   private final EventDocument savedEventDocument;
 
   @Autowired
-  public EventDocumentServiceIT(@NonNull EventDocumentService<BaseTag> eventDocumentService) throws NostrException, NoSuchAlgorithmException {
+  public EventDocumentServiceIT(@NonNull EventDocumentService eventDocumentService) throws NostrException, NoSuchAlgorithmException {
     Identity identity = Factory.createNewIdentity();
     event_pubkey = identity.getPublicKey();
     p_tag = Factory.createPubKeyTag(identity);
@@ -132,13 +130,11 @@ class EventDocumentServiceIT {
         .map(PriceTag.class::cast)
         .map(PriceTag::getFrequency).findFirst().orElseThrow());
 
-    PubKeyTagInterceptor<PubKeyTag> pubKeyTagInterceptor = new PubKeyTagInterceptor<>();
-    RedisPubKeyTag intercept = pubKeyTagInterceptor.intercept(p_tag);
-    assertEquals(intercept.toString(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(p_tag.toString(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("p"))
-        .filter(RedisPubKeyTag.class::isInstance)
-        .map(RedisPubKeyTag.class::cast)
-        .map(RedisPubKeyTag::toString).findFirst().orElseThrow());
+        .filter(PubKeyTag.class::isInstance)
+        .map(PubKeyTag.class::cast)
+        .map(PubKeyTag::toString).findFirst().orElseThrow());
   }
 }
 

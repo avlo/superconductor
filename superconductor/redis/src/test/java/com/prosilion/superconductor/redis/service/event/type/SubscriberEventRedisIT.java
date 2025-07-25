@@ -36,12 +36,12 @@ class SubscriberEventRedisIT {
   public static final Identity IDENTITY = Factory.createNewIdentity();
   public static final String CONTENT = Factory.lorumIpsum(SubscriberEventRedisIT.class);
 
-  private final EventDocumentService<BaseTag> eventDocumentService;
+  private final EventDocumentService eventDocumentService;
 
   ClassifiedListingEvent classifiedListingEvent;
 
   @Autowired
-  public SubscriberEventRedisIT(@NonNull EventDocumentService<BaseTag> eventDocumentService) throws NoSuchAlgorithmException {
+  public SubscriberEventRedisIT(@NonNull EventDocumentService eventDocumentService) throws NoSuchAlgorithmException {
     this.eventDocumentService = eventDocumentService;
 
     List<BaseTag> tags = new ArrayList<>();

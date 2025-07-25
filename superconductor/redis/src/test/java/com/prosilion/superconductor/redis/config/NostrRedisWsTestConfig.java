@@ -24,7 +24,7 @@ import org.springframework.lang.NonNull;
 @ConditionalOnProperty(
     name = "server.ssl.enabled",
     havingValue = "false")
-public class NostrRedisWsConfig {
+public class NostrRedisWsTestConfig {
 
   @Bean
   @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)

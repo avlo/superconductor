@@ -13,7 +13,7 @@ public class AddressTagInterceptor<T extends AddressTag, U extends RedisAddressT
   }
 
   @Override
-  public T revert(U redisAddressTag) {
+  public T canonicalize(U redisAddressTag) {
     return (T) new AddressTag(redisAddressTag.getKind(), new PublicKey(redisAddressTag.getPublicKey()), redisAddressTag.getIdentifierTag(), redisAddressTag.getRelay());
   }
 

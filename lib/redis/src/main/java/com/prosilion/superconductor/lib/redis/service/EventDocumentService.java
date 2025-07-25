@@ -122,7 +122,7 @@ public class EventDocumentService {
                     Optional.ofNullable(
                             interceptors.get(baseTag.getCode()))
                         .stream().map(interceptor ->
-                            interceptor.revert((RedisBaseTagIF) baseTag)).toList()).flatMap(Collection::stream),
+                            interceptor.canonicalize((RedisBaseTagIF) baseTag)).toList()).flatMap(Collection::stream),
                 documentToRevert.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
             .collect(Collectors.toList()));
 

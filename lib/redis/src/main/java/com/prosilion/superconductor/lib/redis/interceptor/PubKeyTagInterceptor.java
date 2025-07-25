@@ -13,7 +13,7 @@ public class PubKeyTagInterceptor<T extends PubKeyTag, U extends RedisPubKeyTag>
   }
 
   @Override
-  public T revert(U redisPubKeyTag) {
+  public T canonicalize(U redisPubKeyTag) {
     return (T) new PubKeyTag(
         new PublicKey(
             redisPubKeyTag.getPublicKey()),

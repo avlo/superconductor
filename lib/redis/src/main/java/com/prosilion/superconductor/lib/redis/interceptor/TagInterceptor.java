@@ -4,6 +4,6 @@ import com.prosilion.nostr.tag.BaseTag;
 
 public interface TagInterceptor<T extends BaseTag, U extends RedisBaseTagIF> {
   U intercept(T t);
-  T revert(U baseTag);
+  T canonicalize(U baseTag);
   String getCode();
 }

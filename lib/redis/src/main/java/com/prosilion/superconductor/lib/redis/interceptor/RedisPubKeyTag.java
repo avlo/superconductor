@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.Key;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.Tag;
-import com.prosilion.nostr.user.PublicKey;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
@@ -23,25 +21,6 @@ public record RedisPubKeyTag(
 
   public RedisPubKeyTag(String publicKey, String mainRelayUrl) {
     this(publicKey, mainRelayUrl, null);
-  }
-
-//  TODO: remove below two methods, unused
-  @Override
-  public BaseTag intercept(BaseTag baseTag) {
-    PubKeyTag pubKeyTag = (PubKeyTag) baseTag;
-    return new RedisPubKeyTag(
-        pubKeyTag.getPublicKey().toString(),
-        pubKeyTag.getMainRelayUrl());
-  }
-
-  @Override
-  public BaseTag revert(BaseTag baseTag) {
-    RedisPubKeyTag redisPubKeyTag = (RedisPubKeyTag) baseTag;
-    return new PubKeyTag(
-        new PublicKey(
-            redisPubKeyTag.getPublicKey()),
-        redisPubKeyTag.getMainRelayUrl(),
-        redisPubKeyTag.getPetName());
   }
 
   @Override

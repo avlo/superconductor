@@ -6,12 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.prosilion.nostr.codec.serializer.AddressTagSerializer;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.Key;
 import com.prosilion.nostr.tag.Tag;
-import com.prosilion.nostr.user.PublicKey;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
@@ -37,23 +35,6 @@ public record RedisAddressTag(
     this.publicKey = publicKey;
     this.identifierTag = identifierTag;
     this.relay = relay;
-  }
-
-  //  TODO: remove below two methods, unused  
-  @Override
-  public BaseTag intercept(BaseTag baseTag) {
-    AddressTag addressTag = (AddressTag) baseTag;
-    return new RedisAddressTag(addressTag.getKind(), addressTag.publicKey().toString(), addressTag.identifierTag(), addressTag.getRelay());
-  }
-
-  @Override
-  public BaseTag revert(BaseTag baseTag) {
-    RedisAddressTag redisAddressTag = (RedisAddressTag) baseTag;
-    return new AddressTag(
-        redisAddressTag.getKind(),
-        new PublicKey(redisAddressTag.getPublicKey()),
-        redisAddressTag.getIdentifierTag(),
-        redisAddressTag.getRelay());
   }
 
   @Override

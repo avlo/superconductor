@@ -22,14 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("testnoop")
-class EventNoOpMessageRedisIT {
+class EventNoOpMessageIT {
   private final NostrRelayServiceRedis nostrRelayService;
 
   private final String authorPubKey;
   private final String eventId;
 
   @Autowired
-  EventNoOpMessageRedisIT(@NonNull NostrRelayServiceRedis nostrRelayService) {
+  EventNoOpMessageIT(@NonNull NostrRelayServiceRedis nostrRelayService) {
     this.nostrRelayService = nostrRelayService;
     this.eventId = Factory.generateRandomHex64String();
     this.authorPubKey = Factory.generateRandomHex64String();

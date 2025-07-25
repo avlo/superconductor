@@ -1182,6 +1182,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 ###### first, start redis docker container as per section [2. Run locally using maven spring-boot:run](#2--run-locally-using-maven-spring-bootrun), then:
 ```bash
   $ cd <your_git_home_dir>/superconductor
+  $ ./mvnw clean install -Dmaven.test.skip=true
   $ ./mvnw package spring-boot:repackage -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
   $ java -jar -Dspring.profiles.active=local_ws superconductor/redis/target/superconductor-app-redis-1.16.1.war
 ```
@@ -1193,6 +1194,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 ###### first, start redis docker container as per section [2. Run locally using maven spring-boot:run](#2--run-locally-using-maven-spring-bootrun), then:
 ```bash
   $ cd <your_git_home_dir>/superconductor
+  $ ./mvnw.cmd clean install -Dmaven.test.skip=true
   $ ./mvnw.cmd package spring-boot:repackage -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
   $ java -jar -Dspring.profiles.active=local_ws superconductor/redis/target/superconductor-app-redis-1.16.1.war
 ```
@@ -1207,6 +1209,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 
 ```bash
   $ cd <your_git_home_dir>/superconductor
+  $ ./mvnw clean install -Dmaven.test.skip=true
   $ ./mvnw package spring-boot:repackage -f superconductor/sqlite/pom.xml -Plocal_ws -Dmaven.test.skip=true
   $ java -jar -Dspring.profiles.active=local_ws superconductor/sqlite/target/superconductor-app-sqlite-1.16.1.war
 ```
@@ -1218,6 +1221,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 ###### first, start sqlite docker container as per section [2. Run locally using maven spring-boot:run](#2--run-locally-using-maven-spring-bootrun), then:
 ```bash
   $ cd <your_git_home_dir>/superconductor
+  $ ./mvnw.cmd clean install -Dmaven.test.skip=true
   $ ./mvnw.cmd package spring-boot:repackage -f superconductor/sqlite/pom.xml -Plocal_ws -Dmaven.test.skip=true
   $ java -jar -Dspring.profiles.active=local_ws superconductor/sqlite/target/superconductor-app-sqlite-1.16.1.war
 ```
@@ -1232,6 +1236,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 
 ```bash
   $ cd <your_git_home_dir>/superconductor
+  $ ./mvnw clean install -Dmaven.test.skip=true
   $ ./mvnw package spring-boot:repackage -f superconductor/h2db/pom.xml -Plocal_ws -Dmaven.test.skip=true
   $ java -jar -Dspring.profiles.active=local_ws superconductor/h2db/target/superconductor-app-h2db-1.16.1.war
 ```
@@ -1242,6 +1247,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
 
 ```bash
   $ cd <your_git_home_dir>/superconductor
+  $ ./mvnw.cmd clean install -Dmaven.test.skip=true
   $ ./mvnw.cmd package spring-boot:repackage -f superconductor/h2db/pom.xml -Plocal_ws -Dmaven.test.skip=true
   $ java -jar -Dspring.profiles.active=local_ws superconductor/h2db/target/superconductor-app-h2db-1.16.1.war
 ```

@@ -31,17 +31,17 @@ _(note: Confirmed compatible with Docker 27.0.3 and Docker Compose version v2.28
 <details>
   <summary>redis</summary>  
 
-      $ docker pull avlo/superconductor-app-redis:1.16.0
+      $ docker pull avlo/superconductor-app-redis:1.16.1
 </details>
 <details>
   <summary>sqlite</summary>  
 
-      $ docker pull avlo/superconductor-app-sqlite:1.16.0
+      $ docker pull avlo/superconductor-app-sqlite:1.16.1
 </details>
 <details>
   <summary>mysql</summary>  
 
-      $ docker pull avlo/superconductor-app-mysql:1.16.0
+      $ docker pull avlo/superconductor-app-mysql:1.16.1
 </details>
 
 ----

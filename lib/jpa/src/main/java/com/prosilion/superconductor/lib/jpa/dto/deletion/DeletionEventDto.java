@@ -10,6 +10,6 @@ public class DeletionEventDto {
   }
 
   public DeletionEventEntity convertDtoToEntity() {
-    return new DeletionEventEntity(this.eventId);
+    return new DeletionEventEntity(eventId);
   }
 }

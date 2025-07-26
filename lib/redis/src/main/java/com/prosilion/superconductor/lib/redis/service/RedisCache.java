@@ -3,7 +3,6 @@ package com.prosilion.superconductor.lib.redis.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.base.DeletionEventEntityIF;
-import com.prosilion.superconductor.base.EventIF;
 import com.prosilion.superconductor.base.service.event.CacheIF;
 import java.util.List;
 import java.util.Map;
@@ -33,15 +32,10 @@ public class RedisCache implements CacheIF {
   public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
     return eventDocumentService.getEventsByKind(kind);
   }
-  
+
   @Override
   public void saveEventEntityOrDocument(@NonNull GenericEventKindIF event) {
     eventDocumentService.saveEventDocument(event);
-  }
-
-  @Override
-  public void deleteEventEntity(@NonNull EventIF eventIF) {
-//    eventEntityService.deleteEventEntity(event);
   }
 
   @Override
@@ -51,7 +45,12 @@ public class RedisCache implements CacheIF {
 
   @Override
   public List<DeletionEventEntityIF> getAllDeletionEventEntities() {
-//    return deletionEventEntityService.findAll();
-    return null;
+//    TODO: below needs impl
+    return List.of();
+  }
+
+  @Override
+  public void deleteEventEntity(@NonNull GenericEventKindIF event) {
+    eventDocumentService.deleteEventEntity(event);
   }
 }

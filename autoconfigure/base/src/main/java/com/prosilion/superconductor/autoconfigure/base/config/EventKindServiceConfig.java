@@ -2,6 +2,7 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
+import com.prosilion.superconductor.base.service.event.CacheIF;
 import com.prosilion.superconductor.base.service.event.EventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindService;
@@ -11,6 +12,9 @@ import com.prosilion.superconductor.base.service.event.service.EventKindTypeServ
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.type.CanonicalEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.type.DeleteEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.type.DeleteEventPlugin;
+import com.prosilion.superconductor.base.service.event.type.DeleteEventPluginIF;
 import com.prosilion.superconductor.base.service.event.type.EventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.base.service.request.NotifierService;
@@ -53,8 +57,26 @@ public class EventKindServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   EventServiceIF eventService(
-      @NonNull @Qualifier("eventKindService") EventKindServiceIF eventKindService, 
+      @NonNull @Qualifier("eventKindService") EventKindServiceIF eventKindService,
       @NonNull EventKindTypeServiceIF eventKindTypeService) {
     return new EventService(eventKindService, eventKindTypeService);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  DeleteEventPluginIF deleteEventPlugin(@NonNull CacheIF cacheIF) {
+    return new DeleteEventPlugin(cacheIF);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  EventKindPluginIF<Kind> deleteEventKindPlugin(
+      @NonNull DeleteEventPluginIF deleteEventPlugin,
+      @NonNull EventPluginIF eventPlugin) {
+    return new DeleteEventKindPlugin(
+        new EventKindPlugin(
+            Kind.DELETION,
+            eventPlugin),
+        deleteEventPlugin);
   }
 }

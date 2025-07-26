@@ -81,7 +81,11 @@ public class EventDocumentService {
         convertDtoToDocument(genericEventKindIF));
   }
 
-  public EventDocument convertDtoToDocument(GenericEventKindIF dto) {
+  protected void deleteEventEntity(@NonNull GenericEventKindIF eventToDelete) {
+    eventDocumentRepository.delete(convertDtoToDocument(eventToDelete));
+  }
+
+  private EventDocument convertDtoToDocument(GenericEventKindIF dto) {
     return processInterceptors(
         dto,
         EventDocument.of(

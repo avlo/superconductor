@@ -81,7 +81,7 @@ class EventEntityServiceSqliteIT {
 
   @Test
   void saveAndGetEventWithGeohash() {
-    GenericEventKindIF savedEvent = eventEntityService.getEventById(savedEventId);
+    GenericEventKindIF savedEvent = eventEntityService.getEventById(savedEventId).orElseThrow();
 
     assertEquals(content, savedEvent.getContent());
     assertEquals(KIND, savedEvent.getKind());

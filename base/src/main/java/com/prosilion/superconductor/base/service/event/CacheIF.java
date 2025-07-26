@@ -3,7 +3,6 @@ package com.prosilion.superconductor.base.service.event;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.base.DeletionEventEntityIF;
-import com.prosilion.superconductor.base.EventIF;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,10 +15,6 @@ public interface CacheIF {
   List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind);
 
   void saveEventEntityOrDocument(@NonNull GenericEventKindIF event);
-
-  void deleteEventEntity(@NonNull EventIF eventIF);
-
-  List<DeletionEventEntityIF> getAllDeletionEventEntities();
 
   <T> Map<Kind, Map<T, GenericEventKindIF>> getAllEventEntities();
 
@@ -37,8 +32,10 @@ public interface CacheIF {
   }
 
   default <T> boolean checkEventIdMatchesAnyDeletionEventEntityId(T eventId, List<DeletionEventEntityIF> deletionEventEntities) {
-//    TODO: readd delete
-//    return deletionEventEntities.stream().map(DeletionEventEntityIF::getEventId).anyMatch(eventId::equals);
-    return false;
+    return deletionEventEntities.stream().map(DeletionEventEntityIF::getEventId).anyMatch(eventId::equals);
   }
+
+  List<DeletionEventEntityIF> getAllDeletionEventEntities();
+
+  void deleteEventEntity(@NonNull GenericEventKindIF eventIF);
 }

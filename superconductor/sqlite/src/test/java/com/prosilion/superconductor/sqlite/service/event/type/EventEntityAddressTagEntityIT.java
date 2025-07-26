@@ -55,7 +55,7 @@ class EventEntityAddressTagEntityIT {
 
   @Test
   void saveAndGetEventWithPublicKey() {
-    List<AddressTag> typeSpecificTags = Filterable.getTypeSpecificTags(AddressTag.class, eventEntityService.getEventById(savedEventId));
+    List<AddressTag> typeSpecificTags = Filterable.getTypeSpecificTags(AddressTag.class, eventEntityService.getEventById(savedEventId).orElseThrow());
 
     assertTrue(typeSpecificTags.stream().anyMatch(tag ->
         tag.getIdentifierTag().getUuid().equals(IDENTIFIER_TAG.getUuid())));

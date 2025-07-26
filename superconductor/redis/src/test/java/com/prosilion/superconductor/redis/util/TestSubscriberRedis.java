@@ -31,7 +31,7 @@ public class TestSubscriberRedis<T> extends BaseSubscriber<T> {
 
   public List<T> getItems() {
     Awaitility.await()
-        .timeout(3, TimeUnit.HOURS)
+        .timeout(3, TimeUnit.SECONDS)
         .untilTrue(completed);
     List<T> eventList = List.copyOf(items);
     items.clear();

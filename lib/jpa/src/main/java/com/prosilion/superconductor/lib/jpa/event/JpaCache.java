@@ -3,7 +3,6 @@ package com.prosilion.superconductor.lib.jpa.event;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.base.DeletionEventEntityIF;
-import com.prosilion.superconductor.base.EventIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 import java.util.List;
@@ -30,7 +29,12 @@ public class JpaCache implements JpaCacheIF {
   }
 
   @Override
-  public GenericEventKindIF getEventById(@NonNull Long id) {
+  public Optional<EventEntityIF> getEventByIdStringAsEventEntityIF(@NonNull String eventId) {
+    return eventEntityService.getEventByIdStringAsEventEntityIF(eventId);
+  }
+
+  @Override
+  public Optional<GenericEventKindIF> getEventById(@NonNull Long id) {
     return eventEntityService.getEventById(id);
   }
 
@@ -38,15 +42,10 @@ public class JpaCache implements JpaCacheIF {
   public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
     return eventEntityService.getEventsByKind(kind);
   }
-    
+
   @Override
   public void saveEventEntityOrDocument(@NonNull GenericEventKindIF event) {
     eventEntityService.saveEventEntity(event);
-  }
-
-  @Override
-  public void deleteEventEntity(@NonNull EventIF event) {
-    eventEntityService.deleteEventEntity((EventEntityIF) event);
   }
 
   @Override
@@ -57,5 +56,10 @@ public class JpaCache implements JpaCacheIF {
   @Override
   public List<DeletionEventEntityIF> getAllDeletionEventEntities() {
     return deletionEventEntityService.findAll();
+  }
+
+  @Override
+  public void deleteEventEntity(@NonNull Long id) {
+    deletionEventEntityService.addDeletionEvent(id);
   }
 }

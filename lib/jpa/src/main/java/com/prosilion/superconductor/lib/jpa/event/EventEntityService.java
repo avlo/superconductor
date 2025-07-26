@@ -62,9 +62,9 @@ public class EventEntityService {
       Long savedEntityId = Optional.of(
               eventEntityRepository.save(
                   convertDtoToEntity(genericEventKindIF)))
-          .map(EventEntity::getId)  
+          .map(EventEntity::getId)
           .orElseThrow(NoResultException::new);
-      
+
       concreteTagEntitiesService.saveTags(savedEntityId, genericEventKindIF.getTags());
       genericTagEntitiesService.saveGenericTags(savedEntityId, genericEventKindIF.getTags());
       return savedEntityId;
@@ -91,32 +91,39 @@ public class EventEntityService {
     return eventEntityRepository.findAll();
   }
 
+  public Optional<EventEntityIF> getEventByIdStringAsEventEntityIF(@NonNull String eventIdString) {
+    return eventEntityRepository
+        .findByEventIdString(eventIdString)
+        .map(this::populateEventEntity);
+  }
+
   public Optional<GenericEventKindIF> findByEventIdString(@NonNull String eventIdString) {
-    return eventEntityRepository.findByEventIdString(eventIdString).map(EventIF::convertEntityToDto);
+    return getEventByIdStringAsEventEntityIF(eventIdString)
+        .map(EventIF::convertEntityToDto);
   }
 
   public List<GenericEventKindIF> getEventsByPublicKey(@NonNull PublicKey publicKey) {
     return eventEntityRepository.findByPubKey(
             publicKey.toHexString()).stream()
         .map(ee ->
-            getEventById(ee.getId())).toList();
+            getEventById(ee.getId())).flatMap(Optional::stream).toList();
   }
 
   public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
     return eventEntityRepository.findByKind(kind.getValue())
         .stream().map(ee ->
-            getEventById(ee.getId())).toList();
+            getEventById(ee.getId())).flatMap(Optional::stream).toList();
   }
 
-  public GenericEventKindIF getEventById(@NonNull Long id) {
-    return populateEventEntity(getById(id).orElseThrow()).convertEntityToDto();
+  public Optional<GenericEventKindIF> getEventById(@NonNull Long id) {
+    return getById(id).map(this::populateEventEntity).map(EventEntityIF::convertEntityToDto);
   }
 
   //  TODO: perhaps below as admin fxnality
-  protected void deleteEventEntity(@NonNull EventEntityIF eventToDelete) {
+  protected void deleteEventEntity(@NonNull GenericEventKindIF eventToDelete) {
 //    concreteTagEntitiesService.deleteTags(eventToDelete.getId(), eventToDelete.getTags());
     genericTagEntitiesService.deleteTags(eventToDelete.getTags());
-    eventEntityRepository.delete((EventEntity) eventToDelete);
+    eventEntityRepository.delete(convertDtoToEntity(eventToDelete));
   }
 
   private Optional<EventEntityIF> getById(Long id) {

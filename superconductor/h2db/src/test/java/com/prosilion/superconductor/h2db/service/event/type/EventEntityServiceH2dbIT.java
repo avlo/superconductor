@@ -74,7 +74,7 @@ class EventEntityServiceH2dbIT {
 
   @Test
   void saveAndGetEventWithGeohash() {
-    GenericEventKindIF savedEvent = eventEntityService.getEventById(savedEventId);
+    GenericEventKindIF savedEvent = eventEntityService.getEventById(savedEventId).orElseThrow();
 
     assertEquals(CONTENT, savedEvent.getContent());
     assertEquals(KIND, savedEvent.getKind());

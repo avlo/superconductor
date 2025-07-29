@@ -3,8 +3,8 @@ package com.prosilion.superconductor.autoconfigure.jpa.config;
 import com.prosilion.superconductor.base.service.event.CacheIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.lib.jpa.event.EventEntityService;
-import com.prosilion.superconductor.lib.jpa.event.JpaCache;
+import com.prosilion.superconductor.lib.jpa.service.EventEntityService;
+import com.prosilion.superconductor.lib.jpa.service.JpaCache;
 import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -23,8 +23,6 @@ import org.springframework.lang.NonNull;
     "com.prosilion.superconductor.base.service.clientresponse",
     "com.prosilion.superconductor.base.service.request",
     "com.prosilion.superconductor.base.util",
-    "com.prosilion.superconductor.lib.jpa.event",
-    "com.prosilion.superconductor.lib.jpa.event.join.generic",
     "com.prosilion.superconductor.lib.jpa.plugin.tag",
     "com.prosilion.superconductor.lib.jpa.service"
 })

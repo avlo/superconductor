@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.lib.jpa.event;
+package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
@@ -12,11 +12,9 @@ import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractEntity;
-import com.prosilion.superconductor.lib.jpa.event.join.generic.GenericTagEntitiesService;
 import com.prosilion.superconductor.lib.jpa.repository.AbstractTagEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.EventEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
 import jakarta.persistence.NoResultException;
 import java.util.List;
 import java.util.Map;

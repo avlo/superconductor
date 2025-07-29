@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.lib.jpa.event.join.generic;
+package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;

@@ -9,28 +9,16 @@ import java.util.Optional;
 import org.springframework.lang.NonNull;
 
 public interface CacheIF {
-
-  //  List<? extends EventIF>         getAll();
+  <T> T save(EventIF event);
   List<? extends EventIF> getAll();
-
-
   Optional<? extends EventIF> getByEventIdString(@NonNull String eventId);
 
-
   void deleteEventEntity(@NonNull EventIF eventIF);
-
-
-  List<? extends EventIF> getEventsByKind(@NonNull Kind kind);
-
-  void saveEventEntityOrDocument(EventIF event);
-
+  List<DeletionEntityIF> getAllDeletionEventEntities();
 //  <T> 
 //  Map<Kind, 
 //      Map<? extends T,
 //          ? extends EventIF>>     getAllMappedByKind();
-
   Map<Kind, Map<?, ? extends EventIF>> getAllMappedByKind();
-
-
-  List<DeletionEntityIF> getAllDeletionEventEntities();
+  List<? extends EventIF> getEventsByKind(@NonNull Kind kind);
 }

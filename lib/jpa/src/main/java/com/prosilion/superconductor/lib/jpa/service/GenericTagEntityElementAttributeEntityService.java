@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.lib.jpa.event.join.generic;
+package com.prosilion.superconductor.lib.jpa.service;
 
 import jakarta.transaction.Transactional;
 import java.util.List;

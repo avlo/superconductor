@@ -40,7 +40,7 @@ public class RedisCache implements CacheIF {
   }
 
   @Override
-  public void saveEventEntityOrDocument(@NonNull EventIF event) {
+  public void save(@NonNull EventIF event) {
     eventDocumentService.saveEventDocument(event);
   }
 

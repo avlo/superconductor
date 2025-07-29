@@ -14,7 +14,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.jpa.event.EventEntityService;
+import com.prosilion.superconductor.lib.jpa.service.EventEntityService;
 import com.prosilion.superconductor.h2db.util.Factory;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;

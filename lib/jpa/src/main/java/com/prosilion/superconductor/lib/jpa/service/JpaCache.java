@@ -1,10 +1,9 @@
-package com.prosilion.superconductor.lib.jpa.event;
+package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.DeletionEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
-import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,8 +50,8 @@ public class JpaCache implements JpaCacheIF {
   }
 
   @Override
-  public void saveEventEntityOrDocument(@NonNull EventIF event) {
-    eventEntityService.saveEventEntity(event);
+  public Long save(@NonNull EventIF event) {
+    return eventEntityService.saveEventEntity(event);
   }
 
   @Override

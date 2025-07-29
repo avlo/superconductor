@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.lib.jpa.event;
+package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.CacheIF;
@@ -9,10 +9,8 @@ import org.springframework.lang.NonNull;
 public interface JpaCacheIF extends CacheIF {
   Optional<EventEntityIF> getEventById(@NonNull Long id);
 
-
   // impls parent IF (CacheIF) spec...
   Optional<EventEntityIF> getByEventIdString(@NonNull String eventId);
-
 
   // impls parent IF (CacheIF) spec...
   default void deleteEventEntity(@NonNull EventIF eventIF) {

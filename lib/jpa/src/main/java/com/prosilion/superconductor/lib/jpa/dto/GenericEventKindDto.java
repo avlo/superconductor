@@ -8,13 +8,15 @@ import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 
 public record GenericEventKindDto(BaseEvent baseEvent) {
   public EventEntityIF convertDtoToEntity() {
-    return new EventEntity(
+    EventEntity e = new EventEntity(
         baseEvent.getEventId(),
         baseEvent.getKind().getValue(),
         baseEvent.getPublicKey().toString(),
         baseEvent.getCreatedAt(),
         baseEvent.getSignature().toString(),
         baseEvent.getContent());
+    e.setTags(baseEvent.getTags());
+    return e;
   }
 
   public GenericEventKindIF convertBaseEventToEventIF() {

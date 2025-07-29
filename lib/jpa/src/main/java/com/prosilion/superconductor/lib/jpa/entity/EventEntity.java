@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
@@ -64,7 +65,7 @@ public class EventEntity implements EventEntityIF {
   public PublicKey getPublicKey() {
     return new PublicKey(pubKey);
   }
-  
+
   @Override
   public Kind getKind() {
     return Kind.valueOf(kind);
@@ -79,11 +80,18 @@ public class EventEntity implements EventEntityIF {
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
     EventEntity that = (EventEntity) o;
-    return Objects.equals(id, that.id) && Objects.equals(eventIdString, that.eventIdString) && Objects.equals(pubKey, that.pubKey) && Objects.equals(kind, that.kind) && Objects.equals(createdAt, that.createdAt) && Objects.equals(content, that.content) && Objects.equals(tags, that.tags) && Objects.equals(signature, that.signature);
+    return
+        new HashSet<>(tags).containsAll(that.tags) &&
+            Objects.equals(eventIdString, that.eventIdString) &&
+            Objects.equals(pubKey, that.pubKey) &&
+            Objects.equals(kind, that.kind) &&
+            Objects.equals(createdAt, that.createdAt) &&
+            Objects.equals(content, that.content) &&
+            Objects.equals(signature, that.signature);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, eventIdString, pubKey, kind, createdAt, content, tags, signature);
+    return Objects.hash(id, eventIdString, pubKey, kind, createdAt, content, new HashSet<>(tags), signature);
   }
 }

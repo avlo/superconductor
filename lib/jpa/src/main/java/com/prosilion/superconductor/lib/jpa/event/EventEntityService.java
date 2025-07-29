@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 public class EventEntityService {
   private final ConcreteTagEntitiesService<BaseTag, AbstractTagEntityRepository<AbstractTagEntity>, AbstractTagEntity, EventEntityAbstractEntity, EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService;
   private final GenericTagEntitiesService genericTagEntitiesService;
-  private final EventEntityRepository<EventEntityIF> eventEntityRepository;
+  private final EventEntityRepository eventEntityRepository;
 
   @Autowired
   public EventEntityService(
@@ -46,7 +46,7 @@ public class EventEntityService {
           EventEntityAbstractEntity,
           EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService,
       @NonNull GenericTagEntitiesService genericTagEntitiesService,
-      @NonNull EventEntityRepository<EventEntityIF> eventEntityRepository) {
+      @NonNull EventEntityRepository eventEntityRepository) {
     this.concreteTagEntitiesService = concreteTagEntitiesService;
     this.genericTagEntitiesService = genericTagEntitiesService;
     this.eventEntityRepository = eventEntityRepository;
@@ -86,7 +86,7 @@ public class EventEntityService {
   }
 
   public List<EventEntityIF> getAll() {
-    return eventEntityRepository.findAll(EventEntityIF.class).stream().map(this::populateEventEntity).collect(Collectors.toList());
+    return eventEntityRepository.findAll().stream().map(this::populateEventEntity).collect(Collectors.toList());
   }
 
   public Optional<EventEntityIF> getEventByIdStringAsEventEntityIF(@NonNull String eventIdString) {
@@ -125,7 +125,7 @@ public class EventEntityService {
   }
 
   private Optional<EventEntityIF> getById(Long id) {
-    return eventEntityRepository.findById(id)
+    return eventEntityRepository.findByIdWoErasure(id)
         .map(EventEntityIF.class::cast);
   }
 
@@ -139,7 +139,7 @@ public class EventEntityService {
     return eventEntity;
   }
 
-  public static EventEntityIF convertDtoToEntity(EventIF dto) {
+  public static EventEntity convertDtoToEntity(EventIF dto) {
     return new EventEntity(dto.getEventId(), dto.getKind().getValue(), dto.getPublicKey().toString(), dto.getCreatedAt(), dto.getSignature().toString(), dto.getContent());
   }
 }

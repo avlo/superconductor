@@ -60,6 +60,31 @@ public class TextNoteEventMessageH2dbIT {
   }
 
   @Test
+  void testReqFilteredByEventId() throws JsonProcessingException, NostrException {
+    final String subscriberId = Factory.generateRandomHex64String();
+
+    EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
+
+    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
+
+    log.debug("okMessage to testReqFilteredByEventId:");
+    log.debug("  " + returnedEvents);
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
+
+    ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter));
+    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
+    List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
+
+    log.debug("okMessage:");
+    log.debug("  " + returnedEvents2);
+    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getContent().equals(content)));
+  }
+
+  @Test
   void testReqSingleSubscriberFilteredByEventAndAuthorViaReqMessage() throws JsonProcessingException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
@@ -103,31 +128,6 @@ public class TextNoteEventMessageH2dbIT {
     assertTrue(returnedEvents2.stream().anyMatch(event -> event.getEventId().equals(eventId)));
     assertTrue(returnedEvents2.stream().anyMatch(event -> event.getContent().equals(content)));
     assertTrue(returnedEvents2.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
-  }
-
-  @Test
-  void testReqFilteredByEventId() throws JsonProcessingException, NostrException {
-    final String subscriberId = Factory.generateRandomHex64String();
-
-    EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
-
-    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
-
-    log.debug("okMessage to testReqFilteredByEventId:");
-    log.debug("  " + returnedEvents);
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.getEventId().equals(eventId)));
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
-
-    ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
-    List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
-
-    log.debug("okMessage:");
-    log.debug("  " + returnedEvents2);
-    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getEventId().equals(eventId)));
-    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getContent().equals(content)));
   }
 
   @Test

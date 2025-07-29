@@ -19,7 +19,7 @@ import org.springframework.lang.NonNull;
 public class EventKindTypeService implements EventKindTypeServiceIF {
   private final Map<Kind, Map<KindTypeIF, EventKindTypePluginIF<KindTypeIF>>> eventKindTypePluginsMap;
 
-  public EventKindTypeService(List<EventKindTypePluginIF<KindTypeIF>> eventKindTypePlugins) {
+  public EventKindTypeService(@NonNull List<EventKindTypePluginIF<KindTypeIF>> eventKindTypePlugins) {
     eventKindTypePluginsMap = eventKindTypePlugins.stream()
         .collect(Collectors.groupingBy(
             EventKindTypePluginIF::getKind,
@@ -29,7 +29,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
   }
 
   @Override
-  public void processIncomingEvent(EventIF event) {
+  public void processIncomingEvent(@NonNull EventIF event) {
     processIncomingEvent(
         new GenericEventKindType(
             new GenericEventKind(
@@ -43,8 +43,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
             getKindType(event)));
   }
 
-  @Override
-  public void processIncomingEvent(@NonNull GenericEventKindTypeIF event) {
+  private void processIncomingEvent(@NonNull GenericEventKindTypeIF event) {
     eventKindTypePluginsMap
         .get(event.getKind())
         .get(event.getKindType())

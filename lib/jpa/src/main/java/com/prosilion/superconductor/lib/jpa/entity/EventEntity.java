@@ -13,6 +13,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.util.List;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -72,5 +73,17 @@ public class EventEntity implements EventEntityIF {
   @Override
   public Signature getSignature() {
     return Signature.fromString(signature);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    EventEntity that = (EventEntity) o;
+    return Objects.equals(id, that.id) && Objects.equals(eventIdString, that.eventIdString) && Objects.equals(pubKey, that.pubKey) && Objects.equals(kind, that.kind) && Objects.equals(createdAt, that.createdAt) && Objects.equals(content, that.content) && Objects.equals(tags, that.tags) && Objects.equals(signature, that.signature);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, eventIdString, pubKey, kind, createdAt, content, tags, signature);
   }
 }

@@ -1,9 +1,22 @@
 package com.prosilion.superconductor.h2db.entity;
 
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntity;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EventEntityTest {
   public static final String SIGNATURE = "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546";
@@ -12,11 +25,10 @@ class EventEntityTest {
   public static final String CONTENT = "1111111111";
   public static final Integer KIND = 1;
   public static final long CREATED_AT = 1717357053050L;
-  EventEntity event;
 
   @Test
   void testSettersGetters() {
-    this.event = new EventEntity(
+    EventEntity event = new EventEntity(
         EVENT_ID,
         KIND,
         PUB_KEY,
@@ -34,14 +46,29 @@ class EventEntityTest {
 
   @Test
   void testEquals() {
+    EventEntity identicalEntity = new EventEntity(
+        EVENT_ID,
+        KIND,
+        PUB_KEY,
+        CREATED_AT,
+        SIGNATURE,
+        CONTENT);
+
+    EventEntity identicalEntity2 = new EventEntity(
+        EVENT_ID,
+        KIND,
+        PUB_KEY,
+        CREATED_AT,
+        SIGNATURE,
+        CONTENT);
+
+    assertEquals(identicalEntity2, identicalEntity);
+    assertEquals(identicalEntity.hashCode(), identicalEntity.hashCode());
   }
+
 
   @Test
   void canEqual() {
-  }
-
-  @Test
-  void testHashCode() {
   }
 
   @Test
@@ -50,5 +77,53 @@ class EventEntityTest {
 
   @Test
   void getTags() {
+    IdentifierTag identifierTag = new IdentifierTag(Factory.generateRandomHex64String());
+    PublicKey aTagPubkey = Identity.generateRandomIdentity().getPublicKey();
+    AddressTag addressTag = new AddressTag(
+        Kind.TEXT_NOTE, aTagPubkey, identifierTag
+    );
+
+    List<BaseTag> tags = new ArrayList<>();
+    tags.add(new EventTag(Factory.generateRandomHex64String()));
+    tags.add(addressTag);
+    
+    EventEntity identicalEntity = new EventEntity(
+        EVENT_ID,
+        KIND,
+        PUB_KEY,
+        CREATED_AT,
+        SIGNATURE,
+        CONTENT);
+    identicalEntity.setTags(tags);
+
+    EventEntity identicalEntity2 = new EventEntity(
+        EVENT_ID,
+        KIND,
+        PUB_KEY,
+        CREATED_AT,
+        SIGNATURE,
+        CONTENT);
+    identicalEntity2.setTags(tags);
+
+    assertEquals(identicalEntity2, identicalEntity);
+    assertEquals(identicalEntity.hashCode(), identicalEntity.hashCode());
+
+    List<BaseTag> tags2 = new ArrayList<>();
+    tags2.add(new EventTag(Factory.generateRandomHex64String()));
+    tags2.add(addressTag);
+    
+    EventEntity entity3Diff = new EventEntity(
+        EVENT_ID,
+        KIND,
+        PUB_KEY,
+        CREATED_AT,
+        SIGNATURE,
+        CONTENT);
+    entity3Diff.setTags(tags2);
+
+    assertNotEquals(identicalEntity2, entity3Diff);
+    assertNotEquals(identicalEntity.hashCode(), entity3Diff.hashCode());
+    
+    assertThrows(AssertionFailedError.class, () -> assertEquals(identicalEntity2, entity3Diff));
   }
 }

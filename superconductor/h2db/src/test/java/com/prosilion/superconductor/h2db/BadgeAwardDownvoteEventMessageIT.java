@@ -65,7 +65,7 @@ public class BadgeAwardDownvoteEventMessageIT {
                 downvotedUserPubKey,
                 downvoteBadgeDefinitionEvent),
             SuperconductorKindType.DOWNVOTE)
-            .convertBaseEventToGenericEventKindTypeIF();
+            .convertBaseEventToEventIF();
 
     eventId = downvoteEvent.getEventId();
 

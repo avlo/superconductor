@@ -51,7 +51,7 @@ public class JpaCache implements JpaCacheIF {
   }
 
   @Override
-  public void saveEventEntityOrDocument(EventIF event) {
+  public void saveEventEntityOrDocument(@NonNull EventIF event) {
     eventEntityService.saveEventEntity(event);
   }
 

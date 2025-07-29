@@ -65,7 +65,7 @@ public class BadgeAwardUpvoteEventMessageIT {
                 upvotedUserPubKey,
                 upvoteBadgeDefinitionEvent),
             SuperconductorKindType.UPVOTE)
-            .convertBaseEventToGenericEventKindTypeIF();
+            .convertBaseEventToEventIF();
 
     eventId = upvoteEvent.getEventId();
 

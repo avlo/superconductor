@@ -12,6 +12,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.h2db.util.Factory;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,6 +59,6 @@ class EventEntityAddressTagEntityIT {
     List<AddressTag> typeSpecificTags = Filterable.getTypeSpecificTags(AddressTag.class, eventEntityService.getEventById(savedEventId).orElseThrow());
 
     assertTrue(typeSpecificTags.stream().anyMatch(tag ->
-        tag.getIdentifierTag().getUuid().equals(IDENTIFIER_TAG.getUuid())));
+        Optional.ofNullable(tag.getIdentifierTag()).map(IdentifierTag::getUuid).orElseThrow().equals(IDENTIFIER_TAG.getUuid())));
   }
 }

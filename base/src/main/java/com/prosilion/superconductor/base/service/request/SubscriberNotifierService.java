@@ -16,7 +16,9 @@ public class SubscriberNotifierService {
   private final FilterMatcher filterMatcher;
 
   @Autowired
-  public SubscriberNotifierService(AbstractSubscriberService abstractSubscriberService, FilterMatcher filterMatcher) {
+  public SubscriberNotifierService(
+      @NonNull AbstractSubscriberService abstractSubscriberService,
+      @NonNull FilterMatcher filterMatcher) {
     this.abstractSubscriberService = abstractSubscriberService;
     this.filterMatcher = filterMatcher;
   }

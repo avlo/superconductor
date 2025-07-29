@@ -4,9 +4,10 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.GenericEventKind;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntity;
+import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 
 public record GenericEventKindDto(BaseEvent baseEvent) {
-  public EventEntity convertDtoToEntity() {
+  public EventEntityIF convertDtoToEntity() {
     return new EventEntity(
         baseEvent.getEventId(),
         baseEvent.getKind().getValue(),

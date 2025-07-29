@@ -1,8 +1,10 @@
 package com.prosilion.superconductor.base.service.event.type;
 
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.service.event.CacheIF;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.lang.NonNull;
 
 public class DeleteEventPlugin implements DeleteEventPluginIF {
@@ -13,7 +15,7 @@ public class DeleteEventPlugin implements DeleteEventPluginIF {
   }
 
   @Override
-  public void processIncomingEvent(@NonNull GenericEventKindIF event) {
+  public void processIncomingEvent(@NonNull EventIF event) {
 //    List<GenericTag> kTags = event.getTags().stream()
 //        .filter(GenericTag.class::isInstance)
 //        .map(GenericTag.class::cast)
@@ -35,14 +37,23 @@ public class DeleteEventPlugin implements DeleteEventPluginIF {
 //                    .contains(eventEntity.getKind().toString())))
 //            .orElseGet(Optional::empty)).toList();
 
-    event.getTags().stream()
+    List<? extends EventIF> list = event.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(eventTag ->
-            cacheIF.getByEventIdString(eventTag.getIdEvent())
-                .filter(eventEntity ->
-                    eventEntity.getPublicKey().equals(
-                        event.getPublicKey()))).toList().forEach(optionalEventEntity ->
-            optionalEventEntity.ifPresent(cacheIF::deleteEventEntity));
+        {
+          String idEvent = eventTag.getIdEvent();
+          Optional<? extends EventIF> byEventIdString = cacheIF.getByEventIdString(idEvent);
+          return byEventIdString
+              .filter(cacheEvent ->
+                  cacheEvent.getPublicKey().toString().equals(
+                      event.getPublicKey().toString()));
+        }).flatMap(Optional::stream).toList();
+
+    list.forEach(this::getAVoid);
+  }
+
+  private void getAVoid(EventIF genericEventKindIF) {
+    cacheIF.deleteEventEntity(genericEventKindIF);
   }
 }

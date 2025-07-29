@@ -3,7 +3,7 @@
 //import com.fasterxml.jackson.core.JsonProcessingException;
 //import com.prosilion.nostr.NostrException;
 //import com.prosilion.nostr.event.GenericEventId;
-//import com.prosilion.nostr.event.GenericEventKindIF;
+//import com.prosilion.nostr.event.EventIF;
 //import com.prosilion.nostr.filter.Filters;
 //import com.prosilion.nostr.filter.event.AuthorFilter;
 //import com.prosilion.nostr.filter.event.EventFilter;
@@ -40,7 +40,7 @@
 //      @NonNull NostrRelayServiceRedis nostrRelayService,
 //      @NonNull DataLoader testDataLoader) {
 //    this.nostrRelayService = nostrRelayService;
-//    this.eventId = testDataLoader.getUpvoteBadgeDefinitionEvent().getId();
+//    this.eventId = testDataLoader.getUpvoteBadgeDefinitionEvent().getEventId();
 //    this.authorPubkey = testDataLoader.getUpvoteBadgeDefinitionEvent().getPublicKey().toString();
 //  }
 //
@@ -55,10 +55,10 @@
 //    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
 //
 //    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-//    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(returnedBaseMessages);
+//    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 //
-//    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
-//    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkey)));
+//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkey)));
 //
 ////    test 2
 //    final String subscriberId2 = Factory.generateRandomHex64String();
@@ -66,9 +66,9 @@
 //    ReqMessage reqMessage2 = new ReqMessage(subscriberId2, new Filters(eventFilter2));
 //
 //    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
-//    List<GenericEventKindIF> returnedGenericEventKindIFs2 = getGenericEventKindIFs(returnedBaseMessages2);
+//    List<EventIF> returnedEventIFs2 = getEventIFs(returnedBaseMessages2);
 //
-//    assertTrue(returnedGenericEventKindIFs2.stream().anyMatch(event -> event.getId().equals(eventId)));
+//    assertTrue(returnedEventIFs2.stream().anyMatch(event -> event.getEventId().equals(eventId)));
 //
 ////    test 3
 //    String subscriberId3 = Factory.generateRandomHex64String();
@@ -78,12 +78,12 @@
 //    ReqMessage reqMessage3 = new ReqMessage(subscriberId3, new Filters(authorFilter3));
 //
 //    List<BaseMessage> returnedBaseMessages3 = nostrRelayService.send(reqMessage3);
-//    List<GenericEventKindIF> returnedGenericEventKindIFs3 = getGenericEventKindIFs(returnedBaseMessages3);
+//    List<EventIF> returnedEventIFs3 = getEventIFs(returnedBaseMessages3);
 //
-//    assertTrue(returnedGenericEventKindIFs3.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkey)));
+//    assertTrue(returnedEventIFs3.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkey)));
 //  }
 //
-//  private List<GenericEventKindIF> getGenericEventKindIFs(List<BaseMessage> returnedBaseMessages) {
+//  private List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {
 //    return returnedBaseMessages.stream()
 //        .filter(EventMessage.class::isInstance)
 //        .map(EventMessage.class::cast)

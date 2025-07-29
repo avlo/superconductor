@@ -20,6 +20,6 @@ public class ClientOkResponse implements ClientResponse {
   public ClientOkResponse(@NonNull String sessionId, @NonNull GenericEventKindIF event, boolean valid, @NonNull String message) throws JsonProcessingException {
     this.valid = valid;
     this.sessionId = sessionId;
-    this.textMessage = new TextMessage(new OkMessage(event.getId(), valid, message).encode());
+    this.textMessage = new TextMessage(new OkMessage(event.getEventId(), valid, message).encode());
   }
 }

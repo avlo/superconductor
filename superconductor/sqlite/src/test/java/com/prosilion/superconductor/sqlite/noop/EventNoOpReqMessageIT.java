@@ -2,7 +2,7 @@ package com.prosilion.superconductor.sqlite.noop;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
@@ -23,7 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
-import static com.prosilion.superconductor.sqlite.TextNoteEventMessageIT.getGenericEventKindIFs;
+import static com.prosilion.superconductor.sqlite.TextNoteEventMessageIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Sql(scripts = {"/reqmessageit.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql
@@ -51,10 +51,10 @@ class EventNoOpReqMessageIT {
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getId().equals(eventIdFromEventSql)));
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkeyFromEventSql)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventIdFromEventSql)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkeyFromEventSql)));
   }
 
   @Test
@@ -64,9 +64,9 @@ class EventNoOpReqMessageIT {
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getId().equals(eventIdFromEventSql)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventIdFromEventSql)));
   }
 
   @Test
@@ -78,9 +78,9 @@ class EventNoOpReqMessageIT {
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkeyFromEventSql)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkeyFromEventSql)));
   }
 
   private String createAuthorReqJson(@NonNull String subscriberId, @NonNull String authorPubkey) {

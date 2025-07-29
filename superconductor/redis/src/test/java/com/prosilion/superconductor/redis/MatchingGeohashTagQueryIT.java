@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.GenericTagQuery;
 import com.prosilion.nostr.filter.tag.GenericTagQueryFilter;
@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.redis.TextNoteEventMessageRedisIT.getGenericEventKindIFs;
+import static com.prosilion.superconductor.redis.TextNoteEventMessageRedisIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -76,14 +76,14 @@ class MatchingGeohashTagQueryIT {
             new GenericTagQuery("#g", geohashTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getEventId().equals(eventId)));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
@@ -98,14 +98,14 @@ class MatchingGeohashTagQueryIT {
             new GeohashTag(geohashTagString))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getEventId().equals(eventId)));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));

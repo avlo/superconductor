@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis.service;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
@@ -51,7 +51,7 @@ public class FilterMatcherRedisIT {
     Filters filters = new Filters(
         new AddressTagFilter(addressTag));
 
-    GenericEventKindIF event = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag), "content")).convertBaseEventToGenericEventKindIF();
+    EventIF event = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag), "content")).convertBaseEventToEventIF();
     AddNostrEvent one = new AddNostrEvent(event);
 
     Optional<AddNostrEvent> resultOne = filterMatcher.intersectFilterMatches(filters, one);
@@ -65,7 +65,7 @@ public class FilterMatcherRedisIT {
     Filters filters2 = new Filters(
         new AddressTagFilter(addressTag2));
 
-    GenericEventKindIF event2 = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag2), "content")).convertBaseEventToGenericEventKindIF();
+    EventIF event2 = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag2), "content")).convertBaseEventToEventIF();
     AddNostrEvent two = new AddNostrEvent(event2);
 
     Optional<AddNostrEvent> resultTwo = filterMatcher.intersectFilterMatches(filters2, two);
@@ -79,7 +79,7 @@ public class FilterMatcherRedisIT {
     Filters filters3 = new Filters(
         new AddressTagFilter(addressTag3));
 
-    GenericEventKindIF event3 = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag3), "content")).convertBaseEventToGenericEventKindIF();
+    EventIF event3 = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag3), "content")).convertBaseEventToEventIF();
     AddNostrEvent three = new AddNostrEvent(event3);
 
     Optional<AddNostrEvent> resultThree = filterMatcher.intersectFilterMatches(filters3, three);
@@ -93,7 +93,7 @@ public class FilterMatcherRedisIT {
 
     AddressTag addressTag4 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-B"));
 
-    GenericEventKindIF event4 = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag4), "content")).convertBaseEventToGenericEventKindIF();
+    EventIF event4 = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag4), "content")).convertBaseEventToEventIF();
     AddNostrEvent four = new AddNostrEvent(event4);
     Optional<AddNostrEvent> resultFour = filterMatcher.intersectFilterMatches(filters3, four);
 

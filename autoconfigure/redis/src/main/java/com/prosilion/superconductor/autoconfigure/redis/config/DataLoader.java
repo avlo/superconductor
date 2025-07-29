@@ -24,8 +24,8 @@ public class DataLoader implements CommandLineRunner {
   @Override
   public void run(String... args) {
     eventPlugin.processIncomingEvent(
-        new GenericDocumentKindDto(upvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF());
+        new GenericDocumentKindDto(upvoteBadgeDefinitionEvent).convertBaseEventToEventIF());
     eventPlugin.processIncomingEvent(
-        new GenericDocumentKindDto(downvoteBadgeDefinitionEvent).convertBaseEventToGenericEventKindIF());
+        new GenericDocumentKindDto(downvoteBadgeDefinitionEvent).convertBaseEventToEventIF());
   }
 }

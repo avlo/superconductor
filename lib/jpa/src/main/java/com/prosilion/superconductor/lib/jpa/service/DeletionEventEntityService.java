@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.lib.jpa.service;
 
-import com.prosilion.superconductor.base.DeletionEventEntityIF;
+import com.prosilion.superconductor.base.DeletionEntityIF;
+import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntity;
 import com.prosilion.superconductor.lib.jpa.repository.deletion.DeletionEventEntityRepository;
 import java.util.Collections;
@@ -21,8 +22,10 @@ public class DeletionEventEntityService {
     this.repo = repo;
   }
 
-  public List<DeletionEventEntityIF> findAll() {
-    return Collections.unmodifiableList(repo.findAll());
+  //    TODO: fix missing generic  
+  public List<DeletionEntityIF> findAll() {
+    List<DeletionEventEntity> all = repo.findAll();
+    return Collections.unmodifiableList(all);
   }
 
   public void addDeletionEvent(@NonNull Long deletedEventId) {
@@ -31,7 +34,7 @@ public class DeletionEventEntityService {
   }
 
   public Optional<Long> getDeletionEvent(@NonNull Long id) {
-    return repo.findById(id).map(DeletionEventEntityIF::getId);
+    return repo.findById(id).map(DeletionEventEntityJpaIF::getId);
   }
 
 //  more efficient mechanism than below exists in RedisCache

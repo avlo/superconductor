@@ -7,7 +7,9 @@ import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
 import com.prosilion.superconductor.lib.redis.interceptor.TagInterceptor;
+import com.prosilion.superconductor.lib.redis.repository.DeletionEventDocumentRepository;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
+import com.prosilion.superconductor.lib.redis.service.DeletionEventDocumentService;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
 import com.prosilion.superconductor.lib.redis.service.RedisCache;
 import java.util.List;
@@ -24,11 +26,13 @@ import org.springframework.lang.NonNull;
 @AutoConfiguration
 @EnableRedisRepositories(
     basePackageClasses = {
-        com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository.class
+        com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository.class,
+        com.prosilion.superconductor.lib.redis.repository.DeletionEventDocumentRepository.class
     })
 @EntityScan(
     basePackageClasses = {
-        com.prosilion.superconductor.lib.redis.document.EventDocument.class
+        com.prosilion.superconductor.lib.redis.document.EventDocument.class,
+        com.prosilion.superconductor.lib.redis.document.DeletionEventDocument.class
     })
 @ComponentScan(
     basePackages = {
@@ -49,9 +53,19 @@ public class RedisConfig {
   }
 
   @Bean
+//  @ConditionalOnMissingBean
+  DeletionEventDocumentService deletionEventDocumentService(
+      @NonNull DeletionEventDocumentRepository deletionEventDocumentRepository,
+      @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
+    return new DeletionEventDocumentService(deletionEventDocumentRepository, interceptors);
+  }
+  
+  @Bean
   @ConditionalOnMissingBean
-  CacheIF cacheIF(EventDocumentService eventDocumentService) {
-    return new RedisCache(eventDocumentService);
+  CacheIF cacheIF(
+      @NonNull EventDocumentService eventDocumentService,
+      @NonNull DeletionEventDocumentService deletionEventDocumentService) {
+    return new RedisCache(eventDocumentService, deletionEventDocumentService);
   }
 
   @Bean

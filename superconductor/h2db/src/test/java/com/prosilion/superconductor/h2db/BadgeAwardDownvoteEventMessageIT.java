@@ -3,7 +3,7 @@ package com.prosilion.superconductor.h2db;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
@@ -67,7 +67,7 @@ public class BadgeAwardDownvoteEventMessageIT {
             SuperconductorKindType.DOWNVOTE)
             .convertBaseEventToGenericEventKindTypeIF();
 
-    eventId = downvoteEvent.getId();
+    eventId = downvoteEvent.getEventId();
 
     EventMessage eventMessage = new EventMessage(downvoteEvent);
     assertTrue(
@@ -81,7 +81,7 @@ public class BadgeAwardDownvoteEventMessageIT {
   void testValidExistingEventThenAfterImageReputationRequest() throws IOException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(
+    List<EventIF> returnedEventIFs = getEventIFs(
         nostrRelayService.send(
             new ReqMessage(
                 subscriberId,
@@ -99,18 +99,18 @@ public class BadgeAwardDownvoteEventMessageIT {
                                 SuperconductorKindType.DOWNVOTE.getName())))))));
 
     log.debug("returned events:");
-    log.debug("  {}", returnedGenericEventKindIFs);
+    log.debug("  {}", returnedEventIFs);
 
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
 
-    AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedGenericEventKindIFs.getFirst()).getFirst();
+    AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
     assertEquals(SuperconductorKindType.DOWNVOTE.getName(), addressTag.getIdentifierTag().getUuid());
   }
 
-  public static List<GenericEventKindIF> getGenericEventKindIFs(List<BaseMessage> returnedBaseMessages) {
+  public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {
     return returnedBaseMessages.stream()
         .filter(EventMessage.class::isInstance)
         .map(EventMessage.class::cast)

@@ -2,21 +2,22 @@ package com.prosilion.superconductor.lib.redis.dto;
 
 import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.GenericEventKind;
 import com.prosilion.nostr.event.GenericEventKindType;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
-import com.prosilion.nostr.user.Signature;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
+import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 
 public record GenericDocumentKindTypeDto(BaseEvent baseEvent, KindTypeIF kindType) {
 
-  public EventDocument convertDtoToEntity() {
+  public EventDocumentIF convertDtoToEntity() {
     EventDocument eventDocument = EventDocument.of(
-        baseEvent.getId(),
+        baseEvent.getEventId(),
         baseEvent.getKind().getValue(),
         baseEvent.getPublicKey().toString(),
         baseEvent.getCreatedAt(),
         baseEvent.getContent(),
-        baseEvent.getSignature());
+        baseEvent.getSignature().toString());
 
     eventDocument.setTags(baseEvent.getTags());
     return eventDocument;
@@ -24,13 +25,14 @@ public record GenericDocumentKindTypeDto(BaseEvent baseEvent, KindTypeIF kindTyp
 
   public GenericEventKindTypeIF convertBaseEventToGenericEventKindTypeIF() {
     return new GenericEventKindType(
-        baseEvent.getId(),
-        baseEvent.getPublicKey(),
-        baseEvent.getCreatedAt(),
-        baseEvent.getKind(),
-        baseEvent.getTags(),
-        baseEvent.getContent(),
-        Signature.fromString(baseEvent.getSignature()),
+        new GenericEventKind(
+            baseEvent.getEventId(),
+            baseEvent.getPublicKey(),
+            baseEvent.getCreatedAt(),
+            baseEvent.getKind(),
+            baseEvent.getTags(),
+            baseEvent.getContent(),
+            baseEvent.getSignature()),
         kindType);
   }
 }

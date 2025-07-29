@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.lib.redis.repository;
 
-import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
+import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentRedisIF;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Sort;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 // TODO: candidate replace below extends with CrudRepository for iterable streaming...
-public interface EventDocumentRepository<T extends EventDocumentIF> extends ListCrudRepository<T, String> {
+public interface DeletionEventDocumentRepository<T extends DeletionEventDocumentRedisIF> extends ListCrudRepository<T, String> {
   Sort DESC_SORT_CREATED_AT = Sort.by(Sort.Direction.DESC, "createdAt");
 
   @NonNull

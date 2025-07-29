@@ -9,7 +9,7 @@ public class DeletionEventDto {
     this.eventId = eventId;
   }
 
-  public DeletionEventEntity convertDtoToEntity() {
+  public DeletionEventEntityJpaIF convertDtoToEntity() {
     return new DeletionEventEntity(eventId);
   }
 }

@@ -2,10 +2,10 @@ package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.superconductor.base.EventIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
+import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
 import com.prosilion.superconductor.lib.redis.interceptor.TagInterceptor;
@@ -22,11 +22,11 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventDocumentService {
-  private final EventDocumentRepository eventDocumentRepository;
+  private final EventDocumentRepository<EventDocumentIF> eventDocumentRepository;
   private final Map<String, TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors;
 
   public EventDocumentService(
-      @NonNull EventDocumentRepository eventDocumentRepository,
+      @NonNull EventDocumentRepository<EventDocumentIF> eventDocumentRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
     this.eventDocumentRepository = eventDocumentRepository;
     this.interceptors = interceptors.stream().collect(
@@ -37,88 +37,81 @@ public class EventDocumentService {
     interceptors.forEach(interceptor -> log.debug("  {}\n", interceptor));
   }
 
-  public Optional<GenericEventKindIF> findByEventIdString(@NonNull String eventIdString) {
-    return eventDocumentRepository
-        .findByEventIdString(eventIdString)
-        .map(this::revertInterceptor)
-        .map(EventIF::convertEntityToDto);
+  public Optional<EventDocumentIF> findByEventIdString(@NonNull String eventIdString) {
+    return eventDocumentRepository.findByEventIdString(eventIdString).map(this::revertInterceptor);
   }
 
-  public List<GenericEventKindIF> getEventsByKind(@NonNull Kind kind) {
+  public List<EventDocumentIF> getEventsByKind(@NonNull Kind kind) {
     return eventDocumentRepository
         .findAllByKind(kind.getValue()).stream()
         .map(this::revertInterceptor)
-        .map(EventIF::convertEntityToDto).toList();
+        .toList();
   }
 
-  public Map<Kind, Map<String, GenericEventKindIF>> getAll() {
-    List<GenericEventKindIF> eventDocumentRepositoryAll = getEventDocumentRepositoryAll();
+  public Map<Kind, Map<String, EventDocumentIF>> getAllMappedByKind() {
+    List<EventDocumentIF> eventDocumentRepositoryAll = getAll();
     return eventDocumentRepositoryAll
         .stream()
         .collect(
             Collectors.groupingBy(
-                GenericEventKindIF::getKind,
+                EventIF::getKind,
                 Collectors.toMap(
-                    GenericEventKindIF::getId,
-                    Function.identity(),
-                    (prev, next) -> next)));
+                    EventDocumentIF::getEventId,
+                    Function.identity(), (prev, next) -> next)));
   }
 
-  private List<GenericEventKindIF> getEventDocumentRepositoryAll() {
+  public List<EventDocumentIF> getAll() {
     return eventDocumentRepository
         .findAll().stream()
         .map(this::revertInterceptor)
-        .map(EventIF::convertEntityToDto).toList();
+        .toList();
   }
 
-  public EventDocument saveEventDocument(@NonNull BaseEvent baseEvent) {
-    return saveEventDocument(
-        new GenericDocumentKindDto(baseEvent).convertBaseEventToGenericEventKindIF());
+  public EventDocumentIF saveEventDocument(@NonNull BaseEvent baseEvent) {
+    return saveEventDocument(new GenericDocumentKindDto(baseEvent).convertDtoToDocument());
   }
 
-  public EventDocument saveEventDocument(GenericEventKindIF genericEventKindIF) {
+  public EventDocumentIF saveEventDocument(@NonNull EventIF eventDocument) {
+    return saveEventDocument(convertDtoToDocument(eventDocument));
+  }
+
+  public EventDocumentIF saveEventDocument(@NonNull EventDocumentIF entity) {
     return eventDocumentRepository.save(
-        convertDtoToDocument(genericEventKindIF));
+        entity);
   }
 
-  protected void deleteEventEntity(@NonNull GenericEventKindIF eventToDelete) {
-    eventDocumentRepository.delete(convertDtoToDocument(eventToDelete));
+  private EventDocumentIF convertDtoToDocument(EventIF dto) {
+    return processInterceptors(dto);
   }
 
-  private EventDocument convertDtoToDocument(GenericEventKindIF dto) {
-    return processInterceptors(
-        dto,
-        EventDocument.of(
-            dto.getId(),
-            dto.getKind().getValue(),
-            dto.getPublicKey().toString(),
-            dto.getCreatedAt(),
-            dto.getContent(),
-            dto.getSignature().toString()));
-  }
+  private EventDocumentIF processInterceptors(EventIF dto) {
+    EventDocument eventDocument = EventDocument.of(
+        dto.getEventId(),
+        dto.getKind().getValue(),
+        dto.getPublicKey().toString(),
+        dto.getCreatedAt(),
+        dto.getContent(),
+        dto.getSignature().toString());
 
-  private EventDocument processInterceptors(GenericEventKindIF dto, EventDocument eventDocument) {
-    eventDocument.setTags(
-        Stream.concat(
-                dto.getTags().stream().map(baseTag ->
-                    Optional.ofNullable(
-                            interceptors.get(baseTag.getCode()))
-                        .stream().map(interceptor ->
-                            (BaseTag) interceptor.intercept(baseTag)).toList()).flatMap(Collection::stream),
-                dto.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
-            .collect(Collectors.toList()));
+    eventDocument.setTags(Stream.concat(
+        dto.getTags().stream().map(baseTag ->
+            Optional.ofNullable(
+                    interceptors.get(baseTag.getCode()))
+                .stream().map(interceptor ->
+                    (BaseTag) interceptor.intercept(baseTag)).toList()).flatMap(Collection::stream),
+        dto.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode()))).toList());
 
     return eventDocument;
   }
 
-  private EventDocument revertInterceptor(EventDocument documentToRevert) {
+  private EventDocumentIF revertInterceptor(EventDocumentIF documentToRevert) {
     EventDocument revertedDocument = EventDocument.of(
-        documentToRevert.getEventIdString(),
-        documentToRevert.getKind(),
-        documentToRevert.getPubKey(),
+        documentToRevert.getEventId(),
+        documentToRevert.getKind().getValue(),
+        documentToRevert.getPublicKey().toString(),
         documentToRevert.getCreatedAt(),
         documentToRevert.getContent(),
-        documentToRevert.getSignature());
+        documentToRevert.getSignature().toString());
 
     revertedDocument.setTags(
         Stream.concat(

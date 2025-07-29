@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.base.service.event.type;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
 import com.prosilion.superconductor.base.service.request.NotifierService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class CanonicalEventKindPlugin extends PublishingEventKindPlugin {
   }
 
   @Override
-  public void processIncomingEvent(@NonNull GenericEventKindIF event) {
+  public void processIncomingEvent(@NonNull EventIF event) {
     super.processIncomingEvent(event);
   }
 }

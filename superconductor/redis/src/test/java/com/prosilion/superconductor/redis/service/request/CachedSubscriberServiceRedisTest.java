@@ -9,11 +9,8 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.Subscriber;
 import com.prosilion.superconductor.base.service.request.CachedSubscriberService;
 import com.prosilion.superconductor.redis.util.Factory;
-import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,9 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Slf4j
-@EmbeddedRedisStandalone
-@SpringBootTest
 @ActiveProfiles("test")
 public class CachedSubscriberServiceRedisTest {
   Kind kind = Kind.TEXT_NOTE;

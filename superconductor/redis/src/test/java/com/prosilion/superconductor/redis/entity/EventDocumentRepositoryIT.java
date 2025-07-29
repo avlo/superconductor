@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.redis.entity;
 
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
+import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -27,10 +28,10 @@ class EventDocumentRepositoryIT {
   public static final Integer KIND = 1;
   public static final long CREATED_AT = 1717357053050L;
 
-  private final EventDocumentRepository eventDocumentRepository;
+  private final EventDocumentRepository<EventDocumentIF> eventDocumentRepository;
 
   @Autowired
-  EventDocumentRepositoryIT(EventDocumentRepository eventDocumentRepository) {
+  EventDocumentRepositoryIT(EventDocumentRepository<EventDocumentIF> eventDocumentRepository) {
     this.eventDocumentRepository = eventDocumentRepository;
 
     EventDocument savedAndFetchedDocument = eventDocumentRepository.save(
@@ -51,19 +52,19 @@ class EventDocumentRepositoryIT {
 
   @Test
   void testGetAllFields() {
-    Optional<EventDocument> retrieved = eventDocumentRepository.findByEventIdString(EVENT_ID);
-    EventDocument byEventIdString = retrieved.orElseThrow();
-    assertEquals(EVENT_ID, byEventIdString.getEventIdString());
-    assertEquals(KIND, byEventIdString.getKind());
-    assertEquals(PUB_KEY, byEventIdString.getPubKey());
+    Optional<EventDocumentIF> retrieved = eventDocumentRepository.findByEventIdString(EVENT_ID);
+    EventDocumentIF byEventIdString = retrieved.orElseThrow();
+    assertEquals(EVENT_ID, byEventIdString.getEventId());
+    assertEquals(KIND, byEventIdString.getKind().getValue());
+    assertEquals(PUB_KEY, byEventIdString.getPublicKey().toString());
     assertEquals(CREATED_AT, byEventIdString.getCreatedAt());
     assertEquals(CONTENT, byEventIdString.getContent());
-    assertEquals(SIGNATURE, byEventIdString.getSignature());
+    assertEquals(SIGNATURE, byEventIdString.getSignature().toString());
   }
 
   @Test
   void testRecordNotExist() {
-    Optional<EventDocument> eventEntity = eventDocumentRepository.findByEventIdString(Factory.generateRandomHex64String());
+    Optional<EventDocumentIF> eventEntity = eventDocumentRepository.findByEventIdString(Factory.generateRandomHex64String());
     assertThrows(NoSuchElementException.class, eventEntity::orElseThrow);
   }
 }

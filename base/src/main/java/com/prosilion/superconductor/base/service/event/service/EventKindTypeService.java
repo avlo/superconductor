@@ -2,7 +2,8 @@ package com.prosilion.superconductor.base.service.event.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventKind;
 import com.prosilion.nostr.event.GenericEventKindType;
 import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.filter.Filterable;
@@ -28,16 +29,17 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
   }
 
   @Override
-  public void processIncomingEvent(GenericEventKindIF event) {
+  public void processIncomingEvent(EventIF event) {
     processIncomingEvent(
         new GenericEventKindType(
-            event.getId(),
-            event.getPublicKey(),
-            event.getCreatedAt(),
-            event.getKind(),
-            event.getTags(),
-            event.getContent(),
-            event.getSignature(),
+            new GenericEventKind(
+                event.getEventId(),
+                event.getPublicKey(),
+                event.getCreatedAt(),
+                event.getKind(),
+                event.getTags(),
+                event.getContent(),
+                event.getSignature()),
             getKindType(event)));
   }
 
@@ -62,7 +64,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
     return List.copyOf(eventKindTypePluginsMap.keySet());
   }
 
-  private KindTypeIF getKindType(GenericEventKindIF event) {
+  private KindTypeIF getKindType(EventIF event) {
     return getKindTypes().stream().filter(kindTypeIF ->
         kindTypeIF.getName().equals(Filterable.getTypeSpecificTags(AddressTag.class, event)
             .stream()

@@ -5,7 +5,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.GenericEventId;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.EventFilter;
@@ -46,9 +46,9 @@ public class DeleteEventH2dbIT {
     this.nostrRelayService = nostrRelayService;
 
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
-    this.eventIdToDelete = event.getId();
+    this.eventIdToDelete = event.getEventId();
 
-    GenericEventKindIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToGenericEventKindIF();
+    EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
     EventMessage eventMessage = new EventMessage(genericEventDtoIF);
     assertTrue(
         this.nostrRelayService
@@ -60,44 +60,70 @@ public class DeleteEventH2dbIT {
     eventDeletionTags.add(new EventTag(eventIdToDelete));
 
     BaseEvent deletionEvent = new DeletionEvent(identity, eventDeletionTags, Factory.lorumIpsum());
-    this.deletionEvent = deletionEvent.getId();
+    this.deletionEvent = deletionEvent.getEventId();
 
-    GenericEventKindIF genericDeleteEventDtoIF = new GenericEventKindDto(deletionEvent).convertBaseEventToGenericEventKindIF();
+    EventIF genericDeleteEventDtoIF = new GenericEventKindDto(deletionEvent).convertBaseEventToEventIF();
     EventMessage deletionEventMessage = new EventMessage(genericDeleteEventDtoIF);
     assertTrue(
         this.nostrRelayService
             .send(
                 deletionEventMessage)
             .getFlag());
+    log.debug("end");
   }
 
   @Test
-  void testReqSingleSubscriberFilteredByEventAndAuthorViaReqMessage() throws JsonProcessingException, NostrException {
+  void testSingleTextNoteEventDeletion() throws JsonProcessingException, NostrException {
     final String deletionSubmitterSubscriberId = Factory.generateRandomHex64String();
 
     EventFilter deletionEventFilter = new EventFilter(new GenericEventId(eventIdToDelete));
 
     ReqMessage deletionReqMessage = new ReqMessage(deletionSubmitterSubscriberId, new Filters(deletionEventFilter));
     List<BaseMessage> returnedDeltionMessagesShouldBeEmpty = nostrRelayService.send(deletionReqMessage);
-    List<GenericEventKindIF> returnedGenericEventKindIFsShouldBeEmpty = getGenericEventKindIFs(returnedDeltionMessagesShouldBeEmpty);
+    List<EventIF> returnedEventIFsShouldBeEmpty = getEventIFs(returnedDeltionMessagesShouldBeEmpty);
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedDeltionMessagesShouldBeEmpty);
-    assertTrue(returnedGenericEventKindIFsShouldBeEmpty.isEmpty());
+    assertTrue(returnedEventIFsShouldBeEmpty.isEmpty());
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(deletionEvent));
 
     final String subscriberId = Factory.generateRandomHex64String();
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedBaseMessages);
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getId().equals(deletionEvent)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(deletionEvent)));
+  }
+  
+  @Test
+  void testCreateAnotherNoteAndConfirItsNotDeleted() throws NoSuchAlgorithmException, IOException {
+    BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
+    String secondEventShouldNotGetDeleted = event.getEventId();
+
+    EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
+    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    assertTrue(
+        this.nostrRelayService
+            .send(
+                eventMessage)
+            .getFlag());
+
+    EventFilter eventFilter = new EventFilter(new GenericEventId(secondEventShouldNotGetDeleted));
+
+    final String subscriberId = Factory.generateRandomHex64String();
+    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
+
+    log.debug("okMessage to UniqueSubscriberId:");
+    log.debug("  " + returnedBaseMessages);
+    assertTrue(returnedEventIFs.stream().anyMatch(secondEvent -> secondEvent.getEventId().equals(secondEventShouldNotGetDeleted)));
   }
 
-  public static List<GenericEventKindIF> getGenericEventKindIFs(List<BaseMessage> returnedBaseMessages) {
+  public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {
     return returnedBaseMessages.stream()
         .filter(EventMessage.class::isInstance)
         .map(EventMessage.class::cast)

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.base.plugin.filter;
 
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
@@ -16,7 +16,7 @@ public interface FilterBiPredicate<T extends BaseTag> extends FilterPlugin {
                 filterable.getPredicate().test(addNostrEvent.event()));
   }
 
-  default List<T> getTypeSpecificTags(Class<T> tagClass, GenericEventKindIF genericEvent) {
+  default List<T> getTypeSpecificTags(Class<T> tagClass, EventIF genericEvent) {
     return genericEvent.getTags().stream()
         .filter(tagClass::isInstance)
         .map(tagClass::cast)

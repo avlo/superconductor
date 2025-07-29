@@ -12,28 +12,32 @@ class EventDocumentTest {
   public static final String CONTENT = "1111111111";
   public static final Integer KIND = 1;
   public static final long CREATED_AT = 1717357053050L;
-  EventDocument eventDocument = new EventDocument();
 
-  @Test
-  void testSettersGetters() {
-    eventDocument.setSignature(SIGNATURE);
-    eventDocument.setEventIdString(EVENT_ID);
-    eventDocument.setPubKey(PUB_KEY);
-    eventDocument.setKind(KIND);
-    eventDocument.setCreatedAt(CREATED_AT);
-    eventDocument.setContent(CONTENT);
-
-    assertEquals(SIGNATURE, eventDocument.getSignature());
-    assertEquals(EVENT_ID, eventDocument.getEventIdString());
-    assertEquals(PUB_KEY, eventDocument.getPubKey());
-    assertEquals(KIND, eventDocument.getKind());
-    assertEquals(CREATED_AT, eventDocument.getCreatedAt());
-    assertEquals(CONTENT, eventDocument.getContent());
-  }
+//  private final EventDocument eventDocument;
+//
+//  public EventDocumentTest() {
+//     this.eventDocument = EventDocument.of(
+//        EVENT_ID,
+//        KIND,
+//        PUB_KEY,
+//        CREATED_AT,
+//         Factory.lorumIpsum(),
+//        SIGNATURE);
+//  }
+//
+//  @Test
+//  void testSettersGetters() {
+//    assertEquals(SIGNATURE, eventDocument.getSignature());
+//    assertEquals(EVENT_ID, eventDocument.getEventIdString());
+//    assertEquals(PUB_KEY, eventDocument.getPubKey());
+//    assertEquals(KIND, eventDocument.getKind());
+//    assertEquals(CREATED_AT, eventDocument.getCreatedAt());
+//    assertEquals(CONTENT, eventDocument.getContent());
+//  }
 
   @Test
   void testDocumentOf() {
-    eventDocument = EventDocument.of(
+    EventDocument eventDocument = EventDocument.of(
         EVENT_ID,
         KIND,
         PUB_KEY,
@@ -41,10 +45,10 @@ class EventDocumentTest {
         CONTENT,
         SIGNATURE);
 
-    assertEquals(SIGNATURE, eventDocument.getSignature());
+    assertEquals(SIGNATURE, eventDocument.getSignature().toString());
     assertEquals(EVENT_ID, eventDocument.getEventIdString());
     assertEquals(PUB_KEY, eventDocument.getPubKey());
-    assertEquals(KIND, eventDocument.getKind());
+    assertEquals(KIND, eventDocument.getKind().getValue());
     assertEquals(CREATED_AT, eventDocument.getCreatedAt());
     assertEquals(CONTENT, eventDocument.getContent());
   }

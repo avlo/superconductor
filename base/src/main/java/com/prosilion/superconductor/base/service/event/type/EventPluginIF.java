@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.base.service.event.type;
 
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 
 public interface EventPluginIF {
-  void processIncomingEvent(GenericEventKindIF event);
+  void processIncomingEvent(EventIF event);
 }

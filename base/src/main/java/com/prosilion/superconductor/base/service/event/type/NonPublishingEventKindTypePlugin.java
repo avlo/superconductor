@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base.service.event.type;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -17,7 +17,7 @@ public class NonPublishingEventKindTypePlugin implements EventKindTypePluginIF<K
   }
 
   @Override
-  public void processIncomingEvent(GenericEventKindIF event) {
+  public void processIncomingEvent(EventIF event) {
     eventKindTypePlugin.processIncomingEvent(event);
   }
 

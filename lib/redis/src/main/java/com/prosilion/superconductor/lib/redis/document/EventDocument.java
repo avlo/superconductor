@@ -1,7 +1,9 @@
 package com.prosilion.superconductor.lib.redis.document;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.superconductor.base.EventIF;
+import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.nostr.user.Signature;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -9,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
@@ -19,7 +22,7 @@ import org.springframework.lang.NonNull;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor(staticName = "of")
 @RedisHash
-public class EventDocument implements EventIF {
+public class EventDocument implements EventDocumentIF {
 
   @Id
   @NonNull
@@ -40,8 +43,29 @@ public class EventDocument implements EventIF {
   private String content;
 
   @Indexed
+  @Setter
   private List<BaseTag> tags = new ArrayList<>();
 
   @NonNull
   private String signature;
+
+  @Override
+  public String getEventId() {
+    return eventIdString;
+  }
+
+  @Override
+  public PublicKey getPublicKey() {
+    return new PublicKey(pubKey);
+  }
+
+  @Override
+  public Kind getKind() {
+    return Kind.valueOf(kind);
+  }
+
+  @Override
+  public Signature getSignature() {
+    return Signature.fromString(signature);
+  }
 }

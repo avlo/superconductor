@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.h2db.entity;
 
-import org.junit.jupiter.api.Test;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntity;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -12,21 +12,22 @@ class EventEntityTest {
   public static final String CONTENT = "1111111111";
   public static final Integer KIND = 1;
   public static final long CREATED_AT = 1717357053050L;
-  EventEntity event = new EventEntity();
+  EventEntity event;
 
   @Test
   void testSettersGetters() {
-    event.setSignature(SIGNATURE);
-    event.setEventIdString(EVENT_ID);
-    event.setPubKey(PUB_KEY);
-    event.setKind(KIND);
-    event.setCreatedAt(CREATED_AT);
-    event.setContent(CONTENT);
+    this.event = new EventEntity(
+        EVENT_ID,
+        KIND,
+        PUB_KEY,
+        CREATED_AT,
+        SIGNATURE,
+        CONTENT);
 
-    assertEquals(SIGNATURE, event.getSignature());
+    assertEquals(SIGNATURE, event.getSignature().toString());
     assertEquals(EVENT_ID, event.getEventIdString());
     assertEquals(PUB_KEY, event.getPubKey());
-    assertEquals(KIND, event.getKind());
+    assertEquals(KIND, event.getKind().getValue());
     assertEquals(CREATED_AT, event.getCreatedAt());
     assertEquals(CONTENT, event.getContent());
   }

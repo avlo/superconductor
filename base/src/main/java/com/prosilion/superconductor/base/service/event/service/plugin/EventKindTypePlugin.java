@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base.service.event.service.plugin;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -32,7 +32,7 @@ public class EventKindTypePlugin implements EventKindTypePluginIF<KindTypeIF> {
   }
 
   @Override
-  public void processIncomingEvent(GenericEventKindIF event) {
+  public void processIncomingEvent(EventIF event) {
     eventPlugin.processIncomingEvent(event);
   }
 }

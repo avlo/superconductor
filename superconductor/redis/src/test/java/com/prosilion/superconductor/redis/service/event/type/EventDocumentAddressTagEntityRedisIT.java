@@ -3,14 +3,13 @@ package com.prosilion.superconductor.redis.service.event.type;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.document.EventDocument;
+import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -40,7 +39,7 @@ class EventDocumentAddressTagEntityRedisIT {
 
   private final EventDocumentService eventDocumentService;
 
-  private final EventDocument savedEventDocument;
+  private final EventDocumentIF savedEventDocument;
 
   @Autowired
   public EventDocumentAddressTagEntityRedisIT(@NonNull EventDocumentService eventDocumentService) throws NostrException, NoSuchAlgorithmException {
@@ -61,7 +60,7 @@ class EventDocumentAddressTagEntityRedisIT {
 
   @Test
   void saveAndGetEventWithPublicKey() {
-    GenericEventKindIF genericEventKindIF = eventDocumentService.findByEventIdString(savedEventDocument.getEventIdString()).orElseThrow();
+    EventDocumentIF genericEventKindIF = eventDocumentService.findByEventIdString(savedEventDocument.getEventId()).orElseThrow();
 
     List<BaseTag> tags = genericEventKindIF.getTags();
     tags.forEach(tag -> log.debug("\ntag:  \n{}\n ---- \n", tag));

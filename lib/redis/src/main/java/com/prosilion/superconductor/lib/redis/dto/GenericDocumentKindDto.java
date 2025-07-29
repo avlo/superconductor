@@ -3,31 +3,31 @@ package com.prosilion.superconductor.lib.redis.dto;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.GenericEventKind;
 import com.prosilion.nostr.event.GenericEventKindIF;
-import com.prosilion.nostr.user.Signature;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
+import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 
 public record GenericDocumentKindDto(BaseEvent baseEvent) {
-  public EventDocument convertDtoToDocument() {
+  public EventDocumentIF convertDtoToDocument() {
     EventDocument eventDocument = EventDocument.of(
-        baseEvent.getId(),
+        baseEvent.getEventId(),
         baseEvent.getKind().getValue(),
         baseEvent.getPublicKey().toString(),
         baseEvent.getCreatedAt(),
         baseEvent.getContent(),
-        baseEvent.getSignature());
+        baseEvent.getSignature().toString());
 
     eventDocument.setTags(baseEvent.getTags());
     return eventDocument;
   }
 
-  public GenericEventKindIF convertBaseEventToGenericEventKindIF() {
+  public GenericEventKindIF convertBaseEventToEventIF() {
     return new GenericEventKind(
-        baseEvent.getId(),
+        baseEvent.getEventId(),
         baseEvent.getPublicKey(),
         baseEvent.getCreatedAt(),
         baseEvent.getKind(),
         baseEvent.getTags(),
         baseEvent.getContent(),
-        Signature.fromString(baseEvent.getSignature()));
+        baseEvent.getSignature());
   }
 }

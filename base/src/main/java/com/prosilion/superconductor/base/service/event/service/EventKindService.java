@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.base.service.event.service;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
 import java.util.List;
@@ -22,12 +23,21 @@ public class EventKindService implements EventKindServiceIF {
   }
 
   @Override
-  public void processIncomingEvent(@NonNull GenericEventKindIF event) {
-    Optional.ofNullable(
-            eventKindPluginsMap.get(
-                event.getKind()))
+  public void processIncomingEvent(@NonNull EventIF event) {
+    Kind kind = event.getKind();
+    EventKindPluginIF<Kind> value = eventKindPluginsMap.get(kind);
+    EventKindPluginIF<Kind> kindEventKindPluginIF = Optional.ofNullable(
+            value)
         .orElse(
-            eventKindPluginsMap.get(Kind.TEXT_NOTE)).processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
+            eventKindPluginsMap.get(Kind.TEXT_NOTE));
+
+    if (kind.equals(Kind.DELETION)) {
+      log.info("plugin: {}", kindEventKindPluginIF);
+      kindEventKindPluginIF.processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
+    } else {
+      log.info("plugin: {}", kindEventKindPluginIF);
+      kindEventKindPluginIF.processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
+    }
   }
 
   @Override

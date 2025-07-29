@@ -3,7 +3,7 @@ package com.prosilion.superconductor.sqlite;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.BaseMessage;
@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.sqlite.TextNoteEventMessageIT.getGenericEventKindIFs;
+import static com.prosilion.superconductor.sqlite.TextNoteEventMessageIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -56,7 +56,7 @@ class MatchingReferencedPubkeyIT {
             new ReferencedPublicKeyFilter(pubKeyTag)));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
@@ -82,7 +82,7 @@ class MatchingReferencedPubkeyIT {
             new ReferencedPublicKeyFilter(pubKeyTag)));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     assertTrue(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());

@@ -51,7 +51,7 @@ public class ClientResponseService {
       publisher.publishEvent(new ClientOkResponse(sessionId, (GenericEventKindIF) eventMessage.getEvent(), false, reason));
     } catch (JsonProcessingException e) {
       publisher.publishEvent(new TextMessage(
-          "[\"OK\", \"" + eventMessage.getEvent().getId() + "\", false, \"" + e.getMessage() + "\"]"
+          "[\"OK\", \"" + eventMessage.getEvent().getEventId() + "\", false, \"" + e.getMessage() + "\"]"
       ));
     }
   }

@@ -13,7 +13,7 @@ package com.prosilion.superconductor.redis;//package com.prosilion.superconducto
 //import com.prosilion.nostr.message.BaseMessage;
 //import com.prosilion.nostr.filter.event.AuthorFilter;
 //import com.prosilion.nostr.filter.Filters;
-//import com.prosilion.nostr.event.GenericEventKindIF;
+//import com.prosilion.nostr.event.EventIF;
 //import com.prosilion.nostr.message.EoseMessage;
 //import com.prosilion.nostr.message.ReqMessage;
 //import org.junit.jupiter.api.Nested;
@@ -22,7 +22,7 @@ package com.prosilion.superconductor.redis;//package com.prosilion.superconducto
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.beans.factory.annotation.Value;
 //
-//import static com.prosilion.superconductor.EventMessageIT.getGenericEventKindIFs;
+//import static com.prosilion.superconductor.EventMessageIT.getEventIFs;
 //import static org.awaitility.Awaitility.await;
 //import static org.junit.jupiter.api.Assertions.assertAll;
 //import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,7 +69,7 @@ package com.prosilion.superconductor.redis;//package com.prosilion.superconducto
 //
 //    ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
 //    List<BaseMessage> returnedBaseMessages = super.getNostrRelayServiceRedis().send(reqMessage);
-//    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
+//    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 //
 //    assertEquals(2, returnedBaseMessages.size());
 //    assertTrue(returnedBaseMessages
@@ -80,7 +80,7 @@ package com.prosilion.superconductor.redis;//package com.prosilion.superconducto
 //
 //    assertTrue(returnedEvents.stream().anyMatch(event -> event.getPubKey().toHexString().equals(publicKey.toHexString())));
 //
-//    String responseJson = returnedEvents.stream().map(event -> getExpectedJsonInAnyOrder(event.getId())).findFirst().orElseThrow();
+//    String responseJson = returnedEvents.stream().map(event -> getExpectedJsonInAnyOrder(event.getEventId())).findFirst().orElseThrow();
 //    String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(authorPubKey);
 //    log.debug("author expectedJson:\n  {}", expectedJsonInAnyOrder);
 //    log.debug("------------");

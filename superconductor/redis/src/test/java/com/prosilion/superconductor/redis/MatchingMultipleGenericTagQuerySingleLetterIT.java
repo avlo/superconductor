@@ -3,7 +3,7 @@ package com.prosilion.superconductor.redis;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.GenericTagQuery;
 import com.prosilion.nostr.filter.tag.GenericTagQueryFilter;
@@ -30,7 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.redis.TextNoteEventMessageRedisIT.getGenericEventKindIFs;
+import static com.prosilion.superconductor.redis.TextNoteEventMessageRedisIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -72,7 +72,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
                 new GenericTagQuery("#h", genericTagStringHPresent))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
@@ -97,7 +97,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
                 new GenericTagQuery("#h", genericTagStringHPresent))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
@@ -119,7 +119,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
                 new GenericTagQuery("#h", genericTagStringH))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
@@ -128,7 +128,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     assertFalse(returnedBaseMessages.isEmpty());
 
     //    associated event
-    assertTrue(returnedEvents.stream().map(GenericEventKindIF::getId).anyMatch(s -> s.contains(eventId)));
+    assertTrue(returnedEvents.stream().map(EventIF::getEventId).anyMatch(s -> s.contains(eventId)));
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
 
@@ -148,11 +148,11 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
                 new GenericTagQuery("#i", genericTagStringI))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedEvents = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals((eventId))));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getEventId().equals((eventId))));
     assertTrue(returnedEvents.stream().anyMatch(s -> s.getTags().stream()
         .filter(GeohashTag.class::isInstance)
         .map(GeohashTag.class::cast)

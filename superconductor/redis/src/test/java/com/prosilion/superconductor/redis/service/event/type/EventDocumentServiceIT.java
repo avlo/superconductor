@@ -3,7 +3,6 @@ package com.prosilion.superconductor.redis.service.event.type;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKindIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -14,7 +13,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.document.EventDocument;
+import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -46,7 +45,7 @@ class EventDocumentServiceIT {
   private final static Kind KIND = Kind.TEXT_NOTE;
 
   private final EventDocumentService eventDocumentService;
-  private final EventDocument savedEventDocument;
+  private final EventDocumentIF savedEventDocument;
 
   @Autowired
   public EventDocumentServiceIT(@NonNull EventDocumentService eventDocumentService) throws NostrException, NoSuchAlgorithmException {
@@ -76,7 +75,7 @@ class EventDocumentServiceIT {
 
   @Test
   void saveAndGetEventWithGeohash() {
-    GenericEventKindIF savedEvent = eventDocumentService.findByEventIdString(savedEventDocument.getEventIdString()).orElseThrow();
+    EventDocumentIF savedEvent = eventDocumentService.findByEventIdString(savedEventDocument.getEventId()).orElseThrow();
     log.debug("savedEvent getPubKey().toString(): " + savedEvent.getPublicKey().toString());
     log.debug("savedEvent getPubKey().toHexString(): " + savedEvent.getPublicKey().toHexString());
     log.debug("savedEvent getPubKey().toBech32String(): " + savedEvent.getPublicKey().toBech32String());

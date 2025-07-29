@@ -3,7 +3,7 @@ package com.prosilion.superconductor.h2db.service.event.type;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -74,7 +74,7 @@ class EventEntityServiceH2dbIT {
 
   @Test
   void saveAndGetEventWithGeohash() {
-    GenericEventKindIF savedEvent = eventEntityService.getEventById(savedEventId).orElseThrow();
+    EventIF savedEvent = eventEntityService.getEventById(savedEventId).orElseThrow();
 
     assertEquals(CONTENT, savedEvent.getContent());
     assertEquals(KIND, savedEvent.getKind());

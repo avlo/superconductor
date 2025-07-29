@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.h2db.util;
 
 import com.prosilion.nostr.enums.KindTypeIF;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.type.PublishingEventKindTypePlugin;
 import com.prosilion.superconductor.base.service.request.NotifierService;
@@ -19,7 +19,7 @@ public class BadgeAwardEventKindTypePlugin extends PublishingEventKindTypePlugin
   }
 
   @Override
-  public void processIncomingEvent(@NonNull GenericEventKindIF event) {
+  public void processIncomingEvent(@NonNull EventIF event) {
     super.processIncomingEvent(event);
   }
 }

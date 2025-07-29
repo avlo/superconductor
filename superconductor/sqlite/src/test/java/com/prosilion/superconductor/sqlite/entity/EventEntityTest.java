@@ -16,17 +16,18 @@ class EventEntityTest {
 
   @Test
   void testSettersGetters() {
-    event.setSignature(SIGNATURE);
-    event.setEventIdString(EVENT_ID);
-    event.setPubKey(PUB_KEY);
-    event.setKind(KIND);
-    event.setCreatedAt(CREATED_AT);
-    event.setContent(CONTENT);
+    this.event = new EventEntity(
+        EVENT_ID,
+        KIND,
+        PUB_KEY,
+        CREATED_AT,
+        SIGNATURE,
+        CONTENT);
 
-    assertEquals(SIGNATURE, event.getSignature());
+    assertEquals(SIGNATURE, event.getSignature().toString());
     assertEquals(EVENT_ID, event.getEventIdString());
     assertEquals(PUB_KEY, event.getPubKey());
-    assertEquals(KIND, event.getKind());
+    assertEquals(KIND, event.getKind().getValue());
     assertEquals(CREATED_AT, event.getCreatedAt());
     assertEquals(CONTENT, event.getContent());
   }

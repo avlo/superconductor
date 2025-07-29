@@ -3,7 +3,7 @@ package com.prosilion.superconductor.sqlite;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.HashtagTagFilter;
@@ -27,7 +27,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
-import static com.prosilion.superconductor.sqlite.TextNoteEventMessageIT.getGenericEventKindIFs;
+import static com.prosilion.superconductor.sqlite.TextNoteEventMessageIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,7 +47,7 @@ class MatchingGenericTagSingleLetterQueryIT {
     assertTrue(
         nostrRelayService
             .send(
-                new EventMessage(new GenericEventKindDto(textNoteEvent).convertBaseEventToGenericEventKindIF()))
+                new EventMessage(new GenericEventKindDto(textNoteEvent).convertBaseEventToEventIF()))
             .getFlag());
   }
 
@@ -79,7 +79,7 @@ class MatchingGenericTagSingleLetterQueryIT {
             new ReqMessage(subscriberId, new Filters(
                 new HashtagTagFilter(new HashtagTag(hashTagString)))));
 
-    List<GenericEventKindIF> events = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> events = getEventIFs(returnedBaseMessages);
 
     assertFalse(events.isEmpty());
     //    associated event

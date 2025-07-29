@@ -1,6 +1,9 @@
 package com.prosilion.superconductor.lib.jpa.entity;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.nostr.user.Signature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +17,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
 @NoArgsConstructor
 @Entity
@@ -34,6 +36,7 @@ public class EventEntity implements EventEntityIF {
   private String content;
 
   @Transient
+  @Setter
   private List<BaseTag> tags;
   private String signature;
 
@@ -46,8 +49,28 @@ public class EventEntity implements EventEntityIF {
     this.content = content;
   }
 
-  public EventEntity(long id, String eventIdString, Integer kind, String pubKey, Long createdAt, String signature, String content) {
+  public EventEntity(Long id, String eventIdString, Integer kind, String pubKey, Long createdAt, String signature, String content) {
     this(eventIdString, kind, pubKey, createdAt, signature, content);
     this.id = id;
+  }
+
+  @Override
+  public String getEventId() {
+    return eventIdString;
+  }
+
+  @Override
+  public PublicKey getPublicKey() {
+    return new PublicKey(pubKey);
+  }
+  
+  @Override
+  public Kind getKind() {
+    return Kind.valueOf(kind);
+  }
+
+  @Override
+  public Signature getSignature() {
+    return Signature.fromString(signature);
   }
 }

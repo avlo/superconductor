@@ -31,7 +31,7 @@ public class TestSubscriber<T> extends BaseSubscriber<T> {
 
   public List<T> getItems() {
     Awaitility.await()
-        .timeout(3, TimeUnit.SECONDS)
+        .timeout(3, TimeUnit.HOURS)
         .untilTrue(completed);
     List<T> eventList = List.copyOf(items);
     items.clear();

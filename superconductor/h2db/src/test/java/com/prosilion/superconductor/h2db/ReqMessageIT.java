@@ -3,7 +3,7 @@ package com.prosilion.superconductor.h2db;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventId;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
@@ -27,7 +27,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
-import static com.prosilion.superconductor.h2db.TextNoteEventMessageH2dbIT.getGenericEventKindIFs;
+import static com.prosilion.superconductor.h2db.TextNoteEventMessageH2dbIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -44,13 +44,13 @@ class ReqMessageIT {
     Identity author = Identity.generateRandomIdentity();
     this.authorPubkey = author.getPublicKey();
 
-    GenericEventKindIF genericEventDtoIF =
+    EventIF genericEventDtoIF =
         new GenericEventKindDto(
             new TextNoteEvent(
                 author,
-                Factory.lorumIpsum(getClass()))).convertBaseEventToGenericEventKindIF();
+                Factory.lorumIpsum(getClass()))).convertBaseEventToEventIF();
 
-    this.eventId = genericEventDtoIF.getId();
+    this.eventId = genericEventDtoIF.getEventId();
 
     EventMessage eventMessage = new EventMessage(genericEventDtoIF);
     assertTrue(
@@ -70,10 +70,10 @@ class ReqMessageIT {
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorPubkey)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorPubkey)));
   }
 
   @Test
@@ -83,9 +83,9 @@ class ReqMessageIT {
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
   }
 
   @Test
@@ -97,8 +97,8 @@ class ReqMessageIT {
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<GenericEventKindIF> returnedGenericEventKindIFs = getGenericEventKindIFs(returnedBaseMessages);
+    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedGenericEventKindIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorPubkey)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorPubkey)));
   }
 }

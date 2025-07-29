@@ -48,7 +48,7 @@ class MultipleSubcsriberClassifiedListingEventMessageIT extends AbstractMultiple
 //    tags.add(G_TAG);
 //    tags.add(T_TAG);
 //
-//    GenericEventKindIF classifiedListingEvent = Factory.createClassifiedListingEvent(
+//    EventIF classifiedListingEvent = Factory.createClassifiedListingEvent(
 //        IDENTITY,
 //        tags,
 //        content,

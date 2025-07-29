@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.base.service.event.type;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
 import com.prosilion.superconductor.base.service.request.NotifierService;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
@@ -19,7 +19,7 @@ public class PublishingEventKindPlugin implements EventKindPluginIF<Kind> {
     this.eventKindPlugin = eventKindPlugin;
   }
 
-  public void processIncomingEvent(@NonNull GenericEventKindIF event) {
+  public void processIncomingEvent(@NonNull EventIF event) {
     eventKindPlugin.processIncomingEvent(event);
     notifierService.nostrEventHandler(new AddNostrEvent(event));
   }

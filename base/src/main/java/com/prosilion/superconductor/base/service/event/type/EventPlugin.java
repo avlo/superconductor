@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.base.service.event.type;
 
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.CacheIF;
 
 public class EventPlugin implements EventPluginIF {
@@ -11,7 +11,7 @@ public class EventPlugin implements EventPluginIF {
   }
 
   @Override
-  public void processIncomingEvent(GenericEventKindIF event) {
+  public void processIncomingEvent(EventIF event) {
     cacheIF.saveEventEntityOrDocument(event);
   }
 }

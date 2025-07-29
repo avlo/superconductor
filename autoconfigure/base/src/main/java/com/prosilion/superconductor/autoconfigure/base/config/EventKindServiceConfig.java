@@ -14,7 +14,6 @@ import com.prosilion.superconductor.base.service.event.service.plugin.EventKindT
 import com.prosilion.superconductor.base.service.event.type.CanonicalEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.DeleteEventPlugin;
-import com.prosilion.superconductor.base.service.event.type.DeleteEventPluginIF;
 import com.prosilion.superconductor.base.service.event.type.EventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.base.service.request.NotifierService;
@@ -63,20 +62,14 @@ public class EventKindServiceConfig {
   }
 
   @Bean
-  @ConditionalOnMissingBean
-  DeleteEventPluginIF deleteEventPlugin(@NonNull CacheIF cacheIF) {
-    return new DeleteEventPlugin(cacheIF);
-  }
-
-  @Bean
 //  @ConditionalOnMissingBean
   EventKindPluginIF<Kind> deleteEventKindPlugin(
-      @NonNull DeleteEventPluginIF deleteEventPlugin,
-      @NonNull EventPluginIF eventPlugin) {
+      @NonNull EventPluginIF eventPlugin,
+      @NonNull CacheIF cacheIF) {
     return new DeleteEventKindPlugin(
         new EventKindPlugin(
             Kind.DELETION,
             eventPlugin),
-        deleteEventPlugin);
+        new DeleteEventPlugin(cacheIF));
   }
 }

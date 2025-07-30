@@ -29,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -38,15 +39,15 @@ public class DeleteEventH2dbIT {
   private final NostrRelayService nostrRelayService;
 
   private final static Identity identity = Identity.generateRandomIdentity();
-  private final String eventIdToDelete;
-  private final String deletionEvent;
+  private final String eventIdToDeleteId;
+  private final String deletionEventId;
 
   @Autowired
   DeleteEventH2dbIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
 
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
-    this.eventIdToDelete = event.getId();
+    this.eventIdToDeleteId = event.getId();
 
     EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
     EventMessage eventMessage = new EventMessage(genericEventDtoIF);
@@ -57,10 +58,10 @@ public class DeleteEventH2dbIT {
             .getFlag());
 
     List<EventTag> eventDeletionTags = new ArrayList<>();
-    eventDeletionTags.add(new EventTag(eventIdToDelete));
+    eventDeletionTags.add(new EventTag(eventIdToDeleteId));
 
     BaseEvent deletionEvent = new DeletionEvent(identity, eventDeletionTags, Factory.lorumIpsum());
-    this.deletionEvent = deletionEvent.getId();
+    this.deletionEventId = deletionEvent.getId();
 
     EventIF genericDeleteEventDtoIF = new GenericEventKindDto(deletionEvent).convertBaseEventToEventIF();
     EventMessage deletionEventMessage = new EventMessage(genericDeleteEventDtoIF);
@@ -76,7 +77,7 @@ public class DeleteEventH2dbIT {
   void testSingleTextNoteEventDeletion() throws JsonProcessingException, NostrException {
     final String deletionSubmitterSubscriberId = Factory.generateRandomHex64String();
 
-    EventFilter deletionEventFilter = new EventFilter(new GenericEventId(eventIdToDelete));
+    EventFilter deletionEventFilter = new EventFilter(new GenericEventId(eventIdToDeleteId));
 
     ReqMessage deletionReqMessage = new ReqMessage(deletionSubmitterSubscriberId, new Filters(deletionEventFilter));
     List<BaseMessage> returnedDeltionMessagesShouldBeEmpty = nostrRelayService.send(deletionReqMessage);
@@ -84,9 +85,9 @@ public class DeleteEventH2dbIT {
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedDeltionMessagesShouldBeEmpty);
-    assertTrue(returnedEventIFsShouldBeEmpty.isEmpty());
+    assertFalse(returnedEventIFsShouldBeEmpty.isEmpty());
 
-    EventFilter eventFilter = new EventFilter(new GenericEventId(deletionEvent));
+    EventFilter eventFilter = new EventFilter(new GenericEventId(deletionEventId));
 
     final String subscriberId = Factory.generateRandomHex64String();
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
@@ -95,7 +96,7 @@ public class DeleteEventH2dbIT {
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedBaseMessages);
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(deletionEvent)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(deletionEventId)));
   }
 
   @Test

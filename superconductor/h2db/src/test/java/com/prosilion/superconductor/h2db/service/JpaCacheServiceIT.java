@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.h2db.service;
 
+import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -9,9 +10,9 @@ import com.prosilion.nostr.tag.PriceTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
+import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
 import java.security.NoSuchAlgorithmException;
@@ -30,28 +31,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
-public class JpaServiceIT {
+public class JpaCacheServiceIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
-  private static final PublicKey EVENT_PUBKEY = IDENTITY.getPublicKey();
   private static final PubKeyTag P_TAG = Factory.createPubKeyTag(IDENTITY);
 
-  private static final EventTag E_TAG = Factory.createEventTag(JpaServiceIT.class);
-  private static final GeohashTag G_TAG = Factory.createGeohashTag(JpaServiceIT.class);
-  private static final HashtagTag T_TAG = Factory.createHashtagTag(JpaServiceIT.class);
-  private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(JpaServiceIT.class);
+  private static final EventTag E_TAG = Factory.createEventTag(JpaCacheServiceIT.class);
+  private static final GeohashTag G_TAG = Factory.createGeohashTag(JpaCacheServiceIT.class);
+  private static final HashtagTag T_TAG = Factory.createHashtagTag(JpaCacheServiceIT.class);
+  private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(JpaCacheServiceIT.class);
   private static final PriceTag PRICE_TAG = Factory.createPriceTag();
 
-  private final static String CONTENT = Factory.lorumIpsum(JpaServiceIT.class);
+  private final static String CONTENT = Factory.lorumIpsum(JpaCacheServiceIT.class);
 
   private final JpaCacheService jpaService;
   private final TextNoteEvent textNoteEvent;
+  private final List<BaseTag> tags;
   private final Long savedId;
 
   @Autowired
-  public JpaServiceIT(JpaCacheService jpaService) throws NoSuchAlgorithmException {
+  public JpaCacheServiceIT(JpaCacheService jpaService) throws NoSuchAlgorithmException {
     this.jpaService = jpaService;
 
-    List<BaseTag> tags = new ArrayList<>();
+    this.tags = new ArrayList<>();
     tags.add(E_TAG);
     tags.add(P_TAG);
     tags.add(SUBJECT_TAG);
@@ -60,7 +61,7 @@ public class JpaServiceIT {
     tags.add(PRICE_TAG);
 
     this.textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-   this.savedId = jpaService.save(textNoteEvent);
+    this.savedId = jpaService.save(textNoteEvent);
   }
 
   @Test
@@ -69,7 +70,7 @@ public class JpaServiceIT {
     log.info("saved id: {}", savedId);
 
     List<EventEntityIF> all = jpaService.getAll();
-    
+
     assertTrue(all.stream()
         .map(EventEntityIF::getUid)
         .anyMatch(savedId::equals));
@@ -125,5 +126,58 @@ public class JpaServiceIT {
 
     assertEquals(firstEntity, secondEntity);
     assertEquals(firstDto, secondDto);
+  }
+
+  @Test
+  void testDuplicateSaveAttempt() {
+    int startSize = jpaService.getAll().size();
+    log.debug("startSize: {}", startSize);
+
+    Long savedUidOfDuplicate = jpaService.save(textNoteEvent);
+    assertEquals(savedId, savedUidOfDuplicate);
+
+    int endSize = jpaService.getAll().size();
+    log.debug("endSize: {}", endSize);
+    assertEquals(startSize, endSize);
+  }
+
+  @Test
+  void testDeletedEvent() throws NoSuchAlgorithmException {
+    log.info("saved id: {}", savedId);
+    String newContent = Factory.lorumIpsum(JpaCacheServiceIT.class);
+
+    List<EventEntityIF> all = jpaService.getAll();
+    int sizeBeforeDeleteMeEvent = all.size();
+    log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
+
+    TextNoteEvent eventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
+    Long eventToDeleteUid = jpaService.save(eventToDelete);
+
+    List<EventEntityIF> allAfterDeleteMeEvent = jpaService.getAll();
+    int sizeAfterDeleteMeEvent = allAfterDeleteMeEvent.size();
+    log.debug("sizeAfterDeleteMeEvent: {}", sizeAfterDeleteMeEvent);
+    assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
+
+    assertTrue(jpaService.getAll().stream()
+        .map(EventEntityIF::getUid)
+        .anyMatch(eventToDeleteUid::equals));
+
+    EventTag eventTag = new EventTag(eventToDelete.getId());
+
+    DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
+    assertTrue(deletionEvent.getTags().contains(eventTag));
+
+    jpaService.deleteEventEntity(deletionEvent);
+
+    List<DeletionEventEntityJpaIF> allDeletionJpaEventEntities = jpaService.getAllDeletionJpaEventEntities();
+    assertEquals(1, allDeletionJpaEventEntities.size());
+
+    log.debug(allDeletionJpaEventEntities.toString());
+    allDeletionJpaEventEntities.forEach(event -> {
+      log.debug("deletionDbId: {}", event.getId().toString());
+      log.debug("deletionDbEventId: {}", event.getEventId().toString());
+    });
+
+    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventEntityJpaIF::getEventId).anyMatch(eventToDeleteUid::equals));
   }
 }

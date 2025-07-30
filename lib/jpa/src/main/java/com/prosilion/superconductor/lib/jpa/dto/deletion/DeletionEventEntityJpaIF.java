@@ -4,4 +4,5 @@ import com.prosilion.superconductor.base.DeletionEntityIF;
 
 public interface DeletionEventEntityJpaIF extends DeletionEntityIF<Long> {
   Long getId();
+  Long getEventId();
 }

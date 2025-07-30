@@ -2,6 +2,7 @@ package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.DeletionEntityIF;
 import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
@@ -49,13 +50,14 @@ public class JpaCacheService implements JpaCacheServiceIF {
 
   // impls parent IF (CacheIF) spec...
   public void deleteEventEntity(@NonNull EventIF eventIF) {
-    Optional<EventEntityIF> eventByIdStringAsEventEntityIF =
-        this.getEventByEventId(eventIF.getId());
-
-    eventByIdStringAsEventEntityIF
-        .map(EventEntityIF::getUid).ifPresent(
-            // ... which in turn calls our own interface variant...   
-            this::deleteEventEntity);
+    eventIF.getTags().stream()
+        .filter(EventTag.class::isInstance)
+        .map(EventTag.class::cast)
+        .map(EventTag::getIdEvent)
+        .map(this::getEventByEventId)
+        .flatMap(Optional::stream).toList().stream()
+        .map(EventEntityIF::getUid)
+        .forEach(this::deleteEventEntity);
   }
 
   @Override
@@ -67,6 +69,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   public Long save(@NonNull EventIF event) {
     return jpaEventEntityService.saveEventEntity(event);
   }
+
 
   public List<EventEntityIF> getAll() {
     return jpaEventEntityService.getAll();

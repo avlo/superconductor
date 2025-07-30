@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.lib.jpa.entity;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.nostr.user.Signature;
@@ -135,16 +136,15 @@ public class EventEntity implements EventEntityIF {
 
   @Override
   public boolean equals(Object o) {
-    if (o == null || getClass() != o.getClass()) return false;
-    EventEntity that = (EventEntity) o;
+    if (!(o instanceof EventIF that)) return false;
     return
-        new HashSet<>(tags).containsAll(that.tags) &&
-            Objects.equals(eventId, that.eventId) &&
-            Objects.equals(pubKey, that.pubKey) &&
-            Objects.equals(kind, that.kind) &&
-            Objects.equals(createdAt, that.createdAt) &&
-            Objects.equals(content, that.content) &&
-            Objects.equals(signature, that.signature);
+        new HashSet<>(tags).containsAll(that.getTags()) &&
+            Objects.equals(eventId, that.getId()) &&
+            Objects.equals(pubKey, that.getPublicKey().toString()) &&
+            Objects.equals(kind, that.getKind().getValue()) &&
+            Objects.equals(createdAt, that.getCreatedAt()) &&
+            Objects.equals(content, that.getContent()) &&
+            Objects.equals(signature, that.getSignature().toString());
   }
 
   @Override

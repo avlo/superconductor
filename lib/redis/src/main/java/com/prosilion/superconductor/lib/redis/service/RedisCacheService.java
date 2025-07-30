@@ -2,8 +2,8 @@ package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.superconductor.base.DeletionEntityIF;
-import com.prosilion.superconductor.base.service.event.CacheIF;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentRedisIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class RedisCache implements CacheIF {
+public class RedisCacheService implements CacheServiceIF {
   private final EventDocumentService eventDocumentService;
   private final DeletionEventDocumentService deletionEventDocumentService;
 
   @Autowired
-  public RedisCache(
+  public RedisCacheService(
       @NonNull EventDocumentService eventDocumentService,
       @NonNull DeletionEventDocumentService deletionEventDocumentService) {
     this.eventDocumentService = eventDocumentService;
@@ -30,18 +30,18 @@ public class RedisCache implements CacheIF {
   }
 
   @Override
-  public Optional<EventDocumentIF> getByEventIdString(@NonNull String eventId) {
+  public Optional<EventDocumentIF> getEventByEventId(@NonNull String eventId) {
     return eventDocumentService.findByEventIdString(eventId);
   }
 
   @Override
-  public List<EventDocumentIF> getEventsByKind(@NonNull Kind kind) {
+  public List<EventDocumentIF> getByKind(@NonNull Kind kind) {
     return eventDocumentService.getEventsByKind(kind);
   }
 
   @Override
-  public void save(@NonNull EventIF event) {
-    eventDocumentService.saveEventDocument(event);
+  public EventDocumentIF save(@NonNull EventIF event) {
+    return eventDocumentService.saveEventDocument(event);
   }
 
   @Override
@@ -53,18 +53,18 @@ public class RedisCache implements CacheIF {
   public Map<Kind, Map<?, ? extends EventIF>> getAllMappedByKind() {
     List<EventDocumentIF> eventEntities = getAll();
 //    TODO: fix missing generic
-    List<DeletionEntityIF> deletionEventEntities = getAllDeletionEventEntities();
+    List<DeletionEventDocumentRedisIF> deletionEventEntities = getAllDeletionEventEntities();
 
     List<EventDocumentIF> filteredDeletedEvents = eventEntities.stream().filter(eventEntityIF ->
         deletionEventEntities.stream()
             .anyMatch(deletionEventEntityJpaIF ->
-                deletionEventEntityJpaIF.getId().equals(eventEntityIF.getEventId()))).toList();
+                deletionEventEntityJpaIF.getId().equals(eventEntityIF.getId()))).toList();
 
     Map<Kind, Map<String, EventDocumentIF>> filteredDeletedEventsAsHardGenerics = filteredDeletedEvents.stream()
         .collect(
             Collectors.groupingBy(EventIF::getKind,
                 Collectors.toMap(
-                    EventDocumentIF::getEventId,
+                    EventDocumentIF::getId,
                     Function.identity())));
 
     Map<Kind, Map<?, ? extends EventIF>> filteredDeletedEventsAsWildcards =
@@ -77,15 +77,13 @@ public class RedisCache implements CacheIF {
     return filteredDeletedEventsAsWildcards;
   }
 
-  //    TODO: fix missing generic
-  @Override
-  public List<DeletionEntityIF> getAllDeletionEventEntities() {
+  public List<DeletionEventDocumentRedisIF> getAllDeletionEventEntities() {
     return List.of();
   }
 
   public void deleteEventEntity(@NonNull EventIF event) {
-    Optional<EventDocumentIF> byEventIdString = getByEventIdString(event.getEventId());
+    Optional<EventDocumentIF> byEventIdString = getEventByEventId(event.getId());
 
-    byEventIdString.map(EventDocumentIF::getEventId).ifPresent(deletionEventDocumentService::deleteEventEntity);
+    byEventIdString.map(EventDocumentIF::getId).ifPresent(deletionEventDocumentService::deleteEventEntity);
   }
 }

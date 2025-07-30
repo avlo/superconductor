@@ -15,22 +15,20 @@ import jakarta.persistence.Transient;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@NoArgsConstructor
 @Entity
 @Table(name = "event")
+@NoArgsConstructor
 public class EventEntity implements EventEntityIF {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Long uid;
 
   @Column(unique = true)
-  private String eventIdString;
+  private String eventId;
   private String pubKey;
+
   private Integer kind;
   private Long createdAt;
 
@@ -38,12 +36,11 @@ public class EventEntity implements EventEntityIF {
   private String content;
 
   @Transient
-  @Setter
   private List<BaseTag> tags;
   private String signature;
 
-  public EventEntity(String eventIdString, Integer kind, String pubKey, Long createdAt, String signature, String content) {
-    this.eventIdString = eventIdString;
+  public EventEntity(String eventId, Integer kind, String pubKey, Long createdAt, String signature, String content) {
+    this.eventId = eventId;
     this.kind = kind;
     this.pubKey = pubKey;
     this.createdAt = createdAt;
@@ -51,14 +48,29 @@ public class EventEntity implements EventEntityIF {
     this.content = content;
   }
 
-  public EventEntity(Long id, String eventIdString, Integer kind, String pubKey, Long createdAt, String signature, String content) {
-    this(eventIdString, kind, pubKey, createdAt, signature, content);
-    this.id = id;
+  public EventEntity(Long uid, String eventId, Integer kind, String pubKey, Long createdAt, String signature, String content) {
+    this(eventId, kind, pubKey, createdAt, signature, content);
+    this.uid = uid;
   }
 
   @Override
-  public String getEventId() {
-    return eventIdString;
+  public void setUid(Long uid) {
+    this.uid = uid;
+  }
+
+  @Override
+  public Long getUid() {
+    return uid;
+  }
+
+  @Override
+  public String getId() {
+    return eventId;
+  }
+
+  @Override
+  public void setId(String id) {
+    this.eventId = id;
   }
 
   @Override
@@ -67,8 +79,48 @@ public class EventEntity implements EventEntityIF {
   }
 
   @Override
+  public void setPublicKey(PublicKey publicKey) {
+    this.pubKey = publicKey.toString();
+  }
+
+  @Override
   public Kind getKind() {
     return Kind.valueOf(kind);
+  }
+
+  @Override
+  public void setKind(Kind kind) {
+    this.kind = kind.getValue();
+  }
+
+  @Override
+  public void setTags(List<BaseTag> tags) {
+    this.tags = tags;
+  }
+
+  @Override
+  public List<BaseTag> getTags() {
+    return tags;
+  }
+
+  @Override
+  public Long getCreatedAt() {
+    return createdAt;
+  }
+
+  @Override
+  public void setCreatedAt(Long createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  @Override
+  public String getContent() {
+    return content;
+  }
+
+  @Override
+  public void setContent(String content) {
+    this.content = content;
   }
 
   @Override
@@ -77,12 +129,17 @@ public class EventEntity implements EventEntityIF {
   }
 
   @Override
+  public void setSignature(Signature signature) {
+    this.signature = signature.toString();
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
     EventEntity that = (EventEntity) o;
     return
         new HashSet<>(tags).containsAll(that.tags) &&
-            Objects.equals(eventIdString, that.eventIdString) &&
+            Objects.equals(eventId, that.eventId) &&
             Objects.equals(pubKey, that.pubKey) &&
             Objects.equals(kind, that.kind) &&
             Objects.equals(createdAt, that.createdAt) &&
@@ -92,6 +149,6 @@ public class EventEntity implements EventEntityIF {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, eventIdString, pubKey, kind, createdAt, content, new HashSet<>(tags), signature);
+    return Objects.hash(uid, eventId, pubKey, kind, createdAt, content, new HashSet<>(tags), signature);
   }
 }

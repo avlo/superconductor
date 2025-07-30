@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.lib.jpa.service;
 
-import com.prosilion.superconductor.base.DeletionEntityIF;
 import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntity;
 import com.prosilion.superconductor.lib.jpa.repository.deletion.DeletionEventEntityRepository;
@@ -14,16 +13,19 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class DeletionEventEntityService {
+public class JpaDeletionEventEntityService {
   private final DeletionEventEntityRepository repo;
 
   @Autowired
-  public DeletionEventEntityService(@NonNull DeletionEventEntityRepository repo) {
+  public JpaDeletionEventEntityService(@NonNull DeletionEventEntityRepository repo) {
     this.repo = repo;
   }
 
   //    TODO: fix missing generic  
-  public List<DeletionEntityIF> findAll() {
+  public List<DeletionEventEntityJpaIF> findAll() {
+//    List<DeletionEventEntityJpaIF> all = repo.findAll();
+//    List<DeletionEventEntityJpaIF> deletionEventEntityJpaIFS = Collections.unmodifiableList(all);
+//    return deletionEventEntityJpaIFS;
     List<DeletionEventEntity> all = repo.findAll();
     return Collections.unmodifiableList(all);
   }

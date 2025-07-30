@@ -53,7 +53,7 @@ class EventNoOpReqMessageIT {
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventIdFromEventSql)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventIdFromEventSql)));
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkeyFromEventSql)));
   }
 
@@ -66,7 +66,7 @@ class EventNoOpReqMessageIT {
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventIdFromEventSql)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventIdFromEventSql)));
   }
 
   @Test

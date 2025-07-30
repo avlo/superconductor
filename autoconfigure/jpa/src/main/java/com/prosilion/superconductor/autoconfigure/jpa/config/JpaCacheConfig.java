@@ -1,11 +1,11 @@
 package com.prosilion.superconductor.autoconfigure.jpa.config;
 
-import com.prosilion.superconductor.base.service.event.CacheIF;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.lib.jpa.service.EventEntityService;
-import com.prosilion.superconductor.lib.jpa.service.JpaCache;
-import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
+import com.prosilion.superconductor.lib.jpa.service.JpaEventEntityService;
+import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
+import com.prosilion.superconductor.lib.jpa.service.JpaDeletionEventEntityService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,19 +26,19 @@ import org.springframework.lang.NonNull;
     "com.prosilion.superconductor.lib.jpa.plugin.tag",
     "com.prosilion.superconductor.lib.jpa.service"
 })
-@ConditionalOnClass(JpaCache.class)
+@ConditionalOnClass(JpaCacheService.class)
 public class JpaCacheConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheIF cacheIF(
-      @NonNull EventEntityService eventEntityService,
-      @NonNull DeletionEventEntityService deletionEventEntityService) {
-    return new JpaCache(eventEntityService, deletionEventEntityService);
+  CacheServiceIF cacheIF(
+      @NonNull JpaEventEntityService jpaEventEntityService,
+      @NonNull JpaDeletionEventEntityService jpaDeletionEventEntityService) {
+    return new JpaCacheService(jpaEventEntityService, jpaDeletionEventEntityService);
   }
 
   @Bean
-  EventPluginIF eventPlugin(@NonNull CacheIF cacheIF) {
-    return new EventPlugin(cacheIF);
+  EventPluginIF eventPlugin(@NonNull CacheServiceIF cacheServiceIF) {
+    return new EventPlugin(cacheServiceIF);
   }
 }

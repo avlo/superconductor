@@ -26,6 +26,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
+import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
@@ -38,7 +39,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -93,7 +93,7 @@ public class ClassifiedListingEventMessageIT {
         CLASSIFIED_LISTING_TITLE, CLASSIFIED_LISTING_SUMMARY, PRICE_TAG, CLASSIFIED_LISTING_LOCATION);
 
     BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, classifiedListing, tags, content);
-    this.eventId = event.getEventId();
+    this.eventId = event.getId();
 
     EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
     EventMessage eventMessage = new EventMessage(genericEventDtoIF);
@@ -117,7 +117,7 @@ public class ClassifiedListingEventMessageIT {
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedBaseMessages);
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getContent().equals(content)));
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
   }
@@ -135,7 +135,7 @@ public class ClassifiedListingEventMessageIT {
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedEvents);
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
@@ -145,7 +145,7 @@ public class ClassifiedListingEventMessageIT {
 
     log.debug("okMessage:");
     log.debug("  " + returnedEvents2);
-    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEvents2.stream().anyMatch(event -> event.getContent().equals(content)));
     assertTrue(returnedEvents2.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
   }
@@ -162,7 +162,7 @@ public class ClassifiedListingEventMessageIT {
 
     log.debug("okMessage to testReqFilteredByEventId:");
     log.debug("  " + returnedEvents);
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter));
@@ -171,7 +171,7 @@ public class ClassifiedListingEventMessageIT {
 
     log.debug("okMessage:");
     log.debug("  " + returnedEvents2);
-    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEvents2.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEvents2.stream().anyMatch(event -> event.getContent().equals(content)));
   }
 

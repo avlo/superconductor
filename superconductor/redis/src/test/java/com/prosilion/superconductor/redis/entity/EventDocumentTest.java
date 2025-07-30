@@ -46,7 +46,7 @@ class EventDocumentTest {
         SIGNATURE);
 
     assertEquals(SIGNATURE, eventDocument.getSignature().toString());
-    assertEquals(EVENT_ID, eventDocument.getEventIdString());
+    assertEquals(EVENT_ID, eventDocument.getEventId());
     assertEquals(PUB_KEY, eventDocument.getPubKey());
     assertEquals(KIND, eventDocument.getKind().getValue());
     assertEquals(CREATED_AT, eventDocument.getCreatedAt());

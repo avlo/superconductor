@@ -66,7 +66,7 @@ class MatchingKindAuthorIdentityTagIT {
     log.debug("  " + returnedEvents);
 
     assertTrue(returnedEvents.stream().anyMatch(event ->
-        event.getEventId().equals(eventId)));
+        event.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().anyMatch(event ->
         event.getContent().equals(content)));
     assertTrue(returnedEvents.stream().anyMatch(event ->

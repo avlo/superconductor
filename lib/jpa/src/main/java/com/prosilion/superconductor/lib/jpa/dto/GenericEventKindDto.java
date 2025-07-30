@@ -1,15 +1,16 @@
+
 package com.prosilion.superconductor.lib.jpa.dto;
 
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKind;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.superconductor.base.service.event.service.GenericEventKind;
+import com.prosilion.superconductor.base.service.event.service.GenericEventKindIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 
 public record GenericEventKindDto(BaseEvent baseEvent) {
   public EventEntityIF convertDtoToEntity() {
     EventEntity e = new EventEntity(
-        baseEvent.getEventId(),
+        baseEvent.getId(),
         baseEvent.getKind().getValue(),
         baseEvent.getPublicKey().toString(),
         baseEvent.getCreatedAt(),
@@ -21,7 +22,7 @@ public record GenericEventKindDto(BaseEvent baseEvent) {
 
   public GenericEventKindIF convertBaseEventToEventIF() {
     return new GenericEventKind(
-        baseEvent.getEventId(),
+        baseEvent.getId(),
         baseEvent.getPublicKey(),
         baseEvent.getCreatedAt(),
         baseEvent.getKind(),

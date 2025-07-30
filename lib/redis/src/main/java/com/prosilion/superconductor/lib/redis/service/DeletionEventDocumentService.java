@@ -89,7 +89,7 @@ public class DeletionEventDocumentService {
 
   private DeletionEventDocumentRedisIF processInterceptors(EventIF dto) {
     DeletionEventDocument eventDocument = DeletionEventDocument.of(
-        dto.getEventId());
+        dto.getId());
 
     return eventDocument;
   }

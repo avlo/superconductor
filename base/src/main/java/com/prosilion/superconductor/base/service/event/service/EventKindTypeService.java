@@ -3,9 +3,6 @@ package com.prosilion.superconductor.base.service.event.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventKind;
-import com.prosilion.nostr.event.GenericEventKindType;
-import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
@@ -33,7 +30,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
     processIncomingEvent(
         new GenericEventKindType(
             new GenericEventKind(
-                event.getEventId(),
+                event.getId(),
                 event.getPublicKey(),
                 event.getCreatedAt(),
                 event.getKind(),

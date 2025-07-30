@@ -14,7 +14,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.jpa.service.EventEntityService;
+import com.prosilion.superconductor.lib.jpa.service.JpaEventEntityService;
 import com.prosilion.superconductor.h2db.util.Factory;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -30,28 +30,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class EventEntityServiceH2dbIT {
+class JpaEventEntityServiceH2DbIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
   private static final PublicKey EVENT_PUBKEY = IDENTITY.getPublicKey();
   private static final PubKeyTag P_TAG = Factory.createPubKeyTag(IDENTITY);
 
-  private static final EventTag E_TAG = Factory.createEventTag(EventEntityServiceH2dbIT.class);
-  private static final GeohashTag G_TAG = Factory.createGeohashTag(EventEntityServiceH2dbIT.class);
-  private static final HashtagTag T_TAG = Factory.createHashtagTag(EventEntityServiceH2dbIT.class);
-  private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(EventEntityServiceH2dbIT.class);
+  private static final EventTag E_TAG = Factory.createEventTag(JpaEventEntityServiceH2DbIT.class);
+  private static final GeohashTag G_TAG = Factory.createGeohashTag(JpaEventEntityServiceH2DbIT.class);
+  private static final HashtagTag T_TAG = Factory.createHashtagTag(JpaEventEntityServiceH2DbIT.class);
+  private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(JpaEventEntityServiceH2DbIT.class);
   private static final PriceTag PRICE_TAG = Factory.createPriceTag();
 
-  private final static String CONTENT = Factory.lorumIpsum(EventEntityServiceH2dbIT.class);
+  private final static String CONTENT = Factory.lorumIpsum(JpaEventEntityServiceH2DbIT.class);
   private final static Kind KIND = Kind.TEXT_NOTE;
 
-  private final EventEntityService eventEntityService;
+  private final JpaEventEntityService jpaEventEntityService;
 
   private final BaseEvent textNoteEvent;
   private final Long savedEventId;
 
   @Autowired
-  public EventEntityServiceH2dbIT(@NonNull EventEntityService eventEntityService) throws NostrException, NoSuchAlgorithmException {
-    this.eventEntityService = eventEntityService;
+  public JpaEventEntityServiceH2DbIT(@NonNull JpaEventEntityService jpaEventEntityService) throws NostrException, NoSuchAlgorithmException {
+    this.jpaEventEntityService = jpaEventEntityService;
     List<BaseTag> tags = new ArrayList<>();
     tags.add(E_TAG);
     tags.add(P_TAG);
@@ -61,20 +61,20 @@ class EventEntityServiceH2dbIT {
     tags.add(PRICE_TAG);
 
     textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-    savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
+    savedEventId = jpaEventEntityService.saveEventEntity(textNoteEvent);
   }
 
   @Test
   void saveAndGetEventWithPublicKey() {
     assertTrue(
-        eventEntityService.getEventsByPublicKey(textNoteEvent.getPublicKey())
+        jpaEventEntityService.getEventsByPublicKey(textNoteEvent.getPublicKey())
             .stream().anyMatch(eventEntity ->
                 eventEntity.getPublicKey().toHexString().equals(textNoteEvent.getPublicKey().toHexString())));
   }
 
   @Test
   void saveAndGetEventWithGeohash() {
-    EventIF savedEvent = eventEntityService.getEventById(savedEventId).orElseThrow();
+    EventIF savedEvent = jpaEventEntityService.getEventByUid(savedEventId).orElseThrow();
 
     assertEquals(CONTENT, savedEvent.getContent());
     assertEquals(KIND, savedEvent.getKind());

@@ -1,15 +1,15 @@
 package com.prosilion.superconductor.lib.redis.dto;
 
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKind;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 
 public record GenericDocumentKindDto(BaseEvent baseEvent) {
   public EventDocumentIF convertDtoToDocument() {
     EventDocument eventDocument = EventDocument.of(
-        baseEvent.getEventId(),
+        baseEvent.getId(),
         baseEvent.getKind().getValue(),
         baseEvent.getPublicKey().toString(),
         baseEvent.getCreatedAt(),
@@ -20,9 +20,9 @@ public record GenericDocumentKindDto(BaseEvent baseEvent) {
     return eventDocument;
   }
 
-  public GenericEventKindIF convertBaseEventToEventIF() {
-    return new GenericEventKind(
-        baseEvent.getEventId(),
+  public EventIF convertBaseEventToEventIF() {
+    return new GenericEventRecord(
+        baseEvent.getId(),
         baseEvent.getPublicKey(),
         baseEvent.getCreatedAt(),
         baseEvent.getKind(),

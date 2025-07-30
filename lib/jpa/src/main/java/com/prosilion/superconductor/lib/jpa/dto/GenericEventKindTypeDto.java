@@ -2,8 +2,8 @@ package com.prosilion.superconductor.lib.jpa.dto;
 
 import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKindType;
-import com.prosilion.nostr.event.GenericEventKindTypeIF;
+import com.prosilion.superconductor.base.service.event.service.GenericEventKindType;
+import com.prosilion.superconductor.base.service.event.service.GenericEventKindTypeIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 
 public record GenericEventKindTypeDto(BaseEvent event, KindTypeIF kindType) {

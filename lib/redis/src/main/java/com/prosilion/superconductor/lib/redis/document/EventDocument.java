@@ -26,7 +26,7 @@ public class EventDocument implements EventDocumentIF {
 
   @Id
   @NonNull
-  private String eventIdString;
+  private String eventId;
 
   @NonNull
   @Indexed
@@ -50,8 +50,8 @@ public class EventDocument implements EventDocumentIF {
   private String signature;
 
   @Override
-  public String getEventId() {
-    return eventIdString;
+  public String getId() {
+    return eventId;
   }
 
   @Override

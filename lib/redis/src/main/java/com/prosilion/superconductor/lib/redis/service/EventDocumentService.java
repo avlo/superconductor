@@ -56,7 +56,7 @@ public class EventDocumentService {
             Collectors.groupingBy(
                 EventIF::getKind,
                 Collectors.toMap(
-                    EventDocumentIF::getEventId,
+                    EventDocumentIF::getId,
                     Function.identity(), (prev, next) -> next)));
   }
 
@@ -86,7 +86,7 @@ public class EventDocumentService {
 
   private EventDocumentIF processInterceptors(EventIF dto) {
     EventDocument eventDocument = EventDocument.of(
-        dto.getEventId(),
+        dto.getId(),
         dto.getKind().getValue(),
         dto.getPublicKey().toString(),
         dto.getCreatedAt(),
@@ -106,7 +106,7 @@ public class EventDocumentService {
 
   private EventDocumentIF revertInterceptor(EventDocumentIF documentToRevert) {
     EventDocument revertedDocument = EventDocument.of(
-        documentToRevert.getEventId(),
+        documentToRevert.getId(),
         documentToRevert.getKind().getValue(),
         documentToRevert.getPublicKey().toString(),
         documentToRevert.getCreatedAt(),

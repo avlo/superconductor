@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.base.service.clientresponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.nostr.event.GenericEventKindIF;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.message.OkMessage;
 import lombok.Getter;
 import org.springframework.lang.NonNull;
@@ -13,13 +13,13 @@ public class ClientOkResponse implements ClientResponse {
   private final String sessionId;
   private final boolean valid;
 
-  public ClientOkResponse(@NonNull String sessionId, @NonNull GenericEventKindIF event) throws JsonProcessingException {
+  public ClientOkResponse(@NonNull String sessionId, @NonNull EventIF event) throws JsonProcessingException {
     this(sessionId, event, true, "request successful");
   }
 
-  public ClientOkResponse(@NonNull String sessionId, @NonNull GenericEventKindIF event, boolean valid, @NonNull String message) throws JsonProcessingException {
+  public ClientOkResponse(@NonNull String sessionId, @NonNull EventIF event, boolean valid, @NonNull String message) throws JsonProcessingException {
     this.valid = valid;
     this.sessionId = sessionId;
-    this.textMessage = new TextMessage(new OkMessage(event.getEventId(), valid, message).encode());
+    this.textMessage = new TextMessage(new OkMessage(event.getId(), valid, message).encode());
   }
 }

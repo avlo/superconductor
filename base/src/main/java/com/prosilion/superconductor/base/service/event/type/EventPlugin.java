@@ -1,17 +1,17 @@
 package com.prosilion.superconductor.base.service.event.type;
 
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.superconductor.base.service.event.CacheIF;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 
 public class EventPlugin implements EventPluginIF {
-  private final CacheIF cacheIF;
+  private final CacheServiceIF cacheServiceIF;
 
-  public EventPlugin(CacheIF cacheIF) {
-    this.cacheIF = cacheIF;
+  public EventPlugin(CacheServiceIF cacheServiceIF) {
+    this.cacheServiceIF = cacheServiceIF;
   }
 
   @Override
   public void processIncomingEvent(EventIF event) {
-    cacheIF.save(event);
+    cacheServiceIF.save(event);
   }
 }

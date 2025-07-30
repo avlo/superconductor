@@ -2,9 +2,9 @@ package com.prosilion.superconductor.lib.redis.dto;
 
 import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventKind;
-import com.prosilion.nostr.event.GenericEventKindType;
-import com.prosilion.nostr.event.GenericEventKindTypeIF;
+import com.prosilion.superconductor.base.service.event.service.GenericEventKind;
+import com.prosilion.superconductor.base.service.event.service.GenericEventKindType;
+import com.prosilion.superconductor.base.service.event.service.GenericEventKindTypeIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 
@@ -12,7 +12,7 @@ public record GenericDocumentKindTypeDto(BaseEvent baseEvent, KindTypeIF kindTyp
 
   public EventDocumentIF convertDtoToEntity() {
     EventDocument eventDocument = EventDocument.of(
-        baseEvent.getEventId(),
+        baseEvent.getId(),
         baseEvent.getKind().getValue(),
         baseEvent.getPublicKey().toString(),
         baseEvent.getCreatedAt(),
@@ -26,7 +26,7 @@ public record GenericDocumentKindTypeDto(BaseEvent baseEvent, KindTypeIF kindTyp
   public GenericEventKindTypeIF convertBaseEventToGenericEventKindTypeIF() {
     return new GenericEventKindType(
         new GenericEventKind(
-            baseEvent.getEventId(),
+            baseEvent.getId(),
             baseEvent.getPublicKey(),
             baseEvent.getCreatedAt(),
             baseEvent.getKind(),

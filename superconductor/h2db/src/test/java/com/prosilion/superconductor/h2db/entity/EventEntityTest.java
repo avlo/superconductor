@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EventEntityTest {
-  public static final String SIGNATURE = "86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546";
-  public static final String EVENT_ID = "5f66a36101d3d152c6270e18f5622d1f8bce4ac5da9ab62d7c3cc0006e5914cc";
-  public static final String PUB_KEY = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
-  public static final String CONTENT = "1111111111";
-  public static final Integer KIND = 1;
-  public static final long CREATED_AT = 1717357053050L;
+  public static final String SIGNATURE = Factory.generateRandomHex64String().concat(Factory.generateRandomHex64String());
+  public static final String EVENT_ID = Factory.generateRandomHex64String();
+  public static final String PUB_KEY = Factory.generateRandomHex64String();
+  public static final String CONTENT = Factory.lorumIpsum(EventEntityTest.class);
+  public static final Integer KIND = Kind.TEXT_NOTE.getValue();
+  public static final long CREATED_AT = System.currentTimeMillis();
 
   @Test
   void testSettersGetters() {
@@ -37,8 +37,8 @@ class EventEntityTest {
         CONTENT);
 
     assertEquals(SIGNATURE, event.getSignature().toString());
-    assertEquals(EVENT_ID, event.getEventIdString());
-    assertEquals(PUB_KEY, event.getPubKey());
+    assertEquals(EVENT_ID, event.getId());
+    assertEquals(PUB_KEY, event.getPublicKey().toString());
     assertEquals(KIND, event.getKind().getValue());
     assertEquals(CREATED_AT, event.getCreatedAt());
     assertEquals(CONTENT, event.getContent());
@@ -86,7 +86,7 @@ class EventEntityTest {
     List<BaseTag> tags = new ArrayList<>();
     tags.add(new EventTag(Factory.generateRandomHex64String()));
     tags.add(addressTag);
-    
+
     EventEntity identicalEntity = new EventEntity(
         EVENT_ID,
         KIND,
@@ -111,7 +111,7 @@ class EventEntityTest {
     List<BaseTag> tags2 = new ArrayList<>();
     tags2.add(new EventTag(Factory.generateRandomHex64String()));
     tags2.add(addressTag);
-    
+
     EventEntity entity3Diff = new EventEntity(
         EVENT_ID,
         KIND,
@@ -123,7 +123,7 @@ class EventEntityTest {
 
     assertNotEquals(identicalEntity2, entity3Diff);
     assertNotEquals(identicalEntity.hashCode(), entity3Diff.hashCode());
-    
+
     assertThrows(AssertionFailedError.class, () -> assertEquals(identicalEntity2, entity3Diff));
   }
 }

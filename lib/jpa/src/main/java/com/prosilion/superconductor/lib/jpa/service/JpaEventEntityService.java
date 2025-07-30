@@ -30,13 +30,18 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class EventEntityService {
-  private final ConcreteTagEntitiesService<BaseTag, AbstractTagEntityRepository<AbstractTagEntity>, AbstractTagEntity, EventEntityAbstractEntity, EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService;
+public class JpaEventEntityService {
+  private final ConcreteTagEntitiesService<
+      BaseTag, 
+      AbstractTagEntityRepository<AbstractTagEntity>, 
+      AbstractTagEntity, 
+      EventEntityAbstractEntity, 
+      EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService;
   private final GenericTagEntitiesService genericTagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
   @Autowired
-  public EventEntityService(
+  public JpaEventEntityService(
       @NonNull ConcreteTagEntitiesService<
           BaseTag,
           AbstractTagEntityRepository<AbstractTagEntity>,
@@ -52,7 +57,8 @@ public class EventEntityService {
 
   public Long saveEventEntity(@NonNull BaseEvent baseEvent) {
     return saveEventEntity(
-        new GenericEventKindDto(baseEvent).convertBaseEventToEventIF());
+        new GenericEventKindDto(baseEvent).convertBaseEventToEventIF()
+    );
   }
 
   public Long saveEventEntity(@NonNull EventIF genericEventKindIF) {
@@ -60,7 +66,7 @@ public class EventEntityService {
       Long savedEntityId = Optional.of(
               eventEntityRepository.save(
                   convertDtoToEntity(genericEventKindIF)))
-          .map(EventEntityIF::getId)
+          .map(EventEntityIF::getUid)
           .orElseThrow(NoResultException::new);
 
       concreteTagEntitiesService.saveTags(savedEntityId, genericEventKindIF.getTags());
@@ -68,7 +74,7 @@ public class EventEntityService {
       return savedEntityId;
     } catch (DataIntegrityViolationException e) {
       log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
-      return eventEntityRepository.findByEventIdString(genericEventKindIF.getEventId()).orElseThrow(NoResultException::new).getId();
+      return eventEntityRepository.findByEventId(genericEventKindIF.getId()).orElseThrow(NoResultException::new).getUid();
     }
   }
 
@@ -78,7 +84,7 @@ public class EventEntityService {
             .collect(
                 Collectors.groupingBy(EventIF::getKind,
                     Collectors.toMap(eventEntityIF ->
-                            (T) eventEntityIF.getId(),
+                            (T) eventEntityIF.getUid(),
                         Function.identity())));
     return collect;
   }
@@ -87,50 +93,45 @@ public class EventEntityService {
     return eventEntityRepository.findAll().stream().map(this::populateEventEntity).collect(Collectors.toList());
   }
 
-  public Optional<EventEntityIF> getEventByIdStringAsEventEntityIF(@NonNull String eventIdString) {
+  public Optional<EventEntityIF> findByEventIdString(@NonNull String eventIdString) {
     Optional<EventEntityIF> entityIF = eventEntityRepository
-        .findByEventIdString(eventIdString);
+        .findByEventId(eventIdString);
     return entityIF
         .map(this::populateEventEntity);
-  }
-
-  public Optional<EventEntityIF> findByEventIdString(@NonNull String eventIdString) {
-    return getEventByIdStringAsEventEntityIF(eventIdString);
   }
 
   public List<EventEntityIF> getEventsByPublicKey(@NonNull PublicKey publicKey) {
     return eventEntityRepository.findByPubKey(
             publicKey.toHexString()).stream()
         .map(ee ->
-            getEventById(ee.getId())).flatMap(Optional::stream).toList();
+            getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
   }
 
   public List<EventEntityIF> getEventsByKind(@NonNull Kind kind) {
     return eventEntityRepository.findByKind(kind.getValue())
         .stream().map(ee ->
-            getEventById(ee.getId())).flatMap(Optional::stream).toList();
+            getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
   }
 
-  public Optional<EventEntityIF> getEventById(@NonNull Long id) {
-    return getById(id).map(this::populateEventEntity);
+  public Optional<EventEntityIF> getEventByUid(@NonNull Long id) {
+    Optional<EventEntityIF> byId = eventEntityRepository.findByUid(id);
+    Optional<EventEntityIF> eventEntityIF = byId.map(this::populateEventEntity);
+    return eventEntityIF;
   }
 
   //  TODO: perhaps below as admin fxnality
   protected void deleteEventEntity(@NonNull EventEntityIF eventToDelete) {
-//    concreteTagEntitiesService.deleteTags(eventToDelete.getId(), eventToDelete.getTags());
+//    concreteTagEntitiesService.deleteTags(eventToDelete.getUid(), eventToDelete.getTags());
 //    genericTagEntitiesService.deleteTags(eventToDelete.getTags());
 //    eventEntityRepository.delete(convertDtoToEntity(eventToDelete));
   }
 
-  private Optional<EventEntityIF> getById(Long id) {
-    return eventEntityRepository.findByIdWoErasure(id)
-        .map(EventEntityIF.class::cast);
-  }
-
   private EventEntityIF populateEventEntity(EventEntityIF eventEntity) {
-    List<BaseTag> concreteTags = concreteTagEntitiesService.getTags(eventEntity.getId()).stream().map(AbstractTagEntity::getAsBaseTag).toList();
+    List<BaseTag> concreteTags = concreteTagEntitiesService.getTags(eventEntity.getUid()).stream().map(AbstractTagEntity::getAsBaseTag).toList();
 
-    List<BaseTag> genericTags = genericTagEntitiesService.getGenericTags(eventEntity.getId()).stream().map(genericTag -> new GenericTag(genericTag.code(), genericTag.atts().stream().map(ElementAttributeDto::getElementAttribute).toList())).toList().stream().map(BaseTag.class::cast).toList();
+    List<BaseTag> genericTags = genericTagEntitiesService.getGenericTags(eventEntity.getUid()).stream().map(genericTag -> new GenericTag(genericTag.code(), genericTag.atts().stream().map(ElementAttributeDto::getElementAttribute).toList())).toList().stream().map(BaseTag.class::cast).toList();
+
+//    eventEntity = convertDtoToEntity(eventEntity);
 
     eventEntity.setTags(Stream.concat(concreteTags.stream(), genericTags.stream()).toList());
 
@@ -138,6 +139,7 @@ public class EventEntityService {
   }
 
   public static EventEntity convertDtoToEntity(EventIF dto) {
-    return new EventEntity(dto.getEventId(), dto.getKind().getValue(), dto.getPublicKey().toString(), dto.getCreatedAt(), dto.getSignature().toString(), dto.getContent());
+    EventEntity eventEntity = new EventEntity(dto.getId(), dto.getKind().getValue(), dto.getPublicKey().toString(), dto.getCreatedAt(), dto.getSignature().toString(), dto.getContent());
+    return eventEntity;
   }
 }

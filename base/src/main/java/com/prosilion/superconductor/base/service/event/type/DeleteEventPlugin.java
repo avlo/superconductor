@@ -2,16 +2,16 @@ package com.prosilion.superconductor.base.service.event.type;
 
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.superconductor.base.service.event.CacheIF;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.lang.NonNull;
 
 public class DeleteEventPlugin implements DeleteEventPluginIF {
-  private final CacheIF cacheIF;
+  private final CacheServiceIF cacheServiceIF;
 
-  public DeleteEventPlugin(@NonNull CacheIF cacheIF) {
-    this.cacheIF = cacheIF;
+  public DeleteEventPlugin(@NonNull CacheServiceIF cacheServiceIF) {
+    this.cacheServiceIF = cacheServiceIF;
   }
 
   @Override
@@ -43,7 +43,7 @@ public class DeleteEventPlugin implements DeleteEventPluginIF {
         .map(eventTag ->
         {
           String idEvent = eventTag.getIdEvent();
-          Optional<? extends EventIF> byEventIdString = cacheIF.getByEventIdString(idEvent);
+          Optional<? extends EventIF> byEventIdString = cacheServiceIF.getEventByEventId(idEvent);
           return byEventIdString
               .filter(cacheEvent ->
                   cacheEvent.getPublicKey().toString().equals(
@@ -54,6 +54,6 @@ public class DeleteEventPlugin implements DeleteEventPluginIF {
   }
 
   private void getAVoid(EventIF genericEventKindIF) {
-    cacheIF.deleteEventEntity(genericEventKindIF);
+    cacheServiceIF.deleteEventEntity(genericEventKindIF);
   }
 }

@@ -42,7 +42,7 @@ class EventDocumentRepositoryIT {
             CREATED_AT,
             CONTENT,
             SIGNATURE));
-    assertEquals(EVENT_ID, savedAndFetchedDocument.getEventIdString());
+    assertEquals(EVENT_ID, savedAndFetchedDocument.getEventId());
     assertEquals(KIND, savedAndFetchedDocument.getKind());
     assertEquals(PUB_KEY, savedAndFetchedDocument.getPubKey());
     assertEquals(CREATED_AT, savedAndFetchedDocument.getCreatedAt());

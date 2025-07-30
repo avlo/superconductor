@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import lombok.extern.slf4j.Slf4j;
-import com.prosilion.nostr.event.GenericEventKindIF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
@@ -28,7 +27,7 @@ public class ClientResponseService {
   public void processOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
     log.debug("Processing event message: {}, reason: {}", eventMessage.getEvent(), reason);
     try {
-      publisher.publishEvent(new ClientOkResponse(sessionId, (GenericEventKindIF) eventMessage.getEvent(), true, reason));
+      publisher.publishEvent(new ClientOkResponse(sessionId, eventMessage.getEvent(), true, reason));
     } catch (JsonProcessingException e) {
       processNotOkClientResponse(sessionId, eventMessage, e.getMessage());
     }
@@ -48,10 +47,10 @@ public class ClientResponseService {
   public void processNotOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
     log.debug("Processing failed event message: {}, reason: {}", eventMessage.getEvent(), reason);
     try {
-      publisher.publishEvent(new ClientOkResponse(sessionId, (GenericEventKindIF) eventMessage.getEvent(), false, reason));
+      publisher.publishEvent(new ClientOkResponse(sessionId, eventMessage.getEvent(), false, reason));
     } catch (JsonProcessingException e) {
       publisher.publishEvent(new TextMessage(
-          "[\"OK\", \"" + eventMessage.getEvent().getEventId() + "\", false, \"" + e.getMessage() + "\"]"
+          "[\"OK\", \"" + eventMessage.getEvent().getId() + "\", false, \"" + e.getMessage() + "\"]"
       ));
     }
   }

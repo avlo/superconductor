@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
-import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.EventFilter;
@@ -46,7 +46,7 @@ public class DeleteEventH2dbIT {
     this.nostrRelayService = nostrRelayService;
 
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
-    this.eventIdToDelete = event.getEventId();
+    this.eventIdToDelete = event.getId();
 
     EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
     EventMessage eventMessage = new EventMessage(genericEventDtoIF);
@@ -60,7 +60,7 @@ public class DeleteEventH2dbIT {
     eventDeletionTags.add(new EventTag(eventIdToDelete));
 
     BaseEvent deletionEvent = new DeletionEvent(identity, eventDeletionTags, Factory.lorumIpsum());
-    this.deletionEvent = deletionEvent.getEventId();
+    this.deletionEvent = deletionEvent.getId();
 
     EventIF genericDeleteEventDtoIF = new GenericEventKindDto(deletionEvent).convertBaseEventToEventIF();
     EventMessage deletionEventMessage = new EventMessage(genericDeleteEventDtoIF);
@@ -95,13 +95,13 @@ public class DeleteEventH2dbIT {
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedBaseMessages);
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(deletionEvent)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(deletionEvent)));
   }
-  
+
   @Test
   void testCreateAnotherNoteAndConfirItsNotDeleted() throws NoSuchAlgorithmException, IOException {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
-    String secondEventShouldNotGetDeleted = event.getEventId();
+    String secondEventShouldNotGetDeleted = event.getId();
 
     EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
     EventMessage eventMessage = new EventMessage(genericEventDtoIF);
@@ -120,7 +120,7 @@ public class DeleteEventH2dbIT {
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedBaseMessages);
-    assertTrue(returnedEventIFs.stream().anyMatch(secondEvent -> secondEvent.getEventId().equals(secondEventShouldNotGetDeleted)));
+    assertTrue(returnedEventIFs.stream().anyMatch(secondEvent -> secondEvent.getId().equals(secondEventShouldNotGetDeleted)));
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {

@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.enums.KindTypeIF;
-import com.prosilion.superconductor.base.service.event.CacheIF;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindService;
@@ -65,11 +65,11 @@ public class EventKindServiceConfig {
 //  @ConditionalOnMissingBean
   EventKindPluginIF<Kind> deleteEventKindPlugin(
       @NonNull EventPluginIF eventPlugin,
-      @NonNull CacheIF cacheIF) {
+      @NonNull CacheServiceIF cacheServiceIF) {
     return new DeleteEventKindPlugin(
         new EventKindPlugin(
             Kind.DELETION,
             eventPlugin),
-        new DeleteEventPlugin(cacheIF));
+        new DeleteEventPlugin(cacheServiceIF));
   }
 }

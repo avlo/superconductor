@@ -2,11 +2,11 @@ package com.prosilion.superconductor.h2db;
 
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
-import org.springframework.lang.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 
 @Slf4j
 @Nested
@@ -39,7 +39,7 @@ class MultipleSubscriberTextEventMessageIT extends AbstractMultipleSubscriber {
   }
 
   public String getGlobalEventJson(String startEventId) {
-    return "[ \"EVENT\", { \"content\": \"" + content + "\", \"id\":\"" + startEventId + "\", \"kind\": 1, \"created_at\": 1717357053050, \"pubkey\": \"" + authorPubKey + 
+    return "[ \"EVENT\", { \"content\": \"" + content + "\", \"id\":\"" + startEventId + "\", \"kind\": 1, \"created_at\": 1717357053050, \"pubkey\": \"" + authorPubKey +
         "\", \"tags\": [[\"a\", \"30023:" + addressableTagAuthorPubKey + ":abcd\"]," +
         "[\"custom-tag\", \"" + customTagValue + "\"], [\"p\", \"" + pubKeyTagPubKey + "\"], [\"e\", \"" + eventTagId + "\"], [\"g\", \"" + geoTagText + "\"]], \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
   }

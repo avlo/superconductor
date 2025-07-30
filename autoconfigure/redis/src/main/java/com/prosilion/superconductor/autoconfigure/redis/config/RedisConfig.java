@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.redis.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.superconductor.base.service.event.CacheIF;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
@@ -11,7 +11,7 @@ import com.prosilion.superconductor.lib.redis.repository.DeletionEventDocumentRe
 import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
 import com.prosilion.superconductor.lib.redis.service.DeletionEventDocumentService;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
-import com.prosilion.superconductor.lib.redis.service.RedisCache;
+import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -41,7 +41,7 @@ import org.springframework.lang.NonNull;
         "com.prosilion.superconductor.base.util",
         "com.prosilion.superconductor.lib.redis.interceptor"
     })
-@ConditionalOnClass(RedisCache.class)
+@ConditionalOnClass(RedisCacheService.class)
 public class RedisConfig {
 
   @Bean
@@ -62,15 +62,15 @@ public class RedisConfig {
   
   @Bean
   @ConditionalOnMissingBean
-  CacheIF cacheIF(
+  CacheServiceIF cacheIF(
       @NonNull EventDocumentService eventDocumentService,
       @NonNull DeletionEventDocumentService deletionEventDocumentService) {
-    return new RedisCache(eventDocumentService, deletionEventDocumentService);
+    return new RedisCacheService(eventDocumentService, deletionEventDocumentService);
   }
 
   @Bean
-  EventPluginIF eventPlugin(@NonNull CacheIF cacheIF) {
-    return new EventPlugin(cacheIF);
+  EventPluginIF eventPlugin(@NonNull CacheServiceIF cacheServiceIF) {
+    return new EventPlugin(cacheServiceIF);
   }
 
   @Bean

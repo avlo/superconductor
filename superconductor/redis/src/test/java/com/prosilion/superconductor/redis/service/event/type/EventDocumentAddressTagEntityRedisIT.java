@@ -60,7 +60,7 @@ class EventDocumentAddressTagEntityRedisIT {
 
   @Test
   void saveAndGetEventWithPublicKey() {
-    EventDocumentIF genericEventKindIF = eventDocumentService.findByEventIdString(savedEventDocument.getEventId()).orElseThrow();
+    EventDocumentIF genericEventKindIF = eventDocumentService.findByEventIdString(savedEventDocument.getId()).orElseThrow();
 
     List<BaseTag> tags = genericEventKindIF.getTags();
     tags.forEach(tag -> log.debug("\ntag:  \n{}\n ---- \n", tag));

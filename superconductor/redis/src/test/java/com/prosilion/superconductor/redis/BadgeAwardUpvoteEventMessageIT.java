@@ -4,7 +4,6 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventKindTypeIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
@@ -18,6 +17,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.base.service.event.service.GenericEventKindTypeIF;
 import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
 import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindTypeDto;
 import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEvent;
@@ -69,7 +69,7 @@ public class BadgeAwardUpvoteEventMessageIT {
             SuperconductorKindType.UPVOTE)
             .convertBaseEventToGenericEventKindTypeIF();
 
-    eventId = upvoteEvent.getEventId();
+    eventId = upvoteEvent.getId();
 
     EventMessage eventMessage = new EventMessage(upvoteEvent);
     assertTrue(
@@ -103,7 +103,7 @@ public class BadgeAwardUpvoteEventMessageIT {
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
 
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
 
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();

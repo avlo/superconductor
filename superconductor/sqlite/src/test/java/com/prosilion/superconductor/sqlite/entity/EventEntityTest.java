@@ -25,8 +25,8 @@ class EventEntityTest {
         CONTENT);
 
     assertEquals(SIGNATURE, event.getSignature().toString());
-    assertEquals(EVENT_ID, event.getEventIdString());
-    assertEquals(PUB_KEY, event.getPubKey());
+    assertEquals(EVENT_ID, event.getId());
+    assertEquals(PUB_KEY, event.getPublicKey());
     assertEquals(KIND, event.getKind().getValue());
     assertEquals(CREATED_AT, event.getCreatedAt());
     assertEquals(CONTENT, event.getContent());

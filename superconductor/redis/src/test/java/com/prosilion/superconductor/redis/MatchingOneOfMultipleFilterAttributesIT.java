@@ -70,7 +70,7 @@ class MatchingOneOfMultipleFilterAttributesIT {
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
 
-    assertTrue(returnedEvents.stream().map(EventIF::getEventId).anyMatch(s -> s.contains(eventId)));
+    assertTrue(returnedEvents.stream().map(EventIF::getId).anyMatch(s -> s.contains(eventId)));
   }
 
   @Test
@@ -94,7 +94,7 @@ class MatchingOneOfMultipleFilterAttributesIT {
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
 
-    assertTrue(returnedEvents.stream().map(EventIF::getEventId).anyMatch(s -> s.contains(eventId)));
+    assertTrue(returnedEvents.stream().map(EventIF::getId).anyMatch(s -> s.contains(eventId)));
   }
 
   private String getEvent() {

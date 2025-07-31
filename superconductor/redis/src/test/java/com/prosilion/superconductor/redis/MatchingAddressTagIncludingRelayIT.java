@@ -57,7 +57,7 @@ class MatchingAddressTagIncludingRelayIT {
             .getFlag());
 
 //    Optional<EventEntity> byEventIdString = eventEntityService.findByEventIdString(eventId);
-//    EventIF eventById = eventEntityService.getEventById(byEventIdString.orElseThrow().getEventId());
+//    EventIF eventById = eventEntityService.getEventById(byEventIdString.orElseThrow().getId());
 //
 //    String string = Objects.requireNonNull(Filterable.getTypeSpecificTags(AddressTag.class, eventById)
 //        .stream()

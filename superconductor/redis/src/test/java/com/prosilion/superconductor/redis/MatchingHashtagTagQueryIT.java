@@ -84,7 +84,7 @@ class MatchingHashtagTagQueryIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getEventId().equals(
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(
         eventId)));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(genericTagString))).findAny().isPresent());
@@ -109,7 +109,7 @@ class MatchingHashtagTagQueryIT {
     assertFalse(returnedEvents.isEmpty());
     //    associated event
 
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getEventId().equals(eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(hashtagTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));

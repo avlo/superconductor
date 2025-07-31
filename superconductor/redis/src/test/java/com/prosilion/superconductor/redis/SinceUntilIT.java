@@ -107,7 +107,7 @@ class SinceUntilIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getCreatedAt().equals(1111111111111L)));
 
 //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(event -> event.getId().equals(eventId)));
 //    TODO: investigate below EOSE missing, causes test failure
 //    assertTrue(returnedJsonMap.get(Command.EOSE).isPresent());
   }

@@ -65,7 +65,7 @@
 //        genericEvent.getContent(),
 //        classifiedListing
 //    );
-//    classifiedListingEvent.setId(genericEvent.getEventId());
+//    classifiedListingEvent.setId(genericEvent.getId());
 //    classifiedListingEvent.setCreatedAt(genericEvent.getCreatedAt());
 //    classifiedListingEvent.setSignature(genericEvent.getSignature());
 //  }

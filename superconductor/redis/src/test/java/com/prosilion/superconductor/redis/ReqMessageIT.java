@@ -52,7 +52,7 @@ class ReqMessageIT {
                 author,
                 Factory.lorumIpsum(getClass()))).convertBaseEventToEventIF();
 
-    this.eventId = genericEventDtoIF.getEventId();
+    this.eventId = genericEventDtoIF.getId();
 
     EventMessage eventMessage = new EventMessage(genericEventDtoIF);
     assertTrue(
@@ -74,7 +74,7 @@ class ReqMessageIT {
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorPubkey)));
   }
 
@@ -87,7 +87,7 @@ class ReqMessageIT {
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
   }
 
   @Test

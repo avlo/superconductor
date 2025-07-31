@@ -70,7 +70,7 @@
 //            SuperconductorKindType.UPVOTE)
 //            .convertBaseEventToEventIF();
 //
-//    eventId = upvoteEvent.getEventId();
+//    eventId = upvoteEvent.getId();
 //
 //    EventMessage eventMessage = new EventMessage(upvoteEvent);
 //    assertTrue(
@@ -104,7 +104,7 @@
 //    log.debug("returned events:");
 //    log.debug("  {}", returnedEventIFs);
 //
-//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
 //    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
 //
 //    AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();

@@ -40,7 +40,7 @@
 //      @NonNull NostrRelayServiceRedis nostrRelayService,
 //      @NonNull DataLoader testDataLoader) {
 //    this.nostrRelayService = nostrRelayService;
-//    this.eventId = testDataLoader.getUpvoteBadgeDefinitionEvent().getEventId();
+//    this.eventId = testDataLoader.getUpvoteBadgeDefinitionEvent().getId();
 //    this.authorPubkey = testDataLoader.getUpvoteBadgeDefinitionEvent().getPublicKey().toString();
 //  }
 //
@@ -57,7 +57,7 @@
 //    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
 //    List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 //
-//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
 //    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().toHexString().equals(authorPubkey)));
 //
 ////    test 2
@@ -68,7 +68,7 @@
 //    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
 //    List<EventIF> returnedEventIFs2 = getEventIFs(returnedBaseMessages2);
 //
-//    assertTrue(returnedEventIFs2.stream().anyMatch(event -> event.getEventId().equals(eventId)));
+//    assertTrue(returnedEventIFs2.stream().anyMatch(event -> event.getId().equals(eventId)));
 //
 ////    test 3
 //    String subscriberId3 = Factory.generateRandomHex64String();

@@ -59,7 +59,7 @@ class SubscriberEventRedisIT {
   @Test
   void saveAndGetEvent() {
     EventDocumentIF eventDocument = eventDocumentService.saveEventDocument(classifiedListingEvent);
-    EventDocumentIF foundEvent = eventDocumentService.findByEventIdString(eventDocument.getEventId()).orElseThrow();
+    EventDocumentIF foundEvent = eventDocumentService.findByEventIdString(eventDocument.getId()).orElseThrow();
     assertEquals(CONTENT, foundEvent.getContent());
     List<BaseTag> tags = foundEvent.getTags();
     tags.forEach(tag -> log.debug("\ntag:  \n{}\n ---- \n", tag));

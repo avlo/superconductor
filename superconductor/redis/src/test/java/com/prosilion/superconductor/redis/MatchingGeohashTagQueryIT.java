@@ -83,7 +83,7 @@ class MatchingGeohashTagQueryIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getEventId().equals(eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
@@ -105,7 +105,7 @@ class MatchingGeohashTagQueryIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getEventId().equals(eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(geohashTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));

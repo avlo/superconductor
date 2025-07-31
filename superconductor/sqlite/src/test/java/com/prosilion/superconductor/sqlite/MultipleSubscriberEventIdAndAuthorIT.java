@@ -80,7 +80,7 @@
 //
 //    assertTrue(returnedEvents.stream().anyMatch(event -> event.getPubKey().toHexString().equals(publicKey.toHexString())));
 //
-//    String responseJson = returnedEvents.stream().map(event -> getExpectedJsonInAnyOrder(event.getEventId())).findFirst().orElseThrow();
+//    String responseJson = returnedEvents.stream().map(event -> getExpectedJsonInAnyOrder(event.getId())).findFirst().orElseThrow();
 //    String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(authorPubKey);
 //    log.debug("author expectedJson:\n  {}", expectedJsonInAnyOrder);
 //    log.debug("------------");

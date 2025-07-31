@@ -126,7 +126,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     assertFalse(returnedBaseMessages.isEmpty());
 
     //    associated event
-    assertTrue(returnedEvents.stream().map(EventIF::getEventId).anyMatch(s -> s.contains(eventId)));
+    assertTrue(returnedEvents.stream().map(EventIF::getId).anyMatch(s -> s.contains(eventId)));
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
 
@@ -150,7 +150,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getEventId().equals((eventId))));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals((eventId))));
     assertTrue(returnedEvents.stream().anyMatch(s -> s.getTags().stream()
         .filter(GeohashTag.class::isInstance)
         .map(GeohashTag.class::cast)

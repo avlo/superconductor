@@ -75,7 +75,7 @@ class EventDocumentServiceIT {
 
   @Test
   void saveAndGetEventWithGeohash() {
-    EventDocumentIF savedEvent = eventDocumentService.findByEventIdString(savedEventDocument.getEventId()).orElseThrow();
+    EventDocumentIF savedEvent = eventDocumentService.findByEventIdString(savedEventDocument.getId()).orElseThrow();
     log.debug("savedEvent getPubKey().toString(): " + savedEvent.getPublicKey().toString());
     log.debug("savedEvent getPubKey().toHexString(): " + savedEvent.getPublicKey().toHexString());
     log.debug("savedEvent getPubKey().toBech32String(): " + savedEvent.getPublicKey().toBech32String());

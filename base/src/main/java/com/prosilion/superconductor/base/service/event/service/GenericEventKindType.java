@@ -23,17 +23,6 @@ public record GenericEventKindType(
     @NonNull @Getter @EqualsAndHashCode.Exclude @JsonIgnore KindTypeIF kindType) implements GenericEventKindTypeIF {
 
   @Override
-  public String toBech32() {
-    return genericEventKind.toBech32();
-  }
-
-  @Transient
-  @Override
-  public Supplier<ByteBuffer> getByteArraySupplier() throws NostrException {
-    return genericEventKind.getByteArraySupplier();
-  }
-
-  @Override
   public String getId() {
     return genericEventKind.getId();
   }
@@ -69,5 +58,16 @@ public record GenericEventKindType(
   @JsonProperty("sig")
   public Signature getSignature() {
     return genericEventKind.getSignature();
+  }
+
+  @Override
+  public String toBech32() {
+    return genericEventKind.toBech32();
+  }
+
+  @Transient
+  @Override
+  public Supplier<ByteBuffer> getByteArraySupplier() throws NostrException {
+    return genericEventKind.getByteArraySupplier();
   }
 }

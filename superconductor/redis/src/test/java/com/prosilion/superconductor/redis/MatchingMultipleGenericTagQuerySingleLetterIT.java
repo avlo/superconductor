@@ -11,14 +11,12 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.tag.GeohashTag;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -128,7 +126,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
     assertFalse(returnedBaseMessages.isEmpty());
 
     //    associated event
-    assertTrue(returnedEvents.stream().map(EventIF::getEventId).anyMatch(s -> s.contains(eventId)));
+    assertTrue(returnedEvents.stream().map(EventIF::getId).anyMatch(s -> s.contains(eventId)));
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
 
@@ -152,24 +150,13 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getEventId().equals((eventId))));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals((eventId))));
     assertTrue(returnedEvents.stream().anyMatch(s -> s.getTags().stream()
         .filter(GeohashTag.class::isInstance)
         .map(GeohashTag.class::cast)
         .anyMatch(tag -> tag.getLocation().equals(genericTagStringG))));
 
-    assertEquals(1, returnedEvents.stream().map(s -> s.getTags().stream()
-        .filter(GenericTag.class::isInstance)
-        .map(GenericTag.class::cast)
-        .map(tag -> tag.getAttributes().stream().map(attribute -> Stream.of(attribute.getValue().toString())
-            .filter(s1 -> s1.equals(genericTagStringH))))).count());
-
-    assertEquals(1, returnedEvents.stream().map(s -> s.getTags().stream()
-        .filter(GenericTag.class::isInstance)
-        .map(GenericTag.class::cast)
-        .map(tag -> tag.getAttributes().stream().map(attribute -> Stream.of(attribute.getValue().toString())
-            .filter(s1 -> s1.equals(genericTagStringI))))).count());
-
+    assertEquals(1, returnedEvents.size());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
 

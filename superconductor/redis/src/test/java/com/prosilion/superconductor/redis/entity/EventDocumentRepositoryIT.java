@@ -42,7 +42,7 @@ class EventDocumentRepositoryIT {
             CREATED_AT,
             CONTENT,
             SIGNATURE));
-    assertEquals(EVENT_ID, savedAndFetchedDocument.getEventId());
+    assertEquals(EVENT_ID, savedAndFetchedDocument.getId());
     assertEquals(KIND, savedAndFetchedDocument.getKind());
     assertEquals(PUB_KEY, savedAndFetchedDocument.getPubKey());
     assertEquals(CREATED_AT, savedAndFetchedDocument.getCreatedAt());
@@ -54,7 +54,7 @@ class EventDocumentRepositoryIT {
   void testGetAllFields() {
     Optional<EventDocumentIF> retrieved = eventDocumentRepository.findByEventIdString(EVENT_ID);
     EventDocumentIF byEventIdString = retrieved.orElseThrow();
-    assertEquals(EVENT_ID, byEventIdString.getEventId());
+    assertEquals(EVENT_ID, byEventIdString.getId());
     assertEquals(KIND, byEventIdString.getKind().getValue());
     assertEquals(PUB_KEY, byEventIdString.getPublicKey().toString());
     assertEquals(CREATED_AT, byEventIdString.getCreatedAt());

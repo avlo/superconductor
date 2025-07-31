@@ -38,7 +38,7 @@ public class EventDocumentService {
   }
 
   public Optional<EventDocumentIF> findByEventIdString(@NonNull String eventId) {
-    return eventDocumentRepository.findByEventIdICustom(eventId).map(this::revertInterceptor);
+    return eventDocumentRepository.findByEventId(eventId).map(this::revertInterceptor);
   }
 
   public List<EventDocumentIF> getEventsByKind(@NonNull Kind kind) {

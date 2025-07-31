@@ -52,7 +52,7 @@ class EventDocumentRepositoryIT {
 
   @Test
   void testGetAllFields() {
-    Optional<EventDocumentIF> retrieved = eventDocumentRepository.findByEventIdICustom(EVENT_ID);
+    Optional<EventDocumentIF> retrieved = eventDocumentRepository.findByEventId(EVENT_ID);
     EventDocumentIF byEventIdString = retrieved.orElseThrow();
     assertEquals(EVENT_ID, byEventIdString.getId());
     assertEquals(KIND, byEventIdString.getKind().getValue());
@@ -64,8 +64,7 @@ class EventDocumentRepositoryIT {
 
   @Test
   void testRecordNotExist() {
-    Optional<EventDocument> eventEntity = eventDocumentRepository.findById(Factory.generateRandomHex64String());
-    Optional<EventDocumentIF> eventDocumentIF = Optional.of(eventEntity).map(EventDocumentIF.class::cast);
-    assertThrows(NoSuchElementException.class, eventDocumentIF::orElseThrow);
+    Optional<EventDocumentIF> eventEntity = eventDocumentRepository.findByEventId(Factory.generateRandomHex64String());
+    assertThrows(NoSuchElementException.class, eventEntity::orElseThrow);
   }
 }

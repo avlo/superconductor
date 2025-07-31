@@ -18,7 +18,8 @@ public interface EventDocumentRepository extends ListCrudRepository<EventDocumen
   @NonNull
   List<EventDocument> findAll(@NonNull Sort sort);
 
-  Optional<EventDocument> findByEventId(String eventId);
+  @NonNull
+  Optional<EventDocument> findById(@NonNull String eventId);
 
   List<EventDocument> findByPubKey(@NonNull String pubKey, Sort sort);
 
@@ -30,9 +31,9 @@ public interface EventDocumentRepository extends ListCrudRepository<EventDocumen
     return eventDocuments;
   }
 
-  default @NonNull Optional<EventDocumentIF> findByEventIdICustom(String eventId) {
-    Optional<EventDocument> byEventId = findByEventId(eventId);
-    Optional<EventDocumentIF> eventDocumentIF = Optional.of(byEventId).map(EventDocumentIF.class::cast);
+  default @NonNull Optional<EventDocumentIF> findByEventId(String eventId) {
+    Optional<EventDocument> byEventId = findById(eventId);
+    Optional<EventDocumentIF> eventDocumentIF = Optional.of(byEventId.map(EventDocumentIF.class::cast)).orElse(Optional.empty());
     return eventDocumentIF;
   }
   

@@ -1,7 +1,7 @@
 INSERT INTO event
 (
   signature
-, event_id_string
+, event_id
 , pub_key
 , kind
 , created_at

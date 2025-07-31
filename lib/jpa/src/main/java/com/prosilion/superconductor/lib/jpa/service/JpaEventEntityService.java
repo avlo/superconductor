@@ -63,9 +63,10 @@ public class JpaEventEntityService {
 
   public Long saveEventEntity(@NonNull EventIF genericEventKindIF) {
     try {
+      EventEntity save = eventEntityRepository.save(
+          convertDtoToEntity(genericEventKindIF));
       Long savedEntityId = Optional.of(
-              eventEntityRepository.save(
-                  convertDtoToEntity(genericEventKindIF)))
+              save)
           .map(EventEntityIF::getUid)
           .orElseThrow(NoResultException::new);
 

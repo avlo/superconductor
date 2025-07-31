@@ -23,6 +23,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.lang.NonNull;
 
+
 @AutoConfiguration
 @EnableRedisRepositories(
     basePackageClasses = {
@@ -36,10 +37,13 @@ import org.springframework.lang.NonNull;
     })
 @ComponentScan(
     basePackages = {
+        "com.prosilion.superconductor.autoconfigure.redis.config",
         "com.prosilion.superconductor.base.service.clientresponse",
         "com.prosilion.superconductor.base.service.request",
         "com.prosilion.superconductor.base.util",
-        "com.prosilion.superconductor.lib.redis.interceptor"
+        "com.prosilion.superconductor.lib.redis.repository",
+        "com.prosilion.superconductor.lib.redis.interceptor",
+        "com.prosilion.superconductor.lib.redis.service"
     })
 @ConditionalOnClass(RedisCacheService.class)
 public class RedisConfig {
@@ -59,7 +63,7 @@ public class RedisConfig {
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
     return new DeletionEventDocumentService(deletionEventDocumentRepository, interceptors);
   }
-  
+
   @Bean
   @ConditionalOnMissingBean
   CacheServiceIF cacheIF(

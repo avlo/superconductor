@@ -78,7 +78,7 @@ public class RedisCacheService implements CacheServiceIF {
   }
 
   public List<DeletionEventDocumentRedisIF> getAllDeletionEventEntities() {
-    return List.of();
+    return deletionEventDocumentService.getAll();
   }
 
   public void deleteEventEntity(@NonNull EventIF event) {

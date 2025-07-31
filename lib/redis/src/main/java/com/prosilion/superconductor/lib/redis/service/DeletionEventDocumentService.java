@@ -1,12 +1,9 @@
 package com.prosilion.superconductor.lib.redis.service;
 
-import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocument;
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentRedisIF;
-import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
 import com.prosilion.superconductor.lib.redis.interceptor.TagInterceptor;
 import com.prosilion.superconductor.lib.redis.repository.DeletionEventDocumentRepository;
@@ -20,11 +17,11 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class DeletionEventDocumentService {
-  private final DeletionEventDocumentRepository<DeletionEventDocumentRedisIF> repo;
+  private final DeletionEventDocumentRepository repo;
   private final Map<String, TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors;
 
   public DeletionEventDocumentService(
-      @NonNull DeletionEventDocumentRepository<DeletionEventDocumentRedisIF> deletionEventDocumentRepository,
+      @NonNull DeletionEventDocumentRepository deletionEventDocumentRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
     this.repo = deletionEventDocumentRepository;
     this.interceptors = interceptors.stream().collect(
@@ -36,15 +33,15 @@ public class DeletionEventDocumentService {
   }
 
   public Optional<DeletionEventDocumentRedisIF> findByEventIdString(@NonNull String eventIdString) {
-    return repo.findByEventIdString(eventIdString).map(this::revertInterceptor);
+    return repo.findByEventIdCustom(eventIdString).map(this::revertInterceptor);
   }
 
-  public List<DeletionEventDocumentRedisIF> getEventsByKind(@NonNull Kind kind) {
-    return repo
-        .findAllByKind(kind.getValue()).stream()
-        .map(this::revertInterceptor)
-        .toList();
-  }
+//  public List<DeletionEventDocumentRedisIF> getEventsByKind(@NonNull Kind kind) {
+//    return repo
+//        .findAllByKind(kind.getValue()).stream()
+//        .map(this::revertInterceptor)
+//        .toList();
+//  }
 
 //  public Map<Kind, Map<String, DeletionEventDocumentRedisIF>> getAllMappedByKind() {
 //    List<DeletionEventDocumentRedisIF> eventDocumentRepositoryAll = getAll();
@@ -60,27 +57,16 @@ public class DeletionEventDocumentService {
 
   public List<DeletionEventDocumentRedisIF> getAll() {
     return repo
-        .findAll().stream()
+        .findAllCustom().stream()
         .map(this::revertInterceptor)
         .toList();
   }
 
-  public DeletionEventDocumentRedisIF saveEventDocument(@NonNull BaseEvent baseEvent) {
-    return saveEventDocument(new GenericDocumentKindDto(baseEvent).convertDtoToDocument());
-  }
-
-  public DeletionEventDocumentRedisIF saveEventDocument(@NonNull EventIF eventDocument) {
-    return saveEventDocument(convertDtoToDocument(eventDocument));
-  }
-
-  public DeletionEventDocumentRedisIF saveEventDocument(@NonNull DeletionEventDocumentRedisIF entity) {
-    return repo.save(
-        entity);
-  }
-
   protected void deleteEventEntity(@NonNull String eventId) {
-    Optional<DeletionEventDocumentRedisIF> byEventIdString = repo.findByEventIdString(eventId);
-    byEventIdString.ifPresent(repo::delete);
+//    Optional<DeletionEventDocumentRedisIF> byEventIdString = repo.findByEventIdCustom(eventId);
+    Optional<DeletionEventDocument> byEventId = repo.findByEventId(eventId);
+    Optional<DeletionEventDocument> deletionEventDocument = byEventId.map(repo::save).map(DeletionEventDocument::getEventId).map(DeletionEventDocument::of);
+    log.debug("DeletionEventDocumentService deletionEventDocument: {}", deletionEventDocument);
   }
 
   private DeletionEventDocumentRedisIF convertDtoToDocument(EventIF dto) {

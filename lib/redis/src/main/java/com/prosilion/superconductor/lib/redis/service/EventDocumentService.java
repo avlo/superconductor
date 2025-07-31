@@ -22,11 +22,11 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventDocumentService {
-  private final EventDocumentRepository<EventDocumentIF> eventDocumentRepository;
+  private final EventDocumentRepository eventDocumentRepository;
   private final Map<String, TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors;
 
   public EventDocumentService(
-      @NonNull EventDocumentRepository<EventDocumentIF> eventDocumentRepository,
+      @NonNull EventDocumentRepository eventDocumentRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
     this.eventDocumentRepository = eventDocumentRepository;
     this.interceptors = interceptors.stream().collect(
@@ -37,13 +37,13 @@ public class EventDocumentService {
     interceptors.forEach(interceptor -> log.debug("  {}\n", interceptor));
   }
 
-  public Optional<EventDocumentIF> findByEventIdString(@NonNull String eventIdString) {
-    return eventDocumentRepository.findByEventIdString(eventIdString).map(this::revertInterceptor);
+  public Optional<EventDocumentIF> findByEventIdString(@NonNull String eventId) {
+    return eventDocumentRepository.findByEventIdICustom(eventId).map(this::revertInterceptor);
   }
 
   public List<EventDocumentIF> getEventsByKind(@NonNull Kind kind) {
     return eventDocumentRepository
-        .findAllByKind(kind.getValue()).stream()
+        .findByKind(kind.getValue()).stream()
         .map(this::revertInterceptor)
         .toList();
   }
@@ -62,7 +62,7 @@ public class EventDocumentService {
 
   public List<EventDocumentIF> getAll() {
     return eventDocumentRepository
-        .findAll().stream()
+        .findAllCustom().stream()
         .map(this::revertInterceptor)
         .toList();
   }
@@ -72,19 +72,16 @@ public class EventDocumentService {
   }
 
   public EventDocumentIF saveEventDocument(@NonNull EventIF eventDocument) {
-    return saveEventDocument(convertDtoToDocument(eventDocument));
+    EventDocument eventDocumentIF = convertDtoToDocument(eventDocument);
+    EventDocument save = eventDocumentRepository.save(eventDocumentIF);
+    return save;
   }
 
-  public EventDocumentIF saveEventDocument(@NonNull EventDocumentIF entity) {
-    return eventDocumentRepository.save(
-        entity);
-  }
-
-  private EventDocumentIF convertDtoToDocument(EventIF dto) {
+  private EventDocument convertDtoToDocument(EventIF dto) {
     return processInterceptors(dto);
   }
 
-  private EventDocumentIF processInterceptors(EventIF dto) {
+  private EventDocument processInterceptors(EventIF dto) {
     EventDocument eventDocument = EventDocument.of(
         dto.getId(),
         dto.getKind().getValue(),

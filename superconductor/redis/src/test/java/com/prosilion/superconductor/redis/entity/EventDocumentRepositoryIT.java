@@ -28,10 +28,10 @@ class EventDocumentRepositoryIT {
   public static final Integer KIND = 1;
   public static final long CREATED_AT = 1717357053050L;
 
-  private final EventDocumentRepository<EventDocumentIF> eventDocumentRepository;
+  private final EventDocumentRepository eventDocumentRepository;
 
   @Autowired
-  EventDocumentRepositoryIT(EventDocumentRepository<EventDocumentIF> eventDocumentRepository) {
+  EventDocumentRepositoryIT(EventDocumentRepository eventDocumentRepository) {
     this.eventDocumentRepository = eventDocumentRepository;
 
     EventDocument savedAndFetchedDocument = eventDocumentRepository.save(
@@ -43,16 +43,16 @@ class EventDocumentRepositoryIT {
             CONTENT,
             SIGNATURE));
     assertEquals(EVENT_ID, savedAndFetchedDocument.getId());
-    assertEquals(KIND, savedAndFetchedDocument.getKind());
+    assertEquals(KIND, savedAndFetchedDocument.getKind().getValue());
     assertEquals(PUB_KEY, savedAndFetchedDocument.getPubKey());
     assertEquals(CREATED_AT, savedAndFetchedDocument.getCreatedAt());
     assertEquals(CONTENT, savedAndFetchedDocument.getContent());
-    assertEquals(SIGNATURE, savedAndFetchedDocument.getSignature());
+    assertEquals(SIGNATURE, savedAndFetchedDocument.getSignature().toString());
   }
 
   @Test
   void testGetAllFields() {
-    Optional<EventDocumentIF> retrieved = eventDocumentRepository.findByEventIdString(EVENT_ID);
+    Optional<EventDocumentIF> retrieved = eventDocumentRepository.findByEventIdICustom(EVENT_ID);
     EventDocumentIF byEventIdString = retrieved.orElseThrow();
     assertEquals(EVENT_ID, byEventIdString.getId());
     assertEquals(KIND, byEventIdString.getKind().getValue());
@@ -64,7 +64,8 @@ class EventDocumentRepositoryIT {
 
   @Test
   void testRecordNotExist() {
-    Optional<EventDocumentIF> eventEntity = eventDocumentRepository.findByEventIdString(Factory.generateRandomHex64String());
-    assertThrows(NoSuchElementException.class, eventEntity::orElseThrow);
+    Optional<EventDocument> eventEntity = eventDocumentRepository.findById(Factory.generateRandomHex64String());
+    Optional<EventDocumentIF> eventDocumentIF = Optional.of(eventEntity).map(EventDocumentIF.class::cast);
+    assertThrows(NoSuchElementException.class, eventDocumentIF::orElseThrow);
   }
 }

@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 
 @Entity
 @Table(name = "event")
@@ -136,9 +137,11 @@ public class EventEntity implements EventEntityIF {
 
   @Override
   public boolean equals(Object o) {
+//    boolean isInstance = (o instanceof EventIF);  useful debug coming future
     if (!(o instanceof EventIF that)) return false;
+
     return
-        new HashSet<>(tags).containsAll(that.getTags()) &&
+        new HashSet<>(CollectionUtils.emptyIfNull(tags)).containsAll(CollectionUtils.emptyIfNull(that.getTags())) &&
             Objects.equals(eventId, that.getId()) &&
             Objects.equals(pubKey, that.getPublicKey().toString()) &&
             Objects.equals(kind, that.getKind().getValue()) &&
@@ -149,6 +152,8 @@ public class EventEntity implements EventEntityIF {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uid, eventId, pubKey, kind, createdAt, content, new HashSet<>(tags), signature);
+    return Objects.hash(uid, eventId, pubKey, kind, createdAt, content,
+        new HashSet<>(CollectionUtils.emptyIfNull(tags)), // HashSet provides comparable-operative ordering 
+        signature);
   }
 }

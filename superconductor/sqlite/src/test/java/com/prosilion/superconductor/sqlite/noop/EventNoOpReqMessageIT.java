@@ -23,7 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
-import static com.prosilion.superconductor.sqlite.TextNoteEventMessageIT.getEventIFs;
+import static com.prosilion.superconductor.sqlite.TextNoteEventMessageSqliteIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Sql(scripts = {"/reqmessageit.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS) // class level @Sql

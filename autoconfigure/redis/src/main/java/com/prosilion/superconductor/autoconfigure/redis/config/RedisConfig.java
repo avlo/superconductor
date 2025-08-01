@@ -23,7 +23,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.lang.NonNull;
 
-
 @AutoConfiguration
 @EnableRedisRepositories(
     basePackageClasses = {
@@ -37,7 +36,6 @@ import org.springframework.lang.NonNull;
     })
 @ComponentScan(
     basePackages = {
-        "com.prosilion.superconductor.autoconfigure.redis.config",
         "com.prosilion.superconductor.base.service.clientresponse",
         "com.prosilion.superconductor.base.service.request",
         "com.prosilion.superconductor.base.util",
@@ -49,7 +47,7 @@ import org.springframework.lang.NonNull;
 public class RedisConfig {
 
   @Bean
-//  @ConditionalOnMissingBean
+  @ConditionalOnMissingBean
   EventDocumentService eventDocumentService(
       @NonNull EventDocumentRepository eventDocumentRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
@@ -57,7 +55,7 @@ public class RedisConfig {
   }
 
   @Bean
-//  @ConditionalOnMissingBean
+  @ConditionalOnMissingBean
   DeletionEventDocumentService deletionEventDocumentService(
       @NonNull DeletionEventDocumentRepository deletionEventDocumentRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
@@ -79,10 +77,10 @@ public class RedisConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  DataLoader dataLoader(
+  DataLoaderRedis dataLoaderRedis(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
       @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeDefinitionEvent downvoteBadgeDefinitionEvent) {
-    return new DataLoader(eventPlugin, upvoteBadgeDefinitionEvent, downvoteBadgeDefinitionEvent);
+    return new DataLoaderRedis(eventPlugin, upvoteBadgeDefinitionEvent, downvoteBadgeDefinitionEvent);
   }
 }

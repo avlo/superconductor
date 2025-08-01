@@ -23,24 +23,20 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
 public class JpaEventEntityService {
   private final ConcreteTagEntitiesService<
-      BaseTag, 
-      AbstractTagEntityRepository<AbstractTagEntity>, 
-      AbstractTagEntity, 
-      EventEntityAbstractEntity, 
+      BaseTag,
+      AbstractTagEntityRepository<AbstractTagEntity>,
+      AbstractTagEntity,
+      EventEntityAbstractEntity,
       EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService;
   private final GenericTagEntitiesService genericTagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
-  @Autowired
   public JpaEventEntityService(
       @NonNull ConcreteTagEntitiesService<
           BaseTag,

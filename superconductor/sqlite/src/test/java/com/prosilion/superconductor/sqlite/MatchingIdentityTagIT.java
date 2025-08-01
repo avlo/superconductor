@@ -21,7 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.sqlite.TextNoteEventMessageIT.getEventIFs;
+import static com.prosilion.superconductor.sqlite.TextNoteEventMessageSqliteIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j

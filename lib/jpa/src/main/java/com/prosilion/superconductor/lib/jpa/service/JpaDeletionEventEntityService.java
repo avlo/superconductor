@@ -7,16 +7,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
 public class JpaDeletionEventEntityService {
   private final DeletionEventEntityRepository repo;
 
-  @Autowired
   public JpaDeletionEventEntityService(@NonNull DeletionEventEntityRepository repo) {
     this.repo = repo;
   }

@@ -1,12 +1,10 @@
 package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import com.prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntity;
@@ -17,9 +15,7 @@ import com.prosilion.superconductor.lib.jpa.repository.EventEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
 import jakarta.persistence.NoResultException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -51,12 +47,6 @@ public class JpaEventEntityService {
     this.eventEntityRepository = eventEntityRepository;
   }
 
-  public Long saveEventEntity(@NonNull BaseEvent baseEvent) {
-    return saveEventEntity(
-        new GenericEventKindDto(baseEvent).convertBaseEventToEventIF()
-    );
-  }
-
   public Long saveEventEntity(@NonNull EventIF genericEventKindIF) {
     try {
       EventEntity save = eventEntityRepository.save(
@@ -73,17 +63,6 @@ public class JpaEventEntityService {
       log.debug("Duplicate eventIdString on save(), returning existing EventEntity");
       return eventEntityRepository.findByEventId(genericEventKindIF.getId()).orElseThrow(NoResultException::new).getUid();
     }
-  }
-
-  public <T extends Long> Map<Kind, Map<T, EventEntityIF>> getAllMappedByKind() {
-    Map<Kind, Map<T, EventEntityIF>> collect =
-        getAll().stream()
-            .collect(
-                Collectors.groupingBy(EventIF::getKind,
-                    Collectors.toMap(eventEntityIF ->
-                            (T) eventEntityIF.getUid(),
-                        Function.identity())));
-    return collect;
   }
 
   public List<EventEntityIF> getAll() {
@@ -128,14 +107,12 @@ public class JpaEventEntityService {
 
     List<BaseTag> genericTags = genericTagEntitiesService.getGenericTags(eventEntity.getUid()).stream().map(genericTag -> new GenericTag(genericTag.code(), genericTag.atts().stream().map(ElementAttributeDto::getElementAttribute).toList())).toList().stream().map(BaseTag.class::cast).toList();
 
-//    eventEntity = convertDtoToEntity(eventEntity);
-
     eventEntity.setTags(Stream.concat(concreteTags.stream(), genericTags.stream()).toList());
 
     return eventEntity;
   }
 
-  public static EventEntity convertDtoToEntity(EventIF dto) {
+  private EventEntity convertDtoToEntity(EventIF dto) {
     EventEntity eventEntity = new EventEntity(dto.getId(), dto.getKind().getValue(), dto.getPublicKey().toString(), dto.getCreatedAt(), dto.getSignature().toString(), dto.getContent());
     return eventEntity;
   }

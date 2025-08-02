@@ -20,25 +20,15 @@ public interface DeletionEventDocumentRepository extends ListCrudRepository<Dele
 
   Optional<DeletionEventDocument> findByEventId(@NonNull String eventIdString);
 
-//  List<DeletionEventDocument> findByKind(Integer kind, Sort sort);
-
-//  List<DeletionEventDocument> findAllByKi
-
-  default Optional<DeletionEventDocumentRedisIF> findByEventIdCustom(@NonNull String eventIdString) {
+  default Optional<DeletionEventDocumentRedisIF> findByDocumentEventId(@NonNull String eventIdString) {
     Optional<DeletionEventDocument> byEventId = findByEventId(eventIdString);
-    Optional<DeletionEventDocumentRedisIF> deletionEventDocumentRedisIF = byEventId.map(DeletionEventDocumentRedisIF.class::cast);
+    Optional<DeletionEventDocumentRedisIF> deletionEventDocumentRedisIF = Optional.of(byEventId.map(DeletionEventDocumentRedisIF.class::cast)).orElse(Optional.empty());
     return deletionEventDocumentRedisIF;
   }
 
-  default @NonNull List<DeletionEventDocumentRedisIF> findAllCustom() {
+  default @NonNull List<DeletionEventDocumentRedisIF> findAllDocuments() {
     List<DeletionEventDocument> all = findAll(DESC_SORT_CREATED_AT);
     List<DeletionEventDocumentRedisIF> eventDocuments = Collections.unmodifiableList(all);
     return eventDocuments;
   }
-
-//  default @NonNull List<DeletionEventDocumentRedisIF> findAllByKindCustom(@NonNull Integer kind) {
-//    List<DeletionEventDocument> allByKind = findAllByKind(kind, DESC_SORT_CREATED_AT);
-//    List<DeletionEventDocumentRedisIF> eventDocuments = Collections.unmodifiableList(allByKind);
-//    return eventDocuments;
-//  }
 }

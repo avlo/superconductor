@@ -2,6 +2,7 @@ package com.prosilion.superconductor.redis.service.event.type;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.ClassifiedListingEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.ClassifiedListing;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -37,7 +38,7 @@ class SubscriberEventRedisIT {
 
   private final EventDocumentService eventDocumentService;
 
-  ClassifiedListingEvent classifiedListingEvent;
+  EventIF classifiedListingEvent;
 
   @Autowired
   public SubscriberEventRedisIT(@NonNull EventDocumentService eventDocumentService) throws NoSuchAlgorithmException {

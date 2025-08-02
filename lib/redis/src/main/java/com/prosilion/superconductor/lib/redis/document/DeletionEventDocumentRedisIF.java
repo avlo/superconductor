@@ -4,8 +4,4 @@ import com.prosilion.superconductor.base.DeletionEntityIF;
 
 public interface DeletionEventDocumentRedisIF extends DeletionEntityIF<String> {
   String getEventId();
-  
-  default String getId() {
-    return getEventId();
-  }
 }

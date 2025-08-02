@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis.service.event.type;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
@@ -51,7 +51,7 @@ class EventDocumentAddressTagEntityRedisIT {
         IDENTIFIER_TAG);
 
 
-    BaseEvent textNoteEvent = new TextNoteEvent(IDENTITY, List.of(addressTag), CONTENT);
+    EventIF textNoteEvent = new TextNoteEvent(IDENTITY, List.of(addressTag), CONTENT);
     System.out.println("textNoteEvent getPubKey().toString(): " + textNoteEvent.getPublicKey().toString());
     System.out.println("textNoteEvent getPubKey().toHexString(): " + textNoteEvent.getPublicKey().toHexString());
     System.out.println("textNoteEvent getPubKey().toBech32String(): " + textNoteEvent.getPublicKey().toBech32String());

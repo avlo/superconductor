@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.h2db.service.event.type;
 
-import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
@@ -10,6 +10,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.h2db.util.Factory;
+import com.prosilion.superconductor.lib.jpa.service.JpaEventEntityService;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
-import com.prosilion.superconductor.lib.jpa.service.JpaEventEntityService;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +47,7 @@ class EventEntityAddressTagEntityIT {
         IDENTIFIER_TAG);
 
 
-    BaseEvent textNoteEvent = new TextNoteEvent(IDENTITY, List.of(addressTag), CONTENT);
+    EventIF textNoteEvent = new TextNoteEvent(IDENTITY, List.of(addressTag), CONTENT);
     System.out.println("textNoteEvent getPubKey().toString(): " + textNoteEvent.getPublicKey().toString());
     System.out.println("textNoteEvent getPubKey().toHexString(): " + textNoteEvent.getPublicKey().toHexString());
     System.out.println("textNoteEvent getPubKey().toBech32String(): " + textNoteEvent.getPublicKey().toBech32String());

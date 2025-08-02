@@ -2,14 +2,12 @@ package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.superconductor.base.DeletionEntityIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentRedisIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -46,35 +44,16 @@ public class RedisCacheService implements CacheServiceIF {
 
   @Override
   public List<EventDocumentIF> getAll() {
-    return eventDocumentService.getAll();
-  }
-
-  @Override
-  public Map<Kind, Map<?, ? extends EventIF>> getAllMappedByKind() {
-    List<EventDocumentIF> eventEntities = getAll();
-//    TODO: fix missing generic
+    List<EventDocumentIF> all = eventDocumentService.getAll();
     List<DeletionEventDocumentRedisIF> deletionEventEntities = getAllDeletionEventEntities();
 
-    List<EventDocumentIF> filteredDeletedEvents = eventEntities.stream().filter(eventEntityIF ->
-        deletionEventEntities.stream()
-            .anyMatch(deletionEventEntityJpaIF ->
-                deletionEventEntityJpaIF.getId().equals(eventEntityIF.getId()))).toList();
+    List<EventDocumentIF> filteredDeletionEntities = all.stream().filter(eventEntityIF ->
+        !deletionEventEntities.stream()
+            .map(DeletionEntityIF::getId)
+            .toList()
+            .contains(eventEntityIF.getEventId())).toList();
 
-    Map<Kind, Map<String, EventDocumentIF>> filteredDeletedEventsAsHardGenerics = filteredDeletedEvents.stream()
-        .collect(
-            Collectors.groupingBy(EventIF::getKind,
-                Collectors.toMap(
-                    EventDocumentIF::getId,
-                    Function.identity())));
-
-    Map<Kind, Map<?, ? extends EventIF>> filteredDeletedEventsAsWildcards =
-        filteredDeletedEventsAsHardGenerics.entrySet().stream().collect(
-            Collectors.toMap(
-                Map.Entry::getKey,
-                Map.Entry::getValue));
-
-    log.debug("filteredDeletedEventsAsWildcards {}", filteredDeletedEventsAsWildcards);
-    return filteredDeletedEventsAsWildcards;
+    return filteredDeletionEntities;
   }
 
   public List<DeletionEventDocumentRedisIF> getAllDeletionEventEntities() {

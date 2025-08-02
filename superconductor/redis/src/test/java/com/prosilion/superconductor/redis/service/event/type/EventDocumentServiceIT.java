@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis.service.event.type;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -69,7 +69,7 @@ class EventDocumentServiceIT {
 
     content = Factory.lorumIpsum(EventDocumentServiceIT.class);
 
-    BaseEvent textNoteEvent = new TextNoteEvent(identity, tags, content);
+    EventIF textNoteEvent = new TextNoteEvent(identity, tags, content);
     savedEventDocument = this.eventDocumentService.saveEventDocument(textNoteEvent);
   }
 

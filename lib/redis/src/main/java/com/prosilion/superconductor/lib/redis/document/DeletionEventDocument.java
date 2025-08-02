@@ -17,4 +17,9 @@ public class DeletionEventDocument implements DeletionEventDocumentRedisIF {
   @Id
   @NonNull
   private String eventId;
+
+  @Override
+  public String getId() {
+    return eventId;
+  }
 }

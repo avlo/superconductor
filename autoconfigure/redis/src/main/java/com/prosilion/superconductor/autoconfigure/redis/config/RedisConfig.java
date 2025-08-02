@@ -57,9 +57,8 @@ public class RedisConfig {
   @Bean
   @ConditionalOnMissingBean
   DeletionEventDocumentService deletionEventDocumentService(
-      @NonNull DeletionEventDocumentRepository deletionEventDocumentRepository,
-      @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
-    return new DeletionEventDocumentService(deletionEventDocumentRepository, interceptors);
+      @NonNull DeletionEventDocumentRepository deletionEventDocumentRepository) {
+    return new DeletionEventDocumentService(deletionEventDocumentRepository);
   }
 
   @Bean
@@ -77,7 +76,7 @@ public class RedisConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  DataLoaderRedis dataLoaderRedis(
+  DataLoaderRedisIF dataLoaderRedis(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
       @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeDefinitionEvent downvoteBadgeDefinitionEvent) {

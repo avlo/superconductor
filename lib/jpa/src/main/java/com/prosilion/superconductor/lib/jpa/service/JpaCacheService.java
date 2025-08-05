@@ -8,6 +8,8 @@ import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaI
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -26,25 +28,27 @@ public class JpaCacheService implements JpaCacheServiceIF {
 
   @Override
   public Optional<EventEntityIF> getEventByEventId(@NonNull String eventId) {
-    Optional<EventEntityIF> byEventIdString = jpaEventEntityService.findByEventIdString(eventId);
-    return byEventIdString;
+    return jpaEventEntityService.findByEventIdString(eventId);
   }
 
   @Override
   public Optional<EventEntityIF> getEventByUid(@NonNull Long id) {
-    Optional<EventEntityIF> eventByUid = jpaEventEntityService.getEventByUid(id);
-    return eventByUid;
+    return jpaEventEntityService.getEventByUid(id);
   }
 
   public void deleteEventEntity(@NonNull EventIF eventIF) {
+    Function<EventEntityIF, Long> getUid = EventEntityIF::getUid;
+    Consumer<Long> addDeletionEvent = jpaDeletionEventEntityService::addDeletionEvent;
     eventIF.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(EventTag::getIdEvent)
         .map(this::getEventByEventId)
         .flatMap(Optional::stream).toList().stream()
-        .map(EventEntityIF::getUid)
-        .forEach(this::deleteEventEntity);
+        .filter(deletionCandidate ->
+            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
+        .map(getUid)
+        .forEach(addDeletionEvent);
   }
 
   @Override
@@ -62,22 +66,15 @@ public class JpaCacheService implements JpaCacheServiceIF {
     List<EventEntityIF> all = jpaEventEntityService.getAll();
     List<DeletionEventEntityJpaIF> deletionEventEntities = getAllDeletionJpaEventEntities();
 
-    List<EventEntityIF> filteredDeletionEntities = all.stream().filter(eventEntityIF ->
-        !deletionEventEntities.stream()
-            .map(DeletionEntityIF::getId)
-            .toList()
-            .contains(eventEntityIF.getUid())).toList();
-
-    return filteredDeletionEntities;
+    return all.stream()
+        .filter(eventEntityIF ->
+            !deletionEventEntities.stream()
+                .map(DeletionEntityIF::getId)
+                .toList()
+                .contains(eventEntityIF.getUid())).toList();
   }
 
   public List<DeletionEventEntityJpaIF> getAllDeletionJpaEventEntities() {
-    List<DeletionEventEntityJpaIF> all = jpaDeletionEventEntityService.findAll();
-    return all;
-  }
-
-  @Override
-  public void deleteEventEntity(@NonNull Long id) {
-    jpaDeletionEventEntityService.addDeletionEvent(id);
+    return jpaDeletionEventEntityService.findAll();
   }
 }

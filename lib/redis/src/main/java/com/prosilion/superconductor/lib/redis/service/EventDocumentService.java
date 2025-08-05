@@ -36,75 +36,72 @@ public class EventDocumentService {
   }
 
   public Optional<EventDocumentIF> findByEventIdString(@NonNull String eventId) {
-    Optional<EventDocumentIF> eventDocumentIF = eventDocumentRepository.findByEventId(eventId).map(this::revertInterceptor);
-    return eventDocumentIF;
+    return eventDocumentRepository.findByEventId(eventId)
+        .map(this::revertInterceptor);
   }
 
   public List<EventDocumentIF> getEventsByKind(@NonNull Kind kind) {
-    List<EventDocumentIF> list = eventDocumentRepository
-        .findByKind(kind.getValue()).stream()
+    return eventDocumentRepository.findByKind(kind.getValue()).stream()
         .map(this::revertInterceptor)
         .toList();
-    return list;
   }
 
   public List<EventDocumentIF> getAll() {
-    List<EventDocumentIF> list = eventDocumentRepository
-        .findAllCustom().stream()
+    return eventDocumentRepository.findAllCustom().stream()
         .map(this::revertInterceptor)
         .toList();
-    return list;
   }
 
   public EventDocumentIF saveEventDocument(@NonNull EventIF eventDocument) {
-    EventDocument eventDocumentIF = convertDtoToDocument(eventDocument);
-    EventDocument save = eventDocumentRepository.save(eventDocumentIF);
-    return save;
+    return eventDocumentRepository.save(convertDtoToDocument(eventDocument));
   }
 
   private EventDocument convertDtoToDocument(EventIF dto) {
     return processInterceptors(dto);
   }
 
-  private EventDocument processInterceptors(EventIF dto) {
-    EventDocument eventDocument = EventDocument.of(
-        dto.getId(),
-        dto.getKind().getValue(),
-        dto.getPublicKey().toString(),
-        dto.getCreatedAt(),
-        dto.getContent(),
-        dto.getSignature().toString());
+//  TODO: functionalize below two methods into one
+  private EventDocument processInterceptors(EventIF eventIF) {
+    EventDocument returnDocument = EventDocument.of(
+        eventIF.getId(),
+        eventIF.getKind().getValue(),
+        eventIF.getPublicKey().toString(),
+        eventIF.getCreatedAt(),
+        eventIF.getContent(),
+        eventIF.getSignature().toString());
 
-    eventDocument.setTags(Stream.concat(
-        dto.getTags().stream().map(baseTag ->
-            Optional.ofNullable(
-                    interceptors.get(baseTag.getCode()))
-                .stream().map(interceptor ->
-                    (BaseTag) interceptor.intercept(baseTag)).toList()).flatMap(Collection::stream),
-        dto.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode()))).toList());
+    returnDocument.setTags(
+        Stream.concat(
+                eventIF.getTags().stream().map(baseTag ->
+                    Optional.ofNullable(
+                            interceptors.get(baseTag.getCode()))
+                        .stream().map(interceptor ->
+                            (BaseTag) interceptor.intercept(baseTag)).toList()).flatMap(Collection::stream),
+                eventIF.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
+            .toList());
 
-    return eventDocument;
+    return returnDocument;
   }
 
-  protected EventDocumentIF revertInterceptor(EventDocumentIF documentToRevert) {
-    EventDocument revertedDocument = EventDocument.of(
-        documentToRevert.getId(),
-        documentToRevert.getKind().getValue(),
-        documentToRevert.getPublicKey().toString(),
-        documentToRevert.getCreatedAt(),
-        documentToRevert.getContent(),
-        documentToRevert.getSignature().toString());
+  protected EventDocumentIF revertInterceptor(EventDocumentIF eventIf) {
+    EventDocument returnDocument = EventDocument.of(
+        eventIf.getId(),
+        eventIf.getKind().getValue(),
+        eventIf.getPublicKey().toString(),
+        eventIf.getCreatedAt(),
+        eventIf.getContent(),
+        eventIf.getSignature().toString());
 
-    revertedDocument.setTags(
+    returnDocument.setTags(
         Stream.concat(
-                documentToRevert.getTags().stream().map(baseTag ->
+                eventIf.getTags().stream().map(baseTag ->
                     Optional.ofNullable(
                             interceptors.get(baseTag.getCode()))
                         .stream().map(interceptor ->
                             interceptor.canonicalize((RedisBaseTagIF) baseTag)).toList()).flatMap(Collection::stream),
-                documentToRevert.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
-            .collect(Collectors.toList()));
+                eventIf.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
+            .toList());
 
-    return revertedDocument;
+    return returnDocument;
   }
 }

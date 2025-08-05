@@ -17,19 +17,15 @@ public class DeletionEventDocumentService {
   }
 
   public Optional<DeletionEventDocumentRedisIF> findByEventIdString(@NonNull String eventIdString) {
-    Optional<DeletionEventDocumentRedisIF> byEventIdCustom = repo.findByDocumentEventId(eventIdString);
-    return byEventIdCustom;
+    return repo.findByDocumentEventId(eventIdString);
   }
 
   public List<DeletionEventDocumentRedisIF> getAll() {
-    return repo
-        .findAllDocuments().stream()
-        .toList();
+    return repo.findAllDocuments();
   }
 
   protected void deleteEventEntity(@NonNull String eventId) {
-    Optional<DeletionEventDocument> byEventId = repo.findByEventId(eventId);
-    Optional<DeletionEventDocument> deletionEventDocument = byEventId.map(repo::save).map(DeletionEventDocument::getEventId).map(DeletionEventDocument::of);
-    log.debug("DeletionEventDocumentService deletionEventDocument: {}", deletionEventDocument);
+    log.debug("DeletionEventDocumentService deleteEventEntity: {}",
+        repo.save(DeletionEventDocument.of(eventId)));
   }
 }

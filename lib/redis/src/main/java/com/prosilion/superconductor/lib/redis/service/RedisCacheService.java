@@ -2,6 +2,7 @@ package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.DeletionEntityIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentRedisIF;
@@ -47,22 +48,28 @@ public class RedisCacheService implements CacheServiceIF {
     List<EventDocumentIF> all = eventDocumentService.getAll();
     List<DeletionEventDocumentRedisIF> deletionEventEntities = getAllDeletionEventEntities();
 
-    List<EventDocumentIF> filteredDeletionEntities = all.stream().filter(eventEntityIF ->
-        !deletionEventEntities.stream()
-            .map(DeletionEntityIF::getId)
-            .toList()
-            .contains(eventEntityIF.getEventId())).toList();
-
-    return filteredDeletionEntities;
+    return all.stream()
+        .filter(eventDocumentIF ->
+            !deletionEventEntities.stream()
+                .map(DeletionEntityIF::getId)
+                .toList()
+                .contains(eventDocumentIF.getEventId())).toList();
   }
 
   public List<DeletionEventDocumentRedisIF> getAllDeletionEventEntities() {
     return deletionEventDocumentService.getAll();
   }
 
-  public void deleteEventEntity(@NonNull EventIF event) {
-    Optional<EventDocumentIF> byEventIdString = getEventByEventId(event.getId());
-
-    byEventIdString.map(EventDocumentIF::getId).ifPresent(deletionEventDocumentService::deleteEventEntity);
+  public void deleteEventEntity(@NonNull EventIF eventIF) {
+    eventIF.getTags().stream()
+        .filter(EventTag.class::isInstance)
+        .map(EventTag.class::cast)
+        .map(EventTag::getIdEvent)
+        .map(this::getEventByEventId)
+        .flatMap(Optional::stream).toList().stream()
+        .filter(deletionCandidate ->
+            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
+        .map(EventDocumentIF::getId)
+        .forEach(deletionEventDocumentService::deleteEventEntity);
   }
 }

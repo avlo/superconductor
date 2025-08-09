@@ -23,7 +23,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class JpaEventEntityService {
+public class EventEntityService {
   private final ConcreteTagEntitiesService<
       BaseTag,
       AbstractTagEntityRepository<AbstractTagEntity>,
@@ -33,7 +33,7 @@ public class JpaEventEntityService {
   private final GenericTagEntitiesService genericTagEntitiesService;
   private final EventEntityRepository eventEntityRepository;
 
-  public JpaEventEntityService(
+  public EventEntityService(
       @NonNull ConcreteTagEntitiesService<
           BaseTag,
           AbstractTagEntityRepository<AbstractTagEntity>,

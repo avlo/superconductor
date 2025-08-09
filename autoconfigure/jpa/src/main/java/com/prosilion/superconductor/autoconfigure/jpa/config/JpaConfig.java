@@ -14,8 +14,8 @@ import com.prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.GenericTagEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
-import com.prosilion.superconductor.lib.jpa.service.JpaDeletionEventEntityService;
-import com.prosilion.superconductor.lib.jpa.service.JpaEventEntityService;
+import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
+import com.prosilion.superconductor.lib.jpa.service.EventEntityService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -49,7 +49,7 @@ public class JpaConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  JpaEventEntityService jpaEventEntityService(
+  EventEntityService eventEntityService(
       @NonNull ConcreteTagEntitiesService<
           BaseTag,
           AbstractTagEntityRepository<AbstractTagEntity>,
@@ -58,21 +58,21 @@ public class JpaConfig {
           EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService,
       @NonNull GenericTagEntitiesService genericTagEntitiesService,
       @NonNull EventEntityRepository eventEntityRepository) {
-    return new JpaEventEntityService(concreteTagEntitiesService, genericTagEntitiesService, eventEntityRepository);
+    return new EventEntityService(concreteTagEntitiesService, genericTagEntitiesService, eventEntityRepository);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  JpaDeletionEventEntityService jpaDeletionEventEntityService(@NonNull DeletionEventEntityRepository deletionEventEntityRepository) {
-    return new JpaDeletionEventEntityService(deletionEventEntityRepository);
+  DeletionEventEntityService deletionEventEntityService(@NonNull DeletionEventEntityRepository deletionEventEntityRepository) {
+    return new DeletionEventEntityService(deletionEventEntityRepository);
   }
 
   @Bean
   @ConditionalOnMissingBean
   JpaCacheServiceIF cacheIF(
-      @NonNull JpaEventEntityService jpaEventEntityService,
-      @NonNull JpaDeletionEventEntityService jpaDeletionEventEntityService) {
-    return new JpaCacheService(jpaEventEntityService, jpaDeletionEventEntityService);
+      @NonNull EventEntityService eventEntityService,
+      @NonNull DeletionEventEntityService deletionEventEntityService) {
+    return new JpaCacheService(eventEntityService, deletionEventEntityService);
   }
 
   @Bean

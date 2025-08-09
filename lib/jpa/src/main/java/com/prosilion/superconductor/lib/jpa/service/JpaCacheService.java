@@ -15,39 +15,39 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class JpaCacheService implements JpaCacheServiceIF {
-  private final JpaEventEntityService jpaEventEntityService;
-  private final JpaDeletionEventEntityService jpaDeletionEventEntityService;
+  private final EventEntityService eventEntityService;
+  private final DeletionEventEntityService deletionEventEntityService;
 
   public JpaCacheService(
-      @NonNull JpaEventEntityService jpaEventEntityService,
-      @NonNull JpaDeletionEventEntityService jpaDeletionEventEntityService) {
-    this.jpaEventEntityService = jpaEventEntityService;
-    this.jpaDeletionEventEntityService = jpaDeletionEventEntityService;
+      @NonNull EventEntityService eventEntityService,
+      @NonNull DeletionEventEntityService deletionEventEntityService) {
+    this.eventEntityService = eventEntityService;
+    this.deletionEventEntityService = deletionEventEntityService;
   }
 
   @Override
   public Optional<EventEntityIF> getEventByEventId(@NonNull String eventId) {
-    return jpaEventEntityService.findByEventIdString(eventId);
+    return eventEntityService.findByEventIdString(eventId);
   }
 
   @Override
   public Optional<EventEntityIF> getEventByUid(@NonNull Long id) {
-    return jpaEventEntityService.getEventByUid(id);
+    return eventEntityService.getEventByUid(id);
   }
 
   @Override
   public List<EventEntityIF> getByKind(@NonNull Kind kind) {
-    return jpaEventEntityService.getEventsByKind(kind);
+    return eventEntityService.getEventsByKind(kind);
   }
 
   @Override
   public Long save(@NonNull EventIF event) {
-    return jpaEventEntityService.saveEventEntity(event);
+    return eventEntityService.saveEventEntity(event);
   }
 
   @Override
   public List<EventEntityIF> getAll() {
-    List<EventEntityIF> all = jpaEventEntityService.getAll();
+    List<EventEntityIF> all = eventEntityService.getAll();
     List<DeletionEventEntityIF> deletionEventEntities = getAllDeletionEvents();
 
     return all.stream()
@@ -61,7 +61,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   @Override
   public void deleteEventEntity(@NonNull EventIF eventIF) {
     Function<EventEntityIF, Long> getUid = EventEntityIF::getUid;
-    Consumer<Long> addDeletionEvent = jpaDeletionEventEntityService::addDeletionEvent;
+    Consumer<Long> addDeletionEvent = deletionEventEntityService::addDeletionEvent;
     eventIF.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
@@ -76,6 +76,6 @@ public class JpaCacheService implements JpaCacheServiceIF {
 
   @Override
   public List<DeletionEventEntityIF> getAllDeletionEvents() {
-    return jpaDeletionEventEntityService.findAll();
+    return deletionEventEntityService.findAll();
   }
 }

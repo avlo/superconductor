@@ -10,10 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class JpaDeletionEventEntityService {
+public class DeletionEventEntityService {
   private final DeletionEventEntityRepository repo;
 
-  public JpaDeletionEventEntityService(@NonNull DeletionEventEntityRepository repo) {
+  public DeletionEventEntityService(@NonNull DeletionEventEntityRepository repo) {
     this.repo = repo;
   }
 

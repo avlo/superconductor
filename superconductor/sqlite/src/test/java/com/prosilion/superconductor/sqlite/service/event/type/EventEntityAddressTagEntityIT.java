@@ -9,7 +9,7 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.jpa.service.JpaEventEntityService;
+import com.prosilion.superconductor.lib.jpa.service.EventEntityService;
 import com.prosilion.superconductor.sqlite.util.Factory;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -32,13 +32,13 @@ class EventEntityAddressTagEntityIT {
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(
       "REPUTATION_UUID-needs_proper_attention");
 
-  private final JpaEventEntityService jpaEventEntityService;
+  private final EventEntityService eventEntityService;
 
   private final Long savedEventId;
 
   @Autowired
-  public EventEntityAddressTagEntityIT(@NonNull JpaEventEntityService jpaEventEntityService) throws NostrException, NoSuchAlgorithmException {
-    this.jpaEventEntityService = jpaEventEntityService;
+  public EventEntityAddressTagEntityIT(@NonNull EventEntityService eventEntityService) throws NostrException, NoSuchAlgorithmException {
+    this.eventEntityService = eventEntityService;
 
     AddressTag addressTag = new AddressTag(
         KIND,
@@ -50,12 +50,12 @@ class EventEntityAddressTagEntityIT {
     System.out.println("textNoteEvent getPubKey().toString(): " + textNoteEvent.getPublicKey().toString());
     System.out.println("textNoteEvent getPubKey().toHexString(): " + textNoteEvent.getPublicKey().toHexString());
     System.out.println("textNoteEvent getPubKey().toBech32String(): " + textNoteEvent.getPublicKey().toBech32String());
-    savedEventId = jpaEventEntityService.saveEventEntity(textNoteEvent);
+    savedEventId = eventEntityService.saveEventEntity(textNoteEvent);
   }
 
   @Test
   void saveAndGetEventWithPublicKey() {
-    List<AddressTag> typeSpecificTags = Filterable.getTypeSpecificTags(AddressTag.class, jpaEventEntityService.getEventByUid(savedEventId).orElseThrow());
+    List<AddressTag> typeSpecificTags = Filterable.getTypeSpecificTags(AddressTag.class, eventEntityService.getEventByUid(savedEventId).orElseThrow());
 
     assertTrue(typeSpecificTags.stream().anyMatch(tag ->
         tag.getIdentifierTag().getUuid().equals(IDENTIFIER_TAG.getUuid())));

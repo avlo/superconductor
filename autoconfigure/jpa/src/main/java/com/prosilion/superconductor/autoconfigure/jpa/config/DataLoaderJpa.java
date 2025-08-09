@@ -4,10 +4,9 @@ import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.lang.NonNull;
 
-public class DataLoaderJpa implements CommandLineRunner {
+public class DataLoaderJpa implements DataLoaderJpaIF {
   private final EventPluginIF eventPlugin;
   private final BadgeDefinitionEvent upvoteBadgeDefinitionEvent;
   private final BadgeDefinitionEvent downvoteBadgeDefinitionEvent;

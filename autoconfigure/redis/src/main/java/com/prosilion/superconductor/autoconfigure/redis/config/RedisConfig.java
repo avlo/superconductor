@@ -12,6 +12,7 @@ import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository
 import com.prosilion.superconductor.lib.redis.service.DeletionEventDocumentService;
 import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
+import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -63,15 +64,15 @@ public class RedisConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheServiceIF cacheIF(
+  RedisCacheServiceIF cacheIF(
       @NonNull EventDocumentService eventDocumentService,
       @NonNull DeletionEventDocumentService deletionEventDocumentService) {
     return new RedisCacheService(eventDocumentService, deletionEventDocumentService);
   }
 
   @Bean
-  EventPluginIF eventPlugin(@NonNull CacheServiceIF cacheServiceIF) {
-    return new EventPlugin(cacheServiceIF);
+  EventPluginIF eventPlugin(@NonNull RedisCacheServiceIF redisCacheServiceIF) {
+    return new EventPlugin(redisCacheServiceIF);
   }
 
   @Bean

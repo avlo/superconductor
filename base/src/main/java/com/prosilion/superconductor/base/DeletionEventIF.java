@@ -1,5 +1,5 @@
 package com.prosilion.superconductor.base;
 
-public interface DeletionEntityIF<T> {
+public interface DeletionEventIF<T> {
   T getId();
 }

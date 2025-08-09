@@ -2,7 +2,6 @@ package com.prosilion.superconductor.autoconfigure.jpa.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
@@ -14,6 +13,7 @@ import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractT
 import com.prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.GenericTagEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
+import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
 import com.prosilion.superconductor.lib.jpa.service.JpaDeletionEventEntityService;
 import com.prosilion.superconductor.lib.jpa.service.JpaEventEntityService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,7 +45,7 @@ import org.springframework.lang.NonNull;
         "com.prosilion.superconductor.lib.jpa.service"
     })
 @ConditionalOnClass(JpaCacheService.class)
-public class JpaCacheConfig {
+public class JpaConfig {
 
   @Bean
   @ConditionalOnMissingBean
@@ -69,20 +69,20 @@ public class JpaCacheConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheServiceIF cacheIF(
+  JpaCacheServiceIF cacheIF(
       @NonNull JpaEventEntityService jpaEventEntityService,
       @NonNull JpaDeletionEventEntityService jpaDeletionEventEntityService) {
     return new JpaCacheService(jpaEventEntityService, jpaDeletionEventEntityService);
   }
 
   @Bean
-  EventPluginIF eventPlugin(@NonNull CacheServiceIF cacheServiceIF) {
+  EventPluginIF eventPlugin(@NonNull JpaCacheServiceIF cacheServiceIF) {
     return new EventPlugin(cacheServiceIF);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  DataLoaderJpa dataLoaderJpa(
+  DataLoaderJpaIF dataLoaderJpa(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
       @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeDefinitionEvent downvoteBadgeDefinitionEvent) {

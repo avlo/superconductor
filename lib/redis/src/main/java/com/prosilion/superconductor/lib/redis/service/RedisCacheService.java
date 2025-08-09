@@ -3,24 +3,19 @@ package com.prosilion.superconductor.lib.redis.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.superconductor.base.DeletionEntityIF;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import com.prosilion.superconductor.base.DeletionEventIF;
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentRedisIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
-public class RedisCacheService implements CacheServiceIF {
+public class RedisCacheService implements RedisCacheServiceIF {
   private final EventDocumentService eventDocumentService;
   private final DeletionEventDocumentService deletionEventDocumentService;
 
-  @Autowired
   public RedisCacheService(
       @NonNull EventDocumentService eventDocumentService,
       @NonNull DeletionEventDocumentService deletionEventDocumentService) {
@@ -46,20 +41,17 @@ public class RedisCacheService implements CacheServiceIF {
   @Override
   public List<EventDocumentIF> getAll() {
     List<EventDocumentIF> all = eventDocumentService.getAll();
-    List<DeletionEventDocumentRedisIF> deletionEventEntities = getAllDeletionEventEntities();
+    List<DeletionEventDocumentRedisIF> deletionEventEntities = getAllDeletionEvents();
 
     return all.stream()
         .filter(eventDocumentIF ->
             !deletionEventEntities.stream()
-                .map(DeletionEntityIF::getId)
+                .map(DeletionEventIF::getId)
                 .toList()
                 .contains(eventDocumentIF.getEventId())).toList();
   }
 
-  public List<DeletionEventDocumentRedisIF> getAllDeletionEventEntities() {
-    return deletionEventDocumentService.getAll();
-  }
-
+  @Override
   public void deleteEventEntity(@NonNull EventIF eventIF) {
     eventIF.getTags().stream()
         .filter(EventTag.class::isInstance)
@@ -71,5 +63,10 @@ public class RedisCacheService implements CacheServiceIF {
             deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
         .map(EventDocumentIF::getId)
         .forEach(deletionEventDocumentService::deleteEventEntity);
+  }
+
+  @Override
+  public List<DeletionEventDocumentRedisIF> getAllDeletionEvents() {
+    return deletionEventDocumentService.getAll();
   }
 }

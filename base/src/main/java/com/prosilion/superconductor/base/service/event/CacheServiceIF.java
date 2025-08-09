@@ -5,10 +5,10 @@ import com.prosilion.nostr.event.EventIF;
 import java.util.List;
 import java.util.Optional;
 
-public interface CacheServiceIF {
-  <T> T save(EventIF event);
-  List<? extends EventIF> getAll();
-  Optional<? extends EventIF> getEventByEventId(String eventId);
-  List<? extends EventIF> getByKind(Kind kind);
+public interface CacheServiceIF<T, U extends EventIF> {
+  T save(EventIF event);
+  List<U> getAll();
+  Optional<U> getEventByEventId(String eventId);
+  List<U> getByKind(Kind kind);
   void deleteEventEntity(EventIF eventIF);
 }

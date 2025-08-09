@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.jpa.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.superconductor.base.DeletionEntityIF;
+import com.prosilion.superconductor.base.DeletionEventIF;
 import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import java.util.List;
@@ -15,7 +15,6 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class JpaCacheService implements JpaCacheServiceIF {
-
   private final JpaEventEntityService jpaEventEntityService;
   private final JpaDeletionEventEntityService jpaDeletionEventEntityService;
 
@@ -36,6 +35,30 @@ public class JpaCacheService implements JpaCacheServiceIF {
     return jpaEventEntityService.getEventByUid(id);
   }
 
+  @Override
+  public List<EventEntityIF> getByKind(@NonNull Kind kind) {
+    return jpaEventEntityService.getEventsByKind(kind);
+  }
+
+  @Override
+  public Long save(@NonNull EventIF event) {
+    return jpaEventEntityService.saveEventEntity(event);
+  }
+
+  @Override
+  public List<EventEntityIF> getAll() {
+    List<EventEntityIF> all = jpaEventEntityService.getAll();
+    List<DeletionEventEntityJpaIF> deletionEventEntities = getAllDeletionEvents();
+
+    return all.stream()
+        .filter(eventEntityIF ->
+            !deletionEventEntities.stream()
+                .map(DeletionEventIF::getId)
+                .toList()
+                .contains(eventEntityIF.getUid())).toList();
+  }
+
+  @Override
   public void deleteEventEntity(@NonNull EventIF eventIF) {
     Function<EventEntityIF, Long> getUid = EventEntityIF::getUid;
     Consumer<Long> addDeletionEvent = jpaDeletionEventEntityService::addDeletionEvent;
@@ -52,29 +75,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
-  public List<EventEntityIF> getByKind(@NonNull Kind kind) {
-    return jpaEventEntityService.getEventsByKind(kind);
-  }
-
-  @Override
-  public Long save(@NonNull EventIF event) {
-    return jpaEventEntityService.saveEventEntity(event);
-  }
-
-
-  public List<EventEntityIF> getAll() {
-    List<EventEntityIF> all = jpaEventEntityService.getAll();
-    List<DeletionEventEntityJpaIF> deletionEventEntities = getAllDeletionJpaEventEntities();
-
-    return all.stream()
-        .filter(eventEntityIF ->
-            !deletionEventEntities.stream()
-                .map(DeletionEntityIF::getId)
-                .toList()
-                .contains(eventEntityIF.getUid())).toList();
-  }
-
-  public List<DeletionEventEntityJpaIF> getAllDeletionJpaEventEntities() {
+  public List<DeletionEventEntityJpaIF> getAllDeletionEvents() {
     return jpaDeletionEventEntityService.findAll();
   }
 }

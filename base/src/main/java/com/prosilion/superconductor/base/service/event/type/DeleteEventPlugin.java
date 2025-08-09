@@ -54,6 +54,6 @@ public class DeleteEventPlugin implements DeleteEventPluginIF {
   }
 
   private void getAVoid(EventIF genericEventKindIF) {
-    cacheServiceIF.deleteEventEntity(genericEventKindIF);
+    cacheServiceIF.deleteEvent(genericEventKindIF);
   }
 }

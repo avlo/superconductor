@@ -173,7 +173,7 @@ public class RedisCacheServiceIT {
     DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(deletionEvent.getTags().contains(eventTag));
 
-    redisCacheService.deleteEventEntity(deletionEvent);
+    redisCacheService.deleteEvent(deletionEvent);
 
     List<DeletionEventDocumentIF> allDeletionJpaEventEntitiesAfterDeletion = redisCacheService.getAllDeletionEvents();
     assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventEntitiesAfterDeletion.size());
@@ -223,7 +223,7 @@ public class RedisCacheServiceIT {
     DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(secondDeletionEvent.getTags().contains(eventTag));
 
-    redisCacheService.deleteEventEntity(secondDeletionEvent);
+    redisCacheService.deleteEvent(secondDeletionEvent);
 
     List<DeletionEventDocumentIF> allDeletionJpaEventEntities = redisCacheService.getAllDeletionEvents();
     assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());

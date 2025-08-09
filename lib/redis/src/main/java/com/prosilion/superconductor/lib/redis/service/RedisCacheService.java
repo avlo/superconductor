@@ -52,7 +52,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   }
 
   @Override
-  public void deleteEventEntity(@NonNull EventIF eventIF) {
+  public void deleteEvent(@NonNull EventIF eventIF) {
     eventIF.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)

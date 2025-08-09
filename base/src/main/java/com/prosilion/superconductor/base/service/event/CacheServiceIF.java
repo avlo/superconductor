@@ -10,5 +10,5 @@ public interface CacheServiceIF<T, U extends EventIF> {
   List<U> getAll();
   Optional<U> getEventByEventId(String eventId);
   List<U> getByKind(Kind kind);
-  void deleteEventEntity(EventIF eventIF);
+  void deleteEvent(EventIF eventIF);
 }

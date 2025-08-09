@@ -59,7 +59,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
-  public void deleteEventEntity(@NonNull EventIF eventIF) {
+  public void deleteEvent(@NonNull EventIF eventIF) {
     Function<EventEntityIF, Long> getUid = EventEntityIF::getUid;
     Consumer<Long> addDeletionEvent = deletionEventEntityService::addDeletionEvent;
     eventIF.getTags().stream()

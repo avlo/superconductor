@@ -169,7 +169,7 @@ public class JpaCacheServiceIT {
     DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(deletionEvent.getTags().contains(eventTag));
 
-    jpaCacheServiceIF.deleteEventEntity(deletionEvent);
+    jpaCacheServiceIF.deleteEvent(deletionEvent);
 
     List<DeletionEventEntityIF> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEvents();
     assertEquals(1, allDeletionJpaEventEntities.size());
@@ -221,7 +221,7 @@ public class JpaCacheServiceIT {
     DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(secondDeletionEvent.getTags().contains(eventTag));
 
-    jpaCacheServiceIF.deleteEventEntity(secondDeletionEvent);
+    jpaCacheServiceIF.deleteEvent(secondDeletionEvent);
 
     List<DeletionEventEntityIF> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEvents();
     assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());

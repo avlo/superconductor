@@ -13,7 +13,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentRedisIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
-import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
+import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.security.NoSuchAlgorithmException;
@@ -45,14 +45,14 @@ public class RedisCacheServiceIT {
 
   private final static String CONTENT = Factory.lorumIpsum(RedisCacheServiceIT.class);
 
-  private final RedisCacheService redisCacheService;
+  private final RedisCacheServiceIF redisCacheService;
   private final TextNoteEvent textNoteEvent;
   private final List<BaseTag> tags;
   private final EventDocumentIF eventDocumentIF;
 
   @Autowired
-  public RedisCacheServiceIT(RedisCacheService redisCacheService) throws NoSuchAlgorithmException {
-    this.redisCacheService = redisCacheService;
+  public RedisCacheServiceIT(RedisCacheServiceIF redisCacheServiceIF) throws NoSuchAlgorithmException {
+    this.redisCacheService = redisCacheServiceIF;
 
     this.tags = new ArrayList<>();
     tags.add(E_TAG);
@@ -63,7 +63,7 @@ public class RedisCacheServiceIT {
     tags.add(PRICE_TAG);
 
     this.textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-    this.eventDocumentIF = redisCacheService.save(textNoteEvent);
+    this.eventDocumentIF = redisCacheServiceIF.save(textNoteEvent);
   }
 
   @Test
@@ -166,7 +166,7 @@ public class RedisCacheServiceIT {
         .map(EventDocumentIF::getId)
         .anyMatch(e -> e.equals(eventToDelete.getId())));
 
-    List<DeletionEventDocumentRedisIF> allDeletionJpaEventEntitiesBeforeDeletion = redisCacheService.getAllDeletionEventEntities();
+    List<DeletionEventDocumentRedisIF> allDeletionJpaEventEntitiesBeforeDeletion = redisCacheService.getAllDeletionEvents();
 
     EventTag eventTag = new EventTag(eventToDelete.getId());
 
@@ -175,7 +175,7 @@ public class RedisCacheServiceIT {
 
     redisCacheService.deleteEventEntity(deletionEvent);
 
-    List<DeletionEventDocumentRedisIF> allDeletionJpaEventEntitiesAfterDeletion = redisCacheService.getAllDeletionEventEntities();
+    List<DeletionEventDocumentRedisIF> allDeletionJpaEventEntitiesAfterDeletion = redisCacheService.getAllDeletionEvents();
     assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventEntitiesAfterDeletion.size());
 
     log.debug(allDeletionJpaEventEntitiesAfterDeletion.toString());
@@ -225,7 +225,7 @@ public class RedisCacheServiceIT {
 
     redisCacheService.deleteEventEntity(secondDeletionEvent);
 
-    List<DeletionEventDocumentRedisIF> allDeletionJpaEventEntities = redisCacheService.getAllDeletionEventEntities();
+    List<DeletionEventDocumentRedisIF> allDeletionJpaEventEntities = redisCacheService.getAllDeletionEvents();
     assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());

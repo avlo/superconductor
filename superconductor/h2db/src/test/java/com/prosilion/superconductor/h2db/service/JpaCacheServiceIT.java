@@ -14,7 +14,7 @@ import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
-import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
+import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +43,14 @@ public class JpaCacheServiceIT {
 
   private final static String CONTENT = Factory.lorumIpsum(JpaCacheServiceIT.class);
 
-  private final JpaCacheService jpaService;
+  private final JpaCacheServiceIF jpaCacheServiceIF;
   private final TextNoteEvent textNoteEvent;
   private final List<BaseTag> tags;
   private final Long savedId;
 
   @Autowired
-  public JpaCacheServiceIT(JpaCacheService jpaService) throws NoSuchAlgorithmException {
-    this.jpaService = jpaService;
+  public JpaCacheServiceIT(JpaCacheServiceIF jpaCacheServiceIF) throws NoSuchAlgorithmException {
+    this.jpaCacheServiceIF = jpaCacheServiceIF;
 
     this.tags = new ArrayList<>();
     tags.add(E_TAG);
@@ -61,7 +61,7 @@ public class JpaCacheServiceIT {
     tags.add(PRICE_TAG);
 
     this.textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-    this.savedId = jpaService.save(textNoteEvent);
+    this.savedId = jpaCacheServiceIF.save(textNoteEvent);
   }
 
   @Test
@@ -69,13 +69,13 @@ public class JpaCacheServiceIT {
     assertNotNull(savedId);
     log.info("saved id: {}", savedId);
 
-    List<EventEntityIF> all = jpaService.getAll();
+    List<EventEntityIF> all = jpaCacheServiceIF.getAll();
 
     assertTrue(all.stream()
         .map(EventEntityIF::getUid)
         .anyMatch(savedId::equals));
 
-    EventEntityIF firstRetrievedEventEntityIF = jpaService.getEventByUid(savedId).orElseThrow();
+    EventEntityIF firstRetrievedEventEntityIF = jpaCacheServiceIF.getEventByUid(savedId).orElseThrow();
     assertEquals(savedId, firstRetrievedEventEntityIF.getUid());
 
     GenericEventKindDto firstDto = new GenericEventKindDto(textNoteEvent);
@@ -83,7 +83,7 @@ public class JpaCacheServiceIT {
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded    
 //    assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
 
-    EventEntityIF secondRetrievedEntityIF = jpaService.getEventByUid(savedId).orElseThrow();
+    EventEntityIF secondRetrievedEntityIF = jpaCacheServiceIF.getEventByUid(savedId).orElseThrow();
     assertEquals(savedId, secondRetrievedEntityIF.getUid());
 
     GenericEventKindDto secondDto = new GenericEventKindDto(textNoteEvent);
@@ -99,7 +99,7 @@ public class JpaCacheServiceIT {
     assertNotNull(savedId);
     log.info("saved id: {}", savedId);
 
-    assertTrue(jpaService.getAll().stream()
+    assertTrue(jpaCacheServiceIF.getAll().stream()
         .map(EventEntityIF::getUid)
         .anyMatch(savedId::equals));
 
@@ -111,10 +111,10 @@ public class JpaCacheServiceIT {
     log.info("********************");
     log.info("********************");
 
-    EventEntityIF firstRetrieval = jpaService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
+    EventEntityIF firstRetrieval = jpaCacheServiceIF.getEventByEventId(textNoteEvent.getId()).orElseThrow();
     assertEquals(savedId, firstRetrieval.getUid());
 
-    EventEntityIF secondRetrieval = jpaService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
+    EventEntityIF secondRetrieval = jpaCacheServiceIF.getEventByEventId(textNoteEvent.getId()).orElseThrow();
     assertEquals(savedId, secondRetrieval.getUid());
 
     assertEquals(firstRetrieval, secondRetrieval);
@@ -132,13 +132,13 @@ public class JpaCacheServiceIT {
 
   @Test
   void testDuplicateSaveAttempt() {
-    int startSize = jpaService.getAll().size();
+    int startSize = jpaCacheServiceIF.getAll().size();
     log.debug("startSize: {}", startSize);
 
-    Long savedUidOfDuplicate = jpaService.save(textNoteEvent);
+    Long savedUidOfDuplicate = jpaCacheServiceIF.save(textNoteEvent);
     assertEquals(savedId, savedUidOfDuplicate);
 
-    int endSize = jpaService.getAll().size();
+    int endSize = jpaCacheServiceIF.getAll().size();
     log.debug("endSize: {}", endSize);
     assertEquals(startSize, endSize);
   }
@@ -148,19 +148,19 @@ public class JpaCacheServiceIT {
     log.info("saved id: {}", savedId);
     String newContent = Factory.lorumIpsum(JpaCacheServiceIT.class);
 
-    List<EventEntityIF> all = jpaService.getAll();
+    List<EventEntityIF> all = jpaCacheServiceIF.getAll();
     int sizeBeforeDeleteMeEvent = all.size();
     log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 
     TextNoteEvent eventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
-    Long eventToDeleteUid = jpaService.save(eventToDelete);
+    Long eventToDeleteUid = jpaCacheServiceIF.save(eventToDelete);
 
-    List<EventEntityIF> allAfterDeleteMeEvent = jpaService.getAll();
+    List<EventEntityIF> allAfterDeleteMeEvent = jpaCacheServiceIF.getAll();
     int sizeAfterDeleteMeEvent = allAfterDeleteMeEvent.size();
     log.debug("sizeAfterDeleteMeEvent: {}", sizeAfterDeleteMeEvent);
     assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
 
-    assertTrue(jpaService.getAll().stream()
+    assertTrue(jpaCacheServiceIF.getAll().stream()
         .map(EventEntityIF::getUid)
         .anyMatch(eventToDeleteUid::equals));
 
@@ -169,9 +169,9 @@ public class JpaCacheServiceIT {
     DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(deletionEvent.getTags().contains(eventTag));
 
-    jpaService.deleteEventEntity(deletionEvent);
+    jpaCacheServiceIF.deleteEventEntity(deletionEvent);
 
-    List<DeletionEventEntityJpaIF> allDeletionJpaEventEntities = jpaService.getAllDeletionJpaEventEntities();
+    List<DeletionEventEntityJpaIF> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEvents();
     assertEquals(1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());
@@ -182,7 +182,7 @@ public class JpaCacheServiceIT {
 
     assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventEntityJpaIF::getEventId).anyMatch(eventToDeleteUid::equals));
 
-    List<EventEntityIF> allAfterDeletion = jpaService.getAll();
+    List<EventEntityIF> allAfterDeletion = jpaCacheServiceIF.getAll();
     int sizeAfterDeletion = allAfterDeletion.size();
     log.debug("sizeAfterDeletion: {}", sizeAfterDeletion);
     assertEquals(sizeAfterDeleteMeEvent - 1, sizeAfterDeletion);
@@ -199,20 +199,20 @@ public class JpaCacheServiceIT {
       String firstDeletedEventId) throws NoSuchAlgorithmException {
     String newContent = Factory.lorumIpsum(JpaCacheServiceIT.class);
 
-    List<EventEntityIF> all = jpaService.getAll();
+    List<EventEntityIF> all = jpaCacheServiceIF.getAll();
     int sizeBeforeSecondDeleteMeEvent = all.size();
     log.debug("sizeBeforeSecondDeleteMeEvent: {}", sizeBeforeSecondDeleteMeEvent);
     assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 
     TextNoteEvent secondEventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
-    Long secondEventToDeleteUid = jpaService.save(secondEventToDelete);
+    Long secondEventToDeleteUid = jpaCacheServiceIF.save(secondEventToDelete);
 
-    List<EventEntityIF> allAfterSecondDeleteMeEvent = jpaService.getAll();
+    List<EventEntityIF> allAfterSecondDeleteMeEvent = jpaCacheServiceIF.getAll();
     int sizeAfterSecondDeleteMeEvent = allAfterSecondDeleteMeEvent.size();
     log.debug("sizeAfterSecondDeleteMeEvent: {}", sizeAfterSecondDeleteMeEvent);
     assertEquals(sizeBeforeSecondDeleteMeEvent + 1, sizeAfterSecondDeleteMeEvent);
 
-    assertTrue(jpaService.getAll().stream()
+    assertTrue(jpaCacheServiceIF.getAll().stream()
         .map(EventEntityIF::getUid)
         .anyMatch(secondEventToDeleteUid::equals));
 
@@ -221,9 +221,9 @@ public class JpaCacheServiceIT {
     DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(secondDeletionEvent.getTags().contains(eventTag));
 
-    jpaService.deleteEventEntity(secondDeletionEvent);
+    jpaCacheServiceIF.deleteEventEntity(secondDeletionEvent);
 
-    List<DeletionEventEntityJpaIF> allDeletionJpaEventEntities = jpaService.getAllDeletionJpaEventEntities();
+    List<DeletionEventEntityJpaIF> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEvents();
     assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());
@@ -234,7 +234,7 @@ public class JpaCacheServiceIT {
 
     assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventEntityJpaIF::getEventId).anyMatch(secondEventToDeleteUid::equals));
 
-    List<EventEntityIF> allAfterSecondDeletion = jpaService.getAll();
+    List<EventEntityIF> allAfterSecondDeletion = jpaCacheServiceIF.getAll();
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();
     log.debug("sizeAfterSecondDeletion: {}", sizeAfterSecondDeletion);
     assertEquals(sizeAfterSecondDeleteMeEvent - 1, sizeAfterSecondDeletion);

@@ -27,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-class SinceUntilIT {
+class SinceUntilSqliteIT {
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
   private final String publicKey = Factory.generateRandomHex64String();
 
   @Autowired
-  SinceUntilIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
+  SinceUntilSqliteIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
     assertTrue(
         nostrRelayService.send(

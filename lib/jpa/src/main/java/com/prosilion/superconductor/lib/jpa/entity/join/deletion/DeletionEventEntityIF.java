@@ -1,8 +1,8 @@
-package com.prosilion.superconductor.lib.jpa.entity.join.deletion;
+package com.prosilion.superconductor.lib.jpa.dto.deletion;
 
 import com.prosilion.superconductor.base.DeletionEventIF;
 
-public interface DeletionEventEntityIF extends DeletionEventIF<Long> {
+public interface DeletionEventEntityJpaIF extends DeletionEventIF<Long> {
   Long getId();
   Long getEventId();
 }

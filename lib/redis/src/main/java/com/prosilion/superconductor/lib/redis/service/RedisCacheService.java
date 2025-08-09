@@ -4,7 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.DeletionEventIF;
-import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentRedisIF;
+import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   @Override
   public List<EventDocumentIF> getAll() {
     List<EventDocumentIF> all = eventDocumentService.getAll();
-    List<DeletionEventDocumentRedisIF> deletionEventEntities = getAllDeletionEvents();
+    List<DeletionEventDocumentIF> deletionEventEntities = getAllDeletionEvents();
 
     return all.stream()
         .filter(eventDocumentIF ->
@@ -66,7 +66,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   }
 
   @Override
-  public List<DeletionEventDocumentRedisIF> getAllDeletionEvents() {
+  public List<DeletionEventDocumentIF> getAllDeletionEvents() {
     return deletionEventDocumentService.getAll();
   }
 }

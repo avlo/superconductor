@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.lib.jpa.service;
 
-import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
+import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntity;
 import com.prosilion.superconductor.lib.jpa.repository.deletion.DeletionEventEntityRepository;
 import java.util.Collections;
@@ -17,7 +17,7 @@ public class JpaDeletionEventEntityService {
     this.repo = repo;
   }
 
-  public List<DeletionEventEntityJpaIF> findAll() {
+  public List<DeletionEventEntityIF> findAll() {
     List<DeletionEventEntity> all = repo.findAll();
     return Collections.unmodifiableList(all);
   }
@@ -28,6 +28,6 @@ public class JpaDeletionEventEntityService {
   }
 
   public Optional<Long> getDeletionEvent(@NonNull Long id) {
-    return repo.findById(id).map(DeletionEventEntityJpaIF::getId);
+    return repo.findById(id).map(DeletionEventEntityIF::getId);
   }
 }

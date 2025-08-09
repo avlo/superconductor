@@ -4,7 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.DeletionEventIF;
-import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
+import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +48,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   @Override
   public List<EventEntityIF> getAll() {
     List<EventEntityIF> all = jpaEventEntityService.getAll();
-    List<DeletionEventEntityJpaIF> deletionEventEntities = getAllDeletionEvents();
+    List<DeletionEventEntityIF> deletionEventEntities = getAllDeletionEvents();
 
     return all.stream()
         .filter(eventEntityIF ->
@@ -75,7 +75,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
-  public List<DeletionEventEntityJpaIF> getAllDeletionEvents() {
+  public List<DeletionEventEntityIF> getAllDeletionEvents() {
     return jpaDeletionEventEntityService.findAll();
   }
 }

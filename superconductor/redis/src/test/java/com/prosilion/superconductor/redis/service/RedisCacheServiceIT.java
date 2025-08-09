@@ -10,7 +10,7 @@ import com.prosilion.nostr.tag.PriceTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentRedisIF;
+import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
@@ -166,7 +166,7 @@ public class RedisCacheServiceIT {
         .map(EventDocumentIF::getId)
         .anyMatch(e -> e.equals(eventToDelete.getId())));
 
-    List<DeletionEventDocumentRedisIF> allDeletionJpaEventEntitiesBeforeDeletion = redisCacheService.getAllDeletionEvents();
+    List<DeletionEventDocumentIF> allDeletionJpaEventEntitiesBeforeDeletion = redisCacheService.getAllDeletionEvents();
 
     EventTag eventTag = new EventTag(eventToDelete.getId());
 
@@ -175,7 +175,7 @@ public class RedisCacheServiceIT {
 
     redisCacheService.deleteEventEntity(deletionEvent);
 
-    List<DeletionEventDocumentRedisIF> allDeletionJpaEventEntitiesAfterDeletion = redisCacheService.getAllDeletionEvents();
+    List<DeletionEventDocumentIF> allDeletionJpaEventEntitiesAfterDeletion = redisCacheService.getAllDeletionEvents();
     assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventEntitiesAfterDeletion.size());
 
     log.debug(allDeletionJpaEventEntitiesAfterDeletion.toString());
@@ -184,7 +184,7 @@ public class RedisCacheServiceIT {
       log.debug("deletionDbEventId: {}", event.getEventId());
     });
 
-    assertTrue(allDeletionJpaEventEntitiesAfterDeletion.stream().map(DeletionEventDocumentRedisIF::getEventId).anyMatch(eventToDelete.getId()::equals));
+    assertTrue(allDeletionJpaEventEntitiesAfterDeletion.stream().map(DeletionEventDocumentIF::getEventId).anyMatch(eventToDelete.getId()::equals));
 
     List<EventDocumentIF> allAfterDeletion = redisCacheService.getAll();
     int sizeAfterDeletion = allAfterDeletion.size();
@@ -225,7 +225,7 @@ public class RedisCacheServiceIT {
 
     redisCacheService.deleteEventEntity(secondDeletionEvent);
 
-    List<DeletionEventDocumentRedisIF> allDeletionJpaEventEntities = redisCacheService.getAllDeletionEvents();
+    List<DeletionEventDocumentIF> allDeletionJpaEventEntities = redisCacheService.getAllDeletionEvents();
     assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());
@@ -234,7 +234,7 @@ public class RedisCacheServiceIT {
       log.debug("deletionDbEventId: {}", event.getEventId());
     });
 
-    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventDocumentRedisIF::getEventId).anyMatch(secondEventToDelete.getId()::equals));
+    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventDocumentIF::getEventId).anyMatch(secondEventToDelete.getId()::equals));
 
     List<EventDocumentIF> allAfterSecondDeletion = redisCacheService.getAll();
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();

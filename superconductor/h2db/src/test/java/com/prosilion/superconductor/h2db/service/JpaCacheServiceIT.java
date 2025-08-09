@@ -12,7 +12,7 @@ import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
-import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
+import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
 import java.security.NoSuchAlgorithmException;
@@ -171,7 +171,7 @@ public class JpaCacheServiceIT {
 
     jpaCacheServiceIF.deleteEventEntity(deletionEvent);
 
-    List<DeletionEventEntityJpaIF> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEvents();
+    List<DeletionEventEntityIF> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEvents();
     assertEquals(1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());
@@ -180,7 +180,7 @@ public class JpaCacheServiceIT {
       log.debug("deletionDbEventId: {}", event.getEventId().toString());
     });
 
-    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventEntityJpaIF::getEventId).anyMatch(eventToDeleteUid::equals));
+    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventEntityIF::getEventId).anyMatch(eventToDeleteUid::equals));
 
     List<EventEntityIF> allAfterDeletion = jpaCacheServiceIF.getAll();
     int sizeAfterDeletion = allAfterDeletion.size();
@@ -223,7 +223,7 @@ public class JpaCacheServiceIT {
 
     jpaCacheServiceIF.deleteEventEntity(secondDeletionEvent);
 
-    List<DeletionEventEntityJpaIF> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEvents();
+    List<DeletionEventEntityIF> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEvents();
     assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());
@@ -232,7 +232,7 @@ public class JpaCacheServiceIT {
       log.debug("deletionDbEventId: {}", event.getEventId().toString());
     });
 
-    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventEntityJpaIF::getEventId).anyMatch(secondEventToDeleteUid::equals));
+    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventEntityIF::getEventId).anyMatch(secondEventToDeleteUid::equals));
 
     List<EventEntityIF> allAfterSecondDeletion = jpaCacheServiceIF.getAll();
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();

@@ -12,7 +12,7 @@ import org.springframework.lang.NonNull;
 //@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor(staticName = "of")
 @RedisHash
-public class DeletionEventDocument implements DeletionEventDocumentRedisIF {
+public class DeletionEventDocument implements DeletionEventDocumentIF {
 
   @Id
   @NonNull

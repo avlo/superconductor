@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.lib.jpa.entity.join.deletion;
 
-import com.prosilion.superconductor.lib.jpa.dto.deletion.DeletionEventEntityJpaIF;
 import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -14,7 +13,7 @@ import org.springframework.lang.NonNull;
 @NoArgsConstructor
 @Entity
 @Table(name = "deletion_event")
-public class DeletionEventEntity extends EventEntityAbstractEntity implements DeletionEventEntityJpaIF {
+public class DeletionEventEntity extends EventEntityAbstractEntity implements DeletionEventEntityIF {
   public DeletionEventEntity(@NonNull Long eventId) {
     super(eventId);
   }

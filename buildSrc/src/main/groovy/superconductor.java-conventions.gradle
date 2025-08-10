@@ -119,8 +119,8 @@ tasks.register('integrationNoOpTest', Test) {
     systemProperty("spring.profiles.active", "testnoop")
     useJUnitPlatform()
     filter {
-//        includeTestsMatching("EventNoOpMessageIT")
-//        includeTestsMatching("EventNoOpReqMessageIT")
+        includeTestsMatching("EventNoOpMessageIT")
+        includeTestsMatching("EventNoOpReqMessageIT")
     }
 }
 

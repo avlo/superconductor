@@ -2,6 +2,7 @@ package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocument;
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentIF;
+import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
 import com.prosilion.superconductor.lib.redis.repository.DeletionEventDocumentRepository;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +25,8 @@ public class DeletionEventDocumentService {
     return repo.findAllDocuments();
   }
 
-  protected void deleteEventEntity(@NonNull String eventId) {
-    log.debug("DeletionEventDocumentService deleteEventEntity: {}",
-        repo.save(DeletionEventDocument.of(eventId)));
+  protected void addDeletionEvent(@NonNull EventDocumentIF event) {
+    log.debug("DeletionEventDocumentService deleteEventEntity: {}", event);
+    repo.save(DeletionEventDocument.of(event.getEventId()));
   }
 }

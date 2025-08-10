@@ -2,7 +2,6 @@ package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.DeletionEventIF;
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
@@ -51,18 +50,25 @@ public class RedisCacheService implements RedisCacheServiceIF {
                 .contains(eventDocumentIF.getEventId())).toList();
   }
 
+  //  @Override
+//  public void deleteEventOld(@NonNull EventIF eventIF) {
+//    Function<EventDocumentIF, String> getUid = EventDocumentIF::getId;
+
+  /// /    Consumer<String> addDeletionEvent = deletionEventDocumentService::addDeletionEvent;
+//    Consumer<EventDocumentIF> addDeletionEvent = deletionEventDocumentService::addDeletionEvent;
+//    eventIF.getTags().stream()
+//        .filter(EventTag.class::isInstance)
+//        .map(EventTag.class::cast)
+//        .map(EventTag::getIdEvent)
+//        .map(this::getEventByEventId)
+//        .flatMap(Optional::stream).toList().stream()
+//        .filter(deletionCandidate ->
+//            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
+//        .forEach(addDeletionEvent);
+//  }
   @Override
   public void deleteEvent(@NonNull EventIF eventIF) {
-    eventIF.getTags().stream()
-        .filter(EventTag.class::isInstance)
-        .map(EventTag.class::cast)
-        .map(EventTag::getIdEvent)
-        .map(this::getEventByEventId)
-        .flatMap(Optional::stream).toList().stream()
-        .filter(deletionCandidate ->
-            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
-        .map(EventDocumentIF::getId)
-        .forEach(deletionEventDocumentService::deleteEventEntity);
+    deleteEventTags(eventIF, deletionEventDocumentService::addDeletionEvent);
   }
 
   @Override

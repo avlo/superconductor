@@ -2,14 +2,11 @@ package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.DeletionEventIF;
-import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
+import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntityIF;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -58,20 +55,22 @@ public class JpaCacheService implements JpaCacheServiceIF {
                 .contains(eventEntityIF.getUid())).toList();
   }
 
+//  public void deleteEventOld(@NonNull EventIF eventIF) {
+//    Function<EventEntityIF, Long> getUid = EventEntityIF::getUid;
+//    eventIF.getTags().stream()
+//        .filter(EventTag.class::isInstance)
+//        .map(EventTag.class::cast)
+//        .map(EventTag::getIdEvent)
+//        .map(this::getEventByEventId)
+//        .flatMap(Optional::stream).toList().stream()
+//        .filter(deletionCandidate ->
+//            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
+//        .forEach(deletionEventEntityService::addDeletionEvent);
+//  }
+
   @Override
   public void deleteEvent(@NonNull EventIF eventIF) {
-    Function<EventEntityIF, Long> getUid = EventEntityIF::getUid;
-    Consumer<Long> addDeletionEvent = deletionEventEntityService::addDeletionEvent;
-    eventIF.getTags().stream()
-        .filter(EventTag.class::isInstance)
-        .map(EventTag.class::cast)
-        .map(EventTag::getIdEvent)
-        .map(this::getEventByEventId)
-        .flatMap(Optional::stream).toList().stream()
-        .filter(deletionCandidate ->
-            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
-        .map(getUid)
-        .forEach(addDeletionEvent);
+    deleteEventTags(eventIF, deletionEventEntityService::addDeletionEvent);
   }
 
   @Override

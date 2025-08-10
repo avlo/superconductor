@@ -44,29 +44,13 @@ public class JpaCacheService implements JpaCacheServiceIF {
 
   @Override
   public List<EventEntityIF> getAll() {
-    List<EventEntityIF> all = eventEntityService.getAll();
-    List<DeletionEventEntityIF> deletionEventEntities = getAllDeletionEvents();
-
-    return all.stream()
+    return eventEntityService.getAll().stream()
         .filter(eventEntityIF ->
-            !deletionEventEntities.stream()
+            !getAllDeletionEvents().stream()
                 .map(DeletionEventIF::getId)
                 .toList()
                 .contains(eventEntityIF.getUid())).toList();
   }
-
-//  public void deleteEventOld(@NonNull EventIF eventIF) {
-//    Function<EventEntityIF, Long> getUid = EventEntityIF::getUid;
-//    eventIF.getTags().stream()
-//        .filter(EventTag.class::isInstance)
-//        .map(EventTag.class::cast)
-//        .map(EventTag::getIdEvent)
-//        .map(this::getEventByEventId)
-//        .flatMap(Optional::stream).toList().stream()
-//        .filter(deletionCandidate ->
-//            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
-//        .forEach(deletionEventEntityService::addDeletionEvent);
-//  }
 
   @Override
   public void deleteEvent(@NonNull EventIF eventIF) {

@@ -39,33 +39,14 @@ public class RedisCacheService implements RedisCacheServiceIF {
 
   @Override
   public List<EventDocumentIF> getAll() {
-    List<EventDocumentIF> all = eventDocumentService.getAll();
-    List<DeletionEventDocumentIF> deletionEventEntities = getAllDeletionEvents();
-
-    return all.stream()
+    return eventDocumentService.getAll().stream()
         .filter(eventDocumentIF ->
-            !deletionEventEntities.stream()
+            !getAllDeletionEvents().stream()
                 .map(DeletionEventIF::getId)
                 .toList()
                 .contains(eventDocumentIF.getEventId())).toList();
   }
 
-  //  @Override
-//  public void deleteEventOld(@NonNull EventIF eventIF) {
-//    Function<EventDocumentIF, String> getUid = EventDocumentIF::getId;
-
-  /// /    Consumer<String> addDeletionEvent = deletionEventDocumentService::addDeletionEvent;
-//    Consumer<EventDocumentIF> addDeletionEvent = deletionEventDocumentService::addDeletionEvent;
-//    eventIF.getTags().stream()
-//        .filter(EventTag.class::isInstance)
-//        .map(EventTag.class::cast)
-//        .map(EventTag::getIdEvent)
-//        .map(this::getEventByEventId)
-//        .flatMap(Optional::stream).toList().stream()
-//        .filter(deletionCandidate ->
-//            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
-//        .forEach(addDeletionEvent);
-//  }
   @Override
   public void deleteEvent(@NonNull EventIF eventIF) {
     deleteEventTags(eventIF, deletionEventDocumentService::addDeletionEvent);

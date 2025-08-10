@@ -101,7 +101,7 @@ tasks.register('integrationTest', Test) {
     filter {
         excludeTestsMatching("*Test")
         includeTestsMatching("*IT")
-        excludeTestsMatching("*NoOp*IT")
+//        excludeTestsMatching("*NoOp*IT")
     }
 }
 
@@ -113,27 +113,29 @@ tasks.named('integrationTest') {
 //    }
 }
 
-tasks.register('integrationNoOpTest', Test) {
-    description = 'integration no-op tests.'
-    group = 'verification'
-    systemProperty("spring.profiles.active", "testnoop")
-    useJUnitPlatform()
-    filter {
-        includeTestsMatching("EventNoOpMessageIT")
-        includeTestsMatching("EventNoOpReqMessageIT")
-    }
-}
+//tasks.register('integrationNoOpTest', Test) {
+//    description = 'integration no-op tests.'
+//    group = 'verification'
+//    systemProperty("spring.profiles.active", "testnoop")
+//    useJUnitPlatform()
+//    filter {
+//        includeTestsMatching("EventNoOpMessageIT")
+//        includeTestsMatching("EventNoOpReqMessageIT")
+//    }
+//}
+//
+//tasks.named('integrationNoOpTest') {
+//    getServerPort()
+//    retry {
+//        failOnPassedAfterRetry = false
+//        maxRetries = 1
+//    }
+//}
 
-tasks.named('integrationNoOpTest') {
-    getServerPort()
-    retry {
-        failOnPassedAfterRetry = false
-        maxRetries = 1
-    }
-}
+//check.dependsOn integrationNoOpTest
+//integrationNoOpTest.dependsOn integrationTest
 
-check.dependsOn integrationNoOpTest
-integrationNoOpTest.dependsOn integrationTest
+check.dependsOn integrationTest
 
 tasks.bootJar {
     enabled = false

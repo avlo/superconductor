@@ -2,8 +2,8 @@ package com.prosilion.superconductor.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
@@ -13,7 +13,6 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -46,15 +45,10 @@ class ReqMessageIT {
     Identity author = Identity.generateRandomIdentity();
     this.authorPubkey = author.getPublicKey();
 
-    EventIF genericEventDtoIF =
-        new GenericDocumentKindDto(
-            new TextNoteEvent(
-                author,
-                Factory.lorumIpsum(getClass()))).convertBaseEventToEventIF();
+    TextNoteEvent event = new TextNoteEvent(author, Factory.lorumIpsum(getClass()));
+    this.eventId = event.getId();
 
-    this.eventId = genericEventDtoIF.getId();
-
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

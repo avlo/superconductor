@@ -21,7 +21,6 @@ import com.prosilion.superconductor.base.service.event.type.SuperconductorKindTy
 import com.prosilion.superconductor.h2db.util.BadgeAwardDownvoteEvent;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindTypeDto;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -58,18 +57,13 @@ public class BadgeAwardDownvoteEventMessageIT {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    EventIF downvoteEvent =
-        new GenericEventKindTypeDto(
-            new BadgeAwardDownvoteEvent(
-                authorIdentity,
-                downvotedUserPubKey,
-                downvoteBadgeDefinitionEvent),
-            SuperconductorKindType.DOWNVOTE)
-            .convertBaseEventToEventIF();
+    BadgeAwardDownvoteEvent event = new BadgeAwardDownvoteEvent(
+        authorIdentity,
+        downvotedUserPubKey,
+        downvoteBadgeDefinitionEvent);
+    eventId = event.getId();
 
-    eventId = downvoteEvent.getId();
-
-    EventMessage eventMessage = new EventMessage(downvoteEvent);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

@@ -16,7 +16,6 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -50,8 +49,7 @@ public class TextNoteEventMessageH2dbIT {
     BaseEvent event = new TextNoteEvent(identity, content);
     this.eventId = event.getId();
 
-    EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(this.nostrRelayService.send(eventMessage).getFlag());
   }
 

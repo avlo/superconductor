@@ -15,7 +15,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -44,15 +43,10 @@ class ReqMessageIT {
     Identity author = Identity.generateRandomIdentity();
     this.authorPubkey = author.getPublicKey();
 
-    EventIF genericEventDtoIF =
-        new GenericEventKindDto(
-            new TextNoteEvent(
-                author,
-                Factory.lorumIpsum(getClass()))).convertBaseEventToEventIF();
+    TextNoteEvent event = new TextNoteEvent(author, Factory.lorumIpsum(getClass()));
+    this.eventId = event.getId();
 
-    this.eventId = genericEventDtoIF.getId();
-
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

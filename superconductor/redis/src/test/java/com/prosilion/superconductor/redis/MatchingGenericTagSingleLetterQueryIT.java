@@ -2,7 +2,6 @@ package com.prosilion.superconductor.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
@@ -13,7 +12,6 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.HashtagTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -45,11 +43,14 @@ class MatchingGenericTagSingleLetterQueryIT {
   @Autowired
   MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayServiceRedis nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
-    BaseEvent textNoteEvent = new TextNoteEvent(identity, List.of(new HashtagTag("h-tag-1")), content);
     assertTrue(
         nostrRelayService
             .send(
-                new EventMessage(new GenericDocumentKindDto(textNoteEvent).convertBaseEventToEventIF()))
+                new EventMessage(
+                    new TextNoteEvent(
+                        identity,
+                        List.of(new HashtagTag("h-tag-1")),
+                        content)))
             .getFlag());
   }
 

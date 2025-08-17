@@ -26,7 +26,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
@@ -95,8 +94,7 @@ public class ClassifiedListingEventMessageIT {
     BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, classifiedListing, tags, content);
     this.eventId = event.getId();
 
-    EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

@@ -3,8 +3,8 @@ package com.prosilion.superconductor.sqlite;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
@@ -26,7 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,8 +49,7 @@ public class TextNoteEventMessageSqliteIT {
     BaseEvent event = new TextNoteEvent(identity, content);
     this.eventId = event.getId();
 
-    EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

@@ -2,8 +2,8 @@ package com.prosilion.superconductor.sqlite;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
@@ -25,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
 import static com.prosilion.superconductor.sqlite.TextNoteEventMessageSqliteIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,15 +43,10 @@ class ReqMessageIT {
     Identity author = Identity.generateRandomIdentity();
     this.authorPubkey = author.getPublicKey();
 
-    EventIF genericEventDtoIF =
-        new GenericEventKindDto(
-            new TextNoteEvent(
-                author,
-                Factory.lorumIpsum(getClass()))).convertBaseEventToEventIF();
+    TextNoteEvent event = new TextNoteEvent(author, Factory.lorumIpsum(getClass()));
+    this.eventId = event.getId();
 
-    this.eventId = genericEventDtoIF.getId();
-
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

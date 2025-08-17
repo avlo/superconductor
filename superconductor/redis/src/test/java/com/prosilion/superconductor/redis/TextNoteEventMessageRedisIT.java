@@ -14,7 +14,6 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -57,12 +56,26 @@ public class TextNoteEventMessageRedisIT {
     BaseEvent event = new TextNoteEvent(identity, content);
     this.eventId = event.getId();
 
-    EventIF genericEventDtoIF = new GenericDocumentKindDto(event).convertBaseEventToEventIF();
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+//    EventIF genericEventDtoIF = new GenericDocumentKindDto(event).convertBaseEventToEventIF();
+//    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+//    assertTrue(
+//        this.nostrRelayServiceRedis
+//            .send(
+//                eventMessage)
+//            .getFlag());
+
+//    EventMessage eventMessageFromTextNote = new EventMessage(event);
+//    assertTrue(
+//        this.nostrRelayServiceRedis
+//            .send(
+//                eventMessageFromTextNote)
+//            .getFlag());
+//
+    EventMessage eventMessageFromTextNoteGenericEventRecord = new EventMessage(event.getGenericEventRecord());
     assertTrue(
         this.nostrRelayServiceRedis
             .send(
-                eventMessage)
+                eventMessageFromTextNoteGenericEventRecord)
             .getFlag());
   }
 

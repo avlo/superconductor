@@ -5,8 +5,8 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.ClassifiedListingEvent;
-import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.internal.ClassifiedListing;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
@@ -24,7 +24,6 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -97,8 +96,7 @@ public class ClassifiedListingEventMessageIT {
     BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, classifiedListing, tags, content);
     this.eventId = event.getId();
 
-    EventIF genericEventDtoIF = new GenericDocumentKindDto(event).convertBaseEventToEventIF();
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

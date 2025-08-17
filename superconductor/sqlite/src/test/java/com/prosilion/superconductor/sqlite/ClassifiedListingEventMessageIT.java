@@ -5,8 +5,8 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.ClassifiedListingEvent;
-import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.internal.ClassifiedListing;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
@@ -24,7 +24,6 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import com.prosilion.superconductor.sqlite.util.Factory;
 import com.prosilion.superconductor.sqlite.util.NostrRelayService;
 import java.io.IOException;
@@ -95,8 +94,7 @@ public class ClassifiedListingEventMessageIT {
     BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, classifiedListing, tags, content);
     this.eventId = event.getId();
 
-    EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

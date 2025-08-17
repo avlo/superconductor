@@ -17,9 +17,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.event.service.GenericEventKindTypeIF;
 import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
-import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindTypeDto;
 import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEvent;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
@@ -60,18 +58,13 @@ public class BadgeAwardUpvoteEventMessageIT {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    GenericEventKindTypeIF upvoteEvent =
-        new GenericDocumentKindTypeDto(
-            new BadgeAwardUpvoteRedisEvent(
-                authorIdentity,
-                upvotedUserPubKey,
-                upvoteBadgeDefinitionEvent),
-            SuperconductorKindType.UPVOTE)
-            .convertBaseEventToGenericEventKindTypeIF();
+    BadgeAwardUpvoteRedisEvent event = new BadgeAwardUpvoteRedisEvent(
+        authorIdentity,
+        upvotedUserPubKey,
+        upvoteBadgeDefinitionEvent);
+    eventId = event.getId();
 
-    eventId = upvoteEvent.getId();
-
-    EventMessage eventMessage = new EventMessage(upvoteEvent);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

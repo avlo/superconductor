@@ -2,7 +2,6 @@ package com.prosilion.superconductor.sqlite;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
@@ -25,7 +24,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 
 import static com.prosilion.superconductor.sqlite.TextNoteEventMessageSqliteIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,11 +41,14 @@ class MatchingGenericTagSingleLetterQueryIT {
   @Autowired
   MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
-    BaseEvent textNoteEvent = new TextNoteEvent(identity, List.of(new HashtagTag("h-tag-1")), content);
     assertTrue(
         nostrRelayService
             .send(
-                new EventMessage(new GenericEventKindDto(textNoteEvent).convertBaseEventToEventIF()))
+                new EventMessage(
+                    new TextNoteEvent(
+                        identity,
+                        List.of(new HashtagTag("h-tag-1")),
+                        content)))
             .getFlag());
   }
 

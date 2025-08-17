@@ -16,7 +16,6 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -49,8 +48,7 @@ public class DeleteEventH2dbIT {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     this.eventIdToDeleteId = event.getId();
 
-    EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(
@@ -63,8 +61,7 @@ public class DeleteEventH2dbIT {
     BaseEvent deletionEvent = new DeletionEvent(identity, eventDeletionTags, Factory.lorumIpsum());
     this.deletionEventId = deletionEvent.getId();
 
-    EventIF genericDeleteEventDtoIF = new GenericEventKindDto(deletionEvent).convertBaseEventToEventIF();
-    EventMessage deletionEventMessage = new EventMessage(genericDeleteEventDtoIF);
+    EventMessage deletionEventMessage = new EventMessage(deletionEvent);
     assertTrue(
         this.nostrRelayService
             .send(
@@ -104,8 +101,7 @@ public class DeleteEventH2dbIT {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     String secondEventShouldNotGetDeleted = event.getId();
 
-    EventIF genericEventDtoIF = new GenericEventKindDto(event).convertBaseEventToEventIF();
-    EventMessage eventMessage = new EventMessage(genericEventDtoIF);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

@@ -2,7 +2,6 @@ package com.prosilion.superconductor.h2db;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
@@ -15,7 +14,6 @@ import com.prosilion.nostr.tag.HashtagTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -43,11 +41,14 @@ class MatchingGenericTagSingleLetterQueryIT {
   @Autowired
   MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
-    BaseEvent textNoteEvent = new TextNoteEvent(identity, List.of(new HashtagTag("h-tag-1")), content);
     assertTrue(
         nostrRelayService
             .send(
-                new EventMessage(new GenericEventKindDto(textNoteEvent).convertBaseEventToEventIF()))
+                new EventMessage(
+                    new TextNoteEvent(
+                        identity,
+                        List.of(new HashtagTag("h-tag-1")),
+                        content)))
             .getFlag());
   }
 

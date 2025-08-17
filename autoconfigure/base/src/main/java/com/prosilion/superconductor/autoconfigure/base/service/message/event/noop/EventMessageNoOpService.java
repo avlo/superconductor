@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.autoconfigure.base.service.message.event.noop;
 
 import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
+import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -25,12 +25,12 @@ public class EventMessageNoOpService implements EventMessageServiceIF {
   }
 
   @Override
-  public void processOkClientResponse(EventMessage eventMessage, @NonNull String sessionId) {
-    clientResponseService.processOkClientResponse(sessionId, new EventMessage(eventMessage.getEvent()));
+  public void processOkClientResponse(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
+    clientResponseService.processOkClientResponse(sessionId, eventMessage);
   }
 
   @Override
-  public void processNotOkClientResponse(EventMessage eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
-    clientResponseService.processNotOkClientResponse(sessionId, new EventMessage(eventMessage.getEvent()), errorMessage);
+  public void processNotOkClientResponse(@NonNull EventMessage eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
+    clientResponseService.processNotOkClientResponse(sessionId, eventMessage, errorMessage);
   }
 }

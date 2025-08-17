@@ -17,9 +17,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.event.service.GenericEventKindTypeIF;
 import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindTypeDto;
 import com.prosilion.superconductor.sqlite.util.BadgeAwardDownvoteEvent;
 import com.prosilion.superconductor.sqlite.util.Factory;
 import com.prosilion.superconductor.sqlite.util.NostrRelayService;
@@ -58,18 +56,13 @@ public class BadgeAwardDownvoteEventMessageIT {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    GenericEventKindTypeIF downvoteEvent =
-        new GenericEventKindTypeDto(
-            new BadgeAwardDownvoteEvent(
-                authorIdentity,
-                downvotedUserPubKey,
-                downvoteBadgeDefinitionEvent),
-            SuperconductorKindType.DOWNVOTE)
-            .convertBaseEventToEventIF();
+    BadgeAwardDownvoteEvent event = new BadgeAwardDownvoteEvent(
+        authorIdentity,
+        downvotedUserPubKey,
+        downvoteBadgeDefinitionEvent);
+    eventId = event.getId();
 
-    eventId = downvoteEvent.getId();
-
-    EventMessage eventMessage = new EventMessage(downvoteEvent);
+    EventMessage eventMessage = new EventMessage(event);
     assertTrue(
         this.nostrRelayService
             .send(

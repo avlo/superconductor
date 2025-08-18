@@ -9,7 +9,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 // our BasicCar
-public class EventKindPlugin implements EventKindPluginIF<Kind> {
+public class EventKindPlugin implements EventKindPluginIF {
   @Getter
   private final Kind kind;
   private final EventPluginIF eventPlugin;

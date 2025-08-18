@@ -13,7 +13,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.base.util.FilterMatcher;
-import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -51,7 +50,7 @@ public class FilterMatcherRedisIT {
     Filters filters = new Filters(
         new AddressTagFilter(addressTag));
 
-    EventIF event = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag), "content")).convertBaseEventToEventIF();
+    EventIF event = new TextNoteEvent(identity, List.of(addressTag), "content");
     AddNostrEvent one = new AddNostrEvent(event);
 
     Optional<AddNostrEvent> resultOne = filterMatcher.intersectFilterMatches(filters, one);
@@ -65,7 +64,7 @@ public class FilterMatcherRedisIT {
     Filters filters2 = new Filters(
         new AddressTagFilter(addressTag2));
 
-    EventIF event2 = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag2), "content")).convertBaseEventToEventIF();
+    EventIF event2 = new TextNoteEvent(identity, List.of(addressTag2), "content");
     AddNostrEvent two = new AddNostrEvent(event2);
 
     Optional<AddNostrEvent> resultTwo = filterMatcher.intersectFilterMatches(filters2, two);
@@ -79,7 +78,7 @@ public class FilterMatcherRedisIT {
     Filters filters3 = new Filters(
         new AddressTagFilter(addressTag3));
 
-    EventIF event3 = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag3), "content")).convertBaseEventToEventIF();
+    EventIF event3 = new TextNoteEvent(identity, List.of(addressTag3), "content");
     AddNostrEvent three = new AddNostrEvent(event3);
 
     Optional<AddNostrEvent> resultThree = filterMatcher.intersectFilterMatches(filters3, three);
@@ -93,7 +92,7 @@ public class FilterMatcherRedisIT {
 
     AddressTag addressTag4 = new AddressTag(kind, publicKey, new IdentifierTag("UUID-B"));
 
-    EventIF event4 = new GenericDocumentKindDto(new TextNoteEvent(identity, List.of(addressTag4), "content")).convertBaseEventToEventIF();
+    EventIF event4 = new TextNoteEvent(identity, List.of(addressTag4), "content");
     AddNostrEvent four = new AddNostrEvent(event4);
     Optional<AddNostrEvent> resultFour = filterMatcher.intersectFilterMatches(filters3, four);
 

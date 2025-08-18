@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
@@ -31,19 +30,19 @@ public class EventKindServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  EventKindServiceIF eventKindService(@NonNull List<EventKindPluginIF<Kind>> eventKindPlugins) {
+  EventKindServiceIF eventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     return new EventKindService(eventKindPlugins);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  EventKindTypeServiceIF eventKindTypeServiceIF(@NonNull List<EventKindTypePluginIF<KindTypeIF>> eventKindTypePlugins) {
+  EventKindTypeServiceIF eventKindTypeServiceIF(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) {
     return new EventKindTypeService(eventKindTypePlugins);
   }
 
   @Bean
 //  @ConditionalOnMissingBean
-  EventKindPluginIF<Kind> textNoteEventKindPlugin(
+  EventKindPluginIF textNoteEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     log.debug("loaded canonical textNoteEventKindPlugin bean");
@@ -63,7 +62,7 @@ public class EventKindServiceConfig {
 
   @Bean
 //  @ConditionalOnMissingBean
-  EventKindPluginIF<Kind> deleteEventKindPlugin(
+  EventKindPluginIF deleteEventKindPlugin(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull CacheServiceIF cacheServiceIF) {
     return new DeleteEventKindPlugin(

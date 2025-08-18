@@ -13,9 +13,9 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventKindService implements EventKindServiceIF {
-  private final Map<Kind, EventKindPluginIF<Kind>> eventKindPluginsMap;
+  private final Map<Kind, EventKindPluginIF> eventKindPluginsMap;
 
-  public EventKindService(List<EventKindPluginIF<Kind>> eventKindPlugins) {
+  public EventKindService(List<EventKindPluginIF> eventKindPlugins) {
     this.eventKindPluginsMap = eventKindPlugins.stream().collect(
         Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
     log.info("eventKindPluginsMap: {}", eventKindPluginsMap);
@@ -24,8 +24,8 @@ public class EventKindService implements EventKindServiceIF {
   @Override
   public void processIncomingEvent(@NonNull EventIF event) {
     Kind kind = event.getKind();
-    EventKindPluginIF<Kind> value = eventKindPluginsMap.get(kind);
-    EventKindPluginIF<Kind> kindEventKindPluginIF = Optional.ofNullable(
+    EventKindPluginIF value = eventKindPluginsMap.get(kind);
+    EventKindPluginIF kindEventKindPluginIF = Optional.ofNullable(
             value)
         .orElse(
             eventKindPluginsMap.get(Kind.TEXT_NOTE));

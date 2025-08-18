@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
 
 public class EventKindTypeService implements EventKindTypeServiceIF {
-  private final Map<Kind, Map<KindTypeIF, EventKindTypePluginIF<KindTypeIF>>> eventKindTypePluginsMap;
+  private final Map<Kind, Map<KindTypeIF, EventKindTypePluginIF>> eventKindTypePluginsMap;
 
-  public EventKindTypeService(@NonNull List<EventKindTypePluginIF<KindTypeIF>> eventKindTypePlugins) {
+  public EventKindTypeService(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) {
     eventKindTypePluginsMap = eventKindTypePlugins.stream()
         .collect(Collectors.groupingBy(
             EventKindTypePluginIF::getKind,

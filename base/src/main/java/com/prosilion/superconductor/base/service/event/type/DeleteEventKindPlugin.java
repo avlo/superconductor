@@ -11,7 +11,7 @@ public class DeleteEventKindPlugin extends NonPublishingEventKindPlugin {
   private final DeleteEventPluginIF deleteEventPlugin;
 
   public DeleteEventKindPlugin(
-      @NonNull EventKindPluginIF<Kind> eventKindPlugin,
+      @NonNull EventKindPluginIF eventKindPlugin,
       @NonNull DeleteEventPluginIF deleteEventPlugin) {
     super(eventKindPlugin);
     this.deleteEventPlugin = deleteEventPlugin;

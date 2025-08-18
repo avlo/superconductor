@@ -9,7 +9,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 // our BasicCar
-public class EventKindTypePlugin implements EventKindTypePluginIF<KindTypeIF> {
+public class EventKindTypePlugin implements EventKindTypePluginIF {
   private final KindTypeIF kindType;
   //  TODO: review below, potential candidate for replacement with EventKindPlugin/IF
 //    considerations: only current avail candidate bean is TextNote/Canonical

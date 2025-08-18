@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.sqlite.config;
 
-import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
@@ -33,7 +32,7 @@ public class NostrWsConfig {
   }
 
   @Bean
-  EventKindTypePluginIF<KindTypeIF> badgeAwardUpvoteEventKindTypePlugin(
+  EventKindTypePluginIF badgeAwardUpvoteEventKindTypePlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     return new BadgeAwardEventKindTypePlugin(
@@ -44,7 +43,7 @@ public class NostrWsConfig {
   }
 
   @Bean
-  EventKindTypePluginIF<KindTypeIF> badgeAwardDownvoteEventKindTypePlugin(
+  EventKindTypePluginIF badgeAwardDownvoteEventKindTypePlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     return new BadgeAwardEventKindTypePlugin(

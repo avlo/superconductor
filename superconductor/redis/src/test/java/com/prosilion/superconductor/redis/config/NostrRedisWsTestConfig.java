@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.config;
 
-import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
@@ -33,7 +32,7 @@ public class NostrRedisWsTestConfig {
   }
 
   @Bean
-  EventKindTypePluginIF<KindTypeIF> badgeAwardUpvoteEventKindTypeRedisPlugin(
+  EventKindTypePluginIF badgeAwardUpvoteEventKindTypeRedisPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     return new BadgeAwardEventKindTypeRedisPlugin(
@@ -44,7 +43,7 @@ public class NostrRedisWsTestConfig {
   }
 
   @Bean
-  EventKindTypePluginIF<KindTypeIF> badgeAwardDownvoteEventKindTypeRedisPlugin(
+  EventKindTypePluginIF badgeAwardDownvoteEventKindTypeRedisPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     return new BadgeAwardEventKindTypeRedisPlugin(

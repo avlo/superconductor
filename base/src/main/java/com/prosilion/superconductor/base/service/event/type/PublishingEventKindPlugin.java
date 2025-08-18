@@ -10,11 +10,11 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 // our CarDecorator for PublishingEventKind hierarchy
-public class PublishingEventKindPlugin implements EventKindPluginIF<Kind> {
+public class PublishingEventKindPlugin implements EventKindPluginIF {
   private final NotifierService notifierService;
-  private final EventKindPluginIF<Kind> eventKindPlugin;
+  private final EventKindPluginIF eventKindPlugin;
 
-  public PublishingEventKindPlugin(@NonNull NotifierService notifierService, @NonNull EventKindPluginIF<Kind> eventKindPlugin) {
+  public PublishingEventKindPlugin(@NonNull NotifierService notifierService, @NonNull EventKindPluginIF eventKindPlugin) {
     this.notifierService = notifierService;
     this.eventKindPlugin = eventKindPlugin;
   }

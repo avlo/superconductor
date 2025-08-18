@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.sqlite.util;
 
-import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.type.PublishingEventKindTypePlugin;
@@ -14,7 +13,7 @@ public class BadgeAwardEventKindTypePlugin extends PublishingEventKindTypePlugin
 
   public BadgeAwardEventKindTypePlugin(
       @NonNull NotifierService notifierService,
-      @NonNull EventKindTypePluginIF<KindTypeIF> eventKindTypePlugin) {
+      @NonNull EventKindTypePluginIF eventKindTypePlugin) {
     super(notifierService, eventKindTypePlugin);
   }
 

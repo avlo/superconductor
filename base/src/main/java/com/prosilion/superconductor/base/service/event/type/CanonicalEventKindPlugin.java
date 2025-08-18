@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base.service.event.type;
 
-import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
 import com.prosilion.superconductor.base.service.request.NotifierService;
@@ -13,7 +12,7 @@ public class CanonicalEventKindPlugin extends PublishingEventKindPlugin {
 
   public CanonicalEventKindPlugin(
       @NonNull NotifierService notifierService,
-      @NonNull EventKindPluginIF<Kind> eventKindPlugin) {
+      @NonNull EventKindPluginIF eventKindPlugin) {
     super(notifierService, eventKindPlugin);
   }
 

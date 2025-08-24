@@ -2,6 +2,7 @@ package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.DeletionEventIF;
 import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentIF;
 import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
@@ -30,6 +31,13 @@ public class RedisCacheService implements RedisCacheServiceIF {
   @Override
   public List<EventDocumentIF> getByKind(@NonNull Kind kind) {
     return eventDocumentService.getEventsByKind(kind);
+  }
+
+  @Override
+  public List<EventDocumentIF> getEventsByKindAndPubKeyTag(
+      @NonNull Kind kind,
+      @NonNull PublicKey publicKey) {
+    return eventDocumentService.getEventsByKindAndPubKeyTag(kind, publicKey);
   }
 
   @Override

@@ -41,6 +41,11 @@ public class RedisCacheService implements RedisCacheServiceIF {
   }
 
   @Override
+  public List<EventDocumentIF> getEventsByKindAndUuid(Kind kind, String uuid) {
+    return eventDocumentService.getEventsByKindAndUuid(kind, uuid);
+  }
+
+  @Override
   public EventDocumentIF save(@NonNull EventIF event) {
     return eventDocumentService.saveEventDocument(event);
   }

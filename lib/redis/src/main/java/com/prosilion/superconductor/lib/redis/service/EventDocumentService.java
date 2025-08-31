@@ -3,6 +3,7 @@ package com.prosilion.superconductor.lib.redis.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.redis.document.EventDocument;
@@ -60,6 +61,21 @@ public class EventDocumentService {
                 .map(PubKeyTag.class::cast)
                 .map(PubKeyTag::getPublicKey)
                 .collect(Collectors.toSet()).contains(publicKey))
+        .toList();
+  }
+
+  public List<EventDocumentIF> getEventsByKindAndUuid(
+      @NonNull Kind kind,
+      @NonNull String uuid) {
+    return eventDocumentRepository.findByKind(
+            kind.getValue()).stream()
+        .map(this::revertInterceptor)
+        .filter(eventDocumentIF ->
+            eventDocumentIF.getTags().stream()
+                .filter(IdentifierTag.class::isInstance)
+                .map(IdentifierTag.class::cast)
+                .map(IdentifierTag::getUuid)
+                .collect(Collectors.toSet()).contains(uuid))
         .toList();
   }
 

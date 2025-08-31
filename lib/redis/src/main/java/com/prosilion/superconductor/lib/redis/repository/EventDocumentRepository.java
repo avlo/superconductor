@@ -26,26 +26,18 @@ public interface EventDocumentRepository extends ListCrudRepository<EventDocumen
   List<EventDocument> findByKind(@NonNull Integer kind, Sort sort);
 
   default @NonNull List<EventDocumentIF> findAllCustom() {
-    List<EventDocument> all = findAll(DESC_SORT_CREATED_AT);
-    List<EventDocumentIF> eventDocuments = Collections.unmodifiableList(all);
-    return eventDocuments;
+    return Collections.unmodifiableList(findAll(DESC_SORT_CREATED_AT));
   }
 
   default @NonNull Optional<EventDocumentIF> findByEventId(String eventId) {
-    Optional<EventDocument> byEventId = findById(eventId);
-    Optional<EventDocumentIF> eventDocumentIF = Optional.of(byEventId.map(EventDocumentIF.class::cast)).orElse(Optional.empty());
-    return eventDocumentIF;
+    return Optional.of(findById(eventId).map(EventDocumentIF.class::cast)).orElse(Optional.empty());
   }
   
   default @NonNull List<EventDocumentIF> findByKind(@NonNull Integer kind) {
-    List<EventDocument> byKind = findByKind(kind, DESC_SORT_CREATED_AT);
-    List<EventDocumentIF> eventDocumentIFS = Collections.unmodifiableList(byKind);
-    return eventDocumentIFS;
+    return Collections.unmodifiableList(findByKind(kind, DESC_SORT_CREATED_AT));
   }
 
   default @NonNull List<EventDocumentIF> findByPubKey(@NonNull String pubKey) {
-    List<EventDocument> byPubKey = findByPubKey(pubKey, DESC_SORT_CREATED_AT);
-    List<EventDocumentIF> eventDocumentIFS = Collections.unmodifiableList(byPubKey);
-    return eventDocumentIFS;
+    return Collections.unmodifiableList(findByPubKey(pubKey, DESC_SORT_CREATED_AT));
   }
 }

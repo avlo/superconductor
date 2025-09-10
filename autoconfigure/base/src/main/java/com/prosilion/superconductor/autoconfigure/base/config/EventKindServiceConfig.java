@@ -30,7 +30,7 @@ public class EventKindServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  EventKindServiceIF eventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
+  EventKindServiceIF eventKindServiceIF(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     return new EventKindService(eventKindPlugins);
   }
 
@@ -55,7 +55,7 @@ public class EventKindServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   EventServiceIF eventService(
-      @NonNull @Qualifier("eventKindService") EventKindServiceIF eventKindService,
+      @NonNull @Qualifier("eventKindServiceIF") EventKindServiceIF eventKindService,
       @NonNull EventKindTypeServiceIF eventKindTypeService) {
     return new EventService(eventKindService, eventKindTypeService);
   }

@@ -6,7 +6,7 @@
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>superconductor-parent</artifactId>
   <name>superconductor-parent</name>
-  <version>1.16.1</version>
+  <version>1.17.0</version>
   <description>SuperConductor Java Nostr-Relay Framework and Web Application</description>
   <packaging>pom</packaging>
 
@@ -36,7 +36,7 @@
 
   <properties>
     <java.version>21</java.version>
-    <project.version>1.16.1</project.version>
+    <project.version>1.17.0</project.version>
     <spring-boot.version>3.5.1</spring-boot.version>
     <nostr-java-core.version>1.0.0</nostr-java-core.version>
 

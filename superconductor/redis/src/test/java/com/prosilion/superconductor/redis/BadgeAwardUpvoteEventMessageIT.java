@@ -91,7 +91,7 @@ public class BadgeAwardUpvoteEventMessageIT {
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
                             new IdentifierTag(
-                                SuperconductorKindType.UPVOTE.getName())))))));
+                                SuperconductorKindType.UNIT_UPVOTE.getName())))))));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -102,7 +102,7 @@ public class BadgeAwardUpvoteEventMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(SuperconductorKindType.UPVOTE.getName(), addressTag.getIdentifierTag().getUuid());
+    assertEquals(SuperconductorKindType.UNIT_UPVOTE.getName(), addressTag.getIdentifierTag().getUuid());
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {

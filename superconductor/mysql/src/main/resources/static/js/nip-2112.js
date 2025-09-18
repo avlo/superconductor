@@ -10,7 +10,7 @@ function generate2112TypeScriptEvent() {
         ['p', $("#2112-p_tag").val()]
     ];
     
-    let voteIntegerAsString = voteSelection === 'UPVOTE' ? '1' : '-1'; 
+    let voteIntegerAsString = voteSelection === 'UNIT_UPVOTE' ? '1' : '-1'; 
 
     let event = {
         id: '',

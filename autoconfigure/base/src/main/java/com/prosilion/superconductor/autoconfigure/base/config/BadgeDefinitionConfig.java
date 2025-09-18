@@ -33,7 +33,7 @@ public class BadgeDefinitionConfig {
       @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
-        new IdentifierTag(SuperconductorKindType.UPVOTE.getName()),
+        new IdentifierTag(SuperconductorKindType.UNIT_UPVOTE.getName()),
         new ReferenceTag(superconductorRelayUrl),
         "1");
   }
@@ -44,7 +44,7 @@ public class BadgeDefinitionConfig {
       @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
-        new IdentifierTag(SuperconductorKindType.DOWNVOTE.getName()),
+        new IdentifierTag(SuperconductorKindType.UNIT_DOWNVOTE.getName()),
         new ReferenceTag(superconductorRelayUrl),
         "-1");
   }

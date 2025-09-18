@@ -38,7 +38,7 @@ public class NostrRedisWsTestConfig {
     return new BadgeAwardEventKindTypeRedisPlugin(
         notifierService,
         new EventKindTypePlugin(
-            SuperconductorKindType.UPVOTE,
+            SuperconductorKindType.UNIT_UPVOTE,
             eventPlugin));
   }
 
@@ -49,7 +49,7 @@ public class NostrRedisWsTestConfig {
     return new BadgeAwardEventKindTypeRedisPlugin(
         notifierService,
         new EventKindTypePlugin(
-            SuperconductorKindType.DOWNVOTE,
+            SuperconductorKindType.UNIT_DOWNVOTE,
             eventPlugin));
   }
 }

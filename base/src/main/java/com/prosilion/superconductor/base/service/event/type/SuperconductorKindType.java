@@ -10,8 +10,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SuperconductorKindType implements KindTypeIF {
-  UPVOTE(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "UPVOTE"),
-  DOWNVOTE(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "DOWNVOTE");
+  UNIT_UPVOTE(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "UNIT_UPVOTE"),
+  UNIT_DOWNVOTE(Kind.BADGE_AWARD_EVENT, Kind.BADGE_DEFINITION_EVENT, "UNIT_DOWNVOTE");
 
   private final Kind kind;
   private final Kind kindDefinition;

@@ -18,7 +18,7 @@ public class BadgeAwardUpvoteRedisEvent extends AbstractBadgeAwardEvent<KindType
       @NonNull PublicKey upvotedUser,
       @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent) throws NostrException, NoSuchAlgorithmException {
     super(
-        SuperconductorKindType.UPVOTE,
+        SuperconductorKindType.UNIT_UPVOTE,
         authorIdentity,
         new Vote(
             upvotedUser,
@@ -32,7 +32,7 @@ public class BadgeAwardUpvoteRedisEvent extends AbstractBadgeAwardEvent<KindType
       @NonNull BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
       @NonNull List<BaseTag> tags) throws NostrException, NoSuchAlgorithmException {
     super(
-        SuperconductorKindType.UPVOTE,
+        SuperconductorKindType.UNIT_UPVOTE,
         authorIdentity,
         new Vote(
             upvotedUser,

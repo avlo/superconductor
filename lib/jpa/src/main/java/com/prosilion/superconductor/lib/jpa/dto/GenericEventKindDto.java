@@ -1,4 +1,3 @@
-
 package com.prosilion.superconductor.lib.jpa.dto;
 
 import com.prosilion.nostr.event.BaseEvent;

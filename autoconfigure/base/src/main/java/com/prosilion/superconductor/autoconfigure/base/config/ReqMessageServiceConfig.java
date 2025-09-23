@@ -14,10 +14,12 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 @AutoConfiguration
+@PropertySource("classpath:application-autoconfigure.properties")
 public class ReqMessageServiceConfig {
 
   @Bean

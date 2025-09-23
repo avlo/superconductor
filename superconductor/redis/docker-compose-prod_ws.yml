@@ -6,16 +6,22 @@ services:
     ports:
       - "6379:6379"
     environment:
-      - "REDIS_ARGS=--appendonly yes"
+      SPRING_DATA_REDIS_USERNAME: produser
+      SPRING_DATA_REDIS_PASSWORD: produserpass
+#      - "REDIS_ARGS=--appendonly yes"
   superconductor-app:
     container_name: superconductor-app-redis-prod_ws
-    image: superconductor-app-redis:1.17.0
+    image: avlo/superconductor-app-redis:1.17.0
     ports:
       - "5555:5555"
     links:
       - superconductor-db
     environment:
       SPRING_PROFILES_ACTIVE: prod_ws
+      SUPERCONDUCTOR_KEY_PRIVATE: fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac
+      SUPERCONDUCTOR_KEY_PUBLIC: e04e1c1c30df6058433f61681644fd24914f2e02e420496086c61f53eb504c04
+      SUPERCONDUCTOR_RELAY_URL: ws://localhost:5555
+#      server.port: 5555
 volumes:
   superconductor-db:
     driver: local

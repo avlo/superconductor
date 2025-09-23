@@ -1,12 +1,12 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
-import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.auth.AutoConfigEventMessageServiceNoAuthDecorator;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.noop.EventMessageNoOpService;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.standard.EventMessageService;
+import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -42,18 +42,10 @@ public class EventMessageServiceConfig {
 
   @Bean
   @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "false", matchIfMissing = true)
+  @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF getEventMessageServiceNoAuthDecorator(
       @NonNull EventMessageServiceIF eventMessageService) {
     log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
     return new AutoConfigEventMessageServiceNoAuthDecorator(eventMessageService);
   }
-
-//  @Bean
-//  @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "true")
-//  AutoConfigEventMessageServiceIF<EventMessage> getEventMessageServiceAuthDecorator(
-//      @NonNull EventMessageServiceIF<EventMessage> eventMessageService,
-//      @NonNull AuthEntityService authEntityService) {
-//    log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
-//    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageService, authEntityService);
-//  }
 }

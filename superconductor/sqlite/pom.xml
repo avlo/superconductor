@@ -190,6 +190,9 @@
               <profiles>
                 <profile>dev_ws</profile>
               </profiles>
+              <image>
+                <builder>bellsoft/buildpacks.builder:musl</builder>
+              </image>
             </configuration>
           </plugin>
         </plugins>

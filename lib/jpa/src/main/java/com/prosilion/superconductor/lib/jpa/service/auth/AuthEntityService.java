@@ -2,22 +2,19 @@ package com.prosilion.superconductor.lib.jpa.service.auth;
 
 import com.prosilion.superconductor.lib.jpa.entity.auth.AuthEntity;
 import com.prosilion.superconductor.lib.jpa.repository.auth.AuthEntityRepository;
-import org.springframework.lang.NonNull;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@ConditionalOnProperty(
-    name = "superconductor.auth.active",
-    havingValue = "true")
+@ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
 public class AuthEntityService implements AuthEntityServiceIF {
   private final AuthEntityRepository authEntityRepository;
 
-  public AuthEntityService(AuthEntityRepository authEntityRepository) {
+  public AuthEntityService(@NonNull AuthEntityRepository authEntityRepository) {
     this.authEntityRepository = authEntityRepository;
   }
 

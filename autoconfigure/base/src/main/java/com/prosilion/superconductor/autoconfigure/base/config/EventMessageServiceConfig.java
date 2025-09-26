@@ -17,7 +17,6 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 @AutoConfiguration
-//@Configuration
 public class EventMessageServiceConfig {
 
   @Bean
@@ -41,9 +40,9 @@ public class EventMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "false", matchIfMissing = true)
+  @ConditionalOnProperty(name = "superconductor.auth.event.active", havingValue = "false", matchIfMissing = true)
   @ConditionalOnMissingBean
-  AutoConfigEventMessageServiceIF getEventMessageServiceNoAuthDecorator(
+  AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageService) {
     log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
     return new AutoConfigEventMessageServiceNoAuthDecorator(eventMessageService);

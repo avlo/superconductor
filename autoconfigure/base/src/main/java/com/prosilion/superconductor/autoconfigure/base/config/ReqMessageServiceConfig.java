@@ -1,12 +1,12 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
-import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.base.service.message.RelayInfoDocServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoConfigReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.RelayInfoDocService;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageService;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.auth.AutoConfigReqMessageServiceNoAuthDecorator;
+import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.base.service.message.RelayInfoDocServiceIF;
 import com.prosilion.superconductor.base.service.request.ReqServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,21 +31,12 @@ public class ReqMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "false", matchIfMissing = true)
-  AutoConfigReqMessageServiceIF autoConfigReqMessageServiceNoAuthDecorator(
+  @ConditionalOnProperty(name = "superconductor.auth.req.active", havingValue = "false", matchIfMissing = true)
+  AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
       @NonNull ReqMessageServiceIF reqMessageServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
     return new AutoConfigReqMessageServiceNoAuthDecorator(reqMessageServiceIF);
   }
-
-//  @Bean
-//  @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "true")
-//  AutoConfigReqMessageServiceIF<T> autoConfigReqMessageServiceAuthDecorator(
-//      @NonNull ReqMessageServiceIF<T> reqMessageServiceIF,
-//      @NonNull AuthEntityService authEntityService) {
-//    log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
-//    return new AutoConfigReqMessageServiceAuthDecorator<>(reqMessageServiceIF, authEntityService);
-//  }
 
   @Bean
   @ConditionalOnMissingBean

@@ -33,12 +33,12 @@ public class AutoConfigEventMessageServiceAuthDecorator implements AutoConfigEve
   }
 
   @Override
-  public void processOkClientResponse(EventMessage eventMessage, @NonNull String sessionId) {
+  public void processOkClientResponse(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
     eventMessageServiceIF.processOkClientResponse(eventMessage, sessionId);
   }
 
   @Override
-  public void processNotOkClientResponse(EventMessage eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
+  public void processNotOkClientResponse(@NonNull EventMessage eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
     eventMessageServiceIF.processNotOkClientResponse(eventMessage, sessionId, errorMessage);
   }
 }

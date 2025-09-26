@@ -13,15 +13,13 @@ import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@ConditionalOnProperty(
-    name = "superconductor.auth.active",
-    havingValue = "true")
+@ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
 public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticationMessage> {
   public static final String CHALLENGE = "challenge";
   private final AuthEntityServiceIF authEntityService;

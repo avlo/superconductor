@@ -91,8 +91,8 @@ public class JpaConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "true")
-  AutoConfigEventMessageServiceIF getEventMessageServiceAuthDecorator(
+  @ConditionalOnProperty(name = "superconductor.auth.event.active", havingValue = "true")
+  AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageService,
       @NonNull AuthEntityServiceIF authEntityServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
@@ -100,8 +100,8 @@ public class JpaConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "true")
-  AutoConfigReqMessageServiceIF getReqMessageServiceAuthDecorator(
+  @ConditionalOnProperty(name = "superconductor.auth.req.active", havingValue = "true")
+  AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
       @NonNull ReqMessageServiceIF reqMessageServiceIF,
       @NonNull AuthEntityServiceIF authEntityServiceIF) {
     log.debug("loaded AutoConfigReqMessageServiceAuthDecorator bean (EVENT AUTH)");

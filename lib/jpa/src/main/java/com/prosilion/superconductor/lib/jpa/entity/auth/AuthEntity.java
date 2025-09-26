@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.lang.NonNull;
 
 @Setter
@@ -18,9 +18,7 @@ import org.springframework.lang.NonNull;
 @NoArgsConstructor
 @Entity
 @Table(name = "auth")
-@ConditionalOnProperty(
-    name = "superconductor.auth.active",
-    havingValue = "true")
+@ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
 public class AuthEntity implements AuthEntityIF {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

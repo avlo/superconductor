@@ -45,8 +45,10 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
   private final ApplicationEventPublisher publisher;
 
-  @Value("${superconductor.auth.active}")
-  private boolean authActive;
+  @Value("${superconductor.auth.event.active}")
+  private boolean authEventActive;
+  @Value("${superconductor.auth.req.active}")
+  private boolean authReqActive;
 
   @Autowired
   public NostrEventController(
@@ -63,13 +65,13 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
 
   @GetMapping("/api-tests.html")
   public String apiTests(Model model) {
-    model.addAttribute("authActive", authActive);
+    model.addAttribute("authActive", authEventActive);
     return "thymeleaf/api-tests";
   }
 
   @GetMapping("/request-test.html")
   public String requestTest(Model model) {
-    model.addAttribute("authActive", authActive);
+    model.addAttribute("authActive", authReqActive);
     return "thymeleaf/request-test";
   }
 

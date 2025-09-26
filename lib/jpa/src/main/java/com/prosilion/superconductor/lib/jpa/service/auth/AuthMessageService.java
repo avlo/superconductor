@@ -1,9 +1,12 @@
 package com.prosilion.superconductor.lib.jpa.service.auth;
 
 import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.message.CanonicalAuthenticationMessage;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.GenericTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.message.MessageServiceIF;
 import com.prosilion.superconductor.lib.jpa.entity.auth.AuthEntity;
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Service;
     name = "superconductor.auth.active",
     havingValue = "true")
 public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticationMessage> {
+  public static final String RELAY = "relay";
+  public static final String CHALLENGE = "challenge";
   private final AuthEntityService authEntityService;
   private final ClientResponseService okResponseService;
 
@@ -38,11 +43,11 @@ public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticat
   public void processIncoming(@NonNull CanonicalAuthenticationMessage authMessage, @NonNull String sessionId) {
     log.debug("processing incoming AUTH message: [{}]", authMessage);
     log.debug("AUTH message sessionId: {}", sessionId);
-    String challengeValue = getElementValue(authMessage, "challenge");
+    String challengeValue = getChallenge(authMessage);
 //    TODO: check non-blank / quality password /etc
     log.debug("AUTH message challenge string: {}, matched", challengeValue);
 
-    String relayUriString = getElementValue(authMessage, "relay");
+    String relayUriString = getRelay(authMessage);
     String pubKey = authMessage.getEvent().getPublicKey().toString();
     if (!relayUriString.equalsIgnoreCase(relayUrl)) {
       log.debug("AUTH message failed, relay URI string: [{}]", relayUriString);
@@ -76,13 +81,21 @@ public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticat
     okResponseService.processNotOkClientResponse(sessionId, new EventMessage(authMessage.getEvent(), sessionId), failureReason);
   }
 
-  private String getElementValue(CanonicalAuthenticationMessage authMessage, String attribute) {
-    return authMessage.getEvent().getTags().stream()
-        .filter(GenericTag.class::isInstance)
-        .map(GenericTag.class::cast)
+  private String getChallenge(CanonicalAuthenticationMessage authMessage) {
+    String challengeString = Filterable.getTypeSpecificTags(GenericTag.class, authMessage.getEvent()).stream()
         .filter(tag ->
-            tag.getCode().equalsIgnoreCase(attribute))
+            tag.getCode().equalsIgnoreCase(CHALLENGE))
         .map(GenericTag::getAttributes)
-        .toList().get(0).get(0).getValue().toString();
+        .toList().getFirst().getFirst().getValue().toString();
+    return challengeString;
+  }
+
+  private String getRelay(CanonicalAuthenticationMessage authMessage) {
+    String relayUrl = Filterable.getTypeSpecificTags(RelayTag.class, authMessage.getEvent())
+        .stream()
+        .findFirst()
+        .map(RelayTag::getRelay).orElseThrow()
+        .getUri().toString();
+    return relayUrl;
   }
 }

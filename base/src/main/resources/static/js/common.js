@@ -49,6 +49,19 @@ async function signEvent(event) {
     return signedPopulatedEvent;
 }
 
+async function createDigest(message) {
+    const utf8 = new Uint8Array(message.length);
+    new TextEncoder().encodeInto(message, utf8);
+    const hashBuffer = await window.crypto.subtle.digest("SHA-256", utf8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+    return hashArray
+        .map(b => b
+            .toString(16)
+            .padStart(2, "0"))
+        .join(""); // convert bytes to hex string
+}
+
+
 function sendContent(signedPopulatedEvent) {
     console.log("\nsending content...\n\n");
     console.log(addEventMessageWrapper(signedPopulatedEvent));

@@ -3,7 +3,7 @@
 <link rel="shortcut icon" href="/favicon.ico">
 <head>
   <title>Nostr Events WebClient</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+  <link rel="stylesheet" href="/bootstrap-3.3.7.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link href="/main.css" rel="stylesheet">
   <script src="/js/jquery-3.7.1.min.js"></script>
@@ -43,7 +43,7 @@
                    id="pubkeyregister" class="form-control" placeholder="pubkeyregister">
           </div>
           <input type="hidden" id="kindregister" name="kindregister" value=22242>
-          <input type="hidden" id="relay" name="relay" value='wss://localhost:5555'>
+          <input type="hidden" id="relay" name="relay" value='ws://localhost:5555'>
           <div class="row">
             <div class="center gap">
               <button id="sendregister" class="btn btn-default" type="submit" disabled="disabled">Register</button>

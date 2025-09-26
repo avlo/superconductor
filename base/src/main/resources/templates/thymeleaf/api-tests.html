@@ -263,6 +263,35 @@
         </form>
       </div>
     </div>
+
+    <input class="radiotab" tabindex="1" name="tabs" type="radio" id="tabsix">
+    <label class="label" for="tabsix">NIP-2112</label>
+    <div class="panel">
+      <div class="col-md-6">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="2112-content">Send Vote:</label>
+            <select name="2112-content" id="2112-content">
+              <option value="UNIT_UPVOTE">UPVOTE</option>
+              <option value="UNIT_DOWNVOTE">DOWNVOTE</option>
+            </select>
+          </div>
+          <input type="hidden" id="2112-p_tag" name="2112-p_tag"
+                 value="2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984">
+          <input type="hidden" id="2112-kind" name="2112-kind" value=8>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-inline">
+                <div class="center gap">
+                  <button id="send2112" class="btn btn-default" type="submit" disabled="disabled">Send Nip-2112 Event
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
 

@@ -4,7 +4,10 @@ import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
+import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoConfigReqMessageServiceIF;
+import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.jpa.service.auth.AutoConfigEventMessageServiceAuthDecorator;
+import com.prosilion.superconductor.autoconfigure.jpa.service.auth.AutoConfigReqMessageServiceAuthDecorator;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
@@ -94,6 +97,15 @@ public class JpaConfig {
       @NonNull AuthEntityServiceIF authEntityServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
     return new AutoConfigEventMessageServiceAuthDecorator(eventMessageService, authEntityServiceIF);
+  }
+
+  @Bean
+  @ConditionalOnProperty(name = "superconductor.auth.active", havingValue = "true")
+  AutoConfigReqMessageServiceIF getReqMessageServiceAuthDecorator(
+      @NonNull ReqMessageServiceIF reqMessageServiceIF,
+      @NonNull AuthEntityServiceIF authEntityServiceIF) {
+    log.debug("loaded AutoConfigReqMessageServiceAuthDecorator bean (EVENT AUTH)");
+    return new AutoConfigReqMessageServiceAuthDecorator(reqMessageServiceIF, authEntityServiceIF);
   }
 
   @Bean

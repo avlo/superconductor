@@ -4,7 +4,6 @@ import com.prosilion.nostr.enums.Command;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.message.CanonicalAuthenticationMessage;
 import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
@@ -28,20 +27,20 @@ public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticat
   public static final String CHALLENGE = "challenge";
   private final AuthEntityService authEntityService;
   private final ClientResponseService okResponseService;
-
-  @Value("${superconductor.relay.url}")
-  private String relayUrl;
+  private final String superconductorRelayUrl;
 
   @Autowired
   public AuthMessageService(
-      AuthEntityService authEntityService,
-      ClientResponseService okResponseService) {
+      @NonNull AuthEntityService authEntityService,
+      @NonNull ClientResponseService okResponseService,
+      @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl) {
     this.authEntityService = authEntityService;
     this.okResponseService = okResponseService;
+    this.superconductorRelayUrl = superconductorRelayUrl;
   }
 
   public void processIncoming(@NonNull CanonicalAuthenticationMessage authMessage, @NonNull String sessionId) {
-    log.debug("processing incoming AUTH message: [{}]", authMessage);
+    log.debug("{} processing incoming AUTH message: [{}]", getClass().getSimpleName(), authMessage);
     log.debug("AUTH message sessionId: {}", sessionId);
     String challengeValue = getChallenge(authMessage);
 //    TODO: check non-blank / quality password /etc
@@ -49,10 +48,10 @@ public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticat
 
     String relayUriString = getRelay(authMessage);
     String pubKey = authMessage.getEvent().getPublicKey().toString();
-    if (!relayUriString.equalsIgnoreCase(relayUrl)) {
+    if (!relayUriString.equalsIgnoreCase(superconductorRelayUrl)) {
       log.debug("AUTH message failed, relay URI string: [{}]", relayUriString);
       sendAuthFailed(authMessage, sessionId,
-          String.format("restricted: provided authentication relay URI [%s] does not match this relay host's URI [%s]", relayUriString, relayUrl)
+          String.format("restricted: provided authentication relay URI [%s] does not match this relay host's URI [%s]", relayUriString, superconductorRelayUrl)
       );
       return;
     }
@@ -82,20 +81,18 @@ public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticat
   }
 
   private String getChallenge(CanonicalAuthenticationMessage authMessage) {
-    String challengeString = Filterable.getTypeSpecificTags(GenericTag.class, authMessage.getEvent()).stream()
+    return Filterable.getTypeSpecificTags(GenericTag.class, authMessage.getEvent()).stream()
         .filter(tag ->
             tag.getCode().equalsIgnoreCase(CHALLENGE))
         .map(GenericTag::getAttributes)
         .toList().getFirst().getFirst().getValue().toString();
-    return challengeString;
   }
 
   private String getRelay(CanonicalAuthenticationMessage authMessage) {
-    String relayUrl = Filterable.getTypeSpecificTags(RelayTag.class, authMessage.getEvent())
+    return Filterable.getTypeSpecificTags(RelayTag.class, authMessage.getEvent())
         .stream()
         .findFirst()
         .map(RelayTag::getRelay).orElseThrow()
         .getUri().toString();
-    return relayUrl;
   }
 }

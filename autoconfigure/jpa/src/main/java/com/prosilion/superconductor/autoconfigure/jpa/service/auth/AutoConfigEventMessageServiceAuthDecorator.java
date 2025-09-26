@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.jpa.service.auth;
 
-import com.prosilion.nostr.enums.Command;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
@@ -41,10 +40,5 @@ public class AutoConfigEventMessageServiceAuthDecorator implements AutoConfigEve
   @Override
   public void processNotOkClientResponse(EventMessage eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
     eventMessageServiceIF.processNotOkClientResponse(eventMessage, sessionId, errorMessage);
-  }
-
-  @Override
-  public Command getCommand() {
-    return Command.EVENT;
   }
 }

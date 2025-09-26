@@ -52,11 +52,20 @@
         </form>
       </div>
     </div>
+    
     <input class="radiotab" name="tabs" tabindex="1" type="radio" id="tabtwo">
     <label class="label" for="tabtwo">Search Filters:</label>
     <div class="panel">
       <div class="col-md-6">
         <form class="form-inline">
+          <div class="form-group">
+            <label for="subscription_id">Subscription Id:</label>
+            <select name="subscription_id" id="subscription_id">
+              <option value="ReqClient-001">ReqClient-001</option>
+              <option value="ReqClient-002">ReqClient-002</option>
+              <option value="ReqClient-003">ReqClient-003</option>
+            </select>
+          </div>
           <div class="form-group">
             <label for="idcontent">Reference Event ID: </label>
             <input tabindex="1" type="text" value="" id="idcontent" class="form-control" placeholder="">

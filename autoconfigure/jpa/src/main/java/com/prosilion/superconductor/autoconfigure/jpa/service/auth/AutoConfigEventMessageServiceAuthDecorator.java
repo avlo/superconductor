@@ -26,7 +26,7 @@ public class AutoConfigEventMessageServiceAuthDecorator implements AutoConfigEve
       authEntityServiceIF.findAuthEntityBySessionId(sessionId).orElseThrow();
     } catch (NoSuchElementException e) {
       log.debug("AUTHENTICATED EVENT message failed session authentication");
-      processNotOkClientResponse(eventMessage, sessionId, String.format("restricted: session [%s] has not been authenticated", sessionId));
+      processNotOkClientResponse(eventMessage, sessionId, String.format("restricted: EVENT sessionId [%s] has not been authenticated", sessionId));
       return;
     }
     eventMessageServiceIF.processIncoming(eventMessage, sessionId);

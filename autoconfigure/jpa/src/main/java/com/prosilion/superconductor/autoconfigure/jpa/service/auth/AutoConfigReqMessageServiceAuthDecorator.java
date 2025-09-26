@@ -27,7 +27,7 @@ public class AutoConfigReqMessageServiceAuthDecorator implements AutoConfigReqMe
       authEntityService.findAuthEntityBySessionId(sessionId).orElseThrow();
     } catch (NoSuchElementException e) {
       log.debug("AUTHENTICATED REQ message failed session authentication");
-      reqMessageService.processNoticeClientResponse(reqMessage, sessionId, String.format("restricted: session [%s] has not been authenticated", sessionId));
+      reqMessageService.processNoticeClientResponse(reqMessage, sessionId, String.format("restricted: REQ sessionId [%s] has not been authenticated", sessionId));
       return;
     }
     reqMessageService.processIncoming(reqMessage, sessionId);

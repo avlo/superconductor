@@ -42,8 +42,4 @@ public class AuthEntity implements AuthEntityIF {
     this.sessionId = sessionId;
     this.createdAt = createdAt;
   }
-
-//  public GenericEventRecord convertEntityToDto() throws NoSuchAlgorithmException {
-//    return new CanonicalAuthenticationEvent(new PublicKey(pubKey), challenge, new Relay(relayUrl)).getGenericEventRecord();
-//  }
 }

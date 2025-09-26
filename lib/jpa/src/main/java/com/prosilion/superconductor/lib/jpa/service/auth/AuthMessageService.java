@@ -23,18 +23,17 @@ import org.springframework.stereotype.Service;
     name = "superconductor.auth.active",
     havingValue = "true")
 public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticationMessage> {
-  public static final String RELAY = "relay";
   public static final String CHALLENGE = "challenge";
-  private final AuthEntityService authEntityService;
+  private final AuthEntityServiceIF authEntityService;
   private final ClientResponseService okResponseService;
   private final String superconductorRelayUrl;
 
   @Autowired
   public AuthMessageService(
-      @NonNull AuthEntityService authEntityService,
+      @NonNull AuthEntityServiceIF authEntityServiceIF,
       @NonNull ClientResponseService okResponseService,
       @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl) {
-    this.authEntityService = authEntityService;
+    this.authEntityService = authEntityServiceIF;
     this.okResponseService = okResponseService;
     this.superconductorRelayUrl = superconductorRelayUrl;
   }

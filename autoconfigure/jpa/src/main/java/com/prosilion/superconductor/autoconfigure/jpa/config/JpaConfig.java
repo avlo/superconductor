@@ -6,8 +6,8 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.event.Aut
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoConfigReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
-import com.prosilion.superconductor.autoconfigure.jpa.service.auth.AutoConfigEventMessageServiceAuthDecorator;
-import com.prosilion.superconductor.autoconfigure.jpa.service.auth.AutoConfigReqMessageServiceAuthDecorator;
+import com.prosilion.superconductor.autoconfigure.base.service.message.event.auth.AutoConfigEventMessageServiceAuthDecorator;
+import com.prosilion.superconductor.autoconfigure.base.service.message.req.auth.AutoConfigReqMessageServiceAuthDecorator;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;

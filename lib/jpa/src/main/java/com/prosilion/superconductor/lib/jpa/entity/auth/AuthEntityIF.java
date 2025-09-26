@@ -1,4 +1,6 @@
 package com.prosilion.superconductor.lib.jpa.entity.auth;
 
-public interface AuthEntityIF {
+import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
+
+public interface AuthEntityIF extends AuthPersistantIF {
 }

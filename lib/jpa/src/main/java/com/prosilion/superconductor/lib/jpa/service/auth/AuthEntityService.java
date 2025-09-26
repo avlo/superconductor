@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.lib.jpa.service.auth;
 
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.jpa.entity.auth.AuthEntity;
 import com.prosilion.superconductor.lib.jpa.repository.auth.AuthEntityRepository;
 import java.util.Optional;
@@ -19,18 +20,23 @@ public class AuthEntityService implements AuthEntityServiceIF {
   }
 
   @Override
-  public Long save(AuthEntity authEntity) {
-    removeAuthEntityBySessionId(authEntity.getSessionId());
-    return authEntityRepository.save(authEntity).getId();
+  public void save(@NonNull String sessionId, @NonNull PublicKey publicKey, @NonNull String challenge, @NonNull Long createdAt) {
+    save(new AuthEntity(sessionId, publicKey, challenge, createdAt));
   }
 
   @Override
-  public Optional<AuthEntity> findAuthEntityBySessionId(@NonNull String sessionId) {
+  public Long save(AuthEntity authEntity) {
+    removeAuthPersistantBySessionId(authEntity.getSessionId());
+    return authEntityRepository.save(authEntity).getUid();
+  }
+
+  @Override
+  public Optional<AuthEntity> findAuthPersistantBySessionId(@NonNull String sessionId) {
     return authEntityRepository.findBySessionId(sessionId);
   }
 
   @Override
-  public void removeAuthEntityBySessionId(@NonNull String sessionId) {
-    findAuthEntityBySessionId(sessionId).ifPresent(authEntityRepository::delete);
+  public void removeAuthPersistantBySessionId(@NonNull String sessionId) {
+    findAuthPersistantBySessionId(sessionId).ifPresent(authEntityRepository::delete);
   }
 }

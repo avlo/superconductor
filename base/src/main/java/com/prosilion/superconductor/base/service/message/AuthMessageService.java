@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.lib.jpa.service.auth;
+package com.prosilion.superconductor.base.service.message;
 
 import com.prosilion.nostr.enums.Command;
 import com.prosilion.nostr.filter.Filterable;
@@ -6,9 +6,9 @@ import com.prosilion.nostr.message.CanonicalAuthenticationMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.tag.RelayTag;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.base.service.message.MessageServiceIF;
-import com.prosilion.superconductor.lib.jpa.entity.auth.AuthEntity;
+import com.prosilion.superconductor.base.service.event.service.AuthPersistantServiceIF;
 import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +22,16 @@ import org.springframework.stereotype.Service;
 @ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
 public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticationMessage> {
   public static final String CHALLENGE = "challenge";
-  private final AuthEntityServiceIF authEntityService;
+  private final AuthPersistantServiceIF authPersistantServiceIF;
   private final ClientResponseService okResponseService;
   private final String superconductorRelayUrl;
 
   @Autowired
   public AuthMessageService(
-      @NonNull AuthEntityServiceIF authEntityServiceIF,
+      @NonNull AuthPersistantServiceIF authPersistantServiceIF,
       @NonNull ClientResponseService okResponseService,
       @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl) {
-    this.authEntityService = authEntityServiceIF;
+    this.authPersistantServiceIF = authPersistantServiceIF;
     this.okResponseService = okResponseService;
     this.superconductorRelayUrl = superconductorRelayUrl;
   }
@@ -39,12 +39,12 @@ public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticat
   public void processIncoming(@NonNull CanonicalAuthenticationMessage authMessage, @NonNull String sessionId) {
     log.debug("{} processing incoming AUTH message: [{}]", getClass().getSimpleName(), authMessage);
     log.debug("AUTH message sessionId: {}", sessionId);
-    String challengeValue = getChallenge(authMessage);
+    String challenge = getChallenge(authMessage);
 //    TODO: check non-blank / quality password /etc
-    log.debug("AUTH message challenge string: {}, matched", challengeValue);
+    log.debug("AUTH message challenge string: {}, matched", challenge);
 
     String relayUriString = getRelay(authMessage);
-    String pubKey = authMessage.getEvent().getPublicKey().toString();
+    PublicKey pubKey = authMessage.getEvent().getPublicKey();
     if (!relayUriString.equalsIgnoreCase(superconductorRelayUrl)) {
       log.debug("AUTH message failed, relay URI string: [{}]", relayUriString);
       sendAuthFailed(authMessage, sessionId,
@@ -54,12 +54,11 @@ public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticat
     }
 
     Long createdAt = Instant.now().toEpochMilli();
-    authEntityService.save(
-        new AuthEntity(
-            pubKey,
-            challengeValue,
+    authPersistantServiceIF.save(
             sessionId,
-            createdAt));
+            pubKey,
+            challenge,
+            createdAt);
     log.debug("auth saved for pubkey [{}], session [{}], createdAt [{}]", pubKey, sessionId, createdAt);
 
     okResponseService.processOkClientResponse(

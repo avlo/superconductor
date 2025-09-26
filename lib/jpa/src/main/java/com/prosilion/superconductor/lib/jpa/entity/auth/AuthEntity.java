@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.lib.jpa.entity.auth;
 
+import com.prosilion.nostr.user.PublicKey;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,7 +23,7 @@ import org.springframework.lang.NonNull;
 public class AuthEntity implements AuthEntityIF {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long uid;
 
   //  TODO: might just need sessionId, revisit
   private String pubKey;
@@ -34,10 +35,10 @@ public class AuthEntity implements AuthEntityIF {
   @Transient
   private String relayUrl;
 
-  public AuthEntity(@NonNull String pubKey, @NonNull String challenge, @NonNull String sessionId, @NonNull Long createdAt) {
-    this.pubKey = pubKey;
-    this.challenge = challenge;
+  public AuthEntity(@NonNull String sessionId, @NonNull PublicKey publicKey, @NonNull String challenge, @NonNull Long createdAt) {
     this.sessionId = sessionId;
+    this.pubKey = publicKey.toString();
+    this.challenge = challenge;
     this.createdAt = createdAt;
   }
 }

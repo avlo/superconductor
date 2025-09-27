@@ -2,12 +2,6 @@ package com.prosilion.superconductor.autoconfigure.jpa.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.superconductor.autoconfigure.base.service.message.event.AutoConfigEventMessageServiceIF;
-import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
-import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoConfigReqMessageServiceIF;
-import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
-import com.prosilion.superconductor.autoconfigure.base.service.message.event.auth.AutoConfigEventMessageServiceAuthDecorator;
-import com.prosilion.superconductor.autoconfigure.base.service.message.req.auth.AutoConfigReqMessageServiceAuthDecorator;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
@@ -22,13 +16,11 @@ import com.prosilion.superconductor.lib.jpa.service.EventEntityService;
 import com.prosilion.superconductor.lib.jpa.service.GenericTagEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
-import com.prosilion.superconductor.lib.jpa.service.auth.AuthEntityServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -88,24 +80,6 @@ public class JpaConfig {
   @Bean
   EventPluginIF eventPlugin(@NonNull JpaCacheServiceIF cacheServiceIF) {
     return new EventPlugin(cacheServiceIF);
-  }
-
-  @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.event.active", havingValue = "true")
-  AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
-      @NonNull EventMessageServiceIF eventMessageService,
-      @NonNull AuthEntityServiceIF authEntityServiceIF) {
-    log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
-    return new AutoConfigEventMessageServiceAuthDecorator(eventMessageService, authEntityServiceIF);
-  }
-
-  @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.req.active", havingValue = "true")
-  AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
-      @NonNull ReqMessageServiceIF reqMessageServiceIF,
-      @NonNull AuthEntityServiceIF authEntityServiceIF) {
-    log.debug("loaded AutoConfigReqMessageServiceAuthDecorator bean (EVENT AUTH)");
-    return new AutoConfigReqMessageServiceAuthDecorator(reqMessageServiceIF, authEntityServiceIF);
   }
 
   @Bean

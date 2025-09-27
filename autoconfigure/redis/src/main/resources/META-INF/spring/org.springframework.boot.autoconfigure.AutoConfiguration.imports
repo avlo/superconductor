@@ -1,1 +1,2 @@
+com.prosilion.superconductor.autoconfigure.redis.config.AuthMessageServiceConfig
 com.prosilion.superconductor.autoconfigure.redis.config.RedisConfig

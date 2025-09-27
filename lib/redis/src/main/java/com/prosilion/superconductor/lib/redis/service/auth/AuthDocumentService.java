@@ -6,13 +6,9 @@ import com.prosilion.superconductor.lib.redis.document.AuthDocumentIF;
 import com.prosilion.superconductor.lib.redis.repository.auth.AuthDocumentRepository;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
-@ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
 public class AuthDocumentService implements AuthDocumentServiceIF {
   private final AuthDocumentRepository authDocumentRepository;
 
@@ -44,7 +40,7 @@ public class AuthDocumentService implements AuthDocumentServiceIF {
 
   @Override
   public Optional<AuthDocumentIF> findAuthPersistantBySessionId(@NonNull String sessionId) {
-    return Optional.of(authDocumentRepository.findBySessionId(sessionId).map(AuthDocumentIF.class::cast)).orElse(Optional.empty());
+    return authDocumentRepository.findBySessionId(sessionId).map(AuthDocumentIF.class::cast);
   }
 
   @Override

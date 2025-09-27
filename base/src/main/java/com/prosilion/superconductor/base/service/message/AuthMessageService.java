@@ -8,27 +8,22 @@ import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import com.prosilion.superconductor.base.service.event.service.AuthPersistantServiceIF;
 import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
-@ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
-public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticationMessage> {
+public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMessageServiceIF {
   public static final String CHALLENGE = "challenge";
-  private final AuthPersistantServiceIF authPersistantServiceIF;
+  private final AuthPersistantServiceIF<T, U> authPersistantServiceIF;
   private final ClientResponseService okResponseService;
   private final String superconductorRelayUrl;
 
-  @Autowired
   public AuthMessageService(
-      @NonNull AuthPersistantServiceIF authPersistantServiceIF,
+      @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF,
       @NonNull ClientResponseService okResponseService,
       @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl) {
     this.authPersistantServiceIF = authPersistantServiceIF;
@@ -55,10 +50,10 @@ public class AuthMessageService implements MessageServiceIF<CanonicalAuthenticat
 
     Long createdAt = Instant.now().toEpochMilli();
     authPersistantServiceIF.save(
-            sessionId,
-            pubKey,
-            challenge,
-            createdAt);
+        sessionId,
+        pubKey,
+        challenge,
+        createdAt);
     log.debug("auth saved for pubkey [{}], session [{}], createdAt [{}]", pubKey, sessionId, createdAt);
 
     okResponseService.processOkClientResponse(

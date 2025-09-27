@@ -2,16 +2,13 @@ package com.prosilion.superconductor.lib.jpa.service.auth;
 
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.jpa.entity.auth.AuthEntity;
+import com.prosilion.superconductor.lib.jpa.entity.auth.AuthEntityIF;
 import com.prosilion.superconductor.lib.jpa.repository.auth.AuthEntityRepository;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
-@ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
 public class AuthEntityService implements AuthEntityServiceIF {
   private final AuthEntityRepository authEntityRepository;
 
@@ -25,18 +22,23 @@ public class AuthEntityService implements AuthEntityServiceIF {
   }
 
   @Override
-  public Long save(AuthEntity authEntity) {
-    removeAuthPersistantBySessionId(authEntity.getSessionId());
+  public Long save(AuthEntityIF authEntityIF) {
+    removeAuthPersistantBySessionId(authEntityIF.getSessionId());
+    AuthEntity authEntity = new AuthEntity(
+        authEntityIF.getSessionId(),
+        new PublicKey(authEntityIF.getPublicKey()),
+        authEntityIF.getChallenge(),
+        authEntityIF.getCreatedAt());
     return authEntityRepository.save(authEntity).getUid();
   }
 
   @Override
-  public Optional<AuthEntity> findAuthPersistantBySessionId(@NonNull String sessionId) {
-    return authEntityRepository.findBySessionId(sessionId);
+  public Optional<AuthEntityIF> findAuthPersistantBySessionId(@NonNull String sessionId) {
+    return authEntityRepository.findBySessionId(sessionId).map(AuthEntityIF.class::cast);
   }
 
   @Override
   public void removeAuthPersistantBySessionId(@NonNull String sessionId) {
-    findAuthPersistantBySessionId(sessionId).ifPresent(authEntityRepository::delete);
+    authEntityRepository.findBySessionId(sessionId).ifPresent(authEntityRepository::delete);
   }
 }

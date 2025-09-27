@@ -3,19 +3,20 @@ package com.prosilion.superconductor.autoconfigure.base.service.message.req.auth
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoConfigReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import com.prosilion.superconductor.base.service.event.service.AuthPersistantServiceIF;
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class AutoConfigReqMessageServiceAuthDecorator implements AutoConfigReqMessageServiceIF {
+public class AutoConfigReqMessageServiceAuthDecorator<T, U extends AuthPersistantIF> implements AutoConfigReqMessageServiceIF {
   private final ReqMessageServiceIF reqMessageService;
-  private final AuthPersistantServiceIF authPersistantServiceIF;
+  private final AuthPersistantServiceIF<T, U> authPersistantServiceIF;
 
   public AutoConfigReqMessageServiceAuthDecorator(
       @NonNull ReqMessageServiceIF reqMessageService,
-      @NonNull AuthPersistantServiceIF authPersistantServiceIF) {
+      @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF) {
     this.reqMessageService = reqMessageService;
     this.authPersistantServiceIF = authPersistantServiceIF;
   }

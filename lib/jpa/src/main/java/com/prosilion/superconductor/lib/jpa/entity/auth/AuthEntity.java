@@ -26,7 +26,7 @@ public class AuthEntity implements AuthEntityIF {
   private Long uid;
 
   //  TODO: might just need sessionId, revisit
-  private String pubKey;
+  private String publicKey;
   private String sessionId;
   private String challenge;
   private Long createdAt;
@@ -37,7 +37,7 @@ public class AuthEntity implements AuthEntityIF {
 
   public AuthEntity(@NonNull String sessionId, @NonNull PublicKey publicKey, @NonNull String challenge, @NonNull Long createdAt) {
     this.sessionId = sessionId;
-    this.pubKey = publicKey.toString();
+    this.publicKey = publicKey.toString();
     this.challenge = challenge;
     this.createdAt = createdAt;
   }

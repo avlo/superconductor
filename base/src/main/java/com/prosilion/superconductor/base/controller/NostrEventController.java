@@ -113,7 +113,8 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     log.debug("Message content [{}]", baseMessage.getPayload());
 //    BaseMessage message = BaseMessageDecoder.decode(baseMessage.getPayload());
     T message = (T) BaseMessageDecoder.decode(baseMessage.getPayload());
-    messageServiceMap.get(message.getCommand()).processIncoming(message, session.getId());
+    MessageServiceIF<T> tMessageServiceIF = messageServiceMap.get(message.getCommand());
+    tMessageServiceIF.processIncoming(message, session.getId());
   }
 
   /**

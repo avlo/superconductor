@@ -17,14 +17,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-@ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
 @AutoConfiguration
 public class AuthMessageServiceConfig {
   @Bean
+  @ConditionalOnProperty(name = "superconductor.auth.event.active", havingValue = "true")
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageService,
@@ -34,6 +35,7 @@ public class AuthMessageServiceConfig {
   }
 
   @Bean
+  @ConditionalOnProperty(name = "superconductor.auth.req.active", havingValue = "true")
   @ConditionalOnMissingBean
   AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
       @NonNull ReqMessageServiceIF reqMessageServiceIF,
@@ -43,18 +45,20 @@ public class AuthMessageServiceConfig {
   }
 
   @Bean
+  @ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
   @ConditionalOnMissingBean
   AuthDocumentServiceIF authDocumentService(@NonNull AuthDocumentRepository authDocumentRepository) {
     return new AuthDocumentService(authDocumentRepository);
   }
 
   @Bean
+  @ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
   @ConditionalOnMissingBean
   AuthMessageServiceIF authMessageServiceIF(
       @NonNull AuthDocumentServiceIF authDocumentServiceIF,
       @NonNull ClientResponseService okResponseService,
-      @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl) {
+      @NonNull @Value("${superconductor.auth.challenge-relay.url}") String challengeRelayUrl) {
     log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
-    return new AuthMessageService<>(authDocumentServiceIF, okResponseService, superconductorRelayUrl);
+    return new AuthMessageService<>(authDocumentServiceIF, okResponseService, challengeRelayUrl);
   }
 }

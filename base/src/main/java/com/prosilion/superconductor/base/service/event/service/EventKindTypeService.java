@@ -62,8 +62,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
 
   private KindTypeIF getKindType(EventIF event) {
     return getKindTypes().stream().filter(kindTypeIF ->
-        kindTypeIF.getName().equals(Filterable.getTypeSpecificTags(AddressTag.class, event)
-            .stream()
+        kindTypeIF.getName().equals(Filterable.getTypeSpecificTagsStream(AddressTag.class, event)
             .findFirst()
             .map(AddressTag::getIdentifierTag).orElseThrow()
             .getUuid())).findFirst().orElseThrow();

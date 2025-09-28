@@ -72,7 +72,7 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
   }
 
   private String getChallenge(CanonicalAuthenticationMessage authMessage) {
-    return Filterable.getTypeSpecificTags(GenericTag.class, authMessage.getEvent()).stream()
+    return Filterable.getTypeSpecificTagsStream(GenericTag.class, authMessage.getEvent())
         .filter(tag ->
             tag.getCode().equalsIgnoreCase(CHALLENGE))
         .map(GenericTag::getAttributes)
@@ -80,8 +80,7 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
   }
 
   private String getRelay(CanonicalAuthenticationMessage authMessage) {
-    return Filterable.getTypeSpecificTags(RelayTag.class, authMessage.getEvent())
-        .stream()
+    return Filterable.getTypeSpecificTagsStream(RelayTag.class, authMessage.getEvent())
         .findFirst()
         .map(RelayTag::getRelay).orElseThrow()
         .getUri().toString();

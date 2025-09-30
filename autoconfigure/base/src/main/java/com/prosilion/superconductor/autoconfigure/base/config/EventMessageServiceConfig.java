@@ -39,7 +39,6 @@ public class EventMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.event.active", havingValue = "false", matchIfMissing = true)
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageService) {

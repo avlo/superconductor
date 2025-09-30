@@ -31,7 +31,7 @@ import org.springframework.lang.NonNull;
 @AutoConfiguration
 public class AuthMessageServiceConfig {
   @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.event.active", havingValue = "true")
+  @ConditionalOnBean(AuthEventKinds.class)
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageService,
@@ -51,9 +51,7 @@ public class AuthMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnExpression("${superconductor.auth.req.active:true}")
-//   OR
-  @ConditionalOnBean(AuthEventKinds.class)
+  @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
   @ConditionalOnMissingBean
   AuthEntityServiceIF authEntityServiceIF(@NonNull AuthEntityRepository authEntityRepository) {
     return new AuthEntityService(authEntityRepository);
@@ -69,8 +67,7 @@ public class AuthMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnExpression("${superconductor.auth.req.active:true}")
-  @ConditionalOnBean(AuthKindEntityService.class)
+  @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
   @ConditionalOnMissingBean
   AuthMessageServiceIF authMessageServiceIF(
       @NonNull AuthEntityServiceIF authEntityServiceIF,

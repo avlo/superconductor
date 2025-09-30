@@ -45,7 +45,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
   private final ApplicationEventPublisher publisher;
 
-  @Value("${superconductor.auth.event.active}")
+  @Value("#{!'${superconductor.auth.event.kinds}'.isEmpty()}")
   private boolean authEventActive;
   @Value("${superconductor.auth.req.active}")
   private boolean authReqActive;

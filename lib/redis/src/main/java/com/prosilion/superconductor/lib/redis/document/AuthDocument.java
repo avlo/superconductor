@@ -18,7 +18,7 @@ import org.springframework.lang.NonNull;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor(staticName = "of")
 @RedisHash
-@ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
+@ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
 public class AuthDocument implements AuthDocumentIF {
   @Id
   @NonNull

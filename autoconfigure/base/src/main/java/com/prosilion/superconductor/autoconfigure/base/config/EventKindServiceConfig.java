@@ -17,14 +17,13 @@ import com.prosilion.superconductor.base.service.event.type.DeleteEventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.base.service.request.NotifierService;
-import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.lang.NonNull;
 
@@ -76,9 +75,9 @@ public class EventKindServiceConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(value = "${superconductor.auth.event.kinds}")
+  @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty()}")
   @ConditionalOnMissingBean
-  AuthEventKinds authEventKinds(@Value("${superconductor.auth.event.kinds}") String[] authEventKinds) {
-    return new AuthEventKinds(Arrays.stream(authEventKinds).map(Kind::valueOf).toList());
+  AuthEventKinds authEventKinds(@Value("#{'${superconductor.auth.event.kinds}'.split(',')}") List<String> authEventKinds) {
+    return new AuthEventKinds(authEventKinds.stream().map(Kind::valueOf).toList());
   }
 }

@@ -7,7 +7,7 @@ import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
+@ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
 public interface AuthDocumentRepository extends ListCrudRepository<AuthDocument, String> {
   Optional<AuthDocument> findBySessionId(String sessionId);
 }

@@ -4,7 +4,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
-import com.prosilion.superconductor.base.service.event.service.AuthPersistantServiceIF;
+import com.prosilion.superconductor.base.service.event.service.AuthKindPersistantServiceIF;
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -12,11 +12,11 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class AutoConfigEventMessageServiceAuthDecorator<T, U extends AuthPersistantIF> implements AutoConfigEventMessageServiceIF {
   private final EventMessageServiceIF eventMessageServiceIF;
-  private final AuthPersistantServiceIF<T, U> authPersistantServiceIF;
+  private final AuthKindPersistantServiceIF<T, U> authPersistantServiceIF;
 
   public AutoConfigEventMessageServiceAuthDecorator(
       @NonNull EventMessageServiceIF eventMessageServiceIF,
-      @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF) {
+      @NonNull AuthKindPersistantServiceIF<T, U> authPersistantServiceIF) {
     this.eventMessageServiceIF = eventMessageServiceIF;
     this.authPersistantServiceIF = authPersistantServiceIF;
   }
@@ -24,7 +24,7 @@ public class AutoConfigEventMessageServiceAuthDecorator<T, U extends AuthPersist
   public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
     log.debug("AUTHENTICATED EVENT message type: {}", eventMessage.getEvent());
     try {
-      authPersistantServiceIF.findAuthPersistantBySessionId(sessionId).orElseThrow();
+      authPersistantServiceIF.findAuthPersistantBySessionIdAndKind(sessionId, eventMessage.getEvent().getKind());
     } catch (NoSuchElementException e) {
       log.debug("AUTHENTICATED EVENT message failed session authentication");
       processNotOkClientResponse(eventMessage, sessionId, String.format("EVENT sessionId [%s] has not been authenticated", sessionId));

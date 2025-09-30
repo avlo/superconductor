@@ -4,6 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
 import com.prosilion.superconductor.base.service.event.service.EventKindService;
 import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindTypeService;
@@ -16,18 +17,20 @@ import com.prosilion.superconductor.base.service.event.type.DeleteEventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.base.service.request.NotifierService;
+import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 @AutoConfiguration
 public class EventKindServiceConfig {
-
   @Bean
   @ConditionalOnMissingBean
   EventKindServiceIF eventKindServiceIF(@NonNull List<EventKindPluginIF> eventKindPlugins) {
@@ -70,5 +73,12 @@ public class EventKindServiceConfig {
             Kind.DELETION,
             eventPlugin),
         new DeleteEventPlugin(cacheServiceIF));
+  }
+
+  @Bean
+  @ConditionalOnProperty(value = "${superconductor.auth.event.kinds}")
+  @ConditionalOnMissingBean
+  AuthEventKinds authEventKinds(@Value("${superconductor.auth.event.kinds}") String[] authEventKinds) {
+    return new AuthEventKinds(Arrays.stream(authEventKinds).map(Kind::valueOf).toList());
   }
 }

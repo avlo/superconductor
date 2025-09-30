@@ -7,14 +7,20 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoC
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.auth.AutoConfigReqMessageServiceAuthDecorator;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
+import com.prosilion.superconductor.base.service.event.service.AuthKindPersistantServiceIF;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
 import com.prosilion.superconductor.base.service.message.AuthMessageServiceIF;
+import com.prosilion.superconductor.lib.jpa.entity.auth.AuthEntityIF;
 import com.prosilion.superconductor.lib.jpa.repository.auth.AuthEntityRepository;
 import com.prosilion.superconductor.lib.jpa.service.auth.AuthEntityService;
 import com.prosilion.superconductor.lib.jpa.service.auth.AuthEntityServiceIF;
+import com.prosilion.superconductor.lib.jpa.service.auth.AuthKindEntityService;
+import com.prosilion.superconductor.lib.jpa.service.auth.AuthKindEntityServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,9 +35,9 @@ public class AuthMessageServiceConfig {
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageService,
-      @NonNull AuthEntityServiceIF authEntityServiceIF) {
+      @NonNull AuthKindPersistantServiceIF<Long, AuthEntityIF> authKindEntityServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
-    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageService, authEntityServiceIF);
+    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageService, authKindEntityServiceIF);
   }
 
   @Bean
@@ -45,14 +51,26 @@ public class AuthMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
+  @ConditionalOnExpression("${superconductor.auth.req.active:true}")
+//   OR
+  @ConditionalOnBean(AuthEventKinds.class)
   @ConditionalOnMissingBean
   AuthEntityServiceIF authEntityServiceIF(@NonNull AuthEntityRepository authEntityRepository) {
     return new AuthEntityService(authEntityRepository);
   }
 
   @Bean
-  @ConditionalOnExpression("${superconductor.auth.req.active:true} || ${superconductor.auth.event.active:true}")
+  @ConditionalOnBean(AuthEventKinds.class)
+  @ConditionalOnMissingBean
+  AuthKindEntityServiceIF authKindEntityServiceIF(
+      @NonNull AuthEntityServiceIF authEntityServiceIF,
+      @NonNull AuthEventKinds authEventKinds) {
+    return new AuthKindEntityService(authEntityServiceIF, authEventKinds);
+  }
+
+  @Bean
+  @ConditionalOnExpression("${superconductor.auth.req.active:true}")
+  @ConditionalOnBean(AuthKindEntityService.class)
   @ConditionalOnMissingBean
   AuthMessageServiceIF authMessageServiceIF(
       @NonNull AuthEntityServiceIF authEntityServiceIF,

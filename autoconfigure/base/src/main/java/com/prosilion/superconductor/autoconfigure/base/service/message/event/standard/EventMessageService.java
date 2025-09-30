@@ -5,10 +5,13 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.event.Eve
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventMessageService implements EventMessageServiceIF {
+  public static final String AUTH_REQUIRED = "auth-required: ";
+
   private final EventServiceIF eventService;
   private final ClientResponseService clientResponseService;
 
@@ -28,6 +31,6 @@ public class EventMessageService implements EventMessageServiceIF {
   }
 
   public void processNotOkClientResponse(@NonNull EventMessage eventMessage, @NonNull String sessionId, @NonNull String errorMessage) {
-    clientResponseService.processNotOkClientResponse(sessionId, eventMessage, errorMessage);
+    clientResponseService.processNotOkClientResponse(sessionId, eventMessage, Strings.concat(AUTH_REQUIRED, errorMessage));
   }
 }

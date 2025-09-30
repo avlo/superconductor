@@ -28,7 +28,7 @@ public class AutoConfigReqMessageServiceAuthDecorator<T, U extends AuthPersistan
       authPersistantServiceIF.findAuthPersistantBySessionId(sessionId).orElseThrow();
     } catch (NoSuchElementException e) {
       log.debug("AUTHENTICATED REQ message failed session authentication");
-      reqMessageService.processNoticeClientResponse(reqMessage, sessionId, String.format("restricted: REQ sessionId [%s] has not been authenticated", sessionId));
+      reqMessageService.processClientClosedResponse(sessionId, String.format("REQ sessionId [%s] has not been authenticated", sessionId));
       return;
     }
     reqMessageService.processIncoming(reqMessage, sessionId);

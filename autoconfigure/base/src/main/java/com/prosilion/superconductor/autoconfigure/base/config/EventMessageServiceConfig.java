@@ -18,7 +18,6 @@ import org.springframework.lang.NonNull;
 @Slf4j
 @AutoConfiguration
 public class EventMessageServiceConfig {
-
   @Bean
   @ConditionalOnMissingBean
   @ConditionalOnProperty(name = "superconductor.noop.event", havingValue = "false", matchIfMissing = true)

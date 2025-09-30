@@ -5,5 +5,6 @@ import org.springframework.lang.NonNull;
 
 public interface ReqMessageServiceIF {
   void processIncoming(ReqMessage reqMessage, @NonNull String sessionId);
-  void processNoticeClientResponse(ReqMessage reqMessage, @NonNull String sessionId, @NonNull String errorMessage);
+  void processClientClosedResponse(@NonNull String sessionId, @NonNull String errorMessage);
+  void processClientNoticeResponse(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull String errorMessage);
 }

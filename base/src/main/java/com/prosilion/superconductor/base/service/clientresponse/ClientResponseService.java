@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.service.clientresponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.superconductor.base.service.request.ClientClosedResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -39,7 +40,18 @@ public class ClientResponseService {
       publisher.publishEvent(new ClientCloseResponse(sessionId));
     } catch (JsonProcessingException e) {
       publisher.publishEvent(new TextMessage(
-          "[\"CLOSE\", \"" + sessionId + "\"]"
+          "[\"CLOSED\", \"" + sessionId + "\"]"
+      ));
+    }
+  }
+
+  public void processClientClosedResponse(@NonNull String sessionId, @NonNull String reason) {
+    log.debug("Processing close: sessionId [{}], reason [{}]", sessionId, reason);
+    try {
+      publisher.publishEvent(new ClientClosedResponse(sessionId, reason));
+    } catch (JsonProcessingException e) {
+      publisher.publishEvent(new TextMessage(
+          "[\"CLOSED\", \"" + sessionId + "\", \"" + reason + "\"]"
       ));
     }
   }
@@ -55,7 +67,7 @@ public class ClientResponseService {
     }
   }
 
-  public void processNoticeClientResponse(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull String reason, boolean valid) {
+  public void processClientNoticeResponse(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull String reason, boolean valid) {
     log.debug("Processing failed request message: {}, reason: {}", reqMessage, reason);
     try {
       publisher.publishEvent(new ClientNoticeResponse(sessionId, reason, valid));

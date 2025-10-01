@@ -12,19 +12,19 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class AutoConfigEventMessageServiceAuthDecorator<T, U extends AuthPersistantIF> implements AutoConfigEventMessageServiceIF {
   private final EventMessageServiceIF eventMessageServiceIF;
-  private final AuthKindPersistantServiceIF<T, U> authPersistantServiceIF;
+  private final AuthKindPersistantServiceIF<T, U> authKindPersistantServiceIF;
 
   public AutoConfigEventMessageServiceAuthDecorator(
       @NonNull EventMessageServiceIF eventMessageServiceIF,
-      @NonNull AuthKindPersistantServiceIF<T, U> authPersistantServiceIF) {
+      @NonNull AuthKindPersistantServiceIF<T, U> authKindPersistantServiceIF) {
     this.eventMessageServiceIF = eventMessageServiceIF;
-    this.authPersistantServiceIF = authPersistantServiceIF;
+    this.authKindPersistantServiceIF = authKindPersistantServiceIF;
   }
 
   public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
     log.debug("AUTHENTICATED EVENT message type: {}", eventMessage.getEvent());
     try {
-      authPersistantServiceIF.findAuthPersistantBySessionIdAndKind(sessionId, eventMessage.getEvent().getKind());
+      authKindPersistantServiceIF.findAuthPersistantBySessionIdAndKind(sessionId, eventMessage.getEvent().getKind());
     } catch (NoSuchElementException e) {
       log.debug("AUTHENTICATED EVENT message failed session authentication");
       processNotOkClientResponse(eventMessage, sessionId, String.format("EVENT sessionId [%s] has not been authenticated", sessionId));

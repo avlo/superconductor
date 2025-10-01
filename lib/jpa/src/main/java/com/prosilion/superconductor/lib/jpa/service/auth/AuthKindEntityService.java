@@ -10,38 +10,41 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class AuthKindEntityService implements AuthKindEntityServiceIF {
-  private final AuthEntityServiceIF authEntityService;
+  private final AuthEntityServiceIF authEntityServiceIF;
   private final AuthEventKinds authEventKinds;
 
   public AuthKindEntityService(
-      @NonNull AuthEntityServiceIF authEntityService,
+      @NonNull AuthEntityServiceIF authEntityServiceIF,
       @NonNull AuthEventKinds authEventKinds) {
-    this.authEntityService = authEntityService;
+    this.authEntityServiceIF = authEntityServiceIF;
     this.authEventKinds = authEventKinds;
   }
 
   @Override
   public void save(@NonNull String sessionId, @NonNull PublicKey publicKey, @NonNull String challenge, @NonNull Long createdAt) {
-    authEntityService.save(sessionId, publicKey, challenge, createdAt);
+    authEntityServiceIF.save(sessionId, publicKey, challenge, createdAt);
   }
 
   @Override
-  public Long save(AuthEntityIF authEntityIF) {
-    return authEntityService.save(authEntityIF);
+  public Long save(@NonNull AuthEntityIF authEntityIF) {
+    return authEntityServiceIF.save(authEntityIF);
   }
 
   @Override
   public Optional<AuthEntityIF> findAuthPersistantBySessionId(@NonNull String sessionId) {
-    return authEntityService.findAuthPersistantBySessionId(sessionId);
+    Optional<AuthEntityIF> authPersistantBySessionId = authEntityServiceIF.findAuthPersistantBySessionId(sessionId);
+    return authPersistantBySessionId;
   }
 
   @Override
-  public Optional<AuthEntityIF> findAuthPersistantBySessionIdAndKind(String sessionId, Kind kind) {
-    return authEventKinds.has(kind) ? Optional.of(findAuthPersistantBySessionId(sessionId).orElseThrow()) : Optional.empty();
+  public Optional<AuthEntityIF> findAuthPersistantBySessionIdAndKind(@NonNull String sessionId, @NonNull Kind kind) {
+    boolean has = authEventKinds.has(kind);
+    Optional<AuthEntityIF> authPersistantBySessionId = findAuthPersistantBySessionId(sessionId);
+    return has ? Optional.of(authPersistantBySessionId.orElseThrow()) : Optional.empty();
   }
 
   @Override
   public void removeAuthPersistantBySessionId(@NonNull String sessionId) {
-    authEntityService.removeAuthPersistantBySessionId(sessionId);
+    authEntityServiceIF.removeAuthPersistantBySessionId(sessionId);
   }
 }

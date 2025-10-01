@@ -31,7 +31,8 @@ import org.springframework.lang.NonNull;
 @AutoConfiguration
 public class AuthMessageServiceConfig {
   @Bean
-  @ConditionalOnBean(AuthEventKinds.class)
+//  @ConditionalOnBean(AuthEventKinds.class)
+  @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty()}")
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageService,

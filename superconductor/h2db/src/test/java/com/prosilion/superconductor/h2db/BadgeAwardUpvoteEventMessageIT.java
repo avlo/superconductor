@@ -102,6 +102,8 @@ public class BadgeAwardUpvoteEventMessageIT {
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
     assertEquals(SuperconductorKindType.UNIT_UPVOTE.getName(), Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow().getUuid());
+
+    nostrRelayService.disconnect();
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {

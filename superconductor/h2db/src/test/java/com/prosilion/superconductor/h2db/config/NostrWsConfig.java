@@ -17,12 +17,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.lang.NonNull;
+import org.springframework.test.context.ActiveProfiles;
 
 @Lazy
 @Configuration
 @ConditionalOnProperty(
     name = "server.ssl.enabled",
     havingValue = "false")
+@ActiveProfiles("test")
 public class NostrWsConfig {
 
   @Bean

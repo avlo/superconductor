@@ -2,19 +2,19 @@ package com.prosilion.superconductor.redis.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
-import com.prosilion.subdivisions.client.reactive.ReactiveNostrRelayClient;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import org.springframework.lang.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.subdivisions.client.reactive.ReactiveNostrRelayClient;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.lang.NonNull;
 
 @Slf4j
 public class NostrRelayServiceRedis {

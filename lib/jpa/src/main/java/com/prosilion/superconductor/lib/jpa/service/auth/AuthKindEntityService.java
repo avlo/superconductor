@@ -32,15 +32,12 @@ public class AuthKindEntityService implements AuthKindEntityServiceIF {
 
   @Override
   public Optional<AuthEntityIF> findAuthPersistantBySessionId(@NonNull String sessionId) {
-    Optional<AuthEntityIF> authPersistantBySessionId = authEntityServiceIF.findAuthPersistantBySessionId(sessionId);
-    return authPersistantBySessionId;
+    return authEntityServiceIF.findAuthPersistantBySessionId(sessionId);
   }
 
   @Override
   public Optional<AuthEntityIF> findAuthPersistantBySessionIdAndKind(@NonNull String sessionId, @NonNull Kind kind) {
-    boolean has = authEventKinds.has(kind);
-    Optional<AuthEntityIF> authPersistantBySessionId = findAuthPersistantBySessionId(sessionId);
-    return has ? Optional.of(authPersistantBySessionId.orElseThrow()) : Optional.empty();
+    return authEventKinds.has(kind) ? Optional.of(findAuthPersistantBySessionId(sessionId).orElseThrow()) : Optional.empty();
   }
 
   @Override

@@ -4,16 +4,16 @@ import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
-import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractEntity;
-import com.prosilion.superconductor.lib.jpa.repository.AbstractTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.EventEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.deletion.DeletionEventEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractJpaEntity;
+import com.prosilion.superconductor.lib.jpa.repository.AbstractTagJpaEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.EventJpaEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.deletion.DeletionEventJpaEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagJpaEntityRepository;
 import com.prosilion.superconductor.lib.jpa.service.ConcreteTagEntitiesService;
-import com.prosilion.superconductor.lib.jpa.service.DeletionEventEntityService;
-import com.prosilion.superconductor.lib.jpa.service.EventEntityService;
-import com.prosilion.superconductor.lib.jpa.service.GenericTagEntitiesService;
+import com.prosilion.superconductor.lib.jpa.service.DeletionEventJpaEntityService;
+import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
+import com.prosilion.superconductor.lib.jpa.service.GenericTagJpaEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
 import lombok.extern.slf4j.Slf4j;
@@ -51,30 +51,30 @@ public class JpaConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  EventEntityService eventEntityService(
+  EventJpaEntityService eventEntityService(
       @NonNull ConcreteTagEntitiesService<
           BaseTag,
-          AbstractTagEntityRepository<AbstractTagEntity>,
-          AbstractTagEntity,
-          EventEntityAbstractEntity,
-          EventEntityAbstractTagEntityRepository<EventEntityAbstractEntity>> concreteTagEntitiesService,
-      @NonNull GenericTagEntitiesService genericTagEntitiesService,
-      @NonNull EventEntityRepository eventEntityRepository) {
-    return new EventEntityService(concreteTagEntitiesService, genericTagEntitiesService, eventEntityRepository);
+          AbstractTagJpaEntityRepository<AbstractTagJpaEntity>,
+          AbstractTagJpaEntity,
+          EventEntityAbstractJpaEntity,
+          EventEntityAbstractTagJpaEntityRepository<EventEntityAbstractJpaEntity>> concreteTagEntitiesService,
+      @NonNull GenericTagJpaEntitiesService genericTagJpaEntitiesService,
+      @NonNull EventJpaEntityRepository eventJpaEntityRepository) {
+    return new EventJpaEntityService(concreteTagEntitiesService, genericTagJpaEntitiesService, eventJpaEntityRepository);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  DeletionEventEntityService deletionEventEntityService(@NonNull DeletionEventEntityRepository deletionEventEntityRepository) {
-    return new DeletionEventEntityService(deletionEventEntityRepository);
+  DeletionEventJpaEntityService deletionEventEntityService(@NonNull DeletionEventJpaEntityRepository deletionEventJpaEntityRepository) {
+    return new DeletionEventJpaEntityService(deletionEventJpaEntityRepository);
   }
 
   @Bean
   @ConditionalOnMissingBean
   JpaCacheServiceIF cacheIF(
-      @NonNull EventEntityService eventEntityService,
-      @NonNull DeletionEventEntityService deletionEventEntityService) {
-    return new JpaCacheService(eventEntityService, deletionEventEntityService);
+      @NonNull EventJpaEntityService eventJpaEntityService,
+      @NonNull DeletionEventJpaEntityService deletionEventJpaEntityService) {
+    return new JpaCacheService(eventJpaEntityService, deletionEventJpaEntityService);
   }
 
   @Bean

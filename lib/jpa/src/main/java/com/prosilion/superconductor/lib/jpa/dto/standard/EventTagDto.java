@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.jpa.dto.standard;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.superconductor.lib.jpa.entity.standard.EventTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.EventTagJpaEntity;
 
 public class EventTagDto implements AbstractTagDto {
   private final EventTag eventTag;
@@ -18,7 +18,7 @@ public class EventTagDto implements AbstractTagDto {
   }
 
   @Override
-  public EventTagEntity convertDtoToEntity() {
-    return new EventTagEntity(eventTag);
+  public EventTagJpaEntity convertDtoToJpaEntity() {
+    return new EventTagJpaEntity(eventTag);
   }
 }

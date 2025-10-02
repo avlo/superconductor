@@ -6,21 +6,21 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.prosilion.superconductor.lib.jpa.dto.standard.PubkeyTagDto;
-import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityPubkeyTagEntity;
-import com.prosilion.superconductor.lib.jpa.entity.standard.PubkeyTagEntity;
-import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityPubkeyTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.standard.PubkeyTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityPubkeyTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.PubkeyTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityPubkeyTagJpaEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.standard.PubkeyTagJpaEntityRepository;
 
 @Component
 public class PubkeyTagPlugin<
     P extends PubKeyTag,
-    Q extends PubkeyTagEntityRepository<R>,
-    R extends PubkeyTagEntity,
-    S extends EventEntityPubkeyTagEntity,
-    T extends EventEntityPubkeyTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
+    Q extends PubkeyTagJpaEntityRepository<R>,
+    R extends PubkeyTagJpaEntity,
+    S extends EventEntityPubkeyTagJpaEntity,
+    T extends EventEntityPubkeyTagJpaEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public PubkeyTagPlugin(@Nonnull PubkeyTagEntityRepository<R> repo, @NonNull EventEntityPubkeyTagEntityRepository<S> join) {
+  public PubkeyTagPlugin(@Nonnull PubkeyTagJpaEntityRepository<R> repo, @NonNull EventEntityPubkeyTagJpaEntityRepository<S> join) {
     super(repo, join, "p");
   }
 
@@ -30,7 +30,7 @@ public class PubkeyTagPlugin<
   }
 
   @Override
-  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long pubkeyId) {
-    return (S) new EventEntityPubkeyTagEntity(eventId, pubkeyId);
+  public S getEventEntityTagJpaEntity(@NonNull Long eventId, @NonNull Long pubkeyId) {
+    return (S) new EventEntityPubkeyTagJpaEntity(eventId, pubkeyId);
   }
 }

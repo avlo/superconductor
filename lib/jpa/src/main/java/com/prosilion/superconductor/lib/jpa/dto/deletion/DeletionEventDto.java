@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.lib.jpa.dto.deletion;
 
-import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntity;
-import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventEntityIF;
+import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntity;
+import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntityIF;
 
 public class DeletionEventDto {
   private final Long eventId;
@@ -10,7 +10,7 @@ public class DeletionEventDto {
     this.eventId = eventId;
   }
 
-  public DeletionEventEntityIF convertDtoToEntity() {
-    return new DeletionEventEntity(eventId);
+  public DeletionEventJpaEntityIF convertDtoToEntity() {
+    return new DeletionEventJpaEntity(eventId);
   }
 }

@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.jpa.dto.standard;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.GeohashTag;
-import com.prosilion.superconductor.lib.jpa.entity.standard.GeohashTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.GeohashTagJpaEntity;
 
 public class GeohashTagDto implements AbstractTagDto {
   private final GeohashTag geohashTag;
@@ -18,7 +18,7 @@ public class GeohashTagDto implements AbstractTagDto {
   }
 
   @Override
-  public GeohashTagEntity convertDtoToEntity() {
-    return new GeohashTagEntity(geohashTag);
+  public GeohashTagJpaEntity convertDtoToJpaEntity() {
+    return new GeohashTagJpaEntity(geohashTag);
   }
 }

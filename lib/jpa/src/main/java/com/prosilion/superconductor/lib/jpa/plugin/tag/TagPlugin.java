@@ -7,26 +7,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
-import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
-import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractEntity;
-import com.prosilion.superconductor.lib.jpa.repository.AbstractTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractJpaEntity;
+import com.prosilion.superconductor.lib.jpa.repository.AbstractTagJpaEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagJpaEntityRepository;
 
 public interface TagPlugin<
     P extends BaseTag,
-    Q extends AbstractTagEntityRepository<R>, // dto table
-    R extends AbstractTagEntity, // dto to return
-    S extends EventEntityAbstractEntity, // @MappedSuperclass for below
-    T extends EventEntityAbstractTagEntityRepository<S>> // event -> dto join table
+    Q extends AbstractTagJpaEntityRepository<R>, // dto table
+    R extends AbstractTagJpaEntity, // dto to return
+    S extends EventEntityAbstractJpaEntity, // @MappedSuperclass for below
+    T extends EventEntityAbstractTagJpaEntityRepository<S>> // event -> dto join table
 {
   String getCode();
   AbstractTagDto getTagDto(P baseTag);
-  AbstractTagEntityRepository<R> getRepo();
-  EventEntityAbstractTagEntityRepository<S> getJoin();
-  S getEventEntityTagEntity(Long eventId, Long baseTagId);
+  AbstractTagJpaEntityRepository<R> getRepo();
+  EventEntityAbstractTagJpaEntityRepository<S> getJoin();
+  S getEventEntityTagJpaEntity(Long eventId, Long baseTagId);
 
-  default R convertDtoToEntity(@NonNull P baseTag) {
-    return (R) getTagDto(baseTag).convertDtoToEntity();
+  default R convertDtoToJpaEntity(@NonNull P baseTag) {
+    return (R) getTagDto(baseTag).convertDtoToJpaEntity();
   }
 
   default List<R> getTags(@NonNull Long eventId) {
@@ -42,9 +42,9 @@ public interface TagPlugin<
 
   default void saveTag(@NonNull Long eventId, @NonNull P baseTag) {
     getJoin().save(
-        getEventEntityTagEntity(
+        getEventEntityTagJpaEntity(
             eventId,
             getRepo().save(
-                convertDtoToEntity(baseTag)).getId()));
+                convertDtoToJpaEntity(baseTag)).getId()));
   }
 }

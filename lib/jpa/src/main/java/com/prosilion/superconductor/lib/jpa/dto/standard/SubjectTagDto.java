@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.jpa.dto.standard;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.SubjectTag;
-import com.prosilion.superconductor.lib.jpa.entity.standard.SubjectTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.SubjectTagJpaEntity;
 
 public class SubjectTagDto implements AbstractTagDto {
   private final SubjectTag subjectTag;
@@ -18,8 +18,8 @@ public class SubjectTagDto implements AbstractTagDto {
   }
 
   @Override
-  public SubjectTagEntity convertDtoToEntity() {
-    return new SubjectTagEntity(limit80(subjectTag.getSubject()));
+  public SubjectTagJpaEntity convertDtoToJpaEntity() {
+    return new SubjectTagJpaEntity(limit80(subjectTag.getSubject()));
   }
 
   private String limit80(String string) {

@@ -4,7 +4,7 @@ import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import lombok.Getter;
 import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.PriceTag;
-import com.prosilion.superconductor.lib.jpa.entity.classified.PriceTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.classified.PriceTagJpaEntity;
 
 @Getter
 public class PriceTagDto implements AbstractTagDto {
@@ -20,8 +20,8 @@ public class PriceTagDto implements AbstractTagDto {
   }
 
   @Override
-  public PriceTagEntity convertDtoToEntity() {
-    return new PriceTagEntity(priceTag);
+  public PriceTagJpaEntity convertDtoToJpaEntity() {
+    return new PriceTagJpaEntity(priceTag);
   }
 }
 

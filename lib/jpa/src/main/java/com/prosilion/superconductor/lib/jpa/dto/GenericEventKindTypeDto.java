@@ -4,11 +4,11 @@ import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.superconductor.base.service.event.service.GenericEventKindType;
 import com.prosilion.superconductor.base.service.event.service.GenericEventKindTypeIF;
-import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
+import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
 
 public record GenericEventKindTypeDto(BaseEvent event, KindTypeIF kindType) {
 
-  public EventEntityIF convertDtoToEntity() {
+  public EventJpaEntityIF convertDtoToEntity() {
     return new GenericEventKindDto(event).convertDtoToEntity();
   }
 

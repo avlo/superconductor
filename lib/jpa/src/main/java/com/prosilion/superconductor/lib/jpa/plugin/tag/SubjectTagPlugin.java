@@ -5,21 +5,21 @@ import com.prosilion.nostr.tag.SubjectTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.prosilion.superconductor.lib.jpa.dto.standard.SubjectTagDto;
-import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntitySubjectTagEntity;
-import com.prosilion.superconductor.lib.jpa.entity.standard.SubjectTagEntity;
-import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntitySubjectTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.standard.SubjectTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntitySubjectTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.SubjectTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntitySubjectTagJpaEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.standard.SubjectTagJpaEntityRepository;
 
 @Component
 public class SubjectTagPlugin<
     P extends SubjectTag,
-    Q extends SubjectTagEntityRepository<R>,
-    R extends SubjectTagEntity,
-    S extends EventEntitySubjectTagEntity,
-    T extends EventEntitySubjectTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
+    Q extends SubjectTagJpaEntityRepository<R>,
+    R extends SubjectTagJpaEntity,
+    S extends EventEntitySubjectTagJpaEntity,
+    T extends EventEntitySubjectTagJpaEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public SubjectTagPlugin(@NonNull SubjectTagEntityRepository<R> repo, @NonNull EventEntitySubjectTagEntityRepository<S> join) {
+  public SubjectTagPlugin(@NonNull SubjectTagJpaEntityRepository<R> repo, @NonNull EventEntitySubjectTagJpaEntityRepository<S> join) {
     super(repo, join, "subject");
   }
 
@@ -29,7 +29,7 @@ public class SubjectTagPlugin<
   }
 
   @Override
-  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
-    return (S) new EventEntitySubjectTagEntity(eventId, subjectTagId);
+  public S getEventEntityTagJpaEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
+    return (S) new EventEntitySubjectTagJpaEntity(eventId, subjectTagId);
   }
 }

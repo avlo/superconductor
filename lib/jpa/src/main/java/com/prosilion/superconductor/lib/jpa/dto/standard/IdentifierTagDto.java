@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.jpa.dto.standard;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.superconductor.lib.jpa.entity.standard.IdentifierTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.IdentifierTagJpaEntity;
 
 public class IdentifierTagDto implements AbstractTagDto {
   private final IdentifierTag identifierTag;
@@ -18,7 +18,7 @@ public class IdentifierTagDto implements AbstractTagDto {
   }
 
   @Override
-  public IdentifierTagEntity convertDtoToEntity() {
-    return new IdentifierTagEntity(identifierTag);
+  public IdentifierTagJpaEntity convertDtoToJpaEntity() {
+    return new IdentifierTagJpaEntity(identifierTag);
   }
 }

@@ -6,21 +6,21 @@ import com.prosilion.nostr.tag.GeohashTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.prosilion.superconductor.lib.jpa.dto.standard.GeohashTagDto;
-import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityGeohashTagEntity;
-import com.prosilion.superconductor.lib.jpa.entity.standard.GeohashTagEntity;
-import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityGeohashTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.standard.GeohashTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityGeohashTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.GeohashTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityGeohashTagJpaEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.standard.GeohashTagJpaEntityRepository;
 
 @Component
 public class GeohashTagPlugin<
     P extends GeohashTag,
-    Q extends GeohashTagEntityRepository<R>,
-    R extends GeohashTagEntity,
-    S extends EventEntityGeohashTagEntity,
-    T extends EventEntityGeohashTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
+    Q extends GeohashTagJpaEntityRepository<R>,
+    R extends GeohashTagJpaEntity,
+    S extends EventEntityGeohashTagJpaEntity,
+    T extends EventEntityGeohashTagJpaEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public GeohashTagPlugin(@Nonnull GeohashTagEntityRepository<R> repo, @NonNull EventEntityGeohashTagEntityRepository<S> join) {
+  public GeohashTagPlugin(@Nonnull GeohashTagJpaEntityRepository<R> repo, @NonNull EventEntityGeohashTagJpaEntityRepository<S> join) {
     super(repo, join, "g");
   }
 
@@ -30,7 +30,7 @@ public class GeohashTagPlugin<
   }
 
   @Override
-  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
-    return (S) new EventEntityGeohashTagEntity(eventId, subjectTagId);
+  public S getEventEntityTagJpaEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
+    return (S) new EventEntityGeohashTagJpaEntity(eventId, subjectTagId);
   }
 }

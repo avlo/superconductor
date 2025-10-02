@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.jpa.dto.standard;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.HashtagTag;
-import com.prosilion.superconductor.lib.jpa.entity.standard.HashtagTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.HashtagTagJpaEntity;
 
 public class HashtagTagDto implements AbstractTagDto {
   private final HashtagTag hashtagTag;
@@ -18,7 +18,7 @@ public class HashtagTagDto implements AbstractTagDto {
   }
 
   @Override
-  public HashtagTagEntity convertDtoToEntity() {
-    return new HashtagTagEntity(hashtagTag);
+  public HashtagTagJpaEntity convertDtoToJpaEntity() {
+    return new HashtagTagJpaEntity(hashtagTag);
   }
 }

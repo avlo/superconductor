@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.jpa.dto.standard;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.superconductor.lib.jpa.entity.standard.AddressTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.AddressTagJpaEntity;
 
 public class AddressTagDto implements AbstractTagDto {
   private final AddressTag addressTag;
@@ -18,7 +18,7 @@ public class AddressTagDto implements AbstractTagDto {
   }
 
   @Override
-  public AddressTagEntity convertDtoToEntity() {
-    return new AddressTagEntity(addressTag);
+  public AddressTagJpaEntity convertDtoToJpaEntity() {
+    return new AddressTagJpaEntity(addressTag);
   }
 }

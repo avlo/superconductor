@@ -3,15 +3,15 @@ package com.prosilion.superconductor.lib.jpa.dto.generic;
 import com.prosilion.nostr.event.internal.ElementAttribute;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import com.prosilion.superconductor.lib.jpa.entity.generic.ElementAttributeEntity;
+import com.prosilion.superconductor.lib.jpa.entity.generic.ElementAttributeJpaEntity;
 
 @Getter
 @RequiredArgsConstructor
 public class ElementAttributeDto {
   private final ElementAttribute elementAttribute;
 
-  public ElementAttributeEntity convertDtoToEntity() {
-    ElementAttributeEntity entity = new ElementAttributeEntity();
+  public ElementAttributeJpaEntity convertDtoToEntity() {
+    ElementAttributeJpaEntity entity = new ElementAttributeJpaEntity();
     entity.setName(elementAttribute.getName());
     entity.setValue(elementAttribute.getValue().toString());
     return entity;

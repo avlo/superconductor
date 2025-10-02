@@ -4,7 +4,7 @@ import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import lombok.Getter;
 import org.springframework.lang.NonNull;
-import com.prosilion.superconductor.lib.jpa.entity.standard.ReferenceTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.ReferenceTagJpaEntity;
 
 @Getter
 public class ReferenceTagDto implements AbstractTagDto {
@@ -20,7 +20,7 @@ public class ReferenceTagDto implements AbstractTagDto {
   }
 
   @Override
-  public ReferenceTagEntity convertDtoToEntity() {
-    return new ReferenceTagEntity(referenceTag);
+  public ReferenceTagJpaEntity convertDtoToJpaEntity() {
+    return new ReferenceTagJpaEntity(referenceTag);
   }
 }

@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.jpa.dto.standard;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.superconductor.lib.jpa.entity.standard.PubkeyTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.PubkeyTagJpaEntity;
 
 public class PubkeyTagDto implements AbstractTagDto {
   private final PubKeyTag pubKeyTag;
@@ -18,7 +18,7 @@ public class PubkeyTagDto implements AbstractTagDto {
   }
 
   @Override
-  public PubkeyTagEntity convertDtoToEntity() {
-    return new PubkeyTagEntity(pubKeyTag);
+  public PubkeyTagJpaEntity convertDtoToJpaEntity() {
+    return new PubkeyTagJpaEntity(pubKeyTag);
   }
 }

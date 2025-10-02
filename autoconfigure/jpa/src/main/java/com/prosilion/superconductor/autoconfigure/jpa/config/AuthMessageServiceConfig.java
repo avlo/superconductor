@@ -10,11 +10,11 @@ import com.prosilion.superconductor.base.service.clientresponse.ClientResponseSe
 import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
 import com.prosilion.superconductor.base.service.message.AuthMessageServiceIF;
-import com.prosilion.superconductor.lib.jpa.repository.auth.AuthEntityRepository;
-import com.prosilion.superconductor.lib.jpa.service.auth.AuthEntityService;
-import com.prosilion.superconductor.lib.jpa.service.auth.AuthEntityServiceIF;
-import com.prosilion.superconductor.lib.jpa.service.auth.AuthKindEntityService;
-import com.prosilion.superconductor.lib.jpa.service.auth.AuthKindEntityServiceIF;
+import com.prosilion.superconductor.lib.jpa.repository.auth.AuthJpaEntityRepository;
+import com.prosilion.superconductor.lib.jpa.service.auth.AuthJpaEntityService;
+import com.prosilion.superconductor.lib.jpa.service.auth.AuthJpaEntityServiceIF;
+import com.prosilion.superconductor.lib.jpa.service.auth.AuthKindJpaEntityService;
+import com.prosilion.superconductor.lib.jpa.service.auth.AuthKindJpaEntityServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -33,9 +33,9 @@ public class AuthMessageServiceConfig {
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageServiceIF,
-      @NonNull AuthKindEntityServiceIF authKindEntityServiceIF) {
+      @NonNull AuthKindJpaEntityServiceIF authKindJpaEntityServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT+Kind AUTH)");
-    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindEntityServiceIF);
+    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindJpaEntityServiceIF);
   }
 
   @Bean
@@ -43,35 +43,35 @@ public class AuthMessageServiceConfig {
   @ConditionalOnMissingBean
   AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
       @NonNull ReqMessageServiceIF reqMessageServiceIF,
-      @NonNull AuthEntityServiceIF authEntityServiceIF) {
+      @NonNull AuthJpaEntityServiceIF authJpaEntityServiceIF) {
     log.debug("loaded AutoConfigReqMessageServiceAuthDecorator bean (REQ AUTH)");
-    return new AutoConfigReqMessageServiceAuthDecorator<>(reqMessageServiceIF, authEntityServiceIF);
+    return new AutoConfigReqMessageServiceAuthDecorator<>(reqMessageServiceIF, authJpaEntityServiceIF);
   }
 
   @Bean
   @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
   @ConditionalOnMissingBean
-  AuthEntityServiceIF authEntityServiceIF(@NonNull AuthEntityRepository authEntityRepository) {
-    return new AuthEntityService(authEntityRepository);
+  AuthJpaEntityServiceIF authJpaEntityServiceIF(@NonNull AuthJpaEntityRepository authJpaEntityRepository) {
+    return new AuthJpaEntityService(authJpaEntityRepository);
   }
 
   @Bean
   @ConditionalOnBean(AuthEventKinds.class)
   @ConditionalOnMissingBean
-  AuthKindEntityServiceIF authKindEntityServiceIF(
-      @NonNull AuthEntityServiceIF authEntityServiceIF,
+  AuthKindJpaEntityServiceIF authKindJpaEntityServiceIF(
+      @NonNull AuthJpaEntityServiceIF authJpaEntityServiceIF,
       @NonNull AuthEventKinds authEventKinds) {
-    return new AuthKindEntityService(authEntityServiceIF, authEventKinds);
+    return new AuthKindJpaEntityService(authJpaEntityServiceIF, authEventKinds);
   }
 
   @Bean
   @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
   @ConditionalOnMissingBean
   AuthMessageServiceIF authMessageServiceIF(
-      @NonNull AuthEntityServiceIF authEntityServiceIF,
+      @NonNull AuthJpaEntityServiceIF authJpaEntityServiceIF,
       @NonNull ClientResponseService okResponseService,
       @NonNull @Value("${superconductor.auth.challenge-relay.url}") String challengeRelayUrl) {
     log.debug("loaded JPA AuthMessageServiceIF bean");
-    return new AuthMessageService<>(authEntityServiceIF, okResponseService, challengeRelayUrl);
+    return new AuthMessageService<>(authJpaEntityServiceIF, okResponseService, challengeRelayUrl);
   }
 }

@@ -1,9 +1,8 @@
 package com.prosilion.superconductor.lib.jpa.dto;
 
-import com.prosilion.superconductor.lib.jpa.entity.AbstractTagEntity;
+import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 
 public interface AbstractTagDto {
   String getCode();
-
-  AbstractTagEntity convertDtoToEntity();
+  AbstractTagJpaEntity convertDtoToJpaEntity();
 }

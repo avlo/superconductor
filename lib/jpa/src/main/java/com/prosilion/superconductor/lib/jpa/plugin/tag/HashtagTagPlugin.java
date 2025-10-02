@@ -6,21 +6,21 @@ import com.prosilion.nostr.tag.HashtagTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.prosilion.superconductor.lib.jpa.dto.standard.HashtagTagDto;
-import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityHashtagTagEntity;
-import com.prosilion.superconductor.lib.jpa.entity.standard.HashtagTagEntity;
-import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityHashtagTagEntityRepository;
-import com.prosilion.superconductor.lib.jpa.repository.standard.HashtagTagEntityRepository;
+import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityHashtagTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.entity.standard.HashtagTagJpaEntity;
+import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityHashtagTagJpaEntityRepository;
+import com.prosilion.superconductor.lib.jpa.repository.standard.HashtagTagJpaEntityRepository;
 
 @Component
 public class HashtagTagPlugin<
     P extends HashtagTag,
-    Q extends HashtagTagEntityRepository<R>,
-    R extends HashtagTagEntity,
-    S extends EventEntityHashtagTagEntity,
-    T extends EventEntityHashtagTagEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
+    Q extends HashtagTagJpaEntityRepository<R>,
+    R extends HashtagTagJpaEntity,
+    S extends EventEntityHashtagTagJpaEntity,
+    T extends EventEntityHashtagTagJpaEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public HashtagTagPlugin(@Nonnull HashtagTagEntityRepository<R> repo, @NonNull EventEntityHashtagTagEntityRepository<S> join) {
+  public HashtagTagPlugin(@Nonnull HashtagTagJpaEntityRepository<R> repo, @NonNull EventEntityHashtagTagJpaEntityRepository<S> join) {
     super(repo, join, "t");
   }
 
@@ -30,7 +30,7 @@ public class HashtagTagPlugin<
   }
 
   @Override
-  public S getEventEntityTagEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
-    return (S) new EventEntityHashtagTagEntity(eventId, subjectTagId);
+  public S getEventEntityTagJpaEntity(@NonNull Long eventId, @NonNull Long subjectTagId) {
+    return (S) new EventEntityHashtagTagJpaEntity(eventId, subjectTagId);
   }
 }

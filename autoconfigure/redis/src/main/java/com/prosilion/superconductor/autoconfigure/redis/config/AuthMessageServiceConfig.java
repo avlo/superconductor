@@ -31,13 +31,13 @@ import org.springframework.lang.NonNull;
 @AutoConfiguration
 public class AuthMessageServiceConfig {
   @Bean
-  @ConditionalOnBean(AuthEventKinds.class)
+  @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty()}")
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
-      @NonNull EventMessageServiceIF eventMessageService,
+      @NonNull EventMessageServiceIF eventMessageServiceIF,
       @NonNull AuthKindPersistantServiceIF<AuthDocumentIF, AuthDocumentIF> authDocumentServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
-    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageService, authDocumentServiceIF);
+    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authDocumentServiceIF);
   }
 
   @Bean
@@ -73,7 +73,7 @@ public class AuthMessageServiceConfig {
       @NonNull AuthDocumentServiceIF authDocumentServiceIF,
       @NonNull ClientResponseService okResponseService,
       @NonNull @Value("${superconductor.auth.challenge-relay.url}") String challengeRelayUrl) {
-    log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
+    log.debug("loaded REDIS AuthMessageServiceIF bean");
     return new AuthMessageService<>(authDocumentServiceIF, okResponseService, challengeRelayUrl);
   }
 }

@@ -22,11 +22,12 @@ public class EventMessageServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   @ConditionalOnProperty(name = "superconductor.noop.event", havingValue = "false", matchIfMissing = true)
-  EventMessageServiceIF getEventMessageService(
+  EventMessageServiceIF eventMessageServiceIF(
       @NonNull EventServiceIF eventService,
       @NonNull ClientResponseService clientResponseService) {
-    log.debug("loaded EventMessageNoOpService bean (NO_OP_EVENT)");
-    return new EventMessageService(eventService, clientResponseService);
+    log.debug("loaded EventMessageService bean");
+    EventMessageService eventMessageService = new EventMessageService(eventService, clientResponseService);
+    return eventMessageService;
   }
 
   @Bean
@@ -43,8 +44,8 @@ public class EventMessageServiceConfig {
   @ConditionalOnExpression("#{'${superconductor.auth.event.kinds}'.isEmpty()}")
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
-      @NonNull EventMessageServiceIF eventMessageService) {
+      @NonNull EventMessageServiceIF eventMessageServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
-    return new AutoConfigEventMessageServiceNoAuthDecorator(eventMessageService);
+    return new AutoConfigEventMessageServiceNoAuthDecorator(eventMessageServiceIF);
   }
 }

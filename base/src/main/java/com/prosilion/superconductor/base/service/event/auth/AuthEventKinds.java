@@ -10,7 +10,7 @@ public class AuthEventKinds {
   private final List<Kind> authenticationEventKinds;
 
   public AuthEventKinds(@NonNull List<Kind> authenticationEventKinds) {
-    this.authenticationEventKinds = Optional.ofNullable(authenticationEventKinds).stream().flatMap(Collection::stream).toList();
+    this.authenticationEventKinds = Optional.of(authenticationEventKinds).stream().flatMap(Collection::stream).toList();
   }
 
   public boolean has(@NonNull Kind kind) {

@@ -31,14 +31,13 @@ import org.springframework.lang.NonNull;
 @AutoConfiguration
 public class AuthMessageServiceConfig {
   @Bean
-//  @ConditionalOnBean(AuthEventKinds.class)
   @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty()}")
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
-      @NonNull EventMessageServiceIF eventMessageService,
+      @NonNull EventMessageServiceIF eventMessageServiceIF,
       @NonNull AuthKindPersistantServiceIF<Long, AuthEntityIF> authKindEntityServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
-    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageService, authKindEntityServiceIF);
+    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindEntityServiceIF);
   }
 
   @Bean
@@ -74,7 +73,7 @@ public class AuthMessageServiceConfig {
       @NonNull AuthEntityServiceIF authEntityServiceIF,
       @NonNull ClientResponseService okResponseService,
       @NonNull @Value("${superconductor.auth.challenge-relay.url}") String challengeRelayUrl) {
-    log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
+    log.debug("loaded JPA AuthMessageServiceIF bean");
     return new AuthMessageService<>(authEntityServiceIF, okResponseService, challengeRelayUrl);
   }
 }

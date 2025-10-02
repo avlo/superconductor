@@ -26,7 +26,7 @@ public class ReqMessageServiceConfig {
   ReqMessageServiceIF reqMessageService(
       @NonNull ReqServiceIF reqService,
       @NonNull ClientResponseService clientResponseService) {
-    log.debug("loaded EventMessageNoOpService bean (NO_OP_EVENT)");
+    log.debug("loaded ReqMessageService bean");
     return new ReqMessageService(reqService, clientResponseService);
   }
 
@@ -34,7 +34,7 @@ public class ReqMessageServiceConfig {
   @ConditionalOnProperty(name = "superconductor.auth.req.active", havingValue = "false", matchIfMissing = true)
   AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
       @NonNull ReqMessageServiceIF reqMessageServiceIF) {
-    log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
+    log.debug("loaded AutoConfigReqMessageServiceNoAuthDecorator bean (REQ NO-AUTH)");
     return new AutoConfigReqMessageServiceNoAuthDecorator(reqMessageServiceIF);
   }
 

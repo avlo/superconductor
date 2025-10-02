@@ -147,7 +147,7 @@ repositories {
 <dependency>
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>superconductor-spring-boot-starter-redis</artifactId>
-  <version>1.17.0</version>
+  <version>1.17.1</version>
 </dependency>
 ```
 </blockquote>            
@@ -159,7 +159,7 @@ repositories {
 
 ###### build.gradle
 ```groovy
-implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-redis:' + 1.17.0
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-redis:' + 1.17.1
 ```
 </blockquote>            
         </details>
@@ -175,7 +175,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 <dependency>
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>superconductor-spring-boot-starter-sqlite</artifactId>
-  <version>1.17.0</version>
+  <version>1.17.1</version>
 </dependency>
 ```
 </blockquote>            
@@ -187,7 +187,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 
 ###### build.gradle
 ```groovy
-implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-sqlite:' + 1.17.0
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-sqlite:' + 1.17.1
 ```
 </blockquote>            
         </details>
@@ -203,7 +203,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 <dependency>
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>superconductor-spring-boot-starter-mysql</artifactId>
-  <version>1.17.0</version>
+  <version>1.17.1</version>
 </dependency>
 ```
 </blockquote>            
@@ -215,7 +215,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 
 ###### build.gradle
 ```groovy
-implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-mysql:' + 1.17.0
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-mysql:' + 1.17.1
 ```
 </blockquote>            
         </details>
@@ -231,7 +231,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 <dependency>
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>superconductor-spring-boot-starter-h2db</artifactId>
-  <version>1.17.0</version>
+  <version>1.17.1</version>
 </dependency>
 ```
 </blockquote>            
@@ -243,7 +243,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 
 ###### build.gradle
 ```groovy
-implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-h2db:' + 1.17.0
+implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-h2db:' + 1.17.1
 ```
 </blockquote>            
         </details>
@@ -269,7 +269,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 <dependency>
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>superconductor-base</artifactId>
-  <version>1.17.0</version>
+  <version>1.17.1</version>
 </dependency>
 ```
 </blockquote>            
@@ -281,7 +281,7 @@ implementation 'com.prosilion.superconductor:superconductor-spring-boot-starter-
 
 ###### build.gradle
 ```groovy
-implementation 'com.prosilion.superconductor:superconductor-base:' + 1.17.0
+implementation 'com.prosilion.superconductor:superconductor-base:' + 1.17.1
 ```
 </blockquote>            
         </details>
@@ -1184,7 +1184,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
   $ cd <your_git_home_dir>/superconductor
   $ ./mvnw clean install -Dmaven.test.skip=true
   $ ./mvnw package spring-boot:repackage -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
-  $ java -jar -Dspring.profiles.active=local_ws superconductor/redis/target/superconductor-app-redis-1.17.0.war
+  $ java -jar -Dspring.profiles.active=local_ws superconductor/redis/target/superconductor-app-redis-1.17.1.war
 ```
 </blockquote>
         </details>
@@ -1196,7 +1196,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
   $ cd <your_git_home_dir>/superconductor
   $ ./mvnw.cmd clean install -Dmaven.test.skip=true
   $ ./mvnw.cmd package spring-boot:repackage -f superconductor/redis/pom.xml -Plocal_ws -Dmaven.test.skip=true
-  $ java -jar -Dspring.profiles.active=local_ws superconductor/redis/target/superconductor-app-redis-1.17.0.war
+  $ java -jar -Dspring.profiles.active=local_ws superconductor/redis/target/superconductor-app-redis-1.17.1.war
 ```
 </blockquote>
         </details>
@@ -1211,7 +1211,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
   $ cd <your_git_home_dir>/superconductor
   $ ./mvnw clean install -Dmaven.test.skip=true
   $ ./mvnw package spring-boot:repackage -f superconductor/sqlite/pom.xml -Plocal_ws -Dmaven.test.skip=true
-  $ java -jar -Dspring.profiles.active=local_ws superconductor/sqlite/target/superconductor-app-sqlite-1.17.0.war
+  $ java -jar -Dspring.profiles.active=local_ws superconductor/sqlite/target/superconductor-app-sqlite-1.17.1.war
 ```
 </blockquote>
         </details>
@@ -1223,7 +1223,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
   $ cd <your_git_home_dir>/superconductor
   $ ./mvnw.cmd clean install -Dmaven.test.skip=true
   $ ./mvnw.cmd package spring-boot:repackage -f superconductor/sqlite/pom.xml -Plocal_ws -Dmaven.test.skip=true
-  $ java -jar -Dspring.profiles.active=local_ws superconductor/sqlite/target/superconductor-app-sqlite-1.17.0.war
+  $ java -jar -Dspring.profiles.active=local_ws superconductor/sqlite/target/superconductor-app-sqlite-1.17.1.war
 ```
 </blockquote>
         </details>
@@ -1238,7 +1238,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
   $ cd <your_git_home_dir>/superconductor
   $ ./mvnw clean install -Dmaven.test.skip=true
   $ ./mvnw package spring-boot:repackage -f superconductor/h2db/pom.xml -Plocal_ws -Dmaven.test.skip=true
-  $ java -jar -Dspring.profiles.active=local_ws superconductor/h2db/target/superconductor-app-h2db-1.17.0.war
+  $ java -jar -Dspring.profiles.active=local_ws superconductor/h2db/target/superconductor-app-h2db-1.17.1.war
 ```
 </blockquote>
         </details>
@@ -1249,7 +1249,7 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
   $ cd <your_git_home_dir>/superconductor
   $ ./mvnw.cmd clean install -Dmaven.test.skip=true
   $ ./mvnw.cmd package spring-boot:repackage -f superconductor/h2db/pom.xml -Plocal_ws -Dmaven.test.skip=true
-  $ java -jar -Dspring.profiles.active=local_ws superconductor/h2db/target/superconductor-app-h2db-1.17.0.war
+  $ java -jar -Dspring.profiles.active=local_ws superconductor/h2db/target/superconductor-app-h2db-1.17.1.war
 ```
 </blockquote>
         </details>
@@ -1268,28 +1268,28 @@ $ docker compose -f superconductor/redis/docker-compose-local_wss.yml down --rem
   <summary>redis</summary>
 
 ```bash
-  $ cp <your_git_home_dir>/superconductor/superconductor/redis/target/superconductor-app-redis-1.17.0.war <your_container/instance/deployment_directory>
+  $ cp <your_git_home_dir>/superconductor/superconductor/redis/target/superconductor-app-redis-1.17.1.war <your_container/instance/deployment_directory>
 ```
 </details>
 <details>
   <summary>sqlite</summary>
 
 ```bash
-  $ cp <your_git_home_dir>/superconductor/superconductor/sqlite/target/superconductor-app-sqlite-1.17.0.war <your_container/instance/deployment_directory>
+  $ cp <your_git_home_dir>/superconductor/superconductor/sqlite/target/superconductor-app-sqlite-1.17.1.war <your_container/instance/deployment_directory>
 ```
 </details>
 <details>
   <summary>h2db</summary>
 
 ```bash
-  $ cp <your_git_home_dir>/superconductor/superconductor/h2db/target/superconductor-app-h2db-1.17.0.war <your_container/instance/deployment_directory>
+  $ cp <your_git_home_dir>/superconductor/superconductor/h2db/target/superconductor-app-h2db-1.17.1.war <your_container/instance/deployment_directory>
 ```
 </details>
 <details>
   <summary>mysql</summary>
 
 ```bash
-  $ cp <your_git_home_dir>/superconductor/superconductor/mysql/target/superconductor-app-mysql-1.17.0.war <your_container/instance/deployment_directory>
+  $ cp <your_git_home_dir>/superconductor/superconductor/mysql/target/superconductor-app-mysql-1.17.1.war <your_container/instance/deployment_directory>
 ```
 </details>
 

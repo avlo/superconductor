@@ -8,10 +8,8 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMe
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.auth.AutoConfigReqMessageServiceAuthDecorator;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
-import com.prosilion.superconductor.base.service.event.service.AuthKindPersistantServiceIF;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
 import com.prosilion.superconductor.base.service.message.AuthMessageServiceIF;
-import com.prosilion.superconductor.lib.redis.document.AuthDocumentIF;
 import com.prosilion.superconductor.lib.redis.repository.auth.AuthDocumentRepository;
 import com.prosilion.superconductor.lib.redis.service.auth.AuthDocumentService;
 import com.prosilion.superconductor.lib.redis.service.auth.AuthDocumentServiceIF;
@@ -35,9 +33,9 @@ public class AuthMessageServiceConfig {
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageServiceIF,
-      @NonNull AuthKindPersistantServiceIF<AuthDocumentIF, AuthDocumentIF> authDocumentServiceIF) {
+      @NonNull AuthKindDocumentServiceIF authKindDocumentServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
-    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authDocumentServiceIF);
+    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindDocumentServiceIF);
   }
 
   @Bean

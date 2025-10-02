@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.lib.jpa.entity.auth;
 
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,8 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.lang.NonNull;
 
 @Setter
@@ -21,8 +18,6 @@ import org.springframework.lang.NonNull;
 @NoArgsConstructor
 @Entity
 @Table(name = "auth")
-@ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
-@ConditionalOnBean(AuthEventKinds.class)
 public class AuthEntity implements AuthEntityIF {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

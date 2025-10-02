@@ -11,8 +11,8 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
-import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.math.BigDecimal;
@@ -36,13 +36,13 @@ class SubscriberEventRedisIT {
   public static final Identity IDENTITY = Factory.createNewIdentity();
   public static final String CONTENT = Factory.lorumIpsum(SubscriberEventRedisIT.class);
 
-  private final EventDocumentService eventDocumentService;
+  private final EventNosqlEntityService eventNosqlEntityService;
 
   EventIF classifiedListingEvent;
 
   @Autowired
-  public SubscriberEventRedisIT(@NonNull EventDocumentService eventDocumentService) throws NoSuchAlgorithmException {
-    this.eventDocumentService = eventDocumentService;
+  public SubscriberEventRedisIT(@NonNull EventNosqlEntityService eventNosqlEntityService) throws NoSuchAlgorithmException {
+    this.eventNosqlEntityService = eventNosqlEntityService;
 
     List<BaseTag> tags = new ArrayList<>();
     tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"));
@@ -59,8 +59,8 @@ class SubscriberEventRedisIT {
 
   @Test
   void saveAndGetEvent() {
-    EventDocumentIF eventDocument = eventDocumentService.saveEventDocument(classifiedListingEvent);
-    EventDocumentIF foundEvent = eventDocumentService.findByEventIdString(eventDocument.getId()).orElseThrow();
+    EventNosqlEntityIF eventNosqlEntity = eventNosqlEntityService.saveEvent(classifiedListingEvent);
+    EventNosqlEntityIF foundEvent = eventNosqlEntityService.findByEventIdString(eventNosqlEntity.getId()).orElseThrow();
     assertEquals(CONTENT, foundEvent.getContent());
     List<BaseTag> tags = foundEvent.getTags();
     tags.forEach(tag -> log.debug("\ntag:  \n{}\n ---- \n", tag));

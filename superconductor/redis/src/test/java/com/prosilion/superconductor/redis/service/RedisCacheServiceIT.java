@@ -10,9 +10,9 @@ import com.prosilion.nostr.tag.PriceTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentIF;
-import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
-import com.prosilion.superconductor.lib.redis.dto.GenericDocumentKindDto;
+import com.prosilion.superconductor.lib.redis.document.DeletionEventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.dto.GenericNosqlEntityKindDto;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -48,7 +48,7 @@ public class RedisCacheServiceIT {
   private final RedisCacheServiceIF redisCacheService;
   private final TextNoteEvent textNoteEvent;
   private final List<BaseTag> tags;
-  private final EventDocumentIF eventDocumentIF;
+  private final EventNosqlEntityIF eventNosqlEntityIF;
 
   @Autowired
   public RedisCacheServiceIT(RedisCacheServiceIF redisCacheServiceIF) throws NoSuchAlgorithmException {
@@ -63,33 +63,33 @@ public class RedisCacheServiceIT {
     tags.add(PRICE_TAG);
 
     this.textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-    this.eventDocumentIF = redisCacheServiceIF.save(textNoteEvent);
+    this.eventNosqlEntityIF = redisCacheServiceIF.save(textNoteEvent);
   }
 
   @Test
   void testGetByEventId() {
-    assertNotNull(eventDocumentIF);
-    log.info("saved id: {}", eventDocumentIF);
+    assertNotNull(eventNosqlEntityIF);
+    log.info("saved id: {}", eventNosqlEntityIF);
 
-    List<EventDocumentIF> all = redisCacheService.getAll();
+    List<EventNosqlEntityIF> all = redisCacheService.getAll();
 
     assertTrue(all.stream()
-        .map(EventDocumentIF::getId)
-        .anyMatch(e -> e.equals(eventDocumentIF.getId())));
+        .map(EventNosqlEntityIF::getId)
+        .anyMatch(e -> e.equals(eventNosqlEntityIF.getId())));
 
-    EventDocumentIF firstRetrievedEventEntityIF = redisCacheService.getEventByEventId(eventDocumentIF.getEventId()).orElseThrow();
-    assertEquals(eventDocumentIF.getEventId(), firstRetrievedEventEntityIF.getId());
+    EventNosqlEntityIF firstRetrievedEventEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIF.getEventId()).orElseThrow();
+    assertEquals(eventNosqlEntityIF.getEventId(), firstRetrievedEventEntityIF.getId());
 
-    GenericDocumentKindDto firstDto = new GenericDocumentKindDto(textNoteEvent);
-    EventDocumentIF firstEntityIF = firstDto.convertDtoToDocument();
+    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(textNoteEvent);
+    EventNosqlEntityIF firstEntityIF = firstDto.convertDtoToNosqlEntity();
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded    
 //    assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
 
-    EventDocumentIF secondRetrievedEntityIF = redisCacheService.getEventByEventId(eventDocumentIF.getEventId()).orElseThrow();
-    assertEquals(eventDocumentIF.getEventId(), secondRetrievedEntityIF.getId());
+    EventNosqlEntityIF secondRetrievedEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIF.getEventId()).orElseThrow();
+    assertEquals(eventNosqlEntityIF.getEventId(), secondRetrievedEntityIF.getId());
 
-    GenericDocumentKindDto secondDto = new GenericDocumentKindDto(textNoteEvent);
-    EventDocumentIF secondEntityIF = secondDto.convertDtoToDocument();
+    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(textNoteEvent);
+    EventNosqlEntityIF secondEntityIF = secondDto.convertDtoToNosqlEntity();
 
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded
 //    assertEquals(secondEntityIF, secondRetrievedEntityIF);
@@ -98,35 +98,35 @@ public class RedisCacheServiceIT {
 
   @Test
   void testGetByEventIdString() {
-    assertNotNull(eventDocumentIF);
-    log.info("saved id: {}", eventDocumentIF);
+    assertNotNull(eventNosqlEntityIF);
+    log.info("saved id: {}", eventNosqlEntityIF);
 
     assertTrue(redisCacheService.getAll().stream()
-        .map(EventDocumentIF::getId)
-        .anyMatch(e -> e.equals(eventDocumentIF.getId())));
+        .map(EventNosqlEntityIF::getId)
+        .anyMatch(e -> e.equals(eventNosqlEntityIF.getId())));
 
     log.info("********************");
     log.info("********************");
-    log.info("expicitly saved id: {}", eventDocumentIF);
+    log.info("expicitly saved id: {}", eventNosqlEntityIF);
     log.info("retrieved ids:");
-//    all.stream().map(EventDocumentIF::getId).forEach(id -> log.info("  {}", id));
+//    all.stream().map(EventNosqlEntityIF::getId).forEach(id -> log.info("  {}", id));
     log.info("********************");
     log.info("********************");
 
-    EventDocumentIF firstRetrieval = redisCacheService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
-    assertEquals(eventDocumentIF.getId(), firstRetrieval.getId());
+    EventNosqlEntityIF firstRetrieval = redisCacheService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
+    assertEquals(eventNosqlEntityIF.getId(), firstRetrieval.getId());
 
-    EventDocumentIF secondRetrieval = redisCacheService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
-    assertEquals(eventDocumentIF.getId(), secondRetrieval.getId());
+    EventNosqlEntityIF secondRetrieval = redisCacheService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
+    assertEquals(eventNosqlEntityIF.getId(), secondRetrieval.getId());
 
     assertEquals(firstRetrieval, secondRetrieval);
 
-    GenericDocumentKindDto firstDto = new GenericDocumentKindDto(textNoteEvent);
-    EventDocumentIF firstEntity = firstDto.convertDtoToDocument();
+    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(textNoteEvent);
+    EventNosqlEntityIF firstEntity = firstDto.convertDtoToNosqlEntity();
 //    assertEquals(firstEntity, firstRetrieval);
 
-    GenericDocumentKindDto secondDto = new GenericDocumentKindDto(textNoteEvent);
-    EventDocumentIF secondEntity = secondDto.convertDtoToDocument();
+    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(textNoteEvent);
+    EventNosqlEntityIF secondEntity = secondDto.convertDtoToNosqlEntity();
 
     assertEquals(firstEntity, secondEntity);
     assertEquals(firstDto, secondDto);
@@ -137,8 +137,8 @@ public class RedisCacheServiceIT {
     int startSize = redisCacheService.getAll().size();
     log.debug("startSize: {}", startSize);
 
-    EventDocumentIF savedUidOfDuplicate = redisCacheService.save(textNoteEvent);
-    assertEquals(eventDocumentIF, savedUidOfDuplicate);
+    EventNosqlEntityIF savedUidOfDuplicate = redisCacheService.save(textNoteEvent);
+    assertEquals(eventNosqlEntityIF, savedUidOfDuplicate);
 
     int endSize = redisCacheService.getAll().size();
     log.debug("endSize: {}", endSize);
@@ -147,26 +147,26 @@ public class RedisCacheServiceIT {
 
   @Test
   void testDeletedEvent() throws NoSuchAlgorithmException {
-    log.info("saved id: {}", eventDocumentIF);
+    log.info("saved id: {}", eventNosqlEntityIF);
     String newContent = Factory.lorumIpsum(RedisCacheServiceIT.class);
 
-    List<EventDocumentIF> all = redisCacheService.getAll();
+    List<EventNosqlEntityIF> all = redisCacheService.getAll();
     int sizeBeforeDeleteMeEvent = all.size();
     log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 
     TextNoteEvent eventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
     assertEquals(eventToDelete.getId(), redisCacheService.save(eventToDelete).getId());
 
-    List<EventDocumentIF> allAfterDeleteMeEvent = redisCacheService.getAll();
+    List<EventNosqlEntityIF> allAfterDeleteMeEvent = redisCacheService.getAll();
     int sizeAfterDeleteMeEvent = allAfterDeleteMeEvent.size();
     log.debug("sizeAfterDeleteMeEvent: {}", sizeAfterDeleteMeEvent);
     assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
 
     assertTrue(allAfterDeleteMeEvent.stream()
-        .map(EventDocumentIF::getId)
+        .map(EventNosqlEntityIF::getId)
         .anyMatch(e -> e.equals(eventToDelete.getId())));
 
-    List<DeletionEventDocumentIF> allDeletionJpaEventEntitiesBeforeDeletion = redisCacheService.getAllDeletionEvents();
+    List<DeletionEventNosqlEntityIF> allDeletionJpaEventEntitiesBeforeDeletion = redisCacheService.getAllDeletionEvents();
 
     EventTag eventTag = new EventTag(eventToDelete.getId());
 
@@ -175,7 +175,7 @@ public class RedisCacheServiceIT {
 
     redisCacheService.deleteEvent(deletionEvent);
 
-    List<DeletionEventDocumentIF> allDeletionJpaEventEntitiesAfterDeletion = redisCacheService.getAllDeletionEvents();
+    List<DeletionEventNosqlEntityIF> allDeletionJpaEventEntitiesAfterDeletion = redisCacheService.getAllDeletionEvents();
     assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventEntitiesAfterDeletion.size());
 
     log.debug(allDeletionJpaEventEntitiesAfterDeletion.toString());
@@ -184,14 +184,14 @@ public class RedisCacheServiceIT {
       log.debug("deletionDbEventId: {}", event.getEventId());
     });
 
-    assertTrue(allDeletionJpaEventEntitiesAfterDeletion.stream().map(DeletionEventDocumentIF::getEventId).anyMatch(eventToDelete.getId()::equals));
+    assertTrue(allDeletionJpaEventEntitiesAfterDeletion.stream().map(DeletionEventNosqlEntityIF::getEventId).anyMatch(eventToDelete.getId()::equals));
 
-    List<EventDocumentIF> allAfterDeletion = redisCacheService.getAll();
+    List<EventNosqlEntityIF> allAfterDeletion = redisCacheService.getAll();
     int sizeAfterDeletion = allAfterDeletion.size();
     log.debug("sizeAfterDeletion: {}", sizeAfterDeletion);
     assertEquals(sizeAfterDeleteMeEvent - 1, sizeAfterDeletion);
 
-    assertTrue(allAfterDeletion.stream().map(EventDocumentIF::getId).noneMatch(e -> e.equals(eventToDelete.getId())));
+    assertTrue(allAfterDeletion.stream().map(EventNosqlEntityIF::getId).noneMatch(e -> e.equals(eventToDelete.getId())));
     deleteSecondEvent(sizeAfterDeletion, allDeletionJpaEventEntitiesAfterDeletion.size(), eventToDelete.getId());
   }
 
@@ -201,7 +201,7 @@ public class RedisCacheServiceIT {
       String firstDeletedEventId) throws NoSuchAlgorithmException {
     String newContent = Factory.lorumIpsum(RedisCacheServiceIT.class);
 
-    List<EventDocumentIF> all = redisCacheService.getAll();
+    List<EventNosqlEntityIF> all = redisCacheService.getAll();
     int sizeBeforeSecondDeleteMeEvent = all.size();
     log.debug("sizeBeforeSecondDeleteMeEvent: {}", sizeBeforeSecondDeleteMeEvent);
     assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
@@ -209,13 +209,13 @@ public class RedisCacheServiceIT {
     TextNoteEvent secondEventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
     assertEquals(secondEventToDelete.getId(), redisCacheService.save(secondEventToDelete).getId());
 
-    List<EventDocumentIF> allAfterSecondDeleteMeEvent = redisCacheService.getAll();
+    List<EventNosqlEntityIF> allAfterSecondDeleteMeEvent = redisCacheService.getAll();
     int sizeAfterSecondDeleteMeEvent = allAfterSecondDeleteMeEvent.size();
     log.debug("sizeAfterSecondDeleteMeEvent: {}", sizeAfterSecondDeleteMeEvent);
     assertEquals(sizeBeforeSecondDeleteMeEvent + 1, sizeAfterSecondDeleteMeEvent);
 
     assertTrue(redisCacheService.getAll().stream()
-        .map(EventDocumentIF::getId)
+        .map(EventNosqlEntityIF::getId)
         .anyMatch(secondEventToDelete.getId()::equals));
 
     EventTag eventTag = new EventTag(secondEventToDelete.getId());
@@ -225,7 +225,7 @@ public class RedisCacheServiceIT {
 
     redisCacheService.deleteEvent(secondDeletionEvent);
 
-    List<DeletionEventDocumentIF> allDeletionJpaEventEntities = redisCacheService.getAllDeletionEvents();
+    List<DeletionEventNosqlEntityIF> allDeletionJpaEventEntities = redisCacheService.getAllDeletionEvents();
     assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());
@@ -234,14 +234,14 @@ public class RedisCacheServiceIT {
       log.debug("deletionDbEventId: {}", event.getEventId());
     });
 
-    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventDocumentIF::getEventId).anyMatch(secondEventToDelete.getId()::equals));
+    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventNosqlEntityIF::getEventId).anyMatch(secondEventToDelete.getId()::equals));
 
-    List<EventDocumentIF> allAfterSecondDeletion = redisCacheService.getAll();
+    List<EventNosqlEntityIF> allAfterSecondDeletion = redisCacheService.getAll();
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();
     log.debug("sizeAfterSecondDeletion: {}", sizeAfterSecondDeletion);
     assertEquals(sizeAfterSecondDeleteMeEvent - 1, sizeAfterSecondDeletion);
 
-    assertTrue(allAfterSecondDeletion.stream().map(EventDocumentIF::getId).noneMatch(secondEventToDelete.getId()::equals));
-    assertTrue(allAfterSecondDeletion.stream().map(EventDocumentIF::getId).noneMatch(firstDeletedEventId::equals));
+    assertTrue(allAfterSecondDeletion.stream().map(EventNosqlEntityIF::getId).noneMatch(secondEventToDelete.getId()::equals));
+    assertTrue(allAfterSecondDeletion.stream().map(EventNosqlEntityIF::getId).noneMatch(firstDeletedEventId::equals));
   }
 }

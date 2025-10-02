@@ -34,7 +34,7 @@ public class AuthMessageServiceConfig {
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageServiceIF,
       @NonNull AuthKindEntityServiceIF authKindEntityServiceIF) {
-    log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
+    log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT+Kind AUTH)");
     return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindEntityServiceIF);
   }
 
@@ -44,7 +44,7 @@ public class AuthMessageServiceConfig {
   AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
       @NonNull ReqMessageServiceIF reqMessageServiceIF,
       @NonNull AuthEntityServiceIF authEntityServiceIF) {
-    log.debug("loaded AutoConfigReqMessageServiceAuthDecorator bean (EVENT AUTH)");
+    log.debug("loaded AutoConfigReqMessageServiceAuthDecorator bean (REQ AUTH)");
     return new AutoConfigReqMessageServiceAuthDecorator<>(reqMessageServiceIF, authEntityServiceIF);
   }
 

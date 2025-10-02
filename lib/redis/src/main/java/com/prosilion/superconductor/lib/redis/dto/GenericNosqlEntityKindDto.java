@@ -2,12 +2,12 @@ package com.prosilion.superconductor.lib.redis.dto;
 
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.superconductor.lib.redis.document.EventDocument;
-import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
 
-public record GenericDocumentKindDto(BaseEvent baseEvent) {
-  public EventDocumentIF convertDtoToDocument() {
-    EventDocument eventDocument = EventDocument.of(
+public record GenericNosqlEntityKindDto(BaseEvent baseEvent) {
+  public EventNosqlEntityIF convertDtoToNosqlEntity() {
+    EventNosqlEntity eventNosqlEntity = EventNosqlEntity.of(
         baseEvent.getId(),
         baseEvent.getKind().getValue(),
         baseEvent.getPublicKey().toString(),
@@ -15,8 +15,8 @@ public record GenericDocumentKindDto(BaseEvent baseEvent) {
         baseEvent.getContent(),
         baseEvent.getSignature().toString());
 
-    eventDocument.setTags(baseEvent.getTags());
-    return eventDocument;
+    eventNosqlEntity.setTags(baseEvent.getTags());
+    return eventNosqlEntity;
   }
 
   public EventIF convertBaseEventToEventIF() {

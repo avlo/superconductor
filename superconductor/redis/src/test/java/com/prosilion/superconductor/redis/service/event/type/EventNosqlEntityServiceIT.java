@@ -13,8 +13,8 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
-import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.security.NoSuchAlgorithmException;
@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EmbeddedRedisStandalone
 @SpringBootTest
 @ActiveProfiles("test")
-class EventDocumentServiceIT {
+class EventNosqlEntityServiceIT {
   private final PublicKey event_pubkey;
   private final PubKeyTag p_tag;
   private final EventTag e_tag;
@@ -44,21 +44,21 @@ class EventDocumentServiceIT {
   private final String content;
   private final static Kind KIND = Kind.TEXT_NOTE;
 
-  private final EventDocumentService eventDocumentService;
-  private final EventDocumentIF savedEventDocument;
+  private final EventNosqlEntityService eventNosqlEntityService;
+  private final EventNosqlEntityIF eventNosqlEntity;
 
   @Autowired
-  public EventDocumentServiceIT(@NonNull EventDocumentService eventDocumentService) throws NostrException, NoSuchAlgorithmException {
+  public EventNosqlEntityServiceIT(@NonNull EventNosqlEntityService eventNosqlEntityService) throws NostrException, NoSuchAlgorithmException {
     Identity identity = Factory.createNewIdentity();
     event_pubkey = identity.getPublicKey();
     p_tag = Factory.createPubKeyTag(identity);
-    e_tag = Factory.createEventTag(EventDocumentServiceIT.class);
-    g_tag = Factory.createGeohashTag(EventDocumentServiceIT.class);
-    t_tag = Factory.createHashtagTag(EventDocumentServiceIT.class);
-    SubjectTag subject_tag = Factory.createSubjectTag(EventDocumentServiceIT.class);
+    e_tag = Factory.createEventTag(EventNosqlEntityServiceIT.class);
+    g_tag = Factory.createGeohashTag(EventNosqlEntityServiceIT.class);
+    t_tag = Factory.createHashtagTag(EventNosqlEntityServiceIT.class);
+    SubjectTag subject_tag = Factory.createSubjectTag(EventNosqlEntityServiceIT.class);
     price_tag = Factory.createPriceTag();
 
-    this.eventDocumentService = eventDocumentService;
+    this.eventNosqlEntityService = eventNosqlEntityService;
     List<BaseTag> tags = new ArrayList<>();
     tags.add(e_tag);
     tags.add(p_tag);
@@ -67,15 +67,15 @@ class EventDocumentServiceIT {
     tags.add(t_tag);
     tags.add(price_tag);
 
-    content = Factory.lorumIpsum(EventDocumentServiceIT.class);
+    content = Factory.lorumIpsum(EventNosqlEntityServiceIT.class);
 
     EventIF textNoteEvent = new TextNoteEvent(identity, tags, content);
-    savedEventDocument = this.eventDocumentService.saveEventDocument(textNoteEvent);
+    eventNosqlEntity = this.eventNosqlEntityService.saveEvent(textNoteEvent);
   }
 
   @Test
   void saveAndGetEventWithGeohash() {
-    EventDocumentIF savedEvent = eventDocumentService.findByEventIdString(savedEventDocument.getId()).orElseThrow();
+    EventNosqlEntityIF savedEvent = eventNosqlEntityService.findByEventIdString(eventNosqlEntity.getId()).orElseThrow();
     log.debug("savedEvent getPubKey().toString(): " + savedEvent.getPublicKey().toString());
     log.debug("savedEvent getPubKey().toHexString(): " + savedEvent.getPublicKey().toHexString());
     log.debug("savedEvent getPubKey().toBech32String(): " + savedEvent.getPublicKey().toBech32String());

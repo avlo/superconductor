@@ -19,7 +19,7 @@ import org.springframework.lang.NonNull;
 @RequiredArgsConstructor(staticName = "of")
 @RedisHash
 @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
-public class AuthDocument implements AuthDocumentIF {
+public class AuthNosql implements AuthNosqlIF {
   @Id
   @NonNull
   @Indexed

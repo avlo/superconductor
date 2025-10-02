@@ -6,11 +6,11 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.document.EventDocument;
-import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
 import com.prosilion.superconductor.lib.redis.interceptor.TagInterceptor;
-import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
+import com.prosilion.superconductor.lib.redis.repository.EventNosqlEntityRepository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -22,41 +22,41 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class EventDocumentService {
-  private final EventDocumentRepository eventDocumentRepository;
+public class EventNosqlEntityService {
+  private final EventNosqlEntityRepository eventNosqlEntityRepository;
   private final Map<String, TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors;
 
-  public EventDocumentService(
-      @NonNull EventDocumentRepository eventDocumentRepository,
+  public EventNosqlEntityService(
+      @NonNull EventNosqlEntityRepository eventNosqlEntityRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
-    this.eventDocumentRepository = eventDocumentRepository;
+    this.eventNosqlEntityRepository = eventNosqlEntityRepository;
     this.interceptors = interceptors.stream().collect(
         Collectors.toMap(
             TagInterceptor::getCode,
             Function.identity()));
-    log.debug("Created EventDocumentService with interceptors:\n");
+    log.debug("Created EventNosqlEntityService with interceptors:\n");
     interceptors.forEach(interceptor -> log.debug("  {}\n", interceptor));
   }
 
-  public Optional<EventDocumentIF> findByEventIdString(@NonNull String eventId) {
-    return eventDocumentRepository.findByEventId(eventId)
+  public Optional<EventNosqlEntityIF> findByEventIdString(@NonNull String eventId) {
+    return eventNosqlEntityRepository.findByEventId(eventId)
         .map(this::revertInterceptor);
   }
 
-  public List<EventDocumentIF> getEventsByKind(@NonNull Kind kind) {
-    return eventDocumentRepository.findByKind(kind.getValue()).stream()
+  public List<EventNosqlEntityIF> getEventsByKind(@NonNull Kind kind) {
+    return eventNosqlEntityRepository.findByKind(kind.getValue()).stream()
         .map(this::revertInterceptor)
         .toList();
   }
 
-  public List<EventDocumentIF> getEventsByKindAndPubKeyTag(
+  public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(
       @NonNull Kind kind,
       @NonNull PublicKey publicKey) {
-    return eventDocumentRepository.findByKind(
+    return eventNosqlEntityRepository.findByKind(
             kind.getValue()).stream()
         .map(this::revertInterceptor)
-        .filter(eventDocumentIF ->
-            eventDocumentIF.getTags().stream()
+        .filter(eventNosqlEntityIF ->
+            eventNosqlEntityIF.getTags().stream()
                 .filter(PubKeyTag.class::isInstance)
                 .map(PubKeyTag.class::cast)
                 .map(PubKeyTag::getPublicKey)
@@ -64,14 +64,14 @@ public class EventDocumentService {
         .toList();
   }
 
-  public List<EventDocumentIF> getEventsByKindAndUuid(
+  public List<EventNosqlEntityIF> getEventsByKindAndUuid(
       @NonNull Kind kind,
       @NonNull String uuid) {
-    return eventDocumentRepository.findByKind(
+    return eventNosqlEntityRepository.findByKind(
             kind.getValue()).stream()
         .map(this::revertInterceptor)
-        .filter(eventDocumentIF ->
-            eventDocumentIF.getTags().stream()
+        .filter(eventNosqlEntityIF ->
+            eventNosqlEntityIF.getTags().stream()
                 .filter(IdentifierTag.class::isInstance)
                 .map(IdentifierTag.class::cast)
                 .map(IdentifierTag::getUuid)
@@ -79,23 +79,23 @@ public class EventDocumentService {
         .toList();
   }
 
-  public List<EventDocumentIF> getAll() {
-    return eventDocumentRepository.findAllCustom().stream()
+  public List<EventNosqlEntityIF> getAll() {
+    return eventNosqlEntityRepository.findAllCustom().stream()
         .map(this::revertInterceptor)
         .toList();
   }
 
-  public EventDocumentIF saveEventDocument(@NonNull EventIF eventDocument) {
-    return eventDocumentRepository.save(convertDtoToDocument(eventDocument));
+  public EventNosqlEntityIF saveEvent(@NonNull EventIF eventNosqlEntity) {
+    return eventNosqlEntityRepository.save(convertDtoToNosqlEntity(eventNosqlEntity));
   }
 
-  private EventDocument convertDtoToDocument(EventIF dto) {
+  private EventNosqlEntity convertDtoToNosqlEntity(EventIF dto) {
     return processInterceptors(dto);
   }
 
   //  TODO: functionalize below two methods into one
-  private EventDocument processInterceptors(EventIF eventIF) {
-    EventDocument returnDocument = EventDocument.of(
+  private EventNosqlEntity processInterceptors(EventIF eventIF) {
+    EventNosqlEntity entity = EventNosqlEntity.of(
         eventIF.getId(),
         eventIF.getKind().getValue(),
         eventIF.getPublicKey().toString(),
@@ -103,7 +103,7 @@ public class EventDocumentService {
         eventIF.getContent(),
         eventIF.getSignature().toString());
 
-    returnDocument.setTags(
+    entity.setTags(
         Stream.concat(
                 eventIF.getTags().stream().map(baseTag ->
                     Optional.ofNullable(
@@ -113,11 +113,11 @@ public class EventDocumentService {
                 eventIF.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
             .toList());
 
-    return returnDocument;
+    return entity;
   }
 
-  protected EventDocumentIF revertInterceptor(EventDocumentIF eventIf) {
-    EventDocument returnDocument = EventDocument.of(
+  protected EventNosqlEntityIF revertInterceptor(EventNosqlEntityIF eventIf) {
+    EventNosqlEntity entity = EventNosqlEntity.of(
         eventIf.getId(),
         eventIf.getKind().getValue(),
         eventIf.getPublicKey().toString(),
@@ -125,7 +125,7 @@ public class EventDocumentService {
         eventIf.getContent(),
         eventIf.getSignature().toString());
 
-    returnDocument.setTags(
+    entity.setTags(
         Stream.concat(
                 eventIf.getTags().stream().map(baseTag ->
                     Optional.ofNullable(
@@ -135,6 +135,6 @@ public class EventDocumentService {
                 eventIf.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
             .toList());
 
-    return returnDocument;
+    return entity;
   }
 }

@@ -2,15 +2,16 @@ package com.prosilion.superconductor.autoconfigure.redis.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.lib.redis.document.DeletionEventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
 import com.prosilion.superconductor.lib.redis.interceptor.TagInterceptor;
-import com.prosilion.superconductor.lib.redis.repository.DeletionEventDocumentRepository;
-import com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository;
-import com.prosilion.superconductor.lib.redis.service.DeletionEventDocumentService;
-import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
+import com.prosilion.superconductor.lib.redis.repository.DeletionEventNosqlEntityRepository;
+import com.prosilion.superconductor.lib.redis.repository.EventNosqlEntityRepository;
+import com.prosilion.superconductor.lib.redis.service.DeletionEventNoSqlEntityService;
+import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 import java.util.List;
@@ -27,13 +28,13 @@ import org.springframework.lang.NonNull;
 @AutoConfiguration
 @EnableRedisRepositories(
     basePackageClasses = {
-        com.prosilion.superconductor.lib.redis.repository.EventDocumentRepository.class,
-        com.prosilion.superconductor.lib.redis.repository.DeletionEventDocumentRepository.class
+        EventNosqlEntityRepository.class,
+        DeletionEventNosqlEntityRepository.class
     })
 @EntityScan(
     basePackageClasses = {
-        com.prosilion.superconductor.lib.redis.document.EventDocument.class,
-        com.prosilion.superconductor.lib.redis.document.DeletionEventDocument.class
+        EventNosqlEntity.class,
+        DeletionEventNosqlEntity.class
     })
 @ComponentScan(
     basePackages = {
@@ -49,25 +50,25 @@ public class RedisConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  EventDocumentService eventDocumentService(
-      @NonNull EventDocumentRepository eventDocumentRepository,
+  EventNosqlEntityService aventNosqlEntityService(
+      @NonNull EventNosqlEntityRepository eventNosqlEntityRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
-    return new EventDocumentService(eventDocumentRepository, interceptors);
+    return new EventNosqlEntityService(eventNosqlEntityRepository, interceptors);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  DeletionEventDocumentService deletionEventDocumentService(
-      @NonNull DeletionEventDocumentRepository deletionEventDocumentRepository) {
-    return new DeletionEventDocumentService(deletionEventDocumentRepository);
+  DeletionEventNoSqlEntityService deletionEventNoSqlEntityService(
+      @NonNull DeletionEventNosqlEntityRepository deletionEventNosqlEntityRepository) {
+    return new DeletionEventNoSqlEntityService(deletionEventNosqlEntityRepository);
   }
 
   @Bean
   @ConditionalOnMissingBean
   RedisCacheServiceIF cacheIF(
-      @NonNull EventDocumentService eventDocumentService,
-      @NonNull DeletionEventDocumentService deletionEventDocumentService) {
-    return new RedisCacheService(eventDocumentService, deletionEventDocumentService);
+      @NonNull EventNosqlEntityService eventNosqlEntityService,
+      @NonNull DeletionEventNoSqlEntityService deletionEventNoSqlEntityService) {
+    return new RedisCacheService(eventNosqlEntityService, deletionEventNoSqlEntityService);
   }
 
   @Bean

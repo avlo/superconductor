@@ -9,8 +9,8 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
-import com.prosilion.superconductor.lib.redis.service.EventDocumentService;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.security.NoSuchAlgorithmException;
@@ -28,22 +28,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EmbeddedRedisStandalone
 @SpringBootTest
 @ActiveProfiles("test")
-class EventDocumentAddressTagEntityRedisIT {
+class EventNosqlEntityAddressTagEntityRedisIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
   private static final PublicKey ADDRESS_TAG_PUBLIC_KEY = Factory.createNewIdentity().getPublicKey();
 
-  private final static String CONTENT = Factory.lorumIpsum(EventDocumentAddressTagEntityRedisIT.class);
+  private final static String CONTENT = Factory.lorumIpsum(EventNosqlEntityAddressTagEntityRedisIT.class);
   public static final Kind KIND = Kind.BADGE_AWARD_EVENT;
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(
       "REPUTATION_UUID-needs_proper_attention");
 
-  private final EventDocumentService eventDocumentService;
+  private final EventNosqlEntityService eventNosqlEntityService;
 
-  private final EventDocumentIF savedEventDocument;
+  private final EventNosqlEntityIF eventNosqlEntity;
 
   @Autowired
-  public EventDocumentAddressTagEntityRedisIT(@NonNull EventDocumentService eventDocumentService) throws NostrException, NoSuchAlgorithmException {
-    this.eventDocumentService = eventDocumentService;
+  public EventNosqlEntityAddressTagEntityRedisIT(@NonNull EventNosqlEntityService eventNosqlEntityService) throws NostrException, NoSuchAlgorithmException {
+    this.eventNosqlEntityService = eventNosqlEntityService;
 
     AddressTag addressTag = new AddressTag(
         KIND,
@@ -55,12 +55,12 @@ class EventDocumentAddressTagEntityRedisIT {
     System.out.println("textNoteEvent getPubKey().toString(): " + textNoteEvent.getPublicKey().toString());
     System.out.println("textNoteEvent getPubKey().toHexString(): " + textNoteEvent.getPublicKey().toHexString());
     System.out.println("textNoteEvent getPubKey().toBech32String(): " + textNoteEvent.getPublicKey().toBech32String());
-    savedEventDocument = eventDocumentService.saveEventDocument(textNoteEvent);
+    eventNosqlEntity = eventNosqlEntityService.saveEvent(textNoteEvent);
   }
 
   @Test
   void saveAndGetEventWithPublicKey() {
-    EventDocumentIF genericEventKindIF = eventDocumentService.findByEventIdString(savedEventDocument.getId()).orElseThrow();
+    EventNosqlEntityIF genericEventKindIF = eventNosqlEntityService.findByEventIdString(eventNosqlEntity.getId()).orElseThrow();
 
     List<BaseTag> tags = genericEventKindIF.getTags();
     tags.forEach(tag -> log.debug("\ntag:  \n{}\n ---- \n", tag));

@@ -5,13 +5,13 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.superconductor.base.service.event.service.GenericEventKind;
 import com.prosilion.superconductor.base.service.event.service.GenericEventKindType;
 import com.prosilion.superconductor.base.service.event.service.GenericEventKindTypeIF;
-import com.prosilion.superconductor.lib.redis.document.EventDocument;
-import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
 
-public record GenericDocumentKindTypeDto(BaseEvent baseEvent, KindTypeIF kindType) {
+public record GenericNosqlEntityKindTypeDto(BaseEvent baseEvent, KindTypeIF kindType) {
 
-  public EventDocumentIF convertDtoToEntity() {
-    EventDocument eventDocument = EventDocument.of(
+  public EventNosqlEntityIF convertDtoToEntity() {
+    EventNosqlEntity entity = EventNosqlEntity.of(
         baseEvent.getId(),
         baseEvent.getKind().getValue(),
         baseEvent.getPublicKey().toString(),
@@ -19,8 +19,8 @@ public record GenericDocumentKindTypeDto(BaseEvent baseEvent, KindTypeIF kindTyp
         baseEvent.getContent(),
         baseEvent.getSignature().toString());
 
-    eventDocument.setTags(baseEvent.getTags());
-    return eventDocument;
+    entity.setTags(baseEvent.getTags());
+    return entity;
   }
 
   public GenericEventKindTypeIF convertBaseEventToGenericEventKindTypeIF() {

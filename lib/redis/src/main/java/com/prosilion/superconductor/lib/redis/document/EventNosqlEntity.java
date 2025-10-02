@@ -22,7 +22,7 @@ import org.springframework.lang.NonNull;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor(staticName = "of")
 @RedisHash
-public class EventDocument implements EventDocumentIF {
+public class EventNosqlEntity implements EventNosqlEntityIF {
 
   @Id
   @NonNull

@@ -10,11 +10,11 @@ import com.prosilion.superconductor.base.service.clientresponse.ClientResponseSe
 import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
 import com.prosilion.superconductor.base.service.message.AuthMessageServiceIF;
-import com.prosilion.superconductor.lib.redis.repository.auth.AuthDocumentRepository;
-import com.prosilion.superconductor.lib.redis.service.auth.AuthDocumentService;
-import com.prosilion.superconductor.lib.redis.service.auth.AuthDocumentServiceIF;
-import com.prosilion.superconductor.lib.redis.service.auth.AuthKindDocumentService;
-import com.prosilion.superconductor.lib.redis.service.auth.AuthKindDocumentServiceIF;
+import com.prosilion.superconductor.lib.redis.repository.auth.AuthNosqlEntityRepository;
+import com.prosilion.superconductor.lib.redis.service.auth.AuthKindNosqlEntityService;
+import com.prosilion.superconductor.lib.redis.service.auth.AuthKindNosqlEntityServiceIF;
+import com.prosilion.superconductor.lib.redis.service.auth.AuthNosqlEntityService;
+import com.prosilion.superconductor.lib.redis.service.auth.AuthNosqlEntityServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -33,9 +33,9 @@ public class AuthMessageServiceConfig {
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageServiceIF,
-      @NonNull AuthKindDocumentServiceIF authKindDocumentServiceIF) {
-    log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT AUTH)");
-    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindDocumentServiceIF);
+      @NonNull AuthKindNosqlEntityServiceIF authKindNoSqlEntityServiceIF) {
+    log.debug("loaded AutoConfigEventMessageServiceAuthDecorator bean (EVENT+Kind AUTH)");
+    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindNoSqlEntityServiceIF);
   }
 
   @Bean
@@ -43,35 +43,35 @@ public class AuthMessageServiceConfig {
   @ConditionalOnMissingBean
   AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
       @NonNull ReqMessageServiceIF reqMessageServiceIF,
-      @NonNull AuthDocumentServiceIF authDocumentServiceIF) {
-    log.debug("loaded AutoConfigReqMessageServiceAuthDecorator bean (EVENT AUTH)");
-    return new AutoConfigReqMessageServiceAuthDecorator<>(reqMessageServiceIF, authDocumentServiceIF);
+      @NonNull AuthNosqlEntityServiceIF authNosqlEntityServiceIF) {
+    log.debug("loaded AutoConfigReqMessageServiceAuthDecorator bean (REQ AUTH)");
+    return new AutoConfigReqMessageServiceAuthDecorator<>(reqMessageServiceIF, authNosqlEntityServiceIF);
   }
 
   @Bean
   @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
   @ConditionalOnMissingBean
-  AuthDocumentServiceIF authDocumentServiceIF(@NonNull AuthDocumentRepository authDocumentRepository) {
-    return new AuthDocumentService(authDocumentRepository);
+  AuthNosqlEntityServiceIF authNosqlEntityServiceIF(@NonNull AuthNosqlEntityRepository authNosqlEntityRepository) {
+    return new AuthNosqlEntityService(authNosqlEntityRepository);
   }
 
   @Bean
   @ConditionalOnBean(AuthEventKinds.class)
   @ConditionalOnMissingBean
-  AuthKindDocumentServiceIF authKindDocumentServiceIF(
-      @NonNull AuthDocumentServiceIF authDocumentServiceIF,
+  AuthKindNosqlEntityServiceIF authKindNosqlEntityServiceIF(
+      @NonNull AuthNosqlEntityServiceIF authNosqlEntityServiceIF,
       @NonNull AuthEventKinds authEventKinds) {
-    return new AuthKindDocumentService(authDocumentServiceIF, authEventKinds);
+    return new AuthKindNosqlEntityService(authNosqlEntityServiceIF, authEventKinds);
   }
 
   @Bean
   @ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty() || ${superconductor.auth.req.active:true}}")
   @ConditionalOnMissingBean
   AuthMessageServiceIF authMessageServiceIF(
-      @NonNull AuthDocumentServiceIF authDocumentServiceIF,
+      @NonNull AuthNosqlEntityServiceIF authNosqlEntityServiceIF,
       @NonNull ClientResponseService okResponseService,
       @NonNull @Value("${superconductor.auth.challenge-relay.url}") String challengeRelayUrl) {
     log.debug("loaded REDIS AuthMessageServiceIF bean");
-    return new AuthMessageService<>(authDocumentServiceIF, okResponseService, challengeRelayUrl);
+    return new AuthMessageService<>(authNosqlEntityServiceIF, okResponseService, challengeRelayUrl);
   }
 }

@@ -26,8 +26,7 @@ public class EventMessageServiceConfig {
       @NonNull EventServiceIF eventService,
       @NonNull ClientResponseService clientResponseService) {
     log.debug("loaded EventMessageService bean");
-    EventMessageService eventMessageService = new EventMessageService(eventService, clientResponseService);
-    return eventMessageService;
+    return new EventMessageService(eventService, clientResponseService);
   }
 
   @Bean

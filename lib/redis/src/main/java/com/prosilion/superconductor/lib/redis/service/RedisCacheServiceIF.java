@@ -3,12 +3,12 @@ package com.prosilion.superconductor.lib.redis.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
-import com.prosilion.superconductor.lib.redis.document.DeletionEventDocumentIF;
-import com.prosilion.superconductor.lib.redis.document.EventDocumentIF;
+import com.prosilion.superconductor.lib.redis.document.DeletionEventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
 import java.util.List;
 
-public interface RedisCacheServiceIF extends CacheServiceIF<EventDocumentIF, EventDocumentIF> {
-  List<DeletionEventDocumentIF> getAllDeletionEvents();
-  List<EventDocumentIF> getEventsByKindAndPubKeyTag(Kind kind, PublicKey publicKey);
-  List<EventDocumentIF> getEventsByKindAndUuid(Kind kind, String uuid);
+public interface RedisCacheServiceIF extends CacheServiceIF<EventNosqlEntityIF, EventNosqlEntityIF> {
+  List<DeletionEventNosqlEntityIF> getAllDeletionEvents();
+  List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(Kind kind, PublicKey publicKey);
+  List<EventNosqlEntityIF> getEventsByKindAndUuid(Kind kind, String uuid);
 }

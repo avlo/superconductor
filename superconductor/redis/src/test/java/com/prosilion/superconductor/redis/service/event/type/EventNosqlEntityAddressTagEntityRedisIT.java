@@ -9,7 +9,7 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;

@@ -5,8 +5,8 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.superconductor.base.service.event.service.GenericEventKind;
 import com.prosilion.superconductor.base.service.event.service.GenericEventKindType;
 import com.prosilion.superconductor.base.service.event.service.GenericEventKindTypeIF;
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntity;
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 
 public record GenericNosqlEntityKindTypeDto(BaseEvent baseEvent, KindTypeIF kindType) {
 

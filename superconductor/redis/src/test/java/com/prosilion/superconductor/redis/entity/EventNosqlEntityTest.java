@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.redis.entity;
 
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

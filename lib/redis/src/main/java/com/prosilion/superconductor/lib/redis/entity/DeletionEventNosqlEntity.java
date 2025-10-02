@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.lib.redis.document;
+package com.prosilion.superconductor.lib.redis.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

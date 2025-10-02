@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.redis.entity;
 
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntity;
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.repository.EventNosqlEntityRepository;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;

@@ -2,8 +2,8 @@ package com.prosilion.superconductor.lib.redis.dto;
 
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntity;
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 
 public record GenericNosqlEntityKindDto(BaseEvent baseEvent) {
   public EventNosqlEntityIF convertDtoToNosqlEntity() {

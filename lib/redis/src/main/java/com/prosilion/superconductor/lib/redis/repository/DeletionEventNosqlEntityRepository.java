@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.lib.redis.repository;
 
-import com.prosilion.superconductor.lib.redis.document.DeletionEventNosqlEntity;
-import com.prosilion.superconductor.lib.redis.document.DeletionEventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntityIF;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.lib.redis.repository;
 
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntity;
-import com.prosilion.superconductor.lib.redis.document.EventNosqlEntityIF;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
+import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

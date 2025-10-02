@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.lib.redis.service.auth;
 
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.redis.document.AuthNosql;
-import com.prosilion.superconductor.lib.redis.document.AuthNosqlIF;
+import com.prosilion.superconductor.lib.redis.entity.AuthNosqlEntity;
+import com.prosilion.superconductor.lib.redis.entity.AuthNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.repository.auth.AuthNosqlEntityRepository;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class AuthNosqlEntityService implements AuthNosqlEntityServiceIF {
   @Override
   public void save(@NonNull String sessionId, @NonNull PublicKey publicKey, @NonNull String challenge, @NonNull Long createdAt) {
     save(
-        AuthNosql.of(
+        AuthNosqlEntity.of(
             sessionId,
             publicKey.toString(),
             challenge,
@@ -27,9 +27,9 @@ public class AuthNosqlEntityService implements AuthNosqlEntityServiceIF {
   }
 
   @Override
-  public AuthNosqlIF save(AuthNosqlIF authPersistantIF) {
+  public AuthNosqlEntityIF save(AuthNosqlEntityIF authPersistantIF) {
     removeAuthPersistantBySessionId(authPersistantIF.getSessionId());
-    AuthNosql authNosql = AuthNosql.of(
+    AuthNosqlEntity authNosql = AuthNosqlEntity.of(
         authPersistantIF.getSessionId(),
         authPersistantIF.getPublicKey(),
         authPersistantIF.getChallenge(),
@@ -39,8 +39,8 @@ public class AuthNosqlEntityService implements AuthNosqlEntityServiceIF {
   }
 
   @Override
-  public Optional<AuthNosqlIF> findAuthPersistantBySessionId(@NonNull String sessionId) {
-    return authNosqlEntityRepository.findBySessionId(sessionId).map(AuthNosqlIF.class::cast);
+  public Optional<AuthNosqlEntityIF> findAuthPersistantBySessionId(@NonNull String sessionId) {
+    return authNosqlEntityRepository.findBySessionId(sessionId).map(AuthNosqlEntityIF.class::cast);
   }
 
   @Override

@@ -28,6 +28,31 @@
   <hr>
 
   <div class="tabs">
+    <input class="radiotab" name="tabs" tabindex="1" type="radio" id="tabone" checked="checked">
+    <label class="label" for="tabone">Register</label>
+    <div class="panel">
+      <div class="col-md-6">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="challenge">Create Password: </label>
+            <input tabindex="1" type="text" value="123123" id="challenge" class="form-control" placeholder="456456">
+          </div>
+          <div class="form-group">
+            <label for="pubkeyregister">Pubkey: </label>
+            <input tabindex="1" type="text" value="aaad79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984"
+                   id="pubkeyregister" class="form-control" placeholder="pubkeyregister">
+          </div>
+          <input type="hidden" id="kindregister" name="kindregister" value=22242>
+          <input type="hidden" id="relay" name="relay" value='ws://localhost:5555'>
+          <div class="row">
+            <div class="center gap">
+              <button id="sendregister" class="btn btn-default" type="submit" disabled="disabled">Register</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <input class="radiotab" tabindex="1" name="tabs" type="radio" id="tabtwo">
     <label class="label" for="tabtwo">NIP-00</label>
     <div class="panel">
@@ -55,7 +80,7 @@
       </div>
     </div>
 
-    <input class="radiotab" name="tabs" tabindex="1" type="radio" id="tabthree" checked="checked">
+    <input class="radiotab" name="tabs" tabindex="1" type="radio" id="tabthree">
     <label class="label" for="tabthree">NIP-01</label>
     <div class="panel">
       <div class="col-md-6">
@@ -267,9 +292,7 @@
         </form>
       </div>
     </div>
-
   </div>
-
 
   <h4>Response</h4>
   <div class="row">

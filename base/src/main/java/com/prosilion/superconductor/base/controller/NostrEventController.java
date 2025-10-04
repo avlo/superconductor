@@ -18,8 +18,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.lang.NonNull;
@@ -44,35 +42,34 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   private final RelayInfoDocServiceIF relayInfoDocService;
   private final Map<String, WebSocketSession> mapSessions = new HashMap<>();
   private final ApplicationEventPublisher publisher;
+  private final ReqApiEventApiUi reqApiEventApiUi;
 
-  @Value("#{!'${superconductor.auth.event.kinds}'.isEmpty()}")
-  private boolean authEventActive;
-  @Value("${superconductor.auth.req.active}")
-  private boolean authReqActive;
-
-  @Autowired
   public NostrEventController(
       @NonNull List<MessageServiceIF<T>> messageServices,
       @NonNull RelayInfoDocServiceIF relayInfoDocService,
-      @NonNull ApplicationEventPublisher publisher) {
+      @NonNull ApplicationEventPublisher publisher,
+      @NonNull ReqApiEventApiUi reqApiEventApiUi) {
     this.messageServiceMap = messageServices.stream().collect(
         Collectors.toMap(
             MessageServiceIF<T>::getCommand,
             Function.identity()));
     this.relayInfoDocService = relayInfoDocService;
     this.publisher = publisher;
+    this.reqApiEventApiUi = reqApiEventApiUi;
   }
 
   @GetMapping("/api-tests.html")
   public String apiTests(Model model) {
-    model.addAttribute("authActive", authEventActive);
-    return "thymeleaf/api-tests";
+//    model.addAttribute("authActive", authEventActive);
+//    return "thymeleaf/api-tests";
+    return reqApiEventApiUi.getEventApiUi();
   }
 
   @GetMapping("/request-test.html")
   public String requestTest(Model model) {
-    model.addAttribute("authActive", authReqActive);
-    return "thymeleaf/request-test";
+//    model.addAttribute("authActive", authReqActive);
+//    return "thymeleaf/request-test";
+    return reqApiEventApiUi.getReqApiUi();
   }
 
   @Override

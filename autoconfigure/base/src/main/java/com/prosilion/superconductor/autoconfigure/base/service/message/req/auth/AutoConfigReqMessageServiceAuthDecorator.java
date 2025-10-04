@@ -19,6 +19,7 @@ public class AutoConfigReqMessageServiceAuthDecorator<T, U extends AuthPersistan
       @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF) {
     this.reqMessageService = reqMessageService;
     this.authPersistantServiceIF = authPersistantServiceIF;
+    log.debug("loaded {} bean (REQ AUTH)", getClass().getSimpleName());
   }
 
   @Override

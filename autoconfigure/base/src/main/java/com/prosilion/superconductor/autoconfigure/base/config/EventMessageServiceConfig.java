@@ -5,6 +5,10 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.event.Eve
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.auth.AutoConfigEventMessageServiceNoAuthDecorator;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.noop.EventMessageNoOpService;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.standard.EventMessageService;
+import com.prosilion.superconductor.autoconfigure.base.web.event.EventApiNoAuthUi;
+import com.prosilion.superconductor.autoconfigure.base.web.req.ReqApiNoAuthUi;
+import com.prosilion.superconductor.base.controller.EventApiUiIF;
+import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import lombok.extern.slf4j.Slf4j;
@@ -46,5 +50,12 @@ public class EventMessageServiceConfig {
       @NonNull EventMessageServiceIF eventMessageServiceIF) {
     log.debug("loaded AutoConfigEventMessageServiceNoAuthDecorator bean (EVENT NO-AUTH)");
     return new AutoConfigEventMessageServiceNoAuthDecorator(eventMessageServiceIF);
+  }
+
+  @Bean
+  @ConditionalOnExpression("#{'${superconductor.auth.event.kinds}'.isEmpty()}")
+  @ConditionalOnMissingBean
+  EventApiUiIF eventApiUiIF() {
+    return new EventApiNoAuthUi();
   }
 }

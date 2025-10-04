@@ -1,2 +1,3 @@
-com.prosilion.superconductor.autoconfigure.jpa.config.AuthMessageServiceConfig
+com.prosilion.superconductor.autoconfigure.jpa.config.EventAuthMessageServiceConfig
+com.prosilion.superconductor.autoconfigure.jpa.config.ReqAuthMessageServiceConfig
 com.prosilion.superconductor.autoconfigure.jpa.config.JpaConfig

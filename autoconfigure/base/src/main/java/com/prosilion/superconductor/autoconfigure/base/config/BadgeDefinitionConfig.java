@@ -4,6 +4,10 @@ import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.controller.ApiUi;
+import com.prosilion.superconductor.base.controller.EventApiUiIF;
+import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
+import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
 import java.security.NoSuchAlgorithmException;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +18,12 @@ import org.springframework.lang.NonNull;
 
 @AutoConfiguration
 public class BadgeDefinitionConfig {
+
+  @Bean
+  @ConditionalOnMissingBean
+  ReqApiEventApiUi reqApiEventApiUi(@NonNull EventApiUiIF eventApiUiIF, @NonNull ReqApiUiIF reqApiUiIF) {
+    return new ApiUi(eventApiUiIF, reqApiUiIF);
+  }
 
   @Bean
   @ConditionalOnMissingBean

@@ -14,11 +14,10 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.lang.NonNull;
 
-@Lazy
+//@Lazy
 @Configuration
 @ConditionalOnProperty(
     name = "server.ssl.enabled",
@@ -32,7 +31,7 @@ public class NostrRedisWsTestConfig {
   }
 
   @Bean
-  EventKindTypePluginIF badgeAwardUpvoteEventKindTypeRedisPlugin(
+  EventKindTypePluginIF badgeAwardUpvoteEventKindTypePlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     return new BadgeAwardEventKindTypeRedisPlugin(
@@ -43,7 +42,7 @@ public class NostrRedisWsTestConfig {
   }
 
   @Bean
-  EventKindTypePluginIF badgeAwardDownvoteEventKindTypeRedisPlugin(
+  EventKindTypePluginIF badgeAwardDownvoteEventKindTypePlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     return new BadgeAwardEventKindTypeRedisPlugin(

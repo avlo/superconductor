@@ -4,7 +4,10 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
 import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEvent;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -13,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
@@ -31,8 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     "superconductor.auth.event.kinds=BADGE_AWARD_EVENT",
     "server.port=5557",
     "superconductor.relay.url=ws://localhost:5557",
-    "spring.cache.type=redis",
-    "spring.data.redis.host=localhost",
     "spring.data.redis.port=6380"
 })
 public class BadgeAwardUpvoteEventMessageAuthIT {
@@ -41,13 +42,18 @@ public class BadgeAwardUpvoteEventMessageAuthIT {
 
   @Autowired
   BadgeAwardUpvoteEventMessageAuthIT(
-      @NonNull NostrRelayServiceRedis nostrRelayService,
-      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent) throws NostrException, NoSuchAlgorithmException {
-    this.nostrRelayService = nostrRelayService;
+      @NonNull Identity superconductorInstanceIdentity,
+      @Value("${superconductor.relay.url}") String relayUri) throws NostrException, NoSuchAlgorithmException {
+
+    this.nostrRelayService = new NostrRelayServiceRedis(relayUri);
     this.event = new BadgeAwardUpvoteRedisEvent(
         Identity.generateRandomIdentity(),
         Identity.generateRandomIdentity().getPublicKey(),
-        upvoteBadgeDefinitionEvent);
+        new BadgeDefinitionEvent(
+            superconductorInstanceIdentity,
+            new IdentifierTag(SuperconductorKindType.UNIT_UPVOTE.getName()),
+            new ReferenceTag(relayUri),
+            "1"));
   }
 
   @Test

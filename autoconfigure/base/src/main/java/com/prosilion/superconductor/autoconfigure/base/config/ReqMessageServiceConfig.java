@@ -5,6 +5,8 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.req.Relay
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageService;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.auth.AutoConfigReqMessageServiceNoAuthDecorator;
+import com.prosilion.superconductor.autoconfigure.base.web.req.ReqApiNoAuthUi;
+import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.message.RelayInfoDocServiceIF;
 import com.prosilion.superconductor.base.service.request.ReqServiceIF;
@@ -71,5 +73,12 @@ public class ReqMessageServiceConfig {
         amountValue,
         unitValue,
         periodValue);
+  }
+
+  @Bean
+  @ConditionalOnProperty(name = "superconductor.auth.req.active", havingValue = "false", matchIfMissing = true)
+  @ConditionalOnMissingBean
+  ReqApiUiIF reqApiUiIF() {
+    return new ReqApiNoAuthUi();
   }
 }

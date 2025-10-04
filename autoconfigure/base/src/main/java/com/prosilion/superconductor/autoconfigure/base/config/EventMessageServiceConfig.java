@@ -6,18 +6,20 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.event.aut
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.noop.EventMessageNoOpService;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.standard.EventMessageService;
 import com.prosilion.superconductor.autoconfigure.base.web.event.EventApiNoAuthUi;
-import com.prosilion.superconductor.autoconfigure.base.web.req.ReqApiNoAuthUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
-import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
+import com.prosilion.superconductor.base.service.event.auth.AuthEventKindsCondition;
+import com.prosilion.superconductor.base.service.event.auth.NoAuthEventKindsCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.lang.NonNull;
 
 @Slf4j
@@ -44,7 +46,7 @@ public class EventMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnExpression("#{'${superconductor.auth.event.kinds}'.isEmpty()}")
+  @Conditional(NoAuthEventKindsCondition.class)
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageServiceIF) {
@@ -53,7 +55,7 @@ public class EventMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnExpression("#{'${superconductor.auth.event.kinds}'.isEmpty()}")
+  @Conditional(NoAuthEventKindsCondition.class)
   @ConditionalOnMissingBean
   EventApiUiIF eventApiUiIF() {
     return new EventApiNoAuthUi();

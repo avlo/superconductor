@@ -7,6 +7,7 @@ import com.prosilion.superconductor.autoconfigure.base.web.event.EventApiAuthUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
+import com.prosilion.superconductor.base.service.event.auth.AuthEventKindsCondition;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
 import com.prosilion.superconductor.base.service.message.AuthMessageServiceIF;
 import com.prosilion.superconductor.lib.redis.repository.auth.AuthNosqlEntityRepository;
@@ -21,11 +22,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 @AutoConfiguration
-@ConditionalOnExpression("#{!'${superconductor.auth.event.kinds}'.isEmpty()}")
+@Conditional(AuthEventKindsCondition.class)
 public class EventAuthMessageServiceConfig {
   @Bean
   @ConditionalOnMissingBean

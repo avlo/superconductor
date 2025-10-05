@@ -9,13 +9,10 @@ import com.prosilion.superconductor.autoconfigure.base.web.event.EventApiNoAuthU
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
-import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
-import com.prosilion.superconductor.base.service.event.auth.AuthEventKindsCondition;
-import com.prosilion.superconductor.base.service.event.auth.NoAuthEventKindsCondition;
+import com.prosilion.superconductor.base.service.event.auth.EventKindsNoAuthCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +43,7 @@ public class EventMessageServiceConfig {
   }
 
   @Bean
-  @Conditional(NoAuthEventKindsCondition.class)
+  @Conditional(EventKindsNoAuthCondition.class)
   @ConditionalOnMissingBean
   AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageServiceIF) {
@@ -55,7 +52,7 @@ public class EventMessageServiceConfig {
   }
 
   @Bean
-  @Conditional(NoAuthEventKindsCondition.class)
+  @Conditional(EventKindsNoAuthCondition.class)
   @ConditionalOnMissingBean
   EventApiUiIF eventApiUiIF() {
     return new EventApiNoAuthUi();

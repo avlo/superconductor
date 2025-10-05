@@ -4,8 +4,8 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
-import com.prosilion.superconductor.base.service.event.auth.AuthEventKinds;
-import com.prosilion.superconductor.base.service.event.auth.AuthEventKindsCondition;
+import com.prosilion.superconductor.base.service.event.auth.EventKindsAuth;
+import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthCondition;
 import com.prosilion.superconductor.base.service.event.service.EventKindService;
 import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindTypeService;
@@ -76,9 +76,9 @@ public class EventKindServiceConfig {
   }
 
   @Bean
-  @Conditional(AuthEventKindsCondition.class)
+  @Conditional(EventKindsAuthCondition.class)
   @ConditionalOnMissingBean
-  AuthEventKinds authEventKinds(@Value("#{'${superconductor.auth.event.kinds}'.split(',')}") List<String> authEventKinds) {
-    return new AuthEventKinds(authEventKinds.stream().map(Kind::valueOf).toList());
+  EventKindsAuth authEventKinds(@Value("#{'${superconductor.auth.event.kinds}'.split(',')}") List<String> eventAuthenticationKinds) {
+    return new EventKindsAuth(eventAuthenticationKinds.stream().map(Kind::valueOf).toList());
   }
 }

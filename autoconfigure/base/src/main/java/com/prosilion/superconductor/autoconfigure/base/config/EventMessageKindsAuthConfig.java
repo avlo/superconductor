@@ -26,7 +26,7 @@ import org.springframework.lang.NonNull;
 @Slf4j
 @AutoConfiguration
 @Conditional(EventKindsAuthCondition.class)
-public class EventKindsAuthConfig {
+public class EventMessageKindsAuthConfig {
   @Bean
   @ConditionalOnMissingBean
   EventKindsAuth authEventKinds(@Value("#{'${superconductor.auth.event.kinds}'.split(',')}") List<String> eventAuthenticationKinds) {

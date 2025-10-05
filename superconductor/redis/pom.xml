@@ -178,7 +178,7 @@
               <profile>dev_ws</profile>
             </profiles>
             <image>
-              <builder>bellsoft/buildpacks.builder:musl</builder>
+              <builder>paketobuildpacks/builder-jammy-base:latest</builder>
             </image>
           </configuration>
         </plugin>
@@ -209,7 +209,7 @@
               <profile>dev_wss</profile>
             </profiles>
             <image>
-              <builder>bellsoft/buildpacks.builder:musl</builder>
+              <builder>paketobuildpacks/builder-jammy-base:latest</builder>
             </image>
           </configuration>
         </plugin>
@@ -246,7 +246,7 @@
                 <profile>prod_ws</profile>
               </profiles>
               <image>
-                <builder>bellsoft/buildpacks.builder:musl</builder>
+                <builder>paketobuildpacks/builder-jammy-base:latest</builder>
               </image>
             </configuration>
           </plugin>
@@ -283,7 +283,7 @@
                 <profile>prod_wss</profile>
               </profiles>
               <image>
-                <builder>bellsoft/buildpacks.builder:musl</builder>
+                <builder>paketobuildpacks/builder-jammy-base:latest</builder>
               </image>
             </configuration>
           </plugin>

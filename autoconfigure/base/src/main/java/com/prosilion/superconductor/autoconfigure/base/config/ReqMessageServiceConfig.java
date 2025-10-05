@@ -8,14 +8,15 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.req.auth.
 import com.prosilion.superconductor.autoconfigure.base.web.req.ReqApiNoAuthUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
+import com.prosilion.superconductor.base.service.event.auth.ReqNoAuthCondition;
 import com.prosilion.superconductor.base.service.message.RelayInfoDocServiceIF;
 import com.prosilion.superconductor.base.service.request.ReqServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.lang.NonNull;
 
@@ -23,7 +24,6 @@ import org.springframework.lang.NonNull;
 @AutoConfiguration
 @PropertySource("classpath:application-autoconfigure.properties")
 public class ReqMessageServiceConfig {
-
   @Bean
   ReqMessageServiceIF reqMessageService(
       @NonNull ReqServiceIF reqService,
@@ -33,7 +33,7 @@ public class ReqMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.req.active", havingValue = "false", matchIfMissing = true)
+  @Conditional(ReqNoAuthCondition.class)
   AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
       @NonNull ReqMessageServiceIF reqMessageServiceIF) {
     log.debug("loaded AutoConfigReqMessageServiceNoAuthDecorator bean (REQ NO-AUTH)");
@@ -76,7 +76,7 @@ public class ReqMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "superconductor.auth.req.active", havingValue = "false", matchIfMissing = true)
+  @Conditional(ReqNoAuthCondition.class)
   @ConditionalOnMissingBean
   ReqApiUiIF reqApiUiIF() {
     return new ReqApiNoAuthUi();

@@ -7,6 +7,7 @@ import com.prosilion.superconductor.autoconfigure.base.web.req.ReqApiAuthUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
+import com.prosilion.superconductor.base.service.event.auth.ReqAuthCondition;
 import com.prosilion.superconductor.base.service.event.service.AuthPersistantServiceIF;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
 import com.prosilion.superconductor.base.service.message.AuthMessageServiceIF;
@@ -14,13 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 @AutoConfiguration
-@ConditionalOnProperty(name = "superconductor.auth.req.active", havingValue = "true")
+@Conditional(ReqAuthCondition.class)
 public class ReqMessageAuthConfig {
   @Bean
   @ConditionalOnMissingBean

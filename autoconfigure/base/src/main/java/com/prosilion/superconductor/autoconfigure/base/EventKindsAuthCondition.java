@@ -1,10 +1,12 @@
-package com.prosilion.superconductor.base.service.event.auth;
+package com.prosilion.superconductor.autoconfigure.base;
 
 import java.util.Arrays;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EventKindsAuthCondition implements Condition {
   @Override
   public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -16,6 +18,7 @@ public class EventKindsAuthCondition implements Condition {
       return false;
     }
 
-    return !Arrays.stream(kinds.split(",")).toList().isEmpty();
+    boolean b = !Arrays.stream(kinds.split(",")).toList().isEmpty();
+    return b;
   }
 }

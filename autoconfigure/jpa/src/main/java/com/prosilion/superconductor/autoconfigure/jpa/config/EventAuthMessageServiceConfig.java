@@ -1,7 +1,8 @@
 package com.prosilion.superconductor.autoconfigure.jpa.config;
 
-import com.prosilion.superconductor.base.service.event.auth.EventKindsAuth;
-import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthCondition;
+import com.prosilion.superconductor.autoconfigure.base.EventKindsAuth;
+import com.prosilion.superconductor.autoconfigure.base.EventKindsAuthCondition;
+import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
 import com.prosilion.superconductor.base.service.event.service.AuthKindPersistantServiceIF;
 import com.prosilion.superconductor.lib.jpa.entity.auth.AuthJpaEntityIF;
 import com.prosilion.superconductor.lib.jpa.repository.auth.AuthJpaEntityRepository;
@@ -27,11 +28,11 @@ public class EventAuthMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnBean(EventKindsAuth.class)
+  @ConditionalOnBean(EventKindsAuthIF.class)
   @ConditionalOnMissingBean
   AuthKindPersistantServiceIF<Long, AuthJpaEntityIF> authKindJpaEntityServiceIF(
       @NonNull AuthJpaEntityServiceIF authPersistantServiceIF,
-      @NonNull EventKindsAuth eventKindsAuth) {
-    return new AuthKindJpaEntityService(authPersistantServiceIF, eventKindsAuth);
+      @NonNull EventKindsAuthIF eventKindsAuthIF) {
+    return new AuthKindJpaEntityService(authPersistantServiceIF, eventKindsAuthIF);
   }
 }

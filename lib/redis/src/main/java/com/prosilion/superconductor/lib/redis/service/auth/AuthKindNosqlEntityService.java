@@ -2,7 +2,7 @@ package com.prosilion.superconductor.lib.redis.service.auth;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.event.auth.EventKindsAuth;
+import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
 import com.prosilion.superconductor.lib.redis.entity.AuthNosqlEntityIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -11,13 +11,13 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class AuthKindNosqlEntityService implements AuthKindNosqlEntityServiceIF {
   private final AuthNosqlEntityServiceIF authNosqlEntityServiceIF;
-  private final EventKindsAuth eventKindsAuth;
+  private final EventKindsAuthIF eventKindsAuthIF;
 
   public AuthKindNosqlEntityService(
       @NonNull AuthNosqlEntityServiceIF authNosqlEntityServiceIF,
-      @NonNull EventKindsAuth eventKindsAuth) {
+      @NonNull EventKindsAuthIF eventKindsAuthIF) {
     this.authNosqlEntityServiceIF = authNosqlEntityServiceIF;
-    this.eventKindsAuth = eventKindsAuth;
+    this.eventKindsAuthIF = eventKindsAuthIF;
   }
 
   @Override
@@ -37,7 +37,7 @@ public class AuthKindNosqlEntityService implements AuthKindNosqlEntityServiceIF 
 
   @Override
   public Optional<AuthNosqlEntityIF> findAuthPersistantBySessionIdAndKind(@NonNull String sessionId, @NonNull Kind kind) {
-    return eventKindsAuth.has(kind) ? Optional.of(findAuthPersistantBySessionId(sessionId).orElseThrow()) : Optional.empty();
+    return eventKindsAuthIF.has(kind) ? Optional.of(findAuthPersistantBySessionId(sessionId).orElseThrow()) : Optional.empty();
   }
 
   @Override

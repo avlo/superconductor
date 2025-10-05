@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.superconductor.autoconfigure.base.EventKindsAuth;
+import com.prosilion.superconductor.autoconfigure.base.EventKindsAuthCondition;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.auth.AutoConfigEventMessageServiceAuthDecorator;
@@ -8,8 +10,7 @@ import com.prosilion.superconductor.autoconfigure.base.web.event.EventApiAuthUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
-import com.prosilion.superconductor.base.service.event.auth.EventKindsAuth;
-import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthCondition;
+import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
 import com.prosilion.superconductor.base.service.event.service.AuthKindPersistantServiceIF;
 import com.prosilion.superconductor.base.service.event.service.AuthPersistantServiceIF;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
@@ -29,7 +30,7 @@ import org.springframework.lang.NonNull;
 public class EventMessageKindsAuthConfig {
   @Bean
   @ConditionalOnMissingBean
-  EventKindsAuth authEventKinds(@Value("#{'${superconductor.auth.event.kinds}'.split(',')}") List<String> eventAuthenticationKinds) {
+  EventKindsAuthIF eventKindsAuthIF(@Value("#{'${superconductor.auth.event.kinds}'.split(',')}") List<String> eventAuthenticationKinds) {
     return new EventKindsAuth(eventAuthenticationKinds.stream().map(Kind::valueOf).toList());
   }
 

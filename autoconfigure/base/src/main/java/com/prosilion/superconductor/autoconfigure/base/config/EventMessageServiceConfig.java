@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
+import com.prosilion.superconductor.autoconfigure.base.EventKindsNoAuthCondition;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.auth.AutoConfigEventMessageServiceNoAuthDecorator;
@@ -9,7 +10,6 @@ import com.prosilion.superconductor.autoconfigure.base.web.event.EventApiNoAuthU
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
-import com.prosilion.superconductor.base.service.event.auth.EventKindsNoAuthCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;

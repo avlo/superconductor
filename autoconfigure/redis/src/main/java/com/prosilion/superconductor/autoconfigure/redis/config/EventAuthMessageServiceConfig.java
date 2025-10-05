@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.redis.config;
 
-import com.prosilion.superconductor.base.service.event.auth.EventKindsAuth;
-import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthCondition;
+import com.prosilion.superconductor.autoconfigure.base.EventKindsAuthCondition;
+import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
 import com.prosilion.superconductor.base.service.event.service.AuthKindPersistantServiceIF;
 import com.prosilion.superconductor.lib.redis.entity.AuthNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.repository.auth.AuthNosqlEntityRepository;
@@ -27,11 +27,11 @@ public class EventAuthMessageServiceConfig {
   }
 
   @Bean
-  @ConditionalOnBean(EventKindsAuth.class)
+  @ConditionalOnBean(EventKindsAuthIF.class)
   @ConditionalOnMissingBean
   AuthKindPersistantServiceIF<AuthNosqlEntityIF, AuthNosqlEntityIF> authKindNosqlEntityServiceIF(
       @NonNull AuthNosqlEntityServiceIF authPersistantServiceIF,
-      @NonNull EventKindsAuth eventKindsAuth) {
-    return new AuthKindNosqlEntityService(authPersistantServiceIF, eventKindsAuth);
+      @NonNull EventKindsAuthIF eventKindsAuthIF) {
+    return new AuthKindNosqlEntityService(authPersistantServiceIF, eventKindsAuthIF);
   }
 }

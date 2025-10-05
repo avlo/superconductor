@@ -38,9 +38,9 @@ public class EventMessageKindsAuthConfig {
   @ConditionalOnMissingBean
   <T, U extends AuthPersistantIF> AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageServiceIF,
-      @NonNull AuthKindPersistantServiceIF<T, U> authKindNoSqlEntityServiceIF) {
+      @NonNull AuthKindPersistantServiceIF<T, U> authKindPersistantServiceIF) {
     log.debug("{} loading REDIS AutoConfigEventMessageServiceAuthDecorator bean (EVENT+Kind AUTH)", getClass().getSimpleName());
-    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindNoSqlEntityServiceIF);
+    return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindPersistantServiceIF);
   }
 
   @Bean

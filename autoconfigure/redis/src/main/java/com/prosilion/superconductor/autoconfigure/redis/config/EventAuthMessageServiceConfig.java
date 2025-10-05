@@ -7,7 +7,6 @@ import com.prosilion.superconductor.lib.redis.entity.AuthNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.repository.auth.AuthNosqlEntityRepository;
 import com.prosilion.superconductor.lib.redis.service.auth.AuthKindNosqlEntityService;
 import com.prosilion.superconductor.lib.redis.service.auth.AuthNosqlEntityService;
-import com.prosilion.superconductor.lib.redis.service.auth.AuthNosqlEntityServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -21,17 +20,13 @@ import org.springframework.lang.NonNull;
 @Conditional(EventKindsAuthCondition.class)
 public class EventAuthMessageServiceConfig {
   @Bean
-  @ConditionalOnMissingBean
-  AuthNosqlEntityServiceIF authPersistantServiceIF(@NonNull AuthNosqlEntityRepository authNosqlEntityRepository) {
-    return new AuthNosqlEntityService(authNosqlEntityRepository);
-  }
-
-  @Bean
   @ConditionalOnBean(EventKindsAuthIF.class)
   @ConditionalOnMissingBean
   AuthKindPersistantServiceIF<AuthNosqlEntityIF, AuthNosqlEntityIF> authKindNosqlEntityServiceIF(
-      @NonNull AuthNosqlEntityServiceIF authPersistantServiceIF,
+      @NonNull AuthNosqlEntityRepository authNosqlEntityRepository,
       @NonNull EventKindsAuthIF eventKindsAuthIF) {
-    return new AuthKindNosqlEntityService(authPersistantServiceIF, eventKindsAuthIF);
+    return new AuthKindNosqlEntityService(
+        new AuthNosqlEntityService(authNosqlEntityRepository),
+        eventKindsAuthIF);
   }
 }

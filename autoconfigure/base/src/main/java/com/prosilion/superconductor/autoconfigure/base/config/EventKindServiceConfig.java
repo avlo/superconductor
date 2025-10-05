@@ -74,11 +74,4 @@ public class EventKindServiceConfig {
             eventPlugin),
         new DeleteEventPlugin(cacheServiceIF));
   }
-
-  @Bean
-  @Conditional(EventKindsAuthCondition.class)
-  @ConditionalOnMissingBean
-  EventKindsAuth authEventKinds(@Value("#{'${superconductor.auth.event.kinds}'.split(',')}") List<String> eventAuthenticationKinds) {
-    return new EventKindsAuth(eventAuthenticationKinds.stream().map(Kind::valueOf).toList());
-  }
 }

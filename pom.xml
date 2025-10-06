@@ -37,7 +37,7 @@
   <properties>
     <java.version>21</java.version>
     <project.version>1.17.1</project.version>
-    <spring-boot.version>3.5.1</spring-boot.version>
+    <spring-boot.version>3.5.6</spring-boot.version>
     <nostr-java-core.version>1.0.0</nostr-java-core.version>
 
     <awaitility.version>4.2.0</awaitility.version>

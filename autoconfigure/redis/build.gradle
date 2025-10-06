@@ -8,6 +8,6 @@ dependencies {
     
     annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure'
     
-    api('org.springframework.boot:spring-boot-starter-data-redis-reactive:3.5.1')
-    annotationProcessor('org.springframework.boot:spring-boot-starter-data-redis-reactive:3.5.1')
+    api('org.springframework.boot:spring-boot-starter-data-redis-reactive:3.5.6')
+    annotationProcessor('org.springframework.boot:spring-boot-starter-data-redis-reactive:3.5.6')
 }

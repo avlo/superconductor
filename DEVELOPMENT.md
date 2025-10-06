@@ -21,7 +21,7 @@
   
   #### Implementation dependencies (auto-imported):
   - [nostr-java-core](https://github.com/avlo/nostr-java-core) (nostr events & tags, event messages, request messages & filters)
-  - Spring [Boot](https://spring.io/projects/spring-boot) 3.5.1
+  - Spring [Boot](https://spring.io/projects/spring-boot) 3.5.6
   - Spring [WebSocketSession](https://docs.spring.io/spring-session/reference/guides/boot-websocket.html)
   - Spring [WebFlux](https://docs.spring.io/spring-framework/reference/web/webflux.html) Reactive Web-Socket Client
   #### Test dependencies (auto-imported):

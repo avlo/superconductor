@@ -1,27 +1,23 @@
+# multiple docker instances using this yml file require lines suffixed with -UNIQUE_NAME to be uniquely named between instances
 services:
-  superconductor-db:
-    container_name: superconductor-db-redis-prod_ws
+  superconductor-db-redis-prod-wss-UNIQUE_NAME:
+    container_name: superconductor-db-redis-prod-wss-UNIQUE_NAME
     image: "redis:8.0.0"
-    hostname: redis
+    hostname: superconductor-db-redis-prod-wss-UNIQUE_NAME
     ports:
-      - "6379:6379"
+      - "6379:6379" # first port number must be unique
     environment:
-      SPRING_DATA_REDIS_USERNAME: produser
-      SPRING_DATA_REDIS_PASSWORD: produserpass
-#      - "REDIS_ARGS=--appendonly yes"
-  superconductor-app:
-    container_name: superconductor-app-redis-prod_ws
-    image: avlo/superconductor-app-redis:1.17.1
+      - "REDIS_ARGS=--appendonly yes"
+  superconductor-app-redis-prod-wss-UNIQUE_NAME:
+    container_name: superconductor-app-redis-prod-wss-UNIQUE_NAME
+    image: superconductor-app-redis:1.17.1
     ports:
-      - "5555:5555"
+      - "5555:5555" # first port number must be unique
+      - "443:443" # first port number must be unique
     links:
-      - superconductor-db
+      - superconductor-db-redis-prod-wss-UNIQUE_NAME
     environment:
-      SPRING_PROFILES_ACTIVE: prod_ws
-      SUPERCONDUCTOR_KEY_PRIVATE: fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac
-      SUPERCONDUCTOR_KEY_PUBLIC: e04e1c1c30df6058433f61681644fd24914f2e02e420496086c61f53eb504c04
-      SUPERCONDUCTOR_RELAY_URL: ws://localhost:5555
-#      server.port: 5555
+      SPRING_PROFILES_ACTIVE: prod_wss
 volumes:
-  superconductor-db:
+  superconductor-db-redis-prod-wss-UNIQUE_NAME:
     driver: local

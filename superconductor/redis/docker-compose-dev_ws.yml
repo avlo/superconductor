@@ -1,4 +1,8 @@
-# multiple docker instances using this yml file require lines suffixed with -UNIQUE_NAME to be uniquely named between instances
+### multiple varying docker instances are possible using this file/template, via:
+##    1. copy this file to docker-compose-<custom_name>.yml
+##    2. in newly copied file, search/replace '-UNIQUE_NAME' with '-whatever_you_like'
+##    3. start custom docker instance via command:
+##         docker compose -f superconductor/redis/docker-compose-<custom_name>.yml up
 services:
   superconductor-db-redis-dev-ws-UNIQUE_NAME:
     container_name: superconductor-db-redis-dev-ws-UNIQUE_NAME

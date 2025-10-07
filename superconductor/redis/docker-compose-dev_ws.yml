@@ -5,7 +5,7 @@ services:
     image: "redis:8.0.0"
     hostname: superconductor-db-redis-dev-ws-UNIQUE_NAME
     ports:
-      - "6379:6379" # first port number must be unique
+      - "6379:6379" # first port number must be unique, second number is (SPRING_DATA_REDIS_PORT) container default, changeable below
     environment:
       - "REDIS_ARGS=--appendonly yes"
     networks:
@@ -14,7 +14,7 @@ services:
     container_name: superconductor-app-redis-dev-ws-UNIQUE_NAME
     image: superconductor-app-redis:1.17.1
     ports:
-      - "5555:5555" # first port number must be unique
+      - "5555:5555" # first port number must be unique, second number is container (SUPERCONDUCTOR_RELAY_URL & SERVER_PORT) default, changeable below
     depends_on:
       - superconductor-db-redis-dev-ws-UNIQUE_NAME
     networks:
@@ -22,7 +22,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev_ws
       SPRING_DATA_REDIS_HOST: superconductor-db-redis-dev-ws-UNIQUE_NAME
-      SPRING_DATA_REDIS_PORT: 6379
+#      SPRING_DATA_REDIS_PORT: 6379  # if container port other than 6379 is desired 
+#      SUPERCONDUCTOR_RELAY_URL: "ws://localhost:5555"  # if container relay URL other than ws://localhost:5555 is desired
+#      SERVER_PORT: 5555  # if server port other than 5555 is desired
 volumes:
   superconductor-db-redis-dev-ws-UNIQUE_NAME:
     driver: local

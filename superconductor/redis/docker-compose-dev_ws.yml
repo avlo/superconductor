@@ -21,6 +21,10 @@ services:
       - superconductor_app_net
     environment:
       SPRING_PROFILES_ACTIVE: dev_ws
+      SPRING_DATA_REDIS_HOST: superconductor-db-redis-dev-ws-UNIQUE_NAME
+      SPRING_DATA_REDIS_PORT: 6379
+      SUPERCONDUCTOR_RELAY_URL: "ws://localhost:5555"
+      SERVER_PORT: 5555
 volumes:
   superconductor-db-redis-dev-ws-UNIQUE_NAME:
     driver: local

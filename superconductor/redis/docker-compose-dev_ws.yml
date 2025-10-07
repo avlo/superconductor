@@ -8,15 +8,22 @@ services:
       - "6379:6379" # first port number must be unique
     environment:
       - "REDIS_ARGS=--appendonly yes"
+    networks:
+      - superconductor_app_net
   superconductor-app-redis-dev-ws-UNIQUE_NAME:
     container_name: superconductor-app-redis-dev-ws-UNIQUE_NAME
     image: superconductor-app-redis:1.17.1
     ports:
       - "5555:5555" # first port number must be unique
-    links:
+    depends_on:
       - superconductor-db-redis-dev-ws-UNIQUE_NAME
+    networks:
+      - superconductor_app_net
     environment:
       SPRING_PROFILES_ACTIVE: dev_ws
 volumes:
   superconductor-db-redis-dev-ws-UNIQUE_NAME:
     driver: local
+networks:
+  superconductor_app_net:
+    driver: bridge

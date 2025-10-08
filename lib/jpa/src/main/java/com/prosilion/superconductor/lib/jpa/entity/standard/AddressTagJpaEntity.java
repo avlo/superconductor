@@ -36,7 +36,7 @@ public class AddressTagJpaEntity extends AbstractTagJpaEntity {
     this.kind = addressTag.getKind().getValue();
     this.pubKey = addressTag.getPublicKey().toHexString();
     Optional.ofNullable(addressTag.getIdentifierTag()).ifPresent(uuid -> this.uuid = uuid.getUuid());
-    Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.relayUri = relay.getUri().toString());
+    Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.relayUri = relay.getUrl());
   }
 
   @Override

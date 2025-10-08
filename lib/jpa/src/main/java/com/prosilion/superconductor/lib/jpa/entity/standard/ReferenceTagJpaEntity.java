@@ -24,7 +24,7 @@ public class ReferenceTagJpaEntity extends AbstractTagJpaEntity {
 
   public ReferenceTagJpaEntity(@NonNull ReferenceTag referenceTag) {
     super("r");
-    this.uri = referenceTag.getUri().toString();
+    this.uri = referenceTag.getUrl();
   }
 
   @Override

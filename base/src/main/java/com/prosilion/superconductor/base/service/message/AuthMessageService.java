@@ -83,6 +83,6 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
     return Filterable.getTypeSpecificTagsStream(RelayTag.class, authMessage.getEvent())
         .findFirst()
         .map(RelayTag::getRelay).orElseThrow()
-        .getUri().toString();
+        .getUrl();
   }
 }

@@ -2,7 +2,7 @@ package com.prosilion.superconductor.sqlite;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeDefinitionEvent;
+import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
@@ -51,7 +51,7 @@ public class BadgeAwardDownvoteEventMessageIT {
   @Autowired
   BadgeAwardDownvoteEventMessageIT(
       @NonNull NostrRelayService nostrRelayService,
-      @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeDefinitionEvent downvoteBadgeDefinitionEvent,
+      @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeAwardDefinitionEvent downvoteBadgeDefinitionEvent,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;

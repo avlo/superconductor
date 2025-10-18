@@ -1,14 +1,14 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
-import com.prosilion.nostr.event.BadgeDefinitionEvent;
+import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
-import java.security.NoSuchAlgorithmException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,24 +39,24 @@ public class BadgeDefinitionConfig {
   }
 
   @Bean
-  BadgeDefinitionEvent upvoteBadgeDefinitionEvent(
+  BadgeAwardDefinitionEvent upvoteBadgeDefinitionEvent(
       @NonNull Identity superconductorInstanceIdentity,
-      @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
-    return new BadgeDefinitionEvent(
+      @NonNull String superconductorRelayUrl) {
+    return new BadgeAwardDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(UNIT_UPVOTE),
         new ReferenceTag(superconductorRelayUrl),
-        "SC UNIT_UPVOTE");
+        new PubKeyTag(superconductorInstanceIdentity.getPublicKey()));
   }
 
   @Bean
-  BadgeDefinitionEvent downvoteBadgeDefinitionEvent(
+  BadgeAwardDefinitionEvent downvoteBadgeDefinitionEvent(
       @NonNull Identity superconductorInstanceIdentity,
-      @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
-    return new BadgeDefinitionEvent(
+      @NonNull String superconductorRelayUrl) {
+    return new BadgeAwardDefinitionEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(UNIT_DOWNVOTE),
         new ReferenceTag(superconductorRelayUrl),
-        "SC UNIT_DOWNVOTE");
+        new PubKeyTag(superconductorInstanceIdentity.getPublicKey()));
   }
 }

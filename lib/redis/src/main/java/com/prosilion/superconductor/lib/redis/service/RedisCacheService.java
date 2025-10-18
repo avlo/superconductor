@@ -3,6 +3,7 @@ package com.prosilion.superconductor.lib.redis.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.DeletionEventIF;
@@ -55,6 +56,14 @@ public class RedisCacheService implements RedisCacheServiceIF {
       @NonNull PublicKey publicKey,
       @NonNull AddressTag addressTag) {
     return eventNosqlEntityService.getEventsByKindAndPubKeyTagAndAddressTag(kind, publicKey, addressTag);
+  }
+
+  @Override
+  public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndExternalIdentityTag(
+      @NonNull Kind kind,
+      @NonNull PublicKey publicKey,
+      @NonNull ExternalIdentityTag externalIdentityTag) {
+    return eventNosqlEntityService.getEventsByKindAndPubKeyTagAndExternalIdentityTag(kind, publicKey, externalIdentityTag);
   }
 
   @Override

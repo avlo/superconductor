@@ -1,10 +1,11 @@
 package com.prosilion.superconductor.redis;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeDefinitionEvent;
+import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.config.BadgeDefinitionConfig;
@@ -46,14 +47,15 @@ public class BadgeAwardUpvoteEventMessageAuthIT {
       @Value("${superconductor.relay.url}") String relayUri) throws NostrException, NoSuchAlgorithmException {
 
     this.nostrRelayService = new NostrRelayServiceRedis(relayUri);
+    Identity authorIdentity = Identity.generateRandomIdentity();
     this.event = new BadgeAwardUpvoteRedisEvent(
-        Identity.generateRandomIdentity(),
+        authorIdentity,
         Identity.generateRandomIdentity().getPublicKey(),
-        new BadgeDefinitionEvent(
+        new BadgeAwardDefinitionEvent(
             superconductorInstanceIdentity,
             new IdentifierTag(BadgeDefinitionConfig.UNIT_UPVOTE),
             new ReferenceTag(relayUri),
-            "1"));
+            new PubKeyTag(authorIdentity.getPublicKey())));
   }
 
   @Test

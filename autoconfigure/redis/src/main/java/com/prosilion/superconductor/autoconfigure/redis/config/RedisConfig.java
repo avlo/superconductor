@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.redis.config;
 
-import com.prosilion.nostr.event.BadgeDefinitionEvent;
+import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
@@ -80,8 +80,8 @@ public class RedisConfig {
   @ConditionalOnMissingBean
   DataLoaderRedisIF dataLoaderRedis(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
-      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
-      @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeDefinitionEvent downvoteBadgeDefinitionEvent) {
+      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeAwardDefinitionEvent upvoteBadgeDefinitionEvent,
+      @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeAwardDefinitionEvent downvoteBadgeDefinitionEvent) {
     return new DataLoaderRedis(eventPlugin, upvoteBadgeDefinitionEvent, downvoteBadgeDefinitionEvent);
   }
 }

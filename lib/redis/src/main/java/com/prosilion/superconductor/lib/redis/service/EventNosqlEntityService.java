@@ -4,6 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
@@ -91,6 +92,27 @@ public class EventNosqlEntityService {
                 .filter(AddressTag.class::isInstance)
                 .map(AddressTag.class::cast)
                 .collect(Collectors.toSet()).contains(addressTag))
+        .filter(eventNosqlEntityIF ->
+            eventNosqlEntityIF.getTags().stream()
+                .filter(PubKeyTag.class::isInstance)
+                .map(PubKeyTag.class::cast)
+                .map(PubKeyTag::getPublicKey)
+                .collect(Collectors.toSet()).contains(publicKey))
+        .toList();
+  }
+
+  public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndExternalIdentityTag(
+      @NonNull Kind kind,
+      @NonNull PublicKey publicKey,
+      @NonNull ExternalIdentityTag externalIdentityTag) {
+    return eventNosqlEntityRepository.findByKind(
+            kind.getValue()).stream()
+        .map(this::revertInterceptor)
+        .filter(eventNosqlEntityIF ->
+            eventNosqlEntityIF.getTags().stream()
+                .filter(ExternalIdentityTag.class::isInstance)
+                .map(ExternalIdentityTag.class::cast)
+                .collect(Collectors.toSet()).contains(externalIdentityTag))
         .filter(eventNosqlEntityIF ->
             eventNosqlEntityIF.getTags().stream()
                 .filter(PubKeyTag.class::isInstance)

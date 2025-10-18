@@ -1,33 +1,27 @@
 package com.prosilion.superconductor.sqlite.util;
 
-import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.enums.KindTypeIF;
 import com.prosilion.nostr.event.AbstractBadgeAwardEvent;
 import com.prosilion.nostr.event.BadgeDefinitionEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import org.springframework.lang.NonNull;
 
-public class BadgeAwardDownvoteEvent extends AbstractBadgeAwardEvent<KindTypeIF> {
+public class BadgeAwardDownvoteEvent extends AbstractBadgeAwardEvent {
   public BadgeAwardDownvoteEvent(
       @NonNull Identity identity,
       @NonNull PublicKey downvotedUser,
-      @NonNull BadgeDefinitionEvent downvoteBadgeDefinitionEvent) throws NostrException, NoSuchAlgorithmException {
-    super(SuperconductorKindType.UNIT_DOWNVOTE, identity,
-        new Vote(downvotedUser, downvoteBadgeDefinitionEvent).getAwardEvent(),
-        downvoteBadgeDefinitionEvent.getContent());
+      @NonNull BadgeDefinitionEvent downvoteBadgeDefinitionEvent) {
+    this(identity, downvotedUser, downvoteBadgeDefinitionEvent, List.of());
   }
 
   public BadgeAwardDownvoteEvent(
       @NonNull Identity identity,
       @NonNull PublicKey downvotedUser,
       @NonNull BadgeDefinitionEvent downvoteBadgeDefinitionEvent,
-      @NonNull List<BaseTag> tags) throws NostrException, NoSuchAlgorithmException {
-    super(SuperconductorKindType.UNIT_DOWNVOTE, identity,
+      @NonNull List<BaseTag> tags) {
+    super(identity,
         new Vote(
             downvotedUser,
             downvoteBadgeDefinitionEvent).getAwardEvent(),

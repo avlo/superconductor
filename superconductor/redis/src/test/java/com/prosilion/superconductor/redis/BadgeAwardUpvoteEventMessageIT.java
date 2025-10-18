@@ -17,7 +17,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
+import com.prosilion.superconductor.autoconfigure.base.config.BadgeDefinitionConfig;
 import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEvent;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
@@ -91,7 +91,7 @@ public class BadgeAwardUpvoteEventMessageIT {
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
                             new IdentifierTag(
-                                SuperconductorKindType.UNIT_UPVOTE.getName())))))));
+                                BadgeDefinitionConfig.UNIT_UPVOTE)))))));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -102,7 +102,7 @@ public class BadgeAwardUpvoteEventMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(SuperconductorKindType.UNIT_UPVOTE.getName(), addressTag.getIdentifierTag().getUuid());
+    assertEquals(BadgeDefinitionConfig.UNIT_UPVOTE, addressTag.getIdentifierTag().getUuid());
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {

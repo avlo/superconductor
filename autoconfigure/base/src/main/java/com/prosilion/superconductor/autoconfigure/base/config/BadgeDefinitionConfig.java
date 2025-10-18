@@ -8,7 +8,6 @@ import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
-import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
 import java.security.NoSuchAlgorithmException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -18,6 +17,8 @@ import org.springframework.lang.NonNull;
 
 @AutoConfiguration
 public class BadgeDefinitionConfig {
+  public static final String UNIT_UPVOTE = "UNIT_UPVOTE";
+  public static final String UNIT_DOWNVOTE = "UNIT_DOWNVOTE";
 
   @Bean
   @ConditionalOnMissingBean
@@ -43,9 +44,9 @@ public class BadgeDefinitionConfig {
       @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
-        new IdentifierTag(SuperconductorKindType.UNIT_UPVOTE.getName()),
+        new IdentifierTag(UNIT_UPVOTE),
         new ReferenceTag(superconductorRelayUrl),
-        "1");
+        "SC UNIT_UPVOTE");
   }
 
   @Bean
@@ -54,8 +55,8 @@ public class BadgeDefinitionConfig {
       @NonNull String superconductorRelayUrl) throws NoSuchAlgorithmException {
     return new BadgeDefinitionEvent(
         superconductorInstanceIdentity,
-        new IdentifierTag(SuperconductorKindType.UNIT_DOWNVOTE.getName()),
+        new IdentifierTag(UNIT_DOWNVOTE),
         new ReferenceTag(superconductorRelayUrl),
-        "-1");
+        "SC UNIT_DOWNVOTE");
   }
 }

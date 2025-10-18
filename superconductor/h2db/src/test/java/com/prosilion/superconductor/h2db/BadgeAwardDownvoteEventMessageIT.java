@@ -17,7 +17,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
+import com.prosilion.superconductor.autoconfigure.base.config.BadgeDefinitionConfig;
 import com.prosilion.superconductor.h2db.util.BadgeAwardDownvoteEvent;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
@@ -90,7 +90,7 @@ public class BadgeAwardDownvoteEventMessageIT {
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
                             new IdentifierTag(
-                                SuperconductorKindType.UNIT_DOWNVOTE.getName())))))));
+                                BadgeDefinitionConfig.UNIT_DOWNVOTE)))))));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -101,7 +101,7 @@ public class BadgeAwardDownvoteEventMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(SuperconductorKindType.UNIT_DOWNVOTE.getName(), Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow().getUuid());
+    assertEquals(BadgeDefinitionConfig.UNIT_DOWNVOTE, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow().getUuid());
 
     nostrRelayService.disconnect();
   }

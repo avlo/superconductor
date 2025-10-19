@@ -56,7 +56,7 @@
 //  @Autowired
 //  BadgeAwardUpvoteEventMessageIT(
 //      @NonNull NostrRelayService nostrRelayService,
-//      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeDefinitionEvent upvoteBadgeDefinitionEvent,
+//      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionEvent badgeDefinitionUpvoteEvent,
 //      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException, NoSuchAlgorithmException {
 //    this.nostrRelayService = nostrRelayService;
 //    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
@@ -66,7 +66,7 @@
 //            new BadgeAwardUpvoteEvent(
 //                authorIdentity,
 //                upvotedUserPubKey,
-//                upvoteBadgeDefinitionEvent),
+//                badgeDefinitionUpvoteEvent),
 //            SuperconductorKindType.UPVOTE)
 //            .convertBaseEventToEventIF();
 //

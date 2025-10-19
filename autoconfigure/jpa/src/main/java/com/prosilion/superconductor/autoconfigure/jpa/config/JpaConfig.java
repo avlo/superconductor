@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.jpa.config;
 
-import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
+import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
@@ -86,8 +86,8 @@ public class JpaConfig {
   @ConditionalOnMissingBean
   DataLoaderJpaIF dataLoaderJpa(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
-      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeAwardDefinitionEvent upvoteBadgeDefinitionEvent,
-      @NonNull @Qualifier("downvoteBadgeDefinitionEvent") BadgeAwardDefinitionEvent downvoteBadgeDefinitionEvent) {
-    return new DataLoaderJpa(eventPlugin, upvoteBadgeDefinitionEvent, downvoteBadgeDefinitionEvent);
+      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
+      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent) {
+    return new DataLoaderJpa(eventPlugin, badgeDefinitionUpvoteEvent, badgeDefinitionDownvoteEvent);
   }
 }

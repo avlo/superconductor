@@ -1,32 +1,32 @@
 package com.prosilion.superconductor.redis.util;
 
-import com.prosilion.nostr.event.AbstractBadgeAwardEvent;
-import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
+import com.prosilion.nostr.event.BadgeAwardAbstractEvent;
+import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import java.util.List;
 import org.springframework.lang.NonNull;
 
-public class BadgeAwardUpvoteRedisEvent extends AbstractBadgeAwardEvent {
+public class BadgeAwardUpvoteRedisEvent extends BadgeAwardAbstractEvent {
   public BadgeAwardUpvoteRedisEvent(
       @NonNull Identity authorIdentity,
       @NonNull PublicKey upvotedUser,
-      @NonNull BadgeAwardDefinitionEvent upvoteBadgeDefinitionEvent) {
-    this(authorIdentity, upvotedUser, upvoteBadgeDefinitionEvent, List.of());
+      @NonNull BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent) {
+    this(authorIdentity, upvotedUser, badgeDefinitionUpvoteEvent, List.of());
   }
 
   public BadgeAwardUpvoteRedisEvent(
       @NonNull Identity authorIdentity,
       @NonNull PublicKey upvotedUser,
-      @NonNull BadgeAwardDefinitionEvent upvoteBadgeDefinitionEvent,
+      @NonNull BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
       @NonNull List<BaseTag> tags) {
     super(
         authorIdentity,
         new Vote(
             upvotedUser,
-            upvoteBadgeDefinitionEvent).getAwardEvent(),
+            badgeDefinitionUpvoteEvent).getAwardEvent(),
         tags,
-        upvoteBadgeDefinitionEvent.getContent());
+        badgeDefinitionUpvoteEvent.getContent());
   }
 }

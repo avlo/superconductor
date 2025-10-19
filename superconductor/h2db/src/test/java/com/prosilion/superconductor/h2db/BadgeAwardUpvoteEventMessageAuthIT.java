@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.h2db;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
+import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.user.Identity;
@@ -37,12 +37,12 @@ public class BadgeAwardUpvoteEventMessageAuthIT {
   @Autowired
   BadgeAwardUpvoteEventMessageAuthIT(
       @NonNull NostrRelayService nostrRelayService,
-      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeAwardDefinitionEvent upvoteBadgeDefinitionEvent) throws NostrException, NoSuchAlgorithmException {
+      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent) throws NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
     this.event = new BadgeAwardUpvoteEvent(
         Identity.generateRandomIdentity(),
         Identity.generateRandomIdentity().getPublicKey(),
-        upvoteBadgeDefinitionEvent);
+        badgeDefinitionUpvoteEvent);
   }
 
   @Test

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.redis;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
+import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -51,7 +51,7 @@ public class BadgeAwardUpvoteEventMessageAuthIT {
     this.event = new BadgeAwardUpvoteRedisEvent(
         authorIdentity,
         Identity.generateRandomIdentity().getPublicKey(),
-        new BadgeAwardDefinitionEvent(
+        new BadgeDefinitionAwardEvent(
             superconductorInstanceIdentity,
             new IdentifierTag(BadgeDefinitionConfig.UNIT_UPVOTE),
             new ReferenceTag(relayUri),

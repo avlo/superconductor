@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
-import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
+import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
@@ -39,10 +39,10 @@ public class BadgeDefinitionConfig {
   }
 
   @Bean
-  BadgeAwardDefinitionEvent upvoteBadgeDefinitionEvent(
+  BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeAwardDefinitionEvent(
+    return new BadgeDefinitionAwardEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(UNIT_UPVOTE),
         new ReferenceTag(superconductorRelayUrl),
@@ -50,10 +50,10 @@ public class BadgeDefinitionConfig {
   }
 
   @Bean
-  BadgeAwardDefinitionEvent downvoteBadgeDefinitionEvent(
+  BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeAwardDefinitionEvent(
+    return new BadgeDefinitionAwardEvent(
         superconductorInstanceIdentity,
         new IdentifierTag(UNIT_DOWNVOTE),
         new ReferenceTag(superconductorRelayUrl),

@@ -1,7 +1,7 @@
 //package com.prosilion.superconductor.service.message.event.standard;
 //
 //import com.prosilion.nostr.enums.Type;
-//import com.prosilion.nostr.event.AbstractBadgeAwardEvent;
+//import com.prosilion.nostr.event.BadgeAwardAbstractEvent;
 //import com.prosilion.nostr.event.GenericEventKindIF;
 //import com.prosilion.nostr.message.EventMessage;
 //import com.prosilion.superconductor.base.clientresponse.service.ClientResponseService;

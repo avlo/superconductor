@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardDefinitionEvent;
+import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
@@ -52,7 +52,7 @@ public class BadgeAwardUpvoteEventMessageIT {
   @Autowired
   BadgeAwardUpvoteEventMessageIT(
       @NonNull NostrRelayServiceRedis nostrRelayService,
-      @NonNull @Qualifier("upvoteBadgeDefinitionEvent") BadgeAwardDefinitionEvent upvoteBadgeDefinitionEvent,
+      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
@@ -60,7 +60,7 @@ public class BadgeAwardUpvoteEventMessageIT {
     BadgeAwardUpvoteRedisEvent event = new BadgeAwardUpvoteRedisEvent(
         authorIdentity,
         upvotedUserPubKey,
-        upvoteBadgeDefinitionEvent);
+        badgeDefinitionUpvoteEvent);
     eventId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);

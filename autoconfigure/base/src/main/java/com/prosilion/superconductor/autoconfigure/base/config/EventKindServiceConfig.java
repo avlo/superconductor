@@ -30,14 +30,7 @@ public class EventKindServiceConfig {
     return new EventKindService(eventKindPlugins);
   }
 
-//  @Bean
-//  @ConditionalOnMissingBean
-//  EventKindTypeServiceIF eventKindTypeServiceIF(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) {
-//    return new EventKindTypeService(eventKindTypePlugins);
-//  }
-
   @Bean
-//  @ConditionalOnMissingBean
   EventKindPluginIF textNoteEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
@@ -50,17 +43,11 @@ public class EventKindServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  EventServiceIF eventService(
-      @NonNull @Qualifier("eventKindServiceIF") EventKindServiceIF eventKindService
-//      , @NonNull EventKindTypeServiceIF eventKindTypeService
-  ) {
-    return new EventService(eventKindService
-//        , eventKindTypeService
-    );
+  EventServiceIF eventService(@NonNull @Qualifier("eventKindServiceIF") EventKindServiceIF eventKindService) {
+    return new EventService(eventKindService);
   }
 
   @Bean
-//  @ConditionalOnMissingBean
   EventKindPluginIF deleteEventKindPlugin(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull CacheServiceIF cacheServiceIF) {

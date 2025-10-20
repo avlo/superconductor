@@ -2,8 +2,6 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
@@ -39,24 +37,12 @@ public class BadgeDefinitionConfig {
   }
 
   @Bean
-  BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent(
-      @NonNull Identity superconductorInstanceIdentity,
-      @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionAwardEvent(
-        superconductorInstanceIdentity,
-        new IdentifierTag(UNIT_UPVOTE),
-        new ReferenceTag(superconductorRelayUrl),
-        new PubKeyTag(superconductorInstanceIdentity.getPublicKey()));
+  BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent(@NonNull Identity superconductorInstanceIdentity) {
+    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_UPVOTE));
   }
 
   @Bean
-  BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent(
-      @NonNull Identity superconductorInstanceIdentity,
-      @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionAwardEvent(
-        superconductorInstanceIdentity,
-        new IdentifierTag(UNIT_DOWNVOTE),
-        new ReferenceTag(superconductorRelayUrl),
-        new PubKeyTag(superconductorInstanceIdentity.getPublicKey()));
+  BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent(@NonNull Identity superconductorInstanceIdentity) {
+    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_DOWNVOTE));
   }
 }

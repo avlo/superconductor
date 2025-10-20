@@ -18,7 +18,7 @@ public class Vote {
   public Vote(@NonNull PublicKey upvotedUser, @NonNull BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent) {
     AddressTag addressTag = new AddressTag(
         Kind.BADGE_DEFINITION_EVENT,
-        badgeDefinitionUpvoteEvent.getReferencePubkeyTag().getPublicKey(),
+        badgeDefinitionUpvoteEvent.getPublicKey(),
         badgeDefinitionUpvoteEvent.getIdentifierTag());
 
     awardEvent = new AwardEvent(addressTag, new PubKeyTag(upvotedUser));

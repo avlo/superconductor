@@ -5,8 +5,6 @@ import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.config.BadgeDefinitionConfig;
 import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEvent;
@@ -53,9 +51,7 @@ public class BadgeAwardUpvoteEventMessageAuthIT {
         Identity.generateRandomIdentity().getPublicKey(),
         new BadgeDefinitionAwardEvent(
             superconductorInstanceIdentity,
-            new IdentifierTag(BadgeDefinitionConfig.UNIT_UPVOTE),
-            new ReferenceTag(relayUri),
-            new PubKeyTag(authorIdentity.getPublicKey())));
+            new IdentifierTag(BadgeDefinitionConfig.UNIT_UPVOTE)));
   }
 
   @Test

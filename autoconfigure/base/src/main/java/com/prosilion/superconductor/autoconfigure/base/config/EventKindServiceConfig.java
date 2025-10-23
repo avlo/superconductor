@@ -6,7 +6,10 @@ import com.prosilion.superconductor.base.service.event.EventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindService;
 import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
+import com.prosilion.superconductor.base.service.event.service.EventKindTypeService;
+import com.prosilion.superconductor.base.service.event.service.EventKindTypeServiceIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
+import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.type.CanonicalEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.type.DeleteEventPlugin;
@@ -31,6 +34,13 @@ public class EventKindServiceConfig {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  EventKindTypeServiceIF eventKindTypeServiceIF(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) {
+    return new EventKindTypeService(eventKindTypePlugins);
+  }
+
+  @Bean
+//  @ConditionalOnMissingBean
   EventKindPluginIF textNoteEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
@@ -43,11 +53,14 @@ public class EventKindServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  EventServiceIF eventService(@NonNull @Qualifier("eventKindServiceIF") EventKindServiceIF eventKindService) {
-    return new EventService(eventKindService);
+  EventServiceIF eventService(
+      @NonNull @Qualifier("eventKindServiceIF") EventKindServiceIF eventKindService,
+      @NonNull EventKindTypeServiceIF eventKindTypeService) {
+    return new EventService(eventKindService, eventKindTypeService);
   }
 
   @Bean
+//  @ConditionalOnMissingBean
   EventKindPluginIF deleteEventKindPlugin(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull CacheServiceIF cacheServiceIF) {

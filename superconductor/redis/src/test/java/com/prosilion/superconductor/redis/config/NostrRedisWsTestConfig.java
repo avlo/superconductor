@@ -3,7 +3,7 @@ package com.prosilion.superconductor.redis.config;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.base.service.event.type.SuperconductorKindType;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.superconductor.base.service.request.NotifierService;
 import com.prosilion.superconductor.redis.util.BadgeAwardEventKindTypeRedisPlugin;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.lang.NonNull;
+
+import static com.prosilion.superconductor.redis.config.TestKindType.UNIT_DOWNVOTE;
 
 //@Lazy
 @Configuration
@@ -37,7 +39,7 @@ public class NostrRedisWsTestConfig {
     return new BadgeAwardEventKindTypeRedisPlugin(
         notifierService,
         new EventKindTypePlugin(
-            SuperconductorKindType.UNIT_UPVOTE,
+            TestKindType.UNIT_UPVOTE,
             eventPlugin));
   }
 
@@ -48,7 +50,7 @@ public class NostrRedisWsTestConfig {
     return new BadgeAwardEventKindTypeRedisPlugin(
         notifierService,
         new EventKindTypePlugin(
-            SuperconductorKindType.UNIT_DOWNVOTE,
+            UNIT_DOWNVOTE,
             eventPlugin));
   }
 }

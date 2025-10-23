@@ -1,4 +1,3 @@
-com.prosilion.superconductor.autoconfigure.base.config.BadgeDefinitionConfig
 com.prosilion.superconductor.autoconfigure.base.config.EventKindServiceConfig
 com.prosilion.superconductor.autoconfigure.base.config.EventMessageKindsAuthConfig
 com.prosilion.superconductor.autoconfigure.base.config.EventMessageServiceConfig

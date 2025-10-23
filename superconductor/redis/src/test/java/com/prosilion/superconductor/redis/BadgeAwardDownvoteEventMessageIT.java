@@ -17,7 +17,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.autoconfigure.base.config.BadgeDefinitionConfig;
+import com.prosilion.superconductor.redis.config.TestKindType;
 import com.prosilion.superconductor.redis.util.BadgeAwardDownvoteRedisEvent;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
@@ -33,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
+import static com.prosilion.superconductor.redis.config.TestKindType.UNIT_DOWNVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -90,7 +91,7 @@ public class BadgeAwardDownvoteEventMessageIT {
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
                             new IdentifierTag(
-                                BadgeDefinitionConfig.UNIT_DOWNVOTE)))))));
+                                TestKindType.UNIT_DOWNVOTE.getName())))))));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -101,7 +102,7 @@ public class BadgeAwardDownvoteEventMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(BadgeDefinitionConfig.UNIT_DOWNVOTE, addressTag.getIdentifierTag().getUuid());
+    assertEquals(UNIT_DOWNVOTE.getName(), addressTag.getIdentifierTag().getUuid());
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {

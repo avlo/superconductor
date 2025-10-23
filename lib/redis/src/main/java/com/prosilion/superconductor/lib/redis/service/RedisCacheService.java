@@ -3,8 +3,8 @@ package com.prosilion.superconductor.lib.redis.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.DeletionEventIF;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntityIF;
@@ -53,17 +53,22 @@ public class RedisCacheService implements RedisCacheServiceIF {
   @Override
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(
       @NonNull Kind kind,
-      @NonNull PublicKey publicKey,
+      @NonNull PublicKey referencePubKeyTag,
       @NonNull AddressTag addressTag) {
-    return eventNosqlEntityService.getEventsByKindAndPubKeyTagAndAddressTag(kind, publicKey, addressTag);
+    return eventNosqlEntityService.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag);
   }
 
   @Override
-  public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndExternalIdentityTag(
+  public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(
       @NonNull Kind kind,
-      @NonNull PublicKey publicKey,
-      @NonNull ExternalIdentityTag externalIdentityTag) {
-    return eventNosqlEntityService.getEventsByKindAndPubKeyTagAndExternalIdentityTag(kind, publicKey, externalIdentityTag);
+      @NonNull PublicKey referencePubKeyTag,
+      @NonNull IdentifierTag identifierTag) {
+    return eventNosqlEntityService.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencePubKeyTag, identifierTag);
+  }
+
+  @Override
+  public List<EventNosqlEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
+    return eventNosqlEntityService.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag);
   }
 
   @Override

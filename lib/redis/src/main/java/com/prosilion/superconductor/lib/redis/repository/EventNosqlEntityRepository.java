@@ -1,5 +1,7 @@
 package com.prosilion.superconductor.lib.redis.repository;
 
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import java.util.Collections;
@@ -25,6 +27,8 @@ public interface EventNosqlEntityRepository extends ListCrudRepository<EventNosq
 
   List<EventNosqlEntity> findByKind(@NonNull Integer kind, Sort sort);
 
+  List<EventNosqlEntity> findByKindAndPubKey(@NonNull Integer kind, @NonNull String pubKey, Sort sort);
+
   default @NonNull List<EventNosqlEntityIF> findAllCustom() {
     return Collections.unmodifiableList(findAll(DESC_SORT_CREATED_AT));
   }
@@ -32,12 +36,16 @@ public interface EventNosqlEntityRepository extends ListCrudRepository<EventNosq
   default @NonNull Optional<EventNosqlEntityIF> findByEventId(String eventId) {
     return Optional.of(findById(eventId).map(EventNosqlEntityIF.class::cast)).orElse(Optional.empty());
   }
-  
-  default @NonNull List<EventNosqlEntityIF> findByKind(@NonNull Integer kind) {
-    return Collections.unmodifiableList(findByKind(kind, DESC_SORT_CREATED_AT));
+
+  default @NonNull List<EventNosqlEntityIF> findByKind(@NonNull Kind kind) {
+    return Collections.unmodifiableList(findByKind(kind.getValue(), DESC_SORT_CREATED_AT));
   }
 
-  default @NonNull List<EventNosqlEntityIF> findByPubKey(@NonNull String pubKey) {
-    return Collections.unmodifiableList(findByPubKey(pubKey, DESC_SORT_CREATED_AT));
+  default @NonNull List<EventNosqlEntityIF> findByAuthorPublicKey(@NonNull PublicKey authorPublicKey) {
+    return Collections.unmodifiableList(findByPubKey(authorPublicKey.toHexString(), DESC_SORT_CREATED_AT));
+  }
+
+  default @NonNull List<EventNosqlEntityIF> findByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
+    return Collections.unmodifiableList(findByKindAndPubKey(kind.getValue(), authorPublicKey.toHexString(), DESC_SORT_CREATED_AT));
   }
 }

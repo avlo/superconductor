@@ -4,7 +4,6 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
@@ -46,79 +45,63 @@ public class EventNosqlEntityService {
   }
 
   public List<EventNosqlEntityIF> getEventsByKind(@NonNull Kind kind) {
-    return eventNosqlEntityRepository.findByKind(kind.getValue()).stream()
+    return eventNosqlEntityRepository.findByKind(kind).stream()
         .map(this::revertInterceptor)
         .toList();
   }
 
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(
       @NonNull Kind kind,
-      @NonNull PublicKey publicKey) {
-    return eventNosqlEntityRepository.findByKind(
-            kind.getValue()).stream()
-        .map(this::revertInterceptor)
+      @NonNull PublicKey referencedPublicKey) {
+    return getEventsByKind(kind).stream()
         .filter(eventNosqlEntityIF ->
             eventNosqlEntityIF.getTags().stream()
                 .filter(PubKeyTag.class::isInstance)
                 .map(PubKeyTag.class::cast)
                 .map(PubKeyTag::getPublicKey)
-                .collect(Collectors.toSet()).contains(publicKey))
+                .collect(Collectors.toSet()).contains(referencedPublicKey))
         .toList();
   }
 
   public List<EventNosqlEntityIF> getEventsByKindAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull IdentifierTag identifierTag) {
-    return eventNosqlEntityRepository.findByKind(
-            kind.getValue()).stream()
-        .map(this::revertInterceptor)
+    return getEventsByKind(kind).stream()
         .filter(eventNosqlEntityIF ->
-            eventNosqlEntityIF.getTags().stream()
-                .filter(IdentifierTag.class::isInstance)
-                .map(IdentifierTag.class::cast)
-                .collect(Collectors.toSet()).contains(identifierTag))
+            containsIdentifierTag(identifierTag, eventNosqlEntityIF))
         .toList();
   }
 
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(
       @NonNull Kind kind,
-      @NonNull PublicKey publicKey,
+      @NonNull PublicKey referencedPublicKey,
       @NonNull AddressTag addressTag) {
-    return eventNosqlEntityRepository.findByKind(
-            kind.getValue()).stream()
-        .map(this::revertInterceptor)
+    return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
         .filter(eventNosqlEntityIF ->
             eventNosqlEntityIF.getTags().stream()
                 .filter(AddressTag.class::isInstance)
                 .map(AddressTag.class::cast)
                 .collect(Collectors.toSet()).contains(addressTag))
-        .filter(eventNosqlEntityIF ->
-            eventNosqlEntityIF.getTags().stream()
-                .filter(PubKeyTag.class::isInstance)
-                .map(PubKeyTag.class::cast)
-                .map(PubKeyTag::getPublicKey)
-                .collect(Collectors.toSet()).contains(publicKey))
         .toList();
   }
 
-  public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndExternalIdentityTag(
+  public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(
       @NonNull Kind kind,
-      @NonNull PublicKey publicKey,
-      @NonNull ExternalIdentityTag externalIdentityTag) {
-    return eventNosqlEntityRepository.findByKind(
-            kind.getValue()).stream()
-        .map(this::revertInterceptor)
+      @NonNull PublicKey referencedPublicKey,
+      @NonNull IdentifierTag identifierTag) {
+    return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
         .filter(eventNosqlEntityIF ->
-            eventNosqlEntityIF.getTags().stream()
-                .filter(ExternalIdentityTag.class::isInstance)
-                .map(ExternalIdentityTag.class::cast)
-                .collect(Collectors.toSet()).contains(externalIdentityTag))
+            containsIdentifierTag(identifierTag, eventNosqlEntityIF))
+        .toList();
+  }
+
+  public List<EventNosqlEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
+      @NonNull Kind kind,
+      @NonNull PublicKey authorPublicKey,
+      @NonNull IdentifierTag identifierTag) {
+    return eventNosqlEntityRepository.findByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
         .filter(eventNosqlEntityIF ->
-            eventNosqlEntityIF.getTags().stream()
-                .filter(PubKeyTag.class::isInstance)
-                .map(PubKeyTag.class::cast)
-                .map(PubKeyTag::getPublicKey)
-                .collect(Collectors.toSet()).contains(publicKey))
+            containsIdentifierTag(identifierTag, eventNosqlEntityIF))
         .toList();
   }
 
@@ -137,6 +120,7 @@ public class EventNosqlEntityService {
   }
 
   //  TODO: functionalize below two methods into one
+
   private EventNosqlEntity processInterceptors(EventIF eventIF) {
     EventNosqlEntity entity = EventNosqlEntity.of(
         eventIF.getId(),
@@ -179,5 +163,12 @@ public class EventNosqlEntityService {
             .toList());
 
     return entity;
+  }
+
+  private static boolean containsIdentifierTag(IdentifierTag identifierTag, EventNosqlEntityIF eventNosqlEntityIF) {
+    return eventNosqlEntityIF.getTags().stream()
+        .filter(IdentifierTag.class::isInstance)
+        .map(IdentifierTag.class::cast)
+        .collect(Collectors.toSet()).contains(identifierTag);
   }
 }

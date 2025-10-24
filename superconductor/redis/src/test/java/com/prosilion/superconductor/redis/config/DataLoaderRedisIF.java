@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.autoconfigure.redis.config;
+package com.prosilion.superconductor.redis.config;
 
 import org.springframework.boot.CommandLineRunner;
 

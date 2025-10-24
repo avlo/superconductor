@@ -1,17 +1,17 @@
-package com.prosilion.superconductor.autoconfigure.redis.config;
+package com.prosilion.superconductor.h2db.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.lib.redis.dto.GenericNosqlEntityKindDto;
+import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 
-public class DataLoaderRedis implements DataLoaderRedisIF {
+public class DataLoaderJpa implements DataLoaderJpaIF {
   private final EventPluginIF eventPlugin;
   private final BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent;
   private final BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent;
 
-  public DataLoaderRedis(
+  public DataLoaderJpa(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
       @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent) {
@@ -23,8 +23,8 @@ public class DataLoaderRedis implements DataLoaderRedisIF {
   @Override
   public void run(String... args) {
     eventPlugin.processIncomingEvent(
-        new GenericNosqlEntityKindDto(badgeDefinitionUpvoteEvent).convertBaseEventToEventIF());
+        new GenericEventKindDto(badgeDefinitionUpvoteEvent).convertBaseEventToEventIF());
     eventPlugin.processIncomingEvent(
-        new GenericNosqlEntityKindDto(badgeDefinitionDownvoteEvent).convertBaseEventToEventIF());
+        new GenericEventKindDto(badgeDefinitionDownvoteEvent).convertBaseEventToEventIF());
   }
 }

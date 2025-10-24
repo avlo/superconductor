@@ -3,8 +3,6 @@ package com.prosilion.superconductor.sqlite.config;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.jpa.config.DataLoaderJpa;
-import com.prosilion.superconductor.autoconfigure.jpa.config.DataLoaderJpaIF;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

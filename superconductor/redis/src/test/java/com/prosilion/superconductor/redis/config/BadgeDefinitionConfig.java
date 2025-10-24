@@ -3,8 +3,6 @@ package com.prosilion.superconductor.redis.config;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.redis.config.DataLoaderRedis;
-import com.prosilion.superconductor.autoconfigure.redis.config.DataLoaderRedisIF;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

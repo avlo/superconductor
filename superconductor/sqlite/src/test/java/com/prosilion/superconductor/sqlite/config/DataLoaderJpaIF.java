@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.autoconfigure.jpa.config;
+package com.prosilion.superconductor.sqlite.config;
 
 import org.springframework.boot.CommandLineRunner;
 

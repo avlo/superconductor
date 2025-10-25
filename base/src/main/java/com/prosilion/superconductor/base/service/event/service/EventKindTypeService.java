@@ -9,20 +9,32 @@ import com.prosilion.superconductor.base.service.event.type.KindTypeIF;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
+@Slf4j
 public class EventKindTypeService implements EventKindTypeServiceIF {
   private final Map<Kind, Map<KindTypeIF, EventKindTypePluginIF>> eventKindTypePluginsMap;
+  private final EventKindTypePluginIF defaultEventKindTypePluginIF;
 
   public EventKindTypeService(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) {
-    eventKindTypePluginsMap = eventKindTypePlugins.stream()
+    this(eventKindTypePlugins, null);
+  }
+
+  public EventKindTypeService(
+      @NonNull List<EventKindTypePluginIF> eventKindTypePlugins,
+      @NonNull EventKindTypePluginIF defaultEventKindTypePluginIF) {
+    this.eventKindTypePluginsMap = eventKindTypePlugins.stream()
         .collect(Collectors.groupingBy(
             EventKindTypePluginIF::getKind,
             Collectors.toMap(
                 EventKindTypePluginIF::getKindType,
                 Function.identity())));
+    this.defaultEventKindTypePluginIF = defaultEventKindTypePluginIF;
   }
 
   @Override
@@ -62,9 +74,16 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
 
   private KindTypeIF getKindType(EventIF event) {
     return getKindTypes().stream().filter(kindTypeIF ->
-        kindTypeIF.getName().equals(Filterable.getTypeSpecificTagsStream(AddressTag.class, event)
-            .findFirst()
-            .map(AddressTag::getIdentifierTag).orElseThrow()
-            .getUuid())).findFirst().orElseThrow();
+            kindTypeIF.getName().equals(Filterable.getTypeSpecificTagsStream(AddressTag.class, event)
+                .findFirst()
+                .map(AddressTag::getIdentifierTag).orElseThrow()
+                .getUuid())).findFirst()
+        .orElse(getDefault());
+  }
+
+  private KindTypeIF getDefault() {
+    log.info("explicit KindType match not found, getting default KindType");
+    return Optional.ofNullable(defaultEventKindTypePluginIF.getKindType())
+        .orElseThrow(() -> new NoSuchElementException("No default KindType was specified"));
   }
 }

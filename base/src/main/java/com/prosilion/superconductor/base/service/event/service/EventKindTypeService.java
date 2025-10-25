@@ -73,17 +73,23 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
   }
 
   private KindTypeIF getKindType(EventIF event) {
-    return getKindTypes().stream().filter(kindTypeIF ->
-            kindTypeIF.getName().equals(Filterable.getTypeSpecificTagsStream(AddressTag.class, event)
+    return Optional.ofNullable(
+            getKindTypes().stream().filter(kindTypeIF ->
+                    kindTypeIF.getName().equals(
+                        Filterable.getTypeSpecificTagsStream(AddressTag.class, event)
+                            .findFirst()
+                            .map(AddressTag::getIdentifierTag).orElseThrow()
+                            .getUuid()))
                 .findFirst()
-                .map(AddressTag::getIdentifierTag).orElseThrow()
-                .getUuid())).findFirst()
-        .orElse(getDefault());
+                .orElse(
+                    getDefault().orElse(null)))
+        .orElseThrow(() -> new NoSuchElementException("No default KindType was specified"));
   }
 
-  private KindTypeIF getDefault() {
+  private Optional<KindTypeIF> getDefault() {
     log.info("explicit KindType match not found, getting default KindType");
-    return Optional.ofNullable(defaultEventKindTypePluginIF.getKindType())
-        .orElseThrow(() -> new NoSuchElementException("No default KindType was specified"));
+    return Optional
+        .ofNullable(defaultEventKindTypePluginIF)
+        .map(EventKindTypePluginIF::getKindType);
   }
 }

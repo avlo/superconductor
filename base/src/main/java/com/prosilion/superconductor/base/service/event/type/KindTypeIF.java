@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.prosilion.nostr.enums.Kind;
 import java.time.temporal.ValueRange;
 import java.util.Arrays;
-import java.util.Objects;
 
 public interface KindTypeIF {
   Kind getKind();
@@ -21,11 +20,11 @@ public interface KindTypeIF {
         new IllegalArgumentException(String.format("Kind must be between 0 and 65535 but was [%d]",
             kind.getValue()));
 
-    assert Objects.equals(kindDefinition, Kind.BADGE_DEFINITION_EVENT) :
-        new IllegalArgumentException(
-            String.format("Kind definition must be [%d], but was [%d]",
-                Kind.BADGE_DEFINITION_EVENT.getValue(),
-                kind.getValue()));
+//    assert Objects.equals(kindDefinition, Kind.BADGE_DEFINITION_EVENT) :
+//        new IllegalArgumentException(
+//            String.format("Kind definition must be [%d], but was [%d]",
+//                Kind.BADGE_DEFINITION_EVENT.getValue(),
+//                kind.getValue()));
 
     for (KindTypeIF k : getValues()) {
       if (k.getKind().equals(kind) && k.getKindDefinition().equals(kindDefinition) && k.getName().equals(name))

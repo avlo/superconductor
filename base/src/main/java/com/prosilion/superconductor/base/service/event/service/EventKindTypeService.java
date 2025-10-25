@@ -39,6 +39,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
 
   @Override
   public void processIncomingEvent(@NonNull EventIF event) {
+    KindTypeIF kindType = getKindType(event);
     processIncomingEvent(
         new GenericEventKindType(
             new GenericEventKind(
@@ -49,22 +50,25 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
                 event.getTags(),
                 event.getContent(),
                 event.getSignature()),
-            getKindType(event)));
+            kindType));
   }
 
   private void processIncomingEvent(@NonNull GenericEventKindTypeIF event) {
-    eventKindTypePluginsMap
-        .get(event.getKind())
-        .get(event.getKindType())
+    Map<KindTypeIF, EventKindTypePluginIF> kindTypeIFEventKindTypePluginIFMap = eventKindTypePluginsMap
+        .get(event.getKind());
+    EventKindTypePluginIF eventKindTypePluginIF = Optional.ofNullable(kindTypeIFEventKindTypePluginIFMap
+        .get(event.getKindType())).orElse(defaultEventKindTypePluginIF);
+    eventKindTypePluginIF
         .processIncomingEvent(event);
   }
 
   @Override
   public final List<KindTypeIF> getKindTypes() {
-    return eventKindTypePluginsMap.values().stream()
+    List<KindTypeIF> collect = eventKindTypePluginsMap.values().stream()
         .map(Map::keySet)
         .flatMap(Collection::stream)
         .collect(Collectors.toList());
+    return collect;
   }
 
   @Override
@@ -73,23 +77,25 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
   }
 
   private KindTypeIF getKindType(EventIF event) {
-    return Optional.ofNullable(
-            getKindTypes().stream().filter(kindTypeIF ->
-                    kindTypeIF.getName().equals(
-                        Filterable.getTypeSpecificTagsStream(AddressTag.class, event)
-                            .findFirst()
-                            .map(AddressTag::getIdentifierTag).orElseThrow()
-                            .getUuid()))
-                .findFirst()
-                .orElse(
-                    getDefault().orElse(null)))
-        .orElseThrow(() -> new NoSuchElementException("No default KindType was specified"));
+    Optional<KindTypeIF> first = getKindTypes().stream().filter(kindTypeIF ->
+            kindTypeIF.getName().equals(
+                Filterable.getTypeSpecificTagsStream(AddressTag.class, event)
+                    .findFirst()
+                    .map(AddressTag::getIdentifierTag).orElseThrow()
+                    .getUuid()))
+        .findFirst();
+
+    boolean present = first.isPresent();
+    KindTypeIF kindTypeIF = first.orElse(getDefault().orElse(null));
+    Optional<KindTypeIF> kindTypeIF1 = Optional.ofNullable(kindTypeIF);
+    return kindTypeIF1.orElseThrow(() -> new NoSuchElementException("No default KindType was specified"));
   }
 
   private Optional<KindTypeIF> getDefault() {
-    log.info("explicit KindType match not found, getting default KindType");
-    return Optional
+    Optional<KindTypeIF> kindTypeIF = Optional
         .ofNullable(defaultEventKindTypePluginIF)
         .map(EventKindTypePluginIF::getKindType);
+    kindTypeIF.ifPresent(kindTypeIF1 -> log.info("explicit KindType match not found, getting default KindType {}", kindTypeIF1));
+    return kindTypeIF;
   }
 }

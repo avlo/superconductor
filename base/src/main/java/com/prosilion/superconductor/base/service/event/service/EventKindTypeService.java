@@ -75,18 +75,20 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
   }
 
   private KindTypeIF getKindType(EventIF event) {
-    return Optional
-        .ofNullable(
-            getKindTypes().stream().filter(kindTypeIF2 ->
-                    kindTypeIF2.getName().equals(
-                        Filterable.getTypeSpecificTagsStream(AddressTag.class, event)
-                            .findFirst()
-                            .map(AddressTag::getIdentifierTag).orElseThrow()
-                            .getUuid()))
-                .findFirst()
-                .orElse(
-                    getDefault()
-                        .orElse(null))).orElseThrow(() -> new NoSuchElementException("No default KindType was specified"));
+    return
+//        TODO: doesn't work without using explicit null and .ofNullable(), needs cleanup
+        Optional.ofNullable(
+                getKindTypes().stream().filter(kindTypeIF2 ->
+                        kindTypeIF2.getName().equals(
+                            Filterable.getTypeSpecificTagsStream(AddressTag.class, event)
+                                .findFirst()
+                                .map(AddressTag::getIdentifierTag).orElseThrow()
+                                .getUuid()))
+                    .findFirst()
+                    .orElse(
+                        getDefault()
+                            .orElse(null)))
+            .orElseThrow(() -> new NoSuchElementException("No default KindType was specified"));
   }
 
   private Optional<KindTypeIF> getDefault() {

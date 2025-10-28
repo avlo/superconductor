@@ -10,6 +10,7 @@ import org.springframework.lang.NonNull;
 
 public interface CacheServiceIF<T, U extends EventIF> {
   T save(EventIF event);
+  T saveWithEventTags(EventIF event, List<EventIF> eventTagEvents);
   List<U> getAll();
   Optional<U> getEventByEventId(String eventId);
   List<U> getByKind(Kind kind);

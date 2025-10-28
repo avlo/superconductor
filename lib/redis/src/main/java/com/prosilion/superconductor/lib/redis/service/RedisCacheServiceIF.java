@@ -11,14 +11,9 @@ import java.util.List;
 
 public interface RedisCacheServiceIF extends CacheServiceIF<EventNosqlEntityIF, EventNosqlEntityIF> {
   List<DeletionEventNosqlEntityIF> getAllDeletionEvents();
-
   List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencedPubKeyTag);
-
   List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencedPubKeyTag, AddressTag addressTag);
-
   List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag);
-
   List<EventNosqlEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag);
-
   List<EventNosqlEntityIF> getEventsByKindAndIdentifierTag(Kind kind, IdentifierTag identifierTag);
 }

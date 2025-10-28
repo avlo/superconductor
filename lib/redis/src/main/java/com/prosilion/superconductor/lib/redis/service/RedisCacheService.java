@@ -2,14 +2,17 @@ package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.DeletionEventIF;
+import com.prosilion.superconductor.base.util.MissingMatchingEventException;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -74,6 +77,31 @@ public class RedisCacheService implements RedisCacheServiceIF {
   @Override
   public EventNosqlEntityIF save(@NonNull EventIF event) {
     return eventNosqlEntityService.saveEvent(event);
+  }
+
+  @Override
+  public EventNosqlEntityIF saveWithEventTags(
+      @NonNull EventIF event,
+      @NonNull List<EventIF> eventTagEvents) {
+    final List<String> eventTagIds = Filterable.getTypeSpecificTagsStream(EventTag.class, event)
+        .map(EventTag::getIdEvent).toList();
+    final List<String> eventTagEventIds = eventTagEvents.stream().map(EventIF::getId).toList();
+
+    List<String> nonMatchingEventTagIds = eventTagIds.stream()
+//        .filter(eventTagEventIds::contains)
+        .filter(eventTagId -> !eventTagEventIds.contains(eventTagId))
+        .toList();
+    assert Objects.equals(0, nonMatchingEventTagIds.size()) :
+        new MissingMatchingEventException(nonMatchingEventTagIds, true);
+
+    List<String> nonMatchingEventTagEventIds = eventTagEventIds.stream()
+        .filter(eventTagEventId -> !eventTagIds.contains(eventTagEventId))
+        .toList();
+    assert Objects.equals(0, nonMatchingEventTagEventIds.size()) :
+        new MissingMatchingEventException(nonMatchingEventTagEventIds, false);
+
+    eventTagEvents.forEach(this::save);
+    return save(event);
   }
 
   @Override

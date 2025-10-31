@@ -9,7 +9,7 @@ services:
       docker-network-sqlite-dev:
   superconductor-app:
     container_name: superconductor-app-sqlite-dev_ws
-    image: superconductor-app-sqlite:1.17.1
+    image: superconductor-app-sqlite:1.17.2
     ports:
       - "5555:5555"
     links:

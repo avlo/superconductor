@@ -10,7 +10,7 @@ services:
       - "REDIS_ARGS=--appendonly yes"
   superconductor-app-redis-prod-wss-UNIQUE_NAME:
     container_name: superconductor-app-redis-prod-wss-UNIQUE_NAME
-    image: superconductor-app-redis:1.17.1
+    image: superconductor-app-redis:1.17.2
     ports:
       - "5555:5555" # first port number must be unique
       - "443:443" # first port number must be unique

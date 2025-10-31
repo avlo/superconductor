@@ -44,7 +44,7 @@ publishing {
 
 dependencies {
     def springBootVersion = '3.5.6'
-    def nostrJavaCoreVersion = '1.0.0'
+    def nostrJavaCoreVersion = '1.1.0'
     def apacheCommonsLang3 = '3.17.0'
     def apacheCommonsLCollections4 = '4.5.0'
     def jacksonModuleAfterburner = '2.18.3'

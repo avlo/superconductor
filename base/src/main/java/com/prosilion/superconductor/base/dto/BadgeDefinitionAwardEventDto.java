@@ -21,7 +21,7 @@ public class BadgeDefinitionAwardEventDto {
 
   @Override
   public boolean equals(Object obj) {
-    if (!obj.getClass().getSuperclass().isAssignableFrom(BadgeDefinitionAwardEventDto.class))
+    if (!obj.getClass().isAssignableFrom(BadgeDefinitionAwardEventDto.class))
       return false;
 
     BadgeDefinitionAwardEventDto that = (BadgeDefinitionAwardEventDto) obj;

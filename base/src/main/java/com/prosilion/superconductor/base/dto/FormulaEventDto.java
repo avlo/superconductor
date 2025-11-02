@@ -39,12 +39,15 @@ public class FormulaEventDto extends ArbitraryCustomAppDataEventDto {
 
   @Override
   public boolean equals(Object obj) {
-    if (!obj.getClass().getSuperclass().isAssignableFrom(FormulaEventDto.class))
+    if (!obj.getClass().isAssignableFrom(FormulaEventDto.class))
       return false;
 
     FormulaEventDto that = (FormulaEventDto) obj;
     return
-        super.equals(that) &&
-            this.badgeDefinitionAwardEventDto.equals(that.badgeDefinitionAwardEventDto);
+        super.equals(that) 
+            &&
+        Objects.equals(
+          this.badgeDefinitionAwardEventDto,
+          that.badgeDefinitionAwardEventDto);
   }
 }

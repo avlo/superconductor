@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FormulaEventTest {
   public final static String UNIT_REPUTATION = "UNIT_REPUTATION";
@@ -58,12 +57,49 @@ public class FormulaEventTest {
 
     BadgeDefinitionAwardEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionAwardEvent(Identity.generateRandomIdentity(), upvoteIdentifierTag, PLUS_ONE_FORMULA);
     assertNotEquals(awardUpvoteEvent, awardUpvoteEventDifferentIdentity);
+    assertNotEquals(awardUpvoteEventDifferentIdentity, awardUpvoteEvent);
 
     BadgeDefinitionAwardEventDto badgeDefinitionAwardUpvoteEventDtoDifferentIdentity = new BadgeDefinitionAwardEventDto(awardUpvoteEventDifferentIdentity);
+
     assertNotEquals(badgeDefinitionAwardUpvoteEventDto, badgeDefinitionAwardUpvoteEventDtoDifferentIdentity);
+    assertNotEquals(badgeDefinitionAwardUpvoteEventDtoDifferentIdentity, badgeDefinitionAwardUpvoteEventDto);
 
     FormulaEventDto formulaEventUpvoteDtoDifferentIdentity = new FormulaEventDto(badgeDefinitionAwardUpvoteEventDtoDifferentIdentity);
     assertNotEquals(formulaEventUpvoteDto, formulaEventUpvoteDtoDifferentIdentity);
+    assertNotEquals(formulaEventUpvoteDtoDifferentIdentity, formulaEventUpvoteDto);
+
+    assertNotEquals(formulaEventUpvoteDto, badgeDefinitionAwardUpvoteEventDtoDifferentIdentity);
+  }
+
+  @Test
+  void formulaEventAssignable() throws ParseException {
+    assertEquals(formulaEventUpvoteDto, new FormulaEventDto(badgeDefinitionAwardUpvoteEventDto));
+  }
+
+  @Test
+  void testAssignable() {
+    BadgeDefinitionAwardEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionAwardEvent(Identity.generateRandomIdentity(), upvoteIdentifierTag, PLUS_ONE_FORMULA);
+    assertNotEquals(awardUpvoteEvent, awardUpvoteEventDifferentIdentity);
+    assertNotEquals(awardUpvoteEventDifferentIdentity, awardUpvoteEvent);
+
+    BadgeDefinitionAwardEventDto badgeDefinitionAwardUpvoteEventDtoDifferentIdentity = new BadgeDefinitionAwardEventDto(awardUpvoteEventDifferentIdentity);
+
+    assertNotEquals(formulaEventUpvoteDto, badgeDefinitionAwardUpvoteEventDtoDifferentIdentity);
+  }
+
+  @Test
+  void testDifferentContent() {
+    BadgeDefinitionAwardEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, "+2");
+    assertNotEquals(awardUpvoteEvent, awardUpvoteEventDifferentIdentity);
+  }
+
+  @Test
+  void testDifferentContentDto() throws ParseException {
+    BadgeDefinitionAwardEvent differentContentAwardEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, "+2");
+
+    BadgeDefinitionAwardEventDto differentContentDto = new BadgeDefinitionAwardEventDto(differentContentAwardEvent);
+
+    assertNotEquals(formulaEventUpvoteDto, new FormulaEventDto(differentContentDto));
   }
 
   @Test

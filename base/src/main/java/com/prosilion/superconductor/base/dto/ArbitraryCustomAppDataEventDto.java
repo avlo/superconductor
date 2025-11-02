@@ -2,6 +2,7 @@ package com.prosilion.superconductor.base.dto;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.tag.IdentifierTag;
+import java.util.Objects;
 import lombok.Getter;
 import org.springframework.lang.NonNull;
 
@@ -17,12 +18,17 @@ public class ArbitraryCustomAppDataEventDto {
 
   @Override
   public boolean equals(Object obj) {
-    if (!obj.getClass().getSuperclass().isAssignableFrom(ArbitraryCustomAppDataEventDto.class))
+    if (!obj.getClass().isAssignableFrom(ArbitraryCustomAppDataEventDto.class) && !obj.getClass().getSuperclass().isAssignableFrom(ArbitraryCustomAppDataEventDto.class)) 
       return false;
 
     ArbitraryCustomAppDataEventDto that = (ArbitraryCustomAppDataEventDto) obj;
     return
-        this.identifierTag.equals(that.identifierTag) &&
-            this.content.equals(that.content);
+        Objects.equals(
+            this.identifierTag,
+            that.identifierTag) 
+          &&
+        Objects.equals(
+            this.content,
+            that.content);
   }
 }

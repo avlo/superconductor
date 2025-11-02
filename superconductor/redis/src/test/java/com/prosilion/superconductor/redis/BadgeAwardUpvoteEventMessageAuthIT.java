@@ -7,7 +7,7 @@ import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.redis.config.TestKindType;
-import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEvent;
+import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEventDto;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 })
 public class BadgeAwardUpvoteEventMessageAuthIT {
   private final NostrRelayServiceRedis nostrRelayService;
-  private final BadgeAwardUpvoteRedisEvent event;
+  private final BadgeAwardUpvoteRedisEventDto event;
 
   @Autowired
   BadgeAwardUpvoteEventMessageAuthIT(
@@ -46,7 +46,7 @@ public class BadgeAwardUpvoteEventMessageAuthIT {
 
     this.nostrRelayService = new NostrRelayServiceRedis(relayUri);
     Identity authorIdentity = Identity.generateRandomIdentity();
-    this.event = new BadgeAwardUpvoteRedisEvent(
+    this.event = new BadgeAwardUpvoteRedisEventDto(
         authorIdentity,
         Identity.generateRandomIdentity().getPublicKey(),
         new BadgeDefinitionAwardEvent(

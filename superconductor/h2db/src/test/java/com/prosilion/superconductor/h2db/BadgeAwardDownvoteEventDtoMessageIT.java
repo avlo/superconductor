@@ -17,7 +17,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.h2db.util.BadgeAwardUpvoteEvent;
+import com.prosilion.superconductor.h2db.util.BadgeAwardDownvoteEventDto;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
 import java.io.IOException;
@@ -32,34 +32,34 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.h2db.util.TestKindType.UNIT_UPVOTE;
+import static com.prosilion.superconductor.h2db.util.TestKindType.UNIT_DOWNVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class BadgeAwardUpvoteEventMessageIT {
+public class BadgeAwardDownvoteEventDtoMessageIT {
   private final NostrRelayService nostrRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
-  private final PublicKey upvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
+  private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
   private final Identity superconductorInstanceIdentity;
 
   private final String eventId;
 
   @Autowired
-  BadgeAwardUpvoteEventMessageIT(
+  BadgeAwardDownvoteEventDtoMessageIT(
       @NonNull NostrRelayService nostrRelayService,
-      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
+      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    BadgeAwardUpvoteEvent event = new BadgeAwardUpvoteEvent(
+    BadgeAwardDownvoteEventDto event = new BadgeAwardDownvoteEventDto(
         authorIdentity,
-        upvotedUserPubKey,
-        badgeDefinitionUpvoteEvent);
+        downvotedUserPubKey,
+        badgeDefinitionDownvoteEvent);
     eventId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);
@@ -83,13 +83,13 @@ public class BadgeAwardUpvoteEventMessageIT {
                         Kind.BADGE_AWARD_EVENT),
                     new ReferencedPublicKeyFilter(
                         new PubKeyTag(
-                            upvotedUserPubKey)),
+                            downvotedUserPubKey)),
                     new AddressTagFilter(
                         new AddressTag(
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
                             new IdentifierTag(
-                                UNIT_UPVOTE.getName())))))));
+                                UNIT_DOWNVOTE.getName())))))));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -100,7 +100,7 @@ public class BadgeAwardUpvoteEventMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(UNIT_UPVOTE.getName(), Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow().getUuid());
+    assertEquals(UNIT_DOWNVOTE.getName(), Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow().getUuid());
 
     nostrRelayService.disconnect();
   }

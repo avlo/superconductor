@@ -5,7 +5,7 @@ import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.h2db.util.BadgeAwardUpvoteEvent;
+import com.prosilion.superconductor.h2db.util.BadgeAwardUpvoteEventDto;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -30,16 +30,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     "server.port=5556",
     "superconductor.relay.url=ws://localhost:5556"
 })
-public class BadgeAwardUpvoteEventMessageAuthIT {
+public class BadgeAwardUpvoteEventDtoMessageAuthIT {
   private final NostrRelayService nostrRelayService;
-  private final BadgeAwardUpvoteEvent event;
+  private final BadgeAwardUpvoteEventDto event;
 
   @Autowired
-  BadgeAwardUpvoteEventMessageAuthIT(
+  BadgeAwardUpvoteEventDtoMessageAuthIT(
       @NonNull NostrRelayService nostrRelayService,
       @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent) throws NostrException, NoSuchAlgorithmException {
     this.nostrRelayService = nostrRelayService;
-    this.event = new BadgeAwardUpvoteEvent(
+    this.event = new BadgeAwardUpvoteEventDto(
         Identity.generateRandomIdentity(),
         Identity.generateRandomIdentity().getPublicKey(),
         badgeDefinitionUpvoteEvent);

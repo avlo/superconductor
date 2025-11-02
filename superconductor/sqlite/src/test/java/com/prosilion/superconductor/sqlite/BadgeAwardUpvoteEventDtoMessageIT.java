@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.h2db;
+package com.prosilion.superconductor.sqlite;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
@@ -17,12 +17,11 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.h2db.util.BadgeAwardDownvoteEvent;
-import com.prosilion.superconductor.h2db.util.Factory;
-import com.prosilion.superconductor.h2db.util.NostrRelayService;
+import com.prosilion.superconductor.sqlite.util.BadgeAwardUpvoteEventDto;
+import com.prosilion.superconductor.sqlite.util.Factory;
+import com.prosilion.superconductor.sqlite.util.NostrRelayService;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,34 +31,34 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.h2db.util.TestKindType.UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.sqlite.config.TestKindType.UNIT_UPVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class BadgeAwardDownvoteEventMessageIT {
+public class BadgeAwardUpvoteEventDtoMessageIT {
   private final NostrRelayService nostrRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
-  private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
+  private final PublicKey upvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
   private final Identity superconductorInstanceIdentity;
 
   private final String eventId;
 
   @Autowired
-  BadgeAwardDownvoteEventMessageIT(
+  BadgeAwardUpvoteEventDtoMessageIT(
       @NonNull NostrRelayService nostrRelayService,
-      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent,
+      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    BadgeAwardDownvoteEvent event = new BadgeAwardDownvoteEvent(
+    BadgeAwardUpvoteEventDto event = new BadgeAwardUpvoteEventDto(
         authorIdentity,
-        downvotedUserPubKey,
-        badgeDefinitionDownvoteEvent);
+        upvotedUserPubKey,
+        badgeDefinitionUpvoteEvent);
     eventId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);
@@ -83,13 +82,13 @@ public class BadgeAwardDownvoteEventMessageIT {
                         Kind.BADGE_AWARD_EVENT),
                     new ReferencedPublicKeyFilter(
                         new PubKeyTag(
-                            downvotedUserPubKey)),
+                            upvotedUserPubKey)),
                     new AddressTagFilter(
                         new AddressTag(
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
                             new IdentifierTag(
-                                UNIT_DOWNVOTE.getName())))))));
+                                UNIT_UPVOTE.getName())))))));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -100,9 +99,7 @@ public class BadgeAwardDownvoteEventMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(UNIT_DOWNVOTE.getName(), Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow().getUuid());
-
-    nostrRelayService.disconnect();
+    assertEquals(UNIT_UPVOTE.getName(), addressTag.getIdentifierTag().getUuid());
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {

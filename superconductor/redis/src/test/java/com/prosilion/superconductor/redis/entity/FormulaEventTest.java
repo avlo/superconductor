@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FormulaEventTest {
   public final static String UNIT_REPUTATION = "UNIT_REPUTATION";
@@ -72,7 +73,20 @@ public class FormulaEventTest {
   }
 
   @Test
-  void formulaEventAssignable() throws ParseException {
+  void testBlankFormula() {
+    BadgeDefinitionAwardEvent blankFormulaAwardEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, "");
+
+    final BadgeDefinitionAwardEventDto badgeDefinitionAwardUpvoteEventDto = new BadgeDefinitionAwardEventDto(blankFormulaAwardEvent);
+
+    assertTrue(
+        assertThrows(
+            ParseException.class, () ->
+                new FormulaEventDto(badgeDefinitionAwardUpvoteEventDto))
+            .getMessage().contains("supplied formula is blank"));
+  }
+
+  @Test
+  void testFormulaEventAssignable() throws ParseException {
     assertEquals(formulaEventUpvoteDto, new FormulaEventDto(badgeDefinitionAwardUpvoteEventDto));
   }
 

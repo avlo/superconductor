@@ -1,6 +1,7 @@
 plugins {
     id 'java'
 //    id 'war'
+    id 'jacoco-report-aggregation'
     id 'java-library'
     id 'maven-publish'
     id 'org.springframework.boot'
@@ -136,7 +137,10 @@ tasks.named('integrationTest') {
 //check.dependsOn integrationNoOpTest
 //integrationNoOpTest.dependsOn integrationTest
 
-check.dependsOn integrationTest
+tasks.named('check') {
+    dependsOn tasks.named('integrationTest')
+    dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
+}
 
 tasks.bootJar {
     enabled = false

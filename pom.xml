@@ -12,26 +12,27 @@
 
   <modules>
     <module>autoconfigure/base</module>
-    <module>autoconfigure/h2db</module>
-    <module>autoconfigure/jpa</module>
-    <module>autoconfigure/mysql</module>
+    <!--    <module>autoconfigure/h2db</module>-->
+    <!--    <module>autoconfigure/jpa</module>-->
+    <!--    <module>autoconfigure/mysql</module>-->
     <module>autoconfigure/redis</module>
-    <module>autoconfigure/sqlite</module>
+    <!--    <module>autoconfigure/sqlite</module>-->
     <module>base</module>
-    <module>lib/h2db</module>
-    <module>lib/jpa</module>
-    <module>lib/mysql</module>
+    <!--    <module>lib/h2db</module>-->
+    <!--    <module>lib/jpa</module>-->
+    <!--    <module>lib/mysql</module>-->
     <module>lib/redis</module>
-    <module>lib/sqlite</module>
-    <module>starter/h2db</module>
-    <module>starter/jpa</module>
-    <module>starter/mysql</module>
+    <!--    <module>lib/sqlite</module>-->
+    <!--    <module>starter/h2db</module>-->
+    <!--    <module>starter/jpa</module>-->
+    <!--    <module>starter/mysql</module>-->
     <module>starter/redis</module>
-    <module>starter/sqlite</module>
-    <module>superconductor/h2db</module>
-    <module>superconductor/mysql</module>
+    <!--    <module>starter/sqlite</module>-->
+    <!--    <module>superconductor/h2db</module>-->
+    <!--    <module>superconductor/mysql</module>-->
     <module>superconductor/redis</module>
-    <module>superconductor/sqlite</module>
+    <!--    <module>superconductor/sqlite</module>-->
+    <module>report-aggregate</module>
   </modules>
 
   <properties>
@@ -47,15 +48,14 @@
     <EvalEx.version>3.5.0</EvalEx.version>
     <guava.version>33.2.1-jre</guava.version>
     <h2.version>2.2.224</h2.version>
-    <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
     <jackson-module-afterburner.version>2.18.3</jackson-module-afterburner.version>
     <junit-jupiter.version>5.10.2</junit-jupiter.version>
     <lombok.version>1.18.34</lombok.version>
     <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
     <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-    <maven-surefire-plugin.version>3.3.0</maven-surefire-plugin.version>
-    <maven-failsafe-plugin.version>3.3.0</maven-failsafe-plugin.version>
-    <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>${maven-surefire-plugin.version}</maven-failsafe-plugin.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <mysql-connector-j.version>9.1.0</mysql-connector-j.version>
@@ -153,7 +153,28 @@
 <!--    </dependency>-->
   </dependencies>
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    
     <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>

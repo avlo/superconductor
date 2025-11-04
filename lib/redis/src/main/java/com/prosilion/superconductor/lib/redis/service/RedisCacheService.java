@@ -79,6 +79,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
     return eventNosqlEntityService.saveEvent(event);
   }
 
+//  TODO: possible MapStruct candidate replacement
   @Override
   public EventNosqlEntityIF saveWithEventTags(
       @NonNull EventIF event,

@@ -43,13 +43,15 @@ public class EventNosqlEntityService {
     return eventNosqlEntityRepository.findByEventId(eventId)
         .map(this::revertInterceptor);
   }
-
+  
+//  TODO: replace with JPQL
   public List<EventNosqlEntityIF> getEventsByKind(@NonNull Kind kind) {
     return eventNosqlEntityRepository.findByKind(kind).stream()
         .map(this::revertInterceptor)
         .toList();
   }
 
+//  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(
       @NonNull Kind kind,
       @NonNull PublicKey referencedPublicKey) {
@@ -63,6 +65,7 @@ public class EventNosqlEntityService {
         .toList();
   }
 
+//  TODO: replace with JPQL
   public List<EventNosqlEntityIF> getEventsByKindAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull IdentifierTag identifierTag) {
@@ -72,6 +75,7 @@ public class EventNosqlEntityService {
         .toList();
   }
 
+//  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(
       @NonNull Kind kind,
       @NonNull PublicKey referencedPublicKey,
@@ -85,6 +89,7 @@ public class EventNosqlEntityService {
         .toList();
   }
 
+//  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull PublicKey referencedPublicKey,
@@ -95,6 +100,7 @@ public class EventNosqlEntityService {
         .toList();
   }
 
+//  TODO: replace with JPQL
   public List<EventNosqlEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull PublicKey authorPublicKey,
@@ -105,6 +111,7 @@ public class EventNosqlEntityService {
         .toList();
   }
 
+//  TODO: consider an economically efficient alternative  
   public List<EventNosqlEntityIF> getAll() {
     return eventNosqlEntityRepository.findAllCustom().stream()
         .map(this::revertInterceptor)

@@ -11,7 +11,6 @@
 
   <artifactId>report-aggregate</artifactId>
   <name>report-aggregate</name>
-<!--  <packaging>war</packaging>-->
 
   <dependencies>
     <dependency>
@@ -57,12 +56,6 @@
             <goals>
               <goal>report-aggregate</goal>
             </goals>
-<!--            <configuration>-->
-<!--              <dataFileIncludes>-->
-<!--                <dataFileInclude>**/jacoco.exec</dataFileInclude>-->
-<!--              </dataFileIncludes>-->
-<!--              &lt;!&ndash;              <outputDirectory>${project.reporting.outputDirectory}/jacoco-aggregate</outputDirectory>&ndash;&gt;-->
-<!--            </configuration>-->
           </execution>
         </executions>
       </plugin>

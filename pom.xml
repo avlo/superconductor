@@ -12,26 +12,26 @@
 
   <modules>
     <module>autoconfigure/base</module>
-    <!--    <module>autoconfigure/h2db</module>-->
-    <!--    <module>autoconfigure/jpa</module>-->
-    <!--    <module>autoconfigure/mysql</module>-->
+    <module>autoconfigure/h2db</module>
+    <module>autoconfigure/jpa</module>
+    <module>autoconfigure/mysql</module>
     <module>autoconfigure/redis</module>
-    <!--    <module>autoconfigure/sqlite</module>-->
+    <module>autoconfigure/sqlite</module>
     <module>base</module>
-    <!--    <module>lib/h2db</module>-->
-    <!--    <module>lib/jpa</module>-->
-    <!--    <module>lib/mysql</module>-->
+    <module>lib/h2db</module>
+    <module>lib/jpa</module>
+    <module>lib/mysql</module>
     <module>lib/redis</module>
-    <!--    <module>lib/sqlite</module>-->
-    <!--    <module>starter/h2db</module>-->
-    <!--    <module>starter/jpa</module>-->
-    <!--    <module>starter/mysql</module>-->
+    <module>lib/sqlite</module>
+    <module>starter/h2db</module>
+    <module>starter/jpa</module>
+    <module>starter/mysql</module>
     <module>starter/redis</module>
-    <!--    <module>starter/sqlite</module>-->
-    <!--    <module>superconductor/h2db</module>-->
-    <!--    <module>superconductor/mysql</module>-->
+    <module>starter/sqlite</module>
+    <module>superconductor/h2db</module>
+    <module>superconductor/mysql</module>
     <module>superconductor/redis</module>
-    <!--    <module>superconductor/sqlite</module>-->
+    <module>superconductor/sqlite</module>
     <module>report-aggregate</module>
   </modules>
 
@@ -87,11 +87,11 @@
       <artifactId>spring-boot</artifactId>
       <version>${spring-boot.version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.springframework.boot</groupId>-->
-<!--      <artifactId>spring-boot-devtools</artifactId>-->
-<!--      <version>${spring-boot.version}</version>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.springframework.boot</groupId>-->
+    <!--      <artifactId>spring-boot-devtools</artifactId>-->
+    <!--      <version>${spring-boot.version}</version>-->
+    <!--    </dependency>-->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
@@ -113,14 +113,14 @@
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
     </dependency>
-    
+
     <!--    <dependency>-->
     <!--      <groupId>org.postgresql</groupId>-->
     <!--      <artifactId>postgresql</artifactId>-->
     <!--      <version>${postgresql.version}</version>-->
     <!--      <scope>runtime</scope>-->
     <!--    </dependency>-->
-    
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -146,11 +146,11 @@
       <artifactId>lombok</artifactId>
       <version>${lombok.version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.springframework.boot</groupId>-->
-<!--      <artifactId>spring-boot-starter-actuator</artifactId>-->
-<!--      <version>${spring-boot.version}</version>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.springframework.boot</groupId>-->
+    <!--      <artifactId>spring-boot-starter-actuator</artifactId>-->
+    <!--      <version>${spring-boot.version}</version>-->
+    <!--    </dependency>-->
   </dependencies>
   <build>
     <pluginManagement>
@@ -162,7 +162,7 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    
+
     <plugins>
       <plugin>
         <groupId>org.jacoco</groupId>

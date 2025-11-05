@@ -8,10 +8,6 @@ plugins {
     id 'jacoco-report-aggregation'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     jacocoAggregation project(':superconductor-app-h2db')
     jacocoAggregation project(':superconductor-app-mysql')
@@ -43,8 +39,3 @@ reporting {
         }
     }
 }
-
-//tasks.named('check') {
-//    dependsOn tasks.named('integrationTest')
-//    dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
-//}

@@ -1,12 +1,12 @@
 package com.prosilion.superconductor.redis.service;
 
 import com.ezylang.evalex.parser.ParseException;
+import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.dto.FormulaEventDtoVariantWithFormulaEvent;
 import com.prosilion.superconductor.lib.redis.dto.GenericNosqlEntityKindDto;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
@@ -28,25 +28,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EmbeddedRedisStandalone
 @SpringBootTest
 @ActiveProfiles("test")
-public class RedisCacheServiceFormulaEventDtoIT {
+public class RedisCacheServiceFormulaEventIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
 
   private final RedisCacheServiceIF redisCacheService;
-  private final FormulaEventDtoVariantWithFormulaEvent upvoteFormulaEventDtoVariant;
+  private final FormulaEvent formulaEvent;
   private final EventNosqlEntityIF eventNosqlEntityIF;
 
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
   public final String PLUS_ONE_FORMULA = "+1";
 
   @Autowired
-  public RedisCacheServiceFormulaEventDtoIT(RedisCacheServiceIF redisCacheServiceIF) throws ParseException {
+  public RedisCacheServiceFormulaEventIT(RedisCacheServiceIF redisCacheServiceIF) throws ParseException {
     this.redisCacheService = redisCacheServiceIF;
 
-    this.upvoteFormulaEventDtoVariant =
-        new FormulaEventDtoVariantWithFormulaEvent(
-            new FormulaEvent(IDENTITY, upvoteIdentifierTag, PLUS_ONE_FORMULA));
+    this.formulaEvent =
+        new FormulaEvent(
+            IDENTITY,
+            new BadgeDefinitionAwardEvent(
+                IDENTITY, upvoteIdentifierTag, PLUS_ONE_FORMULA),
+            PLUS_ONE_FORMULA);
 
-    this.eventNosqlEntityIF = redisCacheServiceIF.save(this.upvoteFormulaEventDtoVariant.getFormulaEvent());
+    this.eventNosqlEntityIF = redisCacheServiceIF.save(this.formulaEvent);
   }
 
   @Test
@@ -63,7 +66,7 @@ public class RedisCacheServiceFormulaEventDtoIT {
     EventNosqlEntityIF firstRetrievedEventEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIF.getEventId()).orElseThrow();
     assertEquals(eventNosqlEntityIF.getEventId(), firstRetrievedEventEntityIF.getId());
 
-    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(upvoteFormulaEventDtoVariant.getFormulaEvent());
+    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(formulaEvent);
     EventNosqlEntityIF firstEntityIF = firstDto.convertDtoToNosqlEntity();
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded    
     assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
@@ -71,7 +74,7 @@ public class RedisCacheServiceFormulaEventDtoIT {
     EventNosqlEntityIF secondRetrievedEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIF.getEventId()).orElseThrow();
     assertEquals(eventNosqlEntityIF.getEventId(), secondRetrievedEntityIF.getId());
 
-    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(upvoteFormulaEventDtoVariant.getFormulaEvent());
+    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(formulaEvent);
     EventNosqlEntityIF secondEntityIF = secondDto.convertDtoToNosqlEntity();
 
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded
@@ -96,19 +99,19 @@ public class RedisCacheServiceFormulaEventDtoIT {
     log.info("********************");
     log.info("********************");
 
-    EventNosqlEntityIF firstRetrieval = redisCacheService.getEventByEventId(upvoteFormulaEventDtoVariant.getFormulaEvent().getId()).orElseThrow();
+    EventNosqlEntityIF firstRetrieval = redisCacheService.getEventByEventId(formulaEvent.getId()).orElseThrow();
     assertEquals(eventNosqlEntityIF.getId(), firstRetrieval.getId());
 
-    EventNosqlEntityIF secondRetrieval = redisCacheService.getEventByEventId(upvoteFormulaEventDtoVariant.getFormulaEvent().getId()).orElseThrow();
+    EventNosqlEntityIF secondRetrieval = redisCacheService.getEventByEventId(formulaEvent.getId()).orElseThrow();
     assertEquals(eventNosqlEntityIF.getId(), secondRetrieval.getId());
 
     assertEquals(firstRetrieval, secondRetrieval);
 
-    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(upvoteFormulaEventDtoVariant.getFormulaEvent());
+    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(formulaEvent);
     EventNosqlEntityIF firstEntity = firstDto.convertDtoToNosqlEntity();
 //    assertEquals(firstEntity, firstRetrieval);
 
-    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(upvoteFormulaEventDtoVariant.getFormulaEvent());
+    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(formulaEvent);
     EventNosqlEntityIF secondEntity = secondDto.convertDtoToNosqlEntity();
 
     assertEquals(firstEntity, secondEntity);
@@ -120,7 +123,7 @@ public class RedisCacheServiceFormulaEventDtoIT {
     int startSize = redisCacheService.getAll().size();
     log.debug("startSize: {}", startSize);
 
-    EventNosqlEntityIF savedUidOfDuplicate = redisCacheService.save(upvoteFormulaEventDtoVariant.getFormulaEvent());
+    EventNosqlEntityIF savedUidOfDuplicate = redisCacheService.save(formulaEvent);
     assertEquals(eventNosqlEntityIF, savedUidOfDuplicate);
 
     int endSize = redisCacheService.getAll().size();
@@ -136,10 +139,14 @@ public class RedisCacheServiceFormulaEventDtoIT {
     int sizeBeforeDeleteMeEvent = all.size();
     log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 
-    FormulaEventDtoVariantWithFormulaEvent eventToDelete =
-        new FormulaEventDtoVariantWithFormulaEvent(
-            new FormulaEvent(IDENTITY, upvoteIdentifierTag, PLUS_ONE_FORMULA));
-    assertEquals(eventToDelete.getFormulaEvent().getId(), redisCacheService.save(eventToDelete.getFormulaEvent()).getId());
+    FormulaEvent eventToDelete = new FormulaEvent(
+        IDENTITY,
+        new BadgeDefinitionAwardEvent(
+            IDENTITY,
+            upvoteIdentifierTag,
+            PLUS_ONE_FORMULA),
+        PLUS_ONE_FORMULA);
+    assertEquals(eventToDelete.getId(), redisCacheService.save(eventToDelete).getId());
 
     List<EventNosqlEntityIF> allAfterDeleteMeEvent = redisCacheService.getAll();
     int sizeAfterDeleteMeEvent = allAfterDeleteMeEvent.size();
@@ -148,11 +155,11 @@ public class RedisCacheServiceFormulaEventDtoIT {
 
     assertTrue(allAfterDeleteMeEvent.stream()
         .map(EventNosqlEntityIF::getId)
-        .anyMatch(e -> e.equals(eventToDelete.getFormulaEvent().getId())));
+        .anyMatch(e -> e.equals(eventToDelete.getId())));
 
     List<DeletionEventNosqlEntityIF> allDeletionJpaEventEntitiesBeforeDeletion = redisCacheService.getAllDeletionEvents();
 
-    EventTag eventTag = new EventTag(eventToDelete.getFormulaEvent().getId());
+    EventTag eventTag = new EventTag(eventToDelete.getId());
 
     DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(deletionEvent.getTags().contains(eventTag));
@@ -168,15 +175,15 @@ public class RedisCacheServiceFormulaEventDtoIT {
       log.debug("deletionDbEventId: {}", event.getEventId());
     });
 
-    assertTrue(allDeletionJpaEventEntitiesAfterDeletion.stream().map(DeletionEventNosqlEntityIF::getEventId).anyMatch(eventToDelete.getFormulaEvent().getId()::equals));
+    assertTrue(allDeletionJpaEventEntitiesAfterDeletion.stream().map(DeletionEventNosqlEntityIF::getEventId).anyMatch(eventToDelete.getId()::equals));
 
     List<EventNosqlEntityIF> allAfterDeletion = redisCacheService.getAll();
     int sizeAfterDeletion = allAfterDeletion.size();
     log.debug("sizeAfterDeletion: {}", sizeAfterDeletion);
     assertEquals(sizeAfterDeleteMeEvent - 1, sizeAfterDeletion);
 
-    assertTrue(allAfterDeletion.stream().map(EventNosqlEntityIF::getId).noneMatch(e -> e.equals(eventToDelete.getFormulaEvent().getId())));
-    deleteSecondEvent(sizeAfterDeletion, allDeletionJpaEventEntitiesAfterDeletion.size(), eventToDelete.getFormulaEvent().getId());
+    assertTrue(allAfterDeletion.stream().map(EventNosqlEntityIF::getId).noneMatch(e -> e.equals(eventToDelete.getId())));
+    deleteSecondEvent(sizeAfterDeletion, allDeletionJpaEventEntitiesAfterDeletion.size(), eventToDelete.getId());
   }
 
   private void deleteSecondEvent(
@@ -189,10 +196,10 @@ public class RedisCacheServiceFormulaEventDtoIT {
     log.debug("sizeBeforeSecondDeleteMeEvent: {}", sizeBeforeSecondDeleteMeEvent);
     assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 
-    FormulaEventDtoVariantWithFormulaEvent secondEventToDelete =
-        new FormulaEventDtoVariantWithFormulaEvent(
-            new FormulaEvent(IDENTITY, upvoteIdentifierTag, PLUS_ONE_FORMULA));
-    assertEquals(secondEventToDelete.getFormulaEvent().getId(), redisCacheService.save(secondEventToDelete.getFormulaEvent()).getId());
+    FormulaEvent secondEventToDelete =
+        new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
+            IDENTITY, upvoteIdentifierTag, PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
+    assertEquals(secondEventToDelete.getId(), redisCacheService.save(secondEventToDelete).getId());
 
     List<EventNosqlEntityIF> allAfterSecondDeleteMeEvent = redisCacheService.getAll();
     int sizeAfterSecondDeleteMeEvent = allAfterSecondDeleteMeEvent.size();
@@ -201,9 +208,9 @@ public class RedisCacheServiceFormulaEventDtoIT {
 
     assertTrue(redisCacheService.getAll().stream()
         .map(EventNosqlEntityIF::getId)
-        .anyMatch(secondEventToDelete.getFormulaEvent().getId()::equals));
+        .anyMatch(secondEventToDelete.getId()::equals));
 
-    EventTag eventTag = new EventTag(secondEventToDelete.getFormulaEvent().getId());
+    EventTag eventTag = new EventTag(secondEventToDelete.getId());
 
     DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(secondDeletionEvent.getTags().contains(eventTag));
@@ -219,14 +226,14 @@ public class RedisCacheServiceFormulaEventDtoIT {
       log.debug("deletionDbEventId: {}", event.getEventId());
     });
 
-    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventNosqlEntityIF::getEventId).anyMatch(secondEventToDelete.getFormulaEvent().getId()::equals));
+    assertTrue(allDeletionJpaEventEntities.stream().map(DeletionEventNosqlEntityIF::getEventId).anyMatch(secondEventToDelete.getId()::equals));
 
     List<EventNosqlEntityIF> allAfterSecondDeletion = redisCacheService.getAll();
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();
     log.debug("sizeAfterSecondDeletion: {}", sizeAfterSecondDeletion);
     assertEquals(sizeAfterSecondDeleteMeEvent - 1, sizeAfterSecondDeletion);
 
-    assertTrue(allAfterSecondDeletion.stream().map(EventNosqlEntityIF::getId).noneMatch(secondEventToDelete.getFormulaEvent().getId()::equals));
+    assertTrue(allAfterSecondDeletion.stream().map(EventNosqlEntityIF::getId).noneMatch(secondEventToDelete.getId()::equals));
     assertTrue(allAfterSecondDeletion.stream().map(EventNosqlEntityIF::getId).noneMatch(firstDeletedEventId::equals));
   }
 }

@@ -1,22 +1,22 @@
-package com.prosilion.superconductor.redis.util;
+package com.prosilion.superconductor.sqlite.util;
 
+import com.prosilion.nostr.event.BadgeAwardAbstractEvent;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.dto.BadgeAwardAbstractEventDto;
 import java.util.List;
 import org.springframework.lang.NonNull;
 
-public class BadgeAwardDownvoteRedisEventDto extends BadgeAwardAbstractEventDto {
-  public BadgeAwardDownvoteRedisEventDto(
+public class BadgeAwardDownvoteEvent extends BadgeAwardAbstractEvent {
+  public BadgeAwardDownvoteEvent(
       @NonNull Identity identity,
       @NonNull PublicKey downvotedUser,
       @NonNull BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent) {
     this(identity, downvotedUser, badgeDefinitionDownvoteEvent, List.of());
   }
 
-  public BadgeAwardDownvoteRedisEventDto(
+  public BadgeAwardDownvoteEvent(
       @NonNull Identity identity,
       @NonNull PublicKey downvotedUser,
       @NonNull BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent,

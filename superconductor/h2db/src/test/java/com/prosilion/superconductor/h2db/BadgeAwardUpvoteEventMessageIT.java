@@ -17,7 +17,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.h2db.util.BadgeAwardUpvoteEventDto;
+import com.prosilion.superconductor.h2db.util.BadgeAwardUpvoteEvent;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
 import java.io.IOException;
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class BadgeAwardUpvoteEventDtoMessageIT {
+public class BadgeAwardUpvoteEventMessageIT {
   private final NostrRelayService nostrRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
@@ -49,14 +49,14 @@ public class BadgeAwardUpvoteEventDtoMessageIT {
   private final String eventId;
 
   @Autowired
-  BadgeAwardUpvoteEventDtoMessageIT(
+  BadgeAwardUpvoteEventMessageIT(
       @NonNull NostrRelayService nostrRelayService,
       @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    BadgeAwardUpvoteEventDto event = new BadgeAwardUpvoteEventDto(
+    BadgeAwardUpvoteEvent event = new BadgeAwardUpvoteEvent(
         authorIdentity,
         upvotedUserPubKey,
         badgeDefinitionUpvoteEvent);

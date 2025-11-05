@@ -12,10 +12,9 @@ import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
-import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
+import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntityIF;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +50,7 @@ public class JpaCacheServiceIT {
   private final Long savedId;
 
   @Autowired
-  public JpaCacheServiceIT(JpaCacheServiceIF jpaCacheServiceIF) throws NoSuchAlgorithmException {
+  public JpaCacheServiceIT(JpaCacheServiceIF jpaCacheServiceIF) {
     this.jpaCacheServiceIF = jpaCacheServiceIF;
 
     this.tags = new ArrayList<>();
@@ -83,7 +82,7 @@ public class JpaCacheServiceIT {
     GenericEventKindDto firstDto = new GenericEventKindDto(textNoteEvent);
     EventJpaEntityIF firstEntityIF = firstDto.convertDtoToEntity();
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded    
-//    assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
+    assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
 
     EventJpaEntityIF secondRetrievedEntityIF = jpaCacheServiceIF.getEventByUid(savedId).orElseThrow();
     assertEquals(savedId, secondRetrievedEntityIF.getUid());
@@ -92,7 +91,7 @@ public class JpaCacheServiceIT {
     EventJpaEntityIF secondEntityIF = secondDto.convertDtoToEntity();
 
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded
-//    assertEquals(secondEntityIF, secondRetrievedEntityIF);
+    assertEquals(secondEntityIF, secondRetrievedEntityIF);
     assertEquals(firstDto, secondDto);
   }
 
@@ -146,7 +145,7 @@ public class JpaCacheServiceIT {
   }
 
   @Test
-  void testDeletedEvent() throws NoSuchAlgorithmException {
+  void testDeletedEvent() {
     log.info("saved id: {}", savedId);
     String newContent = Factory.lorumIpsum(JpaCacheServiceIT.class);
 
@@ -198,7 +197,7 @@ public class JpaCacheServiceIT {
   private void deleteSecondEvent(
       int allEventsSizeAfterFirstDeletion,
       int allDeletedEventsSizeAfterFirstDeletion,
-      String firstDeletedEventId) throws NoSuchAlgorithmException {
+      String firstDeletedEventId) {
     String newContent = Factory.lorumIpsum(JpaCacheServiceIT.class);
 
     List<EventJpaEntityIF> all = jpaCacheServiceIF.getAll();

@@ -17,11 +17,10 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.sqlite.util.BadgeAwardDownvoteEventDto;
+import com.prosilion.superconductor.sqlite.util.BadgeAwardUpvoteEvent;
 import com.prosilion.superconductor.sqlite.util.Factory;
 import com.prosilion.superconductor.sqlite.util.NostrRelayService;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -32,34 +31,34 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.sqlite.config.TestKindType.UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.sqlite.config.TestKindType.UNIT_UPVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class BadgeAwardDownvoteEventDtoMessageIT {
+public class BadgeAwardUpvoteEventMessageIT {
   private final NostrRelayService nostrRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
-  private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
+  private final PublicKey upvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
   private final Identity superconductorInstanceIdentity;
 
   private final String eventId;
 
   @Autowired
-  BadgeAwardDownvoteEventDtoMessageIT(
+  BadgeAwardUpvoteEventMessageIT(
       @NonNull NostrRelayService nostrRelayService,
-      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent,
-      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException, NoSuchAlgorithmException {
+      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
+      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    BadgeAwardDownvoteEventDto event = new BadgeAwardDownvoteEventDto(
+    BadgeAwardUpvoteEvent event = new BadgeAwardUpvoteEvent(
         authorIdentity,
-        downvotedUserPubKey,
-        badgeDefinitionDownvoteEvent);
+        upvotedUserPubKey,
+        badgeDefinitionUpvoteEvent);
     eventId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);
@@ -83,13 +82,13 @@ public class BadgeAwardDownvoteEventDtoMessageIT {
                         Kind.BADGE_AWARD_EVENT),
                     new ReferencedPublicKeyFilter(
                         new PubKeyTag(
-                            downvotedUserPubKey)),
+                            upvotedUserPubKey)),
                     new AddressTagFilter(
                         new AddressTag(
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
                             new IdentifierTag(
-                                UNIT_DOWNVOTE.getName())))))));
+                                UNIT_UPVOTE.getName())))))));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -100,7 +99,7 @@ public class BadgeAwardDownvoteEventDtoMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(UNIT_DOWNVOTE.getName(), addressTag.getIdentifierTag().getUuid());
+    assertEquals(UNIT_UPVOTE.getName(), addressTag.getIdentifierTag().getUuid());
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {

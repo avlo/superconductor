@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.h2db;
+package com.prosilion.superconductor.sqlite;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
@@ -17,12 +17,11 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.h2db.util.BadgeAwardDownvoteEventDto;
-import com.prosilion.superconductor.h2db.util.Factory;
-import com.prosilion.superconductor.h2db.util.NostrRelayService;
+import com.prosilion.superconductor.sqlite.util.BadgeAwardDownvoteEvent;
+import com.prosilion.superconductor.sqlite.util.Factory;
+import com.prosilion.superconductor.sqlite.util.NostrRelayService;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +31,14 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.h2db.util.TestKindType.UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.sqlite.config.TestKindType.UNIT_DOWNVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class BadgeAwardDownvoteEventDtoMessageIT {
+public class BadgeAwardDownvoteEventMessageIT {
   private final NostrRelayService nostrRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
@@ -49,14 +48,14 @@ public class BadgeAwardDownvoteEventDtoMessageIT {
   private final String eventId;
 
   @Autowired
-  BadgeAwardDownvoteEventDtoMessageIT(
+  BadgeAwardDownvoteEventMessageIT(
       @NonNull NostrRelayService nostrRelayService,
       @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    BadgeAwardDownvoteEventDto event = new BadgeAwardDownvoteEventDto(
+    BadgeAwardDownvoteEvent event = new BadgeAwardDownvoteEvent(
         authorIdentity,
         downvotedUserPubKey,
         badgeDefinitionDownvoteEvent);
@@ -100,9 +99,7 @@ public class BadgeAwardDownvoteEventDtoMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(UNIT_DOWNVOTE.getName(), Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow().getUuid());
-
-    nostrRelayService.disconnect();
+    assertEquals(UNIT_DOWNVOTE.getName(), addressTag.getIdentifierTag().getUuid());
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {

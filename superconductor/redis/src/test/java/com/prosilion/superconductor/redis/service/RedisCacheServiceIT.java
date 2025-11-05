@@ -10,13 +10,12 @@ import com.prosilion.nostr.tag.PriceTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.lib.redis.dto.GenericNosqlEntityKindDto;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
-import com.prosilion.superconductor.lib.redis.dto.GenericNosqlEntityKindDto;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +50,7 @@ public class RedisCacheServiceIT {
   private final EventNosqlEntityIF eventNosqlEntityIF;
 
   @Autowired
-  public RedisCacheServiceIT(RedisCacheServiceIF redisCacheServiceIF) throws NoSuchAlgorithmException {
+  public RedisCacheServiceIT(RedisCacheServiceIF redisCacheServiceIF) {
     this.redisCacheService = redisCacheServiceIF;
 
     this.tags = new ArrayList<>();
@@ -146,7 +145,7 @@ public class RedisCacheServiceIT {
   }
 
   @Test
-  void testDeletedEvent() throws NoSuchAlgorithmException {
+  void testDeletedEvent() {
     log.info("saved id: {}", eventNosqlEntityIF);
     String newContent = Factory.lorumIpsum(RedisCacheServiceIT.class);
 
@@ -198,7 +197,7 @@ public class RedisCacheServiceIT {
   private void deleteSecondEvent(
       int allEventsSizeAfterFirstDeletion,
       int allDeletedEventsSizeAfterFirstDeletion,
-      String firstDeletedEventId) throws NoSuchAlgorithmException {
+      String firstDeletedEventId) {
     String newContent = Factory.lorumIpsum(RedisCacheServiceIT.class);
 
     List<EventNosqlEntityIF> all = redisCacheService.getAll();

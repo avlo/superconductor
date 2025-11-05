@@ -17,7 +17,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEventDto;
+import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEvent;
 import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -58,7 +58,7 @@ public class BadgeAwardUpvoteEventMessageIT {
     this.nostrRelayService = nostrRelayService;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    BadgeAwardUpvoteRedisEventDto event = new BadgeAwardUpvoteRedisEventDto(
+    BadgeAwardUpvoteRedisEvent event = new BadgeAwardUpvoteRedisEvent(
         authorIdentity,
         upvotedUserPubKey,
         badgeDefinitionUpvoteEvent);

@@ -1,0 +1,50 @@
+plugins {
+//    id 'base'
+    id 'java'
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'superconductor.java-conventions'
+    id 'jacoco-report-aggregation'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    jacocoAggregation project(':superconductor-app-h2db')
+    jacocoAggregation project(':superconductor-app-mysql')
+    jacocoAggregation project(':superconductor-app-redis')
+    jacocoAggregation project(':superconductor-app-sqlite')
+    jacocoAggregation project(':superconductor-autoconfigure-base')
+    jacocoAggregation project(':superconductor-autoconfigure-h2db')
+    jacocoAggregation project(':superconductor-autoconfigure-jpa')
+    jacocoAggregation project(':superconductor-autoconfigure-mysql')
+    jacocoAggregation project(':superconductor-autoconfigure-redis')
+    jacocoAggregation project(':superconductor-autoconfigure-sqlite')
+    jacocoAggregation project(':superconductor-base')
+    jacocoAggregation project(':superconductor-lib-h2db')
+    jacocoAggregation project(':superconductor-lib-jpa')
+    jacocoAggregation project(':superconductor-lib-mysql')
+    jacocoAggregation project(':superconductor-lib-redis')
+    jacocoAggregation project(':superconductor-lib-sqlite')
+    jacocoAggregation project(':superconductor-spring-boot-starter-h2db')
+    jacocoAggregation project(':superconductor-spring-boot-starter-jpa')
+    jacocoAggregation project(':superconductor-spring-boot-starter-mysql')
+    jacocoAggregation project(':superconductor-spring-boot-starter-redis')
+    jacocoAggregation project(':superconductor-spring-boot-starter-sqlite')
+}
+
+reporting {
+    reports {
+        testCodeCoverageReport(JacocoCoverageReport) {
+            testSuiteName = "test"
+        }
+    }
+}
+
+//tasks.named('check') {
+//    dependsOn tasks.named('integrationTest')
+//    dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
+//}

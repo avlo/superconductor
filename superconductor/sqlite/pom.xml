@@ -11,7 +11,7 @@
 
   <artifactId>superconductor-app-sqlite</artifactId>
   <name>superconductor-app-sqlite</name>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <properties>
     <sqlite-jdbc.version>3.50.2.0</sqlite-jdbc.version>
@@ -79,6 +79,64 @@
   <build>
     <finalName>${project.name}-${project.version}</finalName>
     <plugins>
+
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <image>
+            <builder>bellsoft/buildpacks.builder:musl</builder>
+          </image>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <finalName>${project.build.finalName}</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>install-file</goal>
+            </goals>
+            <configuration>
+              <file>target/superconductor-app-sqlite-1.17.2.war</file>
+              <groupId>com.prosilion.superconductor</groupId>
+              <artifactId>superconductor-app-sqlite</artifactId>
+              <version>1.17.2</version>
+              <packaging>war</packaging>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>war</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -119,19 +177,6 @@
           </execution>
         </executions>
       </plugin>
-<!--      <plugin>-->
-<!--        <groupId>org.jacoco</groupId>-->
-<!--        <artifactId>jacoco-maven-plugin</artifactId>-->
-<!--        <version>${jacoco-maven-plugin.version}</version>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <goals>-->
-<!--              <goal>prepare-agent</goal>-->
-<!--              <goal>report</goal>-->
-<!--            </goals>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
     </plugins>
   </build>
   <profiles>
@@ -141,19 +186,6 @@
       <properties>
         <spring.profiles.active>local_ws</spring.profiles.active>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-              <profiles>
-                <profile>local_ws</profile>
-              </profiles>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
 
     <profile>
@@ -161,19 +193,6 @@
       <properties>
         <spring.profiles.active>local_wss</spring.profiles.active>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-              <profiles>
-                <profile>local_wss</profile>
-              </profiles>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
 
     <profile>
@@ -181,22 +200,6 @@
       <properties>
         <spring.profiles.active>dev_ws</spring.profiles.active>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-              <profiles>
-                <profile>dev_ws</profile>
-              </profiles>
-              <image>
-                <builder>paketobuildpacks/builder-jammy-base:latest</builder>
-              </image>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
 
     <profile>
@@ -204,19 +207,6 @@
       <properties>
         <spring.profiles.active>dev_wss</spring.profiles.active>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-              <profiles>
-                <profile>dev_wss</profile>
-              </profiles>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
 
     <profile>
@@ -224,19 +214,6 @@
       <properties>
         <spring.profiles.active>prod_ws</spring.profiles.active>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-              <profiles>
-                <profile>prod_ws</profile>
-              </profiles>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
 
     <profile>
@@ -244,19 +221,6 @@
       <properties>
         <spring.profiles.active>prod_wss</spring.profiles.active>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-              <profiles>
-                <profile>prod_wss</profile>
-              </profiles>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
   </profiles>
 </project>

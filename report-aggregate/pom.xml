@@ -13,24 +13,25 @@
   <name>report-aggregate</name>
 
   <dependencies>
-    <dependency>
-      <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-base</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-app-redis</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-lib-redis</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
+
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
       <artifactId>superconductor-autoconfigure-base</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-autoconfigure-h2db</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-autoconfigure-jpa</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-autoconfigure-mysql</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
@@ -40,9 +41,63 @@
     </dependency>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-spring-boot-starter-redis</artifactId>
+      <artifactId>superconductor-autoconfigure-sqlite</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-base</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-lib-h2db</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-lib-jpa</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-lib-mysql</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-lib-redis</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-lib-sqlite</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-app-h2db</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-app-mysql</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-app-redis</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-app-sqlite</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>

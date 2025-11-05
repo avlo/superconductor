@@ -13,3 +13,5 @@ pom.xml.versionsBackup
 
 .gradle/
 build/
+
+**/dependency-reduced-pom.xml

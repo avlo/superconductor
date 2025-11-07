@@ -15,3 +15,5 @@ pom.xml.versionsBackup
 build/
 
 **/dependency-reduced-pom.xml
+
+htmlReport/

@@ -60,7 +60,7 @@ class EventJpaEntityServiceH2DbIT {
     tags.add(PRICE_TAG);
 
     textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-    savedEventId = eventJpaEntityService.saveEvent(textNoteEvent);
+    savedEventId = eventJpaEntityService.save(textNoteEvent);
   }
 
   @Test

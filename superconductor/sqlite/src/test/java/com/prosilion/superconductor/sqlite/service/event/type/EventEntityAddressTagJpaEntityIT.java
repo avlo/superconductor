@@ -50,7 +50,7 @@ class EventEntityAddressTagJpaEntityIT {
     System.out.println("textNoteEvent getPubKey().toString(): " + textNoteEvent.getPublicKey().toString());
     System.out.println("textNoteEvent getPubKey().toHexString(): " + textNoteEvent.getPublicKey().toHexString());
     System.out.println("textNoteEvent getPubKey().toBech32String(): " + textNoteEvent.getPublicKey().toBech32String());
-    savedEventId = eventJpaEntityService.saveEvent(textNoteEvent);
+    savedEventId = eventJpaEntityService.save(textNoteEvent);
   }
 
   @Test

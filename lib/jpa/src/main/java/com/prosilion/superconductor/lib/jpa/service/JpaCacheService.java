@@ -1,16 +1,14 @@
 package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.superconductor.base.DeletionEventIF;
-import com.prosilion.superconductor.base.util.MissingMatchingEventException;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntityIF;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -27,57 +25,84 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
-  public Optional<EventJpaEntityIF> getEventByEventId(@NonNull String eventId) {
-    return eventJpaEntityService.findByEventIdString(eventId);
+  public BaseEvent save(EventIF event) {
+    Long save = eventJpaEntityService.save(event);
+    BaseEvent eventByUid = getEventByUid(save).orElseThrow();
+    BaseEvent baseEventFromEntityIF = createBaseEventFromEntityIF(eventByUid).orElseThrow();
+    return baseEventFromEntityIF;
   }
 
   @Override
-  public Optional<EventJpaEntityIF> getEventByUid(@NonNull Long id) {
-    return eventJpaEntityService.getEventByUid(id);
+  public Optional<? extends BaseEvent> getEventByEventId(@NonNull String eventId) {
+    Optional<EventJpaEntityIF> byEventIdString = eventJpaEntityService.findByEventIdString(eventId);
+    Optional<? extends BaseEvent> t = byEventIdString.map(this::createBaseEventFromEntityIF)
+        .orElseThrow().stream().findFirst();
+    return t;
   }
 
   @Override
-  public List<EventJpaEntityIF> getByKind(@NonNull Kind kind) {
-    return eventJpaEntityService.getEventsByKind(kind);
+  public Optional<? extends BaseEvent> getEventByUid(Long id) {
+    Optional<EventJpaEntityIF> eventByUid = eventJpaEntityService.getEventByUid(id);
+    Optional<? extends BaseEvent> first = eventByUid.map(this::createBaseEventFromEntityIF).orElseThrow().stream().findFirst();
+    return first;
   }
 
   @Override
-  public Long save(@NonNull EventIF event) {
-    return eventJpaEntityService.saveEvent(event);
+  public Optional<? extends BaseEvent> getEvent(@NonNull EventIF eventIF) {
+    Optional<EventJpaEntityIF> byEventIdString = eventJpaEntityService.findByEventIdString(eventIF.getId());
+    Optional<? extends BaseEvent> first = byEventIdString.map(this::createBaseEventFromEntityIF).orElseThrow().stream().findFirst();
+    return first;
   }
 
   @Override
-  public Long saveWithEventTags(
-      @NonNull EventIF event,
-      @NonNull List<EventIF> eventTagEvents) {
-    final List<String> eventTagIds = Filterable.getTypeSpecificTagsStream(EventTag.class, event)
-        .map(EventTag::getIdEvent).toList();
-    final List<String> eventTagEventIds = eventTagEvents.stream().map(EventIF::getId).toList();
-
-    List<String> nonMatchingEventTagIds = eventTagIds.stream()
-        .filter(eventTagEventIds::contains)
-        .toList();
-    assert Objects.equals(0, nonMatchingEventTagIds.size()) :
-        new MissingMatchingEventException(nonMatchingEventTagIds, true);
-
-    List<String> nonMatchingEventTagEventIds = eventTagEventIds.stream()
-        .filter(eventTagIds::contains)
-        .toList();
-    assert Objects.equals(0, nonMatchingEventTagEventIds.size()) :
-        new MissingMatchingEventException(nonMatchingEventTagEventIds, false);
-
-    eventTagEvents.forEach(this::save);
-    return save(event);
+  public List<? extends BaseEvent> getByKind(@NonNull Kind kind) {
+    List<EventJpaEntityIF> eventsByKind = eventJpaEntityService.getEventsByKind(kind);
+    List<? extends BaseEvent> collect = eventsByKind.stream().map(this::createBaseEventFromEntityIF).flatMap(Optional::stream).toList();
+    return collect;
   }
 
+//  @Override
+//  public Long save(@NonNull EventIF event) {
+//    return eventJpaEntityService.saveEvent(event);
+//  }
+
+//  @Override
+//  public Long saveWithEventTags(
+//      @NonNull EventIF event,
+//      @NonNull List<EventIF> eventTagEvents) {
+//    final List<String> eventTagIds = Filterable.getTypeSpecificTagsStream(EventTag.class, event)
+//        .map(EventTag::getIdEvent).toList();
+//    final List<String> eventTagEventIds = eventTagEvents.stream().map(EventIF::getId).toList();
+//
+//    List<String> nonMatchingEventTagIds = eventTagIds.stream()
+//        .filter(eventTagEventIds::contains)
+//        .toList();
+//    assert Objects.equals(0, nonMatchingEventTagIds.size()) :
+//        new MissingMatchingEventException(nonMatchingEventTagIds, true);
+//
+//    List<String> nonMatchingEventTagEventIds = eventTagEventIds.stream()
+//        .filter(eventTagIds::contains)
+//        .toList();
+//    assert Objects.equals(0, nonMatchingEventTagEventIds.size()) :
+//        new MissingMatchingEventException(nonMatchingEventTagEventIds, false);
+//
+//    eventTagEvents.forEach(this::save);
+//    return save(event);
+//  }
+
   @Override
-  public List<EventJpaEntityIF> getAll() {
-    return eventJpaEntityService.getAll().stream()
+  public List<? extends BaseEvent> getAll() {
+    List<EventJpaEntityIF> list = eventJpaEntityService.getAll().stream()
         .filter(eventJpaEntityIF ->
-            !getAllDeletionEvents().stream()
-                .map(DeletionEventIF::getId)
+            !getAllDeletionEventIds().stream()
+//                .map(DeletionEventIF::getId)
                 .toList()
                 .contains(eventJpaEntityIF.getUid())).toList();
+    List<? extends Optional<? extends BaseEvent>> list1 = list.stream().map(this::createBaseEventFromEntityIF).toList();
+
+    List<? extends BaseEvent> list2 = list1.stream().flatMap(Optional::stream).toList();
+
+    return list2;
   }
 
   @Override
@@ -86,7 +111,22 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
-  public List<DeletionEventJpaEntityIF> getAllDeletionEvents() {
-    return deletionEventJpaEntityService.findAll();
+  public List<Long> getAllDeletionEventIds() {
+    List<DeletionEventJpaEntityIF> all = deletionEventJpaEntityService.findAll();
+    return all.stream().map(DeletionEventJpaEntityIF::getEventId).toList();
+  }
+
+  void deleteEventTags(
+      @NonNull EventIF event,
+      @NonNull Consumer<EventIF> addDeletionEvent) {
+    event.getTags().stream()
+        .filter(EventTag.class::isInstance)
+        .map(EventTag.class::cast)
+        .map(EventTag::getIdEvent)
+        .map(this::getEventByEventId)
+        .flatMap(Optional::stream)
+        .filter(deletionCandidate ->
+            deletionCandidate.getPublicKey().equals(event.getPublicKey()))
+        .forEach(addDeletionEvent);
   }
 }

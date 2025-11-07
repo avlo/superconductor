@@ -1,19 +1,18 @@
 package com.prosilion.superconductor.lib.redis.service;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
-import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntityIF;
-import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import java.util.List;
 
-public interface RedisCacheServiceIF extends CacheServiceIF<EventNosqlEntityIF, EventNosqlEntityIF> {
-  List<DeletionEventNosqlEntityIF> getAllDeletionEvents();
-  List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencedPubKeyTag);
-  List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencedPubKeyTag, AddressTag addressTag);
-  List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag);
-  List<EventNosqlEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag);
-  List<EventNosqlEntityIF> getEventsByKindAndIdentifierTag(Kind kind, IdentifierTag identifierTag);
+public interface RedisCacheServiceIF extends CacheServiceIF {
+  List<String> getAllDeletionEventIds();
+  List<? extends BaseEvent> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencedPubKeyTag);
+  List<? extends BaseEvent> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencedPubKeyTag, AddressTag addressTag);
+  List<? extends BaseEvent> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag);
+  List<? extends BaseEvent> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag);
+  List<? extends BaseEvent> getEventsByKindAndIdentifierTag(Kind kind, IdentifierTag identifierTag);
 }

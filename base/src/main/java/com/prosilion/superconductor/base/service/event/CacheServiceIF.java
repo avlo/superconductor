@@ -1,32 +1,31 @@
 package com.prosilion.superconductor.base.service.event;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.superconductor.base.GenericEventRecordDto;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
-import org.springframework.lang.NonNull;
 
-public interface CacheServiceIF<T, U extends EventIF> {
-  T save(EventIF event);
-  T saveWithEventTags(EventIF event, List<EventIF> eventTagEvents);
-  List<U> getAll();
-  Optional<U> getEventByEventId(String eventId);
-  List<U> getByKind(Kind kind);
+public interface CacheServiceIF {
+  BaseEvent save(EventIF event);
+  List<? extends BaseEvent> getAll();
+  Optional<? extends BaseEvent> getEventByEventId(String eventId);
+  List<? extends BaseEvent> getByKind(Kind kind);
   void deleteEvent(EventIF eventIF);
 
-  default void deleteEventTags(
-      @NonNull EventIF eventIF,
-      @NonNull Consumer<U> addDeletionEvent) {
-    eventIF.getTags().stream()
-        .filter(EventTag.class::isInstance)
-        .map(EventTag.class::cast)
-        .map(EventTag::getIdEvent)
-        .map(this::getEventByEventId)
-        .flatMap(Optional::stream)
-        .filter(deletionCandidate ->
-            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
-        .forEach(addDeletionEvent);
+  default Optional<? extends BaseEvent> createBaseEventFromEntityIF(EventIF eventIF) {
+    GenericEventRecord genericEventRecord = new GenericEventRecord(
+        eventIF.getId(),
+        eventIF.getPublicKey(),
+        eventIF.getCreatedAt(),
+        eventIF.getKind(),
+        eventIF.getTags(),
+        eventIF.getContent(),
+        eventIF.getSignature());
+    GenericEventRecordDto genericEventRecordDto = new GenericEventRecordDto(genericEventRecord);
+    Optional<? extends BaseEvent> baseEvent = genericEventRecordDto.convertGenericEventRecordToBaseEvent();
+    return baseEvent;
   }
 }

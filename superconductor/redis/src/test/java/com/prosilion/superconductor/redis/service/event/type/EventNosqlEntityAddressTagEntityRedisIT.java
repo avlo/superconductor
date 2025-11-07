@@ -55,7 +55,7 @@ class EventNosqlEntityAddressTagEntityRedisIT {
     System.out.println("textNoteEvent getPubKey().toString(): " + textNoteEvent.getPublicKey().toString());
     System.out.println("textNoteEvent getPubKey().toHexString(): " + textNoteEvent.getPublicKey().toHexString());
     System.out.println("textNoteEvent getPubKey().toBech32String(): " + textNoteEvent.getPublicKey().toBech32String());
-    eventNosqlEntity = eventNosqlEntityService.saveEvent(textNoteEvent);
+    eventNosqlEntity = eventNosqlEntityService.save(textNoteEvent);
   }
 
   @Test

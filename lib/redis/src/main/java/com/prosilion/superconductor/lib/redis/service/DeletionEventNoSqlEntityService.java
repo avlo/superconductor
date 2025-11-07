@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.lib.redis.service;
 
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
@@ -25,8 +26,8 @@ public class DeletionEventNoSqlEntityService {
     return repo.findAllNosqlEntities();
   }
 
-  protected void addDeletionEvent(@NonNull EventNosqlEntityIF event) {
+  protected void addDeletionEvent(@NonNull EventIF event) {
     log.debug("{}} deleteEventEntity: {}", getClass().getSimpleName(), event);
-    repo.save(DeletionEventNosqlEntity.of(event.getEventId()));
+    repo.save(DeletionEventNosqlEntity.of(event.getId()));
   }
 }

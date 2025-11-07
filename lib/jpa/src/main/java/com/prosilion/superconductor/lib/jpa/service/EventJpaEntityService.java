@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.base.service.event.EntityServiceIF;
 import com.prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntity;
@@ -23,7 +24,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class EventJpaEntityService {
+public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEntityIF> {
   private final ConcreteTagEntitiesService<
       BaseTag,
       AbstractTagJpaEntityRepository<AbstractTagJpaEntity>,
@@ -47,7 +48,8 @@ public class EventJpaEntityService {
     this.eventJpaEntityRepository = eventJpaEntityRepository;
   }
 
-  public Long saveEvent(@NonNull EventIF genericEventKindIF) {
+  @Override
+  public Long save(@NonNull EventIF genericEventKindIF) {
     try {
       EventJpaEntity save = eventJpaEntityRepository.save(
           convertDtoToEntity(genericEventKindIF));

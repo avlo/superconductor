@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.lib.jpa.service;
 
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntityIF;
@@ -23,9 +24,9 @@ public class DeletionEventJpaEntityService {
     return Collections.unmodifiableList(all);
   }
 
-  protected void addDeletionEvent(@NonNull EventJpaEntityIF deletedEventId) {
+  protected void addDeletionEvent(@NonNull EventIF deletedEventId) {
     log.debug("eventId [{}] added to deletion table", deletedEventId);
-    repo.save(new DeletionEventJpaEntity(deletedEventId.getUid()));
+//    repo.save(new DeletionEventJpaEntity(deletedEventId.getUid()));
   }
 
   public Optional<Long> getDeletionEvent(@NonNull Long id) {

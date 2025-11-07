@@ -59,7 +59,7 @@ class SubscriberEventRedisIT {
 
   @Test
   void saveAndGetEvent() {
-    EventNosqlEntityIF eventNosqlEntity = eventNosqlEntityService.saveEvent(classifiedListingEvent);
+    EventNosqlEntityIF eventNosqlEntity = eventNosqlEntityService.save(classifiedListingEvent);
     EventNosqlEntityIF foundEvent = eventNosqlEntityService.findByEventIdString(eventNosqlEntity.getId()).orElseThrow();
     assertEquals(CONTENT, foundEvent.getContent());
     List<BaseTag> tags = foundEvent.getTags();

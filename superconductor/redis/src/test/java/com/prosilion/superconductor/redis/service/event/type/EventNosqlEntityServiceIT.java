@@ -70,7 +70,7 @@ class EventNosqlEntityServiceIT {
     content = Factory.lorumIpsum(EventNosqlEntityServiceIT.class);
 
     EventIF textNoteEvent = new TextNoteEvent(identity, tags, content);
-    eventNosqlEntity = this.eventNosqlEntityService.saveEvent(textNoteEvent);
+    eventNosqlEntity = this.eventNosqlEntityService.save(textNoteEvent);
   }
 
   @Test

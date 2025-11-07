@@ -7,6 +7,7 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.base.service.event.EntityServiceIF;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
@@ -23,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class EventNosqlEntityService {
+public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntityIF, EventNosqlEntityIF> {
   private final EventNosqlEntityRepository eventNosqlEntityRepository;
   private final Map<String, TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors;
 
@@ -40,18 +41,19 @@ public class EventNosqlEntityService {
   }
 
   public Optional<EventNosqlEntityIF> findByEventIdString(@NonNull String eventId) {
-    return eventNosqlEntityRepository.findByEventId(eventId)
-        .map(this::revertInterceptor);
+    Optional<EventNosqlEntityIF> byEventId = eventNosqlEntityRepository.findByEventId(eventId);
+    Optional<EventNosqlEntityIF> eventNosqlEntityIF = byEventId.map(this::revertInterceptor);
+    return eventNosqlEntityIF;
   }
-  
-//  TODO: replace with JPQL
+
+  //  TODO: replace with JPQL
   public List<EventNosqlEntityIF> getEventsByKind(@NonNull Kind kind) {
     return eventNosqlEntityRepository.findByKind(kind).stream()
         .map(this::revertInterceptor)
         .toList();
   }
 
-//  TODO: replace with JPQL  
+  //  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(
       @NonNull Kind kind,
       @NonNull PublicKey referencedPublicKey) {
@@ -65,7 +67,7 @@ public class EventNosqlEntityService {
         .toList();
   }
 
-//  TODO: replace with JPQL
+  //  TODO: replace with JPQL
   public List<EventNosqlEntityIF> getEventsByKindAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull IdentifierTag identifierTag) {
@@ -75,7 +77,7 @@ public class EventNosqlEntityService {
         .toList();
   }
 
-//  TODO: replace with JPQL  
+  //  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(
       @NonNull Kind kind,
       @NonNull PublicKey referencedPublicKey,
@@ -89,7 +91,7 @@ public class EventNosqlEntityService {
         .toList();
   }
 
-//  TODO: replace with JPQL  
+  //  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull PublicKey referencedPublicKey,
@@ -100,7 +102,7 @@ public class EventNosqlEntityService {
         .toList();
   }
 
-//  TODO: replace with JPQL
+  //  TODO: replace with JPQL
   public List<EventNosqlEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull PublicKey authorPublicKey,
@@ -111,14 +113,15 @@ public class EventNosqlEntityService {
         .toList();
   }
 
-//  TODO: consider an economically efficient alternative  
+  //  TODO: consider an economically efficient alternative  
   public List<EventNosqlEntityIF> getAll() {
     return eventNosqlEntityRepository.findAllCustom().stream()
         .map(this::revertInterceptor)
         .toList();
   }
 
-  public EventNosqlEntityIF saveEvent(@NonNull EventIF eventNosqlEntity) {
+  @Override
+  public EventNosqlEntityIF save(@NonNull EventIF eventNosqlEntity) {
     return eventNosqlEntityRepository.save(convertDtoToNosqlEntity(eventNosqlEntity));
   }
 

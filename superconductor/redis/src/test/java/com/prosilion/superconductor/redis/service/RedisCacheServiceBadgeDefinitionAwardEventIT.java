@@ -1,14 +1,11 @@
 //package com.prosilion.superconductor.redis.service;
 //
+//import com.ezylang.evalex.parser.ParseException;
+//import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 //import com.prosilion.nostr.event.DeletionEvent;
-//import com.prosilion.nostr.event.TextNoteEvent;
-//import com.prosilion.nostr.tag.BaseTag;
+//import com.prosilion.nostr.event.FormulaEvent;
 //import com.prosilion.nostr.tag.EventTag;
-//import com.prosilion.nostr.tag.GeohashTag;
-//import com.prosilion.nostr.tag.HashtagTag;
-//import com.prosilion.nostr.tag.PriceTag;
-//import com.prosilion.nostr.tag.PubKeyTag;
-//import com.prosilion.nostr.tag.SubjectTag;
+//import com.prosilion.nostr.tag.IdentifierTag;
 //import com.prosilion.nostr.user.Identity;
 //import com.prosilion.superconductor.lib.redis.dto.GenericNosqlEntityKindDto;
 //import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntityIF;
@@ -16,7 +13,6 @@
 //import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 //import com.prosilion.superconductor.redis.util.Factory;
 //import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-//import java.util.ArrayList;
 //import java.util.List;
 //import lombok.extern.slf4j.Slf4j;
 //import org.junit.jupiter.api.Test;
@@ -32,99 +28,83 @@
 //@EmbeddedRedisStandalone
 //@SpringBootTest
 //@ActiveProfiles("test")
-//public class RedisCacheServiceIT {
+//public class RedisCacheServiceBadgeDefinitionAwardEventIT {
 //  private static final Identity IDENTITY = Factory.createNewIdentity();
-//  private static final PubKeyTag P_TAG = Factory.createPubKeyTag(IDENTITY);
-//
-//  private static final EventTag E_TAG = Factory.createEventTag(RedisCacheServiceIT.class);
-//  private static final GeohashTag G_TAG = Factory.createGeohashTag(RedisCacheServiceIT.class);
-//  private static final HashtagTag T_TAG = Factory.createHashtagTag(RedisCacheServiceIT.class);
-//  private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(RedisCacheServiceIT.class);
-//  private static final PriceTag PRICE_TAG = Factory.createPriceTag();
-//
-//  private final static String CONTENT = Factory.lorumIpsum(RedisCacheServiceIT.class);
 //
 //  private final RedisCacheServiceIF redisCacheService;
-//  private final TextNoteEvent textNoteEvent;
-//  private final List<BaseTag> tags;
-//  private final EventNosqlEntityIF eventNosqlEntityIF;
+//  private final BadgeDefinitionAwardEvent badgeDefinitionAwardEvent;
+//  private final EventNosqlEntityIF eventNosqlEntityIFBadgeDefinitionAwardEvent;
+//
+//  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
+//  public final String PLUS_ONE_FORMULA = "+1";
 //
 //  @Autowired
-//  public RedisCacheServiceIT(RedisCacheServiceIF redisCacheServiceIF) {
+//  public RedisCacheServiceBadgeDefinitionAwardEventIT(RedisCacheServiceIF redisCacheServiceIF) {
 //    this.redisCacheService = redisCacheServiceIF;
-//
-//    this.tags = new ArrayList<>();
-//    tags.add(E_TAG);
-//    tags.add(P_TAG);
-//    tags.add(SUBJECT_TAG);
-//    tags.add(G_TAG);
-//    tags.add(T_TAG);
-//    tags.add(PRICE_TAG);
-//
-//    this.textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-//    this.eventNosqlEntityIF = redisCacheServiceIF.save(textNoteEvent);
+//    this.badgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(IDENTITY, upvoteIdentifierTag, PLUS_ONE_FORMULA);
+//    this.eventNosqlEntityIFBadgeDefinitionAwardEvent = redisCacheServiceIF.save(this.badgeDefinitionAwardEvent);
 //  }
 //
 //  @Test
 //  void testGetByEventId() {
-//    assertNotNull(eventNosqlEntityIF);
-//    log.info("saved id: {}", eventNosqlEntityIF);
+//    assertNotNull(eventNosqlEntityIFBadgeDefinitionAwardEvent);
+//    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionAwardEvent);
 //
 //    List<EventNosqlEntityIF> all = redisCacheService.getAll();
 //
 //    assertTrue(all.stream()
 //        .map(EventNosqlEntityIF::getId)
-//        .anyMatch(e -> e.equals(eventNosqlEntityIF.getId())));
+//        .anyMatch(e -> e.equals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId())));
 //
-//    EventNosqlEntityIF firstRetrievedEventEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIF.getEventId()).orElseThrow();
-//    assertEquals(eventNosqlEntityIF.getEventId(), firstRetrievedEventEntityIF.getId());
+//    EventNosqlEntityIF firstRetrievedEventEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIFBadgeDefinitionAwardEvent.getEventId()).orElseThrow();
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getEventId(), firstRetrievedEventEntityIF.getId());
 //
-//    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(textNoteEvent);
+//    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(badgeDefinitionAwardEvent);
 //    EventNosqlEntityIF firstEntityIF = firstDto.convertDtoToNosqlEntity();
 ////    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded    
-////    assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
+//    assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
 //
-//    EventNosqlEntityIF secondRetrievedEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIF.getEventId()).orElseThrow();
-//    assertEquals(eventNosqlEntityIF.getEventId(), secondRetrievedEntityIF.getId());
+//    EventNosqlEntityIF secondRetrievedEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIFBadgeDefinitionAwardEvent.getEventId()).orElseThrow();
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getEventId(), secondRetrievedEntityIF.getId());
 //
-//    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(textNoteEvent);
+//    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(badgeDefinitionAwardEvent);
 //    EventNosqlEntityIF secondEntityIF = secondDto.convertDtoToNosqlEntity();
 //
 ////    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded
-////    assertEquals(secondEntityIF, secondRetrievedEntityIF);
+//    assertEquals(secondEntityIF, secondRetrievedEntityIF);
 //    assertEquals(firstDto, secondDto);
 //  }
 //
 //  @Test
 //  void testGetByEventIdString() {
-//    assertNotNull(eventNosqlEntityIF);
-//    log.info("saved id: {}", eventNosqlEntityIF);
+//    assertNotNull(eventNosqlEntityIFBadgeDefinitionAwardEvent);
+//    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionAwardEvent);
 //
 //    assertTrue(redisCacheService.getAll().stream()
 //        .map(EventNosqlEntityIF::getId)
-//        .anyMatch(e -> e.equals(eventNosqlEntityIF.getId())));
+//        .anyMatch(e -> e.equals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId())));
 //
 //    log.info("********************");
 //    log.info("********************");
-//    log.info("expicitly saved id: {}", eventNosqlEntityIF);
+//    log.info("expicitly saved id: {}", eventNosqlEntityIFBadgeDefinitionAwardEvent);
 //    log.info("retrieved ids:");
 ////    all.stream().map(EventNosqlEntityIF::getId).forEach(id -> log.info("  {}", id));
 //    log.info("********************");
 //    log.info("********************");
 //
-//    EventNosqlEntityIF firstRetrieval = redisCacheService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
-//    assertEquals(eventNosqlEntityIF.getId(), firstRetrieval.getId());
+//    EventNosqlEntityIF firstRetrieval = redisCacheService.getEventByEventId(badgeDefinitionAwardEvent.getId()).orElseThrow();
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId(), firstRetrieval.getId());
 //
-//    EventNosqlEntityIF secondRetrieval = redisCacheService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
-//    assertEquals(eventNosqlEntityIF.getId(), secondRetrieval.getId());
+//    EventNosqlEntityIF secondRetrieval = redisCacheService.getEventByEventId(badgeDefinitionAwardEvent.getId()).orElseThrow();
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId(), secondRetrieval.getId());
 //
 //    assertEquals(firstRetrieval, secondRetrieval);
 //
-//    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(textNoteEvent);
+//    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(badgeDefinitionAwardEvent);
 //    EventNosqlEntityIF firstEntity = firstDto.convertDtoToNosqlEntity();
 ////    assertEquals(firstEntity, firstRetrieval);
 //
-//    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(textNoteEvent);
+//    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(badgeDefinitionAwardEvent);
 //    EventNosqlEntityIF secondEntity = secondDto.convertDtoToNosqlEntity();
 //
 //    assertEquals(firstEntity, secondEntity);
@@ -136,8 +116,8 @@
 //    int startSize = redisCacheService.getAll().size();
 //    log.debug("startSize: {}", startSize);
 //
-//    EventNosqlEntityIF savedUidOfDuplicate = redisCacheService.save(textNoteEvent);
-//    assertEquals(eventNosqlEntityIF, savedUidOfDuplicate);
+//    EventNosqlEntityIF savedUidOfDuplicate = redisCacheService.save(badgeDefinitionAwardEvent);
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent, savedUidOfDuplicate);
 //
 //    int endSize = redisCacheService.getAll().size();
 //    log.debug("endSize: {}", endSize);
@@ -145,15 +125,20 @@
 //  }
 //
 //  @Test
-//  void testDeletedEvent() {
-//    log.info("saved id: {}", eventNosqlEntityIF);
-//    String newContent = Factory.lorumIpsum(RedisCacheServiceIT.class);
+//  void testDeletedEvent() throws ParseException {
+//    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionAwardEvent);
 //
 //    List<EventNosqlEntityIF> all = redisCacheService.getAll();
 //    int sizeBeforeDeleteMeEvent = all.size();
 //    log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 //
-//    TextNoteEvent eventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
+//    FormulaEvent eventToDelete = new FormulaEvent(
+//        IDENTITY,
+//        new BadgeDefinitionAwardEvent(
+//            IDENTITY,
+//            upvoteIdentifierTag,
+//            PLUS_ONE_FORMULA),
+//        PLUS_ONE_FORMULA);
 //    assertEquals(eventToDelete.getId(), redisCacheService.save(eventToDelete).getId());
 //
 //    List<EventNosqlEntityIF> allAfterDeleteMeEvent = redisCacheService.getAll();
@@ -197,15 +182,16 @@
 //  private void deleteSecondEvent(
 //      int allEventsSizeAfterFirstDeletion,
 //      int allDeletedEventsSizeAfterFirstDeletion,
-//      String firstDeletedEventId) {
-//    String newContent = Factory.lorumIpsum(RedisCacheServiceIT.class);
+//      String firstDeletedEventId) throws ParseException {
 //
 //    List<EventNosqlEntityIF> all = redisCacheService.getAll();
 //    int sizeBeforeSecondDeleteMeEvent = all.size();
 //    log.debug("sizeBeforeSecondDeleteMeEvent: {}", sizeBeforeSecondDeleteMeEvent);
 //    assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 //
-//    TextNoteEvent secondEventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
+//    FormulaEvent secondEventToDelete =
+//        new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
+//            IDENTITY, upvoteIdentifierTag, PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
 //    assertEquals(secondEventToDelete.getId(), redisCacheService.save(secondEventToDelete).getId());
 //
 //    List<EventNosqlEntityIF> allAfterSecondDeleteMeEvent = redisCacheService.getAll();

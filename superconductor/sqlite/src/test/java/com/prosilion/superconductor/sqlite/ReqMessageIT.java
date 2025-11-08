@@ -16,7 +16,6 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.sqlite.util.Factory;
 import com.prosilion.superconductor.sqlite.util.NostrRelayService;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ class ReqMessageIT {
   private final PublicKey authorPubkey;
 
   @Autowired
-  ReqMessageIT(@NonNull NostrRelayService nostrRelayService) throws NoSuchAlgorithmException, IOException {
+  ReqMessageIT(@NonNull NostrRelayService nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
     Identity author = Identity.generateRandomIdentity();
     this.authorPubkey = author.getPublicKey();

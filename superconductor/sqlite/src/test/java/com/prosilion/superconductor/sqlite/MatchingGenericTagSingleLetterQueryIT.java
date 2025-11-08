@@ -15,7 +15,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.sqlite.util.Factory;
 import com.prosilion.superconductor.sqlite.util.NostrRelayService;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ class MatchingGenericTagSingleLetterQueryIT {
   String content = Factory.lorumIpsum(getClass());
 
   @Autowired
-  MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
+  MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     assertTrue(
         nostrRelayService

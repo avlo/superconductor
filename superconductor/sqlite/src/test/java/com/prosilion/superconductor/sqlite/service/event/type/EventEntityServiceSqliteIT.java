@@ -17,7 +17,6 @@
 //import com.prosilion.superconductor.lib.jpa.entity.EventEntityIF;
 //import com.prosilion.superconductor.lib.jpa.event.EventEntityService;
 //import com.prosilion.superconductor.sqlite.util.Factory;
-//import java.security.NoSuchAlgorithmException;
 //import java.util.ArrayList;
 //import java.util.List;
 //import org.junit.jupiter.api.Test;
@@ -46,7 +45,7 @@
 //  private final Long savedEventId;
 //
 //  @Autowired
-//  public EventEntityServiceSqliteIT(@NonNull EventEntityService eventEntityService) throws NostrException, NoSuchAlgorithmException {
+//  public EventEntityServiceSqliteIT(@NonNull EventEntityService eventEntityService) throws NostrException {
 //    Identity identity = Factory.createNewIdentity();
 //    event_pubkey = identity.getPublicKey();
 //    p_tag = Factory.createPubKeyTag(identity);

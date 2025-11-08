@@ -11,7 +11,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
 import com.prosilion.superconductor.sqlite.util.Factory;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ class EventEntityAddressTagJpaEntityIT {
   private final Long savedEventId;
 
   @Autowired
-  public EventEntityAddressTagJpaEntityIT(@NonNull EventJpaEntityService eventJpaEntityService) throws NostrException, NoSuchAlgorithmException {
+  public EventEntityAddressTagJpaEntityIT(@NonNull EventJpaEntityService eventJpaEntityService) throws NostrException {
     this.eventJpaEntityService = eventJpaEntityService;
 
     AddressTag addressTag = new AddressTag(

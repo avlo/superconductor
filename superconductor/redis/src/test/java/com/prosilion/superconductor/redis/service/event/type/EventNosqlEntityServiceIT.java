@@ -17,7 +17,6 @@ import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +47,7 @@ class EventNosqlEntityServiceIT {
   private final EventNosqlEntityIF eventNosqlEntity;
 
   @Autowired
-  public EventNosqlEntityServiceIT(@NonNull EventNosqlEntityService eventNosqlEntityService) throws NostrException, NoSuchAlgorithmException {
+  public EventNosqlEntityServiceIT(@NonNull EventNosqlEntityService eventNosqlEntityService) throws NostrException {
     Identity identity = Factory.createNewIdentity();
     event_pubkey = identity.getPublicKey();
     p_tag = Factory.createPubKeyTag(identity);

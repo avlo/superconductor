@@ -13,7 +13,6 @@ import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.redis.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -42,7 +41,7 @@ class EventNosqlEntityAddressTagEntityRedisIT {
   private final EventNosqlEntityIF eventNosqlEntity;
 
   @Autowired
-  public EventNosqlEntityAddressTagEntityRedisIT(@NonNull EventNosqlEntityService eventNosqlEntityService) throws NostrException, NoSuchAlgorithmException {
+  public EventNosqlEntityAddressTagEntityRedisIT(@NonNull EventNosqlEntityService eventNosqlEntityService) throws NostrException {
     this.eventNosqlEntityService = eventNosqlEntityService;
 
     AddressTag addressTag = new AddressTag(

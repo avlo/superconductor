@@ -29,7 +29,6 @@ import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +76,7 @@ public class ClassifiedListingEventMessageIT {
   private final String content;
 
   @Autowired
-  ClassifiedListingEventMessageIT(@NonNull NostrRelayServiceRedis nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
+  ClassifiedListingEventMessageIT(@NonNull NostrRelayServiceRedis nostrRelayService) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     this.content = Factory.lorumIpsum(getClass());
 

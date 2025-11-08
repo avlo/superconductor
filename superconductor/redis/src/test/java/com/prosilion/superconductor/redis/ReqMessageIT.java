@@ -17,7 +17,6 @@ import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,7 @@ class ReqMessageIT {
   private final PublicKey authorPubkey;
 
   @Autowired
-  ReqMessageIT(@NonNull NostrRelayServiceRedis nostrRelayService) throws NoSuchAlgorithmException, IOException {
+  ReqMessageIT(@NonNull NostrRelayServiceRedis nostrRelayService) throws IOException {
     this.nostrRelayService = nostrRelayService;
     Identity author = Identity.generateRandomIdentity();
     this.authorPubkey = author.getPublicKey();

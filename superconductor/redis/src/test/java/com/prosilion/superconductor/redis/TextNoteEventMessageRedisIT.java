@@ -18,7 +18,6 @@ import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -44,7 +43,7 @@ public class TextNoteEventMessageRedisIT {
   private final String content;
 
   @Autowired
-  TextNoteEventMessageRedisIT(@NonNull NostrRelayServiceRedis nostrRelayServiceRedis) throws IOException, NostrException, NoSuchAlgorithmException {
+  TextNoteEventMessageRedisIT(@NonNull NostrRelayServiceRedis nostrRelayServiceRedis) throws IOException, NostrException {
     this.nostrRelayServiceRedis = nostrRelayServiceRedis;
     this.content = Factory.lorumIpsum(getClass());
 

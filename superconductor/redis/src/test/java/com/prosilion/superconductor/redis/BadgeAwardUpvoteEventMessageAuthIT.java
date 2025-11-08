@@ -11,7 +11,6 @@ import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEvent;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,7 @@ public class BadgeAwardUpvoteEventMessageAuthIT {
   @Autowired
   BadgeAwardUpvoteEventMessageAuthIT(
       @NonNull Identity superconductorInstanceIdentity,
-      @Value("${superconductor.relay.url}") String relayUri) throws NostrException, NoSuchAlgorithmException {
+      @Value("${superconductor.relay.url}") String relayUri) throws NostrException {
 
     this.nostrRelayService = new NostrRelayServiceRedis(relayUri);
     Identity authorIdentity = Identity.generateRandomIdentity();

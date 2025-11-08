@@ -16,7 +16,6 @@ import com.prosilion.superconductor.redis.util.Factory;
 import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,7 @@ class MatchingGenericTagSingleLetterQueryIT {
   String content = Factory.lorumIpsum(getClass());
 
   @Autowired
-  MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayServiceRedis nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
+  MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayServiceRedis nostrRelayService) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     assertTrue(
         nostrRelayService

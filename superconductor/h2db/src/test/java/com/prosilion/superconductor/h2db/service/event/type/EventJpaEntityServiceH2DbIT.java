@@ -15,7 +15,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -49,7 +48,7 @@ class EventJpaEntityServiceH2DbIT {
   private final Long savedEventId;
 
   @Autowired
-  public EventJpaEntityServiceH2DbIT(@NonNull EventJpaEntityService eventJpaEntityService) throws NostrException, NoSuchAlgorithmException {
+  public EventJpaEntityServiceH2DbIT(@NonNull EventJpaEntityService eventJpaEntityService) throws NostrException {
     this.eventJpaEntityService = eventJpaEntityService;
     List<BaseTag> tags = new ArrayList<>();
     tags.add(E_TAG);

@@ -8,7 +8,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.h2db.util.BadgeAwardUpvoteEvent;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class BadgeAwardUpvoteEventMessageAuthIT {
   @Autowired
   BadgeAwardUpvoteEventMessageAuthIT(
       @NonNull NostrRelayService nostrRelayService,
-      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent) throws NostrException, NoSuchAlgorithmException {
+      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent) throws NostrException {
     this.nostrRelayService = nostrRelayService;
     this.event = new BadgeAwardUpvoteEvent(
         Identity.generateRandomIdentity(),

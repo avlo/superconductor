@@ -13,7 +13,6 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
 import lombok.Getter;
@@ -21,7 +20,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class Factory {
 
-  public static EventIF createEvent() throws NostrException, NoSuchAlgorithmException {
+  public static EventIF createEvent() throws NostrException {
     return new TextNoteEvent(createNewIdentity(), lorumIpsum());
   }
 

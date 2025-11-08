@@ -28,7 +28,6 @@ import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +74,7 @@ public class ClassifiedListingEventMessageIT {
   private final String content;
 
   @Autowired
-  ClassifiedListingEventMessageIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
+  ClassifiedListingEventMessageIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
     this.content = Factory.lorumIpsum(getClass());
 

@@ -13,7 +13,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.base.util.FilterMatcher;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -42,7 +41,7 @@ public class FilterMatcherIT {
   }
 
   @Test
-  void testEquality() throws NostrException, NoSuchAlgorithmException {
+  void testEquality() throws NostrException {
     AddressTag addressTag = new AddressTag(kind, publicKey);
 
     Filters filters = new Filters(

@@ -17,7 +17,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.h2db.util.NostrRelayService;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +41,7 @@ public class DeleteEventH2dbIT {
   private final String deletionEventId;
 
   @Autowired
-  DeleteEventH2dbIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException, NoSuchAlgorithmException {
+  DeleteEventH2dbIT(@NonNull NostrRelayService nostrRelayService) throws IOException, NostrException {
     this.nostrRelayService = nostrRelayService;
 
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
@@ -97,7 +96,7 @@ public class DeleteEventH2dbIT {
   }
 
   @Test
-  void testCreateAnotherNoteAndConfirItsNotDeleted() throws NoSuchAlgorithmException, IOException {
+  void testCreateAnotherNoteAndConfirItsNotDeleted() throws IOException {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     String secondEventShouldNotGetDeleted = event.getId();
 

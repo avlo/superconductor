@@ -40,6 +40,20 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     interceptors.forEach(interceptor -> log.debug("  {}\n", interceptor));
   }
 
+  //  TODO: consider an economically efficient alternative
+  @Override
+  public List<EventNosqlEntityIF> getAll() {
+    return eventNosqlEntityRepository.findAllCustom().stream()
+        .map(this::revertInterceptor)
+        .toList();
+  }
+
+  @Override
+  public EventNosqlEntityIF save(@NonNull EventIF eventNosqlEntity) {
+    return eventNosqlEntityRepository.save(convertDtoToNosqlEntity(eventNosqlEntity));
+  }
+  
+  @Override
   public Optional<EventNosqlEntityIF> findByEventIdString(@NonNull String eventId) {
     Optional<EventNosqlEntityIF> byEventId = eventNosqlEntityRepository.findByEventId(eventId);
     Optional<EventNosqlEntityIF> eventNosqlEntityIF = byEventId.map(this::revertInterceptor);
@@ -47,6 +61,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   }
 
   //  TODO: replace with JPQL
+  @Override
   public List<EventNosqlEntityIF> getEventsByKind(@NonNull Kind kind) {
     return eventNosqlEntityRepository.findByKind(kind).stream()
         .map(this::revertInterceptor)
@@ -111,18 +126,6 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
         .filter(eventNosqlEntityIF ->
             containsIdentifierTag(identifierTag, eventNosqlEntityIF))
         .toList();
-  }
-
-  //  TODO: consider an economically efficient alternative  
-  public List<EventNosqlEntityIF> getAll() {
-    return eventNosqlEntityRepository.findAllCustom().stream()
-        .map(this::revertInterceptor)
-        .toList();
-  }
-
-  @Override
-  public EventNosqlEntityIF save(@NonNull EventIF eventNosqlEntity) {
-    return eventNosqlEntityRepository.save(convertDtoToNosqlEntity(eventNosqlEntity));
   }
 
   private EventNosqlEntity convertDtoToNosqlEntity(EventIF dto) {

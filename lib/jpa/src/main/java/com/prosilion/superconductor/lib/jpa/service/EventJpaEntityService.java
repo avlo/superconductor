@@ -67,6 +67,7 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
     }
   }
 
+  @Override
   public List<EventJpaEntityIF> getAll() {
     return eventJpaEntityRepository.findAll().stream().map(this::populateEventJpaEntity).collect(Collectors.toList());
   }

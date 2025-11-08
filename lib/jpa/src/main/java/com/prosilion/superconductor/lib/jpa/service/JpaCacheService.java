@@ -112,21 +112,21 @@ public class JpaCacheService implements JpaCacheServiceIF {
 
   @Override
   public List<Long> getAllDeletionEventIds() {
-    List<DeletionEventJpaEntityIF> all = deletionEventJpaEntityService.findAll();
+    List<DeletionEventJpaEntityIF> all = deletionEventJpaEntityService.getAll();
     return all.stream().map(DeletionEventJpaEntityIF::getEventId).toList();
   }
 
   void deleteEventTags(
-      @NonNull EventIF event,
-      @NonNull Consumer<EventIF> addDeletionEvent) {
-    event.getTags().stream()
+      @NonNull EventIF eventIF,
+      @NonNull Consumer<EventJpaEntityIF> addDeletionEvent) {
+    eventIF.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(EventTag::getIdEvent)
-        .map(this::getEventByEventId)
+        .map(eventJpaEntityService::findByEventIdString)
         .flatMap(Optional::stream)
         .filter(deletionCandidate ->
-            deletionCandidate.getPublicKey().equals(event.getPublicKey()))
+            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
         .forEach(addDeletionEvent);
   }
 }

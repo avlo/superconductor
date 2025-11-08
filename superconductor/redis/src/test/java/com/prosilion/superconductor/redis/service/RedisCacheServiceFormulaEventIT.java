@@ -149,6 +149,9 @@ public class RedisCacheServiceFormulaEventIT {
     assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
 
     assertTrue(allAfterDeleteMeEvent.stream()
+        .anyMatch(e -> e.equals(eventToDelete)));
+    
+    assertTrue(allAfterDeleteMeEvent.stream()
         .map(BaseEvent::getId)
         .anyMatch(e -> e.equals(eventToDelete.getId())));
 
@@ -165,9 +168,7 @@ public class RedisCacheServiceFormulaEventIT {
     assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventIdsAfterDeletion.size());
 
     log.debug(allDeletionJpaEventIdsAfterDeletion.toString());
-    allDeletionJpaEventIdsAfterDeletion.forEach(eventId -> {
-      log.debug("deletionDbEventId: {}", eventId);
-    });
+    allDeletionJpaEventIdsAfterDeletion.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId));
 
     assertTrue(allDeletionJpaEventIdsAfterDeletion.stream().anyMatch(eventToDelete.getId()::equals));
 

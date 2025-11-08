@@ -72,7 +72,7 @@ public class JpaCacheServiceFormulaEventIT {
     BaseEvent firstEntityIF = firstDto.baseEvent();
     assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
 
-    BaseEvent secondRetrievedEntityIF = jpaCacheServiceIF.getEvent(savedBaseEvent).orElseThrow();
+    BaseEvent secondRetrievedEntityIF = jpaCacheServiceIF.getEventByEventId(savedBaseEvent.getId()).orElseThrow();
     assertEquals(savedBaseEvent, secondRetrievedEntityIF);
 
     GenericEventKindDto secondDto = new GenericEventKindDto(formulaEvent);
@@ -88,10 +88,9 @@ public class JpaCacheServiceFormulaEventIT {
     log.info("saved id: {}", savedBaseEvent);
 
     assertTrue(jpaCacheServiceIF.getAll().stream()
-//        .map(BaseEvent::getId)
         .anyMatch(savedBaseEvent::equals));
 
-          log.info("********************");
+    log.info("********************");
     log.info("********************");
     log.info("expicitly saved id: {}", savedBaseEvent);
     log.info("retrieved ids:");
@@ -145,15 +144,21 @@ public class JpaCacheServiceFormulaEventIT {
             IDENTITY,
             upvoteIdentifierTag,
             PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
-    BaseEvent baseEvent = jpaCacheServiceIF.save(eventToDelete);
+    assertEquals(eventToDelete.getId(), jpaCacheServiceIF.save(eventToDelete).getId());
 
     List<? extends BaseEvent> allAfterDeleteMeEvent = jpaCacheServiceIF.getAll();
     int sizeAfterDeleteMeEvent = allAfterDeleteMeEvent.size();
     log.debug("sizeAfterDeleteMeEvent: {}", sizeAfterDeleteMeEvent);
     assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
 
-    assertTrue(jpaCacheServiceIF.getAll().stream()
-        .anyMatch(baseEvent::equals));
+    assertTrue(allAfterDeleteMeEvent.stream()
+        .anyMatch(e -> e.equals(eventToDelete)));
+
+    assertTrue(allAfterDeleteMeEvent.stream()
+        .map(BaseEvent::getId)
+        .anyMatch(e -> e.equals(eventToDelete.getId())));
+
+    List<Long> allDeletionJpaEventEntitiesBeforeDeletion = jpaCacheServiceIF.getAllDeletionEventIds();
 
     EventTag eventTag = new EventTag(eventToDelete.getId());
 
@@ -162,27 +167,19 @@ public class JpaCacheServiceFormulaEventIT {
 
     jpaCacheServiceIF.deleteEvent(deletionEvent);
 
-    List<? extends BaseEvent> allDeletionJpaEventEntityIds = jpaCacheServiceIF.getAllDeletionEventIds()
-        .stream()
-        .map(jpaCacheServiceIF::getEventByUid)
-        .flatMap(Optional::stream)
-        .toList();
-    assertEquals(1, allDeletionJpaEventEntityIds.size());
+    List<Long> allDeletionJpaEventIdsAfterDeletion = jpaCacheServiceIF.getAllDeletionEventIds();
+    assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventIdsAfterDeletion.size());
 
-    log.debug(allDeletionJpaEventEntityIds.toString());
-    allDeletionJpaEventEntityIds.forEach(event -> log.debug("deletionDbId: {}", event));
-
-    assertTrue(allDeletionJpaEventEntityIds.stream().anyMatch(allDeletionJpaEventEntityIds::equals));
+    log.debug(allDeletionJpaEventIdsAfterDeletion.toString());
+    allDeletionJpaEventIdsAfterDeletion.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId));
 
     List<? extends BaseEvent> allAfterDeletion = jpaCacheServiceIF.getAll();
     int sizeAfterDeletion = allAfterDeletion.size();
     log.debug("sizeAfterDeletion: {}", sizeAfterDeletion);
     assertEquals(sizeAfterDeleteMeEvent - 1, sizeAfterDeletion);
 
-    assertTrue(allAfterDeletion.stream().noneMatch(baseEvent::equals));
-    assertTrue(allAfterDeletion.stream().map(BaseEvent::getId).noneMatch(eventToDelete.getId()::equals));
-
-    deleteSecondEvent(sizeAfterDeletion, allDeletionJpaEventEntityIds.size(), eventToDelete.getId());
+    assertTrue(allAfterDeletion.stream().map(BaseEvent::getId).noneMatch(e -> e.equals(eventToDelete.getId())));
+    deleteSecondEvent(sizeAfterDeletion, allDeletionJpaEventIdsAfterDeletion.size(), eventToDelete.getId());
   }
 
   private void deleteSecondEvent(
@@ -234,7 +231,7 @@ public class JpaCacheServiceFormulaEventIT {
     log.debug("sizeAfterSecondDeletion: {}", sizeAfterSecondDeletion);
     assertEquals(sizeAfterSecondDeleteMeEvent - 1, sizeAfterSecondDeletion);
 
-    assertTrue(allAfterSecondDeletion.stream().noneMatch(secondBaseEventToDelete::equals));
+//    assertTrue(allAfterSecondDeletion.stream().noneMatch(secondBaseEventToDelete::equals));
     assertTrue(allAfterSecondDeletion.stream().map(BaseEvent::getId).noneMatch(secondEventToDelete.getId()::equals));
     assertTrue(allAfterSecondDeletion.stream().map(BaseEvent::getId).noneMatch(firstDeletedEventId::equals));
   }

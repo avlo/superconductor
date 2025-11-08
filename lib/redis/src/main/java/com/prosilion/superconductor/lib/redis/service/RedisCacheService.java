@@ -152,12 +152,12 @@ public class RedisCacheService implements RedisCacheServiceIF {
 
   private void deleteEventTags(
       @NonNull EventIF event,
-      @NonNull Consumer<EventIF> addDeletionEvent) {
+      @NonNull Consumer<EventNosqlEntityIF> addDeletionEvent) {
     event.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(EventTag::getIdEvent)
-        .map(this::getEventByEventId)
+        .map(eventNosqlEntityService::findByEventIdString)
         .flatMap(Optional::stream)
         .filter(deletionCandidate ->
             deletionCandidate.getPublicKey().equals(event.getPublicKey()))

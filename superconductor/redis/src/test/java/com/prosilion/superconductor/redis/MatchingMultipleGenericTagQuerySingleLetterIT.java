@@ -7,13 +7,11 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.GenericTagQuery;
-import com.prosilion.nostr.filter.tag.ExternalIdentityTagFilter;
 import com.prosilion.nostr.filter.tag.GenericTagQueryFilter;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.tag.GeohashTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -149,9 +147,7 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
             new GenericTagQueryFilter(
                 new GenericTagQuery("#g", genericTagStringG)),
             new GenericTagQueryFilter(
-                new GenericTagQuery("#h", genericTagStringH)),
-            new ExternalIdentityTagFilter(
-                new ExternalIdentityTag(Kind.BADGE_AWARD_EVENT, unitUpvoteIdentifierTag, formula))));
+                new GenericTagQuery("#h", genericTagStringH))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
@@ -169,11 +165,6 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
         .map(GenericTag.class::cast)
         .map(tag -> tag.getAttributes().stream().map(attribute -> Stream.of(attribute.getValue().toString())
             .filter(s1 -> s1.equals(genericTagStringH))))).count());
-
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getTags().stream()
-        .filter(ExternalIdentityTag.class::isInstance)
-        .map(ExternalIdentityTag.class::cast)
-        .anyMatch(tag -> tag.getIdentifierTag().getUuid().equals(UNIT_UPVOTE))));
 
     assertEquals(1, returnedEvents.size());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));

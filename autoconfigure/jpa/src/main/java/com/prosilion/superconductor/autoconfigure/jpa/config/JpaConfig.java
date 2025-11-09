@@ -21,6 +21,8 @@ import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
 import com.prosilion.superconductor.lib.jpa.service.GenericTagJpaEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
+import com.prosilion.superconductor.lib.jpa.service.KindClassMapService;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,11 +78,17 @@ public class JpaConfig {
   }
 
   @Bean
+  KindClassMapService kindClassMapService(Map<String, String> kindClassStringMap) throws ClassNotFoundException {
+    return new KindClassMapService(kindClassStringMap);
+  }
+  
+  @Bean
   @ConditionalOnMissingBean
   JpaCacheServiceIF cacheIF(
       @NonNull EventJpaEntityService eventJpaEntityService,
-      @NonNull DeletionEventJpaEntityService deletionEventJpaEntityService) {
-    return new JpaCacheService(eventJpaEntityService, deletionEventJpaEntityService);
+      @NonNull DeletionEventJpaEntityService deletionEventJpaEntityService,
+      @NonNull KindClassMapService kindClassMapService) {
+    return new JpaCacheService(eventJpaEntityService, deletionEventJpaEntityService, kindClassMapService);
   }
 
   @Bean

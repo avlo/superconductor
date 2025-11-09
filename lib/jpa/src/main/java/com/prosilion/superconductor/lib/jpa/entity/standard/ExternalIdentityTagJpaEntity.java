@@ -1,9 +1,7 @@
 package com.prosilion.superconductor.lib.jpa.entity.standard;
 
-import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import com.prosilion.superconductor.lib.jpa.dto.standard.ExternalIdentityTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
@@ -23,15 +21,15 @@ import org.springframework.lang.NonNull;
 @Entity
 @Table(name = "external_identity_tag")
 public class ExternalIdentityTagJpaEntity extends AbstractTagJpaEntity {
-  private Integer kind;
-  private String uuid;
-  private String formula;
+  private String platform;
+  private String identity;
+  private String proof;
 
   public ExternalIdentityTagJpaEntity(@NonNull ExternalIdentityTag externalIdentityTag) {
     super("i");
-    this.kind = externalIdentityTag.getKind().getValue();
-    this.uuid = externalIdentityTag.getIdentifierTag().getUuid();
-    this.formula = externalIdentityTag.getFormula();
+    this.platform = externalIdentityTag.getPlatform();
+    this.identity = externalIdentityTag.getIdentity();
+    this.proof = externalIdentityTag.getProof();
   }
 
   @Override
@@ -48,15 +46,11 @@ public class ExternalIdentityTagJpaEntity extends AbstractTagJpaEntity {
   @Override
   @Transient
   public List<String> get() {
-    return Stream.of(
-            kind.toString(),
-            uuid,
-            formula)
-        .toList();
+    return Stream.of(platform, identity, proof).toList();
   }
 
   //  TODO: stream-ify below
   private ExternalIdentityTag createExternalIdentityTag() {
-    return new ExternalIdentityTag(Kind.valueOf(kind), new IdentifierTag(uuid), formula);
+    return new ExternalIdentityTag(platform, identity, proof);
   }
 }

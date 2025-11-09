@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.redis.config;
 
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.controller.ApiUi;
@@ -17,10 +16,11 @@ import com.prosilion.superconductor.lib.redis.repository.DeletionEventNosqlEntit
 import com.prosilion.superconductor.lib.redis.repository.EventNosqlEntityRepository;
 import com.prosilion.superconductor.lib.redis.service.DeletionEventNoSqlEntityService;
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
+import com.prosilion.superconductor.lib.redis.service.KindClassMapService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -70,11 +70,17 @@ public class RedisConfig {
   }
 
   @Bean
+  KindClassMapService kindClassMapService(Map<String, String> kindClassStringMap) throws ClassNotFoundException {
+    return new KindClassMapService(kindClassStringMap);
+  }
+
+  @Bean
   @ConditionalOnMissingBean
   RedisCacheServiceIF cacheIF(
       @NonNull EventNosqlEntityService eventNosqlEntityService,
-      @NonNull DeletionEventNoSqlEntityService deletionEventNoSqlEntityService) {
-    return new RedisCacheService(eventNosqlEntityService, deletionEventNoSqlEntityService);
+      @NonNull DeletionEventNoSqlEntityService deletionEventNoSqlEntityService,
+      @NonNull KindClassMapService kindClassMapService) {
+    return new RedisCacheService(eventNosqlEntityService, deletionEventNoSqlEntityService, kindClassMapService);
   }
 
   @Bean

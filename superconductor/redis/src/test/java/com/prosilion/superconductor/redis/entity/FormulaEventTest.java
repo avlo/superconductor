@@ -4,6 +4,7 @@ import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import java.util.List;
@@ -33,9 +34,16 @@ public class FormulaEventTest {
   final FormulaEvent formulaEventUpvote;
   final FormulaEvent formulaEventDownvote;
 
+  public final static String PLATFORM = FormulaEventTest.class.getPackageName();
+  public final static String IDENTITY = FormulaEventTest.class.getSimpleName();
+  public final static String PROOF = String.valueOf(FormulaEventTest.class.hashCode());
+
+  ExternalIdentityTag externalIdentityTag;
+
   public FormulaEventTest() throws ParseException {
     this.formulaEventUpvote = new FormulaEvent(identity, awardUpvoteEvent, PLUS_ONE_FORMULA);
     this.formulaEventDownvote = new FormulaEvent(identity, awardDownvoteEvent, MINUS_ONE_FORMULA);
+    this.externalIdentityTag = new ExternalIdentityTag(PLATFORM, IDENTITY, PROOF);
   }
 
   @Test
@@ -89,6 +97,7 @@ public class FormulaEventTest {
             identity,
             new IdentifierTag(
                 UNIT_REPUTATION),
+            externalIdentityTag,
             List.of(
                 formulaEventUpvote,
                 formulaEventDownvote)).getContent());
@@ -103,6 +112,7 @@ public class FormulaEventTest {
             identity,
             new IdentifierTag(
                 UNIT_REPUTATION),
+            externalIdentityTag,
             List.of(
                 formulaEventUpvote,
                 new FormulaEvent(

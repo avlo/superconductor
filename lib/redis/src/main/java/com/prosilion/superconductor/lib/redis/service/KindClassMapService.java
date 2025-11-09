@@ -14,22 +14,19 @@ import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 public class KindClassMapService {
   Map<Kind, Class<? extends BaseEvent>> kindClassMap = new HashMap<>();
 
-  public KindClassMapService(Map<String, String> kindClassStringMap) throws ClassNotFoundException {
+  public KindClassMapService(@NonNull Map<String, String> kindClassStringMap) throws ClassNotFoundException {
     for (Map.Entry<String, String> entry : kindClassStringMap.entrySet()) {
-      mapEach(Kind.valueOf(entry.getKey()), entry.getValue());
+      add(Kind.valueOf(entry.getKey()), entry.getValue());
     }
   }
 
-  private void mapEach(Kind kind, String className) throws ClassNotFoundException {
+  private void add(Kind kind, String className) throws ClassNotFoundException {
     Class<? extends BaseEvent> value = (Class<? extends BaseEvent>) Class.forName(className);
     kindClassMap.putIfAbsent(kind, value);
-
   }
 
   @SneakyThrows
-  public BaseEvent createBaseEvent(@NonNull GenericEventRecord genericEventRecord)
-//      throws InvocationTargetException, InstantiationException, IllegalAccessException 
-  {
+  public BaseEvent createBaseEvent(@NonNull GenericEventRecord genericEventRecord) {
     Class<? extends BaseEvent> baseEventFromKind = kindClassMap.get(genericEventRecord.getKind());
     assertNotNull(baseEventFromKind);
 

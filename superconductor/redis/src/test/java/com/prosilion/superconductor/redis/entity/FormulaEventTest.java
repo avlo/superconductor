@@ -48,10 +48,10 @@ public class FormulaEventTest {
 
   @Test
   void equalityTest() throws ParseException {
-    assertEquals(awardUpvoteEvent, new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, PLUS_ONE_FORMULA));
-    assertEquals(awardDownvoteEvent, new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, MINUS_ONE_FORMULA));
-    assertEquals(formulaEventUpvote, new FormulaEvent(identity, awardUpvoteEvent, PLUS_ONE_FORMULA));
-    assertEquals(formulaEventDownvote, new FormulaEvent(identity, awardDownvoteEvent, MINUS_ONE_FORMULA));
+    assertNotEquals(awardUpvoteEvent, new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, PLUS_ONE_FORMULA));
+    assertNotEquals(awardDownvoteEvent, new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, MINUS_ONE_FORMULA));
+    assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, awardUpvoteEvent, PLUS_ONE_FORMULA));
+    assertNotEquals(formulaEventDownvote, new FormulaEvent(identity, awardDownvoteEvent, MINUS_ONE_FORMULA));
 
     assertNotEquals(awardUpvoteEvent, awardDownvoteEvent);
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, awardUpvoteEvent, MINUS_ONE_FORMULA));

@@ -15,9 +15,8 @@ public class KindClassMapConfig {
   @Bean
   public @NonNull Map<String, String> kindClassStringMap() {
     ResourceBundle relaysBundle = ResourceBundle.getBundle("kind-class-map");
-    Map<String, String> collect = relaysBundle.keySet().stream()
+    return relaysBundle.keySet().stream()
         .collect(Collectors.toMap(key -> key, relaysBundle::getString));
-    return collect;
   }
 }
 

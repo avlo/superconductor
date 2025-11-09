@@ -29,16 +29,16 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
-  public BaseEvent createBaseEvent(GenericEventRecord genericEventRecord) {
+  public BaseEvent createBaseEvent(@NonNull GenericEventRecord genericEventRecord) {
     return kindClassMapService.createBaseEvent(genericEventRecord);
   }
-  
+
   @Override
-  public BaseEvent save(EventIF event) {
-    Long save = eventJpaEntityService.save(event);
-    BaseEvent eventByUid = getEventByUid(save).orElseThrow();
-    BaseEvent baseEventFromEntityIF = createBaseEventFromEntityIF(eventByUid);
-    return baseEventFromEntityIF;
+  public BaseEvent save(@NonNull EventIF event) {
+    return createBaseEventFromEntityIF(
+        getEventByUid(
+            eventJpaEntityService.save(event))
+            .orElseThrow());
   }
 
   @Override
@@ -49,7 +49,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
-  public Optional<? extends BaseEvent> getEventByUid(Long id) {
+  public Optional<? extends BaseEvent> getEventByUid(@NonNull Long id) {
     Optional<EventJpaEntityIF> eventByUid = eventJpaEntityService.getEventByUid(id);
     Optional<? extends BaseEvent> first = eventByUid.map(this::createBaseEventFromEntityIF);
     return first;

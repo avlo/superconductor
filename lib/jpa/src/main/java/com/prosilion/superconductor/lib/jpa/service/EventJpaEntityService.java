@@ -51,12 +51,9 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
   @Override
   public Long save(@NonNull EventIF genericEventKindIF) {
     try {
-      EventJpaEntity save = eventJpaEntityRepository.save(
-          convertDtoToEntity(genericEventKindIF));
-      Long savedEntityId = Optional.of(
-              save)
-          .map(EventJpaEntityIF::getUid)
-          .orElseThrow(NoResultException::new);
+      Long savedEntityId = eventJpaEntityRepository.save(
+              convertDtoToEntity(genericEventKindIF))
+          .getUid();
 
       concreteTagEntitiesService.saveTags(savedEntityId, genericEventKindIF.getTags());
       genericTagJpaEntitiesService.saveGenericTags(savedEntityId, genericEventKindIF.getTags());

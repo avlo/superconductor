@@ -48,7 +48,6 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
   private final String eventId = Factory.generateRandomHex64String();
   private final String genericTagStringG = Factory.generateRandomHex64String();
   private final String genericTagStringH = Factory.generateRandomHex64String();
-  private final IdentifierTag unitUpvoteIdentifierTag = new IdentifierTag(UNIT_UPVOTE);
   private final String formula = "+1";
 
   @Autowired
@@ -187,10 +186,6 @@ class MatchingMultipleGenericTagQuerySingleLetterIT {
         "      [\n" +
         "        \"h\",\n" +
         "        \"" + genericTagStringH + "\"\n" +
-        "      ],\n" +
-        "      [\n" +
-        "        \"i\",\n" +
-        "        \"" + Kind.BADGE_AWARD_EVENT.getValue() + ":" + UNIT_UPVOTE + ":" + formula + "\"\n" +
         "      ]\n" +
         "    ],\n" +
         "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"\n" +

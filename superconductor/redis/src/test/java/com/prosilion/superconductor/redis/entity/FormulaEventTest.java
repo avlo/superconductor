@@ -91,7 +91,7 @@ public class FormulaEventTest {
   }
 
   @Test
-  void consoleLogTest() throws ParseException {
+  void formulaContentTest() throws ParseException {
     assertEquals("UNIT_REPUTATION == (previous)UNIT_REPUTATION +1(UNIT_UPVOTE) -1(UNIT_DOWNVOTE)",
         new BadgeDefinitionReputationEvent(
             identity,

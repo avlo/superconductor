@@ -127,7 +127,7 @@ public class EventJpaEntity implements EventJpaEntityIF {
 
   @Override
   public Signature getSignature() {
-    return Signature.fromString(signature);
+    return new Signature(signature);
   }
 
   @Override

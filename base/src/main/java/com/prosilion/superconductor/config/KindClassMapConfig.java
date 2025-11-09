@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.redis.config;
+package com.prosilion.superconductor.config;
 
 import java.util.Map;
 import java.util.ResourceBundle;

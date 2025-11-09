@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.lib.redis.service;
+package com.prosilion.superconductor.base.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
@@ -20,7 +20,7 @@ public class KindClassMapService {
     }
   }
 
-  private void add(Kind kind, String className) throws ClassNotFoundException {
+  public void add(Kind kind, String className) throws ClassNotFoundException {
     Class<? extends BaseEvent> value = (Class<? extends BaseEvent>) Class.forName(className);
     kindClassMap.putIfAbsent(kind, value);
   }

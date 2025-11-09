@@ -16,7 +16,7 @@ import com.prosilion.superconductor.lib.redis.repository.DeletionEventNosqlEntit
 import com.prosilion.superconductor.lib.redis.repository.EventNosqlEntityRepository;
 import com.prosilion.superconductor.lib.redis.service.DeletionEventNoSqlEntityService;
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
-import com.prosilion.superconductor.lib.redis.service.KindClassMapService;
+import com.prosilion.superconductor.base.service.KindClassMapService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 import java.util.List;
@@ -70,7 +70,7 @@ public class RedisConfig {
   }
 
   @Bean
-  KindClassMapService kindClassMapService(Map<String, String> kindClassStringMap) throws ClassNotFoundException {
+  KindClassMapService kindClassMapService(@NonNull Map<String, String> kindClassStringMap) throws ClassNotFoundException {
     return new KindClassMapService(kindClassStringMap);
   }
 

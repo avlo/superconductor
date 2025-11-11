@@ -20,7 +20,7 @@ public class KindClassMapService {
     }
   }
 
-  public void add(Kind kind, String className) throws ClassNotFoundException {
+  public void add(@NonNull Kind kind, @NonNull String className) throws ClassNotFoundException {
     Class<? extends BaseEvent> value = (Class<? extends BaseEvent>) Class.forName(className);
     kindClassMap.putIfAbsent(kind, value);
   }
@@ -40,9 +40,5 @@ public class KindClassMapService {
     BaseEvent event = constructor.newInstance(genericEventRecord);
     return event;
 
-  }
-
-  Class<? extends BaseEvent> get(Kind kind) {
-    return kindClassMap.get(kind);
   }
 }

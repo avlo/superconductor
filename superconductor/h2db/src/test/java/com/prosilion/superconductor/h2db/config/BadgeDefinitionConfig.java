@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.h2db.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
@@ -25,12 +26,16 @@ public class BadgeDefinitionConfig {
   }
 
   @Bean
-  BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent(@NonNull Identity superconductorInstanceIdentity) {
-    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_UPVOTE.getName()));
+  BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent(
+      @NonNull Identity superconductorInstanceIdentity,
+      @NonNull String superconductorRelayUrl) {
+    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_UPVOTE.getName()), new Relay(superconductorRelayUrl));
   }
 
   @Bean
-  BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent(@NonNull Identity superconductorInstanceIdentity) {
-    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_DOWNVOTE.getName()));
+  BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent(
+      @NonNull Identity superconductorInstanceIdentity,
+      @NonNull String superconductorRelayUrl) {
+    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_DOWNVOTE.getName()), new Relay(superconductorRelayUrl));
   }
 }

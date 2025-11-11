@@ -2,6 +2,7 @@ package com.prosilion.superconductor.redis;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -35,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     "spring.data.redis.port=6380"
 })
 public class BadgeAwardUpvoteEventMessageAuthIT {
+  public static final Relay relay = new Relay("ws://localhost:5555");
   private final NostrRelayServiceRedis nostrRelayService;
   private final BadgeAwardUpvoteRedisEvent event;
 
@@ -50,7 +52,8 @@ public class BadgeAwardUpvoteEventMessageAuthIT {
         Identity.generateRandomIdentity().getPublicKey(),
         new BadgeDefinitionAwardEvent(
             superconductorInstanceIdentity,
-            new IdentifierTag(TestKindType.UNIT_UPVOTE.getName())));
+            new IdentifierTag(TestKindType.UNIT_UPVOTE.getName()),
+            relay));
   }
 
   @Test

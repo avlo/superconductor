@@ -3,6 +3,7 @@ package com.prosilion.superconductor.lib.redis.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.EventTagsMappedEventsIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -39,8 +40,11 @@ public class RedisCacheService implements RedisCacheServiceIF {
 
   @Override
   public BaseEvent save(EventIF event) {
+    if (event instanceof EventTagsMappedEventsIF) {
+      EventTagsMappedEventsIF eventTagsMappedEventsIF = (EventTagsMappedEventsIF) event;
+    }
+    
     EventNosqlEntityIF eventNosqlEntityIF = eventNosqlEntityService.save(event);
-//    T baseEventFromEntityIF = createBaseEventFromEntityIF(eventNosqlEntityIF);
     BaseEvent baseEventFromEntityIF = createBaseEventFromEntityIF(eventNosqlEntityIF);
     return baseEventFromEntityIF;
   }

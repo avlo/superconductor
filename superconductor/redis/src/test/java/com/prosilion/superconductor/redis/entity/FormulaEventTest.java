@@ -4,6 +4,7 @@ import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
@@ -16,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FormulaEventTest {
+  public static final Relay relay = new Relay("ws://localhost:5555");
+
   public final static String UNIT_REPUTATION = "UNIT_REPUTATION";
   public final static String UNIT_UPVOTE = "UNIT_UPVOTE";
   public final static String UNIT_DOWNVOTE = "UNIT_DOWNVOTE";
@@ -28,8 +31,8 @@ public class FormulaEventTest {
   public final String PLUS_ONE_FORMULA = "+1";
   public final String MINUS_ONE_FORMULA = "-1";
 
-  final BadgeDefinitionAwardEvent awardUpvoteEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, PLUS_ONE_FORMULA);
-  final BadgeDefinitionAwardEvent awardDownvoteEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, MINUS_ONE_FORMULA);
+  final BadgeDefinitionAwardEvent awardUpvoteEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
+  final BadgeDefinitionAwardEvent awardDownvoteEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA);
 
   final FormulaEvent formulaEventUpvote;
   final FormulaEvent formulaEventDownvote;
@@ -48,15 +51,15 @@ public class FormulaEventTest {
 
   @Test
   void equalityTest() throws ParseException {
-    assertNotEquals(awardUpvoteEvent, new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, PLUS_ONE_FORMULA));
-    assertNotEquals(awardDownvoteEvent, new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, MINUS_ONE_FORMULA));
+    assertNotEquals(awardUpvoteEvent, new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA));
+    assertNotEquals(awardDownvoteEvent, new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA));
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, awardUpvoteEvent, PLUS_ONE_FORMULA));
     assertNotEquals(formulaEventDownvote, new FormulaEvent(identity, awardDownvoteEvent, MINUS_ONE_FORMULA));
 
     assertNotEquals(awardUpvoteEvent, awardDownvoteEvent);
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, awardUpvoteEvent, MINUS_ONE_FORMULA));
 
-    BadgeDefinitionAwardEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionAwardEvent(Identity.generateRandomIdentity(), upvoteIdentifierTag, PLUS_ONE_FORMULA);
+    BadgeDefinitionAwardEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionAwardEvent(Identity.generateRandomIdentity(), upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
     assertNotEquals(awardUpvoteEvent, awardUpvoteEventDifferentIdentity);
     assertNotEquals(awardUpvoteEventDifferentIdentity, awardUpvoteEvent);
 
@@ -67,7 +70,7 @@ public class FormulaEventTest {
 
   @Test
   void testBlankFormula() {
-    BadgeDefinitionAwardEvent blankFormulaAwardEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, "");
+    BadgeDefinitionAwardEvent blankFormulaAwardEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay);
 
     assertTrue(
         assertThrows(
@@ -78,14 +81,14 @@ public class FormulaEventTest {
 
   @Test
   void testDifferentContent() {
-    BadgeDefinitionAwardEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, "+2");
+    BadgeDefinitionAwardEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, "+2");
     assertNotEquals(awardUpvoteEvent, awardUpvoteEventDifferentIdentity);
   }
 
   @Test
   void testDifferentContentDto() throws ParseException {
     BadgeDefinitionAwardEvent differentContentDto = new BadgeDefinitionAwardEvent(
-        identity, upvoteIdentifierTag, UNIT_UPVOTE);
+        identity, upvoteIdentifierTag, relay, UNIT_UPVOTE);
 
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, differentContentDto, "+2"));
   }
@@ -97,6 +100,7 @@ public class FormulaEventTest {
             identity,
             new IdentifierTag(
                 UNIT_REPUTATION),
+            relay,
             externalIdentityTag,
             List.of(
                 formulaEventUpvote,
@@ -105,13 +109,14 @@ public class FormulaEventTest {
     String UNIT_UPVOTE_UNIQUE = "UNIT_UPVOTE_UNIQUE";
     String UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA = "+1";
     IdentifierTag upvoteUniqueIdentifierTag = new IdentifierTag(UNIT_UPVOTE_UNIQUE);
-    BadgeDefinitionAwardEvent awardUniqueUpvoteEvent = new BadgeDefinitionAwardEvent(identity, upvoteUniqueIdentifierTag, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA);
+    BadgeDefinitionAwardEvent awardUniqueUpvoteEvent = new BadgeDefinitionAwardEvent(identity, upvoteUniqueIdentifierTag, relay, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA);
 
     assertEquals("UNIT_REPUTATION == (previous)UNIT_REPUTATION +1(UNIT_UPVOTE) +1(UNIT_UPVOTE_UNIQUE)",
         new BadgeDefinitionReputationEvent(
             identity,
             new IdentifierTag(
                 UNIT_REPUTATION),
+            relay,
             externalIdentityTag,
             List.of(
                 formulaEventUpvote,

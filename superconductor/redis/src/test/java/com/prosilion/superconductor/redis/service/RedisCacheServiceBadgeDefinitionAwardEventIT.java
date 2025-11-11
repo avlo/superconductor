@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @ActiveProfiles("test")
 public class RedisCacheServiceBadgeDefinitionAwardEventIT {
+  public static final Relay relay = new Relay("ws://localhost:5555");
   private static final Identity IDENTITY = Factory.createNewIdentity();
 
   private final RedisCacheServiceIF redisCacheService;
@@ -41,7 +43,7 @@ public class RedisCacheServiceBadgeDefinitionAwardEventIT {
   @Autowired
   public RedisCacheServiceBadgeDefinitionAwardEventIT(RedisCacheServiceIF redisCacheServiceIF) {
     this.redisCacheService = redisCacheServiceIF;
-    this.badgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(IDENTITY, upvoteIdentifierTag, PLUS_ONE_FORMULA);
+    this.badgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(IDENTITY, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
     this.eventNosqlEntityIFBadgeDefinitionAwardEvent = redisCacheServiceIF.save(this.badgeDefinitionAwardEvent);
   }
 
@@ -130,6 +132,7 @@ public class RedisCacheServiceBadgeDefinitionAwardEventIT {
         new BadgeDefinitionAwardEvent(
             IDENTITY,
             upvoteIdentifierTag,
+            relay,
             PLUS_ONE_FORMULA),
         PLUS_ONE_FORMULA);
     assertEquals(eventToDelete.getId(), redisCacheService.save(eventToDelete).getId());
@@ -181,7 +184,7 @@ public class RedisCacheServiceBadgeDefinitionAwardEventIT {
 
     FormulaEvent secondEventToDelete =
         new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
-            IDENTITY, upvoteIdentifierTag, PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
+            IDENTITY, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
     assertEquals(secondEventToDelete.getId(), redisCacheService.save(secondEventToDelete).getId());
 
     List<? extends BaseEvent> allAfterSecondDeleteMeEvent = redisCacheService.getAll();

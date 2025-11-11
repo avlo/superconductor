@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
@@ -21,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @ActiveProfiles("test")
 public class RedisCacheServiceFormulaEventIT {
+  public static final Relay relay = new Relay("ws://localhost:5555");
   private static final Identity IDENTITY = Factory.createNewIdentity();
 
   private final RedisCacheServiceIF redisCacheService;
@@ -47,10 +50,17 @@ public class RedisCacheServiceFormulaEventIT {
         new FormulaEvent(
             IDENTITY,
             new BadgeDefinitionAwardEvent(
-                IDENTITY, upvoteIdentifierTag, AWARD_EVENT_CONTENT),
+                IDENTITY, upvoteIdentifierTag, relay, AWARD_EVENT_CONTENT),
             PLUS_ONE_FORMULA);
 
     this.eventNosqlEntityIFFormulaEvent = redisCacheServiceIF.save(this.formulaEvent);
+  }
+
+  @Test
+  void testGetBadDefinitionAwardEventFromFormulaEvent() {
+    BaseEvent event = redisCacheService.getEventByEventId(eventNosqlEntityIFFormulaEvent.getId()).orElseThrow();
+    log.info(event.toString());
+    assertInstanceOf(FormulaEvent.class, event);
   }
 
   @Test
@@ -67,13 +77,11 @@ public class RedisCacheServiceFormulaEventIT {
     EventIF firstRetrievedEventEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIFFormulaEvent.getId()).orElseThrow();
     assertEquals(eventNosqlEntityIFFormulaEvent.getId(), firstRetrievedEventEntityIF.getId());
 
-//    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded    
     assertEquals(formulaEvent, firstRetrievedEventEntityIF);
 
     BaseEvent secondRetrievedEntityIF = redisCacheService.getEventByEventId(eventNosqlEntityIFFormulaEvent.getId()).orElseThrow();
     assertEquals(eventNosqlEntityIFFormulaEvent.getId(), secondRetrievedEntityIF.getId());
 
-//    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded
     assertEquals(firstRetrievedEventEntityIF, secondRetrievedEntityIF);
   }
 
@@ -139,6 +147,7 @@ public class RedisCacheServiceFormulaEventIT {
         new BadgeDefinitionAwardEvent(
             IDENTITY,
             upvoteIdentifierTag,
+            relay, 
             AWARD_EVENT_CONTENT),
         PLUS_ONE_FORMULA);
     assertEquals(eventToDelete.getId(), redisCacheService.save(eventToDelete).getId());
@@ -150,7 +159,7 @@ public class RedisCacheServiceFormulaEventIT {
 
     assertTrue(allAfterDeleteMeEvent.stream()
         .anyMatch(e -> e.equals(eventToDelete)));
-    
+
     assertTrue(allAfterDeleteMeEvent.stream()
         .map(BaseEvent::getId)
         .anyMatch(e -> e.equals(eventToDelete.getId())));
@@ -193,7 +202,8 @@ public class RedisCacheServiceFormulaEventIT {
 
     FormulaEvent secondEventToDelete =
         new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
-            IDENTITY, upvoteIdentifierTag, AWARD_EVENT_CONTENT), PLUS_ONE_FORMULA);
+            IDENTITY, upvoteIdentifierTag, relay, 
+            AWARD_EVENT_CONTENT), PLUS_ONE_FORMULA);
     assertEquals(secondEventToDelete.getId(), redisCacheService.save(secondEventToDelete).getId());
 
     List<? extends BaseEvent> allAfterSecondDeleteMeEvent = redisCacheService.getAll();

@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class JpaCacheServiceFormulaEventIT {
+  public static final Relay relay = new Relay("ws://localhost:5555");
   private static final Identity IDENTITY = Factory.createNewIdentity();
 
   private final JpaCacheServiceIF jpaCacheServiceIF;
@@ -49,6 +51,7 @@ public class JpaCacheServiceFormulaEventIT {
             new BadgeDefinitionAwardEvent(
                 IDENTITY,
                 upvoteIdentifierTag,
+                relay,
                 PLUS_ONE_FORMULA),
             PLUS_ONE_FORMULA);
 
@@ -143,6 +146,7 @@ public class JpaCacheServiceFormulaEventIT {
         new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
             IDENTITY,
             upvoteIdentifierTag,
+            relay,
             PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
     assertEquals(eventToDelete.getId(), jpaCacheServiceIF.save(eventToDelete).getId());
 
@@ -196,6 +200,7 @@ public class JpaCacheServiceFormulaEventIT {
         new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
             IDENTITY,
             upvoteIdentifierTag,
+            relay,
             PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
     BaseEvent secondBaseEventToDelete = jpaCacheServiceIF.save(secondEventToDelete);
 

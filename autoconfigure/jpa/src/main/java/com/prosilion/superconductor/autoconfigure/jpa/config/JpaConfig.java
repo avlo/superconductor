@@ -6,7 +6,7 @@ import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
-import com.prosilion.superconductor.base.service.KindClassMapService;
+import com.prosilion.superconductor.base.service.CacheKindClassMapService;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
@@ -76,17 +76,16 @@ public class JpaConfig {
   }
 
   @Bean
-  KindClassMapService kindClassMapService(Map<String, String> kindClassStringMap) throws ClassNotFoundException {
-    return new KindClassMapService(kindClassStringMap);
+  CacheKindClassMapService kindClassMapService(Map<String, String> kindClassStringMap) throws ClassNotFoundException {
+    return new CacheKindClassMapService(kindClassStringMap);
   }
 
   @Bean
   @ConditionalOnMissingBean
   JpaCacheServiceIF cacheIF(
       @NonNull EventJpaEntityService eventJpaEntityService,
-      @NonNull DeletionEventJpaEntityService deletionEventJpaEntityService,
-      @NonNull KindClassMapService kindClassMapService) {
-    return new JpaCacheService(eventJpaEntityService, deletionEventJpaEntityService, kindClassMapService);
+      @NonNull DeletionEventJpaEntityService deletionEventJpaEntityService) {
+    return new JpaCacheService(eventJpaEntityService, deletionEventJpaEntityService);
   }
 
   @Bean

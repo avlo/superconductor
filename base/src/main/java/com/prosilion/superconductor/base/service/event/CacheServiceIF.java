@@ -4,19 +4,23 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Optional;
+import lombok.SneakyThrows;
+import org.springframework.lang.NonNull;
+
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
 public interface CacheServiceIF {
-  BaseEvent save(EventIF event);
-  List<? extends BaseEvent> getAll();
-  Optional<? extends BaseEvent> getEventByEventId(String eventId);
-  List<? extends BaseEvent> getByKind(Kind kind);
+  GenericEventRecord save(EventIF event);
+  List<GenericEventRecord> getAll();
+  Optional<GenericEventRecord> getEventByEventId(String eventId);
+  List<GenericEventRecord> getByKind(Kind kind);
   <U extends EventIF> void deleteEvent(U eventIF);
-  BaseEvent createBaseEvent(GenericEventRecord genericEventRecord);
 
-  default BaseEvent createBaseEventFromEntityIF(EventIF eventIF) {
-    GenericEventRecord genericEventRecord = new GenericEventRecord(
+  default GenericEventRecord createGenericEventRecordFromEntityIF(EventIF eventIF) {
+    return new GenericEventRecord(
         eventIF.getId(),
         eventIF.getPublicKey(),
         eventIF.getCreatedAt(),
@@ -24,6 +28,23 @@ public interface CacheServiceIF {
         eventIF.getTags(),
         eventIF.getContent(),
         eventIF.getSignature());
-    return createBaseEvent(genericEventRecord);
+  }
+
+  @SneakyThrows
+  default <T extends BaseEvent> T createBaseEvent(
+      @NonNull GenericEventRecord genericEventRecord,
+      @NonNull Class<T> baseEventFromKind) {
+    assertNotNull(baseEventFromKind);
+
+    Constructor<T> constructor = null;
+    try {
+      constructor = baseEventFromKind.getConstructor(GenericEventRecord.class);
+    } catch (NoSuchMethodException e) {
+      throw new RuntimeException(e);
+    }
+
+    T event = constructor.newInstance(genericEventRecord);
+    return event;
+
   }
 }

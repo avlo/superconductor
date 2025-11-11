@@ -35,9 +35,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TextNoteEventMessageH2dbIT {
   private final NostrRelayService nostrRelayService;
 
-  private final static Identity identity = Identity.generateRandomIdentity();
+  private static final Identity identity = Identity.generateRandomIdentity();
   private final String eventId;
-  private final static String globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
+  private static final String globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
   private final String content;
 
   @Autowired

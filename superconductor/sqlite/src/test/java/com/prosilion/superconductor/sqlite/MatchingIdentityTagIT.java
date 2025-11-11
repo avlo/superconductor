@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class MatchingIdentityTagIT {
   private final NostrRelayService nostrRelayService;
-  private final static String eventId = Factory.generateRandomHex64String();
+  private static final String eventId = Factory.generateRandomHex64String();
   private final String uuid = Factory.generateRandomHex64String();
 
   @Autowired

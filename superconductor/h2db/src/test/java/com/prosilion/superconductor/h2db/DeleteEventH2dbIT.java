@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DeleteEventH2dbIT {
   private final NostrRelayService nostrRelayService;
 
-  private final static Identity identity = Identity.generateRandomIdentity();
+  private static final Identity identity = Identity.generateRandomIdentity();
   private final String eventIdToDeleteId;
   private final String deletionEventId;
 

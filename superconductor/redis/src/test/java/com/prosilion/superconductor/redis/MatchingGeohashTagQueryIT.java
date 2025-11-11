@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class MatchingGeohashTagQueryIT {
   private final NostrRelayServiceRedis nostrRelayService;
-  private final static String subscriberId = Factory.generateRandomHex64String();
+  private static final String subscriberId = Factory.generateRandomHex64String();
   private final String eventId = Factory.generateRandomHex64String();
   private final String geohashTagString = Factory.generateRandomHex64String();
 

@@ -41,7 +41,7 @@ class EventNosqlEntityServiceIT {
   private final HashtagTag t_tag;
   private final PriceTag price_tag;
   private final String content;
-  private final static Kind KIND = Kind.TEXT_NOTE;
+  private static final Kind KIND = Kind.TEXT_NOTE;
 
   private final EventNosqlEntityService eventNosqlEntityService;
   private final EventNosqlEntityIF eventNosqlEntity;

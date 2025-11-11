@@ -39,8 +39,8 @@ class EventJpaEntityServiceH2DbIT {
   private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(EventJpaEntityServiceH2DbIT.class);
   private static final PriceTag PRICE_TAG = Factory.createPriceTag();
 
-  private final static String CONTENT = Factory.lorumIpsum(EventJpaEntityServiceH2DbIT.class);
-  private final static Kind KIND = Kind.TEXT_NOTE;
+  private static final String CONTENT = Factory.lorumIpsum(EventJpaEntityServiceH2DbIT.class);
+  private static final Kind KIND = Kind.TEXT_NOTE;
 
   private final EventJpaEntityService eventJpaEntityService;
 

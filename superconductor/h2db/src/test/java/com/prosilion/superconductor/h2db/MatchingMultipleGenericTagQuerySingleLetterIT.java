@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 @TestMethodOrder(OrderAnnotation.class)
 class MatchingMultipleGenericTagQuerySingleLetterIT {
-  private final static String UNIT_UPVOTE = "UNIT_UPVOTE";
+  private static final String UNIT_UPVOTE = "UNIT_UPVOTE";
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
   private final String genericTagStringG = Factory.generateRandomHex64String();

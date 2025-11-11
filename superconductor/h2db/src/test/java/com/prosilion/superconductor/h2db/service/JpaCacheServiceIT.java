@@ -43,7 +43,7 @@ public class JpaCacheServiceIT {
   private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(JpaCacheServiceIT.class);
   private static final PriceTag PRICE_TAG = Factory.createPriceTag();
 
-  private final static String CONTENT = Factory.lorumIpsum(JpaCacheServiceIT.class);
+  private static final String CONTENT = Factory.lorumIpsum(JpaCacheServiceIT.class);
 
   private final JpaCacheServiceIF jpaCacheServiceIF;
   private final TextNoteEvent textNoteEvent;

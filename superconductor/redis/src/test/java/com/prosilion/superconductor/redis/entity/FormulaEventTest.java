@@ -19,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FormulaEventTest {
   public static final Relay relay = new Relay("ws://localhost:5555");
 
-  public final static String UNIT_REPUTATION = "UNIT_REPUTATION";
-  public final static String UNIT_UPVOTE = "UNIT_UPVOTE";
-  public final static String UNIT_DOWNVOTE = "UNIT_DOWNVOTE";
+  public static final String UNIT_REPUTATION = "UNIT_REPUTATION";
+  public static final String UNIT_UPVOTE = "UNIT_UPVOTE";
+  public static final String UNIT_DOWNVOTE = "UNIT_DOWNVOTE";
 
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(UNIT_UPVOTE);
   public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(UNIT_DOWNVOTE);
@@ -37,9 +37,9 @@ public class FormulaEventTest {
   final FormulaEvent formulaEventUpvote;
   final FormulaEvent formulaEventDownvote;
 
-  public final static String PLATFORM = FormulaEventTest.class.getPackageName();
-  public final static String IDENTITY = FormulaEventTest.class.getSimpleName();
-  public final static String PROOF = String.valueOf(FormulaEventTest.class.hashCode());
+  public static final String PLATFORM = FormulaEventTest.class.getPackageName();
+  public static final String IDENTITY = FormulaEventTest.class.getSimpleName();
+  public static final String PROOF = String.valueOf(FormulaEventTest.class.hashCode());
 
   ExternalIdentityTag externalIdentityTag;
 

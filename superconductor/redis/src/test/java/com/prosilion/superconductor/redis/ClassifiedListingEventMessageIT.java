@@ -70,9 +70,9 @@ public class ClassifiedListingEventMessageIT {
   public static final String CLASSIFIED_LISTING_SUMMARY = "classified listing summary";
   public static final String CLASSIFIED_LISTING_LOCATION = "classified listing location";
 
-  private final static Identity identity = Identity.generateRandomIdentity();
+  private static final Identity identity = Identity.generateRandomIdentity();
   private final String eventId;
-  private final static String globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
+  private static final String globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
   private final String content;
 
   @Autowired

@@ -18,9 +18,9 @@ import static com.prosilion.superconductor.redis.entity.FormulaEventTest.UNIT_UP
 public class BadgeDefinitionReputationEventTest {
   public static final Relay relay = new Relay("ws://localhost:5555");
 
-  private final static String PLATFORM = BadgeDefinitionReputationEvent.class.getPackageName();
-  private final static String IDENTITY = BadgeDefinitionReputationEvent.class.getSimpleName();
-  private final static String PROOF = String.valueOf(BadgeDefinitionReputationEvent.class.hashCode());
+  private static final String PLATFORM = BadgeDefinitionReputationEvent.class.getPackageName();
+  private static final String IDENTITY = BadgeDefinitionReputationEvent.class.getSimpleName();
+  private static final String PROOF = String.valueOf(BadgeDefinitionReputationEvent.class.hashCode());
   private final Identity identity = Identity.generateRandomIdentity();
 
   private final String PLUS_ONE = "+1";

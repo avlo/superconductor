@@ -34,10 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class MatchingKindAuthorIdentityTagIT {
   private final NostrRelayService nostrRelayService;
-  private final static String uuid = Factory.generateRandomHex64String();
-  private final static String eventId = Factory.generateRandomHex64String();
-  private final static String authorPubKey = Factory.generateRandomHex64String();
-  private final static String content = Factory.lorumIpsum();
+  private static final String uuid = Factory.generateRandomHex64String();
+  private static final String eventId = Factory.generateRandomHex64String();
+  private static final String authorPubKey = Factory.generateRandomHex64String();
+  private static final String content = Factory.lorumIpsum();
 
   @Autowired
   MatchingKindAuthorIdentityTagIT(@NonNull NostrRelayService nostrRelayService) throws IOException {

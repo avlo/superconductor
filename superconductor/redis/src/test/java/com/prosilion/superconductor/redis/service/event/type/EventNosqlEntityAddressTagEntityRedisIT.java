@@ -31,7 +31,7 @@ class EventNosqlEntityAddressTagEntityRedisIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
   private static final PublicKey ADDRESS_TAG_PUBLIC_KEY = Factory.createNewIdentity().getPublicKey();
 
-  private final static String CONTENT = Factory.lorumIpsum(EventNosqlEntityAddressTagEntityRedisIT.class);
+  private static final String CONTENT = Factory.lorumIpsum(EventNosqlEntityAddressTagEntityRedisIT.class);
   public static final Kind KIND = Kind.BADGE_AWARD_EVENT;
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(
       "REPUTATION_UUID-needs_proper_attention");

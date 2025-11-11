@@ -42,7 +42,7 @@ public class RedisCacheServiceIT {
   private static final SubjectTag SUBJECT_TAG = Factory.createSubjectTag(RedisCacheServiceIT.class);
   private static final PriceTag PRICE_TAG = Factory.createPriceTag();
 
-  private final static String CONTENT = Factory.lorumIpsum(RedisCacheServiceIT.class);
+  private static final String CONTENT = Factory.lorumIpsum(RedisCacheServiceIT.class);
 
   private final RedisCacheServiceIF redisCacheService;
   private final TextNoteEvent textNoteEvent;

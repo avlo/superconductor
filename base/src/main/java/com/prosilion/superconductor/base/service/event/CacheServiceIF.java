@@ -4,9 +4,11 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.tag.EventTag;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.SneakyThrows;
 import org.springframework.lang.NonNull;
 
@@ -31,19 +33,29 @@ public interface CacheServiceIF {
   }
 
   @SneakyThrows
-  default <T extends BaseEvent> T createBaseEvent(
+  default <U extends BaseEvent> U createBaseEvent(
       @NonNull GenericEventRecord genericEventRecord,
-      @NonNull Class<T> baseEventFromKind) {
+      @NonNull Class<U> baseEventFromKind,
+      Function<EventTag, ? extends BaseEvent> exampleFunction) {
     assertNotNull(baseEventFromKind);
 
-    Constructor<T> constructor = null;
+    Constructor<U> constructor;
     try {
-      constructor = baseEventFromKind.getConstructor(GenericEventRecord.class);
+      constructor = baseEventFromKind.getConstructor(GenericEventRecord.class, Function.class);
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
 
-    T event = constructor.newInstance(genericEventRecord);
+    U event = constructor.newInstance(genericEventRecord, exampleFunction);
+
+//    exampleFunction = params -> {
+//      try {
+//        event = constructor.newInstance(genericEventRecord, params[0]); // params[0] is the Function<String, String>
+//      } catch (Exception e) {
+//        e.printStackTrace();
+//        return null;
+//      }
+//    };
     return event;
 
   }

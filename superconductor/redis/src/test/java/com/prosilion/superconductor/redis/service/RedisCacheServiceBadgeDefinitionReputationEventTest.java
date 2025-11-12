@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.redis.entity;
+package com.prosilion.superconductor.redis.service;
 
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
@@ -25,7 +25,7 @@ import static com.prosilion.superconductor.redis.entity.FormulaEventTest.UNIT_UP
 @EmbeddedRedisStandalone
 @SpringBootTest
 @ActiveProfiles("test")
-public class BadgeDefinitionReputationEventTest {
+public class RedisCacheServiceBadgeDefinitionReputationEventTest {
   public static final Relay relay = new Relay("ws://localhost:5555");
 
   private static final String PLATFORM = BadgeDefinitionReputationEvent.class.getPackageName();
@@ -46,7 +46,7 @@ public class BadgeDefinitionReputationEventTest {
   private final RedisCacheServiceIF redisCacheServiceIF;
 
   @Autowired
-  public BadgeDefinitionReputationEventTest(RedisCacheServiceIF redisCacheServiceIF) {
+  public RedisCacheServiceBadgeDefinitionReputationEventTest(RedisCacheServiceIF redisCacheServiceIF) {
     this.redisCacheServiceIF = redisCacheServiceIF;
   }
 
@@ -65,6 +65,11 @@ public class BadgeDefinitionReputationEventTest {
                 PLUS_ONE)));
   }
 
+  @Test
+  void testMissingFormulaEvent() throws ParseException {
+    
+  }
+  
   @Test
   void testUnmarshallUpvoteDownvoteFormula() throws ParseException {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(

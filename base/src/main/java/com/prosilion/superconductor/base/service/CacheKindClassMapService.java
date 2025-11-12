@@ -1,21 +1,20 @@
 package com.prosilion.superconductor.base.service;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BaseEvent;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.lang.NonNull;
 
-public class CacheKindClassMapService<T extends BaseEvent> {
-  Map<Kind, CacheEventMapServiceIF<T>> kindClassMap = new HashMap<>();
+public class CacheKindClassMapService {
+  Map<Kind, CacheEventTagBaseEventServiceIF> kindClassMap = new HashMap<>();
 
-  public CacheKindClassMapService(@NonNull Map<String, CacheEventMapServiceIF<T>> kindClassStringMap) throws ClassNotFoundException {
-    for (Map.Entry<String, CacheEventMapServiceIF<T>> entry : kindClassStringMap.entrySet()) {
-      add(Kind.valueOf(entry.getKey()), entry.getValue());
-    }
+  public CacheKindClassMapService(@NonNull List<CacheEventTagBaseEventServiceIF> cacheEventTagBaseEventServiceIFS) {
+    cacheEventTagBaseEventServiceIFS.forEach(kindClassMap ->
+        add(kindClassMap.getKind(), kindClassMap));
   }
 
-  public void add(@NonNull Kind kind, @NonNull CacheEventMapServiceIF<T> value) throws ClassNotFoundException {
+  public void add(@NonNull Kind kind, @NonNull CacheEventTagBaseEventServiceIF value) {
     kindClassMap.putIfAbsent(kind, value);
   }
 }

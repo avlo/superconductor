@@ -5,10 +5,13 @@ import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,6 +71,24 @@ public class FormulaEventTest {
     assertNotEquals(formulaEventUpvoteDtoDifferentIdentity, formulaEventUpvote);
   }
 
+  Function<EventTag, BadgeDefinitionAwardEvent> fxn = eventTag ->
+      Stream.of(awardUpvoteEvent).filter(formulaEvent ->
+          formulaEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
+  
+  @Test
+  void testGenericEventRecordFormulaEventCreation() throws ParseException {
+    FormulaEvent expected = new FormulaEvent(
+        identity,
+        awardUpvoteEvent,
+        "+1");
+
+    assertEquals(
+        expected.getBadgeDefinitionAwardEvent(),
+        new FormulaEvent(
+            expected.getGenericEventRecord(),
+            fxn).getBadgeDefinitionAwardEvent());
+  }
+  
   @Test
   void testBlankFormula() {
     BadgeDefinitionAwardEvent blankFormulaAwardEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay);

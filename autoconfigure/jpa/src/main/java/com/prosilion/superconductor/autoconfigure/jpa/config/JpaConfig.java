@@ -2,11 +2,11 @@ package com.prosilion.superconductor.autoconfigure.jpa.config;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
-import com.prosilion.superconductor.base.service.CacheKindClassMapService;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
@@ -21,7 +21,6 @@ import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
 import com.prosilion.superconductor.lib.jpa.service.GenericTagJpaEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -76,8 +75,8 @@ public class JpaConfig {
   }
 
   @Bean
-  CacheKindClassMapService kindClassMapService(Map<String, String> kindClassStringMap) throws ClassNotFoundException {
-    return new CacheKindClassMapService(kindClassStringMap);
+  CacheFormulaEventService cacheFormulaEventService(@NonNull JpaCacheServiceIF jpaCacheServiceIF) {
+    return new CacheFormulaEventService(jpaCacheServiceIF);
   }
 
   @Bean

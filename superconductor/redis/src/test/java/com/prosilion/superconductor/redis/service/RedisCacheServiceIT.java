@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.redis.service;
 
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -47,7 +47,7 @@ public class RedisCacheServiceIT {
   private final RedisCacheServiceIF redisCacheService;
   private final TextNoteEvent textNoteEvent;
   private final List<BaseTag> tags;
-  private final BaseEvent eventNosqlBaseEvent;
+  private final GenericEventRecord savedGenericEventRecord;
 
   @Autowired
   public RedisCacheServiceIT(RedisCacheServiceIF redisCacheServiceIF) {
@@ -62,30 +62,30 @@ public class RedisCacheServiceIT {
     tags.add(PRICE_TAG);
 
     this.textNoteEvent = new TextNoteEvent(IDENTITY, tags, CONTENT);
-    this.eventNosqlBaseEvent = redisCacheServiceIF.save(textNoteEvent);
+    this.savedGenericEventRecord = redisCacheServiceIF.save(textNoteEvent);
   }
 
   @Test
   void testGetByEventId() {
-    assertNotNull(eventNosqlBaseEvent);
-    log.info("saved id: {}", eventNosqlBaseEvent);
+    assertNotNull(savedGenericEventRecord);
+    log.info("saved id: {}", savedGenericEventRecord);
 
-    List<? extends BaseEvent> all = redisCacheService.getAll();
+    List<GenericEventRecord> all = redisCacheService.getAll();
 
     assertTrue(all.stream()
         .map(EventIF::getId)
-        .anyMatch(e -> e.equals(eventNosqlBaseEvent.getId())));
+        .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
 
-    EventIF firstRetrievedEventEntityIF = redisCacheService.getEventByEventId(eventNosqlBaseEvent.getId()).orElseThrow();
-    assertEquals(eventNosqlBaseEvent.getId(), firstRetrievedEventEntityIF.getId());
+    EventIF firstRetrievedEventEntityIF = redisCacheService.getEventByEventId(savedGenericEventRecord.getId()).orElseThrow();
+    assertEquals(savedGenericEventRecord.getId(), firstRetrievedEventEntityIF.getId());
 
     GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(textNoteEvent);
     EventIF firstEntityIF = firstDto.convertDtoToNosqlEntity();
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded    
 //    assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
 
-    EventIF secondRetrievedEntityIF = redisCacheService.getEventByEventId(eventNosqlBaseEvent.getId()).orElseThrow();
-    assertEquals(eventNosqlBaseEvent.getId(), secondRetrievedEntityIF.getId());
+    EventIF secondRetrievedEntityIF = redisCacheService.getEventByEventId(savedGenericEventRecord.getId()).orElseThrow();
+    assertEquals(savedGenericEventRecord.getId(), secondRetrievedEntityIF.getId());
 
     GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(textNoteEvent);
     EventIF secondEntityIF = secondDto.convertDtoToNosqlEntity();
@@ -97,26 +97,26 @@ public class RedisCacheServiceIT {
 
   @Test
   void testGetByEventIdString() {
-    assertNotNull(eventNosqlBaseEvent);
-    log.info("saved id: {}", eventNosqlBaseEvent);
+    assertNotNull(savedGenericEventRecord);
+    log.info("saved id: {}", savedGenericEventRecord);
 
     assertTrue(redisCacheService.getAll().stream()
         .map(EventIF::getId)
-        .anyMatch(e -> e.equals(eventNosqlBaseEvent.getId())));
+        .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
 
     log.info("********************");
     log.info("********************");
-    log.info("expicitly saved id: {}", eventNosqlBaseEvent);
+    log.info("expicitly saved id: {}", savedGenericEventRecord);
     log.info("retrieved ids:");
 //    all.stream().map(EventIF::getId).forEach(id -> log.info("  {}", id));
     log.info("********************");
     log.info("********************");
 
     EventIF firstRetrieval = redisCacheService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
-    assertEquals(eventNosqlBaseEvent.getId(), firstRetrieval.getId());
+    assertEquals(savedGenericEventRecord.getId(), firstRetrieval.getId());
 
     EventIF secondRetrieval = redisCacheService.getEventByEventId(textNoteEvent.getId()).orElseThrow();
-    assertEquals(eventNosqlBaseEvent.getId(), secondRetrieval.getId());
+    assertEquals(savedGenericEventRecord.getId(), secondRetrieval.getId());
 
     assertEquals(firstRetrieval, secondRetrieval);
 
@@ -137,7 +137,7 @@ public class RedisCacheServiceIT {
     log.debug("startSize: {}", startSize);
 
     EventIF savedUidOfDuplicate = redisCacheService.save(textNoteEvent);
-    assertEquals(eventNosqlBaseEvent, savedUidOfDuplicate);
+    assertEquals(savedGenericEventRecord, savedUidOfDuplicate);
 
     int endSize = redisCacheService.getAll().size();
     log.debug("endSize: {}", endSize);
@@ -146,17 +146,17 @@ public class RedisCacheServiceIT {
 
   @Test
   void testDeletedEvent() {
-    log.info("saved id: {}", eventNosqlBaseEvent);
+    log.info("saved id: {}", savedGenericEventRecord);
     String newContent = Factory.lorumIpsum(RedisCacheServiceIT.class);
 
-    List<? extends BaseEvent> all = redisCacheService.getAll();
+    List<GenericEventRecord> all = redisCacheService.getAll();
     int sizeBeforeDeleteMeEvent = all.size();
     log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 
     TextNoteEvent eventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
     assertEquals(eventToDelete.getId(), redisCacheService.save(eventToDelete).getId());
 
-    List<? extends BaseEvent> allAfterDeleteMeEvent = redisCacheService.getAll();
+    List<GenericEventRecord> allAfterDeleteMeEvent = redisCacheService.getAll();
     int sizeAfterDeleteMeEvent = allAfterDeleteMeEvent.size();
     log.debug("sizeAfterDeleteMeEvent: {}", sizeAfterDeleteMeEvent);
     assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
@@ -184,7 +184,7 @@ public class RedisCacheServiceIT {
 
     assertTrue(allDeletionJpaEventEntitiesAfterDeletion.stream().anyMatch(eventToDelete.getId()::equals));
 
-    List<? extends BaseEvent> allAfterDeletion = redisCacheService.getAll();
+    List<GenericEventRecord> allAfterDeletion = redisCacheService.getAll();
     int sizeAfterDeletion = allAfterDeletion.size();
     log.debug("sizeAfterDeletion: {}", sizeAfterDeletion);
     assertEquals(sizeAfterDeleteMeEvent - 1, sizeAfterDeletion);
@@ -199,7 +199,7 @@ public class RedisCacheServiceIT {
       String firstDeletedEventId) {
     String newContent = Factory.lorumIpsum(RedisCacheServiceIT.class);
 
-    List<? extends BaseEvent> all = redisCacheService.getAll();
+    List<GenericEventRecord> all = redisCacheService.getAll();
     int sizeBeforeSecondDeleteMeEvent = all.size();
     log.debug("sizeBeforeSecondDeleteMeEvent: {}", sizeBeforeSecondDeleteMeEvent);
     assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
@@ -207,7 +207,7 @@ public class RedisCacheServiceIT {
     TextNoteEvent secondEventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
     assertEquals(secondEventToDelete.getId(), redisCacheService.save(secondEventToDelete).getId());
 
-    List<? extends BaseEvent> allAfterSecondDeleteMeEvent = redisCacheService.getAll();
+    List<GenericEventRecord> allAfterSecondDeleteMeEvent = redisCacheService.getAll();
     int sizeAfterSecondDeleteMeEvent = allAfterSecondDeleteMeEvent.size();
     log.debug("sizeAfterSecondDeleteMeEvent: {}", sizeAfterSecondDeleteMeEvent);
     assertEquals(sizeBeforeSecondDeleteMeEvent + 1, sizeAfterSecondDeleteMeEvent);
@@ -233,7 +233,7 @@ public class RedisCacheServiceIT {
 
     assertTrue(allDeletionJpaEventEntities.stream().anyMatch(secondEventToDelete.getId()::equals));
 
-    List<? extends BaseEvent> allAfterSecondDeletion = redisCacheService.getAll();
+    List<GenericEventRecord> allAfterSecondDeletion = redisCacheService.getAll();
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();
     log.debug("sizeAfterSecondDeletion: {}", sizeAfterSecondDeletion);
     assertEquals(sizeAfterSecondDeleteMeEvent - 1, sizeAfterSecondDeletion);

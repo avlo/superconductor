@@ -27,7 +27,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   @Override
   public GenericEventRecord save(@NonNull EventIF event) {
     return createGenericEventRecordFromEntityIF(
-        getEventByUid(
+        getJpaEventByUid(
             eventJpaEntityService.save(event))
             .orElseThrow());
   }
@@ -40,7 +40,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
-  public Optional<GenericEventRecord> getEventByUid(@NonNull Long id) {
+  public Optional<GenericEventRecord> getJpaEventByUid(Long id) {
     Optional<EventJpaEntityIF> eventByUid = eventJpaEntityService.getEventByUid(id);
     Optional<GenericEventRecord> first = eventByUid.map(this::createGenericEventRecordFromEntityIF);
     return first;
@@ -74,7 +74,10 @@ public class JpaCacheService implements JpaCacheServiceIF {
 
   @Override
   public void deleteEvent(@NonNull EventIF eventIF) {
-    deleteEventTags(eventIF, deletionEventJpaEntityService::addDeletionEvent);
+    eventJpaEntityService.findByEventIdString(eventIF.getId()).ifPresent(deletionEventJpaEntityService::addDeletionEvent);
+//    TODO: revisit below rationale:
+//    do not delete eventTags as they are/likely referenced by other events 
+//    deleteEventTags(eventIF, deletionEventJpaEntityService::addDeletionEvent);
   }
 
   @Override

@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.springframework.lang.NonNull;
 
 public interface JpaCacheServiceIF extends CacheServiceIF {
-  Optional<GenericEventRecord> getEventByUid(Long id);
+  Optional<GenericEventRecord> getJpaEventByUid(Long id);
   Optional<GenericEventRecord> getEvent(@NonNull EventIF eventIF);
   List<Long> getAllDeletionEventIds();
 }

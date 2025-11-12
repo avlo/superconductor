@@ -41,6 +41,12 @@ public class RedisCacheService implements RedisCacheServiceIF {
     return t;
   }
 
+  //  TODO: below is duplicate of above
+  @Override
+  public Optional<GenericEventRecord> getRedisEventByUid(String id) {
+    return getEventByEventId(id);
+  }
+
   @Override
   public List<GenericEventRecord> getByKind(@NonNull Kind kind) {
     List<EventNosqlEntityIF> eventsByKind = eventNosqlEntityService.getEventsByKind(kind);
@@ -109,8 +115,11 @@ public class RedisCacheService implements RedisCacheServiceIF {
   }
 
   @Override
-  public void deleteEvent(@NonNull EventIF event) {
-    deleteEventTags(event, deletionEventNoSqlEntityService::addDeletionEvent);
+  public void deleteEvent(@NonNull EventIF eventIF) {
+    eventNosqlEntityService.findByEventIdString(eventIF.getId()).ifPresent(deletionEventNoSqlEntityService::addDeletionEvent);
+//    TODO: revisit below rationale:
+//    do not delete eventTags as they are/likely referenced by other events 
+//    deleteEventTags(event, deletionEventNoSqlEntityService::addDeletionEvent);
   }
 
   @Override

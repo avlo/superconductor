@@ -1,0 +1,10 @@
+plugins {
+    id 'superconductor.java-conventions'
+}
+
+dependencies {
+    api project(':superconductor-base')
+    api project(':superconductor-autoconfigure-base')
+
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+}

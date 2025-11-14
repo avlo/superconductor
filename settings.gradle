@@ -56,5 +56,8 @@ project(':superconductor-app-redis').setProjectDir(file("superconductor/redis"))
 include ':superconductor-app-sqlite'
 project(':superconductor-app-sqlite').setProjectDir(file("superconductor/sqlite"))
 
+include ':test-common'
+project(':test-common').setProjectDir(file("superconductor/test-common"))
+
 include ':superconductor-report-aggregate'
 project(':superconductor-report-aggregate').setProjectDir(file("report-aggregate"))

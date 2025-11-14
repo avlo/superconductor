@@ -62,7 +62,7 @@ public class EventKindServiceConfig {
   @Bean
 //  @ConditionalOnMissingBean
   EventKindPluginIF deleteEventKindPlugin(
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull EventPluginIF eventPlugin,
       @NonNull CacheServiceIF cacheServiceIF) {
     return new DeleteEventKindPlugin(
         new EventKindPlugin(

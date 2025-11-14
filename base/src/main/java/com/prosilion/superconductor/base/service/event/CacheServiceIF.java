@@ -20,6 +20,7 @@ public interface CacheServiceIF {
   Optional<GenericEventRecord> getEventByEventId(String eventId);
   List<GenericEventRecord> getByKind(Kind kind);
   <U extends EventIF> void deleteEvent(U eventIF);
+  <T> List<T> getAllDeletionEventIds();
 
   default GenericEventRecord createGenericEventRecordFromEntityIF(EventIF eventIF) {
     return new GenericEventRecord(

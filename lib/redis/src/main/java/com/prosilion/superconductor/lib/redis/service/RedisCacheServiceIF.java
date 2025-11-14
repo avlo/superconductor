@@ -7,10 +7,9 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
-import java.util.Optional;
 
 public interface RedisCacheServiceIF extends CacheServiceIF {
-  Optional<GenericEventRecord> getRedisEventByUid(String id);
+  //  Optional<GenericEventRecord> getRedisEventByUid(String id);
   //  Optional<GenericEventRecord> getEvent(EventIF eventIF);
   List<String> getAllDeletionEventIds();
 

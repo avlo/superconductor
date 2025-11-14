@@ -16,7 +16,6 @@ import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,102 +71,97 @@ public class JpaCacheServiceIT {
 
     List<GenericEventRecord> all = jpaCacheServiceIF.getAll();
 
-    assertTrue(all.stream().map(EventIF::getId).anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
+    assertTrue(all.stream()
+        .map(EventIF::getId)
+        .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
 
-    GenericEventRecord firstRetrievedEventEntityIF = jpaCacheServiceIF.getEvent(savedGenericEventRecord).orElseThrow();
-    assertEquals(savedGenericEventRecord, firstRetrievedEventEntityIF);
+    EventIF firstRetrievedEventEntityIF = jpaCacheServiceIF.getEventByEventId(savedGenericEventRecord.getId()).orElseThrow();
+    assertEquals(savedGenericEventRecord.getId(), firstRetrievedEventEntityIF.getId());
 
-    GenericEventRecord secondRetrievedEntityIF = jpaCacheServiceIF.getEventByEventId(savedGenericEventRecord.getId()).orElseThrow();
-    assertEquals(firstRetrievedEventEntityIF, secondRetrievedEntityIF);
+    EventIF secondRetrievedEntityIF = jpaCacheServiceIF.getEventByEventId(savedGenericEventRecord.getId()).orElseThrow();
+    assertEquals(savedGenericEventRecord.getId(), secondRetrievedEntityIF.getId());
+    assertEquals(savedGenericEventRecord, secondRetrievedEntityIF);
 
-//    GenericEventKindDto secondDto = new GenericEventKindDto(textNoteEvent);
-//    BaseEvent secondEntityIF = secondDto.baseEvent();
-
-//    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded
-//    assertEquals(secondEntityIF, secondRetrievedEntityIF);
-//    assertEquals(firstDto, secondDto);
-  }
-
-  @Test
-  void testGetByEventIdString() {
     assertNotNull(savedGenericEventRecord);
     log.info("saved id: {}", savedGenericEventRecord);
 
-    assertTrue(jpaCacheServiceIF.getAll().stream().map(EventIF::getId).anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
+    assertTrue(jpaCacheServiceIF.getAll().stream()
+        .map(EventIF::getId)
+        .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
 
     log.info("********************");
     log.info("********************");
     log.info("expicitly saved id: {}", savedGenericEventRecord);
     log.info("retrieved ids:");
-//    all.stream().map(EventEntityIF::getUid).forEach(id -> log.info("  {}", id));
+//    all.stream().map(EventIF::getId).forEach(id -> log.info("  {}", id));
     log.info("********************");
     log.info("********************");
 
-    assertEquals(savedGenericEventRecord, getFirstRetrieval());
-  }
+    EventIF firstRetrieval = jpaCacheServiceIF.getEventByEventId(textNoteEvent.getId()).orElseThrow();
+    assertEquals(savedGenericEventRecord.getId(), firstRetrieval.getId());
 
-  private GenericEventRecord getFirstRetrieval() {
-    return jpaCacheServiceIF.getEventByEventId(textNoteEvent.getId()).orElseThrow();
-  }
+    EventIF secondRetrieval = jpaCacheServiceIF.getEventByEventId(textNoteEvent.getId()).orElseThrow();
+    assertEquals(savedGenericEventRecord.getId(), secondRetrieval.getId());
 
-  @Test
-  void testDuplicateSaveAttempt() {
+    assertEquals(firstRetrieval, secondRetrieval);
+
     int startSize = jpaCacheServiceIF.getAll().size();
     log.debug("startSize: {}", startSize);
 
-    assertEquals(savedGenericEventRecord, jpaCacheServiceIF.save(textNoteEvent));
+    EventIF savedUidOfDuplicate = jpaCacheServiceIF.save(textNoteEvent);
+    assertEquals(savedGenericEventRecord, savedUidOfDuplicate);
 
     int endSize = jpaCacheServiceIF.getAll().size();
     log.debug("endSize: {}", endSize);
     assertEquals(startSize, endSize);
-  }
 
-  @Test
-  void testDeletedEvent() {
     log.info("saved id: {}", savedGenericEventRecord);
     String newContent = Factory.lorumIpsum(JpaCacheServiceIT.class);
 
-    List<GenericEventRecord> all = jpaCacheServiceIF.getAll();
+    all = jpaCacheServiceIF.getAll();
     int sizeBeforeDeleteMeEvent = all.size();
     log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 
-    TextNoteEvent textNoteEventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
-    GenericEventRecord eventToDelete = jpaCacheServiceIF.save(textNoteEventToDelete);
+    TextNoteEvent eventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
+    assertEquals(eventToDelete.getId(), jpaCacheServiceIF.save(eventToDelete).getId());
 
     List<GenericEventRecord> allAfterDeleteMeEvent = jpaCacheServiceIF.getAll();
     int sizeAfterDeleteMeEvent = allAfterDeleteMeEvent.size();
     log.debug("sizeAfterDeleteMeEvent: {}", sizeAfterDeleteMeEvent);
     assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
 
-    assertTrue(jpaCacheServiceIF.getAll().stream().anyMatch(eventToDelete::equals));
+    assertTrue(allAfterDeleteMeEvent.stream()
+        .map(EventIF::getId)
+        .anyMatch(e -> e.equals(eventToDelete.getId())));
 
-    EventTag eventTag = new EventTag(textNoteEventToDelete.getId());
+    List<Long> allDeletionJpaEventEntitiesBeforeDeletion = jpaCacheServiceIF.getAllDeletionEventIds();
+
+    EventTag eventTag = new EventTag(eventToDelete.getId());
 
     DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(deletionEvent.getTags().contains(eventTag));
 
     jpaCacheServiceIF.deleteEvent(deletionEvent);
 
-    List<GenericEventRecord> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEventIds().stream().map(jpaCacheServiceIF::getJpaEventByUid).flatMap(Optional::stream).toList();
-    assertEquals(1, allDeletionJpaEventEntities.size());
+    List<Long> allDeletionJpaEventEntitiesAfterDeletion = jpaCacheServiceIF.getAllDeletionEventIds();
+    assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventEntitiesAfterDeletion.size());
 
-    log.debug(allDeletionJpaEventEntities.toString());
-    allDeletionJpaEventEntities.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId.toString()));
-
-    assertTrue(allDeletionJpaEventEntities.stream().anyMatch(eventToDelete::equals));
+    log.debug(allDeletionJpaEventEntitiesAfterDeletion.toString());
+    allDeletionJpaEventEntitiesAfterDeletion.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId));
 
     List<GenericEventRecord> allAfterDeletion = jpaCacheServiceIF.getAll();
     int sizeAfterDeletion = allAfterDeletion.size();
     log.debug("sizeAfterDeletion: {}", sizeAfterDeletion);
     assertEquals(sizeAfterDeleteMeEvent - 1, sizeAfterDeletion);
 
-    assertTrue(allAfterDeletion.stream().noneMatch(eventToDelete::equals));
-    assertTrue(allAfterDeletion.stream().noneMatch(genericEventRecord -> genericEventRecord.equals(textNoteEventToDelete.getGenericEventRecord())));
-
-    deleteSecondEvent(sizeAfterDeletion, allDeletionJpaEventEntities.size(), textNoteEventToDelete.getId());
+    assertTrue(allAfterDeletion.stream().map(EventIF::getId).noneMatch(e -> e.equals(eventToDelete.getId())));
+    deleteSecondEvent(sizeAfterDeletion, allDeletionJpaEventEntitiesAfterDeletion.size(), eventToDelete.getId());
   }
 
-  private void deleteSecondEvent(int allEventsSizeAfterFirstDeletion, int allDeletedEventsSizeAfterFirstDeletion, String firstDeletedEventId) {
+  private void deleteSecondEvent(
+      int allEventsSizeAfterFirstDeletion,
+      int allDeletedEventsSizeAfterFirstDeletion,
+      String firstDeletedEventId) {
     String newContent = Factory.lorumIpsum(JpaCacheServiceIT.class);
 
     List<GenericEventRecord> all = jpaCacheServiceIF.getAll();
@@ -176,14 +170,16 @@ public class JpaCacheServiceIT {
     assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 
     TextNoteEvent secondEventToDelete = new TextNoteEvent(IDENTITY, tags, newContent);
-    GenericEventRecord secondEventToDeleteUid = jpaCacheServiceIF.save(secondEventToDelete);
+    assertEquals(secondEventToDelete.getId(), jpaCacheServiceIF.save(secondEventToDelete).getId());
 
     List<GenericEventRecord> allAfterSecondDeleteMeEvent = jpaCacheServiceIF.getAll();
     int sizeAfterSecondDeleteMeEvent = allAfterSecondDeleteMeEvent.size();
     log.debug("sizeAfterSecondDeleteMeEvent: {}", sizeAfterSecondDeleteMeEvent);
     assertEquals(sizeBeforeSecondDeleteMeEvent + 1, sizeAfterSecondDeleteMeEvent);
 
-    assertTrue(jpaCacheServiceIF.getAll().stream().anyMatch(secondEventToDeleteUid::equals));
+    assertTrue(jpaCacheServiceIF.getAll().stream()
+        .map(EventIF::getId)
+        .anyMatch(secondEventToDelete.getId()::equals));
 
     EventTag eventTag = new EventTag(secondEventToDelete.getId());
 
@@ -192,21 +188,18 @@ public class JpaCacheServiceIT {
 
     jpaCacheServiceIF.deleteEvent(secondDeletionEvent);
 
-    List<GenericEventRecord> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEventIds().stream().map(jpaCacheServiceIF::getJpaEventByUid).flatMap(Optional::stream).toList();
+    List<Long> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEventIds();
     assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());
-    allDeletionJpaEventEntities.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId.toString()));
-
-    assertTrue(allDeletionJpaEventEntities.stream().anyMatch(secondEventToDeleteUid::equals));
+    allDeletionJpaEventEntities.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId));
 
     List<GenericEventRecord> allAfterSecondDeletion = jpaCacheServiceIF.getAll();
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();
     log.debug("sizeAfterSecondDeletion: {}", sizeAfterSecondDeletion);
     assertEquals(sizeAfterSecondDeleteMeEvent - 1, sizeAfterSecondDeletion);
 
-    assertTrue(allAfterSecondDeletion.stream().noneMatch(secondEventToDeleteUid::equals));
-    assertTrue(allAfterSecondDeletion.stream().map(GenericEventRecord::getId).noneMatch(secondEventToDelete.getId()::equals));
-    assertTrue(allAfterSecondDeletion.stream().map(GenericEventRecord::getId).noneMatch(firstDeletedEventId::equals));
+    assertTrue(allAfterSecondDeletion.stream().map(EventIF::getId).noneMatch(secondEventToDelete.getId()::equals));
+    assertTrue(allAfterSecondDeletion.stream().map(EventIF::getId).noneMatch(firstDeletedEventId::equals));
   }
 }

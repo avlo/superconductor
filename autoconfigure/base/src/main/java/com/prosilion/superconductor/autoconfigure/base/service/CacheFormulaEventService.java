@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.lang.NonNull;
@@ -25,14 +24,18 @@ import org.springframework.lang.NonNull;
 public class CacheFormulaEventService implements CacheEventTagBaseEventServiceIF {
   public static final String NON_EXISTENT_EVENT_ID_S = "Event ID [%s] contains EventTag(s) referencing non-existent event ID(s): ";
   private final CacheServiceIF cacheServiceIF;
+  private final CacheBadgeDefinitionAwardEventService cacheBadgeDefinitionAwardEventService;
 
-  public CacheFormulaEventService(@NonNull CacheServiceIF cacheServiceIF) {
+  public CacheFormulaEventService(
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull CacheEventTagBaseEventServiceIF cacheBadgeDefinitionAwardEventService) {
     this.cacheServiceIF = cacheServiceIF;
+    this.cacheBadgeDefinitionAwardEventService = (CacheBadgeDefinitionAwardEventService) cacheBadgeDefinitionAwardEventService;
   }
 
   @Override
-  public FormulaEvent save(@NonNull BaseEvent event) {
-    List<EventTag> eventTags = event.getTypeSpecificTags(EventTag.class);
+  public FormulaEvent save(@NonNull EventIF event) {
+    List<EventTag> eventTags = Filterable.getTypeSpecificTags(EventTag.class, event);
 //    confirm eventTag(s) exist as DB events before saving event itself
 
     Set<String> foundDbEvents = eventTags.stream()
@@ -54,6 +57,30 @@ public class CacheFormulaEventService implements CacheEventTagBaseEventServiceIF
     return baseEventFromEntityIF;
   }
 
+  private FormulaEvent getFormulaEvent(GenericEventRecord genericEventRecord) {
+    FormulaEvent baseEventFromEntityIF = createBaseEventFromGenericRecord(genericEventRecord, FormulaEvent.class);
+    return baseEventFromEntityIF;
+  }
+
+  @Override
+  public <T extends BaseEvent> T createBaseEventFromGenericRecord(GenericEventRecord genericEventRecord, Class<T> baseEventFromKind) {
+    Set<BadgeDefinitionAwardEvent> collect = Filterable.getTypeSpecificTagsStream(EventTag.class, genericEventRecord)
+        .map(EventTag::getIdEvent)
+        .map(this::getAwardEventByEventId)
+        .flatMap(Optional::stream)
+        .collect(Collectors.toSet());
+
+    Function<EventTag, BadgeDefinitionAwardEvent> fxn = eventTag ->
+        collect.stream().filter(formulaEvent ->
+            formulaEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
+
+    return cacheServiceIF.createBaseEvent(genericEventRecord, baseEventFromKind, fxn);
+  }
+
+  public Optional<BadgeDefinitionAwardEvent> getAwardEventByEventId(@NonNull String eventId) {
+    return cacheBadgeDefinitionAwardEventService.getEventByEventId(eventId);
+  }
+
   @Override
   public Optional<FormulaEvent> getEventByEventId(@NonNull String eventId) {
     Optional<GenericEventRecord> byEventIdString = cacheServiceIF.getEventByEventId(eventId);
@@ -73,27 +100,6 @@ public class CacheFormulaEventService implements CacheEventTagBaseEventServiceIF
     List<GenericEventRecord> eventsByKind = cacheServiceIF.getByKind(kind);
     List<FormulaEvent> collect = eventsByKind.stream().map(this::getFormulaEvent).toList();
     return collect;
-  }
-
-  private FormulaEvent getFormulaEvent(GenericEventRecord genericEventRecordFromEntityIF) {
-    FormulaEvent baseEventFromEntityIF = createBaseEventFromEntityIF(genericEventRecordFromEntityIF, FormulaEvent.class);
-    return baseEventFromEntityIF;
-  }
-
-  @Override
-  public <T extends BaseEvent> T createBaseEventFromEntityIF(GenericEventRecord genericEventRecord, Class<T> baseEventFromKind) {
-
-    Set<FormulaEvent> collect = Filterable.getTypeSpecificTagsStream(EventTag.class, genericEventRecord)
-        .map(EventTag::getIdEvent)
-        .map(this::getEventByEventId)
-        .flatMap(Optional::stream)
-        .collect(Collectors.toSet());
-
-    Function<EventTag, FormulaEvent> fxn = eventTag ->
-        collect.stream().filter(formulaEvent ->
-            formulaEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
-    
-    return cacheServiceIF.createBaseEvent(genericEventRecord, baseEventFromKind, fxn);
   }
 
   @Override

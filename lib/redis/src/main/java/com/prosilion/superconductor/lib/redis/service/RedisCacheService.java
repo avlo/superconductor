@@ -12,6 +12,7 @@ import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -36,20 +37,21 @@ public class RedisCacheService implements RedisCacheServiceIF {
 
   @Override
   public Optional<GenericEventRecord> getEventByEventId(@NonNull String eventId) {
-    Optional<EventNosqlEntityIF> byEventIdString = eventNosqlEntityService.findByEventIdString(eventId);
+    Optional<EventNosqlEntityIF> byEventIdString = eventNosqlEntityService.findByEventIdString(eventId).stream().filter(filterDeletionEvents()).findFirst();
     Optional<GenericEventRecord> t = byEventIdString.map(this::createGenericEventRecordFromEntityIF);
     return t;
   }
 
   //  TODO: below is duplicate of above
-  @Override
-  public Optional<GenericEventRecord> getRedisEventByUid(String id) {
-    return getEventByEventId(id);
-  }
+//  @Override
+//  public Optional<GenericEventRecord> getRedisEventByUid(String id) {
+//    return getEventByEventId(id);
+//  }
 
   @Override
   public List<GenericEventRecord> getByKind(@NonNull Kind kind) {
-    List<EventNosqlEntityIF> eventsByKind = eventNosqlEntityService.getEventsByKind(kind);
+    List<EventNosqlEntityIF> eventsByKind = eventNosqlEntityService.getEventsByKind(kind)
+        .stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> collect = eventsByKind.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return collect;
   }
@@ -58,7 +60,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   public List<GenericEventRecord> getEventsByKindAndPubKeyTag(
       @NonNull Kind kind,
       @NonNull PublicKey publicKey) {
-    List<EventNosqlEntityIF> eventsByKindAndPubKeyTag = eventNosqlEntityService.getEventsByKindAndPubKeyTag(kind, publicKey);
+    List<EventNosqlEntityIF> eventsByKindAndPubKeyTag = eventNosqlEntityService.getEventsByKindAndPubKeyTag(kind, publicKey).stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> collect = eventsByKindAndPubKeyTag.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return collect;
   }
@@ -67,7 +69,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   public List<GenericEventRecord> getEventsByKindAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull IdentifierTag identifierTag) {
-    List<EventNosqlEntityIF> eventsByKindAndIdentifierTag = eventNosqlEntityService.getEventsByKindAndIdentifierTag(kind, identifierTag);
+    List<EventNosqlEntityIF> eventsByKindAndIdentifierTag = eventNosqlEntityService.getEventsByKindAndIdentifierTag(kind, identifierTag).stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> list = eventsByKindAndIdentifierTag.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return list;
   }
@@ -77,7 +79,8 @@ public class RedisCacheService implements RedisCacheServiceIF {
       @NonNull Kind kind,
       @NonNull PublicKey referencePubKeyTag,
       @NonNull AddressTag addressTag) {
-    List<EventNosqlEntityIF> eventsByKindAndPubKeyTagAndAddressTag = eventNosqlEntityService.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag);
+    List<EventNosqlEntityIF> eventsByKindAndPubKeyTagAndAddressTag = eventNosqlEntityService.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag)
+        .stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> list = eventsByKindAndPubKeyTagAndAddressTag.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return list;
   }
@@ -87,39 +90,37 @@ public class RedisCacheService implements RedisCacheServiceIF {
       @NonNull Kind kind,
       @NonNull PublicKey referencePubKeyTag,
       @NonNull IdentifierTag identifierTag) {
-    List<EventNosqlEntityIF> eventsByKindAndPubKeyTagAndIdentifierTag = eventNosqlEntityService.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencePubKeyTag, identifierTag);
+    List<EventNosqlEntityIF> eventsByKindAndPubKeyTagAndIdentifierTag = eventNosqlEntityService.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencePubKeyTag, identifierTag)
+        .stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> list = eventsByKindAndPubKeyTagAndIdentifierTag.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return list;
   }
 
   @Override
   public List<GenericEventRecord> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
-    List<EventNosqlEntityIF> eventsByKindAndAuthorPublicKeyAndIdentifierTag = eventNosqlEntityService.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag);
+    List<EventNosqlEntityIF> eventsByKindAndAuthorPublicKeyAndIdentifierTag = eventNosqlEntityService.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag).stream()
+        .filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> list = eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return list;
   }
 
   @Override
   public List<GenericEventRecord> getAll() {
-    List<EventNosqlEntityIF> list = eventNosqlEntityService.getAll().stream()
-        .filter(eventNosqlEntityIF ->
-            !getAllDeletionEventIds().stream()
-                .toList()
-                .contains(eventNosqlEntityIF.getEventId())).toList();
-
+    List<EventNosqlEntityIF> list = eventNosqlEntityService.getAll().stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> list1 = list.stream().map(this::createGenericEventRecordFromEntityIF).toList();
+    return list1;
+  }
 
-    List<GenericEventRecord> list2 = list1.stream().toList();
-
-    return list2;
+  private Predicate<EventNosqlEntityIF> filterDeletionEvents() {
+    return eventNosqlEntityIF ->
+        !getAllDeletionEventIds().stream()
+            .toList()
+            .contains(eventNosqlEntityIF.getEventId());
   }
 
   @Override
   public void deleteEvent(@NonNull EventIF eventIF) {
-    eventNosqlEntityService.findByEventIdString(eventIF.getId()).ifPresent(deletionEventNoSqlEntityService::addDeletionEvent);
-//    TODO: revisit below rationale:
-//    do not delete eventTags as they are/likely referenced by other events 
-//    deleteEventTags(event, deletionEventNoSqlEntityService::addDeletionEvent);
+    deleteEventTags(eventIF, deletionEventNoSqlEntityService::addDeletionEvent);
   }
 
   @Override

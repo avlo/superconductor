@@ -9,14 +9,14 @@ import java.util.Optional;
 import org.springframework.lang.NonNull;
 
 public interface CacheEventTagBaseEventServiceIF {
-  BaseEvent save(BaseEvent event);
+  BaseEvent save(EventIF event);
   List<? extends BaseEvent> getAll();
   List<? extends BaseEvent> getByKind(Kind kind);
   Optional<? extends BaseEvent> getEvent(@NonNull EventIF eventIF);
   Optional<? extends BaseEvent> getEventByEventId(String eventId);
   <T extends EventIF> void deleteEvent(T event);
 //  <T> List<T> getAllDeletionEventIds();
-  <T extends BaseEvent> T createBaseEventFromEntityIF(
+  <T extends BaseEvent> T createBaseEventFromGenericRecord(
       GenericEventRecord genericEventRecord,
       Class<T> baseEventFromKind);
   Kind getKind();

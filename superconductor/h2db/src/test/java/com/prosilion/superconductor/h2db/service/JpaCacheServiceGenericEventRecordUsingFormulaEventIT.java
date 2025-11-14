@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.h2db.service;
 
 import com.ezylang.evalex.parser.ParseException;
+import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -9,19 +11,27 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
+import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
+import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.h2db.util.Factory;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheServiceIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import static com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService.NON_EXISTENT_EVENT_ID_S;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -29,140 +39,135 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class JpaCacheServiceGenericEventRecordUsingFormulaEventIT {
-  public static final Relay relay = new Relay("ws://localhost:5555");
+  private static final Relay relay = new Relay("ws://localhost:5555");
   private static final Identity IDENTITY = Factory.createNewIdentity();
 
-  private final JpaCacheServiceIF jpaCacheServiceIF;
+  private final CacheFormulaEventService cacheFormulaEventService;
+  private final EventPluginIF eventPluginIF;
+  private final BadgeDefinitionAwardEvent badgeDefinitionAwardEvent;
   private final FormulaEvent formulaEvent;
-  private final GenericEventRecord genericEventRecordFormulaEvent;
 
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
-  public final Identity identity = Identity.generateRandomIdentity();
   public final String PLUS_ONE_FORMULA = "+1";
 
   @Autowired
-  public JpaCacheServiceGenericEventRecordUsingFormulaEventIT(JpaCacheServiceIF jpaCacheServiceIF) throws ParseException {
-    this.jpaCacheServiceIF = jpaCacheServiceIF;
+  public JpaCacheServiceGenericEventRecordUsingFormulaEventIT(
+      @Qualifier("eventPlugin") EventPluginIF eventPluginIF,
+      CacheEventTagBaseEventServiceIF cacheFormulaEventService) throws ParseException {
+    this.eventPluginIF = eventPluginIF;
+    this.cacheFormulaEventService = (CacheFormulaEventService) cacheFormulaEventService;
+    this.badgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(IDENTITY, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
 
     this.formulaEvent =
         new FormulaEvent(
             IDENTITY,
-            new BadgeDefinitionAwardEvent(
-                IDENTITY,
-                upvoteIdentifierTag,
-                relay,
-                PLUS_ONE_FORMULA),
+            badgeDefinitionAwardEvent,
             PLUS_ONE_FORMULA);
-
-    this.genericEventRecordFormulaEvent = jpaCacheServiceIF.save(this.formulaEvent);
   }
 
   @Test
-  void testGetByEventId() {
-    assertNotNull(genericEventRecordFormulaEvent);
-    log.info("saved id: {}", genericEventRecordFormulaEvent);
+  @Order(1)
+  void testNonExistentEventTag() throws ParseException {
+    assertTrue(
+        assertThrows(NostrException.class, () ->
+            eventPluginIF.processIncomingEvent(this.formulaEvent))
+            .getMessage().contains(
+                Strings.concat(
+                    String.format(NON_EXISTENT_EVENT_ID_S, formulaEvent.getId()),
+                    String.format("[%s]", badgeDefinitionAwardEvent.getId()))));
 
-    List<GenericEventRecord> all = jpaCacheServiceIF.getAll();
+    eventPluginIF.processIncomingEvent(this.badgeDefinitionAwardEvent);
+    eventPluginIF.processIncomingEvent(this.formulaEvent);
+    FormulaEvent savedFormulaEvent = cacheFormulaEventService.getEventByEventId(formulaEvent.getId()).orElseThrow();
+    
+    assertNotNull(savedFormulaEvent);
+
+    log.info("saved id: {}", savedFormulaEvent);
+
+    List<FormulaEvent> all = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
 
     assertTrue(all.stream()
-        .anyMatch(genericEventRecordFormulaEvent::equals));
+        .map(FormulaEvent::getId)
+        .anyMatch(e -> e.equals(savedFormulaEvent.getId())));
 
-    GenericEventRecord firstRetrievedEventEntityIF = jpaCacheServiceIF.getEvent(genericEventRecordFormulaEvent).orElseThrow();
-    assertEquals(genericEventRecordFormulaEvent, firstRetrievedEventEntityIF);
+    FormulaEvent firstRetrievedEventEntityIF = cacheFormulaEventService.getEventByEventId(savedFormulaEvent.getId()).orElseThrow();
+    assertEquals(savedFormulaEvent.getId(), firstRetrievedEventEntityIF.getId());
+    assertEquals(savedFormulaEvent, firstRetrievedEventEntityIF);
 
-    GenericEventRecord secondRetrievedEntityIF = jpaCacheServiceIF.getEventByEventId(genericEventRecordFormulaEvent.getId()).orElseThrow();
-    assertEquals(genericEventRecordFormulaEvent, secondRetrievedEntityIF);
-
+    FormulaEvent secondRetrievedEntityIF = cacheFormulaEventService.getEventByEventId(savedFormulaEvent.getId()).orElseThrow();
+    assertEquals(savedFormulaEvent.getId(), secondRetrievedEntityIF.getId());
+    assertEquals(savedFormulaEvent, secondRetrievedEntityIF);
     assertEquals(firstRetrievedEventEntityIF, secondRetrievedEntityIF);
-  }
 
-  @Test
-  void testGetByEventIdString() {
-    assertNotNull(genericEventRecordFormulaEvent);
-    log.info("saved id: {}", genericEventRecordFormulaEvent);
+    assertNotNull(savedFormulaEvent);
+    log.info("saved id: {}", savedFormulaEvent);
 
-    assertTrue(jpaCacheServiceIF.getAll().stream()
-        .anyMatch(genericEventRecordFormulaEvent::equals));
+    assertTrue(cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA).stream()
+        .map(FormulaEvent::getId)
+        .anyMatch(e -> e.equals(savedFormulaEvent.getId())));
 
     log.info("********************");
     log.info("********************");
-    log.info("expicitly saved id: {}", genericEventRecordFormulaEvent);
+    log.info("expicitly saved id: {}", savedFormulaEvent);
     log.info("retrieved ids:");
-//    all.stream().map(EventEntityIF::getUid).forEach(id -> log.info("  {}", id));
+//    all.stream().map(FormulaEvent::getId).forEach(id -> log.info("  {}", id));
     log.info("********************");
     log.info("********************");
 
-    GenericEventRecord firstRetrieval = jpaCacheServiceIF.getEventByEventId(formulaEvent.getId()).orElseThrow();
-    assertEquals(genericEventRecordFormulaEvent, firstRetrieval);
+    FormulaEvent firstRetrieval = cacheFormulaEventService.getEventByEventId(savedFormulaEvent.getId()).orElseThrow();
+    assertEquals(savedFormulaEvent.getId(), firstRetrieval.getId());
 
-    GenericEventRecord secondRetrieval = jpaCacheServiceIF.getEventByEventId(formulaEvent.getId()).orElseThrow();
-    assertEquals(genericEventRecordFormulaEvent, secondRetrieval);
+    FormulaEvent secondRetrieval = cacheFormulaEventService.getEventByEventId(savedFormulaEvent.getId()).orElseThrow();
+    assertEquals(savedFormulaEvent.getId(), secondRetrieval.getId());
     assertEquals(firstRetrieval, secondRetrieval);
-  }
 
-  @Test
-  void testDuplicateSaveAttempt() {
-    int startSize = jpaCacheServiceIF.getAll().size();
+    int startSize = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA).size();
     log.debug("startSize: {}", startSize);
 
-    GenericEventRecord savedUidOfDuplicate = jpaCacheServiceIF.save(formulaEvent);
-    assertEquals(genericEventRecordFormulaEvent, savedUidOfDuplicate);
+    FormulaEvent savedUidOfDuplicate = cacheFormulaEventService.save(savedFormulaEvent);
+    assertEquals(savedFormulaEvent, savedUidOfDuplicate);
 
-    int endSize = jpaCacheServiceIF.getAll().size();
+    int endSize = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA).size();
     log.debug("endSize: {}", endSize);
     assertEquals(startSize, endSize);
-  }
 
-  @Test
-  void testDeletedEvent() throws ParseException {
-    log.info("saved id: {}", genericEventRecordFormulaEvent);
+    log.info("saved id: {}", savedFormulaEvent);
 
-    List<GenericEventRecord> all = jpaCacheServiceIF.getAll();
+    all = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeBeforeDeleteMeEvent = all.size();
     log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 
-    FormulaEvent eventToDelete =
-        new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
-            IDENTITY,
-            upvoteIdentifierTag,
-            relay,
-            PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
-    assertEquals(eventToDelete.getId(), jpaCacheServiceIF.save(eventToDelete).getId());
+    FormulaEvent eventToDelete = new FormulaEvent(
+        IDENTITY,
+        badgeDefinitionAwardEvent,
+        PLUS_ONE_FORMULA);
+    eventPluginIF.processIncomingEvent(eventToDelete);
+    assertEquals(eventToDelete, cacheFormulaEventService.getEventByEventId(eventToDelete.getId()).orElseThrow());
 
-    List<GenericEventRecord> allAfterDeleteMeEvent = jpaCacheServiceIF.getAll();
+    List<FormulaEvent> allAfterDeleteMeEvent = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeAfterDeleteMeEvent = allAfterDeleteMeEvent.size();
     log.debug("sizeAfterDeleteMeEvent: {}", sizeAfterDeleteMeEvent);
     assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
 
-    assertTrue(allAfterDeleteMeEvent.stream()
-        .anyMatch(e -> e.equals(eventToDelete.getGenericEventRecord())));
+    assertTrue(allAfterDeleteMeEvent.stream().anyMatch(eventToDelete::equals));
 
     assertTrue(allAfterDeleteMeEvent.stream()
-        .map(GenericEventRecord::getId)
+        .map(FormulaEvent::getId)
         .anyMatch(e -> e.equals(eventToDelete.getId())));
-
-    List<Long> allDeletionJpaEventEntitiesBeforeDeletion = jpaCacheServiceIF.getAllDeletionEventIds();
 
     EventTag eventTag = new EventTag(eventToDelete.getId());
 
     DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(deletionEvent.getTags().contains(eventTag));
 
-    jpaCacheServiceIF.deleteEvent(deletionEvent);
+    cacheFormulaEventService.deleteEvent(deletionEvent);
 
-    List<Long> allDeletionJpaEventIdsAfterDeletion = jpaCacheServiceIF.getAllDeletionEventIds();
-    assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventIdsAfterDeletion.size());
-
-    log.debug(allDeletionJpaEventIdsAfterDeletion.toString());
-    allDeletionJpaEventIdsAfterDeletion.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId));
-
-    List<GenericEventRecord> allAfterDeletion = jpaCacheServiceIF.getAll();
+    List<FormulaEvent> allAfterDeletion = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeAfterDeletion = allAfterDeletion.size();
     log.debug("sizeAfterDeletion: {}", sizeAfterDeletion);
     assertEquals(sizeAfterDeleteMeEvent - 1, sizeAfterDeletion);
 
-    assertTrue(allAfterDeletion.stream().map(GenericEventRecord::getId).noneMatch(e -> e.equals(eventToDelete.getId())));
-    deleteSecondEvent(sizeAfterDeletion, allDeletionJpaEventIdsAfterDeletion.size(), eventToDelete.getId());
+    assertTrue(allAfterDeletion.stream().map(FormulaEvent::getId).noneMatch(e -> e.equals(eventToDelete.getId())));
   }
 
   private void deleteSecondEvent(
@@ -170,7 +175,7 @@ public class JpaCacheServiceGenericEventRecordUsingFormulaEventIT {
       int allDeletedEventsSizeAfterFirstDeletion,
       String firstDeletedEventId) throws ParseException {
 
-    List<GenericEventRecord> all = jpaCacheServiceIF.getAll();
+    List<FormulaEvent> all = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeBeforeSecondDeleteMeEvent = all.size();
     log.debug("sizeBeforeSecondDeleteMeEvent: {}", sizeBeforeSecondDeleteMeEvent);
     assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
@@ -181,14 +186,14 @@ public class JpaCacheServiceGenericEventRecordUsingFormulaEventIT {
             upvoteIdentifierTag,
             relay,
             PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
-    GenericEventRecord secondBaseEventToDelete = jpaCacheServiceIF.save(secondEventToDelete);
+    FormulaEvent secondBaseEventToDelete = cacheFormulaEventService.save(secondEventToDelete);
 
-    List<GenericEventRecord> allAfterSecondDeleteMeEvent = jpaCacheServiceIF.getAll();
+    List<FormulaEvent> allAfterSecondDeleteMeEvent = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeAfterSecondDeleteMeEvent = allAfterSecondDeleteMeEvent.size();
     log.debug("sizeAfterSecondDeleteMeEvent: {}", sizeAfterSecondDeleteMeEvent);
     assertEquals(sizeBeforeSecondDeleteMeEvent + 1, sizeAfterSecondDeleteMeEvent);
 
-    assertTrue(jpaCacheServiceIF.getAll().stream()
+    assertTrue(cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA).stream()
         .anyMatch(secondBaseEventToDelete::equals));
 
     EventTag eventTag = new EventTag(secondEventToDelete.getId());
@@ -196,27 +201,15 @@ public class JpaCacheServiceGenericEventRecordUsingFormulaEventIT {
     DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(secondDeletionEvent.getTags().contains(eventTag));
 
-    jpaCacheServiceIF.deleteEvent(secondDeletionEvent);
+    cacheFormulaEventService.deleteEvent(secondDeletionEvent);
 
-    List<GenericEventRecord> allDeletionJpaEventEntities = jpaCacheServiceIF.getAllDeletionEventIds()
-        .stream()
-        .map(jpaCacheServiceIF::getJpaEventByUid)
-        .flatMap(Optional::stream)
-        .toList();
-    assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());
-
-    log.debug(allDeletionJpaEventEntities.toString());
-    allDeletionJpaEventEntities.forEach(event -> log.debug("deletionDbId: {}", event.getId()));
-
-    assertTrue(allDeletionJpaEventEntities.stream().anyMatch(secondBaseEventToDelete::equals));
-
-    List<GenericEventRecord> allAfterSecondDeletion = jpaCacheServiceIF.getAll();
+    List<FormulaEvent> allAfterSecondDeletion = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();
     log.debug("sizeAfterSecondDeletion: {}", sizeAfterSecondDeletion);
     assertEquals(sizeAfterSecondDeleteMeEvent - 1, sizeAfterSecondDeletion);
 
 //    assertTrue(allAfterSecondDeletion.stream().noneMatch(secondBaseEventToDelete::equals));
-    assertTrue(allAfterSecondDeletion.stream().map(GenericEventRecord::getId).noneMatch(secondEventToDelete.getId()::equals));
-    assertTrue(allAfterSecondDeletion.stream().map(GenericEventRecord::getId).noneMatch(firstDeletedEventId::equals));
+    assertTrue(allAfterSecondDeletion.stream().map(FormulaEvent::getId).noneMatch(secondEventToDelete.getId()::equals));
+    assertTrue(allAfterSecondDeletion.stream().map(FormulaEvent::getId).noneMatch(firstDeletedEventId::equals));
   }
 }

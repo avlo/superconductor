@@ -82,7 +82,7 @@ public class RedisCacheServiceIT {
     GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(textNoteEvent);
     EventIF firstEntityIF = firstDto.convertDtoToNosqlEntity();
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded    
-//    assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
+    assertEquals(firstEntityIF, firstRetrievedEventEntityIF);
 
     EventIF secondRetrievedEntityIF = redisCacheService.getEventByEventId(savedGenericEventRecord.getId()).orElseThrow();
     assertEquals(savedGenericEventRecord.getId(), secondRetrievedEntityIF.getId());
@@ -91,7 +91,7 @@ public class RedisCacheServiceIT {
     EventIF secondEntityIF = secondDto.convertDtoToNosqlEntity();
 
 //    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded
-//    assertEquals(secondEntityIF, secondRetrievedEntityIF);
+    assertEquals(secondEntityIF, secondRetrievedEntityIF);
     assertEquals(firstDto, secondDto);
   }
 
@@ -122,7 +122,7 @@ public class RedisCacheServiceIT {
 
     GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(textNoteEvent);
     EventIF firstEntity = firstDto.convertDtoToNosqlEntity();
-//    assertEquals(firstEntity, firstRetrieval);
+    assertEquals(firstEntity, firstRetrieval);
 
     GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(textNoteEvent);
     EventIF secondEntity = secondDto.convertDtoToNosqlEntity();
@@ -178,9 +178,7 @@ public class RedisCacheServiceIT {
     assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventEntitiesAfterDeletion.size());
 
     log.debug(allDeletionJpaEventEntitiesAfterDeletion.toString());
-    allDeletionJpaEventEntitiesAfterDeletion.forEach(eventId -> {
-      log.debug("deletionDbEventId: {}", eventId);
-    });
+    allDeletionJpaEventEntitiesAfterDeletion.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId));
 
     assertTrue(allDeletionJpaEventEntitiesAfterDeletion.stream().anyMatch(eventToDelete.getId()::equals));
 
@@ -227,9 +225,7 @@ public class RedisCacheServiceIT {
     assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());
-    allDeletionJpaEventEntities.forEach(eventId -> {
-      log.debug("deletionDbEventId: {}", eventId);
-    });
+    allDeletionJpaEventEntities.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId));
 
     assertTrue(allDeletionJpaEventEntities.stream().anyMatch(secondEventToDelete.getId()::equals));
 

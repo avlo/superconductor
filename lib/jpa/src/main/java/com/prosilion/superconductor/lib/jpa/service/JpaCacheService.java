@@ -9,6 +9,7 @@ import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJp
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -26,58 +27,57 @@ public class JpaCacheService implements JpaCacheServiceIF {
 
   @Override
   public GenericEventRecord save(@NonNull EventIF event) {
-    return createGenericEventRecordFromEntityIF(
-        getJpaEventByUid(
-            eventJpaEntityService.save(event))
-            .orElseThrow());
+    Long eventNosqlEntityIF = eventJpaEntityService.save(event);
+    EventJpaEntityIF eventByUid = eventJpaEntityService.getEventByUid(eventNosqlEntityIF).orElseThrow();
+    GenericEventRecord genericEventRecord = createGenericEventRecordFromEntityIF(eventByUid);
+    return genericEventRecord;
   }
 
   @Override
   public Optional<GenericEventRecord> getEventByEventId(@NonNull String eventId) {
-    Optional<EventJpaEntityIF> byEventIdString = eventJpaEntityService.findByEventIdString(eventId);
+    Optional<EventJpaEntityIF> byEventIdString = eventJpaEntityService.findByEventIdString(eventId).stream().filter(filterDeletionEvents()).findFirst();
     Optional<GenericEventRecord> t = byEventIdString.map(this::createGenericEventRecordFromEntityIF);
     return t;
   }
 
   @Override
   public Optional<GenericEventRecord> getJpaEventByUid(Long id) {
-    Optional<EventJpaEntityIF> eventByUid = eventJpaEntityService.getEventByUid(id);
+    Optional<EventJpaEntityIF> eventByUid = eventJpaEntityService.getEventByUid(id).stream().filter(filterDeletionEvents()).findFirst();
     Optional<GenericEventRecord> first = eventByUid.map(this::createGenericEventRecordFromEntityIF);
     return first;
   }
 
   @Override
   public Optional<GenericEventRecord> getEvent(@NonNull EventIF eventIF) {
-    Optional<EventJpaEntityIF> byEventIdString = eventJpaEntityService.findByEventIdString(eventIF.getId());
+    Optional<EventJpaEntityIF> byEventIdString = eventJpaEntityService.findByEventIdString(eventIF.getId()).stream().filter(filterDeletionEvents()).findFirst();
     Optional<GenericEventRecord> first = byEventIdString.map(this::createGenericEventRecordFromEntityIF);
     return first;
   }
 
   @Override
   public List<GenericEventRecord> getByKind(@NonNull Kind kind) {
-    List<EventJpaEntityIF> eventsByKind = eventJpaEntityService.getEventsByKind(kind);
+    List<EventJpaEntityIF> eventsByKind = eventJpaEntityService.getEventsByKind(kind).stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> collect = eventsByKind.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return collect;
   }
 
   @Override
   public List<GenericEventRecord> getAll() {
-    List<EventJpaEntityIF> list = eventJpaEntityService.getAll().stream()
-        .filter(eventJpaEntityIF ->
-            !getAllDeletionEventIds().stream()
-//                .map(DeletionEventIF::getId)
-                .toList()
-                .contains(eventJpaEntityIF.getUid())).toList();
+    List<EventJpaEntityIF> list = eventJpaEntityService.getAll().stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> genericEventRecords = list.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return genericEventRecords;
   }
 
+  private Predicate<EventJpaEntityIF> filterDeletionEvents() {
+    return eventJpaEntityIF ->
+        !getAllDeletionEventIds().stream()
+            .toList()
+            .contains(eventJpaEntityIF.getUid());
+  }
+
   @Override
   public void deleteEvent(@NonNull EventIF eventIF) {
-    eventJpaEntityService.findByEventIdString(eventIF.getId()).ifPresent(deletionEventJpaEntityService::addDeletionEvent);
-//    TODO: revisit below rationale:
-//    do not delete eventTags as they are/likely referenced by other events 
-//    deleteEventTags(eventIF, deletionEventJpaEntityService::addDeletionEvent);
+    deleteEventTags(eventIF, deletionEventJpaEntityService::addDeletionEvent);
   }
 
   @Override

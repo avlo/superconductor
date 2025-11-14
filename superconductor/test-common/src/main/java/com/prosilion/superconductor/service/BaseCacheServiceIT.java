@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-public class BaseCacheServiceIT {
+public abstract class BaseCacheServiceIT {
   private static final Identity IDENTITY = Factory.createNewIdentity();
   private static final PubKeyTag P_TAG = Factory.createPubKeyTag(IDENTITY);
 

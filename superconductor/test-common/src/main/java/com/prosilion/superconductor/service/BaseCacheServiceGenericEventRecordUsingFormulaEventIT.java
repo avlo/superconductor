@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
+public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
   private static final Relay relay = new Relay("ws://localhost:5555");
   private static final Identity IDENTITY = Factory.createNewIdentity();
 

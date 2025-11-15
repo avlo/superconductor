@@ -103,6 +103,7 @@ tasks.register('integrationTest', Test) {
     filter {
         excludeTestsMatching("*Test")
         includeTestsMatching("*IT")
+        exclude ':test-common:integrationTest'
 //        excludeTestsMatching("*NoOp*IT")
     }
 }

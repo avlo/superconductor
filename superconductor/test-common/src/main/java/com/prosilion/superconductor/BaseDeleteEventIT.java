@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseDeleteEventIT {
+public abstract class BaseDeleteEventIT {
   private final NostrRelayService nostrRelayService;
 
   private static final Identity identity = Identity.generateRandomIdentity();

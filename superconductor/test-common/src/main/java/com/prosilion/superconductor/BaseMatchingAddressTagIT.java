@@ -27,7 +27,7 @@ import org.springframework.lang.NonNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseMatchingAddressTagIT {
+public abstract class BaseMatchingAddressTagIT {
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
   private final PublicKey publicKey = Identity.generateRandomIdentity().getPublicKey();

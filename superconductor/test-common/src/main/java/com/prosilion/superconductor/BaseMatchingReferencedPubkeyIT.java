@@ -19,18 +19,22 @@ import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class MatchingReferencedPubkeyIT {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
+public abstract class BaseMatchingReferencedPubkeyIT {
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
   private final PublicKey referencedPubkey = Identity.generateRandomIdentity().getPublicKey();
 
-  public MatchingReferencedPubkeyIT(@NonNull String relayUrl) throws IOException {
+  public BaseMatchingReferencedPubkeyIT(@NonNull String relayUrl) throws IOException {
     this.nostrRelayService = new NostrRelayService(relayUrl);
     assertTrue(
         nostrRelayService.send(

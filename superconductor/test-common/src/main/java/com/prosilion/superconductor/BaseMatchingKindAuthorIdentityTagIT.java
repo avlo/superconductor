@@ -25,7 +25,7 @@ import org.springframework.lang.NonNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseMatchingKindAuthorIdentityTagIT {
+public abstract class BaseMatchingKindAuthorIdentityTagIT {
   private final NostrRelayService nostrRelayService;
   private static final String uuid = Factory.generateRandomHex64String();
   private static final String eventId = Factory.generateRandomHex64String();

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseBadgeAwardDownvoteEventMessageIT {
+public abstract class BaseBadgeAwardDownvoteEventMessageIT {
   private final NostrRelayService nostrRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();

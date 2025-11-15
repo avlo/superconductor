@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseBadgeAwardUpvoteEventMessageAuthIT {
+public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
   public static final Relay relay = new Relay("ws://localhost:5555");
   private final NostrRelayService nostrRelayService;
   private final BadgeAwardUpvoteEvent event;

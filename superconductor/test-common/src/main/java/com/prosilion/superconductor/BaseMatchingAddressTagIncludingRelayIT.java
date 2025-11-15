@@ -28,7 +28,7 @@ import org.springframework.lang.NonNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseMatchingAddressTagIncludingRelayIT {
+public abstract class BaseMatchingAddressTagIncludingRelayIT {
   public static final String WS_LOCALHOST_5555 = "ws://localhost:5555";
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();

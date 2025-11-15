@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BashMatchingGeohashTagQueryIT {
+public abstract class BashMatchingGeohashTagQueryIT {
   private final String subscriberId = Factory.generateRandomHex64String();
   private final String eventId = Factory.generateRandomHex64String();
   private final String geohashTagString = Factory.generateRandomHex64String();

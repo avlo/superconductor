@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseTextNoteEventMessageIT {
+public abstract class BaseTextNoteEventMessageIT {
   private final NostrRelayService nostrRelayService;
 
   private static final Identity identity = Identity.generateRandomIdentity();

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseMatchingHashtagTagQueryIT {
+public abstract class BaseMatchingHashtagTagQueryIT {
   private final String eventId = Factory.generateRandomHex64String();
   private final NostrRelayService nostrRelayService;
 

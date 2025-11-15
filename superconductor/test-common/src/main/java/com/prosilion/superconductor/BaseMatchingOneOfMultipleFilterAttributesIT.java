@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseMatchingOneOfMultipleFilterAttributesIT {
+public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
   private final String referenceEventId = Factory.generateRandomHex64String();

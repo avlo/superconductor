@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseClassifiedListingEventMessageIT {
+public abstract class BaseClassifiedListingEventMessageIT {
   private final NostrRelayService nostrRelayService;
   public final PublicKey senderPubkey;
 

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseMatchingGenericTagSingleLetterQueryIT {
+public abstract class BaseMatchingGenericTagSingleLetterQueryIT {
   private final NostrRelayService nostrRelayService;
   Identity identity = Factory.createNewIdentity();
   String content = Factory.lorumIpsum(getClass());

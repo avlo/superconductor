@@ -24,7 +24,7 @@ import org.springframework.lang.NonNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseReqMessageIT {
+public abstract class BaseReqMessageIT {
   private final NostrRelayService nostrRelayService;
   private final String eventId;
   private final PublicKey authorPubkey;

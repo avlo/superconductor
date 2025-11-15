@@ -9,7 +9,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 @Nested
-public class BaseMultipleSubscriberTextEventMessageIT extends AbstractMultipleSubscriber {
+public abstract class BaseMultipleSubscriberTextEventMessageIT extends AbstractMultipleSubscriber {
 
   private final String authorPubKey;
   private final String addressableTagAuthorPubKey;

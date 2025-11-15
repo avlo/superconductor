@@ -26,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public class BashMatchingGeohashTagQueryIT {
-  private static final String subscriberId = Factory.generateRandomHex64String();
-  private static final String eventId = Factory.generateRandomHex64String();
-  private static final String geohashTagString = Factory.generateRandomHex64String();
+  private final String subscriberId = Factory.generateRandomHex64String();
+  private final String eventId = Factory.generateRandomHex64String();
+  private final String geohashTagString = Factory.generateRandomHex64String();
   private final NostrRelayService nostrRelayService;
 
   public BashMatchingGeohashTagQueryIT(@NonNull String relayUrl) throws IOException {

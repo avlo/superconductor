@@ -83,7 +83,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
   @Override
   public List<Long> getAllDeletionEventIds() {
     List<DeletionEventJpaEntityIF> all = deletionEventJpaEntityService.getAll();
-    return all.stream().map(DeletionEventJpaEntityIF::getEventId).toList();
+    return all.stream().map(DeletionEventJpaEntityIF::getId).toList();
   }
 
   void deleteEventTags(

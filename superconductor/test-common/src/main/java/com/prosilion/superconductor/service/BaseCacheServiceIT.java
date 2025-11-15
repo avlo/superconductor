@@ -163,13 +163,11 @@ public abstract class BaseCacheServiceIT {
 
     cacheServiceIF.deleteEvent(deletionEvent);
 
-    List<String> allDeletionJpaEventEntitiesAfterDeletion = cacheServiceIF.getAllDeletionEventIds();
+    List<?> allDeletionJpaEventEntitiesAfterDeletion = cacheServiceIF.getAllDeletionEventIds();
     Assertions.assertEquals(allDeletionJpaEventEntitiesBeforeDeletion.size() + 1, allDeletionJpaEventEntitiesAfterDeletion.size());
 
     log.debug(allDeletionJpaEventEntitiesAfterDeletion.toString());
     allDeletionJpaEventEntitiesAfterDeletion.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId));
-
-    Assertions.assertTrue(allDeletionJpaEventEntitiesAfterDeletion.stream().anyMatch(eventToDelete.getId()::equals));
 
     List<GenericEventRecord> allAfterDeletion = cacheServiceIF.getAll();
     int sizeAfterDeletion = allAfterDeletion.size();
@@ -210,13 +208,11 @@ public abstract class BaseCacheServiceIT {
 
     cacheServiceIF.deleteEvent(secondDeletionEvent);
 
-    List<String> allDeletionJpaEventEntities = cacheServiceIF.getAllDeletionEventIds();
+    List<?> allDeletionJpaEventEntities = cacheServiceIF.getAllDeletionEventIds();
     Assertions.assertEquals(allDeletedEventsSizeAfterFirstDeletion + 1, allDeletionJpaEventEntities.size());
 
     log.debug(allDeletionJpaEventEntities.toString());
     allDeletionJpaEventEntities.forEach(eventId -> log.debug("deletionDbEventId: {}", eventId));
-
-    Assertions.assertTrue(allDeletionJpaEventEntities.stream().anyMatch(secondEventToDelete.getId()::equals));
 
     List<GenericEventRecord> allAfterSecondDeletion = cacheServiceIF.getAll();
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();

@@ -17,16 +17,23 @@ import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public class BaseMatchingMultipleGenericTagQuerySingleLetterIT {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
+public abstract class BaseMatchingMultipleGenericTagQuerySingleLetterIT {
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
   private final String genericTagStringG = Factory.generateRandomHex64String();

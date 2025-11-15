@@ -3,28 +3,20 @@ package com.prosilion.superconductor;
 import com.prosilion.superconductor.base.util.NostrMediaType;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ClientHttpConnector;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.lang.NonNull;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("test")
-class RelayDocumentIT {
-  public static final String HTTP_LOCALHOST_5555 = "http://localhost:5555/";
-  @Autowired
-  ClientHttpConnector clientHttpConnector;
-  WebTestClient webTestClient;
-  WebClient webClient;
+public abstract class RelayDocumentIT {
+  private final String url;
+  private final WebTestClient webTestClient;
 
-  RelayDocumentIT() {
-    webTestClient = WebTestClient.bindToServer(clientHttpConnector).build();
-    webClient = WebClient.create();
+  public RelayDocumentIT(
+      @NonNull WebTestClient webTestClient,
+      @NonNull String url) {
+    this.webTestClient = webTestClient;
+    this.url = url;
   }
 
 //  @Test
@@ -48,7 +40,7 @@ class RelayDocumentIT {
   @Test
   void testRelayDocumentReturnsOk() {
     webTestClient.get()
-        .uri(HTTP_LOCALHOST_5555)
+        .uri(url)
         .accept(
             MediaType.asMediaType(NostrMediaType.APPLICATION_NOSTR_JSON));
 

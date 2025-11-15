@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.jpa.config;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionAwardEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
@@ -10,8 +10,8 @@ import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
-import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
+import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.AbstractTagJpaEntityRepository;
@@ -25,7 +25,6 @@ import com.prosilion.superconductor.lib.jpa.service.GenericTagJpaEntitiesService
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -86,16 +85,17 @@ public class JpaConfig {
     return new JpaCacheService(eventJpaEntityService, deletionEventJpaEntityService);
   }
 
-  @Bean(name = "cacheBadgeDefinitionAwardEventService")
-  CacheEventTagBaseEventServiceIF cacheBadgeDefinitionAwardEventService(@NonNull CacheServiceIF cacheServiceIF) {
-    return new CacheBadgeDefinitionAwardEventService(cacheServiceIF);
+  @Bean(name = "cacheFormulaEventService")
+  CacheEventTagBaseEventServiceIF cacheFormulaEventService(
+      @NonNull CacheServiceIF cacheServiceIF) {
+    return new CacheFormulaEventService(cacheServiceIF);
   }
 
-  @Bean
-  CacheEventTagBaseEventServiceIF cacheFormulaEventService(
+  @Bean(name = "cacheBadgeDefinitionReputationEventService")
+  CacheEventTagBaseEventServiceIF cacheBadgeDefinitionReputationEventService(
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull @Qualifier("cacheBadgeDefinitionAwardEventService") CacheEventTagBaseEventServiceIF cacheBadgeDefinitionAwardEventService) {
-    return new CacheFormulaEventService(cacheServiceIF, cacheBadgeDefinitionAwardEventService);
+      @NonNull CacheEventTagBaseEventServiceIF cacheFormulaEventService) {
+    return new CacheBadgeDefinitionReputationEventService(cacheServiceIF, cacheFormulaEventService);
   }
 
   @Bean

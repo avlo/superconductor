@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -18,19 +18,24 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class CacheFormulaEventService implements CacheEventTagBaseEventServiceIF {
+public class CacheBadgeDefinitionReputationEventService implements CacheEventTagBaseEventServiceIF {
   public static final String NON_EXISTENT_EVENT_ID_S = "Event ID [%s] contains EventTag(s) referencing non-existent event ID(s): ";
   private final CacheServiceIF cacheServiceIF;
+  private final CacheFormulaEventService cacheFormulaEventService;
 
-  public CacheFormulaEventService(@NonNull CacheServiceIF cacheServiceIF) {
+  public CacheBadgeDefinitionReputationEventService(
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull @Qualifier("cacheFormulaEventService") CacheEventTagBaseEventServiceIF cacheFormulaEventService) {
     this.cacheServiceIF = cacheServiceIF;
+    this.cacheFormulaEventService = (CacheFormulaEventService) cacheFormulaEventService;
   }
 
   @Override
-  public FormulaEvent save(@NonNull EventIF event) {
+  public BadgeDefinitionReputationEvent save(@NonNull EventIF event) {
     List<EventTag> eventTags = Filterable.getTypeSpecificTags(EventTag.class, event);
 //    confirm eventTag(s) exist as DB events before saving event itself
 
@@ -49,60 +54,58 @@ public class CacheFormulaEventService implements CacheEventTagBaseEventServiceIF
               Strings.join(missingEventIds.stream().map(eventId -> String.format("[%s]", eventId)).toList(), ',')));
 
     GenericEventRecord genericEventRecordFromEntityIF = cacheServiceIF.save(event);
-    FormulaEvent baseEventFromEntityIF = getFormulaEvent(genericEventRecordFromEntityIF);
+    BadgeDefinitionReputationEvent baseEventFromEntityIF = getBadgeDefinitionReputationEvent(genericEventRecordFromEntityIF);
     return baseEventFromEntityIF;
   }
 
-  private FormulaEvent getFormulaEvent(GenericEventRecord genericEventRecord) {
-    FormulaEvent baseEventFromEntityIF = createBaseEventFromGenericRecord(genericEventRecord, FormulaEvent.class);
+  private BadgeDefinitionReputationEvent getBadgeDefinitionReputationEvent(GenericEventRecord genericEventRecord) {
+    BadgeDefinitionReputationEvent baseEventFromEntityIF = createBaseEventFromGenericRecord(genericEventRecord, BadgeDefinitionReputationEvent.class);
     return baseEventFromEntityIF;
   }
 
   @Override
   public <T extends BaseEvent> T createBaseEventFromGenericRecord(GenericEventRecord genericEventRecord, Class<T> baseEventFromKind) {
-    Set<BadgeDefinitionAwardEvent> collect = Filterable.getTypeSpecificTagsStream(EventTag.class, genericEventRecord)
+    Set<FormulaEvent> collect = Filterable.getTypeSpecificTagsStream(EventTag.class, genericEventRecord)
         .map(EventTag::getIdEvent)
         .map(this::getAwardEventByEventId)
         .flatMap(Optional::stream)
         .collect(Collectors.toSet());
 
-    Function<EventTag, BadgeDefinitionAwardEvent> fxn = eventTag ->
+    Function<EventTag, FormulaEvent> fxn = eventTag ->
         collect.stream().filter(formulaEvent ->
             formulaEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
 
     return cacheServiceIF.createBaseEvent(genericEventRecord, baseEventFromKind, fxn);
   }
 
-  public Optional<BadgeDefinitionAwardEvent> getAwardEventByEventId(@NonNull String eventId) {
-    Optional<GenericEventRecord> eventByEventId = cacheServiceIF.getEventByEventId(eventId);
-    Optional<BadgeDefinitionAwardEvent> badgeDefinitionAwardEvent = eventByEventId.map(BadgeDefinitionAwardEvent::new);
-    return badgeDefinitionAwardEvent;
+  public Optional<FormulaEvent> getAwardEventByEventId(@NonNull String eventId) {
+    return cacheFormulaEventService.getEventByEventId(eventId);
   }
 
   @Override
-  public Optional<FormulaEvent> getEventByEventId(@NonNull String eventId) {
+  public Optional<BadgeDefinitionReputationEvent> getEventByEventId(@NonNull String eventId) {
     Optional<GenericEventRecord> byEventIdString = cacheServiceIF.getEventByEventId(eventId);
-    Optional<FormulaEvent> formulaEventOptional = byEventIdString.map(this::getFormulaEvent);
+    Optional<BadgeDefinitionReputationEvent> formulaEventOptional = byEventIdString.map(this::getBadgeDefinitionReputationEvent);
     return formulaEventOptional;
   }
 
   @Override
-  public Optional<FormulaEvent> getEvent(@NonNull EventIF eventIF) {
+  public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull EventIF eventIF) {
     Optional<GenericEventRecord> byEventIdString = cacheServiceIF.getEventByEventId(eventIF.getId());
-    Optional<FormulaEvent> formulaEventOptional = byEventIdString.map(this::getFormulaEvent);
+    Optional<BadgeDefinitionReputationEvent> formulaEventOptional = byEventIdString.map(this::getBadgeDefinitionReputationEvent);
     return formulaEventOptional;
   }
 
   @Override
-  public List<FormulaEvent> getByKind(@NonNull Kind kind) {
+  public List<BadgeDefinitionReputationEvent> getByKind(@NonNull Kind kind) {
     List<GenericEventRecord> eventsByKind = cacheServiceIF.getByKind(kind);
-    List<FormulaEvent> collect = eventsByKind.stream().map(this::getFormulaEvent).toList();
+    List<BadgeDefinitionReputationEvent> collect = eventsByKind.stream().map(this::getBadgeDefinitionReputationEvent).toList();
     return collect;
   }
 
   @Override
-  public List<FormulaEvent> getAll() {
-    List<FormulaEvent> formulaEvents = cacheServiceIF.getAll().stream().map(this::getFormulaEvent).toList();
+  public List<BadgeDefinitionReputationEvent> getAll() {
+    List<BadgeDefinitionReputationEvent> formulaEvents = cacheServiceIF.getAll().stream().map(this::getBadgeDefinitionReputationEvent).toList();
     return formulaEvents;
   }
 
@@ -113,6 +116,6 @@ public class CacheFormulaEventService implements CacheEventTagBaseEventServiceIF
 
   @Override
   public Kind getKind() {
-    return Kind.ARBITRARY_CUSTOM_APP_DATA;
+    return Kind.BADGE_DEFINITION_EVENT;
   }
 }

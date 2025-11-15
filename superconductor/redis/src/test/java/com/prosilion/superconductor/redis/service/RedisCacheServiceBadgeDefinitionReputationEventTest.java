@@ -9,7 +9,6 @@ import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
-import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.util.TestKindType.UNIT_REPUTATION;
 import static com.prosilion.superconductor.redis.entity.FormulaEventTest.UNIT_DOWNVOTE;
 import static com.prosilion.superconductor.redis.entity.FormulaEventTest.UNIT_UPVOTE;
+import static com.prosilion.superconductor.util.TestKindType.UNIT_REPUTATION;
 
 @Slf4j
 @EmbeddedRedisStandalone
@@ -68,9 +67,9 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
 
   @Test
   void testMissingFormulaEvent() throws ParseException {
-    
+
   }
-  
+
   @Test
   void testUnmarshallUpvoteDownvoteFormula() throws ParseException {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(

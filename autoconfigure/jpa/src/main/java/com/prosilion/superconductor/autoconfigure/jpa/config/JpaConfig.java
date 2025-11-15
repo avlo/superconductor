@@ -11,7 +11,7 @@ import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.base.service.event.type.EventPluginRxR;
+import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.AbstractTagJpaEntityRepository;
@@ -102,7 +102,7 @@ public class JpaConfig {
   EventPluginIF eventPlugin(
       @NonNull List<CacheEventTagBaseEventServiceIF> cacheEventTagBaseEventServiceIFS,
       @NonNull CacheServiceIF cacheServiceIF) {
-    return new EventPluginRxR(cacheEventTagBaseEventServiceIFS, cacheServiceIF);
+    return new EventPlugin(cacheEventTagBaseEventServiceIFS, cacheServiceIF);
   }
 
   @Bean

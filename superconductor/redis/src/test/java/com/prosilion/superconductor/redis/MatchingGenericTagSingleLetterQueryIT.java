@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.redis;
 
-import com.prosilion.superconductor.BaseMatchingGenericTagSingleLetterQueryIT;
+import com.prosilion.superconductor.base.BaseMatchingGenericTagSingleLetterQueryIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;

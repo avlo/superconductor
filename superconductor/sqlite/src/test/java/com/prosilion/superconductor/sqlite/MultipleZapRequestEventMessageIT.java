@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.sqlite;
 
-import com.prosilion.superconductor.BaseMultipleZapRequestEventMessageIT;
+import com.prosilion.superconductor.base.BaseMultipleZapRequestEventMessageIT;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Autowired;

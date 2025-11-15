@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.base;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
@@ -35,11 +35,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 public abstract class BaseMatchingMultipleGenericTagQuerySingleLetterIT {
   private final NostrRelayService nostrRelayService;
-  private final String eventId = Factory.generateRandomHex64String();
-  private final String genericTagStringG = Factory.generateRandomHex64String();
-  private final String genericTagStringH = Factory.generateRandomHex64String();
+  private final String eventId;
+  private final String genericTagStringG;
+  private final String genericTagStringH;
 
   public BaseMatchingMultipleGenericTagQuerySingleLetterIT(@NonNull String relayUrl) throws IOException {
+    this.eventId = Factory.generateRandomHex64String();
+    this.genericTagStringG = Factory.generateRandomHex64String();
+    this.genericTagStringH = Factory.generateRandomHex64String();
     this.nostrRelayService = new NostrRelayService(relayUrl);
     assertTrue(
         nostrRelayService.send(

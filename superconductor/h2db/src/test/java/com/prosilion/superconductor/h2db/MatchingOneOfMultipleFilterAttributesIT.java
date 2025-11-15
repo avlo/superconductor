@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.h2db;
 
-import com.prosilion.superconductor.BaseMatchingOneOfMultipleFilterAttributesIT;
+import com.prosilion.superconductor.base.BaseMatchingOneOfMultipleFilterAttributesIT;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

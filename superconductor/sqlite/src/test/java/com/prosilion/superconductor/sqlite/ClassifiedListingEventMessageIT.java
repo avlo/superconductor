@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.sqlite;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.superconductor.BaseClassifiedListingEventMessageIT;
+import com.prosilion.superconductor.base.BaseClassifiedListingEventMessageIT;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

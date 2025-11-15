@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.redis;
 
-import com.prosilion.superconductor.BashMatchingGeohashTagQueryIT;
+import com.prosilion.superconductor.base.BaseMatchingGeohashTagQueryIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-class MatchingGeohashTagQueryIT extends BashMatchingGeohashTagQueryIT {
+class MatchingGeohashTagQueryIT extends BaseMatchingGeohashTagQueryIT {
   @Autowired
   MatchingGeohashTagQueryIT(@NonNull @Value("${superconductor.relay.url}") String relayUrl) throws IOException {
     super(relayUrl);

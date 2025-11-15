@@ -3,7 +3,7 @@ package com.prosilion.superconductor.h2db;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.BaseBadgeAwardUpvoteEventMessageIT;
+import com.prosilion.superconductor.base.BaseBadgeAwardUpvoteEventMessageIT;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.h2db;
 
-import com.prosilion.superconductor.BaseMatchingAddressTagIT;
+import com.prosilion.superconductor.base.BaseMatchingAddressTagIT;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.sqlite;
 
-import com.prosilion.superconductor.BaseMatchingReferencedEventIT;
+import com.prosilion.superconductor.base.BaseMatchingReferencedEventIT;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.redis;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.superconductor.BaseClassifiedListingEventMessageIT;
+import com.prosilion.superconductor.base.BaseClassifiedListingEventMessageIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;

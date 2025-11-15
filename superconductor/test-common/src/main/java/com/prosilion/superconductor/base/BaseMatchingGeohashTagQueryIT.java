@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.base;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
@@ -25,13 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BashMatchingGeohashTagQueryIT {
+public abstract class BaseMatchingGeohashTagQueryIT {
   private final String subscriberId = Factory.generateRandomHex64String();
   private final String eventId = Factory.generateRandomHex64String();
   private final String geohashTagString = Factory.generateRandomHex64String();
   private final NostrRelayService nostrRelayService;
 
-  public BashMatchingGeohashTagQueryIT(@NonNull String relayUrl) throws IOException {
+  public BaseMatchingGeohashTagQueryIT(@NonNull String relayUrl) throws IOException {
     this.nostrRelayService = new NostrRelayService(relayUrl);
     assertTrue(nostrRelayService.send(
             (EventMessage) BaseMessageDecoder.decode(getEvent()))

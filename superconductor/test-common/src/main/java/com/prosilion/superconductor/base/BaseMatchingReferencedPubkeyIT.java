@@ -1,33 +1,40 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.base;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filters;
-import com.prosilion.nostr.filter.tag.ReferencedEventFilter;
+import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseMatchingReferencedEventIT {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
+public abstract class BaseMatchingReferencedPubkeyIT {
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
+  private final PublicKey referencedPubkey = Identity.generateRandomIdentity().getPublicKey();
 
-  public BaseMatchingReferencedEventIT(@NonNull String relayUrl) throws IOException {
+  public BaseMatchingReferencedPubkeyIT(@NonNull String relayUrl) throws IOException {
     this.nostrRelayService = new NostrRelayService(relayUrl);
     assertTrue(
         nostrRelayService.send(
@@ -38,12 +45,11 @@ public abstract class BaseMatchingReferencedEventIT {
   @Test
   void testReqMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
-    String referencedEventId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
 
-    EventTag eventTag = new EventTag(referencedEventId);
+    PubKeyTag pubKeyTag = new PubKeyTag(referencedPubkey);
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedEventFilter(eventTag)));
+            new ReferencedPublicKeyFilter(pubKeyTag)));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
@@ -53,21 +59,23 @@ public abstract class BaseMatchingReferencedEventIT {
 
     assertTrue(returnedEvents.stream()
         .map(event -> event.getTags().stream()
-            .filter(EventTag.class::isInstance)
-            .map(EventTag.class::cast)
-            .map(EventTag::getIdEvent).findFirst()).anyMatch(s -> s.orElseThrow().equals(referencedEventId)));
+            .filter(PubKeyTag.class::isInstance)
+            .map(PubKeyTag.class::cast)
+            .anyMatch(pk -> pk.getPublicKey().equals(referencedPubkey))).findFirst().orElseThrow());
 
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
 
   @Test
-  void testReqNonMatchingReferencedEvent() throws JsonProcessingException, NostrException {
+  void testReqNonMatchingReferencedPubkey() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
-    String nonMatchingReferencedEventId = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
+    String nonMatchingReferencedPubKey = Factory.generateRandomHex64String();
 
+    PublicKey publicKey = new PublicKey(nonMatchingReferencedPubKey);
+    PubKeyTag pubKeyTag = new PubKeyTag(publicKey);
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedEventFilter(new EventTag(nonMatchingReferencedEventId))));
+            new ReferencedPublicKeyFilter(pubKeyTag)));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
@@ -84,7 +92,7 @@ public abstract class BaseMatchingReferencedEventIT {
         "    \"id\":\"" + eventId + "\",\n" +
         "    \"kind\": 1,\n" +
         "    \"created_at\": 1111111111111,\n" +
-        "    \"pubkey\": \"bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\",\n" +
+        "    \"pubkey\": \"" + Factory.generateRandomHex64String() + "\",\n" +
         "    \"tags\": [\n" +
         "      [\n" +
         "        \"a\",\n" +
@@ -97,7 +105,7 @@ public abstract class BaseMatchingReferencedEventIT {
         "      ],\n" +
         "      [\n" +
         "        \"p\",\n" +
-        "        \"2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"\n" +
+        "        \"" + referencedPubkey.toHexString() + "\"\n" +
         "      ],\n" +
         "      [\n" +
         "        \"e\",\n" +

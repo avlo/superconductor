@@ -3,7 +3,7 @@ package com.prosilion.superconductor.redis;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.BaseBadgeAwardDownvoteEventMessageIT;
+import com.prosilion.superconductor.base.BaseBadgeAwardDownvoteEventMessageIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;

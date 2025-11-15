@@ -1,16 +1,16 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.base;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.ReferencedEventFilter;
-import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
 import java.io.IOException;
@@ -23,15 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
+public abstract class BaseMatchingReferencedEventIT {
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
-  private final String referenceEventId = Factory.generateRandomHex64String();
-  private final String referencePubKey = Factory.generateRandomHex64String();
 
-  public BaseMatchingOneOfMultipleFilterAttributesIT(@NonNull String relayUrl) throws IOException {
+  public BaseMatchingReferencedEventIT(@NonNull String relayUrl) throws IOException {
     this.nostrRelayService = new NostrRelayService(relayUrl);
-
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
@@ -39,52 +36,44 @@ public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
   }
 
   @Test
-  void testMatchingOneOfMultipleReferencedEvents() throws IOException {
+  void testReqMessages() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
+    String referencedEventId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
 
-    String referencedEventIdNoMatch = "0000000000000000000000000000000000000000000000000000000000000000";
-
+    EventTag eventTag = new EventTag(referencedEventId);
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedEventFilter(
-                new EventTag(referenceEventId)),
-            new ReferencedEventFilter(
-                new EventTag(referencedEventIdNoMatch))));
+            new ReferencedEventFilter(eventTag)));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
-    log.debug("okMessage:");
-    log.debug("  " + returnedBaseMessages);
-
     assertFalse(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
 
-    assertTrue(returnedEvents.stream().map(EventIF::getId).anyMatch(s -> s.contains(eventId)));
+    assertTrue(returnedEvents.stream()
+        .map(event -> event.getTags().stream()
+            .filter(EventTag.class::isInstance)
+            .map(EventTag.class::cast)
+            .map(EventTag::getIdEvent).findFirst()).anyMatch(s -> s.orElseThrow().equals(referencedEventId)));
+
+    assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }
 
   @Test
-  void testMatchingOneOfMultipleReferencedPublicKeys() throws IOException {
+  void testReqNonMatchingReferencedEvent() throws JsonProcessingException, NostrException {
     String subscriberId = Factory.generateRandomHex64String();
-    String referencedPubkeyNoMatch = "0000000000000000000000000000000000000000000000000000000000000000";
+    String nonMatchingReferencedEventId = "bbbd79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984";
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedPublicKeyFilter(
-                new PubKeyTag(new PublicKey(referencePubKey))),
-            new ReferencedPublicKeyFilter(
-                new PubKeyTag(new PublicKey(referencedPubkeyNoMatch)))));
+            new ReferencedEventFilter(new EventTag(nonMatchingReferencedEventId))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
-    log.debug("okMessage:");
-    log.debug("  " + returnedBaseMessages);
-
-    assertFalse(returnedEvents.isEmpty());
+    assertTrue(returnedEvents.isEmpty());
     assertFalse(returnedBaseMessages.isEmpty());
-
-    assertTrue(returnedEvents.stream().map(EventIF::getId).anyMatch(s -> s.contains(eventId)));
   }
 
   private String getEvent() {
@@ -108,11 +97,11 @@ public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
         "      ],\n" +
         "      [\n" +
         "        \"p\",\n" +
-        "        \"" + referencePubKey + "\"\n" +
+        "        \"2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"\n" +
         "      ],\n" +
         "      [\n" +
         "        \"e\",\n" +
-        "        \"" + referenceEventId + "\"\n" +
+        "        \"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\"\n" +
         "      ],\n" +
         "      [\n" +
         "        \"g\",\n" +

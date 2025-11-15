@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.h2db;
 
-import com.prosilion.superconductor.BaseMultipleSubscriberTextEventMessageIT;
+import com.prosilion.superconductor.base.BaseMultipleSubscriberTextEventMessageIT;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Autowired;

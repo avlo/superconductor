@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.h2db;
 
-import com.prosilion.superconductor.BaseSinceUntilIT;
+import com.prosilion.superconductor.base.BaseSinceUntilIT;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

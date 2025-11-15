@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.redis;
 
-import com.prosilion.superconductor.BaseMultipleSubscriberClassifiedListingEventMessageIT;
+import com.prosilion.superconductor.base.BaseMultipleSubscriberClassifiedListingEventMessageIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;

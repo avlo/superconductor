@@ -1,10 +1,11 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.base;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.tag.AddressTagFilter;
 import com.prosilion.nostr.message.BaseMessage;
@@ -16,8 +17,8 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.NostrRelayService;
-import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -27,33 +28,45 @@ import org.springframework.lang.NonNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseMatchingAddressTagIT {
+public abstract class BaseMatchingAddressTagIncludingRelayIT {
+  public static final String WS_LOCALHOST_5555 = "ws://localhost:5555";
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
   private final PublicKey publicKey = Identity.generateRandomIdentity().getPublicKey();
   private final PublicKey aTagPubkey = Identity.generateRandomIdentity().getPublicKey();
   private final String uuid = Factory.generateRandomHex64String();
 
-  public BaseMatchingAddressTagIT(@NonNull String relayUrl) throws IOException {
+  public BaseMatchingAddressTagIncludingRelayIT(@NonNull String relayUrl) throws IOException {
     this.nostrRelayService = new NostrRelayService(relayUrl);
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
+
+//    Optional<EventEntity> byEventIdString = eventEntityService.findByEventIdString(eventId);
+//    EventIF eventById = eventEntityService.getEventById(byEventIdString.orElseThrow().getEventId());
+//
+//    String string = Objects.requireNonNull(Filterable.getTypeSpecificTags(AddressTag.class, eventById)
+//        .stream()
+//        .findFirst().orElseThrow()
+//        .getRelay().getUri().toString());
+//
+//    assertEquals(
+//        WS_LOCALHOST_5555,
+//        string);
   }
 
   @Test
-  void testReqMessages() throws JsonProcessingException, NostrException {
+  void testReqMessages() throws JsonProcessingException, NostrException, URISyntaxException {
     String subscriberId = Factory.generateRandomHex64String();
     IdentifierTag identifierTag = new IdentifierTag(uuid);
 
     AddressTag addressTag = new AddressTag(
-        Kind.TEXT_NOTE, aTagPubkey, identifierTag
-    );
+        Kind.TEXT_NOTE, aTagPubkey, identifierTag, new Relay(WS_LOCALHOST_5555));
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new AddressTagFilter(addressTag)));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
-    List<EventIF> returnedEvents = Utils.getEventIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
 
@@ -81,7 +94,7 @@ public abstract class BaseMatchingAddressTagIT {
         "    \"tags\": [\n" +
         "      [\n" +
         "        \"a\",\n" +
-        "        \"1:" + aTagPubkey + ":" + uuid + "\"\n" +
+        "        \"1:" + aTagPubkey + ":" + uuid + "\",\"ws://localhost:5555\"\n" +
         "      ]\n" +
         "    ],\n" +
         "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"\n" +

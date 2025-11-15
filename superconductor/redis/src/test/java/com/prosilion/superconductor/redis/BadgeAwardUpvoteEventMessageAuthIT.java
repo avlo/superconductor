@@ -1,19 +1,10 @@
 package com.prosilion.superconductor.redis;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
-import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.nostr.message.OkMessage;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.redis.config.TestKindType;
-import com.prosilion.superconductor.redis.util.BadgeAwardUpvoteRedisEvent;
-import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
+import com.prosilion.superconductor.BaseBadgeAwardUpvoteEventMessageAuthIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @EmbeddedRedisStandalone
@@ -35,31 +23,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     "superconductor.relay.url=ws://localhost:5557",
     "spring.data.redis.port=6380"
 })
-public class BadgeAwardUpvoteEventMessageAuthIT {
-  public static final Relay relay = new Relay("ws://localhost:5555");
-  private final NostrRelayServiceRedis nostrRelayService;
-  private final BadgeAwardUpvoteRedisEvent event;
-
+public class BadgeAwardUpvoteEventMessageAuthIT extends BaseBadgeAwardUpvoteEventMessageAuthIT {
   @Autowired
   BadgeAwardUpvoteEventMessageAuthIT(
       @NonNull Identity superconductorInstanceIdentity,
-      @Value("${superconductor.relay.url}") String relayUri) throws NostrException {
-
-    this.nostrRelayService = new NostrRelayServiceRedis(relayUri);
-    Identity authorIdentity = Identity.generateRandomIdentity();
-    this.event = new BadgeAwardUpvoteRedisEvent(
-        authorIdentity,
-        Identity.generateRandomIdentity().getPublicKey(),
-        new BadgeDefinitionAwardEvent(
-            superconductorInstanceIdentity,
-            new IdentifierTag(TestKindType.UNIT_UPVOTE.getName()),
-            relay));
-  }
-
-  @Test
-  void testValidExistingEventThenAfterImageReputationRequest() throws IOException, NostrException {
-    OkMessage send = nostrRelayService.send(new EventMessage(event));
-    assertFalse(send.getFlag());
-    assertTrue(send.getMessage().contains("auth-required:"));
+      @NonNull @Value("${superconductor.relay.url}") String relayUri) throws NostrException {
+    super(superconductorInstanceIdentity, relayUri);
   }
 }

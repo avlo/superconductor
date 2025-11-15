@@ -1,91 +1,23 @@
 package com.prosilion.superconductor.redis;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.TextNoteEvent;
-import com.prosilion.nostr.filter.Filters;
-import com.prosilion.nostr.filter.tag.HashtagTagFilter;
-import com.prosilion.nostr.message.BaseMessage;
-import com.prosilion.nostr.message.EoseMessage;
-import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.nostr.tag.HashtagTag;
-import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.redis.util.Factory;
-import com.prosilion.superconductor.redis.util.NostrRelayServiceRedis;
+import com.prosilion.superconductor.BaseMatchingGenericTagSingleLetterQueryIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.redis.TextNoteEventMessageRedisIT.getEventIFs;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 @Slf4j
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-class MatchingGenericTagSingleLetterQueryIT {
-  private final NostrRelayServiceRedis nostrRelayService;
-  Identity identity = Factory.createNewIdentity();
-  String content = Factory.lorumIpsum(getClass());
-
+class MatchingGenericTagSingleLetterQueryIT extends BaseMatchingGenericTagSingleLetterQueryIT {
   @Autowired
-  MatchingGenericTagSingleLetterQueryIT(@NonNull NostrRelayServiceRedis nostrRelayService) throws IOException, NostrException {
-    this.nostrRelayService = nostrRelayService;
-    assertTrue(
-        nostrRelayService
-            .send(
-                new EventMessage(
-                    new TextNoteEvent(
-                        identity,
-                        List.of(new HashtagTag("h-tag-1")),
-                        content)))
-            .getFlag());
-  }
-
-  @Test
-  void testReqMessagesNoGenericMatch() throws JsonProcessingException, NostrException {
-    String subscriberId = Factory.generateRandomHex64String();
-    //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String hashTagString = "textnote-geo-tag-2";
-
-    List<BaseMessage> baseMessages = nostrRelayService.send(
-        new ReqMessage(subscriberId, new Filters(
-            new HashtagTagFilter(new HashtagTag(hashTagString)))));
-    assertEquals(1, baseMessages.size());
-    assertTrue(baseMessages
-        .stream()
-        .filter(EoseMessage.class::isInstance)
-        .map(EoseMessage.class::cast)
-        .findAny().isPresent());
-  }
-
-  @Test
-  void testReqMessagesMatchesGeneric() throws JsonProcessingException, NostrException {
-    String subscriberId = Factory.generateRandomHex64String();
-    //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
-    String hashTagString = "h-tag-1";
-
-    List<BaseMessage> returnedBaseMessages = nostrRelayService
-        .send(
-            new ReqMessage(subscriberId, new Filters(
-                new HashtagTagFilter(new HashtagTag(hashTagString)))));
-
-    List<EventIF> events = getEventIFs(returnedBaseMessages);
-
-    assertFalse(events.isEmpty());
-    //    associated event
-    assertTrue(events.stream().anyMatch(s -> s.getPublicKey().toHexString().equals(identity.getPublicKey().toHexString())));
-    assertTrue(events.stream().anyMatch(s -> s.getTags().stream().anyMatch(tag -> tag.toString().contains(hashTagString))));
+  MatchingGenericTagSingleLetterQueryIT(@NonNull @Value("${superconductor.relay.url}") String relayUrl) throws IOException {
+    super(relayUrl);
   }
 }

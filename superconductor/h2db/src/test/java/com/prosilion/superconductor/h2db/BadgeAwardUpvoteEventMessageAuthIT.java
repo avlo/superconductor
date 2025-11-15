@@ -1,27 +1,19 @@
 package com.prosilion.superconductor.h2db;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
-import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.h2db.util.BadgeAwardUpvoteEvent;
-import com.prosilion.superconductor.h2db.util.NostrRelayService;
-import java.io.IOException;
+import com.prosilion.superconductor.BaseBadgeAwardUpvoteEventMessageAuthIT;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 @Slf4j
+
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
@@ -29,26 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     "server.port=5556",
     "superconductor.relay.url=ws://localhost:5556"
 })
-public class BadgeAwardUpvoteEventMessageAuthIT {
-  private final NostrRelayService nostrRelayService;
-  private final BadgeAwardUpvoteEvent event;
 
+public class BadgeAwardUpvoteEventMessageAuthIT extends BaseBadgeAwardUpvoteEventMessageAuthIT {
   @Autowired
   BadgeAwardUpvoteEventMessageAuthIT(
-      @NonNull NostrRelayService nostrRelayService,
-      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent) throws NostrException {
-    this.nostrRelayService = nostrRelayService;
-    this.event = new BadgeAwardUpvoteEvent(
-        Identity.generateRandomIdentity(),
-        Identity.generateRandomIdentity().getPublicKey(),
-        badgeDefinitionUpvoteEvent);
-  }
-
-  @Test
-  void testValidExistingEventThenAfterImageReputationRequest() throws IOException, NostrException {
-    OkMessage send = nostrRelayService.send(new EventMessage(event));
-    assertFalse(send.getFlag());
-    assertTrue(send.getMessage().contains("auth-required:"));
-    nostrRelayService.disconnect();
+      @NonNull Identity superconductorInstanceIdentity,
+      @NonNull @Value("${superconductor.relay.url}") String relayUri) throws NostrException {
+    super(superconductorInstanceIdentity, relayUri);
   }
 }

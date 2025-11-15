@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 
-import static com.prosilion.superconductor.h2db.util.TestKindType.UNIT_DOWNVOTE;
-import static com.prosilion.superconductor.h2db.util.TestKindType.UNIT_UPVOTE;
+import static com.prosilion.superconductor.util.TestKindType.UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.util.TestKindType.UNIT_UPVOTE;
 
 @Configuration
 public class BadgeDefinitionConfig {

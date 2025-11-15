@@ -10,7 +10,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
-import com.prosilion.superconductor.sqlite.util.Factory;
+import com.prosilion.superconductor.util.Factory;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

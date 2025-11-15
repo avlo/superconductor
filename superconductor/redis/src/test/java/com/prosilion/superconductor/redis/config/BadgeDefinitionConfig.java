@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.lang.NonNull;
 
-import static com.prosilion.superconductor.redis.config.TestKindType.UNIT_DOWNVOTE;
-import static com.prosilion.superconductor.redis.config.TestKindType.UNIT_UPVOTE;
+import static com.prosilion.superconductor.util.TestKindType.UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.util.TestKindType.UNIT_UPVOTE;
 
 @Configuration
 @PropertySource("classpath:kind-class-map.properties")

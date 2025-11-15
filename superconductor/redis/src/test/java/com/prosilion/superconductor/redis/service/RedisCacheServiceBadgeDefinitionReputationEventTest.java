@@ -8,6 +8,7 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
@@ -17,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.redis.config.TestKindType.UNIT_REPUTATION;
+import static com.prosilion.superconductor.util.TestKindType.UNIT_REPUTATION;
 import static com.prosilion.superconductor.redis.entity.FormulaEventTest.UNIT_DOWNVOTE;
 import static com.prosilion.superconductor.redis.entity.FormulaEventTest.UNIT_UPVOTE;
 
@@ -43,11 +44,11 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
 
   private final ExternalIdentityTag externalIdentityTag = new ExternalIdentityTag(PLATFORM, IDENTITY, PROOF);
 
-  private final RedisCacheServiceIF redisCacheServiceIF;
+  private final CacheServiceIF redisCacheServiceIF;
 
   @Autowired
-  public RedisCacheServiceBadgeDefinitionReputationEventTest(RedisCacheServiceIF redisCacheServiceIF) {
-    this.redisCacheServiceIF = redisCacheServiceIF;
+  public RedisCacheServiceBadgeDefinitionReputationEventTest(CacheServiceIF cacheServiceIF) {
+    this.redisCacheServiceIF = cacheServiceIF;
   }
 
   @Test

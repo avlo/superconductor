@@ -15,7 +15,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
-import com.prosilion.superconductor.redis.util.Factory;
+import com.prosilion.superconductor.util.Factory;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.ArrayList;
 import java.util.List;

@@ -9,7 +9,7 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.h2db.util.Factory;
+import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
 import java.util.List;
 import java.util.Optional;

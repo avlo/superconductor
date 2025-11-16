@@ -34,17 +34,16 @@ public interface CacheServiceIF {
   }
 
   @SneakyThrows
-  default <U extends BaseEvent> U createBaseEvent(
+  default <T extends BaseEvent> T createBaseEvent(
       @NonNull GenericEventRecord genericEventRecord,
-      @NonNull Class<U> baseEventFromKind,
-      @NonNull Function<EventTag, ? extends BaseEvent> exampleFunction) {
+      @NonNull Class<T> baseEventFromKind) {
     assertNotNull(baseEventFromKind);
-    Constructor<U> constructor;
+    Constructor<T> constructor;
     try {
-      constructor = baseEventFromKind.getConstructor(GenericEventRecord.class, Function.class);
+      constructor = baseEventFromKind.getConstructor(GenericEventRecord.class);
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
-    return constructor.newInstance(genericEventRecord, exampleFunction);
+    return constructor.newInstance(genericEventRecord);
   }
 }

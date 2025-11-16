@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.lang.NonNull;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -18,8 +19,9 @@ import org.springframework.test.context.ActiveProfiles;
 public class JpaCacheServiceGenericEventRecordUsingFormulaEventIT extends TempIT {
   @Autowired
   public JpaCacheServiceGenericEventRecordUsingFormulaEventIT(
-      @Qualifier("eventPlugin") EventPluginIF eventPluginIF,
-      CacheEventTagBaseEventServiceIF cacheFormulaEventService) throws ParseException {
-    super(eventPluginIF, cacheFormulaEventService);
+      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPluginIF,
+      @NonNull CacheEventTagBaseEventServiceIF cacheFormulaEventService,
+      @NonNull CacheEventTagBaseEventServiceIF cacheBadgeDefinitionReputationEventService) throws ParseException {
+    super(eventPluginIF, cacheFormulaEventService, cacheBadgeDefinitionReputationEventService);
   }
 }

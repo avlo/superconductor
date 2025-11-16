@@ -23,24 +23,25 @@ public interface CacheEventTagBaseEventServiceIF {
   Optional<? extends EventTagsMappedEventsIF> getEvent(@NonNull EventIF eventIF);
   Optional<? extends EventTagsMappedEventsIF> getEventByEventId(String eventId);
   <T extends EventIF> void deleteEvent(T event);
-  <T extends BaseEvent> EventTagsMappedEventsIF createEventGivenMappedEventTagEvents(
+  <T extends BaseEvent> T createEventGivenMappedEventTagEvents(
       GenericEventRecord eventIF,
-      Class<? extends EventTagsMappedEventsIF> eventClassFromKind,
-      List<GenericEventRecord> mappedEventTagEvents);
+      Class<T> eventClassFromKind,
+      Function<EventTag, ? extends BaseEvent> fxn);
 
   @SneakyThrows
-  default EventTagsMappedEventsIF createBaseEvent(
+  default <T extends BaseEvent> T createBaseEvent(
       @NonNull GenericEventRecord genericEventRecord,
-      @NonNull Class<? extends EventTagsMappedEventsIF> baseEventFromKind,
-      @NonNull Function<EventTag, GenericEventRecord> exampleFunction) {
+      @NonNull Class<T> baseEventFromKind,
+      @NonNull Function<EventTag, ? extends BaseEvent> exampleFunction) {
     assertNotNull(baseEventFromKind);
-    Constructor<? extends EventTagsMappedEventsIF> constructor;
+    Constructor<T> constructor;
     try {
       constructor = baseEventFromKind.getConstructor(GenericEventRecord.class, Function.class);
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
-    return constructor.newInstance(genericEventRecord, exampleFunction);
+    T t = constructor.newInstance(genericEventRecord, exampleFunction);
+    return t;
   }
 
   Kind getKind();

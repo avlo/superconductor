@@ -4,11 +4,14 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.EventTagsMappedEventsIF;
+import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
@@ -35,16 +38,29 @@ public class CacheBadgeDefinitionReputationEventService extends AbstractCacheEve
       GenericEventRecord badgeDefinitionReputationEvent,
       List<GenericEventRecord> unpopulatedFormulaEvents) {
 
-    List<GenericEventRecord> populatedFormulaEvent = unpopulatedFormulaEvents.stream()
-        .map(this::getList)
-        .flatMap(Collection::stream).toList();
+    List<FormulaEvent> populatedFormulaEvents = unpopulatedFormulaEvents.stream()
+        .map(event ->
+            cacheFormulaEventService.populate(
+                event,
+                getList(event))).toList();
 
-    EventTagsMappedEventsIF eventGivenMappedEventTagEvents = createEventGivenMappedEventTagEvents(
+    Function<EventTag, FormulaEvent> fxn = eventTag ->
+        populatedFormulaEvents.stream().filter(genericEventRecord ->
+                genericEventRecord.getId().equals(eventTag.getIdEvent()))
+            .findFirst().orElseThrow();
+
+    BadgeDefinitionReputationEvent eventGivenMappedEventTagEvents = createEventGivenMappedEventTagEvents(
         badgeDefinitionReputationEvent,
         BadgeDefinitionReputationEvent.class,
-        populatedFormulaEvent);
+        fxn);
 
     return eventGivenMappedEventTagEvents;
+  }
+
+  @Override
+  public Optional<BadgeDefinitionReputationEvent> getEventByEventId(String eventId) {
+    Optional<BadgeDefinitionReputationEvent> eventByEventId = (Optional<BadgeDefinitionReputationEvent>) super.getEventByEventId(eventId);
+    return eventByEventId;
   }
 
   @Override

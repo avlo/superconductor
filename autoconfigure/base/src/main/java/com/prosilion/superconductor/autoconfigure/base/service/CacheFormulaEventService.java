@@ -7,9 +7,11 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.EventTagsMappedEventsIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -28,24 +30,30 @@ public class CacheFormulaEventService extends AbstractCacheEventTagBaseEventServ
   }
 
   @Override
-  EventTagsMappedEventsIF populate(
+  FormulaEvent populate(
       GenericEventRecord formulaEvent,
       List<GenericEventRecord> badgeDefinitionAwardEvents) {
-    EventTagsMappedEventsIF baseEventFromEntityIF =
+    
+    Function<EventTag, BadgeDefinitionAwardEvent> fxn = eventTag ->
+        createEventTagMappedEvent(badgeDefinitionAwardEvents.stream().filter(genericEventRecord ->
+                genericEventRecord.getId().equals(eventTag.getIdEvent()))
+            .findFirst().orElseThrow());
+    
+    FormulaEvent baseEventFromEntityIF =
         createEventGivenMappedEventTagEvents(
             formulaEvent,
             FormulaEvent.class,
-            badgeDefinitionAwardEvents);
+            fxn);
     return baseEventFromEntityIF;
   }
 
 //  @Override
-//  public BadgeDefinitionAwardEvent createEventTagMappedEvent(GenericEventRecord genericEventRecord) {
-//    BadgeDefinitionAwardEvent baseEvent = super.createBaseEvent(
-//        genericEventRecord,
-//        BadgeDefinitionAwardEvent.class);
-//    return baseEvent;
-//  }
+  public BadgeDefinitionAwardEvent createEventTagMappedEvent(GenericEventRecord genericEventRecord) {
+    BadgeDefinitionAwardEvent baseEvent = super.createBaseEvent(
+        genericEventRecord,
+        BadgeDefinitionAwardEvent.class);
+    return baseEvent;
+  }
 
 
   @Override

@@ -49,30 +49,22 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
   }
 
   @Override
-  public <U extends BaseEvent> EventTagsMappedEventsIF createEventGivenMappedEventTagEvents(
+  public <U extends BaseEvent> U createEventGivenMappedEventTagEvents(
       GenericEventRecord eventToPopulate,
-      Class<? extends EventTagsMappedEventsIF> eventClassFromKind,
-      List<GenericEventRecord> mappedEventTagEvents) {
-
-//    Function<EventTag, T> eventTagTFunction = eventTag ->
-//        createEventTagMappedEvent(mappedEventTagEvents.stream().filter(genericEventRecord ->
-//                genericEventRecord.getId().equals(eventTag.getIdEvent()))
-//            .findFirst().orElseThrow());
-
-    Function<EventTag, GenericEventRecord> fxn = eventTag ->
-        mappedEventTagEvents.stream().filter(genericEventRecord ->
-            genericEventRecord.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
+      Class<U> eventClassFromKind,
+      Function<EventTag, ? extends BaseEvent> fxn) {
 
     return createBaseEvent(eventToPopulate, eventClassFromKind, fxn);
   }
 
 //  abstract <T extends BaseEvent> T createEventTagMappedEvent(GenericEventRecord genericEventRecord);
 
-//  <T extends BaseEvent> T createBaseEvent(
-//      @NonNull GenericEventRecord genericEventRecord,
-//      @NonNull Class<T> baseEventFromKind) {
-//    return cacheServiceIF.createBaseEvent(genericEventRecord, baseEventFromKind);
-//  }
+  <T extends BaseEvent> T createBaseEvent(
+      @NonNull GenericEventRecord genericEventRecord,
+      @NonNull Class<T> baseEventFromKind) {
+    T baseEvent = cacheServiceIF.createBaseEvent(genericEventRecord, baseEventFromKind);
+    return baseEvent;
+  }
 
   abstract EventTagsMappedEventsIF populate(GenericEventRecord baseEvent, List<GenericEventRecord> mappedTags);
 

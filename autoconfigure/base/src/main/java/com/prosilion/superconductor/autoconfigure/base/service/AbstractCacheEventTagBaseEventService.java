@@ -89,9 +89,10 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
   }
 
   @Override
-  public List<EventTagsMappedEventsIF> getByKind(@NonNull Kind kind) {
+  public List<? extends EventTagsMappedEventsIF> getByKind(@NonNull Kind kind) {
     List<GenericEventRecord> eventsByKind = cacheServiceIF.getByKind(kind);
-    return eventsByKind.stream().map(eventTag -> populate(eventTag, eventsByKind)).toList();
+    return eventsByKind.stream().map(eventTag -> 
+        populate(eventTag, getList(eventTag))).toList();
   }
 
   @Override

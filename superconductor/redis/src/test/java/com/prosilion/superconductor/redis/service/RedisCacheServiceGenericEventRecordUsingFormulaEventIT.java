@@ -3,7 +3,7 @@ package com.prosilion.superconductor.redis.service;
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.service.TempIT;
+import com.prosilion.superconductor.service.BaseCacheServiceGenericEventRecordUsingFormulaEventIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,11 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class RedisCacheServiceGenericEventRecordUsingFormulaEventIT extends TempIT {
+public class RedisCacheServiceGenericEventRecordUsingFormulaEventIT extends BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
   @Autowired
   public RedisCacheServiceGenericEventRecordUsingFormulaEventIT(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPluginIF,
-      @NonNull CacheEventTagBaseEventServiceIF cacheFormulaEventService,
-      @NonNull CacheEventTagBaseEventServiceIF cacheBadgeDefinitionReputationEventService) throws ParseException {
-    super(eventPluginIF, cacheFormulaEventService, cacheBadgeDefinitionReputationEventService);
+      @NonNull CacheEventTagBaseEventServiceIF cacheFormulaEventService) throws ParseException {
+    super(eventPluginIF, cacheFormulaEventService);
   }
 }

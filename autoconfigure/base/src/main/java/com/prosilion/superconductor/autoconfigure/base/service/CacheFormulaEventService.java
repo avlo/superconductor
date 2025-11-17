@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.EventTagsMappedEventsIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.EventTag;
@@ -53,6 +54,11 @@ public class CacheFormulaEventService extends AbstractCacheEventTagBaseEventServ
   @Override
   public Optional<FormulaEvent> getEventByEventId(String eventId) {
     return (Optional<FormulaEvent>) super.getEventByEventId(eventId);
+  }
+  
+  @Override
+  public List<FormulaEvent> getByKind(@NonNull Kind kind) {
+    return (List<FormulaEvent>) super.getByKind(kind);
   }
 
   @Override

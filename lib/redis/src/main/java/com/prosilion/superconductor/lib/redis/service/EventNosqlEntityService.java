@@ -60,9 +60,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
 
   @Override
   public Optional<EventNosqlEntityIF> findByEventIdString(@NonNull String eventId) {
-    Optional<EventNosqlEntityIF> byEventId = eventNosqlEntityRepository.findByEventId(eventId);
-    Optional<EventNosqlEntityIF> eventNosqlEntityIF = byEventId.map(this::revertInterceptor);
-    return eventNosqlEntityIF;
+    return eventNosqlEntityRepository.findByEventId(eventId).map(this::revertInterceptor);
   }
 
   //  TODO: replace with JPQL

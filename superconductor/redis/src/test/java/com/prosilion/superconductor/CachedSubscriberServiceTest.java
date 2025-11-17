@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.mysql;
+package com.prosilion.superconductor;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.filter.Filters;

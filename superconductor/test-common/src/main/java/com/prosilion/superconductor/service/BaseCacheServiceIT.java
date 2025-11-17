@@ -1,17 +1,21 @@
 package com.prosilion.superconductor.service;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.TextNoteEvent;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.GeohashTag;
 import com.prosilion.nostr.tag.HashtagTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PriceTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import java.util.ArrayList;
@@ -19,6 +23,10 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseCacheServiceIT {
@@ -61,7 +69,7 @@ public abstract class BaseCacheServiceIT {
 
     List<GenericEventRecord> all = cacheServiceIF.getAll();
 
-    Assertions.assertTrue(all.stream()
+    assertTrue(all.stream()
         .map(EventIF::getId)
         .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
 
@@ -89,7 +97,7 @@ public abstract class BaseCacheServiceIT {
     Assertions.assertNotNull(savedGenericEventRecord);
     log.info("saved id: {}", savedGenericEventRecord);
 
-    Assertions.assertTrue(cacheServiceIF.getAll().stream()
+    assertTrue(cacheServiceIF.getAll().stream()
         .map(EventIF::getId)
         .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
 
@@ -150,7 +158,7 @@ public abstract class BaseCacheServiceIT {
     log.debug("sizeAfterDeleteMeEvent: {}", sizeAfterDeleteMeEvent);
     Assertions.assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
 
-    Assertions.assertTrue(allAfterDeleteMeEvent.stream()
+    assertTrue(allAfterDeleteMeEvent.stream()
         .map(EventIF::getId)
         .anyMatch(e -> e.equals(eventToDelete.getId())));
 
@@ -159,7 +167,7 @@ public abstract class BaseCacheServiceIT {
     EventTag eventTag = new EventTag(eventToDelete.getId());
 
     DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
-    Assertions.assertTrue(deletionEvent.getTags().contains(eventTag));
+    assertTrue(deletionEvent.getTags().contains(eventTag));
 
     cacheServiceIF.deleteEvent(deletionEvent);
 
@@ -174,7 +182,7 @@ public abstract class BaseCacheServiceIT {
     log.debug("sizeAfterDeletion: {}", sizeAfterDeletion);
     Assertions.assertEquals(sizeAfterDeleteMeEvent - 1, sizeAfterDeletion);
 
-    Assertions.assertTrue(allAfterDeletion.stream().map(EventIF::getId).noneMatch(e -> e.equals(eventToDelete.getId())));
+    assertTrue(allAfterDeletion.stream().map(EventIF::getId).noneMatch(e -> e.equals(eventToDelete.getId())));
     deleteSecondEvent(sizeAfterDeletion, allDeletionJpaEventEntitiesAfterDeletion.size(), eventToDelete.getId());
   }
 
@@ -197,14 +205,14 @@ public abstract class BaseCacheServiceIT {
     log.debug("sizeAfterSecondDeleteMeEvent: {}", sizeAfterSecondDeleteMeEvent);
     Assertions.assertEquals(sizeBeforeSecondDeleteMeEvent + 1, sizeAfterSecondDeleteMeEvent);
 
-    Assertions.assertTrue(cacheServiceIF.getAll().stream()
+    assertTrue(cacheServiceIF.getAll().stream()
         .map(EventIF::getId)
         .anyMatch(secondEventToDelete.getId()::equals));
 
     EventTag eventTag = new EventTag(secondEventToDelete.getId());
 
     DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
-    Assertions.assertTrue(secondDeletionEvent.getTags().contains(eventTag));
+    assertTrue(secondDeletionEvent.getTags().contains(eventTag));
 
     cacheServiceIF.deleteEvent(secondDeletionEvent);
 
@@ -219,7 +227,19 @@ public abstract class BaseCacheServiceIT {
     log.debug("sizeAfterSecondDeletion: {}", sizeAfterSecondDeletion);
     Assertions.assertEquals(sizeAfterSecondDeleteMeEvent - 1, sizeAfterSecondDeletion);
 
-    Assertions.assertTrue(allAfterSecondDeletion.stream().map(EventIF::getId).noneMatch(secondEventToDelete.getId()::equals));
-    Assertions.assertTrue(allAfterSecondDeletion.stream().map(EventIF::getId).noneMatch(firstDeletedEventId::equals));
+    assertTrue(allAfterSecondDeletion.stream().map(EventIF::getId).noneMatch(secondEventToDelete.getId()::equals));
+    assertTrue(allAfterSecondDeletion.stream().map(EventIF::getId).noneMatch(firstDeletedEventId::equals));
+  }
+
+  @Test
+  void testFindByKindAndPubKeyAndAddressTag() {
+    Kind textNoteKind = Kind.TEXT_NOTE;
+    AddressTag addressTag = new AddressTag(textNoteKind, IDENTITY.getPublicKey(), new IdentifierTag("findByKindAndPubKeyAndAddressTagIdentifierTag"));
+    PubKeyTag pubKeyTag = new PubKeyTag(IDENTITY.getPublicKey());
+    TextNoteEvent secondEventToDelete = new TextNoteEvent(IDENTITY, List.of(pubKeyTag, addressTag), "findByKindAndPubKeyAndAddressTagContent");
+    Assertions.assertEquals(secondEventToDelete.getId(), cacheServiceIF.save(secondEventToDelete).getId());
+    GenericEventRecord eventsByKindAndAddressTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(textNoteKind, IDENTITY.getPublicKey(), addressTag).getFirst();
+    assertTrue(eventsByKindAndAddressTag.getTags().contains(addressTag));
+    assertTrue(eventsByKindAndAddressTag.getTags().contains(pubKeyTag));
   }
 }

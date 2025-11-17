@@ -4,11 +4,11 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.user.PublicKey;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import lombok.SneakyThrows;
 import org.springframework.lang.NonNull;
 
@@ -19,6 +19,7 @@ public interface CacheServiceIF {
   List<GenericEventRecord> getAll();
   Optional<GenericEventRecord> getEventByEventId(String eventId);
   List<GenericEventRecord> getByKind(Kind kind);
+  List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencePubKeyTag, AddressTag addressTag);
   <U extends EventIF> void deleteEvent(U eventIF);
   <T> List<T> getAllDeletionEventIds();
 

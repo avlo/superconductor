@@ -29,6 +29,8 @@ public interface EventNosqlEntityRepository extends ListCrudRepository<EventNosq
 
   List<EventNosqlEntity> findByKindAndPubKey(@NonNull Integer kind, @NonNull String pubKey, Sort sort);
 
+  List<EventNosqlEntity> findByKindAndPubKeyTagAndAddressTag(@NonNull Integer kind, @NonNull String pubKey, Sort sort);
+
   default @NonNull List<EventNosqlEntityIF> findAllCustom() {
     return Collections.unmodifiableList(findAll(DESC_SORT_CREATED_AT));
   }

@@ -28,6 +28,7 @@ public class EventPlugin implements EventPluginIF {
   }
 
   @Override
+//  TODO: needs clean refactor
   public void processIncomingEvent(EventIF event) {
     Kind kind = event.getKind();
     if (isABoolean(event)) {
@@ -38,6 +39,7 @@ public class EventPlugin implements EventPluginIF {
     cacheServiceIF.save(event);
   }
 
+  //  TODO: needs clean refactor  
   private boolean isABoolean(EventIF event) {
     Kind kind = event.getKind();
     if (!kindClassMap.containsKey(kind)) {
@@ -47,8 +49,7 @@ public class EventPlugin implements EventPluginIF {
     if (kind.equals(Kind.ARBITRARY_CUSTOM_APP_DATA)) {
       return true;
     }
-    
-    boolean hasExternalIdentityTag = !Filterable.getTypeSpecificTags(ExternalIdentityTag.class, event).isEmpty();
-    return hasExternalIdentityTag;
+
+    return !Filterable.getTypeSpecificTags(ExternalIdentityTag.class, event).isEmpty();
   }
 }

@@ -40,8 +40,7 @@ public interface CacheEventTagBaseEventServiceIF {
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
-    T t = constructor.newInstance(genericEventRecord, exampleFunction);
-    return t;
+    return constructor.newInstance(genericEventRecord, exampleFunction);
   }
 
   Kind getKind();

@@ -29,7 +29,7 @@ public class CacheBadgeDefinitionReputationEventService extends AbstractCacheEve
 
   @Override
   public void save(@NonNull EventIF badgeDefinitionReputationEvent) {
-    List<GenericEventRecord> eventTagMappedEvents = super.getEventTagMappedEvents(badgeDefinitionReputationEvent);
+    super.getEventTagMappedEvents(badgeDefinitionReputationEvent);
     super.save(badgeDefinitionReputationEvent);
   }
 
@@ -49,18 +49,15 @@ public class CacheBadgeDefinitionReputationEventService extends AbstractCacheEve
                 genericEventRecord.getId().equals(eventTag.getIdEvent()))
             .findFirst().orElseThrow();
 
-    BadgeDefinitionReputationEvent eventGivenMappedEventTagEvents = createEventGivenMappedEventTagEvents(
+    return createEventGivenMappedEventTagEvents(
         badgeDefinitionReputationEvent,
         BadgeDefinitionReputationEvent.class,
         fxn);
-
-    return eventGivenMappedEventTagEvents;
   }
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> getEventByEventId(String eventId) {
-    Optional<BadgeDefinitionReputationEvent> eventByEventId = (Optional<BadgeDefinitionReputationEvent>) super.getEventByEventId(eventId);
-    return eventByEventId;
+    return (Optional<BadgeDefinitionReputationEvent>) super.getEventByEventId(eventId);
   }
 
   @Override

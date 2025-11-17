@@ -2,9 +2,7 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.EventTagsMappedEventsIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.EventTag;
@@ -32,34 +30,29 @@ public class CacheFormulaEventService extends AbstractCacheEventTagBaseEventServ
   @Override
   FormulaEvent populate(
       GenericEventRecord formulaEvent,
-      List<GenericEventRecord> badgeDefinitionAwardEvents) {
-    
+      List<GenericEventRecord> unpopulatedBadgeDefinitionAwardEvents) {
+
     Function<EventTag, BadgeDefinitionAwardEvent> fxn = eventTag ->
-        createEventTagMappedEvent(badgeDefinitionAwardEvents.stream().filter(genericEventRecord ->
+        createEventTagMappedEvent(unpopulatedBadgeDefinitionAwardEvents.stream().filter(genericEventRecord ->
                 genericEventRecord.getId().equals(eventTag.getIdEvent()))
             .findFirst().orElseThrow());
-    
-    FormulaEvent baseEventFromEntityIF =
-        createEventGivenMappedEventTagEvents(
-            formulaEvent,
-            FormulaEvent.class,
-            fxn);
-    return baseEventFromEntityIF;
+
+    return createEventGivenMappedEventTagEvents(
+        formulaEvent,
+        FormulaEvent.class,
+        fxn);
   }
 
-//  @Override
   public BadgeDefinitionAwardEvent createEventTagMappedEvent(GenericEventRecord genericEventRecord) {
-    BadgeDefinitionAwardEvent baseEvent = super.createBaseEvent(
+    return super.createBaseEvent(
         genericEventRecord,
         BadgeDefinitionAwardEvent.class);
-    return baseEvent;
   }
 
 
   @Override
   public Optional<FormulaEvent> getEventByEventId(String eventId) {
-    Optional<FormulaEvent> eventByEventId = (Optional<FormulaEvent>) super.getEventByEventId(eventId);
-    return eventByEventId;
+    return (Optional<FormulaEvent>) super.getEventByEventId(eventId);
   }
 
   @Override

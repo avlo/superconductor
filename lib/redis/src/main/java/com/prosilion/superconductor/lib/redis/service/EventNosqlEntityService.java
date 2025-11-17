@@ -12,6 +12,7 @@ import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
 import com.prosilion.superconductor.lib.redis.interceptor.TagInterceptor;
+import com.prosilion.superconductor.lib.redis.repository.EventNosqlEntityByExampleRepository;
 import com.prosilion.superconductor.lib.redis.repository.EventNosqlEntityRepository;
 import java.util.Collection;
 import java.util.List;
@@ -21,17 +22,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Example;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntityIF, EventNosqlEntityIF> {
   private final EventNosqlEntityRepository eventNosqlEntityRepository;
+  private final EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository;
   private final Map<String, TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors;
 
   public EventNosqlEntityService(
       @NonNull EventNosqlEntityRepository eventNosqlEntityRepository,
+      @NonNull EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
     this.eventNosqlEntityRepository = eventNosqlEntityRepository;
+    this.eventNosqlEntityByExampleRepository = eventNosqlEntityByExampleRepository;
     this.interceptors = interceptors.stream().collect(
         Collectors.toMap(
             TagInterceptor::getCode,
@@ -52,7 +57,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   public EventNosqlEntityIF save(@NonNull EventIF eventNosqlEntity) {
     return eventNosqlEntityRepository.save(convertDtoToNosqlEntity(eventNosqlEntity));
   }
-  
+
   @Override
   public Optional<EventNosqlEntityIF> findByEventIdString(@NonNull String eventId) {
     Optional<EventNosqlEntityIF> byEventId = eventNosqlEntityRepository.findByEventId(eventId);
@@ -97,13 +102,11 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
       @NonNull Kind kind,
       @NonNull PublicKey referencedPublicKey,
       @NonNull AddressTag addressTag) {
-    return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
-        .filter(eventNosqlEntityIF ->
-            eventNosqlEntityIF.getTags().stream()
-                .filter(AddressTag.class::isInstance)
-                .map(AddressTag.class::cast)
-                .collect(Collectors.toSet()).contains(addressTag))
-        .toList();
+    EventNosqlEntity eventNosqlEntity = new EventNosqlEntity();
+    eventNosqlEntity.setKind(kind.getValue());
+    eventNosqlEntity.setTags(List.of(new PubKeyTag(referencedPublicKey), addressTag));
+    return eventNosqlEntityByExampleRepository.findAll(Example.of(eventNosqlEntity)).stream()
+        .map(this::revertInterceptor).toList();
   }
 
   //  TODO: replace with JPQL  

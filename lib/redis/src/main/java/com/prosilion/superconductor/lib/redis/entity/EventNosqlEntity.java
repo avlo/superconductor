@@ -34,7 +34,7 @@ public class EventNosqlEntity implements EventNosqlEntityIF {
 
   @NonNull
   @Indexed
-  private String pubKey;
+  private String publicKey;
 
   @NonNull
   private Long createdAt;
@@ -56,7 +56,7 @@ public class EventNosqlEntity implements EventNosqlEntityIF {
 
   @Override
   public PublicKey getPublicKey() {
-    return new PublicKey(pubKey);
+    return new PublicKey(publicKey);
   }
 
   @Override

@@ -15,7 +15,6 @@ import com.prosilion.nostr.tag.PriceTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import java.util.ArrayList;
@@ -24,8 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -238,8 +235,8 @@ public abstract class BaseCacheServiceIT {
     PubKeyTag pubKeyTag = new PubKeyTag(IDENTITY.getPublicKey());
     TextNoteEvent secondEventToDelete = new TextNoteEvent(IDENTITY, List.of(pubKeyTag, addressTag), "findByKindAndPubKeyAndAddressTagContent");
     Assertions.assertEquals(secondEventToDelete.getId(), cacheServiceIF.save(secondEventToDelete).getId());
-    GenericEventRecord eventsByKindAndAddressTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(textNoteKind, IDENTITY.getPublicKey(), addressTag).getFirst();
-    assertTrue(eventsByKindAndAddressTag.getTags().contains(addressTag));
-    assertTrue(eventsByKindAndAddressTag.getTags().contains(pubKeyTag));
+    List<GenericEventRecord> eventsByKindAndAddressTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(textNoteKind, IDENTITY.getPublicKey(), addressTag).stream().toList();
+    assertTrue(eventsByKindAndAddressTag.stream().map(GenericEventRecord::getTags).flatMap(List::stream).toList().contains(addressTag));
+    assertTrue(eventsByKindAndAddressTag.stream().map(GenericEventRecord::getTags).flatMap(List::stream).toList().contains(pubKeyTag));
   }
 }

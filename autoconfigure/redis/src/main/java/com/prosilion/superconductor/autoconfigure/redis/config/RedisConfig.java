@@ -17,6 +17,7 @@ import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
 import com.prosilion.superconductor.lib.redis.interceptor.TagInterceptor;
 import com.prosilion.superconductor.lib.redis.repository.DeletionEventNosqlEntityRepository;
+import com.prosilion.superconductor.lib.redis.repository.EventNosqlEntityByExampleRepository;
 import com.prosilion.superconductor.lib.redis.repository.EventNosqlEntityRepository;
 import com.prosilion.superconductor.lib.redis.service.DeletionEventNoSqlEntityService;
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
@@ -36,12 +37,14 @@ import org.springframework.lang.NonNull;
 @EnableRedisRepositories(
     basePackageClasses = {
         EventNosqlEntityRepository.class,
-        DeletionEventNosqlEntityRepository.class
+        DeletionEventNosqlEntityRepository.class,
+        EventNosqlEntityByExampleRepository.class
     })
 @EntityScan(
     basePackageClasses = {
         EventNosqlEntity.class,
-        DeletionEventNosqlEntity.class
+        DeletionEventNosqlEntity.class,
+        EventNosqlEntityByExampleRepository.class
     })
 @ComponentScan(
     basePackages = {
@@ -59,8 +62,9 @@ public class RedisConfig {
   @ConditionalOnMissingBean
   EventNosqlEntityService aventNosqlEntityService(
       @NonNull EventNosqlEntityRepository eventNosqlEntityRepository,
+      @NonNull EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
-    return new EventNosqlEntityService(eventNosqlEntityRepository, interceptors);
+    return new EventNosqlEntityService(eventNosqlEntityRepository, eventNosqlEntityByExampleRepository, interceptors);
   }
 
   @Bean

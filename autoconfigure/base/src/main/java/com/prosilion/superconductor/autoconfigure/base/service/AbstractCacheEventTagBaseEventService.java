@@ -74,18 +74,24 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
     Optional<GenericEventRecord> optionalFoundRecord = cacheServiceIF.getEventByEventId(eventId);
     if (optionalFoundRecord.isPresent()) {
       return optionalFoundRecord.map(genericEventRecord ->
-          populate(genericEventRecord, optionalFoundRecord.map(this::getList).orElseThrow()));
+          getPopulate(genericEventRecord, optionalFoundRecord.map(this::getList).orElseThrow()));
     }
     return Optional.empty();
   }
 
+  private EventTagsMappedEventsIF getPopulate(GenericEventRecord genericEventRecord, List<GenericEventRecord> optionalFoundRecord) {
+    EventTagsMappedEventsIF populate = populate(genericEventRecord, optionalFoundRecord);
+    return populate;
+  }
+
   protected List<GenericEventRecord> getList(GenericEventRecord genericEventRecord) {
-    return genericEventRecord.getTags().stream()
+    List<GenericEventRecord> list = genericEventRecord.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(eventTag ->
             cacheServiceIF.getEventByEventId(eventTag.getIdEvent()))
         .flatMap(Optional::stream).toList();
+    return list;
   }
 
   @Override
@@ -96,14 +102,14 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
   @Override
   public List<EventTagsMappedEventsIF> getByKind(@NonNull Kind kind) {
     List<GenericEventRecord> eventsByKind = cacheServiceIF.getByKind(kind);
-    List<EventTagsMappedEventsIF> list = eventsByKind.stream().map(eventTag -> populate(eventTag, eventsByKind)).toList();
+    List<EventTagsMappedEventsIF> list = eventsByKind.stream().map(eventTag -> getPopulate(eventTag, eventsByKind)).toList();
     return list;
   }
 
   @Override
   public List<EventTagsMappedEventsIF> getAll() {
     List<GenericEventRecord> all = cacheServiceIF.getAll();
-    List<EventTagsMappedEventsIF> list = all.stream().map(eventTag -> populate(eventTag, all)).toList();
+    List<EventTagsMappedEventsIF> list = all.stream().map(eventTag -> getPopulate(eventTag, all)).toList();
     return list;
   }
 

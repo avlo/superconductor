@@ -2,6 +2,8 @@ package com.prosilion.superconductor.base.service.event.type;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.filter.Filterable;
+import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.HashMap;
@@ -28,11 +30,25 @@ public class EventPlugin implements EventPluginIF {
   @Override
   public void processIncomingEvent(EventIF event) {
     Kind kind = event.getKind();
-    if (kindClassMap.containsKey(kind)) {
+    if (isABoolean(event)) {
       kindClassMap.get(kind).save(event);
       return;
     }
     
     cacheServiceIF.save(event);
+  }
+
+  private boolean isABoolean(EventIF event) {
+    Kind kind = event.getKind();
+    if (!kindClassMap.containsKey(kind)) {
+      return false;
+    }
+    
+    if (kind.equals(Kind.ARBITRARY_CUSTOM_APP_DATA)) {
+      return true;
+    }
+    
+    boolean hasExternalIdentityTag = !Filterable.getTypeSpecificTags(ExternalIdentityTag.class, event).isEmpty();
+    return hasExternalIdentityTag;
   }
 }

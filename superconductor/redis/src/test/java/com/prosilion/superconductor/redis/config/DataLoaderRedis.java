@@ -2,7 +2,6 @@ package com.prosilion.superconductor.redis.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.lib.redis.dto.GenericNosqlEntityKindDto;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 
@@ -22,9 +21,7 @@ public class DataLoaderRedis implements DataLoaderRedisIF {
 
   @Override
   public void run(String... args) {
-    eventPlugin.processIncomingEvent(
-        new GenericNosqlEntityKindDto(badgeDefinitionUpvoteEvent).convertBaseEventToEventIF());
-    eventPlugin.processIncomingEvent(
-        new GenericNosqlEntityKindDto(badgeDefinitionDownvoteEvent).convertBaseEventToEventIF());
+    eventPlugin.processIncomingEvent(badgeDefinitionUpvoteEvent);
+    eventPlugin.processIncomingEvent(badgeDefinitionDownvoteEvent);
   }
 }

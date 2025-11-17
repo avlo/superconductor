@@ -29,7 +29,7 @@ public class CacheBadgeDefinitionReputationEventService extends AbstractCacheEve
 
   @Override
   public void save(@NonNull EventIF badgeDefinitionReputationEvent) {
-    super.getEventTagMappedEvents(badgeDefinitionReputationEvent);
+    List<GenericEventRecord> eventTagMappedEvents = super.getEventTagMappedEvents(badgeDefinitionReputationEvent);
     super.save(badgeDefinitionReputationEvent);
   }
 

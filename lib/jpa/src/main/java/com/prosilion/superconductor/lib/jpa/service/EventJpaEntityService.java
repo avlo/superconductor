@@ -2,6 +2,7 @@ package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.user.PublicKey;
@@ -89,6 +90,14 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
             getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
   }
 
+  @Override
+  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PublicKey referencePubKeyTag, @NonNull AddressTag addressTag) {
+    return eventJpaEntityRepository.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag)
+        .stream().map(ee ->
+            getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
+  }
+
+//  TODO: this is a 2nd call to db, needs economic sol'n
   public Optional<EventJpaEntityIF> getEventByUid(@NonNull Long id) {
     return eventJpaEntityRepository.findByUid(id).map(this::populateEventJpaEntity);
   }
@@ -100,6 +109,7 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
 //    eventEntityRepository.delete(convertDtoToEntity(eventToDelete));
   }
 
+//  TODO: this is a 2nd call to db, needs economic sol'n
   private EventJpaEntityIF populateEventJpaEntity(EventJpaEntityIF entityIF) {
     entityIF.setTags(
         Stream.concat(

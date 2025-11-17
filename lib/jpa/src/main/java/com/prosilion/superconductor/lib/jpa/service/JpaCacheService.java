@@ -3,7 +3,9 @@ package com.prosilion.superconductor.lib.jpa.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntityIF;
 import java.util.List;
@@ -58,6 +60,13 @@ public class JpaCacheService implements JpaCacheServiceIF {
   public List<GenericEventRecord> getByKind(@NonNull Kind kind) {
     List<EventJpaEntityIF> eventsByKind = eventJpaEntityService.getEventsByKind(kind).stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> collect = eventsByKind.stream().map(this::createGenericEventRecordFromEntityIF).toList();
+    return collect;
+  }
+
+  @Override
+  public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencePubKeyTag, AddressTag addressTag) {
+    List<EventJpaEntityIF> eventsByKindAndPubKeyTagAndAddressTag = eventJpaEntityService.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag).stream().filter(filterDeletionEvents()).toList();
+    List<GenericEventRecord> collect = eventsByKindAndPubKeyTagAndAddressTag.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return collect;
   }
 

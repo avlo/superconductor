@@ -2,13 +2,14 @@ package com.prosilion.superconductor.util;
 
 import com.prosilion.nostr.event.BadgeAwardAbstractEvent;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.EventTagsMappedEventsIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import java.util.List;
 import org.springframework.lang.NonNull;
 
-public class BadgeAwardUpvoteEvent extends BadgeAwardAbstractEvent {
+public class BadgeAwardUpvoteEvent extends BadgeAwardAbstractEvent implements EventTagsMappedEventsIF {
   public BadgeAwardUpvoteEvent(
       @NonNull Identity authorIdentity,
       @NonNull PublicKey upvotedUser,

@@ -2,8 +2,6 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
-import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.EventTagsMappedEventsIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.EventTag;
@@ -23,13 +21,7 @@ public class CacheFormulaEventService extends AbstractCacheEventTagBaseEventServ
   }
 
   @Override
-  public void save(@NonNull EventIF formulaEvent) {
-    super.getEventTagMappedEvents(formulaEvent);
-    super.save(formulaEvent);
-  }
-
-  @Override
-  FormulaEvent populate(
+  public FormulaEvent populate(
       GenericEventRecord formulaEvent,
       List<GenericEventRecord> unpopulatedBadgeDefinitionAwardEvents) {
 
@@ -44,20 +36,17 @@ public class CacheFormulaEventService extends AbstractCacheEventTagBaseEventServ
         fxn);
   }
 
-  public BadgeDefinitionAwardEvent createEventTagMappedEvent(GenericEventRecord genericEventRecord) {
+  private BadgeDefinitionAwardEvent createEventTagMappedEvent(GenericEventRecord genericEventRecord) {
     return super.createBaseEvent(
         genericEventRecord,
         BadgeDefinitionAwardEvent.class);
   }
 
-
-  @Override
-  public Optional<FormulaEvent> getEventByEventId(String eventId) {
+  public Optional<FormulaEvent> getFormulaEvent(String eventId) {
     return (Optional<FormulaEvent>) super.getEventByEventId(eventId);
   }
-  
-  @Override
-  public List<FormulaEvent> getByKind(@NonNull Kind kind) {
+
+  public List<FormulaEvent> getFormulaEvents(@NonNull Kind kind) {
     return (List<FormulaEvent>) super.getByKind(kind);
   }
 

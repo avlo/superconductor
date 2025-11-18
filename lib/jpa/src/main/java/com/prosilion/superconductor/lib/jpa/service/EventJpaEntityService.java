@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.event.EntityServiceIF;
 import com.prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
@@ -70,6 +71,7 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
     return eventJpaEntityRepository.findAll().stream().map(this::populateEventJpaEntity).collect(Collectors.toList());
   }
 
+  @Override
   public Optional<EventJpaEntityIF> findByEventIdString(@NonNull String eventIdString) {
     Optional<EventJpaEntityIF> entityIF = eventJpaEntityRepository
         .findByEventId(eventIdString);
@@ -84,8 +86,16 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
             getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
   }
 
+  @Override
   public List<EventJpaEntityIF> getEventsByKind(@NonNull Kind kind) {
     return eventJpaEntityRepository.findByKind(kind.getValue())
+        .stream().map(ee ->
+            getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
+  }
+
+  @Override
+  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencePubKeyTag) {
+    return eventJpaEntityRepository.getEventsByKindAndPubKeyTag(kind, referencePubKeyTag)
         .stream().map(ee ->
             getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
   }
@@ -97,7 +107,21 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
             getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
   }
 
-//  TODO: this is a 2nd call to db, needs economic sol'n
+  @Override
+  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag) {
+    return eventJpaEntityRepository.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencedPubkeyTag, identifierTag)
+        .stream().map(ee ->
+            getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
+  }
+
+  @Override
+  public List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
+    return eventJpaEntityRepository.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag)
+        .stream().map(ee ->
+            getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
+  }
+
+  //  TODO: this is a 2nd call to db, needs economic sol'n
   public Optional<EventJpaEntityIF> getEventByUid(@NonNull Long id) {
     return eventJpaEntityRepository.findByUid(id).map(this::populateEventJpaEntity);
   }
@@ -109,7 +133,7 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
 //    eventEntityRepository.delete(convertDtoToEntity(eventToDelete));
   }
 
-//  TODO: this is a 2nd call to db, needs economic sol'n
+  //  TODO: this is a 2nd call to db, needs economic sol'n
   private EventJpaEntityIF populateEventJpaEntity(EventJpaEntityIF entityIF) {
     entityIF.setTags(
         Stream.concat(

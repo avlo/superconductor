@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntityIF;
@@ -64,8 +65,31 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
+  public List<GenericEventRecord> getEventsByKindAndPubKeyTag(
+      @NonNull Kind kind,
+      @NonNull PublicKey publicKey) {
+    List<EventJpaEntityIF> eventsByKind = eventJpaEntityService.getEventsByKind(kind).stream().filter(filterDeletionEvents()).toList();
+    List<GenericEventRecord> collect = eventsByKind.stream().map(this::createGenericEventRecordFromEntityIF).toList();
+    return collect;
+  }
+  
+  @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencePubKeyTag, AddressTag addressTag) {
     List<EventJpaEntityIF> eventsByKindAndPubKeyTagAndAddressTag = eventJpaEntityService.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag).stream().filter(filterDeletionEvents()).toList();
+    List<GenericEventRecord> collect = eventsByKindAndPubKeyTagAndAddressTag.stream().map(this::createGenericEventRecordFromEntityIF).toList();
+    return collect;
+  }
+
+  @Override
+  public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag) {
+    List<EventJpaEntityIF> eventsByKindAndPubKeyTagAndAddressTag = eventJpaEntityService.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencedPubkeyTag, identifierTag).stream().filter(filterDeletionEvents()).toList();
+    List<GenericEventRecord> collect = eventsByKindAndPubKeyTagAndAddressTag.stream().map(this::createGenericEventRecordFromEntityIF).toList();
+    return collect;
+  }
+
+  @Override
+  public List<GenericEventRecord> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
+    List<EventJpaEntityIF> eventsByKindAndPubKeyTagAndAddressTag = eventJpaEntityService.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag).stream().filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> collect = eventsByKindAndPubKeyTagAndAddressTag.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return collect;
   }

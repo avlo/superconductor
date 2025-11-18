@@ -74,7 +74,7 @@ public class RedisConfig {
     return new DeletionEventNoSqlEntityService(deletionEventNosqlEntityRepository);
   }
 
-  @Bean
+  @Bean(name = "redisCacheService")
   @ConditionalOnMissingBean
   CacheServiceIF cacheServiceIF(
       @NonNull EventNosqlEntityService eventNosqlEntityService,

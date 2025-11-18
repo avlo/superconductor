@@ -5,7 +5,10 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.EventTagsMappedEventsIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.PublicKey;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +23,12 @@ public interface CacheEventTagBaseEventServiceIF {
 
   List<? extends EventTagsMappedEventsIF> getAll();
   List<? extends EventTagsMappedEventsIF> getByKind(Kind kind);
-  Optional<? extends EventTagsMappedEventsIF> getEvent(@NonNull EventIF eventIF);
+  Optional<? extends EventTagsMappedEventsIF> getEvent(EventIF eventIF);
   Optional<? extends EventTagsMappedEventsIF> getEventByEventId(String eventId);
+  List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencePubKeyTag);
+  List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencePubKeyTag, AddressTag addressTag);
+  List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag);
+  List<? extends EventTagsMappedEventsIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag);
   <T extends EventIF> void deleteEvent(T event);
   <T extends BaseEvent> T createEventGivenMappedEventTagEvents(
       GenericEventRecord eventIF,

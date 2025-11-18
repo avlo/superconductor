@@ -2,11 +2,14 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.EventTagsMappedEventsIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
@@ -28,13 +31,7 @@ public class CacheBadgeDefinitionReputationEventService extends AbstractCacheEve
   }
 
   @Override
-  public void save(@NonNull EventIF badgeDefinitionReputationEvent) {
-    super.getEventTagMappedEvents(badgeDefinitionReputationEvent);
-    super.save(badgeDefinitionReputationEvent);
-  }
-
-  @Override
-  EventTagsMappedEventsIF populate(
+  public EventTagsMappedEventsIF populate(
       GenericEventRecord badgeDefinitionReputationEvent,
       List<GenericEventRecord> unpopulatedFormulaEvents) {
 
@@ -55,9 +52,23 @@ public class CacheBadgeDefinitionReputationEventService extends AbstractCacheEve
         fxn);
   }
 
-  @Override
-  public Optional<BadgeDefinitionReputationEvent> getEventByEventId(String eventId) {
+  public Optional<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvent(@NonNull String eventId) {
     return (Optional<BadgeDefinitionReputationEvent>) super.getEventByEventId(eventId);
+  }
+
+  public List<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvents(
+      @NonNull Kind kind,
+      @NonNull PublicKey referencePubKeyTag,
+      @NonNull AddressTag addressTag) {
+    return (List<BadgeDefinitionReputationEvent>) super.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag);
+  }
+
+  public List<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvents(Kind kind, PubKeyTag referencedPubkeyTag, IdentifierTag identifierTag) {
+    return (List<BadgeDefinitionReputationEvent>) super.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencedPubkeyTag.getPublicKey(), identifierTag);
+  }
+
+  public List<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvents(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
+    return (List<BadgeDefinitionReputationEvent>) super.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag);
   }
 
   @Override

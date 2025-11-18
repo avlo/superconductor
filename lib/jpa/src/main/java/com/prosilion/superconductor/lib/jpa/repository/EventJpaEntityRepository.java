@@ -2,6 +2,7 @@ package com.prosilion.superconductor.lib.jpa.repository;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
@@ -16,15 +17,10 @@ import org.springframework.stereotype.Repository;
 public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, Long> {
   Sort DESC_SORT_CREATED_AT = Sort.by(Sort.Direction.DESC, "createdAt");
 
-  @NonNull
   List<EventJpaEntity> findAll(@NonNull Sort sort);
-
   Optional<EventJpaEntityIF> findByUid(@NonNull Long uid);
-
   Optional<EventJpaEntityIF> findByEventId(String eventId);
-
   List<EventJpaEntityIF> findByPubKey(@NonNull String pubKey, Sort sort);
-
   List<EventJpaEntityIF> findByKind(@NonNull Integer kind, Sort sort);
 
 //  TODO: below is properly structured query
@@ -49,9 +45,24 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
   default @NonNull List<EventJpaEntityIF> findByPubKey(@NonNull String pubKey) {
     return findByPubKey(pubKey, DESC_SORT_CREATED_AT);
   }
-  
+
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PublicKey referencePubKeyTag) {
+//    return getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag, DESC_SORT_CREATED_AT);
+    return findByKind(kind.getValue());
+  }
+
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PublicKey referencePubKeyTag, @NonNull AddressTag addressTag) {
 //    return getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag, DESC_SORT_CREATED_AT);
+    return findByKind(kind.getValue());
+  }
+
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
+    assert (false);
+    return findByKind(kind.getValue());
+  }
+
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag) {
+    assert (false);
     return findByKind(kind.getValue());
   }
 }

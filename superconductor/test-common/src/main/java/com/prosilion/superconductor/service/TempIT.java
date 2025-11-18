@@ -4,7 +4,6 @@ import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.EventTagsMappedEventsIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
@@ -73,7 +72,7 @@ public abstract class TempIT {
 
     eventPluginIF.processIncomingEvent(this.badgeDefinitionAwardEvent);
     eventPluginIF.processIncomingEvent(this.formulaEvent);
-    FormulaEvent savedFormulaEvent = cacheFormulaEventService.getEventByEventId(formulaEvent.getId()).orElseThrow();
+    FormulaEvent savedFormulaEvent = cacheFormulaEventService.getFormulaEvent(formulaEvent.getId()).orElseThrow();
     assertNotNull(savedFormulaEvent);
 
     log.info("saved id: {}", savedFormulaEvent);
@@ -87,7 +86,7 @@ public abstract class TempIT {
         formulaEvent);
 
     eventPluginIF.processIncomingEvent(badgeDefinitionReputationEvent);
-    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent1 = cacheBadgeDefinitionReputationEventService.getEventByEventId(badgeDefinitionReputationEvent.getId()).orElseThrow();
+    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent1 = cacheBadgeDefinitionReputationEventService.getBadgeDefinitionReputationEvent(badgeDefinitionReputationEvent.getId()).orElseThrow();
     assertNotNull(badgeDefinitionReputationEvent1);
   }
 }

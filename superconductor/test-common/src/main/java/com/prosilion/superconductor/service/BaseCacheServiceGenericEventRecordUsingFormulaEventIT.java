@@ -66,22 +66,22 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 
     eventPluginIF.processIncomingEvent(this.badgeDefinitionAwardEvent);
     eventPluginIF.processIncomingEvent(this.formulaEvent);
-    FormulaEvent savedFormulaEvent = cacheFormulaEventService.getEventByEventId(formulaEvent.getId()).orElseThrow();
+    FormulaEvent savedFormulaEvent = cacheFormulaEventService.getFormulaEvent(formulaEvent.getId()).orElseThrow();
     assertNotNull(savedFormulaEvent);
 
     log.info("saved id: {}", savedFormulaEvent);
 
-    List<FormulaEvent> all = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
+    List<FormulaEvent> all = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA);
 
     assertTrue(all.stream()
         .map(FormulaEvent::getId)
         .anyMatch(e -> e.equals(savedFormulaEvent.getId())));
 
-    FormulaEvent firstRetrievedEventEntityIF = cacheFormulaEventService.getEventByEventId(savedFormulaEvent.getId()).orElseThrow();
+    FormulaEvent firstRetrievedEventEntityIF = cacheFormulaEventService.getFormulaEvent(savedFormulaEvent.getId()).orElseThrow();
     assertEquals(savedFormulaEvent.getId(), firstRetrievedEventEntityIF.getId());
     assertEquals(savedFormulaEvent, firstRetrievedEventEntityIF);
 
-    FormulaEvent secondRetrievedEntityIF = cacheFormulaEventService.getEventByEventId(savedFormulaEvent.getId()).orElseThrow();
+    FormulaEvent secondRetrievedEntityIF = cacheFormulaEventService.getFormulaEvent(savedFormulaEvent.getId()).orElseThrow();
     assertEquals(savedFormulaEvent.getId(), secondRetrievedEntityIF.getId());
     assertEquals(savedFormulaEvent, secondRetrievedEntityIF);
     assertEquals(firstRetrievedEventEntityIF, secondRetrievedEntityIF);
@@ -89,7 +89,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
     assertNotNull(savedFormulaEvent);
     log.info("saved id: {}", savedFormulaEvent);
 
-    Assertions.assertTrue(cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA).stream()
+    Assertions.assertTrue(cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA).stream()
         .map(FormulaEvent::getId)
         .anyMatch(e -> e.equals(savedFormulaEvent.getId())));
 
@@ -101,27 +101,27 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
     log.info("********************");
     log.info("********************");
 
-    FormulaEvent firstRetrieval = cacheFormulaEventService.getEventByEventId(savedFormulaEvent.getId()).orElseThrow();
+    FormulaEvent firstRetrieval = cacheFormulaEventService.getFormulaEvent(savedFormulaEvent.getId()).orElseThrow();
     assertEquals(savedFormulaEvent.getId(), firstRetrieval.getId());
 
-    FormulaEvent secondRetrieval = cacheFormulaEventService.getEventByEventId(savedFormulaEvent.getId()).orElseThrow();
+    FormulaEvent secondRetrieval = cacheFormulaEventService.getFormulaEvent(savedFormulaEvent.getId()).orElseThrow();
     assertEquals(savedFormulaEvent.getId(), secondRetrieval.getId());
     assertEquals(firstRetrieval, secondRetrieval);
 
-    int startSize = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA).size();
+    int startSize = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA).size();
     log.debug("startSize: {}", startSize);
 
     cacheFormulaEventService.save(savedFormulaEvent);
-    FormulaEvent savedUidOfDuplicate = cacheFormulaEventService.getEventByEventId(savedFormulaEvent.getId()).orElseThrow();
+    FormulaEvent savedUidOfDuplicate = cacheFormulaEventService.getFormulaEvent(savedFormulaEvent.getId()).orElseThrow();
     assertEquals(savedFormulaEvent, savedUidOfDuplicate);
 
-    int endSize = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA).size();
+    int endSize = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA).size();
     log.debug("endSize: {}", endSize);
     assertEquals(startSize, endSize);
 
     log.info("saved id: {}", savedFormulaEvent);
 
-    all = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
+    all = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeBeforeDeleteMeEvent = all.size();
     log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 
@@ -130,9 +130,9 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
         badgeDefinitionAwardEvent,
         PLUS_ONE_FORMULA);
     eventPluginIF.processIncomingEvent(eventToDelete);
-    Assertions.assertEquals(eventToDelete, cacheFormulaEventService.getEventByEventId(eventToDelete.getId()).orElseThrow());
+    Assertions.assertEquals(eventToDelete, cacheFormulaEventService.getFormulaEvent(eventToDelete.getId()).orElseThrow());
 
-    List<FormulaEvent> allAfterDeleteMeEvent = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
+    List<FormulaEvent> allAfterDeleteMeEvent = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeAfterDeleteMeEvent = allAfterDeleteMeEvent.size();
     log.debug("sizeAfterDeleteMeEvent: {}", sizeAfterDeleteMeEvent);
     assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
@@ -150,7 +150,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 
     cacheFormulaEventService.deleteEvent(deletionEvent);
 
-    List<FormulaEvent> allAfterDeletion = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
+    List<FormulaEvent> allAfterDeletion = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeAfterDeletion = allAfterDeletion.size();
     log.debug("sizeAfterDeletion: {}", sizeAfterDeletion);
     assertEquals(sizeAfterDeleteMeEvent - 1, sizeAfterDeletion);
@@ -163,7 +163,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
       int allDeletedEventsSizeAfterFirstDeletion,
       String firstDeletedEventId) throws ParseException {
 
-    List<FormulaEvent> all = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
+    List<FormulaEvent> all = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeBeforeSecondDeleteMeEvent = all.size();
     log.debug("sizeBeforeSecondDeleteMeEvent: {}", sizeBeforeSecondDeleteMeEvent);
     assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
@@ -176,15 +176,15 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
             PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
 
     cacheFormulaEventService.save(secondEventToDelete);
-    FormulaEvent secondBaseEventToDelete = cacheFormulaEventService.getEventByEventId(secondEventToDelete.getId()).orElseThrow();
+    FormulaEvent secondBaseEventToDelete = cacheFormulaEventService.getFormulaEvent(secondEventToDelete.getId()).orElseThrow();
     assertEquals(secondEventToDelete, secondBaseEventToDelete);
 
-    List<FormulaEvent> allAfterSecondDeleteMeEvent = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
+    List<FormulaEvent> allAfterSecondDeleteMeEvent = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeAfterSecondDeleteMeEvent = allAfterSecondDeleteMeEvent.size();
     log.debug("sizeAfterSecondDeleteMeEvent: {}", sizeAfterSecondDeleteMeEvent);
     assertEquals(sizeBeforeSecondDeleteMeEvent + 1, sizeAfterSecondDeleteMeEvent);
 
-    Assertions.assertTrue(cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA).stream()
+    Assertions.assertTrue(cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA).stream()
         .anyMatch(secondBaseEventToDelete::equals));
 
     EventTag eventTag = new EventTag(secondEventToDelete.getId());
@@ -194,7 +194,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 
     cacheFormulaEventService.deleteEvent(secondDeletionEvent);
 
-    List<FormulaEvent> allAfterSecondDeletion = cacheFormulaEventService.getByKind(Kind.ARBITRARY_CUSTOM_APP_DATA);
+    List<FormulaEvent> allAfterSecondDeletion = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA);
     int sizeAfterSecondDeletion = allAfterSecondDeletion.size();
     log.debug("sizeAfterSecondDeletion: {}", sizeAfterSecondDeletion);
     assertEquals(sizeAfterSecondDeleteMeEvent - 1, sizeAfterSecondDeletion);

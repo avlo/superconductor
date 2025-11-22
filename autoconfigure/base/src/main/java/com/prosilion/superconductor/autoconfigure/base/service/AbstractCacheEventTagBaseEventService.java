@@ -16,9 +16,11 @@ import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.lang.NonNull;
 
+@Slf4j
 public abstract class AbstractCacheEventTagBaseEventService implements CacheEventTagBaseEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
 
@@ -28,16 +30,26 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
 
   @Override
   public void save(EventIF event) {
+    log.info("{} saving event: [{}] ...", getClass().getSimpleName(), event.toString());
+    log.info("... with eventId [{}] ...", event.getId());
     List<EventTag> eventTags = Filterable.getTypeSpecificTags(EventTag.class, event);
+    if (!eventTags.isEmpty()) { log.info("... with EventTag(s):");}
+    eventTags.forEach(tag -> log.info("eventId [{}], event URL [{}]", tag.getIdEvent(), tag.getRecommendedRelayUrl()));
     List<GenericEventRecord> foundDbEvents = eventTags.stream()
         .map(EventTag::getIdEvent)
         .map(cacheServiceIF::getEventByEventId)
         .flatMap(Optional::stream)
         .toList();
 
+    if (!foundDbEvents.isEmpty()) { log.info("... found related DB events:");}
+    foundDbEvents.forEach(ger -> log.info("eventId [{}]", ger.getId()));
+
     List<String> missingEventIds = eventTags.stream()
         .map(EventTag::getIdEvent).filter(eventTag ->
             !foundDbEvents.stream().map(GenericEventRecord::getId).toList().contains(eventTag)).toList();
+
+    if (!missingEventIds.isEmpty()) { log.info("... missing required DB events:");}
+    missingEventIds.forEach(eventId -> log.info("eventId [{}]", eventId));
 
     if (!missingEventIds.isEmpty())
       throw new NostrException(
@@ -45,7 +57,9 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
               String.format(CacheFormulaEventService.NON_EXISTENT_EVENT_ID_S, event.getId()),
               Strings.join(missingEventIds.stream().map(eventId -> String.format("[%s]", eventId)).toList(), ',')));
 
+    log.info("all required EventTag events found, saving event with eventId [{}] ...", event.getId());
     cacheServiceIF.save(event);
+    log.info("...done");
   }
 
   @Override
@@ -69,16 +83,31 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
     Optional<GenericEventRecord> optionalFoundRecord = cacheServiceIF.getEventByEventId(eventId);
     if (optionalFoundRecord.isPresent()) {
       return optionalFoundRecord.map(genericEventRecord ->
-          populate(genericEventRecord, optionalFoundRecord.map(this::getList).orElseThrow()));
+          populate(genericEventRecord, optionalFoundRecord.map(this::getEventTagsAsGenericEventRecords).orElseThrow()));
     }
     return Optional.empty();
   }
 
   @Override
-  public List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencePubKeyTag) {
-    List<GenericEventRecord> eventsByKindAndPubKeyTagAndAddressTag = cacheServiceIF.getEventsByKindAndPubKeyTag(kind, referencePubKeyTag);
-    List<EventTagsMappedEventsIF> list = eventsByKindAndPubKeyTagAndAddressTag.stream().map(eventTag ->
-        populate(eventTag, getList(eventTag))).toList();
+  public List<? extends EventTagsMappedEventsIF> getByKind(@NonNull Kind kind) {
+    List<GenericEventRecord> eventsByKind = cacheServiceIF.getByKind(kind);
+    return eventsByKind.stream().map(eventTag ->
+        populate(eventTag, getEventTagsAsGenericEventRecords(eventTag))).toList();
+  }
+
+  @Override
+  public List<? extends EventTagsMappedEventsIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
+    List<GenericEventRecord> eventsByKindAndAuthorPublicKey = cacheServiceIF.getEventsByKindAndAuthorPublicKey(kind, authorPublicKey);
+    List<EventTagsMappedEventsIF> list = eventsByKindAndAuthorPublicKey.stream().map(eventTag ->
+        populate(eventTag, getEventTagsAsGenericEventRecords(eventTag))).toList();
+    return list;
+  }
+
+  @Override
+  public List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PublicKey referencePubKeyTag) {
+    List<GenericEventRecord> eventsByKindAndPubKeyTag = cacheServiceIF.getEventsByKindAndPubKeyTag(kind, referencePubKeyTag);
+    List<EventTagsMappedEventsIF> list = eventsByKindAndPubKeyTag.stream().map(eventTag ->
+        populate(eventTag, getEventTagsAsGenericEventRecords(eventTag))).toList();
     return list;
   }
 
@@ -89,45 +118,45 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
       @NonNull AddressTag addressTag) {
     List<GenericEventRecord> eventsByKindAndPubKeyTagAndAddressTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag);
     List<EventTagsMappedEventsIF> list = eventsByKindAndPubKeyTagAndAddressTag.stream().map(eventTag ->
-        populate(eventTag, getList(eventTag))).toList();
+        populate(eventTag, getEventTagsAsGenericEventRecords(eventTag))).toList();
     return list;
   }
 
   @Override
-  public List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag) {
+  public List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTagAndIdentifierTag(
+      @NonNull Kind kind,
+      @NonNull PublicKey referencedPubkeyTag,
+      @NonNull IdentifierTag identifierTag) {
     List<GenericEventRecord> eventsByKindAndPubKeyTagAndIdentifierTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencedPubkeyTag, identifierTag);
     List<EventTagsMappedEventsIF> list = eventsByKindAndPubKeyTagAndIdentifierTag.stream().map(eventTag ->
-        populate(eventTag, getList(eventTag))).toList();
+        populate(eventTag, getEventTagsAsGenericEventRecords(eventTag))).toList();
     return list;
   }
 
   @Override
-  public List<? extends EventTagsMappedEventsIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
+  public List<? extends EventTagsMappedEventsIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
+      @NonNull Kind kind,
+      @NonNull PublicKey authorPublicKey,
+      @NonNull IdentifierTag identifierTag) {
     List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag = cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag);
     List<EventTagsMappedEventsIF> list = eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().map(eventTag ->
-        populate(eventTag, getList(eventTag))).toList();
+        populate(eventTag, getEventTagsAsGenericEventRecords(eventTag))).toList();
     return list;
   }
 
-  public List<GenericEventRecord> getList(GenericEventRecord genericEventRecord) {
-    return genericEventRecord.getTags().stream()
+  public List<GenericEventRecord> getEventTagsAsGenericEventRecords(@NonNull GenericEventRecord genericEventRecord) {
+    List<GenericEventRecord> eventTagsAsGenericEventRecords = genericEventRecord.getTags().stream()
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
         .map(eventTag ->
             cacheServiceIF.getEventByEventId(eventTag.getIdEvent()))
         .flatMap(Optional::stream).toList();
+    return eventTagsAsGenericEventRecords;
   }
 
   @Override
   public Optional<? extends EventTagsMappedEventsIF> getEvent(@NonNull EventIF eventIF) {
     return getEventByEventId(eventIF.getId());
-  }
-
-  @Override
-  public List<? extends EventTagsMappedEventsIF> getByKind(@NonNull Kind kind) {
-    List<GenericEventRecord> eventsByKind = cacheServiceIF.getByKind(kind);
-    return eventsByKind.stream().map(eventTag ->
-        populate(eventTag, getList(eventTag))).toList();
   }
 
   @Override

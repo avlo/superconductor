@@ -13,7 +13,6 @@
 //import com.prosilion.nostr.user.Identity;
 //import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
 //import com.prosilion.superconductor.lib.redis.dto.GenericNosqlEntityKindDto;
-//import com.prosilion.superconductor.redis.util.Factory;
 //import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 //import java.util.List;
 //import lombok.extern.slf4j.Slf4j;
@@ -40,20 +39,23 @@
 //@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //public class RedisCacheServiceBadgeDefinitionAwardEventIT {
 //  public static final Relay relay = new Relay("ws://localhost:5555");
-//  private static final Identity IDENTITY = Factory.createNewIdentity();
+//  private final Identity identity;
 //
 //  private final CacheFormulaEventService cacheFormulaEventService;
 //  private final BadgeDefinitionAwardEvent badgeDefinitionAwardEvent;
 //
 //  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
 //  public final String PLUS_ONE_FORMULA = "+1";
-//  
+//
 //  private BaseEvent eventNosqlEntityIFBadgeDefinitionAwardEvent;
 //
 //  @Autowired
-//  public RedisCacheServiceBadgeDefinitionAwardEventIT(CacheFormulaEventService cacheFormulaEventService) {
+//  public RedisCacheServiceBadgeDefinitionAwardEventIT(
+//      @NonNull Identity superconductorInstanceIdentity,
+//      CacheFormulaEventService cacheFormulaEventService) {
+//    this.identity = superconductorInstanceIdentity;
 //    this.cacheFormulaEventService = cacheFormulaEventService;
-//    this.badgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(IDENTITY, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
+//    this.badgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
 //  }
 //
 //  @Test
@@ -72,7 +74,7 @@
 //    this.eventNosqlEntityIFBadgeDefinitionAwardEvent = cacheFormulaEventService.save(this.badgeDefinitionAwardEvent);
 //
 //  }
-//  
+//
 //  @Test
 //  @Order(3)
 //  void testGetByEventId() {
@@ -155,9 +157,9 @@
 //    log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 //
 //    FormulaEvent eventToDelete = new FormulaEvent(
-//        IDENTITY,
+//        identity,
 //        new BadgeDefinitionAwardEvent(
-//            IDENTITY,
+//            identity,
 //            upvoteIdentifierTag,
 //            relay,
 //            PLUS_ONE_FORMULA),
@@ -175,7 +177,7 @@
 //
 //    EventTag eventTag = new EventTag(eventToDelete.getId());
 //
-//    DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
+//    DeletionEvent deletionEvent = new DeletionEvent(identity, List.of(eventTag), Factory.lorumIpsum());
 //    assertTrue(deletionEvent.getTags().contains(eventTag));
 //
 //    cacheFormulaEventService.deleteEvent(deletionEvent);
@@ -199,8 +201,8 @@
 //    assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 //
 //    FormulaEvent secondEventToDelete =
-//        new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
-//            IDENTITY, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
+//        new FormulaEvent(identity, new BadgeDefinitionAwardEvent(
+//            identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
 //    assertEquals(secondEventToDelete.getId(), cacheFormulaEventService.save(secondEventToDelete).getId());
 //
 //    List<FormulaEvent> allAfterSecondDeleteMeEvent = cacheFormulaEventService.getAll();
@@ -214,7 +216,7 @@
 //
 //    EventTag eventTag = new EventTag(secondEventToDelete.getId());
 //
-//    DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
+//    DeletionEvent secondDeletionEvent = new DeletionEvent(identity, List.of(eventTag), Factory.lorumIpsum());
 //    assertTrue(secondDeletionEvent.getTags().contains(eventTag));
 //
 //    cacheFormulaEventService.deleteEvent(secondDeletionEvent);

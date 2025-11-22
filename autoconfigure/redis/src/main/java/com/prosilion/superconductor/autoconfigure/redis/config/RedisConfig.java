@@ -9,9 +9,7 @@ import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
-import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
@@ -23,7 +21,6 @@ import com.prosilion.superconductor.lib.redis.service.DeletionEventNoSqlEntitySe
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -61,7 +58,7 @@ public class RedisConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  EventNosqlEntityService aventNosqlEntityService(
+  EventNosqlEntityService eventNosqlEntityService(
       @NonNull EventNosqlEntityRepository eventNosqlEntityRepository,
       @NonNull EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository,
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
@@ -75,32 +72,33 @@ public class RedisConfig {
     return new DeletionEventNoSqlEntityService(deletionEventNosqlEntityRepository);
   }
 
-  @Bean(name = "redisCacheService")
+  @Bean
   @ConditionalOnMissingBean
-  CacheServiceIF cacheServiceIF(
+  RedisCacheService cacheService(
       @NonNull EventNosqlEntityService eventNosqlEntityService,
       @NonNull DeletionEventNoSqlEntityService deletionEventNoSqlEntityService) {
     return new RedisCacheService(eventNosqlEntityService, deletionEventNoSqlEntityService);
   }
 
-  @Bean(name = "cacheFormulaEventService")
-  CacheEventTagBaseEventServiceIF cacheFormulaEventService(
-      @NonNull @Qualifier("redisCacheService") CacheServiceIF cacheServiceIF) {
-    return new CacheFormulaEventService(cacheServiceIF);
-  }
-
-  @Bean(name = "cacheBadgeDefinitionReputationEventService")
-  CacheEventTagBaseEventServiceIF cacheBadgeDefinitionReputationEventService(
-      @NonNull @Qualifier("redisCacheService") CacheServiceIF cacheServiceIF,
-      @NonNull @Qualifier("cacheFormulaEventService") CacheEventTagBaseEventServiceIF cacheFormulaEventService) {
-    return new CacheBadgeDefinitionReputationEventService(cacheServiceIF, cacheFormulaEventService);
+  @Bean
+  CacheFormulaEventService cacheFormulaEventService(
+      @NonNull RedisCacheService cacheService) {
+    return new CacheFormulaEventService(cacheService);
   }
 
   @Bean
-  EventPluginIF eventPlugin(
+  CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
+      @NonNull RedisCacheService cacheService,
+      @NonNull CacheFormulaEventService cacheFormulaEventService) {
+    return new CacheBadgeDefinitionReputationEventService(cacheService, cacheFormulaEventService);
+  }
+
+  @Bean(name = "eventPlugin")
+  @ConditionalOnMissingBean
+  EventPlugin eventPlugin(
       @NonNull List<CacheEventTagBaseEventServiceIF> cacheEventTagBaseEventServiceIFS,
-      @NonNull @Qualifier("redisCacheService") CacheServiceIF cacheServiceIF) {
-    return new EventPlugin(cacheEventTagBaseEventServiceIFS, cacheServiceIF);
+      @NonNull RedisCacheService cacheService) {
+    return new EventPlugin(cacheEventTagBaseEventServiceIFS, cacheService);
   }
 
   @Bean

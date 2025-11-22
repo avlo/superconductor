@@ -3,7 +3,6 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventService;
-import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindService;
 import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindTypeService;
@@ -27,21 +26,21 @@ import org.springframework.lang.NonNull;
 @Slf4j
 @AutoConfiguration
 public class EventKindServiceConfig {
-  @Bean(name = "eventKindServiceIF")
-//  @ConditionalOnMissingBean
-  EventKindServiceIF eventKindServiceIF(@NonNull List<EventKindPluginIF> eventKindPlugins) {
+  @Bean(name = "eventKindService")
+  @ConditionalOnMissingBean
+  EventKindService eventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     return new EventKindService(eventKindPlugins);
   }
 
-  @Bean
+  @Bean(name = "eventKindTypeService")
   @ConditionalOnMissingBean
-  EventKindTypeServiceIF eventKindTypeServiceIF(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) {
+  EventKindTypeService eventKindTypeService(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) {
     return new EventKindTypeService(eventKindTypePlugins);
   }
 
   @Bean
 //  @ConditionalOnMissingBean
-  EventKindPluginIF textNoteEventKindPlugin(
+  CanonicalEventKindPlugin textNoteEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     log.debug("loaded canonical textNoteEventKindPlugin bean");
@@ -53,21 +52,22 @@ public class EventKindServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  EventServiceIF eventService(
-      @NonNull @Qualifier("eventKindServiceIF") EventKindServiceIF eventKindService,
-      @NonNull EventKindTypeServiceIF eventKindTypeService) {
-    return new EventService(eventKindService, eventKindTypeService);
+  EventService eventService(
+      @NonNull @Qualifier("eventKindService") EventKindServiceIF eventKindService,
+      @NonNull @Qualifier("eventKindTypeService") EventKindTypeServiceIF eventKindTypeService) {
+    EventService eventService = new EventService(eventKindService, eventKindTypeService);
+    return eventService;
   }
 
   @Bean
-//  @ConditionalOnMissingBean
-  EventKindPluginIF deleteEventKindPlugin(
-      @NonNull EventPluginIF eventPlugin,
-      @NonNull CacheServiceIF cacheServiceIF) {
+  @ConditionalOnMissingBean
+  DeleteEventKindPlugin deleteEventKindPlugin(
+      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull CacheServiceIF cacheService) {
     return new DeleteEventKindPlugin(
         new EventKindPlugin(
             Kind.DELETION,
             eventPlugin),
-        new DeleteEventPlugin(cacheServiceIF));
+        new DeleteEventPlugin(cacheService));
   }
 }

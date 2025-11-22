@@ -94,6 +94,13 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
   }
 
   @Override
+  public List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
+    return eventJpaEntityRepository.getEventsByKindAndAuthorPublicKey(kind, authorPublicKey)
+        .stream().map(ee ->
+            getEventByUid(ee.getUid())).flatMap(Optional::stream).toList();
+  }
+
+  @Override
   public List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencePubKeyTag) {
     return eventJpaEntityRepository.getEventsByKindAndPubKeyTag(kind, referencePubKeyTag)
         .stream().map(ee ->

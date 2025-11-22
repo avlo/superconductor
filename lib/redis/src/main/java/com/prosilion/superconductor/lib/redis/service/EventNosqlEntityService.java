@@ -71,6 +71,13 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
         .toList();
   }
 
+  @Override
+  public List<EventNosqlEntityIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
+    return eventNosqlEntityRepository.findByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
+        .map(this::revertInterceptor)
+        .toList();
+  }
+
   //  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(
       @NonNull Kind kind,

@@ -27,7 +27,7 @@ public interface EventNosqlEntityRepository extends ListCrudRepository<EventNosq
 
   List<EventNosqlEntity> findByKind(@NonNull Integer kind, Sort sort);
 
-  List<EventNosqlEntity> findByKindAndPubKey(@NonNull Integer kind, @NonNull String pubKey, Sort sort);
+  List<EventNosqlEntity> findByKindAndPublicKey(@NonNull Integer kind, @NonNull String pubKey, Sort sort);
 
   List<EventNosqlEntity> findByKindAndPubKeyTagAndAddressTag(@NonNull Integer kind, @NonNull String pubKey, Sort sort);
 
@@ -43,11 +43,7 @@ public interface EventNosqlEntityRepository extends ListCrudRepository<EventNosq
     return Collections.unmodifiableList(findByKind(kind.getValue(), DESC_SORT_CREATED_AT));
   }
 
-  default @NonNull List<EventNosqlEntityIF> findByAuthorPublicKey(@NonNull PublicKey authorPublicKey) {
-    return Collections.unmodifiableList(findByPubKey(authorPublicKey.toHexString(), DESC_SORT_CREATED_AT));
-  }
-
   default @NonNull List<EventNosqlEntityIF> findByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
-    return Collections.unmodifiableList(findByKindAndPubKey(kind.getValue(), authorPublicKey.toHexString(), DESC_SORT_CREATED_AT));
+    return Collections.unmodifiableList(findByKindAndPublicKey(kind.getValue(), authorPublicKey.toHexString(), DESC_SORT_CREATED_AT));
   }
 }

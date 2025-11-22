@@ -26,6 +26,7 @@ public interface CacheEventTagBaseEventServiceIF {
   Optional<? extends EventTagsMappedEventsIF> getEvent(EventIF eventIF);
   Optional<? extends EventTagsMappedEventsIF> getEventByEventId(String eventId);
   List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencePubKeyTag);
+  List<? extends EventTagsMappedEventsIF> getEventsByKindAndAuthorPublicKey(Kind kind, PublicKey authorPublicKey);
   List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencePubKeyTag, AddressTag addressTag);
   List<? extends EventTagsMappedEventsIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag);
   List<? extends EventTagsMappedEventsIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag);

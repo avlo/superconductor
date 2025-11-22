@@ -13,6 +13,7 @@ public interface EntityServiceIF<T, U extends EventIF> {
   List<U> getAll();
   Optional<U> findByEventIdString(String eventId);
   List<U> getEventsByKind(Kind kind);
+  List<U> getEventsByKindAndAuthorPublicKey(Kind kind, PublicKey authorPublicKey);
   List<U> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencePubKeyTag);
   List<U> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencePubKeyTag, AddressTag addressTag);
   List<U> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag);

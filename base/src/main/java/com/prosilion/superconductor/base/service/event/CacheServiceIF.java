@@ -20,6 +20,7 @@ public interface CacheServiceIF {
   List<GenericEventRecord> getAll();
   Optional<GenericEventRecord> getEventByEventId(String eventId);
   List<GenericEventRecord> getByKind(Kind kind);
+  List<GenericEventRecord> getEventsByKindAndAuthorPublicKey(Kind kind, PublicKey authorPublicKey);
   List<GenericEventRecord> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencePubKeyTag);
   List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencePubKeyTag, AddressTag addressTag);
   List<GenericEventRecord> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag);

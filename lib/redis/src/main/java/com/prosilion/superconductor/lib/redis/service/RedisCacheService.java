@@ -51,6 +51,14 @@ public class RedisCacheService implements RedisCacheServiceIF {
   }
 
   @Override
+  public List<GenericEventRecord> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
+    List<EventNosqlEntityIF> eventsByKind = eventNosqlEntityService.getEventsByKindAndAuthorPublicKey(kind, authorPublicKey)
+        .stream().filter(filterDeletionEvents()).toList();
+    List<GenericEventRecord> matches = eventsByKind.stream().map(this::createGenericEventRecordFromEntityIF).toList();
+    return matches;
+  }
+
+  @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTag(
       @NonNull Kind kind,
       @NonNull PublicKey publicKey) {

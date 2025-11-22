@@ -8,11 +8,11 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventService implements EventServiceIF {
-  private final EventKindServiceIF eventKindService;
+  private final EventKindServiceIF eventKindServiceIF;
   private final EventKindTypeServiceIF eventKindTypeService;
 
-  public EventService(@NonNull EventKindServiceIF eventKindService, @NonNull EventKindTypeServiceIF eventKindTypeService) {
-    this.eventKindService = eventKindService;
+  public EventService(@NonNull EventKindServiceIF eventKindServiceIF, @NonNull EventKindTypeServiceIF eventKindTypeService) {
+    this.eventKindServiceIF = eventKindServiceIF;
     this.eventKindTypeService = eventKindTypeService;
   }
 
@@ -25,6 +25,6 @@ public class EventService implements EventServiceIF {
       return;
     }
 
-    eventKindService.processIncomingEvent(eventMessage.getEvent());
+    eventKindServiceIF.processIncomingEvent(eventMessage.getEvent());
   }
 }

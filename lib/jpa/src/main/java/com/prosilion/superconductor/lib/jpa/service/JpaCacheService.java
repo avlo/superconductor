@@ -65,6 +65,13 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
+  public List<GenericEventRecord> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
+    List<EventJpaEntityIF> eventsByKind = eventJpaEntityService.getEventsByKindAndAuthorPublicKey(kind, authorPublicKey).stream().filter(filterDeletionEvents()).toList();
+    List<GenericEventRecord> collect = eventsByKind.stream().map(this::createGenericEventRecordFromEntityIF).toList();
+    return collect;
+  }
+
+  @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTag(
       @NonNull Kind kind,
       @NonNull PublicKey publicKey) {
@@ -72,7 +79,7 @@ public class JpaCacheService implements JpaCacheServiceIF {
     List<GenericEventRecord> collect = eventsByKind.stream().map(this::createGenericEventRecordFromEntityIF).toList();
     return collect;
   }
-  
+
   @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencePubKeyTag, AddressTag addressTag) {
     List<EventJpaEntityIF> eventsByKindAndPubKeyTagAndAddressTag = eventJpaEntityService.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag).stream().filter(filterDeletionEvents()).toList();

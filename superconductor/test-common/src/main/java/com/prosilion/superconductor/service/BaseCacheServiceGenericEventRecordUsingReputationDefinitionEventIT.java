@@ -1,65 +1,89 @@
-package com.prosilion.superconductor.service;
-
-import com.ezylang.evalex.parser.ParseException;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
-import com.prosilion.nostr.event.FormulaEvent;
-import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.lang.NonNull;
-
-@Slf4j
-public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
+//package com.prosilion.superconductor.service;
+//
+//import com.ezylang.evalex.parser.ParseException;
+//import com.prosilion.nostr.NostrException;
+//import com.prosilion.nostr.enums.Kind;
+//import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+//import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+//import com.prosilion.nostr.event.DeletionEvent;
+//import com.prosilion.nostr.event.FormulaEvent;
+//import com.prosilion.nostr.event.internal.Relay;
+//import com.prosilion.nostr.tag.EventTag;
+//import com.prosilion.nostr.tag.ExternalIdentityTag;
+//import com.prosilion.nostr.tag.IdentifierTag;
+//import com.prosilion.nostr.user.Identity;
+//import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
+//import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+//import com.prosilion.superconductor.util.Factory;
+//import java.util.List;
+//import lombok.extern.slf4j.Slf4j;
+//import org.apache.logging.log4j.util.Strings;
+//import org.junit.jupiter.api.Assertions;
+//import org.junit.jupiter.api.Order;
+//import org.junit.jupiter.api.Test;
+//
+//import static com.prosilion.superconductor.util.TestKindType.UNIT_REPUTATION;
+//import static com.prosilion.superconductor.util.TestKindType.UNIT_UPVOTE;
+//import static org.junit.jupiter.api.Assertions.assertEquals;
+//import static org.junit.jupiter.api.Assertions.assertNotNull;
+//import static org.junit.jupiter.api.Assertions.assertThrows;
+//import static org.junit.jupiter.api.Assertions.assertTrue;
+//
+//@Slf4j
+//public abstract class BaseCacheServiceGenericEventRecordUsingReputationDefinitionEventIT {
 //  private static final Relay relay = new Relay("ws://localhost:5555");
-//  private static final Identity IDENTITY = Factory.createNewIdentity();
-
-  private final EventPluginIF eventPluginIF;
-  private final BadgeDefinitionAwardEvent badgeDefinitionAwardEvent;
-  private final FormulaEvent formulaEvent;
-
-  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
-  public final String PLUS_ONE_FORMULA = "+1";
-
-  public BaseCacheServiceGenericEventRecordUsingFormulaEventIT(
-      EventPluginIF eventPluginIF,
-      @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
-      @NonNull Identity superconductorInstanceIdentity) throws ParseException {
-    this.eventPluginIF = eventPluginIF;
-    this.badgeDefinitionAwardEvent = badgeDefinitionUpvoteEvent;
-
-    this.formulaEvent =
-        new FormulaEvent(
-            superconductorInstanceIdentity,
-            badgeDefinitionAwardEvent,
-            PLUS_ONE_FORMULA);
-  }
-
-  @Test
-  @Order(10)
-  void testSaveFormulaEvent() {
-    eventPluginIF.processIncomingEvent(this.formulaEvent);
-  }
-
+//  private static final Identity authorIdentity = Identity.generateRandomIdentity();
+//
+//  private static final String PLATFORM = BadgeDefinitionReputationEvent.class.getPackageName();
+//  private static final String IDENTITY = BadgeDefinitionReputationEvent.class.getSimpleName();
+//  private static final String PROOF = String.valueOf(BadgeDefinitionReputationEvent.class.hashCode());
+//
+//  private final String PLUS_ONE_FORMULA = "+1";
+//  private final IdentifierTag upvoteIdentifierTag = new IdentifierTag(UNIT_UPVOTE.getName());
+//  private final BadgeDefinitionAwardEvent badgeDefinitionAwardUpvoteEvent = new BadgeDefinitionAwardEvent(authorIdentity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
+//
+//  private final ExternalIdentityTag externalIdentityTag = new ExternalIdentityTag(PLATFORM, IDENTITY, PROOF);
+//
+//  private final EventPluginIF eventPluginIF;
+//  private final FormulaEvent formulaEvent;
+//  private final BadgeDefinitionReputationEvent badgeDefinitionReputationEvent;
+//
+//
+//  public BaseCacheServiceGenericEventRecordUsingReputationDefinitionEventIT(EventPluginIF eventPluginIF) throws ParseException {
+//    this.eventPluginIF = eventPluginIF;
+//
+//    this.formulaEvent =
+//        new FormulaEvent(
+//            authorIdentity,
+//            badgeDefinitionAwardUpvoteEvent,
+//            PLUS_ONE_FORMULA);
+//
+//    this.badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
+//        authorIdentity,
+//        new IdentifierTag(
+//            UNIT_REPUTATION.getName()),
+//        relay,
+//        externalIdentityTag,
+//        List.of(
+//            formulaEvent));
+//  }
+//
 //  @Test
-//  @Order(20)
-//  void testDuplicateFormulaEventWithDifferentContent() {
+//  @Order(0)
+//  void testNonExistentEventTag() {
 //    assertTrue(
 //        assertThrows(NostrException.class, () ->
 //            eventPluginIF.processIncomingEvent(this.formulaEvent))
 //            .getMessage().contains(
 //                Strings.concat(
 //                    String.format(CacheFormulaEventService.NON_EXISTENT_EVENT_ID_S, formulaEvent.getId()),
-//                    String.format("[%s]", badgeDefinitionAwardEvent.getId()))));
+//                    String.format("[%s]", badgeDefinitionAwardUpvoteEvent.getId()))));
 //  }
 //
 //  @Test
-//  @Order(30)
+//  @Order(1)
 //  void testExistentEventTag() throws ParseException {
-//    eventPluginIF.processIncomingEvent(this.badgeDefinitionAwardEvent);
+//    eventPluginIF.processIncomingEvent(this.badgeDefinitionAwardUpvoteEvent);
 //    eventPluginIF.processIncomingEvent(this.formulaEvent);
 //    FormulaEvent savedFormulaEvent = cacheFormulaEventService.getFormulaEvent(formulaEvent.getId()).orElseThrow();
 //    assertNotNull(savedFormulaEvent);
@@ -121,8 +145,8 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //    log.debug("sizeBeforeDeleteMeEvent: {}", sizeBeforeDeleteMeEvent);
 //
 //    FormulaEvent eventToDelete = new FormulaEvent(
-//        IDENTITY,
-//        badgeDefinitionAwardEvent,
+//        authorIdentity,
+//        badgeDefinitionAwardUpvoteEvent,
 //        PLUS_ONE_FORMULA);
 //    eventPluginIF.processIncomingEvent(eventToDelete);
 //    Assertions.assertEquals(eventToDelete, cacheFormulaEventService.getFormulaEvent(eventToDelete.getId()).orElseThrow());
@@ -140,7 +164,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //
 //    EventTag eventTag = new EventTag(eventToDelete.getId());
 //
-//    DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
+//    DeletionEvent deletionEvent = new DeletionEvent(authorIdentity, List.of(eventTag), Factory.lorumIpsum());
 //    assertTrue(deletionEvent.getTags().contains(eventTag));
 //
 //    cacheFormulaEventService.deleteEvent(deletionEvent);
@@ -164,8 +188,8 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //    assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 //
 //    FormulaEvent secondEventToDelete =
-//        new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
-//            IDENTITY,
+//        new FormulaEvent(authorIdentity, new BadgeDefinitionAwardEvent(
+//            authorIdentity,
 //            upvoteIdentifierTag,
 //            relay,
 //            PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
@@ -184,7 +208,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //
 //    EventTag eventTag = new EventTag(secondEventToDelete.getId());
 //
-//    DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
+//    DeletionEvent secondDeletionEvent = new DeletionEvent(authorIdentity, List.of(eventTag), Factory.lorumIpsum());
 //    assertTrue(secondDeletionEvent.getTags().contains(eventTag));
 //
 //    cacheFormulaEventService.deleteEvent(secondDeletionEvent);
@@ -198,4 +222,4 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //    assertTrue(allAfterSecondDeletion.stream().map(FormulaEvent::getId).noneMatch(secondEventToDelete.getId()::equals));
 //    assertTrue(allAfterSecondDeletion.stream().map(FormulaEvent::getId).noneMatch(firstDeletedEventId::equals));
 //  }
-}
+//}

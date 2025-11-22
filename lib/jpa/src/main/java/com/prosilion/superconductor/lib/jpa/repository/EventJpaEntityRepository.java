@@ -46,6 +46,11 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
     return findByPubKey(pubKey, DESC_SORT_CREATED_AT);
   }
 
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
+    assert (false);
+    return findByKind(kind.getValue());
+  }
+
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PublicKey referencePubKeyTag) {
 //    return getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag, DESC_SORT_CREATED_AT);
     return findByKind(kind.getValue());

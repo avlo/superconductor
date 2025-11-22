@@ -39,7 +39,7 @@ public class CacheBadgeDefinitionReputationEventService extends AbstractCacheEve
         .map(event ->
             cacheFormulaEventService.populate(
                 event,
-                getList(event))).toList();
+                getEventTagsAsGenericEventRecords(event))).toList();
 
     Function<EventTag, FormulaEvent> fxn = eventTag ->
         populatedFormulaEvents.stream().filter(genericEventRecord ->

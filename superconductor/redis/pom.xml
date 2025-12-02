@@ -85,7 +85,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <image>
-            <builder>paketobuildpacks/builder-jammy-base:latest</builder>
+            <builder>bellsoft/buildpacks.builder:musl</builder>
           </image>
         </configuration>
       </plugin>

@@ -41,11 +41,12 @@ import org.springframework.lang.NonNull;
 @EntityScan(
     basePackageClasses = {
         EventNosqlEntity.class,
-        DeletionEventNosqlEntity.class,
-        EventNosqlEntityByExampleRepository.class
+        DeletionEventNosqlEntity.class
     })
 @ComponentScan(
     basePackages = {
+        "com.prosilion.superconductor.autoconfigure.base.service",
+//        "com.prosilion.superconductor.base.service",
         "com.prosilion.superconductor.base.service.clientresponse",
         "com.prosilion.superconductor.base.service.request",
         "com.prosilion.superconductor.base.util",
@@ -72,7 +73,7 @@ public class RedisConfig {
     return new DeletionEventNoSqlEntityService(deletionEventNosqlEntityRepository);
   }
 
-  @Bean
+  @Bean(name = "cacheService")
   @ConditionalOnMissingBean
   RedisCacheService cacheService(
       @NonNull EventNosqlEntityService eventNosqlEntityService,
@@ -80,7 +81,7 @@ public class RedisConfig {
     return new RedisCacheService(eventNosqlEntityService, deletionEventNoSqlEntityService);
   }
 
-  @Bean
+  @Bean(name = "cacheFormulaEventService")
   CacheFormulaEventService cacheFormulaEventService(
       @NonNull RedisCacheService cacheService) {
     return new CacheFormulaEventService(cacheService);

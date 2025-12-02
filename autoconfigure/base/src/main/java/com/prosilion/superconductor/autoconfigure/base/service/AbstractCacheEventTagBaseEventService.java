@@ -33,7 +33,9 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
     log.info("{} saving event: [{}] ...", getClass().getSimpleName(), event.toString());
     log.info("... with eventId [{}] ...", event.getId());
     List<EventTag> eventTags = Filterable.getTypeSpecificTags(EventTag.class, event);
-    if (!eventTags.isEmpty()) { log.info("... with EventTag(s):");}
+    if (!eventTags.isEmpty()) {
+      log.info("... with EventTag(s):");
+    }
     eventTags.forEach(tag -> log.info("eventId [{}], event URL [{}]", tag.getIdEvent(), tag.getRecommendedRelayUrl()));
     List<GenericEventRecord> foundDbEvents = eventTags.stream()
         .map(EventTag::getIdEvent)
@@ -41,14 +43,18 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
         .flatMap(Optional::stream)
         .toList();
 
-    if (!foundDbEvents.isEmpty()) { log.info("... found related DB events:");}
+    if (!foundDbEvents.isEmpty()) {
+      log.info("... found related DB events:");
+    }
     foundDbEvents.forEach(ger -> log.info("eventId [{}]", ger.getId()));
 
     List<String> missingEventIds = eventTags.stream()
         .map(EventTag::getIdEvent).filter(eventTag ->
             !foundDbEvents.stream().map(GenericEventRecord::getId).toList().contains(eventTag)).toList();
 
-    if (!missingEventIds.isEmpty()) { log.info("... missing required DB events:");}
+    if (!missingEventIds.isEmpty()) {
+      log.info("... missing required DB events:");
+    }
     missingEventIds.forEach(eventId -> log.info("eventId [{}]", eventId));
 
     if (!missingEventIds.isEmpty())
@@ -67,13 +73,20 @@ public abstract class AbstractCacheEventTagBaseEventService implements CacheEven
       GenericEventRecord eventToPopulate,
       Class<U> eventClassFromKind,
       Function<EventTag, ? extends BaseEvent> fxn) {
-    return createBaseEvent(eventToPopulate, eventClassFromKind, fxn);
+    U eventWithEventTagsMappedEvents = createBaseEvent(
+        eventToPopulate,
+        eventClassFromKind,
+        fxn);
+    return eventWithEventTagsMappedEvents;
   }
 
   public <T extends BaseEvent> T createBaseEvent(
       @NonNull GenericEventRecord genericEventRecord,
       @NonNull Class<T> baseEventFromKind) {
-    return cacheServiceIF.createBaseEvent(genericEventRecord, baseEventFromKind);
+    T event = cacheServiceIF.createBaseEvent(
+        genericEventRecord,
+        baseEventFromKind);
+    return event;
   }
 
   abstract public EventTagsMappedEventsIF populate(GenericEventRecord baseEvent, List<GenericEventRecord> unpopulatedEvents);

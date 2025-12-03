@@ -18,6 +18,7 @@ import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +26,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
 import static com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService.DUPLICATE_REPUTATION_IDENTIFIER_TAG;
+import static com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService.NON_EXISTENT_EVENT_ID_S;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -116,16 +118,11 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         externalIdentityTag,
         List.of(plusOneFormulaEvent, minusOneFormulaEvent));
 
-    String messageMissingEventId = assertThrows(NostrException.class, () -> eventPlugin.processIncomingEvent(badgeDefinitionReputationEventPlusOneMinusOne)).getMessage();
-
+    String messageDuplicateIdentifierTag = assertThrows(NostrException.class, () -> eventPlugin.processIncomingEvent(badgeDefinitionReputationEventPlusOneMinusOne)).getMessage();
     assertTrue(
-        messageMissingEventId.contains(
+        messageDuplicateIdentifierTag.contains(
             String.format(
                 DUPLICATE_REPUTATION_IDENTIFIER_TAG, badgeDefinitionReputationEventPlusOneMinusOne.getId(), reputationIdentifierTag.getUuid(), badgeDefinitionReputationEventPlusOneFormula.getId())));
-
-    eventPlugin.processIncomingEvent(awardDownvoteDefinitionEvent);
-    eventPlugin.processIncomingEvent(minusOneFormulaEvent);
-    assertThrows(NostrException.class, () -> eventPlugin.processIncomingEvent(badgeDefinitionReputationEventPlusOneMinusOne));
 
     IdentifierTag uniqueIdentifierTag = new IdentifierTag("UNIQUE_" + REPUTATION);
     BadgeDefinitionReputationEvent uniqueBadgeDefinitionReputationEventIdentifierTag = new BadgeDefinitionReputationEvent(
@@ -135,6 +132,16 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         externalIdentityTag,
         List.of(plusOneFormulaEvent, minusOneFormulaEvent));
 
+    String messageMissingEventId = assertThrows(NostrException.class, () -> eventPlugin.processIncomingEvent(uniqueBadgeDefinitionReputationEventIdentifierTag)).getMessage();
+    assertTrue(
+        messageMissingEventId.contains(
+            String.format(
+                Strings.concat("", NON_EXISTENT_EVENT_ID_S, "[%s]"),
+                uniqueBadgeDefinitionReputationEventIdentifierTag.getId(),
+                minusOneFormulaEvent.getId())));
+
+    eventPlugin.processIncomingEvent(awardDownvoteDefinitionEvent);
+    eventPlugin.processIncomingEvent(minusOneFormulaEvent);
     eventPlugin.processIncomingEvent(uniqueBadgeDefinitionReputationEventIdentifierTag);
 
     BadgeDefinitionReputationEvent dbRepDefnEventPlusMinus = cacheBadgeDefinitionReputationEventService.getBadgeDefinitionReputationEvent(uniqueBadgeDefinitionReputationEventIdentifierTag.getId()).orElseThrow();

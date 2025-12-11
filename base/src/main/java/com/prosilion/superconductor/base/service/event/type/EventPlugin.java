@@ -2,9 +2,10 @@ package com.prosilion.superconductor.base.service.event.type;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
+import com.prosilion.superconductor.base.service.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.HashMap;
 import java.util.List;
@@ -13,12 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class EventPlugin implements EventPluginIF {
-  private final Map<Kind, CacheEventTagBaseEventServiceIF> kindClassMap = new HashMap<>();
+public class EventPlugin implements EventPluginIF<EventIF> {
+  private final Map<Kind, CacheTagMappedEventServiceIF<TagMappedEventIF>> kindClassMap = new HashMap<>();
   private final CacheServiceIF cacheServiceIF;
 
   public EventPlugin(
-      @NonNull List<CacheEventTagBaseEventServiceIF> cacheEventTagBaseEventServiceIFS,
+      @NonNull List<CacheTagMappedEventServiceIF<TagMappedEventIF>> cacheEventTagBaseEventServiceIFS,
       @NonNull CacheServiceIF cacheServiceIF) {
     log.info("class {} adding:", getClass().getSimpleName());
     cacheEventTagBaseEventServiceIFS.forEach(kindClassMap ->
@@ -26,7 +27,7 @@ public class EventPlugin implements EventPluginIF {
     this.cacheServiceIF = cacheServiceIF;
   }
 
-  public void add(@NonNull Kind kind, @NonNull CacheEventTagBaseEventServiceIF value) {
+  public void add(@NonNull Kind kind, @NonNull CacheTagMappedEventServiceIF<TagMappedEventIF> value) {
     log.info("kind [{}] mapped to class [{}]...", kind.getName(), value.getClass().getSimpleName());
     kindClassMap.putIfAbsent(kind, value);
     log.info("...done");
@@ -39,7 +40,7 @@ public class EventPlugin implements EventPluginIF {
     Kind kind = event.getKind();
     if (isCacheEventTagKind(event)) {
       log.info("saving CacheEventTagBaseEvent (EventTags) event...");
-      kindClassMap.get(kind).save(event);
+      kindClassMap.get(kind).save((TagMappedEventIF)event);
       log.info("...done");
       return;
     }

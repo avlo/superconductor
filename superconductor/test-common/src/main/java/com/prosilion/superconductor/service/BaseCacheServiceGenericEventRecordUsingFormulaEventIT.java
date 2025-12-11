@@ -34,6 +34,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
     this.formulaEvent =
         new FormulaEvent(
             superconductorInstanceIdentity,
+            upvoteIdentifierTag,
             badgeDefinitionAwardEvent,
             PLUS_ONE_FORMULA);
   }

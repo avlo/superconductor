@@ -39,8 +39,8 @@ public class CacheFormulaEventServiceIT {
   public final String PLUS_ONE_FORMULA = "+1";
   public final String MINUS_ONE_FORMULA = "-1";
 
-  final BadgeDefinitionAwardEvent awardUpvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
-  final BadgeDefinitionAwardEvent awardDownvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA);
+  final BadgeDefinitionAwardEvent awardUpvoteDefinitionEvent; // = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
+  final BadgeDefinitionAwardEvent awardDownvoteDefinitionEvent; // = new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA);
 
   final FormulaEvent formulaEventUpvote;
   final FormulaEvent formulaEventDownvote;
@@ -51,12 +51,16 @@ public class CacheFormulaEventServiceIT {
   public CacheFormulaEventServiceIT(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull @Qualifier("cacheFormulaEventService") CacheFormulaEventService cacheFormulaEventService,
-      @NonNull @Qualifier("cacheService") RedisCacheService cacheService) throws ParseException {
+      @NonNull @Qualifier("cacheService") RedisCacheService cacheService,
+      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
+      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent) throws ParseException {
     this.eventPlugin = eventPlugin;
     this.cacheFormulaEventService = cacheFormulaEventService;
+    this.awardUpvoteDefinitionEvent = badgeDefinitionUpvoteEvent;
+    this.awardDownvoteDefinitionEvent = badgeDefinitionDownvoteEvent;
 
-    this.formulaEventUpvote = new FormulaEvent(identity, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
-    this.formulaEventDownvote = new FormulaEvent(identity, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
+    this.formulaEventUpvote = new FormulaEvent(identity, upvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
+    this.formulaEventDownvote = new FormulaEvent(identity, downvoteIdentifierTag, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
 
     eventPlugin.processIncomingEvent(awardUpvoteDefinitionEvent);
     GenericEventRecord dbAwardUpvoteEvent = cacheService.getEventByEventId(awardUpvoteDefinitionEvent.getId()).orElseThrow();
@@ -71,8 +75,9 @@ public class CacheFormulaEventServiceIT {
 
   @Test
   public void testSaveFormulaUpvote() {
+    cacheFormulaEventService.save(formulaEventUpvote);
     eventPlugin.processIncomingEvent(formulaEventUpvote);
-    FormulaEvent dbPlusOneFormulaEvent = cacheFormulaEventService.getFormulaEvent(formulaEventUpvote.getId()).orElseThrow();
+    FormulaEvent dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId()).orElseThrow();
     assertEquals(formulaEventUpvote, dbPlusOneFormulaEvent);
     assertEquals(PLUS_ONE_FORMULA, dbPlusOneFormulaEvent.getContent());
     assertEquals(UNIT_UPVOTE, dbPlusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
@@ -80,8 +85,9 @@ public class CacheFormulaEventServiceIT {
 
   @Test
   public void testSaveFormulaDownvote() {
+    cacheFormulaEventService.save(formulaEventDownvote);
     eventPlugin.processIncomingEvent(formulaEventDownvote);
-    FormulaEvent dbMinusOneFormulaEvent = cacheFormulaEventService.getFormulaEvent(formulaEventDownvote.getId()).orElseThrow();
+    FormulaEvent dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId()).orElseThrow();
     assertEquals(formulaEventDownvote, dbMinusOneFormulaEvent);
     assertEquals(MINUS_ONE_FORMULA, dbMinusOneFormulaEvent.getContent());
     assertEquals(UNIT_DOWNVOTE, dbMinusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());

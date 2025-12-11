@@ -1,14 +1,15 @@
 package com.prosilion.superconductor.autoconfigure.jpa.config;
 
+import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
-import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
+import com.prosilion.superconductor.base.service.CacheReferencedAddressTagService;
+import com.prosilion.superconductor.base.service.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
@@ -85,22 +86,29 @@ public class JpaConfig {
     return new JpaCacheService(eventJpaEntityService, deletionEventJpaEntityService);
   }
 
-  @Bean(name = "cacheFormulaEventService")
-  CacheEventTagBaseEventServiceIF cacheFormulaEventService(
+  @Bean(name = "cacheReferencedAddressTagService")
+  CacheReferencedAddressTagService cacheReferencedAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF) {
-    return new CacheFormulaEventService(cacheServiceIF);
+    return new CacheReferencedAddressTagService(cacheServiceIF);
   }
 
-  @Bean(name = "cacheBadgeDefinitionReputationEventService")
-  CacheEventTagBaseEventServiceIF cacheBadgeDefinitionReputationEventService(
+  @Bean(name = "cacheFormulaEventService")
+  CacheTagMappedEventServiceIF cacheFormulaEventService(
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull CacheEventTagBaseEventServiceIF cacheFormulaEventService) {
-    return new CacheBadgeDefinitionReputationEventService(cacheServiceIF, cacheFormulaEventService);
+      @NonNull CacheReferencedAddressTagService cacheReferencedAddressTagService) {
+    return new CacheFormulaEventService(cacheServiceIF, cacheReferencedAddressTagService);
   }
+
+//  @Bean(name = "cacheBadgeDefinitionReputationEventService")
+//  CacheTagMappedEventServiceIF cacheBadgeDefinitionReputationEventService(
+//      @NonNull CacheServiceIF cacheServiceIF,
+//      @NonNull CacheTagMappedEventServiceIF cacheFormulaEventService) {
+//    return new CacheBadgeDefinitionReputationEventService(cacheServiceIF, cacheFormulaEventService);
+//  }
 
   @Bean
   EventPluginIF eventPlugin(
-      @NonNull List<CacheEventTagBaseEventServiceIF> cacheEventTagBaseEventServiceIFS,
+      @NonNull List<CacheTagMappedEventServiceIF<TagMappedEventIF>> cacheEventTagBaseEventServiceIFS,
       @NonNull CacheServiceIF cacheServiceIF) {
     return new EventPlugin(cacheEventTagBaseEventServiceIFS, cacheServiceIF);
   }

@@ -13,8 +13,6 @@ import java.util.Optional;
 import lombok.SneakyThrows;
 import org.springframework.lang.NonNull;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-
 public interface CacheServiceIF {
   GenericEventRecord save(EventIF event);
   List<GenericEventRecord> getAll();
@@ -40,11 +38,10 @@ public interface CacheServiceIF {
   }
 
   @SneakyThrows
-  default <T extends BaseEvent> T createBaseEvent(
+  default <S extends BaseEvent> S createTypedSimpleEvent(
       @NonNull GenericEventRecord genericEventRecord,
-      @NonNull Class<T> baseEventFromKind) {
-    assertNotNull(baseEventFromKind);
-    Constructor<T> constructor;
+      @NonNull Class<S> baseEventFromKind) {
+    Constructor<S> constructor;
     try {
       constructor = baseEventFromKind.getConstructor(GenericEventRecord.class);
     } catch (NoSuchMethodException e) {

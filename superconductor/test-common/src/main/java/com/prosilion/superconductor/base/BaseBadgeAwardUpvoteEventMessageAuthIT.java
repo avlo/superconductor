@@ -1,13 +1,13 @@
 package com.prosilion.superconductor.base;
 
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.event.BadgeAwardUpvoteEvent;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.util.BadgeAwardUpvoteEvent;
 import com.prosilion.superconductor.util.NostrRelayService;
 import com.prosilion.superconductor.util.TestKindType;
 import java.io.IOException;

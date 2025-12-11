@@ -1,14 +1,17 @@
 package com.prosilion.superconductor.autoconfigure.redis.config;
 
+import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
-import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
+import com.prosilion.superconductor.base.service.CacheReferencedAddressTagService;
+import com.prosilion.superconductor.base.service.CacheReferencedAddressTagServiceIF;
+import com.prosilion.superconductor.base.service.CacheTagMappedEventServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
@@ -81,23 +84,30 @@ public class RedisConfig {
     return new RedisCacheService(eventNosqlEntityService, deletionEventNoSqlEntityService);
   }
 
-  @Bean(name = "cacheFormulaEventService")
-  CacheFormulaEventService cacheFormulaEventService(
-      @NonNull RedisCacheService cacheService) {
-    return new CacheFormulaEventService(cacheService);
+  @Bean(name = "cacheReferencedAddressTagService")
+  CacheReferencedAddressTagService cacheReferencedAddressTagService(
+      @NonNull CacheServiceIF cacheServiceIF) {
+    return new CacheReferencedAddressTagService(cacheServiceIF);
   }
 
-  @Bean
-  CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
+  @Bean(name = "cacheFormulaEventService")
+  CacheFormulaEventService cacheFormulaEventService(
       @NonNull RedisCacheService cacheService,
-      @NonNull CacheFormulaEventService cacheFormulaEventService) {
-    return new CacheBadgeDefinitionReputationEventService(cacheService, cacheFormulaEventService);
+      @NonNull CacheReferencedAddressTagServiceIF cacheReferencedAddressTagServiceIF) {
+    return new CacheFormulaEventService(cacheService, cacheReferencedAddressTagServiceIF);
   }
+
+//  @Bean
+//  CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
+//      @NonNull RedisCacheService cacheService,
+//      @NonNull CacheFormulaEventService cacheFormulaEventService) {
+//    return new CacheBadgeDefinitionReputationEventService(cacheService, cacheFormulaEventService);
+//  }
 
   @Bean(name = "eventPlugin")
   @ConditionalOnMissingBean
   EventPlugin eventPlugin(
-      @NonNull List<CacheEventTagBaseEventServiceIF> cacheEventTagBaseEventServiceIFS,
+      @NonNull List<CacheTagMappedEventServiceIF<TagMappedEventIF>> cacheEventTagBaseEventServiceIFS,
       @NonNull RedisCacheService cacheService) {
     return new EventPlugin(cacheEventTagBaseEventServiceIFS, cacheService);
   }

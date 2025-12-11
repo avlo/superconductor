@@ -61,6 +61,7 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
         List.of(
             new FormulaEvent(
                 identity,
+                upvoteIdTag,
                 upvoteDefnEvent,
                 PLUS_ONE)));
   }
@@ -81,10 +82,12 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
         List.of(
             new FormulaEvent(
                 identity,
+                upvoteIdTag,
                 upvoteDefnEvent,
                 PLUS_ONE),
             new FormulaEvent(
                 identity,
+                downvoteIdTag,
                 downvoteDefnEvent,
                 MINUS_ONE)));
   }

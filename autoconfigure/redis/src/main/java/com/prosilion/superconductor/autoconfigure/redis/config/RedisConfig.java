@@ -91,7 +91,7 @@ public class RedisConfig {
   }
 
   @Bean(name = "cacheFormulaEventService")
-  CacheFormulaEventService cacheFormulaEventService(
+  CacheTagMappedEventServiceIF cacheFormulaEventService(
       @NonNull RedisCacheService cacheService,
       @NonNull CacheReferencedAddressTagServiceIF cacheReferencedAddressTagServiceIF) {
     return new CacheFormulaEventService(cacheService, cacheReferencedAddressTagServiceIF);

@@ -40,7 +40,7 @@ public class EventPlugin implements EventPluginIF {
     Kind kind = event.getKind();
     if (isCacheEventTagKind(event)) {
       log.info("saving CacheEventTagBaseEvent (EventTags) event...");
-      kindClassMap.get(kind).save((TagMappedEventIF) event);
+      kindClassMap.get(kind).save((TagMappedEventIF)event);
       log.info("...done");
       return;
     }

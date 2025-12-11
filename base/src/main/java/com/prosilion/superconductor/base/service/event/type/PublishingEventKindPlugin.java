@@ -19,6 +19,7 @@ public class PublishingEventKindPlugin implements EventKindPluginIF {
     this.eventKindPlugin = eventKindPlugin;
   }
 
+  @Override
   public void processIncomingEvent(@NonNull EventIF event) {
     eventKindPlugin.processIncomingEvent(event);
     notifierService.nostrEventHandler(new AddNostrEvent(event));

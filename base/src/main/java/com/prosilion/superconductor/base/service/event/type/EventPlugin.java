@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class EventPlugin implements EventPluginIF<EventIF> {
+public class EventPlugin implements EventPluginIF {
   private final Map<Kind, CacheTagMappedEventServiceIF<TagMappedEventIF>> kindClassMap = new HashMap<>();
   private final CacheServiceIF cacheServiceIF;
 
@@ -40,7 +40,7 @@ public class EventPlugin implements EventPluginIF<EventIF> {
     Kind kind = event.getKind();
     if (isCacheEventTagKind(event)) {
       log.info("saving CacheEventTagBaseEvent (EventTags) event...");
-      kindClassMap.get(kind).save((TagMappedEventIF)event);
+      kindClassMap.get(kind).save((TagMappedEventIF) event);
       log.info("...done");
       return;
     }

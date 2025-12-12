@@ -5,10 +5,11 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.service.CacheFormulaEventServiceIF;
-import com.prosilion.superconductor.base.service.CacheReferencedAddressTagServiceIF;
+import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
 import java.util.Optional;
@@ -19,13 +20,13 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
-  private final CacheReferencedAddressTagServiceIF cacheReferencedAddressTagServiceIF;
+  private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
 
   public CacheFormulaEventService(
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull CacheReferencedAddressTagServiceIF cacheReferencedAddressTagServiceIF) {
+      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
-    this.cacheReferencedAddressTagServiceIF = cacheReferencedAddressTagServiceIF;
+    this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;
   }
 
   @Override
@@ -61,12 +62,12 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
           String.format("Incoming FormulaEvent [%s] formula clashes with pre-existing FormulaEvent [%s] formula having same Kind, PublicKey, Uuid", incomingFormulaEvent, existingFormulaEvent));
   }
 
-  private static boolean softEquals(@org.checkerframework.checker.nullness.qual.NonNull FormulaEvent incomingFormulaEvent, FormulaEvent existingFormulaEvent) {
+  private static boolean softEquals(TagMappedEventIF incomingFormulaEvent, TagMappedEventIF existingFormulaEvent) {
     return existingFormulaEvent.getKind().equals(incomingFormulaEvent.getKind()) &&
         existingFormulaEvent.getPublicKey().equals(incomingFormulaEvent.getPublicKey());
   }
 
-  private static boolean identifierTagEquals(@org.checkerframework.checker.nullness.qual.NonNull FormulaEvent incomingFormulaEvent, FormulaEvent existingFormulaEvent) {
+  private static boolean identifierTagEquals(@NonNull FormulaEvent incomingFormulaEvent, FormulaEvent existingFormulaEvent) {
     return existingFormulaEvent.getIdentifierTag().equals(incomingFormulaEvent.getIdentifierTag());
   }
 
@@ -76,7 +77,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     if (unpopulatedFormulaEvent.isEmpty())
       return Optional.empty();
 
-    return Optional.of(cacheReferencedAddressTagServiceIF.createTypedFxnEvent(
+    return Optional.of(cacheDereferenceAddressTagServiceIF.createTypedFxnEvent(
         unpopulatedFormulaEvent.orElseThrow(),
         FormulaEvent.class,
         (Function<AddressTag, BadgeDefinitionAwardEvent>) addressTag ->
@@ -91,7 +92,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
         .filter(AddressTag.class::isInstance)
         .map(AddressTag.class::cast).findFirst().orElseThrow();
 
-    GenericEventRecord firstAddressTagAsEvent = cacheReferencedAddressTagServiceIF.getEvent(firstAddressTag).orElseThrow();
+    GenericEventRecord firstAddressTagAsEvent = cacheDereferenceAddressTagServiceIF.getEvent(firstAddressTag).orElseThrow();
 
     BadgeDefinitionAwardEvent addressTagNowBadgeDefinitionAwardEvent =
         cacheServiceIF.createTypedSimpleEvent(

@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.ClassifiedListing;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PriceTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
@@ -43,6 +44,8 @@ class SubscriberEventRedisIT {
   public SubscriberEventRedisIT(@NonNull EventNosqlEntityService eventNosqlEntityService){
     this.eventNosqlEntityService = eventNosqlEntityService;
 
+    IdentifierTag identifierTag = new IdentifierTag("ClassifiedListingUuid");
+    
     List<BaseTag> tags = new ArrayList<>();
     tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"));
     tags.add(new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")));
@@ -53,7 +56,7 @@ class SubscriberEventRedisIT {
         "classified summary",
         new PriceTag(new BigDecimal("2.71"), "BTC", "frequency"));
 
-    classifiedListingEvent = new ClassifiedListingEvent(IDENTITY, Kind.CLASSIFIED_LISTING, classifiedListing, tags, CONTENT);
+    classifiedListingEvent = new ClassifiedListingEvent(IDENTITY, Kind.CLASSIFIED_LISTING, identifierTag, classifiedListing, tags, CONTENT);
   }
 
   @Test

@@ -4,7 +4,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.EventTag;
 import java.util.Optional;
 
-public interface CacheReferencedEventTagServiceIF extends CacheReferencedAbstractTagServiceIF<EventTag> {
+public interface CacheDereferenceEventTagServiceIF extends CacheDereferenceAbstractTagServiceIF<EventTag> {
   @Override
   Optional<GenericEventRecord> getEvent(EventTag t);
 }

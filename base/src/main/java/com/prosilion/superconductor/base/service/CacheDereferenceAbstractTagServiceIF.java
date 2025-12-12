@@ -9,7 +9,7 @@ import java.util.function.Function;
 import lombok.SneakyThrows;
 import org.springframework.lang.NonNull;
 
-public interface CacheReferencedAbstractTagServiceIF<T extends ReferencedAbstractEventTag> {
+public interface CacheDereferenceAbstractTagServiceIF<T extends ReferencedAbstractEventTag> {
   Optional<GenericEventRecord> getEvent(T t);
   
   @SneakyThrows

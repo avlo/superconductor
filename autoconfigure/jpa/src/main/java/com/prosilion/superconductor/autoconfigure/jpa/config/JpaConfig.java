@@ -8,7 +8,7 @@ import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
-import com.prosilion.superconductor.base.service.CacheReferencedAddressTagService;
+import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagService;
 import com.prosilion.superconductor.base.service.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
@@ -86,17 +86,17 @@ public class JpaConfig {
     return new JpaCacheService(eventJpaEntityService, deletionEventJpaEntityService);
   }
 
-  @Bean(name = "cacheReferencedAddressTagService")
-  CacheReferencedAddressTagService cacheReferencedAddressTagService(
+  @Bean(name = "cacheDereferenceAddressTagService")
+  CacheDereferenceAddressTagService cacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF) {
-    return new CacheReferencedAddressTagService(cacheServiceIF);
+    return new CacheDereferenceAddressTagService(cacheServiceIF);
   }
 
   @Bean(name = "cacheFormulaEventService")
   CacheTagMappedEventServiceIF cacheFormulaEventService(
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull CacheReferencedAddressTagService cacheReferencedAddressTagService) {
-    return new CacheFormulaEventService(cacheServiceIF, cacheReferencedAddressTagService);
+      @NonNull CacheDereferenceAddressTagService cacheDereferenceAddressTagService) {
+    return new CacheFormulaEventService(cacheServiceIF, cacheDereferenceAddressTagService);
   }
 
 //  @Bean(name = "cacheBadgeDefinitionReputationEventService")

@@ -19,6 +19,7 @@ import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.GeohashTag;
 import com.prosilion.nostr.tag.HashtagTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PriceTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SubjectTag;
@@ -47,6 +48,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
 
   public static final PubKeyTag P_TAG = new PubKeyTag(new PublicKey(PTAG_HEX));
   public static final EventTag E_TAG = new EventTag(ETAG_HEX);
+  public static final IdentifierTag identifierTag = new IdentifierTag("ClassifiedListingUuid");
 
   public static final String SUBJECT = "Classified Listing Test Subject Tag";
   public static final SubjectTag SUBJECT_TAG = new SubjectTag(SUBJECT);
@@ -83,7 +85,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     ClassifiedListing classifiedListing = new ClassifiedListing(
         CLASSIFIED_LISTING_TITLE, CLASSIFIED_LISTING_SUMMARY, PRICE_TAG, CLASSIFIED_LISTING_LOCATION);
 
-    BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, classifiedListing, tags, content);
+    BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, identifierTag, classifiedListing, tags, content);
     this.eventId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);

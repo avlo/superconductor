@@ -6,10 +6,10 @@ import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.Optional;
 import org.springframework.lang.NonNull;
 
-public class CacheReferencedAddressTagService implements CacheReferencedAddressTagServiceIF {
+public class CacheDereferenceAddressTagService implements CacheDereferenceAddressTagServiceIF {
   CacheServiceIF cacheServiceIF;
 
-  public CacheReferencedAddressTagService(@NonNull CacheServiceIF cacheServiceIF) {
+  public CacheDereferenceAddressTagService(@NonNull CacheServiceIF cacheServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
   }
 

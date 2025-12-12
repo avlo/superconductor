@@ -8,8 +8,8 @@ import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
-import com.prosilion.superconductor.base.service.CacheReferencedAddressTagService;
-import com.prosilion.superconductor.base.service.CacheReferencedAddressTagServiceIF;
+import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagService;
+import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
@@ -84,17 +84,17 @@ public class RedisConfig {
     return new RedisCacheService(eventNosqlEntityService, deletionEventNoSqlEntityService);
   }
 
-  @Bean(name = "cacheReferencedAddressTagService")
-  CacheReferencedAddressTagService cacheReferencedAddressTagService(
+  @Bean(name = "cacheDereferenceAddressTagService")
+  CacheDereferenceAddressTagService cacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF) {
-    return new CacheReferencedAddressTagService(cacheServiceIF);
+    return new CacheDereferenceAddressTagService(cacheServiceIF);
   }
 
   @Bean(name = "cacheFormulaEventService")
   CacheTagMappedEventServiceIF cacheFormulaEventService(
       @NonNull RedisCacheService cacheService,
-      @NonNull CacheReferencedAddressTagServiceIF cacheReferencedAddressTagServiceIF) {
-    return new CacheFormulaEventService(cacheService, cacheReferencedAddressTagServiceIF);
+      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
+    return new CacheFormulaEventService(cacheService, cacheDereferenceAddressTagServiceIF);
   }
 
 //  @Bean

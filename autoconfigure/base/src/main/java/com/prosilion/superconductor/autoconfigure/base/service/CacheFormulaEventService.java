@@ -5,11 +5,11 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.superconductor.base.service.CacheFormulaEventServiceIF;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.service.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +19,8 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
+  public static final String NON_EXISTENT_EVENT_ID_S = "Event ID [%s] contains EventTag(s) referencing non-existent event ID(s): ";
+  public static final String FORMATTED = "formula event found with matching author public key and identifier tag (UUID) but with different formula:\n  (db) [%s]\n    -vs- (incoming formula) [%s]\n";
   private final CacheServiceIF cacheServiceIF;
   private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
 
@@ -31,44 +33,50 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
   @Override
   public void save(@NonNull FormulaEvent incomingFormulaEvent) {
-    Optional<GenericEventRecord> optionalFormulaEvent = cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
+// check formula event AddressTag (badge definition award) existence
+    AddressTag incomingFormulaEventAddressTag = incomingFormulaEvent.getContainedEventsAsTags().stream().findFirst().orElseThrow();
+//  if badge definition award not found
+// 		throw exception
+    cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
+        incomingFormulaEventAddressTag.getKind(),
+        incomingFormulaEventAddressTag.getPublicKey(),
+        incomingFormulaEventAddressTag.getIdentifierTag()).stream().findFirst().orElseThrow();
+
+// check for existing formula event using pubkey and identifier tag
+    Optional<GenericEventRecord> dbOptionalFormulaEvent = cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
         incomingFormulaEvent.getKind(),
         incomingFormulaEvent.getPublicKey(),
         incomingFormulaEvent.getIdentifierTag()).stream().findFirst();
 
-    if (optionalFormulaEvent.isEmpty()) {
+// 	if existing formula event not found:
+    if (dbOptionalFormulaEvent.isEmpty()) {
       log.debug("saving new FormulaEvent {}...", incomingFormulaEvent);
       cacheServiceIF.save(incomingFormulaEvent);
       log.debug("...done");
-      return;
+      return; // implicit equals, does not require save
     }
 
-    FormulaEvent existingFormulaEvent = getEvent(optionalFormulaEvent.get().getId()).orElseThrow();
-    if (!softEquals(incomingFormulaEvent, existingFormulaEvent)) {
+// existing formula event was found    
+// check non-conflicting formula content
+    IdentifierTag incomingFormulaIdentifierTag = incomingFormulaEvent.getIdentifierTag();
+    FormulaEvent existingFormulaEvent = getEvent(dbOptionalFormulaEvent.get().getId()).orElseThrow();
+    IdentifierTag dbIdentifierTag = existingFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag();
+
+//    identifier tag different, ok to save incomingFormulaEvent
+    if (!dbIdentifierTag.equals(incomingFormulaIdentifierTag)) {
       log.debug("saving new FormulaEvent {}...", incomingFormulaEvent);
       cacheServiceIF.save(incomingFormulaEvent);
       log.debug("...done");
-      return;
     }
 
-    if (!identifierTagEquals(incomingFormulaEvent, existingFormulaEvent)) {
-      log.debug("saving new FormulaEvent {}...", incomingFormulaEvent);
-      cacheServiceIF.save(incomingFormulaEvent);
-      log.debug("...done");
-      return;
-    }
-    if (!incomingFormulaEvent.getFormula().equals(existingFormulaEvent.getFormula()))
+    String dbFormula = existingFormulaEvent.getFormula();
+    String incomingFormula = incomingFormulaEvent.getContent();
+// 		if formula content different
+// 			throw exception
+    if (!dbFormula.equals(incomingFormula)) {
       throw new NostrException(
-          String.format("Incoming FormulaEvent [%s] formula clashes with pre-existing FormulaEvent [%s] formula having same Kind, PublicKey, Uuid", incomingFormulaEvent, existingFormulaEvent));
-  }
-
-  private static boolean softEquals(TagMappedEventIF incomingFormulaEvent, TagMappedEventIF existingFormulaEvent) {
-    return existingFormulaEvent.getKind().equals(incomingFormulaEvent.getKind()) &&
-        existingFormulaEvent.getPublicKey().equals(incomingFormulaEvent.getPublicKey());
-  }
-
-  private static boolean identifierTagEquals(@NonNull FormulaEvent incomingFormulaEvent, FormulaEvent existingFormulaEvent) {
-    return existingFormulaEvent.getIdentifierTag().equals(incomingFormulaEvent.getIdentifierTag());
+          String.format(FORMATTED, dbFormula, incomingFormula));
+    }
   }
 
   @Override

@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.redis.config;
 import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeAwardReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
 import com.prosilion.superconductor.base.controller.ApiUi;
@@ -105,6 +106,14 @@ public class RedisConfig {
       @NonNull @Qualifier("cacheFormulaEventService") CacheTagMappedEventServiceIF cacheFormulaEventService,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
     return new CacheBadgeDefinitionReputationEventService(cacheService, cacheDereferenceAddressTagServiceIF, (CacheFormulaEventService) cacheFormulaEventService);
+  }
+
+  @Bean(name = "cacheBadgeAwardReputationEventService")
+  CacheTagMappedEventServiceIF cacheBadgeAwardReputationEventService(
+      @NonNull RedisCacheService cacheService,
+      @NonNull @Qualifier("cacheBadgeDefinitionReputationEventService") CacheTagMappedEventServiceIF cacheBadgeDefinitionReputationEventService,
+      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
+    return new CacheBadgeAwardReputationEventService(cacheService, cacheDereferenceAddressTagServiceIF, (CacheBadgeDefinitionReputationEventService) cacheBadgeDefinitionReputationEventService);
   }
 
   @Bean(name = "eventPlugin")

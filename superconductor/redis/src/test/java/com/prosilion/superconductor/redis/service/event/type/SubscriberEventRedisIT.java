@@ -69,6 +69,6 @@ class SubscriberEventRedisIT {
     assertEquals(CONTENT, foundEvent.getContent());
     List<BaseTag> tags = foundEvent.getTags();
     tags.forEach(tag -> log.debug("\ntag:  \n{}\n ---- \n", tag));
-    assertEquals(4, tags.size());
+    assertEquals(classifiedListingEvent.getTags().size(), tags.size());
   }
 }

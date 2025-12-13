@@ -62,6 +62,7 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
             new FormulaEvent(
                 identity,
                 upvoteIdTag,
+                relay,
                 upvoteDefnEvent,
                 PLUS_ONE)));
   }
@@ -83,11 +84,13 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
             new FormulaEvent(
                 identity,
                 upvoteIdTag,
+                relay,
                 upvoteDefnEvent,
                 PLUS_ONE),
             new FormulaEvent(
                 identity,
                 downvoteIdTag,
+                relay,
                 downvoteDefnEvent,
                 MINUS_ONE)));
   }

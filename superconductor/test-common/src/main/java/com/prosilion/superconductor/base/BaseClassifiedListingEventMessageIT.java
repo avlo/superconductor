@@ -8,6 +8,7 @@ import com.prosilion.nostr.event.ClassifiedListingEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.internal.ClassifiedListing;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
 import com.prosilion.nostr.filter.event.EventFilter;
@@ -40,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseClassifiedListingEventMessageIT {
+  public static final Relay relay = new Relay("ws://localhost:5555");
   private final NostrRelayService nostrRelayService;
   public final PublicKey senderPubkey;
 
@@ -85,7 +87,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     ClassifiedListing classifiedListing = new ClassifiedListing(
         CLASSIFIED_LISTING_TITLE, CLASSIFIED_LISTING_SUMMARY, PRICE_TAG, CLASSIFIED_LISTING_LOCATION);
 
-    BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, identifierTag, classifiedListing, tags, content);
+    BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, identifierTag, relay, classifiedListing, tags, content);
     this.eventId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);

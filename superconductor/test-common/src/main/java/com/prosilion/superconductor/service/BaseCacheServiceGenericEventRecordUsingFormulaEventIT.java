@@ -3,6 +3,7 @@ package com.prosilion.superconductor.service;
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
@@ -14,6 +15,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
+  public static final Relay relay = new Relay("ws://localhost:5555");
 //  private static final Relay relay = new Relay("ws://localhost:5555");
 //  private static final Identity IDENTITY = Factory.createNewIdentity();
 
@@ -35,6 +37,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
         new FormulaEvent(
             superconductorInstanceIdentity,
             upvoteIdentifierTag,
+            relay,
             badgeDefinitionAwardEvent,
             PLUS_ONE_FORMULA);
   }

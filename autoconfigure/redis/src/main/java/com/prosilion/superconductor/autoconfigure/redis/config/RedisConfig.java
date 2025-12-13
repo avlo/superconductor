@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.redis.config;
 import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
@@ -24,6 +25,7 @@ import com.prosilion.superconductor.lib.redis.service.DeletionEventNoSqlEntitySe
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -97,12 +99,13 @@ public class RedisConfig {
     return new CacheFormulaEventService(cacheService, cacheDereferenceAddressTagServiceIF);
   }
 
-//  @Bean
-//  CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
-//      @NonNull RedisCacheService cacheService,
-//      @NonNull CacheFormulaEventService cacheFormulaEventService) {
-//    return new CacheBadgeDefinitionReputationEventService(cacheService, cacheFormulaEventService);
-//  }
+  @Bean(name = "cacheBadgeDefinitionReputationEventService")
+  CacheTagMappedEventServiceIF cacheBadgeDefinitionReputationEventService(
+      @NonNull RedisCacheService cacheService,
+      @NonNull @Qualifier("cacheFormulaEventService") CacheTagMappedEventServiceIF cacheFormulaEventService,
+      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
+    return new CacheBadgeDefinitionReputationEventService(cacheService, cacheDereferenceAddressTagServiceIF, (CacheFormulaEventService) cacheFormulaEventService);
+  }
 
   @Bean(name = "eventPlugin")
   @ConditionalOnMissingBean

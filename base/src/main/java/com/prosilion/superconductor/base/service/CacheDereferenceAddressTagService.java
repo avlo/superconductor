@@ -15,10 +15,9 @@ public class CacheDereferenceAddressTagService implements CacheDereferenceAddres
 
   @Override
   public Optional<GenericEventRecord> getEvent(@NonNull AddressTag addressTag) {
-    return Optional.ofNullable(
-        cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
-            addressTag.getKind(),
-            addressTag.publicKey(),
-            addressTag.getIdentifierTag()).getFirst());
+    return cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
+        addressTag.getKind(),
+        addressTag.publicKey(),
+        addressTag.getIdentifierTag()).stream().findFirst();
   }
 }

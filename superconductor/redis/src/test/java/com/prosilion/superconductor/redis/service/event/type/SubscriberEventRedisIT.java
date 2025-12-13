@@ -4,6 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.ClassifiedListingEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.ClassifiedListing;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -33,6 +34,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 class SubscriberEventRedisIT {
+  public static final Relay relay = new Relay("ws://localhost:5555");
+  
   public static final Identity IDENTITY = Factory.createNewIdentity();
   public static final String CONTENT = Factory.lorumIpsum(SubscriberEventRedisIT.class);
 
@@ -56,7 +59,7 @@ class SubscriberEventRedisIT {
         "classified summary",
         new PriceTag(new BigDecimal("2.71"), "BTC", "frequency"));
 
-    classifiedListingEvent = new ClassifiedListingEvent(IDENTITY, Kind.CLASSIFIED_LISTING, identifierTag, classifiedListing, tags, CONTENT);
+    classifiedListingEvent = new ClassifiedListingEvent(IDENTITY, Kind.CLASSIFIED_LISTING, identifierTag, relay, classifiedListing, tags, CONTENT);
   }
 
   @Test

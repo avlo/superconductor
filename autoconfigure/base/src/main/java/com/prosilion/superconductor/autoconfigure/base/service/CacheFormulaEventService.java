@@ -13,13 +13,12 @@ import com.prosilion.superconductor.base.service.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
-  public static final String NON_EXISTENT_EVENT_ID_S = "Event ID [%s] contains EventTag(s) referencing non-existent event ID(s): ";
+  public static final String NON_EXISTENT_EVENT_ID_S = "FormulaEvent [%s] contains AddressTag referencing non-existent BadgeDefinitionAwardEvent";
   public static final String FORMATTED = "formula event found with matching author public key and identifier tag (UUID) but with different formula:\n  (db) [%s]\n    -vs- (incoming formula) [%s]\n";
   private final CacheServiceIF cacheServiceIF;
   private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
@@ -34,7 +33,9 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   @Override
   public void save(@NonNull FormulaEvent incomingFormulaEvent) {
 // check formula event AddressTag (badge definition award) existence
-    AddressTag incomingFormulaEventAddressTag = incomingFormulaEvent.getContainedEventsAsTags().stream().findFirst().orElseThrow();
+    AddressTag incomingFormulaEventAddressTag = incomingFormulaEvent.getContainedEventsAsAddressTags().stream().findFirst().orElseThrow(() ->
+        new NostrException(
+            String.format(NON_EXISTENT_EVENT_ID_S, incomingFormulaEvent)));
 //  if badge definition award not found
 // 		throw exception
     cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
@@ -77,6 +78,8 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
       throw new NostrException(
           String.format(FORMATTED, dbFormula, incomingFormula));
     }
+
+    log.debug("Identical FormulaEvent already exists, save not required, just return");
   }
 
   @Override
@@ -88,9 +91,8 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     return Optional.of(cacheDereferenceAddressTagServiceIF.createTypedFxnEvent(
         unpopulatedFormulaEvent.orElseThrow(),
         FormulaEvent.class,
-        (Function<AddressTag, BadgeDefinitionAwardEvent>) addressTag ->
-            getBadgeDefinitionAwardEvent(
-                unpopulatedFormulaEvent.get())));
+        addressTag ->
+            getBadgeDefinitionAwardEvent(unpopulatedFormulaEvent.get())));
   }
 
   private BadgeDefinitionAwardEvent getBadgeDefinitionAwardEvent(GenericEventRecord genericEventRecord) {

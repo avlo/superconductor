@@ -1,99 +1,100 @@
-//package com.prosilion.superconductor.autoconfigure.base.service;
-//
-//import com.prosilion.nostr.NostrException;
-//import com.prosilion.nostr.enums.Kind;
-//import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-//import com.prosilion.nostr.event.EventIF;
-//import com.prosilion.nostr.event.EventTagsMappedEventsIF;
-//import com.prosilion.nostr.event.FormulaEvent;
-//import com.prosilion.nostr.event.GenericEventRecord;
-//import com.prosilion.nostr.filter.Filterable;
-//import com.prosilion.nostr.tag.AddressTag;
-//import com.prosilion.nostr.tag.EventTag;
-//import com.prosilion.nostr.tag.IdentifierTag;
-//import com.prosilion.nostr.tag.PubKeyTag;
-//import com.prosilion.nostr.user.PublicKey;
-//import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
-//import com.prosilion.superconductor.base.service.event.CacheServiceIF;
-//import java.util.List;
-//import java.util.Optional;
-//import java.util.function.Function;
-//import lombok.extern.slf4j.Slf4j;
-//import org.apache.logging.log4j.util.Strings;
-//import org.springframework.beans.factory.annotation.Qualifier;
-//import org.springframework.lang.NonNull;
-//
-//@Slf4j
-//public class CacheBadgeDefinitionReputationEventService extends AbstractCacheEventTagBaseEventService {
-//  public static final String DUPLICATE_REPUTATION_IDENTIFIER_TAG = "Event ID [%s] contains duplicate IdentifierTag [%s] from event ID [%s]";
-//  private final CacheFormulaEventService cacheFormulaEventService;
-//
-//  public CacheBadgeDefinitionReputationEventService(
-//      @NonNull CacheServiceIF cacheServiceIF,
-//      @NonNull @Qualifier("cacheFormulaEventService") CacheEventTagBaseEventServiceIF cacheFormulaEventService) {
-//    super(cacheServiceIF);
-//    this.cacheFormulaEventService = (CacheFormulaEventService) cacheFormulaEventService;
-//  }
-//
-//  @Override
-//  public void save(EventIF event) {
-//    IdentifierTag identifierTag = Filterable.getTypeSpecificTags(IdentifierTag.class, event).getFirst();
-//    List<BadgeDefinitionReputationEvent> found = getBadgeDefinitionReputationEvents(getKind(), event.getPublicKey(), identifierTag);
-//
-//    if (!found.isEmpty())
-//      throw new NostrException(
-//          Strings.concat(
-//              String.format(DUPLICATE_REPUTATION_IDENTIFIER_TAG, event.getId(), identifierTag.getUuid(), found.getFirst().getId()),
-//              Strings.join(found.stream().map(eventId -> String.format("[%s]", eventId)).toList(), ',')));
-//
-//    log.info("saving CacheBadgeDefinitionReputationEvent event with eventId [{}] ...", event.getId());
-//    super.save(event);
-//    log.info("...done");
-//  }
-//
-//  @Override
-//  public EventTagsMappedEventsIF populate(
-//      GenericEventRecord badgeDefinitionReputationEvent,
-//      List<GenericEventRecord> unpopulatedFormulaEvents) {
-//
-//    List<FormulaEvent> populatedFormulaEvents = unpopulatedFormulaEvents.stream()
-//        .map(event ->
-//            cacheFormulaEventService.populate(
-//                event,
-//                getEventTagsAsGenericEventRecords(event))).toList();
-//
-//    Function<EventTag, FormulaEvent> fxn = eventTag ->
-//        populatedFormulaEvents.stream().filter(genericEventRecord ->
-//                genericEventRecord.getId().equals(eventTag.getIdEvent()))
-//            .findFirst().orElseThrow();
-//
-//    return createEventGivenMappedEventTagEvents(
-//        badgeDefinitionReputationEvent,
-//        BadgeDefinitionReputationEvent.class,
-//        fxn);
-//  }
-//
-//  public Optional<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvent(@NonNull String eventId) {
-//    return (Optional<BadgeDefinitionReputationEvent>) super.getEventByEventId(eventId);
-//  }
-//
-//  public List<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvents(
-//      @NonNull Kind kind,
-//      @NonNull PublicKey referencePubKeyTag,
-//      @NonNull AddressTag addressTag) {
-//    return (List<BadgeDefinitionReputationEvent>) super.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag);
-//  }
-//
-//  public List<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvents(Kind kind, PubKeyTag referencedPubkeyTag, IdentifierTag identifierTag) {
-//    return (List<BadgeDefinitionReputationEvent>) super.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencedPubkeyTag.getPublicKey(), identifierTag);
-//  }
-//
-//  public List<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvents(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
-//    return (List<BadgeDefinitionReputationEvent>) super.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag);
-//  }
-//
-//  @Override
-//  public Kind getKind() {
-//    return Kind.BADGE_DEFINITION_EVENT;
-//  }
-//}
+package com.prosilion.superconductor.autoconfigure.base.service;
+
+import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.filter.Filterable;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.superconductor.base.service.CacheBadgeDefinitionReputationEventServiceIF;
+import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
+
+@Slf4j
+public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDefinitionReputationEventServiceIF {
+  public static final String NON_EXISTENT_EVENT_ID_S = "BadgeDefinitionReputationEvent [%s] contains AddressTag [%s] referencing non-existent FormulaEvent";
+  private final CacheServiceIF cacheServiceIF;
+  private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
+  private final CacheFormulaEventService cacheFormulaEventService;
+
+  public CacheBadgeDefinitionReputationEventService(
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
+      @NonNull CacheFormulaEventService cacheFormulaEventService) {
+    this.cacheServiceIF = cacheServiceIF;
+    this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;
+    this.cacheFormulaEventService = cacheFormulaEventService;
+  }
+
+  @Override
+  public void save(BadgeDefinitionReputationEvent incomingBadgeDefinitionReputationEvent) {
+    List<AddressTag> incomingBadgeDefinitionReputationEventAddressTags = incomingBadgeDefinitionReputationEvent.getContainedEventsAsAddressTags();
+
+    if (incomingBadgeDefinitionReputationEventAddressTags.isEmpty())
+      throw new NostrException(
+          String.format("BadgeDefinitionReputationEvent [%s] requires at last one AddressTag", incomingBadgeDefinitionReputationEvent));
+
+    incomingBadgeDefinitionReputationEventAddressTags
+        .forEach(addressTag ->
+            cacheDereferenceAddressTagServiceIF.getEvent(addressTag).orElseThrow(() ->
+                new NostrException(
+                    String.format(
+                        String.join("", NON_EXISTENT_EVENT_ID_S, "[%s]"),
+                        incomingBadgeDefinitionReputationEvent.serialize(),
+                        incomingBadgeDefinitionReputationEvent.getId(),
+                        addressTag))));
+
+    Optional<GenericEventRecord> optionalBadgeDefinitionReputationEvent =
+        cacheDereferenceAddressTagServiceIF.getEvent(
+            incomingBadgeDefinitionReputationEvent.asAddressTag());
+
+    if (optionalBadgeDefinitionReputationEvent.isEmpty()) {
+      log.debug("saving new FormulaEvent {}...", incomingBadgeDefinitionReputationEvent);
+      cacheServiceIF.save(incomingBadgeDefinitionReputationEvent);
+      log.debug("...done");
+      return;
+    }
+
+    log.debug("Identical BadgeDefinitionReputationEvent already exists, save not required, just return");
+  }
+
+  @Override
+  public Optional<BadgeDefinitionReputationEvent> getEvent(String eventId) {
+    Optional<GenericEventRecord> unpopulatedBadgeDefinitionReputationEvent = cacheServiceIF.getEventByEventId(eventId);
+    if (unpopulatedBadgeDefinitionReputationEvent.isEmpty())
+      return Optional.empty();
+
+    List<AddressTag> addressTagsOfFormulaEvents = Filterable.getTypeSpecificTags(AddressTag.class, unpopulatedBadgeDefinitionReputationEvent.get()).stream().toList();
+
+    List<GenericEventRecord> formulaEventsAsGenericEventRecords =
+        addressTagsOfFormulaEvents.stream()
+            .map(cacheDereferenceAddressTagServiceIF::getEvent)
+            .flatMap(Optional::stream)
+            .toList();
+
+    List<FormulaEvent> formulaEvents = formulaEventsAsGenericEventRecords.stream()
+        .map(GenericEventRecord::getId)
+        .map(cacheFormulaEventService::getEvent)
+        .flatMap(Optional::stream).toList();
+
+    Function<AddressTag, FormulaEvent> fxn = addressTag ->
+        formulaEvents.stream().filter(formulaEvent ->
+            formulaEvent.getIdentifierTag().equals(addressTag.getIdentifierTag())).findFirst().orElseThrow();
+
+    return Optional.of(cacheDereferenceAddressTagServiceIF.createTypedFxnEvent(
+        unpopulatedBadgeDefinitionReputationEvent.orElseThrow(),
+        BadgeDefinitionReputationEvent.class,
+        fxn));
+  }
+
+  @Override
+  public Kind getKind() {
+    return Kind.BADGE_DEFINITION_EVENT;
+  }
+}

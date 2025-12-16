@@ -18,7 +18,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDefinitionReputationEventServiceIF {
-  public static final String NON_EXISTENT_EVENT_ID_S = "BadgeDefinitionReputationEvent [%s] contains AddressTag [%s] referencing non-existent FormulaEvent";
+  public static final String NON_EXISTENT_ADDRESS_TAG_S = "BadgeDefinitionReputationEvent [%s] contains AddressTag [%s] referencing non-existent FormulaEvent";
   private final CacheServiceIF cacheServiceIF;
   private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
   private final CacheFormulaEventService cacheFormulaEventService;
@@ -33,8 +33,8 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
   }
 
   @Override
-  public void save(BadgeDefinitionReputationEvent incomingBadgeDefinitionReputationEvent) {
-    List<AddressTag> incomingBadgeDefinitionReputationEventAddressTags = incomingBadgeDefinitionReputationEvent.getContainedEventsAsAddressTags();
+  public void save(@NonNull BadgeDefinitionReputationEvent incomingBadgeDefinitionReputationEvent) {
+    List<AddressTag> incomingBadgeDefinitionReputationEventAddressTags = incomingBadgeDefinitionReputationEvent.getContainedAddressableEvents();
 
     if (incomingBadgeDefinitionReputationEventAddressTags.isEmpty())
       throw new NostrException(
@@ -45,7 +45,7 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
             cacheDereferenceAddressTagServiceIF.getEvent(addressTag).orElseThrow(() ->
                 new NostrException(
                     String.format(
-                        String.join("", NON_EXISTENT_EVENT_ID_S, "[%s]"),
+                        String.join("", NON_EXISTENT_ADDRESS_TAG_S, "[%s]"),
                         incomingBadgeDefinitionReputationEvent.serialize(),
                         incomingBadgeDefinitionReputationEvent.getId(),
                         addressTag))));
@@ -65,7 +65,7 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getEvent(String eventId) {
+  public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId) {
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionReputationEvent = cacheServiceIF.getEventByEventId(eventId);
     if (unpopulatedBadgeDefinitionReputationEvent.isEmpty())
       return Optional.empty();

@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardUpvoteEvent;
+import com.prosilion.nostr.event.BadgeAwardGenericVoteEvent;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filterable;
@@ -48,7 +48,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
     this.nostrRelayService = new NostrRelayService(relayUrl);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    BadgeAwardUpvoteEvent event = new BadgeAwardUpvoteEvent(
+    BadgeAwardGenericVoteEvent event = new BadgeAwardGenericVoteEvent(
         authorIdentity,
         upvotedUserPubKey,
         badgeDefinitionUpvoteEvent);

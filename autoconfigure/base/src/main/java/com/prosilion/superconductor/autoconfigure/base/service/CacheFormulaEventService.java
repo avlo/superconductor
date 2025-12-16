@@ -18,7 +18,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
-  public static final String NON_EXISTENT_EVENT_ID_S = "FormulaEvent [%s] contains AddressTag referencing non-existent BadgeDefinitionAwardEvent";
+  public static final String NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S = "FormulaEvent [%s] contains AddressTag referencing non-existent BadgeDefinitionAwardEvent";
   public static final String FORMATTED = "formula event found with matching author public key and identifier tag (UUID) but with different formula:\n  (db) [%s]\n    -vs- (incoming formula) [%s]\n";
   private final CacheServiceIF cacheServiceIF;
   private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
@@ -33,9 +33,9 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   @Override
   public void save(@NonNull FormulaEvent incomingFormulaEvent) {
 // check formula event AddressTag (badge definition award) existence
-    AddressTag incomingFormulaEventAddressTag = incomingFormulaEvent.getContainedEventsAsAddressTags().stream().findFirst().orElseThrow(() ->
+    AddressTag incomingFormulaEventAddressTag = incomingFormulaEvent.getContainedAddressableEvents().stream().findFirst().orElseThrow(() ->
         new NostrException(
-            String.format(NON_EXISTENT_EVENT_ID_S, incomingFormulaEvent)));
+            String.format(NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S, incomingFormulaEvent)));
 //  if badge definition award not found
 // 		throw exception
     cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(

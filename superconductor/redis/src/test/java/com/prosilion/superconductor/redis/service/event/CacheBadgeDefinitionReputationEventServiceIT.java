@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService.NON_EXISTENT_EVENT_ID_S;
+import static com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService.NON_EXISTENT_ADDRESS_TAG_S;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -114,7 +114,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
     assertTrue(
         messageMissingEventId.contains(
             String.format(
-                String.join("", NON_EXISTENT_EVENT_ID_S),
+                String.join("", NON_EXISTENT_ADDRESS_TAG_S),
                 uniqueBadgeDefinitionReputationEventIdentifierTag.serialize(),
                 uniqueBadgeDefinitionReputationEventIdentifierTag.getId())));
 

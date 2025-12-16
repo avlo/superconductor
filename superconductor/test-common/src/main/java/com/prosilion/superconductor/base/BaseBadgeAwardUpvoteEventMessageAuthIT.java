@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.base;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeAwardUpvoteEvent;
+import com.prosilion.nostr.event.BadgeAwardGenericVoteEvent;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
   public static final Relay relay = new Relay("ws://localhost:5555");
   private final NostrRelayService nostrRelayService;
-  private final BadgeAwardUpvoteEvent event;
+  private final BadgeAwardGenericVoteEvent event;
 
   public BaseBadgeAwardUpvoteEventMessageAuthIT(
       @NonNull Identity superconductorInstanceIdentity,
@@ -30,7 +30,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
 
     this.nostrRelayService = new NostrRelayService(relayUri);
     Identity authorIdentity = Identity.generateRandomIdentity();
-    this.event = new BadgeAwardUpvoteEvent(
+    this.event = new BadgeAwardGenericVoteEvent(
         authorIdentity,
         Identity.generateRandomIdentity().getPublicKey(),
         new BadgeDefinitionAwardEvent(

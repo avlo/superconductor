@@ -40,7 +40,7 @@ public class EventPlugin implements EventPluginIF {
     Kind kind = event.getKind();
     if (isCacheEventTagKind(event)) {
       log.info("saving CacheEventTagBaseEvent (EventTags) event...");
-      kindClassMap.get(kind).save((TagMappedEventIF)event);
+      kindClassMap.get(kind).save((TagMappedEventIF) event);
       log.info("...done");
       return;
     }
@@ -58,8 +58,8 @@ public class EventPlugin implements EventPluginIF {
       return false;
     }
 
-    if (kind.equals(Kind.ARBITRARY_CUSTOM_APP_DATA)) {
-      log.info("kind == Kind.ARBITRARY_CUSTOM_APP_DATA.  return true");
+    if (kind.equals(Kind.ARBITRARY_CUSTOM_APP_DATA) || kind.equals(Kind.FOLLOW_SETS)) {
+      log.info("kind == Kind.ARBITRARY_CUSTOM_APP_DATA || kind.equals(Kind.FOLLOW_SETS, return true");
       return true;
     }
 

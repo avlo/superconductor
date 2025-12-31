@@ -2,12 +2,13 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericVoteEvent;
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.superconductor.base.service.CacheBadgeAwardGenericVoteEventServiceIF;
+import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.base.service.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.service.CacheDereferenceEventTagServiceIF;
 import com.prosilion.superconductor.base.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
@@ -22,15 +23,15 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   public static final String NON_EXISTENT_EVENT_ID_S = "FollowSetsEvent [%s] contains AddressTag [%s] referencing non-existent BadgeDefinitionReputationEvent";
   private final CacheServiceIF cacheServiceIF;
   private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
-  private final CacheBadgeAwardGenericVoteEventServiceIF cacheBadgeGenericAwardEventServiceIF;
+  private final CacheBadgeAwardGenericEventServiceIF cacheBadgeGenericAwardEventServiceIF;
 
   public CacheFollowSetsEventService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
-      @NonNull CacheBadgeAwardGenericVoteEventServiceIF cacheBadgeAwardGenericVoteEventServiceIF) {
+      @NonNull CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
-    this.cacheBadgeGenericAwardEventServiceIF = cacheBadgeAwardGenericVoteEventServiceIF;
+    this.cacheBadgeGenericAwardEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
   }
 
   @Override
@@ -89,12 +90,12 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
             .flatMap(Optional::stream)
             .toList();
 
-    List<BadgeAwardGenericVoteEvent> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords.stream()
+    List<BadgeAwardGenericEvent> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords.stream()
         .map(GenericEventRecord::getId)
         .map(cacheBadgeGenericAwardEventServiceIF::getEvent)
         .flatMap(Optional::stream).toList();
 
-    Function<EventTag, BadgeAwardGenericVoteEvent> fxn = eventTag ->
+    Function<EventTag, BadgeAwardGenericEvent> fxn = eventTag ->
         badgeAwardAbstractEvents.stream().filter(badgeAwardAbstractEvent ->
             badgeAwardAbstractEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
 
@@ -102,6 +103,13 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
         unpopulatedFollowSetsEvent.orElseThrow(),
         FollowSetsEvent.class,
         fxn));
+  }
+
+  @Override
+  public List<FollowSetsEvent> getEventsByPubkeyTag(@NonNull PublicKey badgeAwardRecipientPublicKey) {
+    List<GenericEventRecord> dbFollowSetsGenericEventRecordOptional = cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), badgeAwardRecipientPublicKey);
+    List<FollowSetsEvent> list = dbFollowSetsGenericEventRecordOptional.stream().map(GenericEventRecord::id).map(this::getEvent).flatMap(Optional::stream).toList();
+    return list;
   }
 
   @Override

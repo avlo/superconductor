@@ -15,11 +15,11 @@ import org.springframework.lang.NonNull;
 public class Vote {
   private final AwardEvent awardEvent;
 
-  public Vote(@NonNull PublicKey upvotedUser, @NonNull BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent) {
+  public Vote(@NonNull PublicKey upvotedUser, @NonNull BadgeDefinitionAwardEvent badgeDefinitionVoteEvent) {
     AddressTag addressTag = new AddressTag(
         Kind.BADGE_DEFINITION_EVENT,
-        badgeDefinitionUpvoteEvent.getPublicKey(),
-        badgeDefinitionUpvoteEvent.getIdentifierTag());
+        badgeDefinitionVoteEvent.getPublicKey(),
+        badgeDefinitionVoteEvent.getIdentifierTag());
 
     awardEvent = new AwardEvent(addressTag, new PubKeyTag(upvotedUser));
   }

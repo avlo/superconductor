@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 
-import static com.prosilion.superconductor.util.TestKindType.UNIT_DOWNVOTE;
-import static com.prosilion.superconductor.util.TestKindType.UNIT_UPVOTE;
-
 @Configuration
 public class BadgeDefinitionConfig {
+  private final static String UNIT_UPVOTE = "UNIT_UPVOTE";
+  private final static String UNIT_DOWNVOTE = "UNIT_DOWNVOTE";
+
   @Bean
   @ConditionalOnMissingBean
   DataLoaderJpaIF dataLoaderJpa(
@@ -25,17 +25,17 @@ public class BadgeDefinitionConfig {
     return new DataLoaderJpa(eventPlugin, badgeDefinitionUpvoteEvent, badgeDefinitionDownvoteEvent);
   }
 
-  @Bean
+  @Bean(name = "badgeDefinitionUpvoteEvent")
   BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_UPVOTE.getName()), new Relay(superconductorRelayUrl));
+    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_UPVOTE), new Relay(superconductorRelayUrl));
   }
 
-  @Bean
+  @Bean(name = "badgeDefinitionDownvoteEvent")
   BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_DOWNVOTE.getName()), new Relay(superconductorRelayUrl));
+    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_DOWNVOTE), new Relay(superconductorRelayUrl));
   }
 }

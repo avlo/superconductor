@@ -6,13 +6,16 @@ import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import java.util.List;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
+import static com.prosilion.superconductor.enums.AfterimageKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_REPUTATION;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,12 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FormulaEventTest {
   public static final Relay relay = new Relay("ws://localhost:5555");
 
-  public static final String UNIT_REPUTATION = "UNIT_REPUTATION";
-  public static final String UNIT_UPVOTE = "UNIT_UPVOTE";
-  public static final String UNIT_DOWNVOTE = "UNIT_DOWNVOTE";
-
-  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(UNIT_UPVOTE);
-  public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(UNIT_DOWNVOTE);
+  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
+  public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(TEST_UNIT_DOWNVOTE);
 
   public final Identity identity = Identity.generateRandomIdentity();
 
@@ -39,16 +38,9 @@ public class FormulaEventTest {
   final FormulaEvent formulaEventUpvote;
   final FormulaEvent formulaEventDownvote;
 
-  public static final String PLATFORM = FormulaEventTest.class.getPackageName();
-  public static final String IDENTITY = FormulaEventTest.class.getSimpleName();
-  public static final String PROOF = String.valueOf(FormulaEventTest.class.hashCode());
-
-  ExternalIdentityTag externalIdentityTag;
-
   public FormulaEventTest() throws ParseException {
     this.formulaEventUpvote = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteEvent, PLUS_ONE_FORMULA);
     this.formulaEventDownvote = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteEvent, MINUS_ONE_FORMULA);
-    this.externalIdentityTag = new ExternalIdentityTag(PLATFORM, IDENTITY, PROOF);
   }
 
   @Test
@@ -109,20 +101,20 @@ public class FormulaEventTest {
   @Test
   void testDifferentContentDto() throws ParseException {
     BadgeDefinitionAwardEvent differentContentDto = new BadgeDefinitionAwardEvent(
-        identity, upvoteIdentifierTag, relay, UNIT_UPVOTE);
+        identity, upvoteIdentifierTag, relay, TEST_UNIT_UPVOTE);
 
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, relay, differentContentDto, "+2"));
   }
 
   @Test
   void formulaContentTest() throws ParseException {
-    assertEquals("UNIT_REPUTATION == (previous)UNIT_REPUTATION +1(UNIT_UPVOTE) -1(UNIT_DOWNVOTE)",
+    assertEquals("TEST_UNIT_REPUTATION == (previous)TEST_UNIT_REPUTATION +1(TEST_UNIT_UPVOTE) -1(TEST_UNIT_DOWNVOTE)",
         new BadgeDefinitionReputationEvent(
             identity,
             new IdentifierTag(
-                UNIT_REPUTATION),
+                TEST_UNIT_REPUTATION),
             relay,
-            externalIdentityTag,
+            BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
             List.of(
                 formulaEventUpvote,
                 formulaEventDownvote)).getContent());
@@ -132,13 +124,13 @@ public class FormulaEventTest {
     IdentifierTag upvoteUniqueIdentifierTag = new IdentifierTag(UNIT_UPVOTE_UNIQUE);
     BadgeDefinitionAwardEvent awardUniqueUpvoteEvent = new BadgeDefinitionAwardEvent(identity, upvoteUniqueIdentifierTag, relay, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA);
 
-    assertEquals("UNIT_REPUTATION == (previous)UNIT_REPUTATION +1(UNIT_UPVOTE) +1(UNIT_UPVOTE_UNIQUE)",
+    assertEquals("TEST_UNIT_REPUTATION == (previous)TEST_UNIT_REPUTATION +1(TEST_UNIT_UPVOTE) +1(UNIT_UPVOTE_UNIQUE)",
         new BadgeDefinitionReputationEvent(
             identity,
             new IdentifierTag(
-                UNIT_REPUTATION),
+                TEST_UNIT_REPUTATION),
             relay,
-            externalIdentityTag,
+            BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
             List.of(
                 formulaEventUpvote,
                 new FormulaEvent(

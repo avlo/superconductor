@@ -1,6 +1,9 @@
 package com.prosilion.superconductor.base.service.event;
 
+import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.service.EventKindTypeServiceIF;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +23,23 @@ public class EventService implements EventServiceIF {
   public void processIncomingEvent(@NonNull EventMessage eventMessage) {
     log.debug("processing incoming TEXT_NOTE: [{}]", eventMessage);
 
-    if (eventKindTypeService.getKinds().stream().anyMatch(eventMessage.getEvent().getKind()::equals)) {
-      eventKindTypeService.processIncomingEvent(eventMessage.getEvent());
+    EventIF event = eventMessage.getEvent();
+//    TODO: simplify below
+    if (matchesKind(event) && hasExternalIdentityTag(event)) {
+      eventKindTypeService.processIncomingEvent(event);
       return;
     }
 
-    eventKindServiceIF.processIncomingEvent(eventMessage.getEvent());
+    eventKindServiceIF.processIncomingEvent(event);
+  }
+
+  private boolean matchesKind(EventIF event) {
+    boolean b = eventKindTypeService.getKinds().stream().anyMatch(event.getKind()::equals);
+    return b;
+  }
+
+  private boolean hasExternalIdentityTag(EventIF event) {
+    boolean b = !Filterable.getTypeSpecificTags(ExternalIdentityTag.class, event).isEmpty();
+    return b;
   }
 }

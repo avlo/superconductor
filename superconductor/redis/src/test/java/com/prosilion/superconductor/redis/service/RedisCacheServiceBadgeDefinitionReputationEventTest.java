@@ -5,7 +5,6 @@ import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
@@ -17,9 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.redis.entity.FormulaEventTest.UNIT_DOWNVOTE;
-import static com.prosilion.superconductor.redis.entity.FormulaEventTest.UNIT_UPVOTE;
-import static com.prosilion.superconductor.util.TestKindType.UNIT_REPUTATION;
+import static com.prosilion.superconductor.enums.AfterimageKindType.BADGE_AWARD_REPUTATION;
+import static com.prosilion.superconductor.enums.AfterimageKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
 
 @Slf4j
 @EmbeddedRedisStandalone
@@ -27,21 +27,15 @@ import static com.prosilion.superconductor.util.TestKindType.UNIT_REPUTATION;
 @ActiveProfiles("test")
 public class RedisCacheServiceBadgeDefinitionReputationEventTest {
   public static final Relay relay = new Relay("ws://localhost:5555");
-
-  private static final String PLATFORM = BadgeDefinitionReputationEvent.class.getPackageName();
-  private static final String IDENTITY = BadgeDefinitionReputationEvent.class.getSimpleName();
-  private static final String PROOF = String.valueOf(BadgeDefinitionReputationEvent.class.hashCode());
   private final Identity identity = Identity.generateRandomIdentity();
 
   private final String PLUS_ONE = "+1";
   private final String MINUS_ONE = "-1";
 
-  private final IdentifierTag upvoteIdTag = new IdentifierTag(UNIT_UPVOTE);
-  private final IdentifierTag downvoteIdTag = new IdentifierTag(UNIT_DOWNVOTE);
+  private final IdentifierTag upvoteIdTag = new IdentifierTag(TEST_UNIT_UPVOTE);
+  private final IdentifierTag downvoteIdTag = new IdentifierTag(TEST_UNIT_DOWNVOTE);
   private final BadgeDefinitionAwardEvent upvoteDefnEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdTag, relay, PLUS_ONE);
   private final BadgeDefinitionAwardEvent downvoteDefnEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdTag, relay, MINUS_ONE);
-
-  private final ExternalIdentityTag externalIdentityTag = new ExternalIdentityTag(PLATFORM, IDENTITY, PROOF);
 
   private final CacheServiceIF redisCacheServiceIF;
 
@@ -55,9 +49,9 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
         identity,
         new IdentifierTag(
-            UNIT_REPUTATION.getName()),
+            BADGE_AWARD_REPUTATION.getName()),
         relay,
-        externalIdentityTag,
+        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
         List.of(
             new FormulaEvent(
                 identity,
@@ -77,9 +71,9 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
         identity,
         new IdentifierTag(
-            UNIT_REPUTATION.getName()),
+            BADGE_AWARD_REPUTATION.getName()),
         relay,
-        externalIdentityTag,
+        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
         List.of(
             new FormulaEvent(
                 identity,

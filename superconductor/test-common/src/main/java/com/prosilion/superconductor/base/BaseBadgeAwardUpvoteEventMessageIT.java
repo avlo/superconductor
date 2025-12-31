@@ -2,9 +2,10 @@ package com.prosilion.superconductor.base;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericVoteEvent;
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
@@ -27,12 +28,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
-import static com.prosilion.superconductor.util.TestKindType.UNIT_UPVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseBadgeAwardUpvoteEventMessageIT {
+  public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
+  public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
   private final NostrRelayService nostrRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
@@ -43,18 +45,21 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
 
   protected BaseBadgeAwardUpvoteEventMessageIT(
       @NonNull String relayUrl,
-      @NonNull BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.nostrRelayService = new NostrRelayService(relayUrl);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
-    BadgeAwardGenericVoteEvent event = new BadgeAwardGenericVoteEvent(
+    BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent = new BadgeDefinitionAwardEvent(
+        superconductorInstanceIdentity,
+        IDENTIFIER_TAG, new Relay(relayUrl));
+
+    BadgeAwardGenericEvent badgeAwardUpvoteEvent = new BadgeAwardGenericEvent(
         authorIdentity,
         upvotedUserPubKey,
         badgeDefinitionUpvoteEvent);
-    eventId = event.getId();
+    eventId = badgeAwardUpvoteEvent.getId();
 
-    EventMessage eventMessage = new EventMessage(event);
+    EventMessage eventMessage = new EventMessage(badgeAwardUpvoteEvent);
     assertTrue(
         this.nostrRelayService
             .send(
@@ -63,7 +68,37 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
   }
 
   @Test
-  void testValidExistingEventThenAfterImageReputationRequest() throws IOException, NostrException {
+  void testValidExistingEventThenAfterImageReputationRequestGeneral() throws IOException, NostrException {
+    final String subscriberId = Factory.generateRandomHex64String();
+
+    List<EventIF> returnedEventIFs = Utils.getEventIFs(
+        nostrRelayService.send(
+            new ReqMessage(
+                subscriberId,
+                new Filters(
+                    new KindFilter(
+                        Kind.BADGE_AWARD_EVENT),
+                    new ReferencedPublicKeyFilter(
+                        new PubKeyTag(
+                            upvotedUserPubKey))))));
+
+    log.debug("returned events:");
+    log.debug("  {}", returnedEventIFs);
+
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
+
+    AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
+
+    assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
+    assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
+    assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
+
+    nostrRelayService.disconnect();
+  }
+
+  @Test
+  void testValidExistingEventThenAfterImageReputationRequestSpecific() throws IOException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
@@ -80,8 +115,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
                         new AddressTag(
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
-                            new IdentifierTag(
-                                UNIT_UPVOTE.getName())))))));
+                            IDENTIFIER_TAG))))));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -92,7 +126,8 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(UNIT_UPVOTE.getName(), Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow().getUuid());
+    assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
+    assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
 
     nostrRelayService.disconnect();
   }

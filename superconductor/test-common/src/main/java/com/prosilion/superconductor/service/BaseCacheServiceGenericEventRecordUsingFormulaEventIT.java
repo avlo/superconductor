@@ -7,39 +7,38 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.util.Factory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
+  public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
+  public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
+
   public static final Relay relay = new Relay("ws://localhost:5555");
 //  private static final Relay relay = new Relay("ws://localhost:5555");
 //  private static final Identity IDENTITY = Factory.createNewIdentity();
 
   private final EventPluginIF eventPluginIF;
-  private final BadgeDefinitionAwardEvent badgeDefinitionAwardEvent;
+  private final BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent;
   private final FormulaEvent formulaEvent;
 
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
   public final String PLUS_ONE_FORMULA = "+1";
 
-  public BaseCacheServiceGenericEventRecordUsingFormulaEventIT(
-      EventPluginIF eventPluginIF,
-      @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
-      @NonNull Identity superconductorInstanceIdentity) throws ParseException {
+  public BaseCacheServiceGenericEventRecordUsingFormulaEventIT(EventPluginIF eventPluginIF, @NonNull Identity superconductorInstanceIdentity) throws ParseException {
     this.eventPluginIF = eventPluginIF;
-    this.badgeDefinitionAwardEvent = badgeDefinitionUpvoteEvent;
+    this.badgeDefinitionUpvoteEvent = new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, IDENTIFIER_TAG, relay);
 
-    this.formulaEvent =
-        new FormulaEvent(
-            superconductorInstanceIdentity,
-            upvoteIdentifierTag,
-            relay,
-            badgeDefinitionAwardEvent,
-            PLUS_ONE_FORMULA);
+//    BadgeAwardGenericEvent badgeAwardUpvoteEvent = new BadgeAwardGenericEvent(
+//        authorIdentity,
+//        upvotedUserPubKey,
+//        badgeDefinitionUpvoteEvent);
+
+    this.formulaEvent = new FormulaEvent(superconductorInstanceIdentity, upvoteIdentifierTag, relay, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA);
   }
 
   @Test

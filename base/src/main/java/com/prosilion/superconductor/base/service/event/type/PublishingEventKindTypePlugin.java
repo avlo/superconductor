@@ -20,7 +20,7 @@ public class PublishingEventKindTypePlugin implements EventKindTypePluginIF {
   }
 
   @Override
-  public void processIncomingEvent(@NonNull EventIF event) {
+  public <T extends EventIF> void processIncomingEvent(@NonNull T event) {
     eventKindTypePlugin.processIncomingEvent(event);
     notifierService.nostrEventHandler(new AddNostrEvent(event));
   }

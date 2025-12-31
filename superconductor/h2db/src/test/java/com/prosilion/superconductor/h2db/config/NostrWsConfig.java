@@ -29,7 +29,7 @@ public class NostrWsConfig {
 //    return new BadgeAwardEventKindTypePlugin(
 //        notifierService,
 //        new EventKindTypePlugin(
-//            BadgeDefinitionConfig.UNIT_DOWNVOTE,
+//            BadgeDefinitionConfig.BADGE_DEFINITION_VOTE,
 //            eventPlugin));
 //  }
 }

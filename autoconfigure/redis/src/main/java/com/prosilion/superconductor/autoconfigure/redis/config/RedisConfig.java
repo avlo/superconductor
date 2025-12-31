@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.redis.config;
 import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeAwardGenericVoteEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeAwardReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFollowSetsEventService;
@@ -121,10 +121,8 @@ public class RedisConfig {
   @Bean(name = "cacheBadgeAwardGenericEventService")
   CacheTagMappedEventServiceIF cacheBadgeAwardGenericEventService(
       @NonNull RedisCacheService cacheService,
-      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
-      @NonNull @Qualifier("cacheBadgeDefinitionReputationEventService") CacheTagMappedEventServiceIF cacheBadgeDefinitionReputationEventService
-  ) {
-    return new CacheBadgeAwardGenericVoteEventService(cacheService, cacheDereferenceAddressTagServiceIF, (CacheBadgeDefinitionReputationEventService) cacheBadgeDefinitionReputationEventService);
+      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
+    return new CacheBadgeAwardGenericEventService(cacheService, cacheDereferenceAddressTagServiceIF);
   }
 
   @Bean(name = "cacheBadgeAwardReputationEventService")
@@ -140,7 +138,7 @@ public class RedisConfig {
       @NonNull RedisCacheService cacheService,
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheTagMappedEventServiceIF cacheBadgeAwardGenericEventService) {
-    return new CacheFollowSetsEventService(cacheService, cacheDereferenceEventTagServiceIF, (CacheBadgeAwardGenericVoteEventService) cacheBadgeAwardGenericEventService);
+    return new CacheFollowSetsEventService(cacheService, cacheDereferenceEventTagServiceIF, (CacheBadgeAwardGenericEventService) cacheBadgeAwardGenericEventService);
   }
 
   @Bean(name = "eventPlugin")

@@ -13,8 +13,8 @@ public class DataLoaderJpa implements DataLoaderJpaIF {
 
   public DataLoaderJpa(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
-      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
-      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent) {
+      @NonNull @Qualifier("badgeDefinitionVoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
+      @NonNull @Qualifier("badgeDefinitionVoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent) {
     this.eventPlugin = eventPlugin;
     this.badgeDefinitionUpvoteEvent = badgeDefinitionUpvoteEvent;
     this.badgeDefinitionDownvoteEvent = badgeDefinitionDownvoteEvent;

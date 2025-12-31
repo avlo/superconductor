@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.redis.service;
 
 import com.ezylang.evalex.parser.ParseException;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 import com.prosilion.superconductor.service.BaseCacheServiceGenericEventRecordUsingFormulaEventIT;
@@ -23,8 +22,7 @@ public class RedisCacheServiceGenericEventRecordUsingFormulaEventIT extends Base
   @Autowired
   public RedisCacheServiceGenericEventRecordUsingFormulaEventIT(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPluginIF,
-      @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
       @NonNull Identity superconductorInstanceIdentity) throws ParseException {
-    super(eventPluginIF, badgeDefinitionUpvoteEvent, superconductorInstanceIdentity);
+    super(eventPluginIF, superconductorInstanceIdentity);
   }
 }

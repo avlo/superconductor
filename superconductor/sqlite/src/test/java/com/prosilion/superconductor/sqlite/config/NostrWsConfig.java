@@ -35,7 +35,7 @@ public class NostrWsConfig {
 //    return new BadgeAwardEventKindTypePlugin(
 //        notifierService,
 //        new EventKindTypePlugin(
-//            SuperconductorKindType.UNIT_DOWNVOTE,
+//            SuperconductorKindType.BADGE_DEFINITION_VOTE,
 //            eventPlugin));
 //  }
 }

@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.enums.AfterimageKindType.BADGE_AWARD_REPUTATION;
 import static com.prosilion.superconductor.enums.AfterimageKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_REPUTATION;
 import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
 
 @Slf4j
@@ -34,6 +34,7 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
 
   private final IdentifierTag upvoteIdTag = new IdentifierTag(TEST_UNIT_UPVOTE);
   private final IdentifierTag downvoteIdTag = new IdentifierTag(TEST_UNIT_DOWNVOTE);
+  private final IdentifierTag reputationIdTag = new IdentifierTag(TEST_UNIT_REPUTATION);
   private final BadgeDefinitionAwardEvent upvoteDefnEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdTag, relay, PLUS_ONE);
   private final BadgeDefinitionAwardEvent downvoteDefnEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdTag, relay, MINUS_ONE);
 
@@ -48,8 +49,7 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
   void testUnmarshallUpvoteFormula() throws ParseException {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
         identity,
-        new IdentifierTag(
-            BADGE_AWARD_REPUTATION.getName()),
+        reputationIdTag,
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
         List.of(
@@ -70,8 +70,7 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
   void testUnmarshallUpvoteDownvoteFormula() throws ParseException {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
         identity,
-        new IdentifierTag(
-            BADGE_AWARD_REPUTATION.getName()),
+        reputationIdTag,
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
         List.of(

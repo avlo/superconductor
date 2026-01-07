@@ -29,7 +29,7 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
   }
 
   @Override
-  public void save(@NonNull BadgeAwardGenericEvent incomingBadgeAwardReputationEvent) {
+  public BadgeAwardGenericEvent reconstruct(@NonNull BadgeAwardGenericEvent incomingBadgeAwardReputationEvent) {
     List<AddressTag> incomingBadgeAwardReputationEventAddressTags = incomingBadgeAwardReputationEvent.getContainedAddressableEvents();
 
     if (incomingBadgeAwardReputationEventAddressTags.size() != 1)
@@ -46,9 +46,10 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
                         incomingBadgeAwardReputationEvent.getId(),
                         addressTag))));
 
-    log.info("saving BadgeAwardReputationEvent event with eventId [{}] ...", incomingBadgeAwardReputationEvent.getId());
-    cacheServiceIF.save(incomingBadgeAwardReputationEvent);
-    log.info("...done");
+//    log.info("saving BadgeAwardReputationEvent event with eventId [{}] ...", incomingBadgeAwardReputationEvent.getId());
+//    cacheServiceIF.save(incomingBadgeAwardReputationEvent);
+    return incomingBadgeAwardReputationEvent;
+//    log.info("...done");
   }
 
   @Override
@@ -64,14 +65,20 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
           String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedBadgeAwardGenericVoteEvent, addressTagsOfBadgeAwardGenericVoteEvent.size()));
 
     GenericEventRecord firstAddressTagAsAwardDefinitionEventGenericEventRecord = cacheDereferenceAddressTagServiceIF.getEvent(addressTagsOfBadgeAwardGenericVoteEvent.getFirst()).orElseThrow();
-    GenericEventRecord cacheBadgeDefinitionAwardEventGenericEventRecord = cacheServiceIF.getEventByEventId(firstAddressTagAsAwardDefinitionEventGenericEventRecord.getId()).orElseThrow();
-    BadgeDefinitionAwardEvent cacheBadgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(cacheBadgeDefinitionAwardEventGenericEventRecord);
+    BadgeDefinitionAwardEvent cacheBadgeDefinitionAwardEvent = getBadgeDefinitionAwardEvent(firstAddressTagAsAwardDefinitionEventGenericEventRecord);
 
     return Optional.of(cacheDereferenceAddressTagServiceIF.createTypedFxnEvent(
         unpopulatedBadgeAwardGenericVoteEvent.orElseThrow(),
         BadgeAwardGenericEvent.class,
         addressTag ->
             cacheBadgeDefinitionAwardEvent));
+  }
+
+  @Override
+  public BadgeDefinitionAwardEvent getBadgeDefinitionAwardEvent(@NonNull GenericEventRecord genericEventRecord) {
+    GenericEventRecord cacheBadgeDefinitionAwardEventGenericEventRecord = cacheServiceIF.getEventByEventId(genericEventRecord.getId()).orElseThrow();
+    BadgeDefinitionAwardEvent cacheBadgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(cacheBadgeDefinitionAwardEventGenericEventRecord);
+    return cacheBadgeDefinitionAwardEvent;
   }
 
   @Override

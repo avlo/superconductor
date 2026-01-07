@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.jpa.config;
 
-import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
@@ -24,7 +23,6 @@ import com.prosilion.superconductor.lib.jpa.service.DeletionEventJpaEntityServic
 import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
 import com.prosilion.superconductor.lib.jpa.service.GenericTagJpaEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -107,10 +105,8 @@ public class JpaConfig {
 //  }
 
   @Bean
-  EventPluginIF eventPlugin(
-      @NonNull List<CacheTagMappedEventServiceIF<TagMappedEventIF>> cacheEventTagBaseEventServiceIFS,
-      @NonNull CacheServiceIF cacheServiceIF) {
-    return new EventPlugin(cacheEventTagBaseEventServiceIFS, cacheServiceIF);
+  EventPluginIF eventPlugin(@NonNull CacheServiceIF cacheServiceIF) {
+    return new EventPlugin(cacheServiceIF);
   }
 
   @Bean

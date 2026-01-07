@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.base.service;
 
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
+import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import java.util.Optional;
@@ -13,4 +15,6 @@ public interface CacheBadgeAwardReputationEventServiceIF extends CacheTagMappedE
       @NonNull PublicKey awardReputationRecipientPublicKey,
       @NonNull PublicKey eventCreatorPublicKey,
       @NonNull IdentifierTag uuid);
+
+  BadgeDefinitionReputationEvent getBadgeDefinitionReputationEvent(@NonNull GenericEventRecord genericEventRecord);
 }

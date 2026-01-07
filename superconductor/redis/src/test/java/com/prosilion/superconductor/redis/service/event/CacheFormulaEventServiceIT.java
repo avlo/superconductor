@@ -5,10 +5,11 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
-import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,10 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CacheFormulaEventServiceIT {
   public static final Relay relay = new Relay("ws://localhost:5555");
 
-  public static final String BADGE_DEFINITION_VOTE = "TEST_BADGE_DEFINITION_VOTE";
+  public static final String TEST_UNIT_UPVOTE = "TEST_UNIT_UPVOTE";
+  public static final String TEST_BADGE_DEFINITION_VOTE = "TEST_BADGE_DEFINITION_VOTE";
 
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
-  public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(BADGE_DEFINITION_VOTE);
+  public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(TEST_BADGE_DEFINITION_VOTE);
 
   public final Identity identity = Identity.generateRandomIdentity();
 
@@ -45,13 +46,13 @@ public class CacheFormulaEventServiceIT {
   final FormulaEvent formulaEventUpvote;
   final FormulaEvent formulaEventDownvote;
 
-  private final EventPluginIF eventPlugin;
+  private final EventServiceIF eventServiceIF;
   private final CacheFormulaEventService cacheFormulaEventService;
 
   public CacheFormulaEventServiceIT(
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheFormulaEventService") CacheFormulaEventService cacheFormulaEventService) throws ParseException {
-    this.eventPlugin = eventPlugin;
+    this.eventServiceIF = eventServiceIF;
     this.cacheFormulaEventService = cacheFormulaEventService;
 
     this.formulaEventUpvote = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
@@ -60,51 +61,51 @@ public class CacheFormulaEventServiceIT {
 
   @Test
   public void testSaveFormulae() throws ParseException {
-    eventPlugin.processIncomingEvent(awardUpvoteDefinitionEvent);
-    eventPlugin.processIncomingEvent(awardDownvoteDefinitionEvent);
+    eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
+    eventServiceIF.processIncomingEvent(new EventMessage(awardDownvoteDefinitionEvent));
 
-    eventPlugin.processIncomingEvent(formulaEventUpvote);
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote));
     FormulaEvent dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId()).orElseThrow();
     assertEquals(formulaEventUpvote, dbPlusOneFormulaEvent);
     assertEquals(PLUS_ONE_FORMULA, dbPlusOneFormulaEvent.getContent());
     assertEquals(TEST_UNIT_UPVOTE, dbPlusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
-    eventPlugin.processIncomingEvent(formulaEventDownvote);
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvote));
     FormulaEvent dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId()).orElseThrow();
     assertEquals(formulaEventDownvote, dbMinusOneFormulaEvent);
     assertEquals(MINUS_ONE_FORMULA, dbMinusOneFormulaEvent.getContent());
-    assertEquals(BADGE_DEFINITION_VOTE, dbMinusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
+    assertEquals(TEST_BADGE_DEFINITION_VOTE, dbMinusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
-    eventPlugin.processIncomingEvent(formulaEventUpvote);
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote));
     dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId()).orElseThrow();
     assertEquals(formulaEventUpvote, dbPlusOneFormulaEvent);
     assertEquals(PLUS_ONE_FORMULA, dbPlusOneFormulaEvent.getContent());
     assertEquals(TEST_UNIT_UPVOTE, dbPlusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
-    eventPlugin.processIncomingEvent(formulaEventDownvote);
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvote));
     dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId()).orElseThrow();
     assertEquals(formulaEventDownvote, dbMinusOneFormulaEvent);
     assertEquals(MINUS_ONE_FORMULA, dbMinusOneFormulaEvent.getContent());
-    assertEquals(BADGE_DEFINITION_VOTE, dbMinusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
+    assertEquals(TEST_BADGE_DEFINITION_VOTE, dbMinusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
     FormulaEvent formulaEventUpvoteIdentical = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, "+1");
-    eventPlugin.processIncomingEvent(formulaEventUpvoteIdentical);
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvoteIdentical));
     dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId()).orElseThrow();
     assertEquals(PLUS_ONE_FORMULA, formulaEventUpvoteIdentical.getContent());
     assertEquals(TEST_UNIT_UPVOTE, formulaEventUpvoteIdentical.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
     FormulaEvent formulaEventDownvoteIdentical = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-1");
-    eventPlugin.processIncomingEvent(formulaEventDownvoteIdentical);
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvoteIdentical));
     dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId()).orElseThrow();
     assertEquals(MINUS_ONE_FORMULA, formulaEventDownvoteIdentical.getContent());
-    assertEquals(BADGE_DEFINITION_VOTE, formulaEventDownvoteIdentical.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
+    assertEquals(TEST_BADGE_DEFINITION_VOTE, formulaEventDownvoteIdentical.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
-//    FormulaEvent formulaEventUpvoteMisMatch = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, "+2");
-//    assertThrows(NostrException.class, () -> eventPlugin.processIncomingEvent(formulaEventUpvoteMisMatch));
-//    assertTrue(cacheFormulaEventService.getEvent(formulaEventUpvoteMisMatch.getId()).isEmpty());
-//
-//    FormulaEvent formulaEventDownvoteMisMatch = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-2");
-//    assertThrows(NostrException.class, () -> eventPlugin.processIncomingEvent(formulaEventDownvoteMisMatch));
-//    assertTrue(cacheFormulaEventService.getEvent(formulaEventDownvoteMisMatch.getId()).isEmpty());
+    FormulaEvent formulaEventUpvoteMisMatch = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, "+2");
+    assertThrows(NostrException.class, () -> eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvoteMisMatch)));
+    assertTrue(cacheFormulaEventService.getEvent(formulaEventUpvoteMisMatch.getId()).isEmpty());
+
+    FormulaEvent formulaEventDownvoteMisMatch = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-2");
+    assertThrows(NostrException.class, () -> eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvoteMisMatch)));
+    assertTrue(cacheFormulaEventService.getEvent(formulaEventDownvoteMisMatch.getId()).isEmpty());
   }
 }

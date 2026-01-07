@@ -35,7 +35,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
-  public void save(@NonNull FollowSetsEvent incomingFollowSetsEvent) {
+  public FollowSetsEvent reconstruct(@NonNull FollowSetsEvent incomingFollowSetsEvent) {
     List<EventTag> incomingFollowSetsEventTags = incomingFollowSetsEvent.getContainedAddressableEvents();
 
 //    TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up
@@ -66,9 +66,10 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
       log.debug("...done");
     }
 
-    log.debug("saving new FollowSetsEvent {}...", incomingFollowSetsEvent);
-    cacheServiceIF.save(incomingFollowSetsEvent);
-    log.debug("...done");
+//    log.debug("saving new FollowSetsEvent {}...", incomingFollowSetsEvent);
+//    cacheServiceIF.save(incomingFollowSetsEvent);
+//    log.debug("...done");
+    return incomingFollowSetsEvent;
   }
 
   @Override

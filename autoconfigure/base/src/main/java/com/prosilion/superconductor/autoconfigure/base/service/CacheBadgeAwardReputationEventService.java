@@ -38,7 +38,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
   }
 
   @Override
-  public void save(@NonNull BadgeAwardReputationEvent incomingBadgeAwardReputationEvent) {
+  public BadgeAwardReputationEvent reconstruct(@NonNull BadgeAwardReputationEvent incomingBadgeAwardReputationEvent) {
     List<AddressTag> incomingBadgeAwardReputationEventAddressTags = incomingBadgeAwardReputationEvent.getContainedAddressableEvents();
 
     if (incomingBadgeAwardReputationEventAddressTags.size() != 1)
@@ -55,9 +55,10 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
                         incomingBadgeAwardReputationEvent.getId(),
                         addressTag))));
 
-    log.info("saving BadgeAwardReputationEvent event with eventId [{}] ...", incomingBadgeAwardReputationEvent.getId());
-    cacheServiceIF.save(incomingBadgeAwardReputationEvent);
-    log.info("...done");
+//    log.info("saving BadgeAwardReputationEvent event with eventId [{}] ...", incomingBadgeAwardReputationEvent.getId());
+//    cacheServiceIF.save(incomingBadgeAwardReputationEvent);
+//    log.info("...done");
+    return incomingBadgeAwardReputationEvent;
   }
 
   @Override
@@ -73,7 +74,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
           String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedBadgeAwardReputationEvent, addressTagsOfBadgeDefinitionEvent.size()));
 
     GenericEventRecord firstAddressTagAsReputationDefinitionEvent = cacheDereferenceAddressTagServiceIF.getEvent(addressTagsOfBadgeDefinitionEvent.getFirst()).orElseThrow();
-    BadgeDefinitionReputationEvent cacheBadgeDefinitionReputationEvent = cacheBadgeDefinitionReputationEventService.getEvent(firstAddressTagAsReputationDefinitionEvent.getId()).orElseThrow();
+    BadgeDefinitionReputationEvent cacheBadgeDefinitionReputationEvent = getBadgeDefinitionReputationEvent(firstAddressTagAsReputationDefinitionEvent);
 
     return Optional.of(cacheDereferenceAddressTagServiceIF.createTypedFxnEvent(
         unpopulatedBadgeAwardReputationEvent.orElseThrow(),
@@ -100,6 +101,11 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
 
     Optional<BadgeAwardReputationEvent> badgeAwardReputationEvent = matchingDbBadgeAwardReputationEventGenericEventRecord.flatMap(genericEventRecord -> getEvent(genericEventRecord.getId()));
     return badgeAwardReputationEvent;
+  }
+
+  @Override
+  public BadgeDefinitionReputationEvent getBadgeDefinitionReputationEvent(@NonNull GenericEventRecord genericEventRecord) {
+    return cacheBadgeDefinitionReputationEventService.getEvent(genericEventRecord.getId()).orElseThrow();
   }
 
   @Override

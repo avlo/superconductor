@@ -143,10 +143,8 @@ public class RedisConfig {
 
   @Bean(name = "eventPlugin")
   @ConditionalOnMissingBean
-  EventPlugin eventPlugin(
-      @NonNull List<CacheTagMappedEventServiceIF<TagMappedEventIF>> cacheEventTagBaseEventServiceIFS,
-      @NonNull RedisCacheService cacheService) {
-    return new EventPlugin(cacheEventTagBaseEventServiceIFS, cacheService);
+  EventPlugin eventPlugin(@NonNull RedisCacheService cacheService) {
+    return new EventPlugin(cacheService);
   }
 
   @Bean

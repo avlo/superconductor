@@ -7,11 +7,12 @@ import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.CacheFollowSetsEventServiceIF;
-import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -56,19 +57,19 @@ public class CacheFollowSetsEventServiceIT {
       reputationRecipientPublicKey,
       badgeDefinitionReputationEventPlusOneFormula);
 
-  private final EventPluginIF eventPlugin;
+  private final EventServiceIF eventServiceIF;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
 
   public CacheFollowSetsEventServiceIT(
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService) throws ParseException {
-    this.eventPlugin = eventPlugin;
+    this.eventServiceIF = eventServiceIF;
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
 
-    eventPlugin.processIncomingEvent(awardUpvoteDefinitionEvent);
-    eventPlugin.processIncomingEvent(plusOneFormulaEvent);
-    eventPlugin.processIncomingEvent(badgeDefinitionReputationEventPlusOneFormula);
-    eventPlugin.processIncomingEvent(badgeAwardUpvoteEvent);
+    eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
+    eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent));
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula));
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent));
   }
 
   @Test
@@ -83,10 +84,10 @@ public class CacheFollowSetsEventServiceIT {
         relay,
         List.of(badgeAwardUpvoteEvent));
 
-    eventPlugin.processIncomingEvent(followSetsEvent);
+    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent));
 
     FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId()).orElseThrow();
-    List<BadgeAwardGenericEvent> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardAbstractEvents();
+    List<BadgeAwardGenericEvent> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
     assertTrue(badgeAwardAbstractEvents.contains(badgeAwardUpvoteEvent));
 
     FollowSetsEvent dbFollowSetsEventByPubkeyTag = cacheFollowSetsEventService.getEventsByPubkeyTag(reputationRecipientPublicKey).stream().findFirst().orElseThrow();

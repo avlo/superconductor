@@ -9,7 +9,7 @@ import org.springframework.lang.NonNull;
  * Maps EventTag/AddressTag to an Event
  */
 public interface CacheTagMappedEventServiceIF<T extends TagMappedEventIF> {
-  void save(@NonNull T event);
+  T reconstruct(@NonNull T event);
   Optional<T> getEvent(@NonNull String eventId);
   Kind getKind();
 }

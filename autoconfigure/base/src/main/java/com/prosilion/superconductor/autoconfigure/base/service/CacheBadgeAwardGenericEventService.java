@@ -29,27 +29,24 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
   }
 
   @Override
-  public BadgeAwardGenericEvent reconstruct(@NonNull BadgeAwardGenericEvent incomingBadgeAwardReputationEvent) {
-    List<AddressTag> incomingBadgeAwardReputationEventAddressTags = incomingBadgeAwardReputationEvent.getContainedAddressableEvents();
+  public BadgeAwardGenericEvent reconstruct(@NonNull BadgeAwardGenericEvent incomingBadgeAwardGenericEvent) {
+    List<AddressTag> incomingBadgeAwardGenericEventAddressTags = incomingBadgeAwardGenericEvent.getContainedAddressableEvents();
 
-    if (incomingBadgeAwardReputationEventAddressTags.size() != 1)
+    if (incomingBadgeAwardGenericEventAddressTags.size() != 1)
       throw new NostrException(
-          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", incomingBadgeAwardReputationEvent.serialize(), incomingBadgeAwardReputationEventAddressTags.size()));
+          String.format("BadgeAwardGenericEvent [%s] requires a single AddressTag but had [%s]", incomingBadgeAwardGenericEvent.serialize(), incomingBadgeAwardGenericEventAddressTags.size()));
 
-    incomingBadgeAwardReputationEventAddressTags
+    incomingBadgeAwardGenericEventAddressTags
         .forEach(addressTag ->
             cacheDereferenceAddressTagServiceIF.getEvent(addressTag).orElseThrow(() ->
                 new NostrException(
                     String.format(
                         String.join("", NON_EXISTENT_ADDRESS_TAG_S, "[%s]"),
-                        incomingBadgeAwardReputationEvent.serialize(),
-                        incomingBadgeAwardReputationEvent.getId(),
+                        incomingBadgeAwardGenericEvent.serialize(),
+                        incomingBadgeAwardGenericEvent.getId(),
                         addressTag))));
 
-//    log.info("saving BadgeAwardReputationEvent event with eventId [{}] ...", incomingBadgeAwardReputationEvent.getId());
-//    cacheServiceIF.save(incomingBadgeAwardReputationEvent);
-    return incomingBadgeAwardReputationEvent;
-//    log.info("...done");
+    return incomingBadgeAwardGenericEvent;
   }
 
   @Override

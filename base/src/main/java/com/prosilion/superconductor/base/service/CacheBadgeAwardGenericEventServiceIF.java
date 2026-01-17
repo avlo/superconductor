@@ -6,8 +6,8 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public interface CacheBadgeAwardGenericEventServiceIF extends CacheTagMappedEventServiceIF<BadgeAwardGenericEvent> {
+public interface CacheBadgeAwardGenericEventServiceIF extends CacheBadgeAwardEventServiceIF<BadgeDefinitionAwardEvent, BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> {
   @Override
-  Optional<BadgeAwardGenericEvent> getEvent(@NonNull String eventId);
+  Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getEvent(@NonNull String eventId);
   BadgeDefinitionAwardEvent getBadgeDefinitionAwardEvent(@NonNull GenericEventRecord genericEventRecord);
 }

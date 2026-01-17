@@ -52,7 +52,7 @@ public class CacheFollowSetsEventServiceIT {
       plusOneFormulaEvent);
 
   private final PublicKey reputationRecipientPublicKey = Identity.generateRandomIdentity().getPublicKey();
-  private final BadgeAwardGenericEvent badgeAwardUpvoteEvent = new BadgeAwardGenericEvent(
+  private final BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
       identity,
       reputationRecipientPublicKey,
       badgeDefinitionReputationEventPlusOneFormula);
@@ -87,7 +87,7 @@ public class CacheFollowSetsEventServiceIT {
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent));
 
     FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId()).orElseThrow();
-    List<BadgeAwardGenericEvent> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
+    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
     assertTrue(badgeAwardAbstractEvents.contains(badgeAwardUpvoteEvent));
 
     FollowSetsEvent dbFollowSetsEventByPubkeyTag = cacheFollowSetsEventService.getEventsByPubkeyTag(reputationRecipientPublicKey).stream().findFirst().orElseThrow();

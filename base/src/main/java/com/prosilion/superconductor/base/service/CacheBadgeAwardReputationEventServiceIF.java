@@ -8,7 +8,7 @@ import com.prosilion.nostr.user.PublicKey;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public interface CacheBadgeAwardReputationEventServiceIF extends CacheTagMappedEventServiceIF<BadgeAwardReputationEvent> {
+public interface CacheBadgeAwardReputationEventServiceIF extends CacheBadgeAwardEventServiceIF<BadgeDefinitionReputationEvent, BadgeAwardReputationEvent> {
   @Override
   Optional<BadgeAwardReputationEvent> getEvent(@NonNull String eventId);
   Optional<BadgeAwardReputationEvent> getEvent(
@@ -17,4 +17,8 @@ public interface CacheBadgeAwardReputationEventServiceIF extends CacheTagMappedE
       @NonNull IdentifierTag uuid);
 
   BadgeDefinitionReputationEvent getBadgeDefinitionReputationEvent(@NonNull GenericEventRecord genericEventRecord);
+
+  default BadgeDefinitionReputationEvent getBadgeDefinitionAwardEvent(@NonNull GenericEventRecord genericEventRecord) {
+    return getBadgeDefinitionReputationEvent(genericEventRecord);
+  }
 }

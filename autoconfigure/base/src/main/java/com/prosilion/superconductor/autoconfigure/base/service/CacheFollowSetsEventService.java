@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
@@ -91,12 +92,12 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
             .flatMap(Optional::stream)
             .toList();
 
-    List<BadgeAwardGenericEvent> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords.stream()
+    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords.stream()
         .map(GenericEventRecord::getId)
         .map(cacheBadgeGenericAwardEventServiceIF::getEvent)
         .flatMap(Optional::stream).toList();
 
-    Function<EventTag, BadgeAwardGenericEvent> fxn = eventTag ->
+    Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> fxn = eventTag ->
         badgeAwardAbstractEvents.stream().filter(badgeAwardAbstractEvent ->
             badgeAwardAbstractEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
 

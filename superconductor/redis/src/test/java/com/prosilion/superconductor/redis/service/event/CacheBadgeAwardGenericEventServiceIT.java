@@ -47,13 +47,13 @@ public class CacheBadgeAwardGenericEventServiceIT {
   @Test
   public void testSaveBadgeAwardGenericEventUpvote() {
     PublicKey upvotedUserPublicKey = Identity.generateRandomIdentity().getPublicKey();
-    BadgeAwardGenericEvent badgeAwardGenericVoteEvent = new BadgeAwardGenericEvent(
+    BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> badgeAwardGenericVoteEvent = new BadgeAwardGenericEvent<>(
         identity,
         upvotedUserPublicKey,
         awardUpvoteDefinitionEvent);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericVoteEvent));
-    BadgeAwardGenericEvent dbGenericAwardEvent = cacheBadgeAwardGenericEventServiceIF.getEvent(badgeAwardGenericVoteEvent.getId()).orElseThrow();
+    BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> dbGenericAwardEvent = cacheBadgeAwardGenericEventServiceIF.getEvent(badgeAwardGenericVoteEvent.getId()).orElseThrow();
     assertEquals(badgeAwardGenericVoteEvent, dbGenericAwardEvent);
   }
 }

@@ -29,7 +29,7 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
   }
 
   @Override
-  public BadgeAwardGenericEvent reconstruct(@NonNull BadgeAwardGenericEvent incomingBadgeAwardGenericEvent) {
+  public BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> reconstruct(@NonNull BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> incomingBadgeAwardGenericEvent) {
     List<AddressTag> incomingBadgeAwardGenericEventAddressTags = incomingBadgeAwardGenericEvent.getContainedAddressableEvents();
 
     if (incomingBadgeAwardGenericEventAddressTags.size() != 1)
@@ -50,7 +50,7 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
   }
 
   @Override
-  public Optional<BadgeAwardGenericEvent> getEvent(@NonNull String eventId) {
+  public Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getEvent(@NonNull String eventId) {
     Optional<GenericEventRecord> unpopulatedBadgeAwardGenericVoteEvent = cacheServiceIF.getEventByEventId(eventId);
     if (unpopulatedBadgeAwardGenericVoteEvent.isEmpty())
       return Optional.empty();

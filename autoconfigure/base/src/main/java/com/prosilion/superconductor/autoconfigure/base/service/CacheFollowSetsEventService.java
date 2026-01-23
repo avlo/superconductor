@@ -4,6 +4,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
@@ -36,7 +37,38 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
-  public FollowSetsEvent reconstruct(@NonNull FollowSetsEvent incomingFollowSetsEvent) {
+  public FollowSetsEvent materialize(@NonNull EventIF incomingFollowSetsEvent) {
+    GenericEventRecord incomingFollowSetsEventAsGenericEventRecord = (GenericEventRecord) incomingFollowSetsEvent;
+
+    List<EventTag> eventTagsOfFollowSetsEvent = Filterable.getTypeSpecificTags(EventTag.class, incomingFollowSetsEvent).stream().toList();
+
+//  TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up    
+//    if (eventTagsOfFollowSetsEvent.size() != 1)
+//      throw new NostrException(
+//          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedFollowSetsEvent, eventTagsOfFollowSetsEvent.size()));
+
+    List<GenericEventRecord> badgeAwardEventsAsGenericEventRecords =
+        eventTagsOfFollowSetsEvent.stream()
+            .map(cacheDereferenceEventTagServiceIF::getEvent)
+            .flatMap(Optional::stream)
+            .toList();
+
+    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords.stream()
+        .map(GenericEventRecord::getId)
+        .map(cacheBadgeGenericAwardEventServiceIF::getEvent)
+        .flatMap(Optional::stream).toList();
+
+    Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> fxn = eventTag ->
+        badgeAwardAbstractEvents.stream().filter(badgeAwardGenericEvent ->
+            badgeAwardGenericEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
+
+    FollowSetsEvent followSetsEvent = new FollowSetsEvent(
+        incomingFollowSetsEventAsGenericEventRecord, fxn);
+
+    return reconstruct(followSetsEvent);
+  }
+
+  private FollowSetsEvent reconstruct(@NonNull FollowSetsEvent incomingFollowSetsEvent) {
     List<EventTag> incomingFollowSetsEventTags = incomingFollowSetsEvent.getContainedAddressableEvents();
 
 //    TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up

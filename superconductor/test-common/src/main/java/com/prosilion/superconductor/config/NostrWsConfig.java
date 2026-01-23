@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.config;
 
-import com.prosilion.superconductor.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.util.concurrent.ExecutionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;

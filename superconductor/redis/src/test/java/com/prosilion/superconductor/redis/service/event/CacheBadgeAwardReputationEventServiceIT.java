@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 public class CacheBadgeAwardReputationEventServiceIT {
-  public static final Relay relay = new Relay("ws://localhost:5555");
+  public static final Relay relay = new Relay("ws://localhost:5575");
 
   public static final String PLUS_ONE_FORMULA = "+1";
 

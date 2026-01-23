@@ -15,7 +15,7 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

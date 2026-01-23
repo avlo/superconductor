@@ -11,7 +11,7 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import java.io.IOException;
 import java.util.ArrayList;

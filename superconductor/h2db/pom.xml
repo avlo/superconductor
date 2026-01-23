@@ -37,12 +37,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.prosilion</groupId>
-      <artifactId>subdivisions</artifactId>
-      <version>${subdivisions.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>${junit-jupiter.version}</version>
@@ -52,12 +46,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <version>${spring-boot.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.awaitility</groupId>
-      <artifactId>awaitility</artifactId>
-      <version>${awaitility.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

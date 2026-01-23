@@ -4,11 +4,10 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.CacheBadgeAwardReputationEventServiceIF;
@@ -17,6 +16,7 @@ import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -38,7 +38,40 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
   }
 
   @Override
-  public BadgeAwardReputationEvent reconstruct(@NonNull BadgeAwardReputationEvent incomingBadgeAwardReputationEvent) {
+  public BadgeAwardReputationEvent materialize(@NonNull EventIF incomingBadgeAwardReputationEvent) {
+    PublicKey awardRecipientPublicKey = Filterable.getTypeSpecificTags(PubKeyTag.class, incomingBadgeAwardReputationEvent)
+        .stream()
+        .map(PubKeyTag::getPublicKey)
+        .findFirst().orElseThrow();
+
+//    IdentifierTag reputationEventIdentifierTag = Filterable.getTypeSpecificTags(IdentifierTag.class, incomingBadgeAwardReputationEvent)
+//        .stream()
+//        .findFirst().orElseThrow();
+
+    List<AddressTag> addressTagsOfBadgeDefinitionEvent = Filterable.getTypeSpecificTags(AddressTag.class, incomingBadgeAwardReputationEvent).stream().toList();
+
+    if (addressTagsOfBadgeDefinitionEvent.size() != 1)
+      throw new NostrException(
+          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", incomingBadgeAwardReputationEvent, addressTagsOfBadgeDefinitionEvent.size()));
+
+    GenericEventRecord firstAddressTagAsReputationDefinitionEvent = cacheDereferenceAddressTagServiceIF.getEvent(addressTagsOfBadgeDefinitionEvent.getFirst()).orElseThrow();
+    BadgeDefinitionReputationEvent cacheBadgeDefinitionReputationEvent = getBadgeDefinitionReputationEvent(firstAddressTagAsReputationDefinitionEvent);
+
+    BadgeAwardReputationEvent existingBadgeAwardReputationEvent =
+        getEvent(
+            awardRecipientPublicKey,
+            incomingBadgeAwardReputationEvent.getPublicKey()
+//            , reputationEventIdentifierTag
+        )
+            .orElse(
+                new BadgeAwardReputationEvent(
+                    (GenericEventRecord) incomingBadgeAwardReputationEvent,
+                    addressTag -> cacheBadgeDefinitionReputationEvent));
+
+    return reconstruct(existingBadgeAwardReputationEvent);
+  }
+
+  private BadgeAwardReputationEvent reconstruct(@NonNull BadgeAwardReputationEvent incomingBadgeAwardReputationEvent) {
     List<AddressTag> incomingBadgeAwardReputationEventAddressTags = incomingBadgeAwardReputationEvent.getContainedAddressableEvents();
 
     if (incomingBadgeAwardReputationEventAddressTags.size() != 1)
@@ -76,31 +109,46 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
     GenericEventRecord firstAddressTagAsReputationDefinitionEvent = cacheDereferenceAddressTagServiceIF.getEvent(addressTagsOfBadgeDefinitionEvent.getFirst()).orElseThrow();
     BadgeDefinitionReputationEvent cacheBadgeDefinitionReputationEvent = getBadgeDefinitionReputationEvent(firstAddressTagAsReputationDefinitionEvent);
 
-    return Optional.of(cacheDereferenceAddressTagServiceIF.createTypedFxnEvent(
-        unpopulatedBadgeAwardReputationEvent.orElseThrow(),
-        BadgeAwardReputationEvent.class,
-        addressTag ->
-            cacheBadgeDefinitionReputationEvent));
+    return Optional.of(
+        new BadgeAwardReputationEvent(
+            unpopulatedBadgeAwardReputationEvent.get(),
+            addressTag -> cacheBadgeDefinitionReputationEvent));
   }
 
   @Override
   public Optional<BadgeAwardReputationEvent> getEvent(
       @NonNull PublicKey awardReputationRecipientPublicKey,
-      @NonNull PublicKey eventCreatorPublicKey,
-      @NonNull IdentifierTag uuid) {
-    List<GenericEventRecord> dbBadgeAwardReputationEvents = cacheServiceIF.getEventsByKindAndAuthorPublicKey(Kind.BADGE_AWARD_EVENT, eventCreatorPublicKey);
-    List<BaseTag> uniqueBaseTags = dbBadgeAwardReputationEvents.stream().map(GenericEventRecord::getTags).toList().stream().flatMap(Collection::stream).toList();
-    List<PubKeyTag> uniqueAwardReputationRecipientPubKeyTags = uniqueBaseTags.stream().filter(PubKeyTag.class::isInstance).map(PubKeyTag.class::cast).toList();
-    Optional<PublicKey> first = uniqueAwardReputationRecipientPubKeyTags.stream().map(PubKeyTag::getPublicKey).filter(awardReputationRecipientPublicKey::equals).findFirst();
+      @NonNull PublicKey eventCreatorPublicKey
+//      , @NonNull IdentifierTag badgeDefintionIdentifierTag
+  ) {
+    Optional<GenericEventRecord> matchingDbBadgeAwardReputationEventGenericEventRecord =
+        getEventsByKindAndAuthorPublicKey(eventCreatorPublicKey).filter(eventCreatorBadgeAwardGenericEventRecord ->
+                eventCreatorBadgeAwardGenericEventRecord.getTags().stream()
+                    .filter(PubKeyTag.class::isInstance)
+                    .map(PubKeyTag.class::cast)
+                    .map(PubKeyTag::getPublicKey)
+                    .equals(getEventsByKindAndRecipientPublicKey(awardReputationRecipientPublicKey)
+                        .map(GenericEventRecord::getTags).flatMap(Collection::stream)
+                        .filter(PubKeyTag.class::isInstance)
+                        .map(PubKeyTag.class::cast)
+                        .map(PubKeyTag::getPublicKey)
+                        .filter(awardReputationRecipientPublicKey::equals).findFirst().stream()))
+//            .filter(dbBadgeAwardReputationEvent ->
+//                dbBadgeAwardReputationEvent.getTags().contains(badgeDefintionIdentifierTag))
+            .findFirst();
 
-    Optional<GenericEventRecord> matchingDbBadgeAwardReputationEventGenericEventRecord = dbBadgeAwardReputationEvents.stream().filter(dbBadgeAwardReputationEvent ->
-        dbBadgeAwardReputationEvent.getTags().stream()
-            .filter(PubKeyTag.class::isInstance)
-            .map(PubKeyTag.class::cast)
-            .map(PubKeyTag::getPublicKey).equals(first.stream())).findFirst();
+    return matchingDbBadgeAwardReputationEventGenericEventRecord.flatMap(genericEventRecord ->
+        getEvent(genericEventRecord.getId()));
+  }
 
-    Optional<BadgeAwardReputationEvent> badgeAwardReputationEvent = matchingDbBadgeAwardReputationEventGenericEventRecord.flatMap(genericEventRecord -> getEvent(genericEventRecord.getId()));
-    return badgeAwardReputationEvent;
+  private Stream<GenericEventRecord> getEventsByKindAndAuthorPublicKey(PublicKey eventCreatorPublicKey) {
+    List<GenericEventRecord> eventsByKindAndAuthorPublicKey = cacheServiceIF.getEventsByKindAndAuthorPublicKey(Kind.BADGE_AWARD_EVENT, eventCreatorPublicKey);
+    return eventsByKindAndAuthorPublicKey.stream();
+  }
+
+  private Stream<GenericEventRecord> getEventsByKindAndRecipientPublicKey(PublicKey awardReceipientPublicKey) {
+    List<GenericEventRecord> eventsByKindAndPubKeyTag = cacheServiceIF.getEventsByKindAndPubKeyTag(Kind.BADGE_AWARD_EVENT, awardReceipientPublicKey);
+    return eventsByKindAndPubKeyTag.stream();
   }
 
   @Override

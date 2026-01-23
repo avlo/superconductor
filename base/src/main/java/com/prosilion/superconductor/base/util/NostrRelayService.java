@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.util;
+package com.prosilion.superconductor.base.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
@@ -36,13 +36,13 @@ public class NostrRelayService {
   }
 
   public OkMessage send(@NonNull EventMessage eventMessage) throws IOException {
-    TestSubscriber<OkMessage> subscriber = new TestSubscriber<>();
+    RequestSubscriber<OkMessage> subscriber = new RequestSubscriber<>();
     nostrRelayService.send(eventMessage, subscriber);
     return subscriber.getItems().getFirst();
   }
 
   public List<BaseMessage> send(@NonNull ReqMessage reqMessage) throws JsonProcessingException, NostrException {
-    TestSubscriber<BaseMessage> subscriber = new TestSubscriber<>();
+    RequestSubscriber<BaseMessage> subscriber = new RequestSubscriber<>();
     nostrRelayService.send(reqMessage, subscriber);
     return subscriber.getItems();
   }

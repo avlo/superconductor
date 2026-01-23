@@ -6,8 +6,8 @@ dependencies {
     api project(':superconductor-base')
     api project(':superconductor-autoconfigure-base')
 
-    def subdivisionsVersion = '1.3.2'
-    implementation 'com.prosilion:subdivisions:' + subdivisionsVersion
+//    def subdivisionsVersion = '1.3.2'
+//    implementation 'com.prosilion:subdivisions:' + subdivisionsVersion
 
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-configuration-processor'

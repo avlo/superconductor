@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.util;
+package com.prosilion.superconductor.base.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import org.reactivestreams.Subscription;
 import org.springframework.lang.NonNull;
 import reactor.core.publisher.BaseSubscriber;
 
-public class TestSubscriber<T> extends BaseSubscriber<T> {
+public class RequestSubscriber<T> extends BaseSubscriber<T> {
   private final List<T> items = Collections.synchronizedList(new ArrayList<>());
   private final AtomicBoolean completed = new AtomicBoolean(false);
   private Subscription subscription;

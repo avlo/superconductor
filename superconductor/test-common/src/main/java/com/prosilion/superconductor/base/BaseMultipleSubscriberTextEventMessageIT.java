@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.base;
 
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrRelayService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Value;

@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 public class CacheFollowSetsEventServiceIT {
-  public static final Relay relay = new Relay("ws://localhost:5555");
+  public static final Relay relay = new Relay("ws://localhost:5575");
 
   public static final String PLUS_ONE_FORMULA = "+1";
 
@@ -92,5 +92,6 @@ public class CacheFollowSetsEventServiceIT {
 
     FollowSetsEvent dbFollowSetsEventByPubkeyTag = cacheFollowSetsEventService.getEventsByPubkeyTag(reputationRecipientPublicKey).stream().findFirst().orElseThrow();
     assertEquals(dbFollowSetsEventByPubkeyTag, dbFollowSetsEventByEventId);
+    assertEquals(followSetsEvent.getContainedAddressableEvents(), dbFollowSetsEventByPubkeyTag.getContainedAddressableEvents());
   }
 }

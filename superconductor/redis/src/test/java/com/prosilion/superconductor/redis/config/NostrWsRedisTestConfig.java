@@ -3,7 +3,7 @@ package com.prosilion.superconductor.redis.config;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.superconductor.base.service.CacheBadgeAwardReputationEventServiceIF;
 import com.prosilion.superconductor.base.service.CacheBadgeDefinitionReputationEventServiceIF;
-import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.service.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
@@ -16,6 +16,7 @@ import com.prosilion.superconductor.redis.util.BadgeAwardGenericEventKindRedisPl
 import com.prosilion.superconductor.redis.util.BadgeAwardReputationEventKindTypeRedisPlugin;
 import com.prosilion.superconductor.redis.util.BadgeDefinitionGenericEventKindRedisPlugin;
 import com.prosilion.superconductor.redis.util.BadgeDefinitionReputationEventKindTypeRedisPlugin;
+import com.prosilion.superconductor.redis.util.FollowSetsEventKindRedisPlugin;
 import com.prosilion.superconductor.redis.util.FormulaEventKindPlugin;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -72,15 +73,13 @@ public class NostrWsRedisTestConfig {
   EventKindTypePluginIF badgeAwardReputationEventKindTypePlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
-      @NonNull @Qualifier("cacheBadgeAwardReputationEventService") CacheTagMappedEventServiceIF cacheBadgeAwardReputationEventService,
-      @NonNull @Qualifier("cacheDereferenceAddressTagService") CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagService) {
+      @NonNull @Qualifier("cacheBadgeAwardReputationEventService") CacheTagMappedEventServiceIF cacheBadgeAwardReputationEventService) {
     return new BadgeAwardReputationEventKindTypeRedisPlugin(
         notifierService,
         new EventKindTypePlugin(
             BADGE_AWARD_REPUTATION_KIND_TYPE,
             eventPlugin),
-        (CacheBadgeAwardReputationEventServiceIF) cacheBadgeAwardReputationEventService,
-        cacheDereferenceAddressTagService);
+        (CacheBadgeAwardReputationEventServiceIF) cacheBadgeAwardReputationEventService);
   }
 
   @Bean
@@ -92,5 +91,19 @@ public class NostrWsRedisTestConfig {
             BADGE_DEFINITION_REPUTATION_KIND_TYPE,
             eventPlugin),
         (CacheBadgeDefinitionReputationEventServiceIF) cacheBadgeDefinitionReputationEventService);
+  }
+
+  @Bean
+  EventKindPluginIF followSetsEventKindRedisPlugin(
+      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull NotifierService notifierService,
+      @NonNull @Qualifier("cacheFollowSetsEventService") CacheTagMappedEventServiceIF cacheFollowSetsEventService) {
+    FollowSetsEventKindRedisPlugin followSetsEventKindRedisPlugin = new FollowSetsEventKindRedisPlugin(
+        notifierService,
+        new EventKindPlugin(
+            Kind.FOLLOW_SETS,
+            eventPlugin),
+        (CacheFollowSetsEventServiceIF) cacheFollowSetsEventService);
+    return followSetsEventKindRedisPlugin;
   }
 }

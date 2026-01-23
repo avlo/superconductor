@@ -9,7 +9,7 @@ import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;

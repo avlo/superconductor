@@ -35,6 +35,16 @@
       <artifactId>spring-boot-configuration-processor</artifactId>
       <version>${spring-boot.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.prosilion</groupId>
+      <artifactId>subdivisions</artifactId>
+      <version>${subdivisions.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>${awaitility.version}</version>
+    </dependency>
   </dependencies>
 
 <!--  <build>-->

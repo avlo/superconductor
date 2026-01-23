@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.redis.config;
 
-import com.prosilion.nostr.event.TagMappedEventIF;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeAwardGenericEventService;

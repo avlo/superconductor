@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
@@ -31,7 +32,16 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   }
 
   @Override
-  public FormulaEvent reconstruct(@NonNull FormulaEvent incomingFormulaEvent) {
+  public FormulaEvent materialize(@NonNull EventIF incomingFormulaEvent) {
+    log.debug("processing incoming EventIF as FORMULA EVENT: [{}]", incomingFormulaEvent);
+    return reconstruct(
+        new FormulaEvent(
+            (GenericEventRecord) incomingFormulaEvent,
+            addressTag ->
+                getBadgeDefinitionAwardEvent((GenericEventRecord) incomingFormulaEvent)));
+  }
+
+  private FormulaEvent reconstruct(@NonNull FormulaEvent incomingFormulaEvent) {
 // check formula event AddressTag (badge definition award) existence
     AddressTag incomingFormulaEventAddressTag = incomingFormulaEvent.getContainedAddressableEvents().stream().findFirst().orElseThrow(() ->
         new NostrException(

@@ -2,8 +2,6 @@ package com.prosilion.superconductor.redis.util;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.FormulaEvent;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
 import com.prosilion.superconductor.base.service.event.type.NonPublishingEventKindPlugin;
@@ -23,14 +21,9 @@ public class FormulaEventKindPlugin extends NonPublishingEventKindPlugin {
 
   @Override
   public void processIncomingEvent(@NonNull EventIF incomingFormulaEvent) {
-    log.debug("processing incoming EventIF as FORMULA EVENT: [{}]", incomingFormulaEvent);
-    FormulaEvent formulaEvent = new FormulaEvent(
-        (GenericEventRecord) incomingFormulaEvent,
-        addressTag ->
-            cacheFormulaEventServiceIF.getBadgeDefinitionAwardEvent((GenericEventRecord) incomingFormulaEvent));
-
-    FormulaEvent reconstructedFormulaEvent = cacheFormulaEventServiceIF.reconstruct(formulaEvent);
-    super.processIncomingEvent(reconstructedFormulaEvent);
+    super.processIncomingEvent(
+        cacheFormulaEventServiceIF.materialize(
+            incomingFormulaEvent));
   }
 
   @Override

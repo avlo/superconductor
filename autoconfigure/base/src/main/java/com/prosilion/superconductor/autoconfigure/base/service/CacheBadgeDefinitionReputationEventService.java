@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
@@ -36,6 +37,17 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
   }
 
   @Override
+  public BadgeDefinitionReputationEvent materialize(@NonNull EventIF incomingBadgeDefinitionReputationEvent) {
+    GenericEventRecord incomingBadgeDefinitionReputationEventAsGenericEventRecord = (GenericEventRecord) incomingBadgeDefinitionReputationEvent;
+
+    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
+        incomingBadgeDefinitionReputationEventAsGenericEventRecord, addressTag ->
+        getFormulaEvents(incomingBadgeDefinitionReputationEventAsGenericEventRecord).stream().filter(formulaEvent ->
+            formulaEvent.asAddressTag().equals(addressTag)).findFirst().orElseThrow());
+
+    return reconstruct(badgeDefinitionReputationEvent);
+  }
+
   public BadgeDefinitionReputationEvent reconstruct(@NonNull BadgeDefinitionReputationEvent incomingBadgeDefinitionReputationEvent) {
     List<AddressTag> incomingBadgeDefinitionReputationEventAddressTags = incomingBadgeDefinitionReputationEvent.getContainedAddressableEvents();
 
@@ -58,9 +70,6 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
             incomingBadgeDefinitionReputationEvent.asAddressTag());
 
     if (optionalBadgeDefinitionReputationEvent.isEmpty()) {
-//      log.debug("saving new FormulaEvent {}...", incomingBadgeDefinitionReputationEvent);
-//      cacheServiceIF.save(incomingBadgeDefinitionReputationEvent);
-//      log.debug("...done");
       return incomingBadgeDefinitionReputationEvent;
     }
 

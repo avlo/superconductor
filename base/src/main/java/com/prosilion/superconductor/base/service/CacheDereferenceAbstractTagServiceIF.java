@@ -8,7 +8,6 @@ import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.lang.reflect.Constructor;
@@ -17,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.springframework.lang.NonNull;
 
@@ -39,48 +39,29 @@ public interface CacheDereferenceAbstractTagServiceIF<T extends ReferencedAbstra
 
   default Supplier<Optional<GenericEventRecord>> remoteEventSupplier(
       @NonNull String recommendedRelayUrl,
-      @NonNull EventTag baseTag,
-      @NonNull Function<EventTag, Filters> fxnFilter) {
-
+      @NonNull T baseTag,
+      @NonNull Function<T, Filters> fxnFilter) {
     NostrRelayService relayService = new NostrRelayService(recommendedRelayUrl);
-    Supplier<Optional<GenericEventRecord>> supplier = () -> {
+
+    return () -> {
       try {
-        List<GenericEventRecord> first = getGenericEvents(
-            relayService.send(
-                createSuperconductorReqMessageRxR(
-                    generateRandomHex64String(),
-                    baseTag,
-                    fxnFilter)));
+        Optional<GenericEventRecord> eventRecord =
+            getGenericEvents(
+                relayService.send(
+                    new ReqMessage(
+                        generateRandomHex64String(),
+                        fxnFilter.apply(baseTag))))
+                .findFirst();
         relayService.disconnect();
-        Optional<GenericEventRecord> eventRecord = first.stream().findFirst();
         return eventRecord;
       } catch (JsonProcessingException e) {
         throw new NostrException(e);
       }
     };
-    return supplier;
   }
 
-  default ReqMessage createSuperconductorReqMessageRxR(
-      @NonNull String subscriberId,
-      @NonNull EventTag baseTag,
-      @NonNull Function<EventTag, Filters> fxnFilter) {
-    Filters apply = fxnFilter.apply(baseTag);
-    ReqMessage reqMessage = new ReqMessage(subscriberId, apply);
-    return reqMessage;
-  }
-  
-  default ReqMessage createSuperconductorReqMessage(
-      @NonNull String subscriberId,
-      @NonNull T baseTag,
-      @NonNull Function<T, Filters> fxnFilter) {
-    Filters apply = fxnFilter.apply(baseTag);
-    ReqMessage reqMessage = new ReqMessage(subscriberId, apply);
-    return reqMessage;
-  }
-
-  default List<GenericEventRecord> getGenericEvents(List<BaseMessage> returnedBaseMessages) {
-    List<GenericEventRecord> list = returnedBaseMessages.stream()
+  private Stream<GenericEventRecord> getGenericEvents(List<BaseMessage> returnedBaseMessages) {
+    return returnedBaseMessages.stream()
         .filter(EventMessage.class::isInstance)
         .map(EventMessage.class::cast)
         .map(EventMessage::getEvent)
@@ -91,9 +72,7 @@ public interface CacheDereferenceAbstractTagServiceIF<T extends ReferencedAbstra
             eventIF.getKind(),
             eventIF.getTags(),
             eventIF.getContent(),
-            eventIF.getSignature()))
-        .toList();
-    return list;
+            eventIF.getSignature()));
   }
 
   default String generateRandomHex64String() {

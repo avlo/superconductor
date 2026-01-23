@@ -107,43 +107,30 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
   @Override
   public Optional<FollowSetsEvent> getEvent(@NonNull String eventId) {
-    Optional<GenericEventRecord> unpopulatedFollowSetsEvent = cacheServiceIF.getEventByEventId(eventId);
-    if (unpopulatedFollowSetsEvent.isEmpty())
-      return Optional.empty();
-
-    List<EventTag> eventTagsOfFollowSetsEvent = Filterable.getTypeSpecificTags(EventTag.class, unpopulatedFollowSetsEvent.get()).stream().toList();
-
 //  TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up    
 //    if (eventTagsOfFollowSetsEvent.size() != 1)
 //      throw new NostrException(
-//          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedFollowSetsEvent, eventTagsOfFollowSetsEvent.size()));
-
-    List<GenericEventRecord> badgeAwardEventsAsGenericEventRecords =
-        eventTagsOfFollowSetsEvent.stream()
-            .map(cacheDereferenceEventTagServiceIF::getEvent)
-            .flatMap(Optional::stream)
-            .toList();
-
-    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords.stream()
-        .map(GenericEventRecord::getId)
-        .map(cacheBadgeGenericAwardEventServiceIF::getEvent)
-        .flatMap(Optional::stream).toList();
-
-    Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> fxn = eventTag ->
-        badgeAwardAbstractEvents.stream().filter(badgeAwardAbstractEvent ->
-            badgeAwardAbstractEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
-
-    return Optional.of(cacheDereferenceEventTagServiceIF.createTypedFxnEvent(
-        unpopulatedFollowSetsEvent.orElseThrow(),
-        FollowSetsEvent.class,
-        fxn));
+//          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedFollowSetsEvent, eventTagsOfFollowSetsEvent.size()));    
+    return cacheServiceIF.getEventByEventId(eventId)
+        .map(genericEventRecord ->
+            new FollowSetsEvent(genericEventRecord, eventTag ->
+                Filterable.getTypeSpecificTags(EventTag.class, genericEventRecord).stream()
+                    .map(cacheDereferenceEventTagServiceIF::getEvent)
+                    .flatMap(Optional::stream)
+                    .map(GenericEventRecord::getId)
+                    .map(cacheBadgeGenericAwardEventServiceIF::getEvent)
+                    .flatMap(Optional::stream)
+                    .filter(badgeAwardAbstractEvent ->
+                        badgeAwardAbstractEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow(() ->
+                        new NostrException(
+                            String.format("FollowSetsEvent [%s] either missing an EventTag or EventTag does not have mappable BadgeGenericAwardEvent", genericEventRecord)))));
   }
 
   @Override
   public List<FollowSetsEvent> getEventsByPubkeyTag(@NonNull PublicKey badgeAwardRecipientPublicKey) {
-    List<GenericEventRecord> dbFollowSetsGenericEventRecordOptional = cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), badgeAwardRecipientPublicKey);
-    List<FollowSetsEvent> list = dbFollowSetsGenericEventRecordOptional.stream().map(GenericEventRecord::id).map(this::getEvent).flatMap(Optional::stream).toList();
-    return list;
+    return cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), badgeAwardRecipientPublicKey).stream()
+        .map(GenericEventRecord::id)
+        .map(this::getEvent).flatMap(Optional::stream).toList();
   }
 
   @Override

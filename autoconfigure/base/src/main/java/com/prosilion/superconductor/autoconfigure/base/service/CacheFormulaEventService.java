@@ -96,15 +96,11 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
   @Override
   public Optional<FormulaEvent> getEvent(@NonNull String eventId) {
-    Optional<GenericEventRecord> unpopulatedFormulaEvent = cacheServiceIF.getEventByEventId(eventId);
-    if (unpopulatedFormulaEvent.isEmpty())
-      return Optional.empty();
+    return cacheServiceIF.getEventByEventId(eventId)
+        .map(genericEventRecord ->
+            new FormulaEvent(genericEventRecord, addressTag ->
+                getBadgeDefinitionAwardEvent(genericEventRecord)));
 
-    return Optional.of(cacheDereferenceAddressTagServiceIF.createTypedFxnEvent(
-        unpopulatedFormulaEvent.orElseThrow(),
-        FormulaEvent.class,
-        addressTag ->
-            getBadgeDefinitionAwardEvent(unpopulatedFormulaEvent.get())));
   }
 
   @Override

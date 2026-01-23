@@ -14,7 +14,6 @@ import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -79,20 +78,14 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId) {
-    Optional<GenericEventRecord> unpopulatedBadgeDefinitionReputationEvent = cacheServiceIF.getEventByEventId(eventId);
-    if (unpopulatedBadgeDefinitionReputationEvent.isEmpty())
-      return Optional.empty();
+    return cacheServiceIF.getEventByEventId(eventId)
+        .map(genericEventRecord ->
+            new BadgeDefinitionReputationEvent(genericEventRecord, addressTag ->
+                getFormulaEvents(genericEventRecord).stream()
+                    .filter(formulaEvent ->
+                        formulaEvent.getIdentifierTag().equals(addressTag.getIdentifierTag()))
+                    .findFirst().orElseThrow()));
 
-    List<FormulaEvent> formulaEvents = getFormulaEvents(unpopulatedBadgeDefinitionReputationEvent.get());
-
-    Function<AddressTag, FormulaEvent> fxn = addressTag ->
-        formulaEvents.stream().filter(formulaEvent ->
-            formulaEvent.getIdentifierTag().equals(addressTag.getIdentifierTag())).findFirst().orElseThrow();
-
-    return Optional.of(cacheDereferenceAddressTagServiceIF.createTypedFxnEvent(
-        unpopulatedBadgeDefinitionReputationEvent.orElseThrow(),
-        BadgeDefinitionReputationEvent.class,
-        fxn));
   }
 
   @Override

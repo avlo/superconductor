@@ -14,6 +14,7 @@ import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisSta
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
@@ -27,8 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 public class CacheFormulaEventServiceIT {
-  public static final Relay relay = new Relay("ws://localhost:5555");
-
   public static final String TEST_UNIT_UPVOTE = "TEST_UNIT_UPVOTE";
   public static final String TEST_BADGE_DEFINITION_VOTE = "TEST_BADGE_DEFINITION_VOTE";
 
@@ -40,22 +39,29 @@ public class CacheFormulaEventServiceIT {
   public final String PLUS_ONE_FORMULA = "+1";
   public final String MINUS_ONE_FORMULA = "-1";
 
-  final BadgeDefinitionAwardEvent awardUpvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
-  final BadgeDefinitionAwardEvent awardDownvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA);
+  private final BadgeDefinitionAwardEvent awardUpvoteDefinitionEvent;
+  private final BadgeDefinitionAwardEvent awardDownvoteDefinitionEvent;
 
   final FormulaEvent formulaEventUpvote;
   final FormulaEvent formulaEventDownvote;
 
-  private final EventServiceIF eventServiceIF;
   private final CacheFormulaEventService cacheFormulaEventService;
+  
+  private final Relay relay;
+  private final EventServiceIF eventServiceIF;
 
   public CacheFormulaEventServiceIT(
+      @Value("${superconductor.relay.url}") String relayUri,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheFormulaEventService") CacheFormulaEventService cacheFormulaEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
     this.cacheFormulaEventService = cacheFormulaEventService;
+    this.relay = new Relay(relayUri);
 
+    this.awardUpvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
     this.formulaEventUpvote = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
+
+    this.awardDownvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA);
     this.formulaEventDownvote = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
   }
 

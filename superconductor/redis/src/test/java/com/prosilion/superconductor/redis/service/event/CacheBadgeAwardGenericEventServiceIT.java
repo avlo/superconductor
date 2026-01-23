@@ -14,6 +14,7 @@ import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisSta
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,21 +27,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 public class CacheBadgeAwardGenericEventServiceIT {
-  public static final Relay relay = new Relay("ws://localhost:5555");
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
   public final Identity identity = Identity.generateRandomIdentity();
 
-  private final BadgeDefinitionAwardEvent awardUpvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay);
-
-  private final EventServiceIF eventServiceIF;
+  private final BadgeDefinitionAwardEvent awardUpvoteDefinitionEvent;
   private final CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF;
+  private final EventServiceIF eventServiceIF;
 
   public CacheBadgeAwardGenericEventServiceIT(
+      @Value("${superconductor.relay.url}") String relayUri,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF) throws ParseException {
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeAwardGenericEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
 
+    awardUpvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, new Relay(relayUri));
     eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
   }
 

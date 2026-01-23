@@ -23,6 +23,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,21 +35,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 class SubscriberEventRedisIT {
-  public static final Relay relay = new Relay("ws://localhost:5555");
-  
   public static final Identity IDENTITY = Factory.createNewIdentity();
   public static final String CONTENT = Factory.lorumIpsum(SubscriberEventRedisIT.class);
 
   private final EventNosqlEntityService eventNosqlEntityService;
-
-  EventIF classifiedListingEvent;
+  private final EventIF classifiedListingEvent;
 
   @Autowired
-  public SubscriberEventRedisIT(@NonNull EventNosqlEntityService eventNosqlEntityService){
+  public SubscriberEventRedisIT(
+      @Value("${superconductor.relay.url}") String relayUri,
+      @NonNull EventNosqlEntityService eventNosqlEntityService) {
     this.eventNosqlEntityService = eventNosqlEntityService;
 
     IdentifierTag identifierTag = new IdentifierTag("ClassifiedListingUuid");
-    
+
     List<BaseTag> tags = new ArrayList<>();
     tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"));
     tags.add(new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")));
@@ -59,7 +59,7 @@ class SubscriberEventRedisIT {
         "classified summary",
         new PriceTag(new BigDecimal("2.71"), "BTC", "frequency"));
 
-    classifiedListingEvent = new ClassifiedListingEvent(IDENTITY, Kind.CLASSIFIED_LISTING, identifierTag, relay, classifiedListing, tags, CONTENT);
+    classifiedListingEvent = new ClassifiedListingEvent(IDENTITY, Kind.CLASSIFIED_LISTING, identifierTag, new Relay(relayUri), classifiedListing, tags, CONTENT);
   }
 
   @Test

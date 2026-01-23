@@ -22,26 +22,4 @@ public class NostrWsConfig {
   public NostrRelayService nostrRelayService(@Value("${superconductor.relay.url}") String relayUri) throws ExecutionException, InterruptedException {
     return new NostrRelayService(relayUri);
   }
-
-//  @Bean
-//  EventKindTypePluginIF badgeAwardUpvoteEventKindTypePlugin(
-//      @NonNull NotifierService notifierService,
-//      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
-//    return new BadgeAwardEventKindTypePlugin(
-//        notifierService,
-//        new EventKindTypePlugin(
-//            BadgeDefinitionConfig.UNIT_UPVOTE,
-//            eventPlugin));
-//  }
-//
-//  @Bean
-//  EventKindTypePluginIF badgeAwardDownvoteEventKindTypePlugin(
-//      @NonNull NotifierService notifierService,
-//      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
-//    return new BadgeAwardEventKindTypePlugin(
-//        notifierService,
-//        new EventKindTypePlugin(
-//            BadgeDefinitionConfig.BADGE_DEFINITION_VOTE,
-//            eventPlugin));
-//  }
 }

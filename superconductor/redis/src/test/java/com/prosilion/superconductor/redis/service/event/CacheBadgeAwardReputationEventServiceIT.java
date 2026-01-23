@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,8 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 public class CacheBadgeAwardReputationEventServiceIT {
-  public static final Relay relay = new Relay("ws://localhost:5575");
-
   public static final String PLUS_ONE_FORMULA = "+1";
 
   public final IdentifierTag reputationIdentifierTag = new IdentifierTag(TEST_UNIT_REPUTATION);
@@ -43,38 +42,50 @@ public class CacheBadgeAwardReputationEventServiceIT {
   public final Identity identity = Identity.generateRandomIdentity();
   public final PublicKey upvotedUserPublicKey = Identity.generateRandomIdentity().getPublicKey();
 
-  private final BadgeDefinitionAwardEvent awardUpvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay);
-
-  private final FormulaEvent plusOneFormulaEvent = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
-
-  private final EventServiceIF eventServiceIF;
   private final CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService;
+  
+  private final EventServiceIF eventServiceIF;
 
   public CacheBadgeAwardReputationEventServiceIT(
+      @Value("${superconductor.relay.url}") String relayUri,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheBadgeAwardReputationEventService") CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeAwardReputationEventService = cacheBadgeAwardReputationEventService;
+    final Relay relay = new Relay(relayUri);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
-    eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent));
+    eventServiceIF.processIncomingEvent(
+        new EventMessage(
+            new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay)));
+
+    eventServiceIF.processIncomingEvent(
+        new EventMessage(
+            new FormulaEvent(
+                identity,
+                upvoteIdentifierTag,
+                relay,
+                new BadgeDefinitionAwardEvent(
+                    identity,
+                    upvoteIdentifierTag,
+                    relay),
+                PLUS_ONE_FORMULA)));
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
         identity,
         reputationIdentifierTag,
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-        plusOneFormulaEvent);
+        new FormulaEvent(identity, upvoteIdentifierTag, relay, new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay), PLUS_ONE_FORMULA));
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula));
 
-    BadgeAwardGenericEvent badgeAwardGenericVoteEvent = new BadgeAwardGenericEvent(
-        identity,
-        upvotedUserPublicKey,
-        awardUpvoteDefinitionEvent);
-
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericVoteEvent));
+    eventServiceIF.processIncomingEvent(
+        new EventMessage(
+            new BadgeAwardGenericEvent<>(
+                identity,
+                upvotedUserPublicKey,
+                new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay))));
   }
 
   @Test

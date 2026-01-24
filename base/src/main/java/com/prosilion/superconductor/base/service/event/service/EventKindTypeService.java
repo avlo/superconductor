@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,14 +37,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
   public void processIncomingEvent(@NonNull EventIF event) {
     processIncomingEvent(
         new GenericEventKindType(
-            new GenericEventKind(
-                event.getId(),
-                event.getPublicKey(),
-                event.getCreatedAt(),
-                event.getKind(),
-                event.getTags(),
-                event.getContent(),
-                event.getSignature()),
+            EventKindServiceIF.createGenericEventKindFromEntityIF(event),
             getKindType(event)),
         (GenericEventRecord) event);
   }
@@ -56,7 +48,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
             .get(event.getKind())
             .get(event.getKindType()))
         .orElseThrow();
-    
+
     eventKindTypePluginIF.processIncomingEvent(genericEventRecord);
   }
 

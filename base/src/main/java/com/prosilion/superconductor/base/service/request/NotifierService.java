@@ -1,9 +1,8 @@
 package com.prosilion.superconductor.base.service.request;
 
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.user.Signature;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
-import com.prosilion.superconductor.base.service.event.service.GenericEventKind;
+import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.service.GenericEventKindIF;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import java.util.List;
@@ -42,14 +41,6 @@ public class NotifierService {
   }
 
   private GenericEventKindIF convertEntityToGenericEventKindIF(EventIF eventIF) {
-    return new GenericEventKind(
-        eventIF.getId(),
-        eventIF.getPublicKey(),
-        eventIF.getCreatedAt(),
-        eventIF.getKind(),
-        eventIF.getTags(),
-        eventIF.getContent(),
-        new Signature(
-            eventIF.getSignature().toString()));
+    return EventKindServiceIF.createGenericEventKindFromEntityIF(eventIF);
   }
 }

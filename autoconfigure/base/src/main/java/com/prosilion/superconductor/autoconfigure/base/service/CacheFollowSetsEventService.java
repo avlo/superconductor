@@ -42,10 +42,9 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
     List<EventTag> eventTagsOfFollowSetsEvent = Filterable.getTypeSpecificTags(EventTag.class, incomingFollowSetsEvent).stream().toList();
 
-//  TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up    
-//    if (eventTagsOfFollowSetsEvent.size() != 1)
-//      throw new NostrException(
-//          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedFollowSetsEvent, eventTagsOfFollowSetsEvent.size()));
+    if (eventTagsOfFollowSetsEvent.isEmpty())
+      throw new NostrException(
+          String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
 
     List<GenericEventRecord> badgeAwardEventsAsGenericEventRecords =
         eventTagsOfFollowSetsEvent.stream()
@@ -54,13 +53,13 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
             .toList();
 
     List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords.stream()
-        .map(GenericEventRecord::getId)
-        .map(cacheBadgeGenericAwardEventServiceIF::getEvent)
-        .flatMap(Optional::stream).toList();
+//        .map(GenericEventRecord::getId)
+        .map(cacheBadgeGenericAwardEventServiceIF::materialize)
+//        .flatMap(Optional::stream)
+        .toList();
 
     Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> fxn = eventTag ->
-        badgeAwardAbstractEvents.stream().filter(badgeAwardGenericEvent ->
-            badgeAwardGenericEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
+        getBadgeAwardGenericEventStream(badgeAwardAbstractEvents, eventTag).stream().findFirst().orElseThrow();
 
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
         incomingFollowSetsEventAsGenericEventRecord, fxn);
@@ -114,16 +113,14 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     return cacheServiceIF.getEventByEventId(eventId)
         .map(genericEventRecord ->
             new FollowSetsEvent(genericEventRecord, eventTag ->
-                Filterable.getTypeSpecificTags(EventTag.class, genericEventRecord).stream()
+                getBadgeAwardGenericEventStream(Filterable.getTypeSpecificTags(EventTag.class, genericEventRecord).stream()
                     .map(cacheDereferenceEventTagServiceIF::getEvent)
                     .flatMap(Optional::stream)
                     .map(GenericEventRecord::getId)
                     .map(cacheBadgeGenericAwardEventServiceIF::getEvent)
-                    .flatMap(Optional::stream)
-                    .filter(badgeAwardAbstractEvent ->
-                        badgeAwardAbstractEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow(() ->
-                        new NostrException(
-                            String.format("FollowSetsEvent [%s] either missing an EventTag or EventTag does not have mappable BadgeGenericAwardEvent", genericEventRecord)))));
+                    .flatMap(Optional::stream).toList(), eventTag).stream().findFirst().orElseThrow(() ->
+                    new NostrException(
+                        String.format("FollowSetsEvent [%s] either missing an EventTag or EventTag does not have mappable BadgeGenericAwardEvent", genericEventRecord)))));
   }
 
   @Override
@@ -136,5 +133,18 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   @Override
   public Kind getKind() {
     return Kind.FOLLOW_SETS;
+  }
+
+  private List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getBadgeAwardGenericEventStream(
+      List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents,
+      EventTag eventTag) {
+    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardGenericEvents = badgeAwardAbstractEvents.stream().filter(badgeAwardGenericEvent ->
+    {
+      String id = badgeAwardGenericEvent.getId();
+      String idEvent = eventTag.getIdEvent();
+      boolean equals = id.equals(idEvent);
+      return equals;
+    }).toList();
+    return badgeAwardGenericEvents;
   }
 }

@@ -38,8 +38,6 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
   @Override
   public FollowSetsEvent materialize(@NonNull EventIF incomingFollowSetsEvent) {
-    GenericEventRecord incomingFollowSetsEventAsGenericEventRecord = (GenericEventRecord) incomingFollowSetsEvent;
-
     List<EventTag> eventTagsOfFollowSetsEvent = Filterable.getTypeSpecificTags(EventTag.class, incomingFollowSetsEvent).stream().toList();
 
     if (eventTagsOfFollowSetsEvent.isEmpty())
@@ -62,7 +60,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
         getBadgeAwardGenericEventStream(badgeAwardAbstractEvents, eventTag).stream().findFirst().orElseThrow();
 
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
-        incomingFollowSetsEventAsGenericEventRecord, fxn);
+        incomingFollowSetsEvent.asGenericEventRecord(), fxn);
 
     return reconstruct(followSetsEvent);
   }

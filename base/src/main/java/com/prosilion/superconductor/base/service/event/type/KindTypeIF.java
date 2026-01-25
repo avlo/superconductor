@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.base.service.event.type;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import java.time.temporal.ValueRange;
 import java.util.Arrays;
@@ -16,9 +17,9 @@ public interface KindTypeIF {
 
   @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
   default KindTypeIF valueOf(Kind kind, Kind kindDefinition, String name) {
-    assert ValueRange.of(0, 65_535).isValidIntValue(kind.getValue()) :
-        new IllegalArgumentException(String.format("Kind must be between 0 and 65535 but was [%d]",
-            kind.getValue()));
+    NostrException.testBoolean(
+        ValueRange.of(0, 65_535).isValidIntValue(kind.getValue()),
+        String.format("Kind must be between 0 and 65535 but was [%d]", kind.getValue()));
 
 //    assert Objects.equals(kindDefinition, Kind.BADGE_DEFINITION_EVENT) :
 //        new IllegalArgumentException(

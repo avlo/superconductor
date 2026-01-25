@@ -36,9 +36,9 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     log.debug("processing incoming EventIF as FORMULA EVENT: [{}]", incomingFormulaEvent);
     return reconstruct(
         new FormulaEvent(
-            (GenericEventRecord) incomingFormulaEvent,
+            incomingFormulaEvent.asGenericEventRecord(),
             addressTag ->
-                getBadgeDefinitionAwardEvent((GenericEventRecord) incomingFormulaEvent)));
+                getBadgeDefinitionAwardEvent(incomingFormulaEvent.asGenericEventRecord())));
   }
 
   private FormulaEvent reconstruct(@NonNull FormulaEvent incomingFormulaEvent) {

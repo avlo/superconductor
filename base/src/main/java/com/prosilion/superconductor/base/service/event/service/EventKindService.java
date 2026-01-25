@@ -2,7 +2,6 @@ package com.prosilion.superconductor.base.service.event.service;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
 import java.util.List;
 import java.util.Map;
@@ -34,11 +33,11 @@ public class EventKindService implements EventKindServiceIF {
     if (kind.equals(Kind.DELETION)) {
       log.info("plugin: {}", kindEventKindPluginIF);
       kindEventKindPluginIF.processIncomingEvent(
-          CacheServiceIF.createGenericEventRecordFromEntityIF(event)); // everything else handled as TEXT_NOTE kind
+          event.asGenericEventRecord()); // everything else handled as TEXT_NOTE kind
     } else {
       log.info("plugin: {}", kindEventKindPluginIF);
       kindEventKindPluginIF.processIncomingEvent(
-          CacheServiceIF.createGenericEventRecordFromEntityIF(event)); // everything else handled as TEXT_NOTE kind
+          event.asGenericEventRecord()); // everything else handled as TEXT_NOTE kind
     }
   }
 

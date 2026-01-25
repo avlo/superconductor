@@ -37,11 +37,9 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
 
   @Override
   public BadgeDefinitionReputationEvent materialize(@NonNull EventIF incomingBadgeDefinitionReputationEvent) {
-    GenericEventRecord incomingBadgeDefinitionReputationEventAsGenericEventRecord = (GenericEventRecord) incomingBadgeDefinitionReputationEvent;
-
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
-        incomingBadgeDefinitionReputationEventAsGenericEventRecord, addressTag ->
-        getFormulaEvents(incomingBadgeDefinitionReputationEventAsGenericEventRecord).stream().filter(formulaEvent ->
+        incomingBadgeDefinitionReputationEvent.asGenericEventRecord(), addressTag ->
+        getFormulaEvents(incomingBadgeDefinitionReputationEvent.asGenericEventRecord()).stream().filter(formulaEvent ->
             formulaEvent.asAddressTag().equals(addressTag)).findFirst().orElseThrow());
 
     return reconstruct(badgeDefinitionReputationEvent);

@@ -65,7 +65,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
         )
             .orElse(
                 new BadgeAwardReputationEvent(
-                    (GenericEventRecord) incomingBadgeAwardReputationEvent,
+                    incomingBadgeAwardReputationEvent.asGenericEventRecord(),
                     addressTag -> cacheBadgeDefinitionReputationEvent));
 
     return reconstruct(existingBadgeAwardReputationEvent);

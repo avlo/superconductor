@@ -32,7 +32,7 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
   @Override
   public BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> materialize(@NonNull EventIF incomingBadgeAwardGenericEvent) {
     return reconstruct(
-        new BadgeAwardGenericEvent<>((GenericEventRecord) incomingBadgeAwardGenericEvent, aTag ->
+        new BadgeAwardGenericEvent<>(incomingBadgeAwardGenericEvent.asGenericEventRecord(), aTag ->
             getBadgeDefinitionAwardEvent(
                 cacheDereferenceAddressTagServiceIF.getEvent(
                         Filterable.getTypeSpecificTags(AddressTag.class, incomingBadgeAwardGenericEvent).stream().findFirst().orElseThrow(() ->

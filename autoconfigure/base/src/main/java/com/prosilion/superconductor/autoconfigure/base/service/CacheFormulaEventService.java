@@ -12,6 +12,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -119,6 +120,20 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
             firstAddressTagAsEvent,
             BadgeDefinitionAwardEvent.class);
     return addressTagNowBadgeDefinitionAwardEvent;
+  }
+
+  @Override
+  public List<FormulaEvent> getFormulaEventsGivenAssociatedBadgeDefinitionAwardEvent(@NonNull BadgeDefinitionAwardEvent badgeDefinitionAwardEvent) {
+    List<FormulaEvent> formulaEvents = cacheServiceIF.getByKind(
+            Kind.ARBITRARY_CUSTOM_APP_DATA).stream()
+        .map(ger ->
+            new FormulaEvent(ger, aTag ->
+                getBadgeDefinitionAwardEvent(ger)))
+        .filter(formulaEvent ->
+            formulaEvent.getBadgeDefinitionAwardEvent().equals(badgeDefinitionAwardEvent))
+        .toList();
+
+    return formulaEvents;
   }
 
   public Kind getKind() {

@@ -8,6 +8,7 @@ import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagService;
+import com.prosilion.superconductor.base.service.CacheDereferenceEventTagServiceIF;
 import com.prosilion.superconductor.base.service.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.type.EventPlugin;
@@ -93,8 +94,9 @@ public class JpaConfig {
   @Bean(name = "cacheFormulaEventService")
   CacheTagMappedEventServiceIF cacheFormulaEventService(
       @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagService cacheDereferenceAddressTagService) {
-    return new CacheFormulaEventService(cacheServiceIF, cacheDereferenceAddressTagService);
+    return new CacheFormulaEventService(cacheServiceIF, cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagService);
   }
 
 //  @Bean(name = "cacheBadgeDefinitionReputationEventService")

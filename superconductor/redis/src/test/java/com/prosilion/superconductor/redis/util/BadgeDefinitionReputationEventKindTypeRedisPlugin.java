@@ -21,6 +21,6 @@ public class BadgeDefinitionReputationEventKindTypeRedisPlugin extends NonPublis
 
   @Override
   public void processIncomingEvent(@NonNull EventIF incomingBadgeDefinitionReputationEvent) {
-    super.processIncomingEvent(cacheBadgeDefinitionReputationEventService.materialize(incomingBadgeDefinitionReputationEvent));
+    super.processIncomingEvent(cacheBadgeDefinitionReputationEventService.materialize(incomingBadgeDefinitionReputationEvent.asGenericEventRecord()));
   }
 }

@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
@@ -19,9 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
+import static com.prosilion.superconductor.base.service.CacheDereferenceEventTagService.INVALID_REMOTE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @EmbeddedRedisStandalone
@@ -46,7 +47,7 @@ public class CacheFormulaEventServiceIT {
   final FormulaEvent formulaEventDownvote;
 
   private final CacheFormulaEventService cacheFormulaEventService;
-  
+
   private final Relay relay;
   private final EventServiceIF eventServiceIF;
 
@@ -108,10 +109,17 @@ public class CacheFormulaEventServiceIT {
 
     FormulaEvent formulaEventUpvoteMisMatch = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, "+2");
     assertThrows(NostrException.class, () -> eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvoteMisMatch)));
-    assertTrue(cacheFormulaEventService.getEvent(formulaEventUpvoteMisMatch.getId()).isEmpty());
+    EventTag eventTag = new EventTag(formulaEventUpvoteMisMatch.getId(), null);
+    assertEquals(
+        String.format(INVALID_REMOTE_URL, eventTag, eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl()),
+        assertThrows(NostrException.class, () -> cacheFormulaEventService.getEvent(formulaEventUpvoteMisMatch.getId()))
+            .getMessage());
 
     FormulaEvent formulaEventDownvoteMisMatch = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-2");
     assertThrows(NostrException.class, () -> eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvoteMisMatch)));
-    assertTrue(cacheFormulaEventService.getEvent(formulaEventDownvoteMisMatch.getId()).isEmpty());
+    EventTag eventTag2 = new EventTag(formulaEventDownvoteMisMatch.getId(), null);
+    assertEquals(
+        String.format(INVALID_REMOTE_URL, eventTag2, eventTag2.getIdEvent(), eventTag2.getRecommendedRelayUrl()),
+        assertThrows(NostrException.class, () -> cacheFormulaEventService.getEvent(formulaEventDownvoteMisMatch.getId()).isEmpty()).getMessage());
   }
 }

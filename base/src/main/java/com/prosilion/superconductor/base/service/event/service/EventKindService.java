@@ -23,12 +23,13 @@ public class EventKindService implements EventKindServiceIF {
 
   @Override
   public void processIncomingEvent(@NonNull EventIF event) {
+    log.debug("{} processIncomingEvent() called with event {}", getClass().getSimpleName(), event.createPrettyPrintJson());
     Kind kind = event.getKind();
-    EventKindPluginIF value = eventKindPluginsMap.get(kind);
-    EventKindPluginIF kindEventKindPluginIF = Optional.ofNullable(
-            value)
-        .orElse(
-            eventKindPluginsMap.get(Kind.TEXT_NOTE));
+    log.debug("{} processIncomingEvent() event.getKind() [{}]", getClass().getSimpleName(), kind);
+    EventKindPluginIF kindEventKindPluginIF =
+        checkExistingEventKind(kind)
+            .orElseGet(() ->
+                useDefaultMapEntry(kind));
 
     if (kind.equals(Kind.DELETION)) {
       log.info("plugin: {}", kindEventKindPluginIF);
@@ -39,6 +40,25 @@ public class EventKindService implements EventKindServiceIF {
       kindEventKindPluginIF.processIncomingEvent(
           event.asGenericEventRecord()); // everything else handled as TEXT_NOTE kind
     }
+  }
+
+  private EventKindPluginIF useDefaultMapEntry(Kind kind) {
+    EventKindPluginIF defaultEntry = eventKindPluginsMap.get(Kind.TEXT_NOTE);
+    log.debug("{} processIncomingEvent() did not find map value for kind [{}], using default EventKindPluginIF [{}]",
+        getClass().getSimpleName(),
+        kind, defaultEntry);
+    return defaultEntry;
+  }
+
+  private Optional<EventKindPluginIF> checkExistingEventKind(Kind kind) {
+    EventKindPluginIF value = eventKindPluginsMap.get(kind);
+    Optional<EventKindPluginIF> mapEntry = Optional.ofNullable(value);
+    if (mapEntry.isPresent())
+      log.debug("{} processIncomingEvent() found map value for kind [{}], using EventKindPluginIF [{}]",
+          getClass().getSimpleName(),
+          kind,
+          value);
+    return mapEntry;
   }
 
   @Override

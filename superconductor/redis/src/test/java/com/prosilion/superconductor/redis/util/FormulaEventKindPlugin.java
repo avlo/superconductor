@@ -23,7 +23,7 @@ public class FormulaEventKindPlugin extends NonPublishingEventKindPlugin {
   public void processIncomingEvent(@NonNull EventIF incomingFormulaEvent) {
     super.processIncomingEvent(
         cacheFormulaEventServiceIF.materialize(
-            incomingFormulaEvent));
+            incomingFormulaEvent.asGenericEventRecord()));
   }
 
   @Override

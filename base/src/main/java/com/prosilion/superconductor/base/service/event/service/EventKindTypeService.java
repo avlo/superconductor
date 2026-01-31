@@ -2,9 +2,9 @@ package com.prosilion.superconductor.base.service.event.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
@@ -35,21 +35,14 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
 
   @Override
   public void processIncomingEvent(@NonNull EventIF event) {
-    processIncomingEvent(
-        new GenericEventKindType(
-            EventKindServiceIF.createGenericEventKindFromEntityIF(event),
-            getKindType(event)),
-        (GenericEventRecord) event);
-  }
-
-  private void processIncomingEvent(@NonNull GenericEventKindTypeIF event, GenericEventRecord genericEventRecord) {
     EventKindTypePluginIF eventKindTypePluginIF = Optional
         .ofNullable(eventKindTypePluginsMap
             .get(event.getKind())
-            .get(event.getKindType()))
-        .orElseThrow();
+            .get(getKindType(event)))
+        .orElseThrow(() -> new NostrException(
+            String.format("eventKindTypePluginsMap does not contain matching entry for kind [%s], kindtype [%s]", event.getKind(), getKindType(event))));
 
-    eventKindTypePluginIF.processIncomingEvent(genericEventRecord);
+    eventKindTypePluginIF.processIncomingEvent(event.asGenericEventRecord());
   }
 
   @Override
@@ -75,11 +68,11 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
 
   private static boolean isEquals(EventIF event, KindTypeIF kindTypeIF2) {
     String kindTypeIF2Name = kindTypeIF2.getName();
-    boolean equals = kindTypeIF2Name.equals(getExternalIdentifierIdenitity(event));
+    boolean equals = kindTypeIF2Name.equals(getExternalIdentifierIdentity(event));
     return equals;
   }
 
-  private static String getExternalIdentifierIdenitity(EventIF event) {
+  private static String getExternalIdentifierIdentity(EventIF event) {
     ExternalIdentityTag externalIdentityTag = Filterable.getTypeSpecificTags(ExternalIdentityTag.class, event).stream()
         .findFirst().orElseThrow();
     String identity = externalIdentityTag.getIdentity();

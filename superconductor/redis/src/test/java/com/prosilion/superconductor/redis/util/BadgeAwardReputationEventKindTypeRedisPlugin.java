@@ -23,6 +23,6 @@ public class BadgeAwardReputationEventKindTypeRedisPlugin extends PublishingEven
 
   @Override
   public void processIncomingEvent(@NonNull EventIF incomingBadgeAwardReputationEvent) {
-    super.processIncomingEvent(cacheBadgeAwardReputationEventService.materialize(incomingBadgeAwardReputationEvent));
+    super.processIncomingEvent(cacheBadgeAwardReputationEventService.materialize(incomingBadgeAwardReputationEvent.asGenericEventRecord()));
   }
 }

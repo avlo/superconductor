@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.message.BaseMessage;
@@ -37,42 +38,33 @@ public interface CacheDereferenceAbstractTagServiceIF<T extends ReferencedAbstra
     return constructor.newInstance(genericEventRecord, exampleFunction);
   }
 
-  default Supplier<Optional<GenericEventRecord>> remoteEventSupplier(
+  default Optional<GenericEventRecord> remoteEventSupplier(
       @NonNull String recommendedRelayUrl,
-      @NonNull T baseTag,
+      @NonNull T referencedAbstractEventTag,
       @NonNull Function<T, Filters> fxnFilter) {
     NostrRelayService relayService = new NostrRelayService(recommendedRelayUrl);
 
-    return () -> {
-      try {
-        Optional<GenericEventRecord> eventRecord =
-            getGenericEvents(
-                relayService.send(
-                    new ReqMessage(
-                        generateRandomHex64String(),
-                        fxnFilter.apply(baseTag))))
-                .findFirst();
-        relayService.disconnect();
-        return eventRecord;
-      } catch (JsonProcessingException e) {
-        throw new NostrException(e);
-      }
-    };
+    try {
+      Optional<GenericEventRecord> eventRecord =
+          getGenericEvents(
+              relayService.send(
+                  new ReqMessage(
+                      generateRandomHex64String(),
+                      fxnFilter.apply(referencedAbstractEventTag))))
+              .findFirst();
+      relayService.disconnect();
+      return eventRecord;
+    } catch (JsonProcessingException e) {
+      throw new NostrException(e);
+    }
   }
 
-  private Stream<GenericEventRecord> getGenericEvents(List<BaseMessage> returnedBaseMessages) {
+  default Stream<GenericEventRecord> getGenericEvents(List<BaseMessage> returnedBaseMessages) {
     return returnedBaseMessages.stream()
         .filter(EventMessage.class::isInstance)
         .map(EventMessage.class::cast)
         .map(EventMessage::getEvent)
-        .map(eventIF -> new GenericEventRecord(
-            eventIF.getId(),
-            eventIF.getPublicKey(),
-            eventIF.getCreatedAt(),
-            eventIF.getKind(),
-            eventIF.getTags(),
-            eventIF.getContent(),
-            eventIF.getSignature()));
+        .map(EventIF::asGenericEventRecord);
   }
 
   default String generateRandomHex64String() {

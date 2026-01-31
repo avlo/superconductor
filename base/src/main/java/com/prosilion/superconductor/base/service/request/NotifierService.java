@@ -2,8 +2,6 @@ package com.prosilion.superconductor.base.service.request;
 
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
-import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
-import com.prosilion.superconductor.base.service.event.service.GenericEventKindIF;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +30,11 @@ public class NotifierService {
 
     List<? extends EventIF> all = cacheServiceIFAll
         .stream()
-        .map(this::convertEntityToGenericEventKindIF).toList();
+        .map(EventIF::asGenericEventRecord).toList();
 
     all.forEach(event ->
         subscriberNotifierService.newSubscriptionHandler(subscriberSessionHash, new AddNostrEvent(event)));
 
     subscriberNotifierService.broadcastEose(subscriberSessionHash);
-  }
-
-  private GenericEventKindIF convertEntityToGenericEventKindIF(EventIF eventIF) {
-    return EventKindServiceIF.createGenericEventKindFromEntityIF(eventIF);
   }
 }

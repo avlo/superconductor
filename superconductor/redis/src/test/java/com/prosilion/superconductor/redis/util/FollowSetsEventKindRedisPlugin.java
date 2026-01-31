@@ -23,6 +23,6 @@ public class FollowSetsEventKindRedisPlugin extends PublishingEventKindPlugin {
 
   @Override
   public void processIncomingEvent(@NonNull EventIF incomingFollowSetsEvent) {
-    super.processIncomingEvent(cacheFollowSetsEventServiceIF.materialize(incomingFollowSetsEvent));
+    super.processIncomingEvent(cacheFollowSetsEventServiceIF.materialize(incomingFollowSetsEvent.asGenericEventRecord()));
   }
 }

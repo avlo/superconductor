@@ -44,7 +44,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
 
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService;
-  
+
   private final EventServiceIF eventServiceIF;
 
   public CacheBadgeAwardReputationEventServiceIT(
@@ -98,7 +98,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
         BigDecimal.ZERO);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardReputationEvent));
-    BadgeAwardReputationEvent dbRepAwardEvent = cacheBadgeAwardReputationEventService.getEvent(badgeAwardReputationEvent.getId()).orElseThrow();
+    BadgeAwardReputationEvent dbRepAwardEvent = cacheBadgeAwardReputationEventService.materialize(badgeAwardReputationEvent.asGenericEventRecord());
     assertEquals(badgeDefinitionReputationEventPlusOneFormula, dbRepAwardEvent.getBadgeDefinitionReputationEvent());
   }
 }

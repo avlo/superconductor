@@ -4,7 +4,6 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
@@ -37,7 +36,20 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
-  public FollowSetsEvent materialize(@NonNull EventIF incomingFollowSetsEvent) {
+  public Optional<FollowSetsEvent> getEvent(@NonNull String eventId) {
+//  TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up    
+//    if (eventTagsOfFollowSetsEvent.size() != 1)
+//      throw new NostrException(
+//          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedFollowSetsEvent, eventTagsOfFollowSetsEvent.size()));    
+    Optional<GenericEventRecord> unpopulatedFollowSetsEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId));
+    if (unpopulatedFollowSetsEvent.isEmpty())
+      return Optional.empty();
+
+    return Optional.of(materialize(unpopulatedFollowSetsEvent.get()));
+  }
+
+  @Override
+  public FollowSetsEvent materialize(@NonNull GenericEventRecord incomingFollowSetsEvent) {
     List<EventTag> eventTagsOfFollowSetsEvent = Filterable.getTypeSpecificTags(EventTag.class, incomingFollowSetsEvent).stream().toList();
 
     if (eventTagsOfFollowSetsEvent.isEmpty())
@@ -46,103 +58,51 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
     List<GenericEventRecord> badgeAwardEventsAsGenericEventRecords =
         eventTagsOfFollowSetsEvent.stream()
-            .map(cacheDereferenceEventTagServiceIF::getEvent)
+            .map(this::getCacheDereferenceEventTagEvent)
             .flatMap(Optional::stream)
             .toList();
 
     List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords.stream()
-//        .map(GenericEventRecord::getId)
-        .map(cacheBadgeGenericAwardEventServiceIF::materialize)
-//        .flatMap(Optional::stream)
+        .map(this::getCacheBadgeGenericAwardEvent)
+        .flatMap(Optional::stream)
         .toList();
 
     Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> fxn = eventTag ->
-        getBadgeAwardGenericEventStream(badgeAwardAbstractEvents, eventTag).stream().findFirst().orElseThrow();
+        badgeAwardAbstractEvents.stream()
+            .filter(badgeAwardGenericEvent ->
+                badgeAwardGenericEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
 
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
         incomingFollowSetsEvent.asGenericEventRecord(), fxn);
 
-    return reconstruct(followSetsEvent);
+    return followSetsEvent;
   }
 
-  private FollowSetsEvent reconstruct(@NonNull FollowSetsEvent incomingFollowSetsEvent) {
-    List<EventTag> incomingFollowSetsEventTags = incomingFollowSetsEvent.getContainedAddressableEvents();
-
-//    TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up
-//    if (incomingFollowSetsEventTags.isEmpty())
-//      throw new NostrException(
-//          String.format("FollowSetsEvent [%s] requires a single AddressTag but had none", incomingFollowSetsEvent.serialize()));
-
-    incomingFollowSetsEventTags
-        .forEach(eventTag ->
-            cacheDereferenceEventTagServiceIF.getEvent(eventTag).orElseThrow(() ->
-                new NostrException(
-                    String.format(
-                        String.join("", NON_EXISTENT_EVENT_ID_S, "[%s]"),
-                        incomingFollowSetsEvent.serialize(),
-                        incomingFollowSetsEvent.getId(),
-                        eventTag))));
-
-// check for existing follow sets event using pubkey and identifier tag
-    Optional<GenericEventRecord> dbOptionalFollowSetsEvent = cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
-        incomingFollowSetsEvent.getKind(),
-        incomingFollowSetsEvent.getPublicKey(),
-        incomingFollowSetsEvent.getIdentifierTag()).stream().findFirst();
-
-    // 	if existing formula event not found:
-    if (dbOptionalFollowSetsEvent.isPresent()) {
-      log.debug("deleting previous FollowSetsEvent {}...", incomingFollowSetsEvent);
-      cacheServiceIF.deleteEvent(dbOptionalFollowSetsEvent.get());
-      log.debug("...done");
-    }
-
-//    log.debug("saving new FollowSetsEvent {}...", incomingFollowSetsEvent);
-//    cacheServiceIF.save(incomingFollowSetsEvent);
-//    log.debug("...done");
-    return incomingFollowSetsEvent;
+  private Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getCacheBadgeGenericAwardEvent(GenericEventRecord cacheBadgeGenericAwardEventId) {
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(cacheBadgeGenericAwardEventId.getId());
+    return event;
   }
 
-  @Override
-  public Optional<FollowSetsEvent> getEvent(@NonNull String eventId) {
-//  TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up    
-//    if (eventTagsOfFollowSetsEvent.size() != 1)
-//      throw new NostrException(
-//          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedFollowSetsEvent, eventTagsOfFollowSetsEvent.size()));    
-    return cacheServiceIF.getEventByEventId(eventId)
-        .map(genericEventRecord ->
-            new FollowSetsEvent(genericEventRecord, eventTag ->
-                getBadgeAwardGenericEventStream(Filterable.getTypeSpecificTags(EventTag.class, genericEventRecord).stream()
-                    .map(cacheDereferenceEventTagServiceIF::getEvent)
-                    .flatMap(Optional::stream)
-                    .map(GenericEventRecord::getId)
-                    .map(cacheBadgeGenericAwardEventServiceIF::getEvent)
-                    .flatMap(Optional::stream).toList(), eventTag).stream().findFirst().orElseThrow(() ->
-                    new NostrException(
-                        String.format("FollowSetsEvent [%s] either missing an EventTag or EventTag does not have mappable BadgeGenericAwardEvent", genericEventRecord)))));
+  private Optional<GenericEventRecord> getCacheDereferenceEventTagEvent(EventTag cacheDereferenceEvent) {
+    Optional<GenericEventRecord> event = cacheDereferenceEventTagServiceIF.getEvent(cacheDereferenceEvent);
+    return event;
   }
 
   @Override
   public List<FollowSetsEvent> getEventsByPubkeyTag(@NonNull PublicKey badgeAwardRecipientPublicKey) {
-    return cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), badgeAwardRecipientPublicKey).stream()
-        .map(GenericEventRecord::id)
+    List<GenericEventRecord> eventsByKindAndPubKeyTag = cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), badgeAwardRecipientPublicKey);
+
+    List<String> eventIds = eventsByKindAndPubKeyTag.stream()
+        .map(GenericEventRecord::id).toList();
+
+    List<FollowSetsEvent> list = eventIds.stream()
         .map(this::getEvent).flatMap(Optional::stream).toList();
+
+    return list;
   }
 
   @Override
   public Kind getKind() {
     return Kind.FOLLOW_SETS;
-  }
-
-  private List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getBadgeAwardGenericEventStream(
-      List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents,
-      EventTag eventTag) {
-    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardGenericEvents = badgeAwardAbstractEvents.stream().filter(badgeAwardGenericEvent ->
-    {
-      String id = badgeAwardGenericEvent.getId();
-      String idEvent = eventTag.getIdEvent();
-      boolean equals = id.equals(idEvent);
-      return equals;
-    }).toList();
-    return badgeAwardGenericEvents;
   }
 }

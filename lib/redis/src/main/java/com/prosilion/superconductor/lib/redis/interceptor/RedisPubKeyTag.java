@@ -2,6 +2,8 @@ package com.prosilion.superconductor.lib.redis.interceptor;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.prosilion.nostr.codec.serializer.PubKeyTagSerializer;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.Key;
 import com.prosilion.nostr.tag.Tag;
@@ -10,6 +12,7 @@ import org.springframework.lang.Nullable;
 
 @Tag(code = "p")
 @JsonPropertyOrder({"publicKey", "mainRelayUrl", "petName"})
+@JsonSerialize(using = PubKeyTagSerializer.class)
 public record RedisPubKeyTag(
     @Getter @Key String publicKey,
     @Getter @Nullable @Key @JsonInclude(JsonInclude.Include.NON_NULL) String mainRelayUrl,

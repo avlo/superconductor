@@ -29,6 +29,20 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
   }
 
   @Override
+  public Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getEvent(@NonNull EventTag eventTag) {
+    return getEvent(eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl());
+  }
+
+  @Override
+  public Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getEvent(@NonNull String eventId, @NonNull String url) {
+    Optional<GenericEventRecord> unpopulatedBadgeAwardGenericVoteEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId, url));
+    if (unpopulatedBadgeAwardGenericVoteEvent.isEmpty())
+      return Optional.empty();
+
+    return Optional.of(materialize(unpopulatedBadgeAwardGenericVoteEvent.get()));
+  }
+  
+  @Override
   public BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> materialize(@NonNull GenericEventRecord incomingBadgeAwardGenericEvent) {
     BadgeDefinitionAwardEvent badgeDefinitionAwardEvent = getBadgeDefinitionAwardEvent(incomingBadgeAwardGenericEvent);
 
@@ -36,15 +50,6 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
         incomingBadgeAwardGenericEvent.asGenericEventRecord(), aTag -> badgeDefinitionAwardEvent);
 
     return badgeAwardGenericEvent;
-  }
-
-  @Override
-  public Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getEvent(@NonNull String eventId) {
-    Optional<GenericEventRecord> unpopulatedBadgeAwardGenericVoteEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId));
-    if (unpopulatedBadgeAwardGenericVoteEvent.isEmpty())
-      return Optional.empty();
-
-    return Optional.of(materialize(unpopulatedBadgeAwardGenericVoteEvent.get()));
   }
 
   private BadgeDefinitionAwardEvent getBadgeDefinitionAwardEvent(GenericEventRecord incomingBadgeAwardGenericEvent) {

@@ -8,7 +8,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public interface CacheBadgeAwardReputationEventServiceIF extends CacheBadgeAwardEventServiceIF<BadgeDefinitionReputationEvent, BadgeAwardReputationEvent> {
   @Override
-  Optional<BadgeAwardReputationEvent> getEvent(@NonNull String eventId);
+  Optional<BadgeAwardReputationEvent> getEvent(@NonNull String eventId, @NonNull String url);
   Optional<BadgeAwardReputationEvent> getEvent(
       @NonNull PublicKey awardReputationRecipientPublicKey,
       @NonNull PublicKey eventCreatorPublicKey

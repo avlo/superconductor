@@ -6,6 +6,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public interface CacheBadgeDefinitionReputationEventServiceIF extends CacheTagMappedEventServiceIF<BadgeDefinitionReputationEvent> {
   @Override
-  Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId);
+  Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull String url);
 //  List<FormulaEvent> getFormulaEvents(GenericEventRecord genericEventRecord);
 }

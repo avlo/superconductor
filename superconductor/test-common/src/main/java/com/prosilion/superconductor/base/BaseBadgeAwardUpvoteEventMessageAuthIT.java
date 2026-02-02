@@ -8,8 +8,8 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
 
   public static final Relay relay = new Relay("ws://localhost:5555");
   private final NostrRelayService nostrRelayService;
-  private final BadgeAwardGenericEvent event;
+  private final BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> event;
 
   public BaseBadgeAwardUpvoteEventMessageAuthIT(
       @NonNull Identity superconductorInstanceIdentity,
@@ -32,9 +32,10 @@ public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
 
     this.nostrRelayService = new NostrRelayService(relayUri);
     Identity authorIdentity = Identity.generateRandomIdentity();
-    this.event = new BadgeAwardGenericEvent(
+    this.event = new BadgeAwardGenericEvent<>(
         authorIdentity,
         Identity.generateRandomIdentity().getPublicKey(),
+        relay,
         new BadgeDefinitionAwardEvent(
             superconductorInstanceIdentity,
             new IdentifierTag(IDENTIFIER_TAG_UUID),

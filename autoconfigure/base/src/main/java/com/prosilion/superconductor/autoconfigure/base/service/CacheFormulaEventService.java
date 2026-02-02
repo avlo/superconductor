@@ -7,7 +7,6 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.CacheDereferenceEventTagServiceIF;
@@ -37,8 +36,8 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   }
 
   @Override
-  public Optional<FormulaEvent> getEvent(@NonNull String eventId) {
-    Optional<GenericEventRecord> unpopulatedFormulaEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId));
+  public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url) {
+    Optional<GenericEventRecord> unpopulatedFormulaEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedFormulaEvent.isEmpty())
       return Optional.empty();
 

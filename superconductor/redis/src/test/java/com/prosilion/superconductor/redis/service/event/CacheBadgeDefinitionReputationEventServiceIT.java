@@ -71,7 +71,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         plusOneFormulaEvent);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula));
-    BadgeDefinitionReputationEvent dbRepDefnEvent = cacheBadgeDefinitionReputationEventService.getEvent(badgeDefinitionReputationEventPlusOneFormula.getId()).orElseThrow();
+    BadgeDefinitionReputationEvent dbRepDefnEvent = cacheBadgeDefinitionReputationEventService.getEvent(badgeDefinitionReputationEventPlusOneFormula.getId(), relay.getUrl()).orElseThrow();
     assertTrue(dbRepDefnEvent.getFormulaEvents().contains(plusOneFormulaEvent));
     assertEquals(reputationIdentifierTag, dbRepDefnEvent.getIdentifierTag());
     assertEquals(BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG, dbRepDefnEvent.getExternalIdentityTag());
@@ -120,7 +120,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
     eventServiceIF.processIncomingEvent(new EventMessage(minusOneFormulaEvent));
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEvent));
 
-    BadgeDefinitionReputationEvent dbRepDefnEventPlusMinus = cacheBadgeDefinitionReputationEventService.getEvent(badgeDefinitionReputationEvent.getId()).orElseThrow();
+    BadgeDefinitionReputationEvent dbRepDefnEventPlusMinus = cacheBadgeDefinitionReputationEventService.getEvent(badgeDefinitionReputationEvent.getId(), relay.getUrl()).orElseThrow();
     assertTrue(dbRepDefnEventPlusMinus.getFormulaEvents().contains(plusOneFormulaEvent));
     assertTrue(dbRepDefnEventPlusMinus.getFormulaEvents().contains(minusOneFormulaEvent));
     assertEquals(uniqueIdentifierTag, dbRepDefnEventPlusMinus.getIdentifierTag());

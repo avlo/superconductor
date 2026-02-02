@@ -12,8 +12,10 @@ import com.prosilion.superconductor.base.service.CacheBadgeDefinitionReputationE
 import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.CacheDereferenceEventTagServiceIF;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -21,6 +23,7 @@ import static com.prosilion.superconductor.autoconfigure.base.service.CacheFormu
 
 @Slf4j
 public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDefinitionReputationEventServiceIF {
+  public static final String NON_EXISTENT_ADDRESSTAG_EVENT = "%s getFormulaEvents(genericEventRecord) calling cacheDereferenceAddressTagServiceIF.getEvent(addressTag) contains AddressTag [%s] referencing non-existent FormulaEvent";
   public static final String NON_EXISTENT_FORMULA_EVENT = "BadgeDefinitionReputationEvent [%s] contains AddressTag [%s] referencing non-existent FormulaEvent [%s]";
   private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
   private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
@@ -36,7 +39,7 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId) {
+  public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull String url) {
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId));
     if (unpopulatedBadgeDefinitionReputationEvent.isEmpty())
       return Optional.empty();
@@ -51,7 +54,12 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
         incomingBadgeDefinitionReputationEvent, addressTag ->
         formulaEvents.stream().filter(formulaEvent ->
-            formulaEvent.asAddressTag().equals(addressTag)).findFirst().orElseThrow());
+            formulaEvent.asAddressTag().equals(addressTag)).findFirst().orElseThrow(
+//                () ->
+//            new NostrException(
+//                String.format(NON_EXISTENT_ADDRESS_TAG, genericEventRecord))
+        )
+    );
 
     return badgeDefinitionReputationEvent;
   }
@@ -63,19 +71,23 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
       throw new NostrException(
           String.format(NON_EXISTENT_ADDRESS_TAG, genericEventRecord));
 
-    List<GenericEventRecord> formulaEventsAsGenericEventRecords =
+    Map<GenericEventRecord, String> formulaEventsAsGenericEventRecords =
         addressTagsOfFormulaEvents.stream()
-            .map(cacheDereferenceAddressTagServiceIF::getEvent)
-            .flatMap(Optional::stream)
-            .toList();
+            .collect(
+                Collectors.toMap(addressTag ->
+                        cacheDereferenceAddressTagServiceIF.getEvent(addressTag).orElseThrow(() ->
+                            new NostrException(
+                                String.format(NON_EXISTENT_ADDRESSTAG_EVENT, getClass().getSimpleName(), addressTag))),
+                    addressTag -> addressTag.getRelay().getUrl()));
 
     if (!Objects.equals(addressTagsOfFormulaEvents.size(), formulaEventsAsGenericEventRecords.size()))
       throw new NostrException(
           String.format(NON_EXISTENT_FORMULA_EVENT, genericEventRecord, addressTagsOfFormulaEvents, formulaEventsAsGenericEventRecords));
 
-    List<FormulaEvent> formulaEvents = formulaEventsAsGenericEventRecords.stream()
-        .map(GenericEventRecord::getId)
-        .map(cacheFormulaEventService::getEvent)
+    List<FormulaEvent> formulaEvents = formulaEventsAsGenericEventRecords
+        .entrySet().stream()
+        .map(genericEventRecordStringEntry ->
+            cacheFormulaEventService.getEvent(genericEventRecordStringEntry.getKey().getId(), genericEventRecordStringEntry.getValue()))
         .flatMap(Optional::stream).toList();
 
     return formulaEvents;

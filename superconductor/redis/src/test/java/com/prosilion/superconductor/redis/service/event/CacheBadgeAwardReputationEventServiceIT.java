@@ -46,6 +46,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
   private final CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService;
 
   private final EventServiceIF eventServiceIF;
+  private final Relay relay;
 
   public CacheBadgeAwardReputationEventServiceIT(
       @Value("${superconductor.relay.url}") String relayUri,
@@ -53,7 +54,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
       @NonNull @Qualifier("cacheBadgeAwardReputationEventService") CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeAwardReputationEventService = cacheBadgeAwardReputationEventService;
-    final Relay relay = new Relay(relayUri);
+    this.relay = new Relay(relayUri);
 
     eventServiceIF.processIncomingEvent(
         new EventMessage(
@@ -85,6 +86,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
             new BadgeAwardGenericEvent<>(
                 identity,
                 upvotedUserPublicKey,
+                relay,
                 new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay))));
   }
 
@@ -93,6 +95,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
     BadgeAwardReputationEvent badgeAwardReputationEvent = new BadgeAwardReputationEvent(
         identity,
         upvotedUserPublicKey,
+        relay,
         BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
         badgeDefinitionReputationEventPlusOneFormula,
         BigDecimal.ZERO);

@@ -48,14 +48,16 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.nostrRelayService = new NostrRelayService(relayUrl);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
-
+    Relay relay = new Relay(relayUrl);
+    
     BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent = new BadgeDefinitionAwardEvent(
         superconductorInstanceIdentity,
-        IDENTIFIER_TAG, new Relay(relayUrl));
+        IDENTIFIER_TAG, relay);
 
     BadgeAwardGenericEvent badgeAwardUpvoteEvent = new BadgeAwardGenericEvent(
         authorIdentity,
         upvotedUserPubKey,
+        relay,
         badgeDefinitionUpvoteEvent);
     eventId = badgeAwardUpvoteEvent.getId();
 

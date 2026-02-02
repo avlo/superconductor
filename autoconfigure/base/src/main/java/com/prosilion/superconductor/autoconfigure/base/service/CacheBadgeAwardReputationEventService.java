@@ -26,16 +26,19 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardReputationEventServiceIF {
   public static final String NON_EXISTENT_ADDRESS_TAG_S = "BadgeAwardReputationEvent [%s] contains AddressTag [%s] referencing non-existent BadgeDefinitionReputationEvent";
+  private final String superconductorRelayUrl;
   private final CacheServiceIF cacheServiceIF;
   private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
   private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService;
 
   public CacheBadgeAwardReputationEventService(
+      @NonNull String superconductorRelayUrl,
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
       @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
+    this.superconductorRelayUrl = superconductorRelayUrl;
     this.cacheServiceIF = cacheServiceIF;
     this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
     this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;
@@ -43,8 +46,8 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
   }
 
   @Override
-  public Optional<BadgeAwardReputationEvent> getEvent(@NonNull String eventId) {
-    Optional<GenericEventRecord> unpopulatedBadgeAwardReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId));
+  public Optional<BadgeAwardReputationEvent> getEvent(@NonNull String eventId, @NonNull String url) {
+    Optional<GenericEventRecord> unpopulatedBadgeAwardReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId, url));
     if (unpopulatedBadgeAwardReputationEvent.isEmpty())
       return Optional.empty();
 
@@ -133,7 +136,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
             .findFirst();
 
     return matchingDbBadgeAwardReputationEventGenericEventRecord.flatMap(genericEventRecord ->
-        this.getEvent(genericEventRecord.getId()));
+        this.getEvent(genericEventRecord.getId(), superconductorRelayUrl));
   }
 
   private Stream<GenericEventRecord> getEventsByKindAndAuthorPublicKey(PublicKey eventCreatorPublicKey) {
@@ -147,7 +150,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
   }
 
   private BadgeDefinitionReputationEvent getBadgeDefinitionReputationEvent(@NonNull GenericEventRecord genericEventRecord) {
-    return cacheBadgeDefinitionReputationEventService.getEvent(genericEventRecord.getId()).orElseThrow();
+    return cacheBadgeDefinitionReputationEventService.getEvent(genericEventRecord.getId(), superconductorRelayUrl).orElseThrow();
   }
 
   @Override

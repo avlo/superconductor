@@ -8,6 +8,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public interface CacheFollowSetsEventServiceIF extends CacheTagMappedEventServiceIF<FollowSetsEvent> {
   @Override
-  Optional<FollowSetsEvent> getEvent(@NonNull String eventId);
+  Optional<FollowSetsEvent> getEvent(@NonNull String eventId, @NonNull String url);
   List<FollowSetsEvent> getEventsByPubkeyTag(@NonNull PublicKey badgeAwardRecipientPublicKey);
 }

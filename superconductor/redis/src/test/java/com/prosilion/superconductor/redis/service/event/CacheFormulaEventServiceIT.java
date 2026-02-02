@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class CacheFormulaEventServiceIT {
   public static final String TEST_UNIT_UPVOTE = "TEST_UNIT_UPVOTE";
   public static final String TEST_BADGE_DEFINITION_VOTE = "TEST_BADGE_DEFINITION_VOTE";
+  public static final String INVALID_URL = "ws://localhost:1111";
 
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
   public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(TEST_BADGE_DEFINITION_VOTE);
@@ -72,38 +73,38 @@ public class CacheFormulaEventServiceIT {
     eventServiceIF.processIncomingEvent(new EventMessage(awardDownvoteDefinitionEvent));
 
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote));
-    FormulaEvent dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId()).orElseThrow();
+    FormulaEvent dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(formulaEventUpvote, dbPlusOneFormulaEvent);
     assertEquals(PLUS_ONE_FORMULA, dbPlusOneFormulaEvent.getContent());
     assertEquals(TEST_UNIT_UPVOTE, dbPlusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvote));
-    FormulaEvent dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId()).orElseThrow();
+    FormulaEvent dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(formulaEventDownvote, dbMinusOneFormulaEvent);
     assertEquals(MINUS_ONE_FORMULA, dbMinusOneFormulaEvent.getContent());
     assertEquals(TEST_BADGE_DEFINITION_VOTE, dbMinusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote));
-    dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId()).orElseThrow();
+    dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(formulaEventUpvote, dbPlusOneFormulaEvent);
     assertEquals(PLUS_ONE_FORMULA, dbPlusOneFormulaEvent.getContent());
     assertEquals(TEST_UNIT_UPVOTE, dbPlusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvote));
-    dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId()).orElseThrow();
+    dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(formulaEventDownvote, dbMinusOneFormulaEvent);
     assertEquals(MINUS_ONE_FORMULA, dbMinusOneFormulaEvent.getContent());
     assertEquals(TEST_BADGE_DEFINITION_VOTE, dbMinusOneFormulaEvent.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
     FormulaEvent formulaEventUpvoteIdentical = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, "+1");
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvoteIdentical));
-    dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId()).orElseThrow();
+    dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(PLUS_ONE_FORMULA, formulaEventUpvoteIdentical.getContent());
     assertEquals(TEST_UNIT_UPVOTE, formulaEventUpvoteIdentical.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
     FormulaEvent formulaEventDownvoteIdentical = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-1");
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvoteIdentical));
-    dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId()).orElseThrow();
+    dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(MINUS_ONE_FORMULA, formulaEventDownvoteIdentical.getContent());
     assertEquals(TEST_BADGE_DEFINITION_VOTE, formulaEventDownvoteIdentical.getBadgeDefinitionAwardEvent().getIdentifierTag().getUuid());
 
@@ -112,7 +113,7 @@ public class CacheFormulaEventServiceIT {
     EventTag eventTag = new EventTag(formulaEventUpvoteMisMatch.getId(), null);
     assertEquals(
         String.format(INVALID_REMOTE_URL, eventTag, eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl()),
-        assertThrows(NostrException.class, () -> cacheFormulaEventService.getEvent(formulaEventUpvoteMisMatch.getId()))
+        assertThrows(NostrException.class, () -> cacheFormulaEventService.getEvent(eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl()))
             .getMessage());
 
     FormulaEvent formulaEventDownvoteMisMatch = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-2");
@@ -120,6 +121,6 @@ public class CacheFormulaEventServiceIT {
     EventTag eventTag2 = new EventTag(formulaEventDownvoteMisMatch.getId(), null);
     assertEquals(
         String.format(INVALID_REMOTE_URL, eventTag2, eventTag2.getIdEvent(), eventTag2.getRecommendedRelayUrl()),
-        assertThrows(NostrException.class, () -> cacheFormulaEventService.getEvent(formulaEventDownvoteMisMatch.getId()).isEmpty()).getMessage());
+        assertThrows(NostrException.class, () -> cacheFormulaEventService.getEvent(eventTag2.getIdEvent(), eventTag2.getRecommendedRelayUrl())).getMessage());
   }
 }

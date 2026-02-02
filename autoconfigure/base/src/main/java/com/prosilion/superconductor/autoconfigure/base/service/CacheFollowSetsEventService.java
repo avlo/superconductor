@@ -14,29 +14,34 @@ import com.prosilion.superconductor.base.service.CacheDereferenceEventTagService
 import com.prosilion.superconductor.base.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceIF {
   public static final String NON_EXISTENT_EVENT_ID_S = "FollowSetsEvent [%s] contains AddressTag [%s] referencing non-existent BadgeDefinitionReputationEvent";
+  private final String superconductorRelayUrl;
   private final CacheServiceIF cacheServiceIF;
   private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
   private final CacheBadgeAwardGenericEventServiceIF cacheBadgeGenericAwardEventServiceIF;
 
   public CacheFollowSetsEventService(
+      @NonNull String superconductorRelayUrl,
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF) {
+    this.superconductorRelayUrl = superconductorRelayUrl;
     this.cacheServiceIF = cacheServiceIF;
     this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
     this.cacheBadgeGenericAwardEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
   }
 
   @Override
-  public Optional<FollowSetsEvent> getEvent(@NonNull String eventId) {
+  public Optional<FollowSetsEvent> getEvent(@NonNull String eventId, @NonNull String url) {
 //  TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up    
 //    if (eventTagsOfFollowSetsEvent.size() != 1)
 //      throw new NostrException(
@@ -56,14 +61,17 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
       throw new NostrException(
           String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
 
-    List<GenericEventRecord> badgeAwardEventsAsGenericEventRecords =
+    Map<GenericEventRecord, String> badgeAwardEventsAsGenericEventRecords =
         eventTagsOfFollowSetsEvent.stream()
-            .map(this::getCacheDereferenceEventTagEvent)
-            .flatMap(Optional::stream)
-            .toList();
+            .collect(
+                Collectors.toMap(eventTag ->
+                    getCacheDereferenceEventTagEvent(eventTag).orElseThrow(), EventTag::getRecommendedRelayUrl));
 
-    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords.stream()
-        .map(this::getCacheBadgeGenericAwardEvent)
+    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords
+        .entrySet()
+        .stream()
+        .map(entry ->
+            getCacheBadgeGenericAwardEvent(entry.getKey(), entry.getValue()))
         .flatMap(Optional::stream)
         .toList();
 
@@ -78,8 +86,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     return followSetsEvent;
   }
 
-  private Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getCacheBadgeGenericAwardEvent(GenericEventRecord cacheBadgeGenericAwardEventId) {
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(cacheBadgeGenericAwardEventId.getId());
+  private Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getCacheBadgeGenericAwardEvent(GenericEventRecord cacheBadgeGenericAwardEventId, String url) {
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(cacheBadgeGenericAwardEventId.getId(), url);
     return event;
   }
 
@@ -96,7 +104,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
         .map(GenericEventRecord::id).toList();
 
     List<FollowSetsEvent> list = eventIds.stream()
-        .map(this::getEvent).flatMap(Optional::stream).toList();
+        .map(eventId -> getEvent(eventId, superconductorRelayUrl)).flatMap(Optional::stream).toList();
 
     return list;
   }

@@ -2,12 +2,16 @@ package com.prosilion.superconductor.autoconfigure.jpa.config;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionAwardEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
+import com.prosilion.superconductor.base.service.CacheAddressableEventServiceIF;
 import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagService;
+import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.service.CacheDereferenceEventTagService;
 import com.prosilion.superconductor.base.service.CacheDereferenceEventTagServiceIF;
 import com.prosilion.superconductor.base.service.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheServiceIF;
@@ -85,6 +89,12 @@ public class JpaConfig {
     return new JpaCacheService(eventJpaEntityService, deletionEventJpaEntityService);
   }
 
+  @Bean(name = "cacheDereferenceEventTagService")
+  CacheDereferenceEventTagService cacheDereferenceEventTagService(
+      @NonNull CacheServiceIF cacheServiceIF) {
+    return new CacheDereferenceEventTagService(cacheServiceIF);
+  }
+  
   @Bean(name = "cacheDereferenceAddressTagService")
   CacheDereferenceAddressTagService cacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF) {
@@ -97,6 +107,13 @@ public class JpaConfig {
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagService cacheDereferenceAddressTagService) {
     return new CacheFormulaEventService(cacheServiceIF, cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagService);
+  }
+
+  @Bean(name = "cacheBadgeDefinitionAwardEventService")
+  CacheAddressableEventServiceIF cacheBadgeDefinitionAwardEventService(
+      @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
+      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
+    return new CacheBadgeDefinitionAwardEventService(cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagServiceIF);
   }
 
 //  @Bean(name = "cacheBadgeDefinitionReputationEventService")

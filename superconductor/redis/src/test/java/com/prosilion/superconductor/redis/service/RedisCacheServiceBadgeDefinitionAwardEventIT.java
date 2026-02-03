@@ -2,7 +2,7 @@
 //
 //import com.ezylang.evalex.parser.ParseException;
 //import com.prosilion.nostr.NostrException;
-//import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+//import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 //import com.prosilion.nostr.event.BaseEvent;
 //import com.prosilion.nostr.event.DeletionEvent;
 //import com.prosilion.nostr.event.EventIF;
@@ -37,63 +37,63 @@
 //@ActiveProfiles("test")
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 //@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-//public class RedisCacheServiceBadgeDefinitionAwardEventIT {
+//public class RedisCacheServiceBadgeDefinitionGenericEventIT {
 //  public static final Relay relay = new Relay("ws://localhost:5555");
 //  private final Identity identity;
 //
 //  private final CacheFormulaEventService cacheFormulaEventService;
-//  private final BadgeDefinitionAwardEvent badgeDefinitionAwardEvent;
+//  private final BadgeDefinitionGenericEvent badgeDefinitionGenericEvent;
 //
 //  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
 //  public final String PLUS_ONE_FORMULA = "+1";
 //
-//  private BaseEvent eventNosqlEntityIFBadgeDefinitionAwardEvent;
+//  private BaseEvent eventNosqlEntityIFBadgeDefinitionGenericEvent;
 //
 //  @Autowired
-//  public RedisCacheServiceBadgeDefinitionAwardEventIT(
+//  public RedisCacheServiceBadgeDefinitionGenericEventIT(
 //      @NonNull Identity superconductorInstanceIdentity,
 //      CacheFormulaEventService cacheFormulaEventService) {
 //    this.identity = superconductorInstanceIdentity;
 //    this.cacheFormulaEventService = cacheFormulaEventService;
-//    this.badgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
+//    this.badgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
 //  }
 //
 //  @Test
 //  @Order(1)
 //  void testNonExistentEventTag() {
-//    assertThrows(NostrException.class, () -> cacheFormulaEventService.save(this.badgeDefinitionAwardEvent));
-//    this.eventNosqlEntityIFBadgeDefinitionAwardEvent = redisCacheServiceIF.save(this.badgeDefinitionAwardEvent);
+//    assertThrows(NostrException.class, () -> cacheFormulaEventService.save(this.badgeDefinitionGenericEvent));
+//    this.eventNosqlEntityIFBadgeDefinitionGenericEvent = redisCacheServiceIF.save(this.badgeDefinitionGenericEvent);
 //
 //  }
 //
 //  @Test
 //  @Order(2)
 //  void testExistentEventTag() {
-//    cacheFormulaEventService.save(this.badgeDefinitionAwardEvent);
-//    cacheFormulaEventService.save(this.badgeDefinitionAwardEvent);
-//    this.eventNosqlEntityIFBadgeDefinitionAwardEvent = cacheFormulaEventService.save(this.badgeDefinitionAwardEvent);
+//    cacheFormulaEventService.save(this.badgeDefinitionGenericEvent);
+//    cacheFormulaEventService.save(this.badgeDefinitionGenericEvent);
+//    this.eventNosqlEntityIFBadgeDefinitionGenericEvent = cacheFormulaEventService.save(this.badgeDefinitionGenericEvent);
 //
 //  }
 //
 //  @Test
 //  @Order(3)
 //  void testGetByEventId() {
-//    assertNotNull(eventNosqlEntityIFBadgeDefinitionAwardEvent);
-//    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionAwardEvent);
+//    assertNotNull(eventNosqlEntityIFBadgeDefinitionGenericEvent);
+//    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionGenericEvent);
 //
 //    List<FormulaEvent> all = cacheFormulaEventService.getAll();
 //
 //    assertTrue(all.stream()
 //        .map(BaseEvent::getId)
-//        .anyMatch(e -> e.equals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId())));
+//        .anyMatch(e -> e.equals(eventNosqlEntityIFBadgeDefinitionGenericEvent.getId())));
 //
-//    EventIF firstRetrievedEventEntityIF = cacheFormulaEventService.getEventByEventId(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId()).orElseThrow();
-//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId(), firstRetrievedEventEntityIF.getId());
+//    EventIF firstRetrievedEventEntityIF = cacheFormulaEventService.getEventByEventId(eventNosqlEntityIFBadgeDefinitionGenericEvent.getId()).orElseThrow();
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionGenericEvent.getId(), firstRetrievedEventEntityIF.getId());
 //
-//    assertEquals(badgeDefinitionAwardEvent, firstRetrievedEventEntityIF);
+//    assertEquals(badgeDefinitionGenericEvent, firstRetrievedEventEntityIF);
 //
-//    EventIF secondRetrievedEntityIF = cacheFormulaEventService.getEventByEventId(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId()).orElseThrow();
-//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId(), secondRetrievedEntityIF.getId());
+//    EventIF secondRetrievedEntityIF = cacheFormulaEventService.getEventByEventId(eventNosqlEntityIFBadgeDefinitionGenericEvent.getId()).orElseThrow();
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionGenericEvent.getId(), secondRetrievedEntityIF.getId());
 //
 ////    TODO: readd below test after GenericEventKindDto/GenericEventKindType have been upgraded
 //    assertEquals(firstRetrievedEventEntityIF, secondRetrievedEntityIF);
@@ -101,34 +101,34 @@
 //
 //  @Test
 //  void testGetByEventIdString() {
-//    assertNotNull(eventNosqlEntityIFBadgeDefinitionAwardEvent);
-//    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionAwardEvent);
+//    assertNotNull(eventNosqlEntityIFBadgeDefinitionGenericEvent);
+//    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionGenericEvent);
 //
 //    assertTrue(cacheFormulaEventService.getAll().stream()
 //        .map(EventIF::getId)
-//        .anyMatch(e -> e.equals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId())));
+//        .anyMatch(e -> e.equals(eventNosqlEntityIFBadgeDefinitionGenericEvent.getId())));
 //
 //    log.info("********************");
 //    log.info("********************");
-//    log.info("expicitly saved id: {}", eventNosqlEntityIFBadgeDefinitionAwardEvent);
+//    log.info("expicitly saved id: {}", eventNosqlEntityIFBadgeDefinitionGenericEvent);
 //    log.info("retrieved ids:");
 ////    all.stream().map(EventNosqlEntityIF::getId).forEach(id -> log.info("  {}", id));
 //    log.info("********************");
 //    log.info("********************");
 //
-//    EventIF firstRetrieval = cacheFormulaEventService.getEventByEventId(badgeDefinitionAwardEvent.getId()).orElseThrow();
-//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId(), firstRetrieval.getId());
+//    EventIF firstRetrieval = cacheFormulaEventService.getEventByEventId(badgeDefinitionGenericEvent.getId()).orElseThrow();
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionGenericEvent.getId(), firstRetrieval.getId());
 //
-//    EventIF secondRetrieval = cacheFormulaEventService.getEventByEventId(badgeDefinitionAwardEvent.getId()).orElseThrow();
-//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent.getId(), secondRetrieval.getId());
+//    EventIF secondRetrieval = cacheFormulaEventService.getEventByEventId(badgeDefinitionGenericEvent.getId()).orElseThrow();
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionGenericEvent.getId(), secondRetrieval.getId());
 //
 //    assertEquals(firstRetrieval, secondRetrieval);
 //
-//    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(badgeDefinitionAwardEvent);
+//    GenericNosqlEntityKindDto firstDto = new GenericNosqlEntityKindDto(badgeDefinitionGenericEvent);
 //    EventIF firstEntity = firstDto.convertDtoToNosqlEntity();
 ////    assertEquals(firstEntity, firstRetrieval);
 //
-//    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(badgeDefinitionAwardEvent);
+//    GenericNosqlEntityKindDto secondDto = new GenericNosqlEntityKindDto(badgeDefinitionGenericEvent);
 //    EventIF secondEntity = secondDto.convertDtoToNosqlEntity();
 //
 //    assertEquals(firstEntity, secondEntity);
@@ -140,8 +140,8 @@
 //    int startSize = cacheFormulaEventService.getAll().size();
 //    log.debug("startSize: {}", startSize);
 //
-//    EventIF savedUidOfDuplicate = cacheFormulaEventService.save(badgeDefinitionAwardEvent);
-//    assertEquals(eventNosqlEntityIFBadgeDefinitionAwardEvent, savedUidOfDuplicate);
+//    EventIF savedUidOfDuplicate = cacheFormulaEventService.save(badgeDefinitionGenericEvent);
+//    assertEquals(eventNosqlEntityIFBadgeDefinitionGenericEvent, savedUidOfDuplicate);
 //
 //    int endSize = cacheFormulaEventService.getAll().size();
 //    log.debug("endSize: {}", endSize);
@@ -150,7 +150,7 @@
 //
 //  @Test
 //  void testDeletedEvent() throws ParseException {
-//    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionAwardEvent);
+//    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionGenericEvent);
 //
 //    List<FormulaEvent> all = cacheFormulaEventService.getAll();
 //    int sizeBeforeDeleteMeEvent = all.size();
@@ -158,7 +158,7 @@
 //
 //    FormulaEvent eventToDelete = new FormulaEvent(
 //        identity,
-//        new BadgeDefinitionAwardEvent(
+//        new BadgeDefinitionGenericEvent(
 //            identity,
 //            upvoteIdentifierTag,
 //            relay,
@@ -201,7 +201,7 @@
 //    assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 //
 //    FormulaEvent secondEventToDelete =
-//        new FormulaEvent(identity, new BadgeDefinitionAwardEvent(
+//        new FormulaEvent(identity, new BadgeDefinitionGenericEvent(
 //            identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA), PLUS_ONE_FORMULA);
 //    assertEquals(secondEventToDelete.getId(), cacheFormulaEventService.save(secondEventToDelete).getId());
 //

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.util;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.AwardEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.PubKeyTag;
@@ -15,7 +15,7 @@ import org.springframework.lang.NonNull;
 public class Vote {
   private final AwardEvent awardEvent;
 
-  public Vote(@NonNull PublicKey upvotedUser, @NonNull BadgeDefinitionAwardEvent badgeDefinitionVoteEvent) {
+  public Vote(@NonNull PublicKey upvotedUser, @NonNull BadgeDefinitionGenericEvent badgeDefinitionVoteEvent) {
     AddressTag addressTag = new AddressTag(
         Kind.BADGE_DEFINITION_EVENT,
         badgeDefinitionVoteEvent.getPublicKey(),

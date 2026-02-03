@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.jpa.config;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionAwardEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
@@ -94,7 +94,7 @@ public class JpaConfig {
       @NonNull CacheServiceIF cacheServiceIF) {
     return new CacheDereferenceEventTagService(cacheServiceIF);
   }
-  
+
   @Bean(name = "cacheDereferenceAddressTagService")
   CacheDereferenceAddressTagService cacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF) {
@@ -109,11 +109,11 @@ public class JpaConfig {
     return new CacheFormulaEventService(cacheServiceIF, cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagService);
   }
 
-  @Bean(name = "cacheBadgeDefinitionAwardEventService")
-  CacheAddressableEventServiceIF cacheBadgeDefinitionAwardEventService(
+  @Bean(name = "cacheBadgeDefinitionGenericEventService")
+  CacheAddressableEventServiceIF cacheBadgeDefinitionGenericEventService(
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
-    return new CacheBadgeDefinitionAwardEventService(cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagServiceIF);
+    return new CacheBadgeDefinitionGenericEventService(cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagServiceIF);
   }
 
 //  @Bean(name = "cacheBadgeDefinitionReputationEventService")

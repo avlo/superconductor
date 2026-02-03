@@ -3,7 +3,7 @@ package com.prosilion.superconductor.redis.service.event;
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -58,7 +58,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
 
     eventServiceIF.processIncomingEvent(
         new EventMessage(
-            new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay)));
+            new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay)));
 
     eventServiceIF.processIncomingEvent(
         new EventMessage(
@@ -66,7 +66,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
                 identity,
                 upvoteIdentifierTag,
                 relay,
-                new BadgeDefinitionAwardEvent(
+                new BadgeDefinitionGenericEvent(
                     identity,
                     upvoteIdentifierTag,
                     relay),
@@ -77,7 +77,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
         reputationIdentifierTag,
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-        new FormulaEvent(identity, upvoteIdentifierTag, relay, new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay), PLUS_ONE_FORMULA));
+        new FormulaEvent(identity, upvoteIdentifierTag, relay, new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay), PLUS_ONE_FORMULA));
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula));
 
@@ -87,7 +87,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
                 identity,
                 upvotedUserPublicKey,
                 relay,
-                new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay))));
+                new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay))));
   }
 
   @Test

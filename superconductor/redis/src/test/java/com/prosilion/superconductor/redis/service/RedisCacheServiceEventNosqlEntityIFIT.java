@@ -1,7 +1,7 @@
 //package com.prosilion.superconductor.redis.service;
 //
 //import com.ezylang.evalex.parser.ParseException;
-//import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+//import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 //import com.prosilion.nostr.event.BaseEvent;
 //import com.prosilion.nostr.event.DeletionEvent;
 //import com.prosilion.nostr.event.EventIF;
@@ -49,7 +49,7 @@
 //    this.formulaEvent =
 //        new FormulaEvent(
 //            IDENTITY,
-//            new BadgeDefinitionAwardEvent(
+//            new BadgeDefinitionGenericEvent(
 //                IDENTITY, upvoteIdentifierTag, relay, AWARD_EVENT_CONTENT),
 //            PLUS_ONE_FORMULA);
 //
@@ -144,7 +144,7 @@
 //
 //    FormulaEvent eventToDelete = new FormulaEvent(
 //        IDENTITY,
-//        new BadgeDefinitionAwardEvent(
+//        new BadgeDefinitionGenericEvent(
 //            IDENTITY,
 //            upvoteIdentifierTag,
 //            relay, 
@@ -201,7 +201,7 @@
 //    assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 //
 //    FormulaEvent secondEventToDelete =
-//        new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
+//        new FormulaEvent(IDENTITY, new BadgeDefinitionGenericEvent(
 //            IDENTITY, upvoteIdentifierTag, relay, 
 //            AWARD_EVENT_CONTENT), PLUS_ONE_FORMULA);
 //    assertEquals(secondEventToDelete.getId(), redisCacheService.save(secondEventToDelete).getId());

@@ -18,7 +18,7 @@ public interface CacheBadgeAwardReputationEventServiceIF extends CacheBadgeAward
 //  BadgeDefinitionReputationEvent getBadgeDefinitionReputationEvent(@NonNull GenericEventRecord genericEventRecord);
 //
 //  @Override
-//  default BadgeDefinitionReputationEvent getBadgeDefinitionAwardEvent(@NonNull GenericEventRecord genericEventRecord) {
+//  default BadgeDefinitionReputationEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord genericEventRecord) {
 //    return getBadgeDefinitionReputationEvent(genericEventRecord);
 //  }
 }

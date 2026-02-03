@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.service;
 
 import com.ezylang.evalex.parser.ParseException;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -23,7 +23,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //  private static final Identity IDENTITY = Factory.createNewIdentity();
 
   private final EventPluginIF eventPluginIF;
-  private final BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent;
+  private final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent;
   private final FormulaEvent formulaEvent;
 
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
@@ -31,7 +31,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 
   public BaseCacheServiceGenericEventRecordUsingFormulaEventIT(EventPluginIF eventPluginIF, @NonNull Identity superconductorInstanceIdentity) throws ParseException {
     this.eventPluginIF = eventPluginIF;
-    this.badgeDefinitionUpvoteEvent = new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, IDENTIFIER_TAG, relay);
+    this.badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, IDENTIFIER_TAG, relay);
 
 //    BadgeAwardGenericEvent badgeAwardUpvoteEvent = new BadgeAwardGenericEvent(
 //        authorIdentity,
@@ -56,13 +56,13 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //            .getMessage().contains(
 //                Strings.concat(
 //                    String.format(CacheFormulaEventService.NON_EXISTENT_EVENT_ID_S, formulaEvent.getId()),
-//                    String.format("[%s]", badgeDefinitionAwardEvent.getId()))));
+//                    String.format("[%s]", badgeDefinitionGenericEvent.getId()))));
 //  }
 //
 //  @Test
 //  @Order(30)
 //  void testExistentEventTag() throws ParseException {
-//    eventPluginIF.processIncomingEvent(this.badgeDefinitionAwardEvent);
+//    eventPluginIF.processIncomingEvent(this.badgeDefinitionGenericEvent);
 //    eventPluginIF.processIncomingEvent(this.formulaEvent);
 //    FormulaEvent savedFormulaEvent = cacheFormulaEventService.getFormulaEvent(formulaEvent.getId()).orElseThrow();
 //    assertNotNull(savedFormulaEvent);
@@ -125,7 +125,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //
 //    FormulaEvent eventToDelete = new FormulaEvent(
 //        IDENTITY,
-//        badgeDefinitionAwardEvent,
+//        badgeDefinitionGenericEvent,
 //        PLUS_ONE_FORMULA);
 //    eventPluginIF.processIncomingEvent(eventToDelete);
 //    Assertions.assertEquals(eventToDelete, cacheFormulaEventService.getFormulaEvent(eventToDelete.getId()).orElseThrow());
@@ -167,7 +167,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //    assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 //
 //    FormulaEvent secondEventToDelete =
-//        new FormulaEvent(IDENTITY, new BadgeDefinitionAwardEvent(
+//        new FormulaEvent(IDENTITY, new BadgeDefinitionGenericEvent(
 //            IDENTITY,
 //            upvoteIdentifierTag,
 //            relay,

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.redis.config;
 
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
@@ -18,25 +18,25 @@ import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TE
 public class BadgeDefinitionRedisTestConfig {
 
   @Bean(name = "badgeDefinitionUpvoteEvent")
-  BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent(
+  BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(TEST_UNIT_UPVOTE), new Relay(superconductorRelayUrl));
+    return new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, new IdentifierTag(TEST_UNIT_UPVOTE), new Relay(superconductorRelayUrl));
   }
 
   @Bean(name = "badgeDefinitionDownvoteEvent")
-  BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent(
+  BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(TEST_UNIT_DOWNVOTE), new Relay(superconductorRelayUrl));
+    return new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, new IdentifierTag(TEST_UNIT_DOWNVOTE), new Relay(superconductorRelayUrl));
   }
 
 //  @Bean
 //  @ConditionalOnMissingBean
 //  DataLoaderRedisTestIF dataLoaderRedis(
 //      @NonNull CacheServiceIF cacheService,
-//      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
-//      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent) {
+//      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent,
+//      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent) {
 //    log.info("class {} dataLoaderRedis() method called with bean parameters:\n  - {}\n  - {}\n  - {}",
 //        getClass().getSimpleName(),
 //        cacheService,

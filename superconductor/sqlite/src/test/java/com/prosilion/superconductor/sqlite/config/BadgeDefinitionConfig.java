@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.sqlite.config;
 
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
@@ -20,22 +20,22 @@ public class BadgeDefinitionConfig {
   @ConditionalOnMissingBean
   DataLoaderJpaIF dataLoaderJpa(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
-      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent,
-      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent) {
+      @NonNull @Qualifier("badgeDefinitionUpvoteEvent") BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent,
+      @NonNull @Qualifier("badgeDefinitionDownvoteEvent") BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent) {
     return new DataLoaderJpa(eventPlugin, badgeDefinitionUpvoteEvent, badgeDefinitionDownvoteEvent);
   }
 
   @Bean(name = "badgeDefinitionUpvoteEvent")
-  BadgeDefinitionAwardEvent badgeDefinitionUpvoteEvent(
+  BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_UPVOTE), new Relay(superconductorRelayUrl));
+    return new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_UPVOTE), new Relay(superconductorRelayUrl));
   }
 
   @Bean(name = "badgeDefinitionDownvoteEvent")
-  BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent(
+  BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionAwardEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_DOWNVOTE), new Relay(superconductorRelayUrl));
+    return new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, new IdentifierTag(UNIT_DOWNVOTE), new Relay(superconductorRelayUrl));
   }
 }

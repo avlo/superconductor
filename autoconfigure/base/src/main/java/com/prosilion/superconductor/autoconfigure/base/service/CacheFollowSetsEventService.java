@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
@@ -46,7 +46,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 //    if (eventTagsOfFollowSetsEvent.size() != 1)
 //      throw new NostrException(
 //          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedFollowSetsEvent, eventTagsOfFollowSetsEvent.size()));    
-    Optional<GenericEventRecord> unpopulatedFollowSetsEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId));
+    Optional<GenericEventRecord> unpopulatedFollowSetsEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedFollowSetsEvent.isEmpty())
       return Optional.empty();
 
@@ -67,7 +67,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
                 Collectors.toMap(eventTag ->
                     getCacheDereferenceEventTagEvent(eventTag).orElseThrow(), EventTag::getRecommendedRelayUrl));
 
-    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords
+    List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardAbstractEvents = badgeAwardEventsAsGenericEventRecords
         .entrySet()
         .stream()
         .map(entry ->
@@ -75,7 +75,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
         .flatMap(Optional::stream)
         .toList();
 
-    Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> fxn = eventTag ->
+    Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> fxn = eventTag ->
         badgeAwardAbstractEvents.stream()
             .filter(badgeAwardGenericEvent ->
                 badgeAwardGenericEvent.getId().equals(eventTag.getIdEvent())).findFirst().orElseThrow();
@@ -86,8 +86,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     return followSetsEvent;
   }
 
-  private Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> getCacheBadgeGenericAwardEvent(GenericEventRecord cacheBadgeGenericAwardEventId, String url) {
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(cacheBadgeGenericAwardEventId.getId(), url);
+  private Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getCacheBadgeGenericAwardEvent(GenericEventRecord cacheBadgeGenericAwardEventId, String url) {
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(cacheBadgeGenericAwardEventId.getId(), url);
     return event;
   }
 

@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
@@ -24,7 +24,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
 
   public static final Relay relay = new Relay("ws://localhost:5555");
   private final NostrRelayService nostrRelayService;
-  private final BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> event;
+  private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event;
 
   public BaseBadgeAwardUpvoteEventMessageAuthIT(
       @NonNull Identity superconductorInstanceIdentity,
@@ -36,7 +36,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
         authorIdentity,
         Identity.generateRandomIdentity().getPublicKey(),
         relay,
-        new BadgeDefinitionAwardEvent(
+        new BadgeDefinitionGenericEvent(
             superconductorInstanceIdentity,
             new IdentifierTag(IDENTIFIER_TAG_UUID),
             relay));

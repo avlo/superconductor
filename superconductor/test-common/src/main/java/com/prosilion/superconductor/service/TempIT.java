@@ -2,7 +2,7 @@
 //
 //import com.ezylang.evalex.parser.ParseException;
 //import com.prosilion.nostr.NostrException;
-//import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+//import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 //import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 //import com.prosilion.nostr.event.FormulaEvent;
 //import com.prosilion.nostr.event.internal.Relay;
@@ -32,7 +32,7 @@
 //  private final CacheFormulaEventService cacheFormulaEventService;
 //  private final CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService;
 //  private final EventPluginIF eventPluginIF;
-//  private final BadgeDefinitionAwardEvent badgeDefinitionAwardEvent;
+//  private final BadgeDefinitionGenericEvent badgeDefinitionGenericEvent;
 //  private final FormulaEvent formulaEvent;
 //
 //  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
@@ -50,13 +50,13 @@
 //    this.eventPluginIF = eventPluginIF;
 //    this.cacheFormulaEventService = (CacheFormulaEventService) cacheFormulaEventService;
 //    this.cacheBadgeDefinitionReputationEventService = (CacheBadgeDefinitionReputationEventService) cacheBadgeDefinitionReputationEventService;
-//    this.badgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
+//    this.badgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
 //
 //    this.formulaEvent =
 //        new FormulaEvent(
 //            identity,
 //            upvoteIdentifierTag,
-//            badgeDefinitionAwardEvent,
+//            badgeDefinitionGenericEvent,
 //            PLUS_ONE_FORMULA);
 //  }
 //
@@ -69,9 +69,9 @@
 //            .getMessage().contains(
 //                Strings.concat(
 //                    String.format(CacheFormulaEventService.NON_EXISTENT_EVENT_ID_S, formulaEvent.getId()),
-//                    String.format("[%s]", badgeDefinitionAwardEvent.getId()))));
+//                    String.format("[%s]", badgeDefinitionGenericEvent.getId()))));
 //
-//    eventPluginIF.processIncomingEvent(this.badgeDefinitionAwardEvent);
+//    eventPluginIF.processIncomingEvent(this.badgeDefinitionGenericEvent);
 //    eventPluginIF.processIncomingEvent(this.formulaEvent);
 //    FormulaEvent savedFormulaEvent = cacheFormulaEventService.getFormulaEvent(formulaEvent.getId()).orElseThrow();
 //    assertNotNull(savedFormulaEvent);

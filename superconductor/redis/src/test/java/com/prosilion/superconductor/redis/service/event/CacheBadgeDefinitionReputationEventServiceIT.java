@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -54,7 +54,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
     this.cacheBadgeDefinitionReputationEventService = cacheBadgeDefinitionReputationEventService;
     this.relay = new Relay(relayUri);
 
-    BadgeDefinitionAwardEvent awardUpvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay);
+    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
     eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
 
     plusOneFormulaEvent = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
@@ -82,15 +82,15 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         .toList().contains(PLUS_ONE_FORMULA));
 
     assertTrue(dbRepDefnEvent.getFormulaEvents().stream()
-        .map(FormulaEvent::getBadgeDefinitionAwardEvent)
-        .map(BadgeDefinitionAwardEvent::getIdentifierTag)
+        .map(FormulaEvent::getBadgeDefinitionGenericEvent)
+        .map(BadgeDefinitionGenericEvent::getIdentifierTag)
         .map(IdentifierTag::getUuid).toList().contains(TEST_UNIT_UPVOTE));
 
     String BADGE_DEFINITION_VOTE = "BADGE_DEFINITION_VOTE";
     String MINUS_ONE_FORMULA = "-1";
     IdentifierTag downvoteIdentifierTag = new IdentifierTag(BADGE_DEFINITION_VOTE);
 
-    BadgeDefinitionAwardEvent awardDownvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, relay);
+    BadgeDefinitionGenericEvent awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, downvoteIdentifierTag, relay);
     FormulaEvent minusOneFormulaEvent = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneMinusOne = new BadgeDefinitionReputationEvent(
@@ -130,8 +130,8 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         .map(FormulaEvent::getFormula)
         .toList().contains(MINUS_ONE_FORMULA));
     assertTrue(dbRepDefnEventPlusMinus.getFormulaEvents().stream()
-        .map(FormulaEvent::getBadgeDefinitionAwardEvent)
-        .map(BadgeDefinitionAwardEvent::getIdentifierTag)
+        .map(FormulaEvent::getBadgeDefinitionGenericEvent)
+        .map(BadgeDefinitionGenericEvent::getIdentifierTag)
         .map(IdentifierTag::getUuid).toList().contains(BADGE_DEFINITION_VOTE));
 
 

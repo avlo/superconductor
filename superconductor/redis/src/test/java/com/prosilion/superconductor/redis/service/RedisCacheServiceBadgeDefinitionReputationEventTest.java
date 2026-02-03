@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.redis.service;
 
 import com.ezylang.evalex.parser.ParseException;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -35,8 +35,8 @@ public class RedisCacheServiceBadgeDefinitionReputationEventTest {
   private final IdentifierTag upvoteIdTag = new IdentifierTag(TEST_UNIT_UPVOTE);
   private final IdentifierTag downvoteIdTag = new IdentifierTag(TEST_UNIT_DOWNVOTE);
   private final IdentifierTag reputationIdTag = new IdentifierTag(TEST_UNIT_REPUTATION);
-  private final BadgeDefinitionAwardEvent upvoteDefnEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdTag, relay, PLUS_ONE);
-  private final BadgeDefinitionAwardEvent downvoteDefnEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdTag, relay, MINUS_ONE);
+  private final BadgeDefinitionGenericEvent upvoteDefnEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdTag, relay, PLUS_ONE);
+  private final BadgeDefinitionGenericEvent downvoteDefnEvent = new BadgeDefinitionGenericEvent(identity, downvoteIdTag, relay, MINUS_ONE);
 
   private final CacheServiceIF redisCacheServiceIF;
 

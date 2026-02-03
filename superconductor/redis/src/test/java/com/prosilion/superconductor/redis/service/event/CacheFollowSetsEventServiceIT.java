@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -44,7 +44,7 @@ public class CacheFollowSetsEventServiceIT {
   public final Identity identity = Identity.generateRandomIdentity();
   private final PublicKey reputationRecipientPublicKey = Identity.generateRandomIdentity().getPublicKey();
 
-  private final BadgeAwardGenericEvent<BadgeDefinitionAwardEvent> badgeAwardUpvoteEvent;
+  private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
 
   private final Relay relay;
@@ -58,7 +58,7 @@ public class CacheFollowSetsEventServiceIT {
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
     this.relay = new Relay(relayUri);
 
-    BadgeDefinitionAwardEvent awardUpvoteDefinitionEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay);
+    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
     eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
 
     FormulaEvent plusOneFormulaEvent = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
@@ -95,7 +95,7 @@ public class CacheFollowSetsEventServiceIT {
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent));
 
     FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId(), relay.getUrl()).orElseThrow();
-    List<BadgeAwardGenericEvent<BadgeDefinitionAwardEvent>> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
+    List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
     assertTrue(badgeAwardAbstractEvents.contains(badgeAwardUpvoteEvent));
 
     PublicKey matchPubkey = Filterable.getTypeSpecificTags(PubKeyTag.class, dbFollowSetsEventByEventId).stream().map(PubKeyTag::getPublicKey).findFirst().orElseThrow();

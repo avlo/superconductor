@@ -2,7 +2,7 @@
 //
 //import com.prosilion.nostr.enums.Kind;
 //import com.prosilion.nostr.event.BadgeAwardAbstractEvent;
-//import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+//import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 //import com.prosilion.nostr.event.BaseEvent;
 //import com.prosilion.nostr.event.FormulaEvent;
 //import com.prosilion.nostr.event.GenericEventRecord;
@@ -51,7 +51,7 @@
 //    return switch (kind) {
 //      case Kind.BADGE_AWARD_EVENT -> (Class<T>) BadgeAwardAbstractEvent.class;
 //      case Kind.ARBITRARY_CUSTOM_APP_DATA -> (Class<T>) FormulaEvent.class;
-//      case Kind.BADGE_DEFINITION_EVENT -> (Class<T>) BadgeDefinitionAwardEvent.class;
+//      case Kind.BADGE_DEFINITION_EVENT -> (Class<T>) BadgeDefinitionGenericEvent.class;
 //      default -> (Class<T>) TextNoteEvent.class;
 //    };
 //  }

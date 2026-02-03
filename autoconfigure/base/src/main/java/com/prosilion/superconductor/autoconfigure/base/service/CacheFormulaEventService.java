@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.base.service;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
@@ -20,7 +20,7 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   public static final String NON_EXISTENT_ADDRESS_TAG = "FormulaEvent [%s] is missing required AddressTag";
-  public static final String NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S = "FormulaEvent [%s] contains AddressTag referencing non-existent BadgeDefinitionAwardEvent";
+  public static final String NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S = "FormulaEvent [%s] contains AddressTag referencing non-existent BadgeDefinitionGenericEvent";
   public static final String FORMATTED = "formula event found with matching author public key and identifier tag (UUID) but with different formula:\n  (db) [%s]\n    -vs- (incoming formula) [%s]\n";
   private final CacheServiceIF cacheServiceIF;
   private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
@@ -47,11 +47,11 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   @Override
   public FormulaEvent materialize(@NonNull GenericEventRecord incomingFormulaEvent) {
     log.debug("processing incoming EventIF as FORMULA EVENT: [{}]", incomingFormulaEvent);
-    BadgeDefinitionAwardEvent badgeDefinitionAwardEvent = getBadgeDefinitionAwardEvent(incomingFormulaEvent.asGenericEventRecord());
+    BadgeDefinitionGenericEvent badgeDefinitionGenericEvent = getBadgeDefinitionGenericEvent(incomingFormulaEvent.asGenericEventRecord());
 
     FormulaEvent formulaEvent = new FormulaEvent(
         incomingFormulaEvent.asGenericEventRecord(),
-        addressTag -> badgeDefinitionAwardEvent);
+        addressTag -> badgeDefinitionGenericEvent);
 
 // check for existing formula event using pubkey and identifier tag
     Optional<GenericEventRecord> dbOptionalFormulaEvent = cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
@@ -94,7 +94,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     return formulaEvent;
   }
 
-  private BadgeDefinitionAwardEvent getBadgeDefinitionAwardEvent(@NonNull GenericEventRecord genericEventRecord) {
+  private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord genericEventRecord) {
     AddressTag firstAddressTag = Filterable.getTypeSpecificTagsStream(AddressTag.class, genericEventRecord)
         .findFirst().orElseThrow(() ->
             new NostrException(
@@ -104,20 +104,20 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
         new NostrException(
             String.format(NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S, genericEventRecord)));
 
-    BadgeDefinitionAwardEvent addressTagNowBadgeDefinitionAwardEvent = new BadgeDefinitionAwardEvent(firstAddressTagAsEvent);
+    BadgeDefinitionGenericEvent addressTagNowBadgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(firstAddressTagAsEvent);
 
-    return addressTagNowBadgeDefinitionAwardEvent;
+    return addressTagNowBadgeDefinitionGenericEvent;
   }
 
   @Override
-  public List<FormulaEvent> getFormulaEventsGivenAssociatedBadgeDefinitionAwardEvent(@NonNull BadgeDefinitionAwardEvent badgeDefinitionAwardEvent) {
+  public List<FormulaEvent> getFormulaEventsGivenAssociatedBadgeDefinitionGenericEvent(@NonNull BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
     List<FormulaEvent> formulaEvents = cacheServiceIF.getByKind(
             Kind.ARBITRARY_CUSTOM_APP_DATA).stream()
         .map(ger ->
             new FormulaEvent(ger, aTag ->
-                getBadgeDefinitionAwardEvent(ger)))
+                getBadgeDefinitionGenericEvent(ger)))
         .filter(formulaEvent ->
-            formulaEvent.getBadgeDefinitionAwardEvent().equals(badgeDefinitionAwardEvent))
+            formulaEvent.getBadgeDefinitionGenericEvent().equals(badgeDefinitionGenericEvent))
         .toList();
 
     return formulaEvents;

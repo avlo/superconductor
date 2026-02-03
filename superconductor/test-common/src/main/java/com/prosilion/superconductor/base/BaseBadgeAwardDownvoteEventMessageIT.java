@@ -3,7 +3,7 @@ package com.prosilion.superconductor.base;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
@@ -18,8 +18,8 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
 import java.util.List;
@@ -49,12 +49,12 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
     this.nostrRelayService = new NostrRelayService(relayUrl);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     Relay relay = new Relay(relayUrl);
-    
-    BadgeDefinitionAwardEvent badgeDefinitionDownvoteEvent = new BadgeDefinitionAwardEvent(
+
+    BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent = new BadgeDefinitionGenericEvent(
         superconductorInstanceIdentity,
         IDENTIFIER_TAG, relay);
 
-    BadgeAwardGenericEvent badgeAwardDownvoteEvent = new BadgeAwardGenericEvent(
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = new BadgeAwardGenericEvent<>(
         authorIdentity,
         downvotedUserPubKey,
         relay,
@@ -95,8 +95,6 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
     assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
     assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
-
-    nostrRelayService.disconnect();
   }
 
   @Test
@@ -130,7 +128,5 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
     assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
     assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
-
-    nostrRelayService.disconnect();
   }
 }

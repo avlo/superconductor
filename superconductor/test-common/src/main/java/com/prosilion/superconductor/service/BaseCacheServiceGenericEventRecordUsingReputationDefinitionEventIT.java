@@ -3,7 +3,7 @@
 //import com.ezylang.evalex.parser.ParseException;
 //import com.prosilion.nostr.NostrException;
 //import com.prosilion.nostr.enums.Kind;
-//import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+//import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 //import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 //import com.prosilion.nostr.event.DeletionEvent;
 //import com.prosilion.nostr.event.FormulaEvent;
@@ -40,7 +40,7 @@
 //
 //  private final String PLUS_ONE_FORMULA = "+1";
 //  private final IdentifierTag upvoteIdentifierTag = new IdentifierTag(UNIT_UPVOTE.getName());
-//  private final BadgeDefinitionAwardEvent badgeDefinitionAwardUpvoteEvent = new BadgeDefinitionAwardEvent(authorIdentity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
+//  private final BadgeDefinitionGenericEvent badgeDefinitionAwardUpvoteEvent = new BadgeDefinitionGenericEvent(authorIdentity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
 //
 //  private final ExternalIdentityTag externalIdentityTag = new ExternalIdentityTag(PLATFORM, IDENTITY, PROOF);
 //
@@ -188,7 +188,7 @@
 //    assertEquals(allEventsSizeAfterFirstDeletion, sizeBeforeSecondDeleteMeEvent);
 //
 //    FormulaEvent secondEventToDelete =
-//        new FormulaEvent(authorIdentity, new BadgeDefinitionAwardEvent(
+//        new FormulaEvent(authorIdentity, new BadgeDefinitionGenericEvent(
 //            authorIdentity,
 //            upvoteIdentifierTag,
 //            relay,

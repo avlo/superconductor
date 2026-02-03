@@ -5,12 +5,16 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.ExternalIdentityTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.service.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.CacheDereferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheServiceIF;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,11 +32,14 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
   private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
   private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
   private final CacheFormulaEventService cacheFormulaEventService;
+  private final CacheServiceIF cacheServiceIF;
 
   public CacheBadgeDefinitionReputationEventService(
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
       @NonNull CacheFormulaEventService cacheFormulaEventService) {
+    this.cacheServiceIF = cacheServiceIF;
     this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
     this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;
     this.cacheFormulaEventService = cacheFormulaEventService;
@@ -91,6 +98,21 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
         .flatMap(Optional::stream).toList();
 
     return formulaEvents;
+  }
+
+  @Override
+  public List<BadgeDefinitionReputationEvent> getExistingReputationDefinitionEvents() {
+    return cacheServiceIF.getByKind(
+            Kind.BADGE_DEFINITION_EVENT).stream()
+        .filter(ger ->
+            !Filterable.getTypeSpecificTags(ExternalIdentityTag.class, ger).isEmpty())
+        .map(genericEventRecord ->
+            getEvent(genericEventRecord.getId(),
+                Filterable.getTypeSpecificTagsStream(RelayTag.class, genericEventRecord)
+                    .findFirst()
+                    .map(RelayTag::getRelay)
+                    .map(Relay::getUrl).orElseThrow()))
+        .flatMap(Optional::stream).toList();
   }
 
   @Override

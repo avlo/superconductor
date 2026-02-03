@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.redis.entity;
 
 import com.ezylang.evalex.parser.ParseException;
-import com.prosilion.nostr.event.BadgeDefinitionAwardEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -32,8 +32,8 @@ public class FormulaEventTest {
   public final String PLUS_ONE_FORMULA = "+1";
   public final String MINUS_ONE_FORMULA = "-1";
 
-  final BadgeDefinitionAwardEvent awardUpvoteEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
-  final BadgeDefinitionAwardEvent awardDownvoteEvent = new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA);
+  final BadgeDefinitionGenericEvent awardUpvoteEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
+  final BadgeDefinitionGenericEvent awardDownvoteEvent = new BadgeDefinitionGenericEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA);
 
   final FormulaEvent formulaEventUpvote;
   final FormulaEvent formulaEventDownvote;
@@ -45,15 +45,15 @@ public class FormulaEventTest {
 
   @Test
   void equalityTest() throws ParseException {
-    assertNotEquals(awardUpvoteEvent, new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA));
-    assertNotEquals(awardDownvoteEvent, new BadgeDefinitionAwardEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA));
+    assertNotEquals(awardUpvoteEvent, new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay, PLUS_ONE_FORMULA));
+    assertNotEquals(awardDownvoteEvent, new BadgeDefinitionGenericEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA));
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteEvent, PLUS_ONE_FORMULA));
     assertNotEquals(formulaEventDownvote, new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteEvent, MINUS_ONE_FORMULA));
 
     assertNotEquals(awardUpvoteEvent, awardDownvoteEvent);
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteEvent, MINUS_ONE_FORMULA));
 
-    BadgeDefinitionAwardEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionAwardEvent(Identity.generateRandomIdentity(), upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
+    BadgeDefinitionGenericEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionGenericEvent(Identity.generateRandomIdentity(), upvoteIdentifierTag, relay, PLUS_ONE_FORMULA);
     assertNotEquals(awardUpvoteEvent, awardUpvoteEventDifferentIdentity);
     assertNotEquals(awardUpvoteEventDifferentIdentity, awardUpvoteEvent);
 
@@ -71,19 +71,19 @@ public class FormulaEventTest {
         awardUpvoteEvent,
         "+1");
 
-    Function<AddressTag, BadgeDefinitionAwardEvent> fxn = addressTag ->
+    Function<AddressTag, BadgeDefinitionGenericEvent> fxn = addressTag ->
         awardUpvoteEvent;
 
     assertEquals(
-        expected.getBadgeDefinitionAwardEvent(),
+        expected.getBadgeDefinitionGenericEvent(),
         new FormulaEvent(
             expected.getGenericEventRecord(),
-            fxn).getBadgeDefinitionAwardEvent());
+            fxn).getBadgeDefinitionGenericEvent());
   }
 
   @Test
   void testBlankFormula() {
-    BadgeDefinitionAwardEvent blankFormulaAwardEvent = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay);
+    BadgeDefinitionGenericEvent blankFormulaAwardEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
 
     assertTrue(
         assertThrows(
@@ -94,13 +94,13 @@ public class FormulaEventTest {
 
   @Test
   void testDifferentContent() {
-    BadgeDefinitionAwardEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionAwardEvent(identity, upvoteIdentifierTag, relay, "+2");
+    BadgeDefinitionGenericEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay, "+2");
     assertNotEquals(awardUpvoteEvent, awardUpvoteEventDifferentIdentity);
   }
 
   @Test
   void testDifferentContentDto() throws ParseException {
-    BadgeDefinitionAwardEvent differentContentDto = new BadgeDefinitionAwardEvent(
+    BadgeDefinitionGenericEvent differentContentDto = new BadgeDefinitionGenericEvent(
         identity, upvoteIdentifierTag, relay, TEST_UNIT_UPVOTE);
 
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, relay, differentContentDto, "+2"));
@@ -122,7 +122,7 @@ public class FormulaEventTest {
     String UNIT_UPVOTE_UNIQUE = "UNIT_UPVOTE_UNIQUE";
     String UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA = "+1";
     IdentifierTag upvoteUniqueIdentifierTag = new IdentifierTag(UNIT_UPVOTE_UNIQUE);
-    BadgeDefinitionAwardEvent awardUniqueUpvoteEvent = new BadgeDefinitionAwardEvent(identity, upvoteUniqueIdentifierTag, relay, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA);
+    BadgeDefinitionGenericEvent awardUniqueUpvoteEvent = new BadgeDefinitionGenericEvent(identity, upvoteUniqueIdentifierTag, relay, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA);
 
     assertEquals("TEST_UNIT_REPUTATION == (previous)TEST_UNIT_REPUTATION +1(TEST_UNIT_UPVOTE) +1(UNIT_UPVOTE_UNIQUE)",
         new BadgeDefinitionReputationEvent(

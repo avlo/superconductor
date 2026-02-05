@@ -4,7 +4,7 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoConfigReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
-import com.prosilion.superconductor.base.service.event.service.AuthPersistantServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.AuthPersistantServiceIF;
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;

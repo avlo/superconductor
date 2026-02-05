@@ -4,8 +4,8 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
-import com.prosilion.superconductor.base.service.event.service.EventKindTypeServiceIF;
+import com.prosilion.superconductor.base.service.event.kind.EventKindServiceIF;
+import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 

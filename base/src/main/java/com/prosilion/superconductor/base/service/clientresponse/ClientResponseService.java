@@ -3,7 +3,6 @@ package com.prosilion.superconductor.base.service.clientresponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.superconductor.base.service.request.ClientClosedResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;

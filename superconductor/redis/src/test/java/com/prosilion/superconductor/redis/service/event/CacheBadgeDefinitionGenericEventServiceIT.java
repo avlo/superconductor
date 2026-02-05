@@ -8,7 +8,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.extern.slf4j.Slf4j;
@@ -59,10 +59,10 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
         awardUpvoteDefinitionEvent);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent));
-    BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getEvent(
+    BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getAddressTagEvent(
         badgeAwardUpvoteEvent.getAddressTag()).orElseThrow();
 
-    assertEquals(badgeAwardUpvoteEvent.getBadgeAwardGenericEvent(), dbDefinitionGenericEvent);
+    assertEquals(badgeAwardUpvoteEvent.getBadgeDefinitionGenericEvent(), dbDefinitionGenericEvent);
     assertEquals(upvoteIdentifierTag, dbDefinitionGenericEvent.getIdentifierTag());
 
     String BADGE_DEFINITION_VOTE = "BADGE_DEFINITION_DOWNVOTE";

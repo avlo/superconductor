@@ -1,8 +1,7 @@
 package com.prosilion.superconductor.h2db.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.lib.jpa.dto.GenericEventKindDto;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 
@@ -22,9 +21,9 @@ public class DataLoaderJpa implements DataLoaderJpaIF {
 
   @Override
   public void run(String... args) {
-    eventPlugin.processIncomingEvent(
-        new GenericEventKindDto(badgeDefinitionUpvoteEvent).convertBaseEventToEventIF());
-    eventPlugin.processIncomingEvent(
-        new GenericEventKindDto(badgeDefinitionDownvoteEvent).convertBaseEventToEventIF());
+//    eventPlugin.processIncomingEvent(
+//        new GenericEventKindDto(badgeDefinitionUpvoteEvent).convertBaseEventToEventIF());
+//    eventPlugin.processIncomingEvent(
+//        new GenericEventKindDto(badgeDefinitionDownvoteEvent).convertBaseEventToEventIF());
   }
 }

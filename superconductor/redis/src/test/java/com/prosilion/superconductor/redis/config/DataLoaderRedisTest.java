@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.redis.config;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;

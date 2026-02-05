@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.redis.config;
 
 import com.prosilion.superconductor.autoconfigure.base.EventKindsAuthCondition;
 import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
-import com.prosilion.superconductor.base.service.event.service.AuthKindPersistantServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.AuthKindPersistantServiceIF;
 import com.prosilion.superconductor.lib.redis.entity.AuthNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.repository.auth.AuthNosqlEntityRepository;
 import com.prosilion.superconductor.lib.redis.service.auth.AuthKindNosqlEntityService;

@@ -7,7 +7,7 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;

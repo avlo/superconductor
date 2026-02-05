@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.redis.service;
 
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.service.BaseCacheServiceIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.extern.slf4j.Slf4j;

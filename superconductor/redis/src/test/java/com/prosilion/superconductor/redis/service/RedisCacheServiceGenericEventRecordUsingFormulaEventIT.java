@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis.service;
 
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.service.BaseCacheServiceGenericEventRecordUsingFormulaEventIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.extern.slf4j.Slf4j;

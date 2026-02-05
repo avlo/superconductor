@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.util.Factory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Order;

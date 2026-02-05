@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.jpa.config;
 
 import com.prosilion.superconductor.autoconfigure.base.EventKindsAuthCondition;
 import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
-import com.prosilion.superconductor.base.service.event.service.AuthKindPersistantServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.AuthKindPersistantServiceIF;
 import com.prosilion.superconductor.lib.jpa.entity.auth.AuthJpaEntityIF;
 import com.prosilion.superconductor.lib.jpa.repository.auth.AuthJpaEntityRepository;
 import com.prosilion.superconductor.lib.jpa.service.auth.AuthJpaEntityService;

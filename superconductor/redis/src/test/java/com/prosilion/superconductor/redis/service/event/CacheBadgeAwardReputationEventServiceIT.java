@@ -11,7 +11,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeAwardReputationEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.math.BigDecimal;
@@ -102,6 +102,6 @@ public class CacheBadgeAwardReputationEventServiceIT {
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardReputationEvent));
     BadgeAwardReputationEvent dbRepAwardEvent = cacheBadgeAwardReputationEventService.materialize(badgeAwardReputationEvent.asGenericEventRecord());
-    assertEquals(badgeDefinitionReputationEventPlusOneFormula, dbRepAwardEvent.getBadgeDefinitionReputationEvent());
+    assertEquals(badgeDefinitionReputationEventPlusOneFormula, dbRepAwardEvent.getBadgeDefinitionGenericEvent());
   }
 }

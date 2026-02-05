@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base.util;
 
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
-import com.prosilion.superconductor.base.plugin.filter.FilterPlugin;
+import com.prosilion.superconductor.base.service.request.plugin.filter.FilterPlugin;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import java.util.ArrayList;
 import java.util.HashMap;

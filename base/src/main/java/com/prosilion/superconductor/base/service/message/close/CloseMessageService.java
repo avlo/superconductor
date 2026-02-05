@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base.service.message.close;
 
 import com.prosilion.nostr.enums.Command;
 import com.prosilion.nostr.message.CloseMessage;
-import com.prosilion.superconductor.base.service.request.AbstractSubscriberService;
+import com.prosilion.superconductor.base.service.request.subscriber.AbstractSubscriberService;
 import com.prosilion.superconductor.base.service.request.pubsub.RemoveSubscriberFilter;
 import com.prosilion.superconductor.base.util.NoExistingUserException;
 import java.util.List;

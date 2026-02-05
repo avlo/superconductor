@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.redis.service;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.util.List;
 
 public interface RedisCacheServiceIF extends CacheServiceIF {

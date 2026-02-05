@@ -5,7 +5,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.superconductor.base.service.event.type.KindTypeIF;
+import com.prosilion.superconductor.base.service.event.plugin.kind.type.KindTypeIF;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
 import lombok.Getter;

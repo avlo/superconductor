@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.h2db.service;
 
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.service.BaseCacheServiceIT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

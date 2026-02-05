@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
-import com.prosilion.superconductor.base.service.request.AbstractSubscriberService;
-import com.prosilion.superconductor.base.service.request.NotifierService;
+import com.prosilion.superconductor.base.service.request.subscriber.AbstractSubscriberService;
+import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import com.prosilion.superconductor.base.service.request.ReqService;
 import com.prosilion.superconductor.base.service.request.ReqServiceIF;
 import lombok.extern.slf4j.Slf4j;

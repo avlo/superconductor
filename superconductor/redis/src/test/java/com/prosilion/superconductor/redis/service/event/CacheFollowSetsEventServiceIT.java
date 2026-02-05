@@ -13,7 +13,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.CacheFollowSetsEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
@@ -94,14 +94,14 @@ public class CacheFollowSetsEventServiceIT {
 
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent));
 
-    FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId(), relay.getUrl()).orElseThrow();
-    List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEventTagEvent(followSetsEvent.getId(), relay.getUrl()).orElseThrow();
+    List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardAbstractEvents = List.of(dbFollowSetsEventByEventId);
     assertTrue(badgeAwardAbstractEvents.contains(badgeAwardUpvoteEvent));
 
     PublicKey matchPubkey = Filterable.getTypeSpecificTags(PubKeyTag.class, dbFollowSetsEventByEventId).stream().map(PubKeyTag::getPublicKey).findFirst().orElseThrow();
     assertEquals(matchPubkey, reputationRecipientPublicKey);
 
-    FollowSetsEvent dbFollowSetsEventByPubkeyTag = cacheFollowSetsEventService.getEventsByPubkeyTag(reputationRecipientPublicKey).stream().findFirst().orElseThrow();
+    FollowSetsEvent dbFollowSetsEventByPubkeyTag = cacheFollowSetsEventService.getEvent(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelayTagRelay().getUrl()).stream().findFirst().orElseThrow();
     assertEquals(dbFollowSetsEventByPubkeyTag, dbFollowSetsEventByEventId);
     assertEquals(followSetsEvent.getContainedAddressableEvents(), dbFollowSetsEventByPubkeyTag.getContainedAddressableEvents());
   }

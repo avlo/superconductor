@@ -4,7 +4,7 @@ import com.prosilion.superconductor.autoconfigure.base.EventKindsNoAuthCondition
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.auth.AutoConfigEventMessageServiceNoAuthDecorator;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.noop.EventMessageNoOpService;
-import com.prosilion.superconductor.autoconfigure.base.service.message.event.standard.EventMessageService;
+import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageService;
 import com.prosilion.superconductor.autoconfigure.base.web.event.EventApiNoAuthUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;

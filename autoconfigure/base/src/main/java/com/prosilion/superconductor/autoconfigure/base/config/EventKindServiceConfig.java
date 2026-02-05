@@ -2,21 +2,23 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventService;
-import com.prosilion.superconductor.base.service.event.service.EventKindService;
-import com.prosilion.superconductor.base.service.event.service.EventKindServiceIF;
-import com.prosilion.superconductor.base.service.event.service.EventKindTypeService;
-import com.prosilion.superconductor.base.service.event.service.EventKindTypeServiceIF;
-import com.prosilion.superconductor.base.service.event.service.plugin.EventKindPluginIF;
-import com.prosilion.superconductor.base.service.event.service.plugin.EventKindTypePluginIF;
-import com.prosilion.superconductor.base.service.event.type.CanonicalEventKindPlugin;
-import com.prosilion.superconductor.base.service.event.type.DeleteEventKindPlugin;
-import com.prosilion.superconductor.base.service.event.type.DeleteEventPlugin;
-import com.prosilion.superconductor.base.service.event.type.EventKindPlugin;
-import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-import com.prosilion.superconductor.base.service.request.NotifierService;
+import com.prosilion.superconductor.base.service.event.kind.EventKindService;
+import com.prosilion.superconductor.base.service.event.kind.EventKindServiceIF;
+import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeService;
+import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeServiceIF;
+import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.kind.CanonicalEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.DeleteEventPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
+import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -29,13 +31,16 @@ import org.springframework.lang.NonNull;
 public class EventKindServiceConfig {
   @Bean(name = "eventKindService")
   @ConditionalOnMissingBean
-  EventKindService eventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
+  EventKindService eventKindService(
+      @NonNull List<EventKindPluginIF<? extends BaseEvent>> eventKindPlugins,
+      @NonNull Map<String, String> kindClassStringMap) {
     return new EventKindService(eventKindPlugins);
   }
 
   @Bean(name = "eventKindTypeService")
   @ConditionalOnMissingBean
-  EventKindTypeService eventKindTypeService(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) throws JsonProcessingException {
+  EventKindTypeService eventKindTypeService(
+      @NonNull List<EventKindTypePluginIF<? extends BaseEvent>> eventKindTypePlugins) throws JsonProcessingException {
     return new EventKindTypeService(eventKindTypePlugins);
   }
 

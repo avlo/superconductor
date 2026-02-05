@@ -2,25 +2,25 @@ package com.prosilion.superconductor.autoconfigure.redis.config;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeAwardGenericEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeAwardReputationEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionGenericEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheBadgeDefinitionReputationEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheFollowSetsEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.CacheFormulaEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceAddressTagService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceEventTagService;
 import com.prosilion.superconductor.base.controller.ApiUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.controller.ReqApiEventApiUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
-import com.prosilion.superconductor.base.service.CacheAddressableEventServiceIF;
-import com.prosilion.superconductor.base.service.CacheBadgeDefinitionGenericEventServiceIF;
-import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagService;
-import com.prosilion.superconductor.base.service.CacheDereferenceAddressTagServiceIF;
-import com.prosilion.superconductor.base.service.CacheDereferenceEventTagService;
-import com.prosilion.superconductor.base.service.CacheDereferenceEventTagServiceIF;
-import com.prosilion.superconductor.base.service.CacheTagMappedEventServiceIF;
-import com.prosilion.superconductor.base.service.event.CacheServiceIF;
-import com.prosilion.superconductor.base.service.event.type.EventPlugin;
+import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.mapped.CacheAddressableEventServiceIF;
+import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
+import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;
@@ -138,14 +138,10 @@ public class RedisConfig {
 
   @Bean(name = "cacheBadgeAwardReputationEventService")
   CacheTagMappedEventServiceIF cacheBadgeAwardReputationEventService(
-      @NonNull String superconductorRelayUrl,
-      @NonNull RedisCacheService cacheService,
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
       @NonNull @Qualifier("cacheBadgeDefinitionReputationEventService") CacheTagMappedEventServiceIF cacheBadgeDefinitionReputationEventService) {
     return new CacheBadgeAwardReputationEventService(
-        superconductorRelayUrl,
-        cacheService,
         cacheDereferenceEventTagServiceIF,
         cacheDereferenceAddressTagServiceIF,
         (CacheBadgeDefinitionReputationEventService) cacheBadgeDefinitionReputationEventService);
@@ -153,11 +149,11 @@ public class RedisConfig {
 
   @Bean(name = "cacheFollowSetsEventService")
   CacheTagMappedEventServiceIF cacheFollowSetsEventService(
-      @NonNull String superconductorRelayUrl,
-      @NonNull RedisCacheService cacheService,
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheTagMappedEventServiceIF cacheBadgeAwardGenericEventService) {
-    return new CacheFollowSetsEventService(superconductorRelayUrl, cacheService, cacheDereferenceEventTagServiceIF, (CacheBadgeAwardGenericEventService) cacheBadgeAwardGenericEventService);
+    return new CacheFollowSetsEventService(
+        cacheDereferenceEventTagServiceIF,
+        (CacheBadgeAwardGenericEventService) cacheBadgeAwardGenericEventService);
   }
 
   @Bean(name = "eventPlugin")

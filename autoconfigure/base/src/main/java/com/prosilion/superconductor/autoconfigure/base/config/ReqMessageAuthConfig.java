@@ -8,7 +8,7 @@ import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import com.prosilion.superconductor.base.service.event.auth.ReqAuthCondition;
-import com.prosilion.superconductor.base.service.event.service.AuthPersistantServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.AuthPersistantServiceIF;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
 import com.prosilion.superconductor.base.service.message.AuthMessageServiceIF;
 import lombok.extern.slf4j.Slf4j;

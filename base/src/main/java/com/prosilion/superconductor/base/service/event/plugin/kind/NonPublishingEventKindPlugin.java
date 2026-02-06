@@ -7,15 +7,15 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 // our CarDecorator for NonPublishingEventKind hierarchy
-public class NonPublishingEventKindPlugin<T extends BaseEvent> implements EventKindPluginIF<T> {
-  private final EventKindPluginIF<T> eventKindPlugin;
+public abstract class NonPublishingEventKindPlugin implements EventKindPluginIF {
+  private final EventKindPluginIF eventKindPlugin;
 
-  public NonPublishingEventKindPlugin(@NonNull EventKindPluginIF<T> eventKindPlugin) {
+  public NonPublishingEventKindPlugin(@NonNull EventKindPluginIF eventKindPlugin) {
     this.eventKindPlugin = eventKindPlugin;
   }
 
   @Override
-  public void processIncomingEvent(T event) {
+  public <T extends BaseEvent> void processIncomingEvent(@NonNull T event) {
     eventKindPlugin.processIncomingEvent(event);
   }
 

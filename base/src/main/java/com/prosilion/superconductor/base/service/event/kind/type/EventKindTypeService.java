@@ -22,9 +22,9 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventKindTypeService implements EventKindTypeServiceIF {
-  private final Map<Kind, Map<KindTypeIF, EventKindTypePluginIF<? extends BaseEvent>>> eventKindTypePluginsMap;
+  private final Map<Kind, Map<KindTypeIF, EventKindTypePluginIF>> eventKindTypePluginsMap;
 
-  public EventKindTypeService(@NonNull List<EventKindTypePluginIF<? extends BaseEvent>> eventKindTypePlugins) throws JsonProcessingException {
+  public EventKindTypeService(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) throws JsonProcessingException {
     this.eventKindTypePluginsMap = eventKindTypePlugins.stream()
         .collect(Collectors.groupingBy(
             EventKindTypePluginIF::getKind,
@@ -36,14 +36,17 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
 
   @Override
   public void processIncomingEvent(@NonNull EventIF event) {
-    EventKindTypePluginIF<? extends BaseEvent> eventKindTypePluginIF = Optional
+    Optional<? extends EventKindTypePluginIF> eventKindTypePluginIF1 = Optional
         .ofNullable(eventKindTypePluginsMap
             .get(event.getKind())
-            .get(getKindType(event)))
+            .get(getKindType(event)));
+
+    EventKindTypePluginIF eventKindTypePluginIF = (EventKindTypePluginIF) eventKindTypePluginIF1
         .orElseThrow(() -> new NostrException(
             String.format("eventKindTypePluginsMap does not contain matching entry for kind [%s], kindtype [%s]", event.getKind(), getKindType(event))));
 
-//    eventKindTypePluginIF.processIncomingEvent(event);
+    BaseEvent materialized = eventKindTypePluginIF.materialize(event);
+    eventKindTypePluginIF.processIncomingEvent(materialized);
   }
 
   @Override

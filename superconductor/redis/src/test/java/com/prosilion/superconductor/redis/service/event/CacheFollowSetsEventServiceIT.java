@@ -94,15 +94,15 @@ public class CacheFollowSetsEventServiceIT {
 
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent));
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEventTagEvent(followSetsEvent.getId(), relay.getUrl()).orElseThrow();
-    List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardAbstractEvents = List.of(dbFollowSetsEventByEventId);
+    FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId(), relay.getUrl()).orElseThrow();
+    assertEquals(followSetsEvent, dbFollowSetsEventByEventId);
+
+    List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
     assertTrue(badgeAwardAbstractEvents.contains(badgeAwardUpvoteEvent));
 
     PublicKey matchPubkey = Filterable.getTypeSpecificTags(PubKeyTag.class, dbFollowSetsEventByEventId).stream().map(PubKeyTag::getPublicKey).findFirst().orElseThrow();
     assertEquals(matchPubkey, reputationRecipientPublicKey);
 
-    FollowSetsEvent dbFollowSetsEventByPubkeyTag = cacheFollowSetsEventService.getEvent(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelayTagRelay().getUrl()).stream().findFirst().orElseThrow();
-    assertEquals(dbFollowSetsEventByPubkeyTag, dbFollowSetsEventByEventId);
-    assertEquals(followSetsEvent.getContainedAddressableEvents(), dbFollowSetsEventByPubkeyTag.getContainedAddressableEvents());
+    assertEquals(followSetsEvent.getContainedAddressableEvents(), dbFollowSetsEventByEventId.getContainedAddressableEvents());
   }
 }

@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.ClassifiedListingEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventId;
+import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.event.internal.ClassifiedListing;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
@@ -23,6 +24,7 @@ import com.prosilion.nostr.tag.HashtagTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PriceTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
@@ -46,10 +48,9 @@ public abstract class BaseClassifiedListingEventMessageIT {
   public final PublicKey senderPubkey;
 
   public static final String PTAG_HEX = "2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76985";
-  public static final String ETAG_HEX = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4347";
 
   public static final PubKeyTag P_TAG = new PubKeyTag(new PublicKey(PTAG_HEX));
-  public static final EventTag E_TAG = new EventTag(ETAG_HEX);
+  public final EventTag E_TAG;
   public static final IdentifierTag identifierTag = new IdentifierTag("ClassifiedListingUuid");
 
   public static final String SUBJECT = "Classified Listing Test Subject Tag";
@@ -77,6 +78,17 @@ public abstract class BaseClassifiedListingEventMessageIT {
 
     senderPubkey = new PublicKey(identity.getPublicKey().toString());
 
+    TextNoteEvent textNoteEvent = new TextNoteEvent(identity, List.of(new RelayTag(relay)), "text note event content");
+
+    EventMessage textNoteEventMessage = new EventMessage(textNoteEvent);
+    assertTrue(
+        this.nostrRelayService
+            .send(
+                textNoteEventMessage)
+            .getFlag());
+
+    E_TAG = new EventTag(textNoteEvent.getId(), relayUrl);
+    
     List<BaseTag> tags = new ArrayList<>();
     tags.add(E_TAG);
     tags.add(P_TAG);
@@ -87,15 +99,16 @@ public abstract class BaseClassifiedListingEventMessageIT {
     ClassifiedListing classifiedListing = new ClassifiedListing(
         CLASSIFIED_LISTING_TITLE, CLASSIFIED_LISTING_SUMMARY, PRICE_TAG, CLASSIFIED_LISTING_LOCATION);
 
-    BaseEvent event = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, identifierTag, relay, classifiedListing, tags, content);
-    this.eventId = event.getId();
+    BaseEvent classifiedListingEvent = new ClassifiedListingEvent(identity, Kind.CLASSIFIED_LISTING, identifierTag, relay, classifiedListing, tags, content);
+    this.eventId = classifiedListingEvent.getId();
 
-    EventMessage eventMessage = new EventMessage(event);
+    EventMessage classifiedListingEventMessage = new EventMessage(classifiedListingEvent);
     assertTrue(
         this.nostrRelayService
             .send(
-                eventMessage)
+                classifiedListingEventMessage)
             .getFlag());
+    log.debug("done");
   }
 
   @Test

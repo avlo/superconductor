@@ -14,44 +14,47 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventKindService implements EventKindServiceIF {
-  private final Map<Kind, EventKindPluginIF<? extends BaseEvent>> eventKindPluginsMap;
+  private final Map<Kind, EventKindPluginIF> eventKindPluginsMap;
 
-  public <T extends BaseEvent> EventKindService(@NonNull List<EventKindPluginIF<? extends T>> eventKindPlugins) {
+  public <T extends BaseEvent> EventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     this.eventKindPluginsMap = eventKindPlugins.stream().collect(
         Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
     log.info("eventKindPluginsMap: {}", eventKindPluginsMap);
   }
 
   @Override
-  public <T extends BaseEvent> void processIncomingEvent(EventIF event) {
+  public void processIncomingEvent(EventIF event) {
     log.debug("{} processIncomingEvent() called with event {}", getClass().getSimpleName(), event.createPrettyPrintJson());
     Kind kind = event.getKind();
     log.debug("{} processIncomingEvent() event.getKind() [{}]", getClass().getSimpleName(), kind);
-    EventKindPluginIF<T> kindEventKindPluginIF =
-        (EventKindPluginIF<T>) checkExistingEventKind(kind)
+
+    EventKindPluginIF kindEventKindPluginIF =
+        checkExistingEventKind(kind)
             .orElseGet(() ->
                 useDefaultMapEntry(kind));
 
     if (kind.equals(Kind.DELETION)) {
-      log.info("plugin: {}", kindEventKindPluginIF);
-//      kindEventKindPluginIF.processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
+      log.info("sanity check deletion plugin: {}", kindEventKindPluginIF);
+      BaseEvent materialize = kindEventKindPluginIF.materialize(event);
+      kindEventKindPluginIF.processIncomingEvent(materialize); // TODO: remove conditional after done testing
     } else {
-      log.info("plugin: {}", kindEventKindPluginIF);
-//      kindEventKindPluginIF.processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
+      log.info("sanity check non-deletion plugin: {}", kindEventKindPluginIF);
+      BaseEvent materialize = kindEventKindPluginIF.materialize(event);
+      kindEventKindPluginIF.processIncomingEvent(materialize); // everything else handled as TEXT_NOTE kind
     }
   }
 
-  private EventKindPluginIF<? extends BaseEvent> useDefaultMapEntry(Kind kind) {
-    EventKindPluginIF<? extends BaseEvent> defaultEntry = eventKindPluginsMap.get(Kind.TEXT_NOTE);
+  private EventKindPluginIF useDefaultMapEntry(Kind kind) {
+    EventKindPluginIF defaultEntry = eventKindPluginsMap.get(Kind.TEXT_NOTE);
     log.debug("{} processIncomingEvent() did not find map value for kind [{}], using default EventKindPluginIF [{}]",
         getClass().getSimpleName(),
         kind, defaultEntry);
     return defaultEntry;
   }
 
-  private Optional<EventKindPluginIF<? extends BaseEvent>> checkExistingEventKind(Kind kind) {
-    EventKindPluginIF<? extends BaseEvent> value = eventKindPluginsMap.get(kind);
-    Optional<EventKindPluginIF<? extends BaseEvent>> mapEntry = Optional.ofNullable(value);
+  private Optional<EventKindPluginIF> checkExistingEventKind(Kind kind) {
+    EventKindPluginIF value = eventKindPluginsMap.get(kind);
+    Optional<EventKindPluginIF> mapEntry = Optional.ofNullable(value);
     if (mapEntry.isPresent())
       log.debug("{} processIncomingEvent() found map value for kind [{}], using EventKindPluginIF [{}]",
           getClass().getSimpleName(),

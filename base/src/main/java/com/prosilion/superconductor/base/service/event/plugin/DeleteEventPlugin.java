@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.base.service.event.plugin;
 
-import com.prosilion.nostr.event.DeletionEvent;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -16,7 +16,7 @@ public class DeleteEventPlugin implements DeleteEventPluginIF {
   }
 
   @Override
-  public void processIncomingEvent(@NonNull DeletionEvent event) {
+  public <T extends BaseEvent> void processIncomingEvent(@NonNull T event) {
 //    List<GenericTag> kTags = event.getTags().stream()
 //        .filter(GenericTag.class::isInstance)
 //        .map(GenericTag.class::cast)

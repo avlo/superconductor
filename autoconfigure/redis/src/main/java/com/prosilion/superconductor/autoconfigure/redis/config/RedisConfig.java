@@ -1,5 +1,12 @@
 package com.prosilion.superconductor.autoconfigure.redis.config;
 
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardReputationEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.FollowSetsEvent;
+import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
@@ -106,7 +113,7 @@ public class RedisConfig {
   }
 
   @Bean(name = "cacheFormulaEventService")
-  CacheTagMappedEventServiceIF cacheFormulaEventService(
+  CacheTagMappedEventServiceIF<FormulaEvent> cacheFormulaEventService(
       @NonNull RedisCacheService cacheService,
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
@@ -114,33 +121,34 @@ public class RedisConfig {
   }
 
   @Bean(name = "cacheBadgeDefinitionGenericEventService")
-  CacheAddressableEventServiceIF cacheBadgeDefinitionGenericEventService(
+  CacheAddressableEventServiceIF<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventService(
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
     return new CacheBadgeDefinitionGenericEventService(cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagServiceIF);
   }
 
   @Bean(name = "cacheBadgeDefinitionReputationEventService")
-  CacheTagMappedEventServiceIF cacheBadgeDefinitionReputationEventService(
+  CacheTagMappedEventServiceIF<BadgeDefinitionReputationEvent> cacheBadgeDefinitionReputationEventService(
       @NonNull RedisCacheService cacheService,
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
-      @NonNull @Qualifier("cacheFormulaEventService") CacheTagMappedEventServiceIF cacheFormulaEventService) {
+      @NonNull @Qualifier("cacheFormulaEventService") CacheTagMappedEventServiceIF<FormulaEvent> cacheFormulaEventService) {
     return new CacheBadgeDefinitionReputationEventService(cacheService, cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagServiceIF, (CacheFormulaEventService) cacheFormulaEventService);
   }
 
   @Bean(name = "cacheBadgeAwardGenericEventService")
-  CacheTagMappedEventServiceIF cacheBadgeAwardGenericEventService(
+  CacheTagMappedEventServiceIF<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventService(
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
-      @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheAddressableEventServiceIF cacheBadgeDefinitionGenericEventService) {
-    return new CacheBadgeAwardGenericEventService(cacheDereferenceEventTagServiceIF, (CacheBadgeDefinitionGenericEventServiceIF) cacheBadgeDefinitionGenericEventService);
+      @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheAddressableEventServiceIF<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventService) {
+    CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService = new CacheBadgeAwardGenericEventService(cacheDereferenceEventTagServiceIF, (CacheBadgeDefinitionGenericEventServiceIF) cacheBadgeDefinitionGenericEventService);
+    return cacheBadgeAwardGenericEventService;
   }
 
   @Bean(name = "cacheBadgeAwardReputationEventService")
-  CacheTagMappedEventServiceIF cacheBadgeAwardReputationEventService(
+  CacheTagMappedEventServiceIF<BadgeAwardReputationEvent> cacheBadgeAwardReputationEventService(
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
-      @NonNull @Qualifier("cacheBadgeDefinitionReputationEventService") CacheTagMappedEventServiceIF cacheBadgeDefinitionReputationEventService) {
+      @NonNull @Qualifier("cacheBadgeDefinitionReputationEventService") CacheTagMappedEventServiceIF<BadgeDefinitionReputationEvent> cacheBadgeDefinitionReputationEventService) {
     return new CacheBadgeAwardReputationEventService(
         cacheDereferenceEventTagServiceIF,
         cacheDereferenceAddressTagServiceIF,
@@ -148,9 +156,9 @@ public class RedisConfig {
   }
 
   @Bean(name = "cacheFollowSetsEventService")
-  CacheTagMappedEventServiceIF cacheFollowSetsEventService(
+  CacheTagMappedEventServiceIF<FollowSetsEvent> cacheFollowSetsEventService(
       @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
-      @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheTagMappedEventServiceIF cacheBadgeAwardGenericEventService) {
+      @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheTagMappedEventServiceIF<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventService) {
     return new CacheFollowSetsEventService(
         cacheDereferenceEventTagServiceIF,
         (CacheBadgeAwardGenericEventService) cacheBadgeAwardGenericEventService);

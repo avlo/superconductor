@@ -30,9 +30,14 @@ public class CacheBadgeDefinitionGenericEventService implements CacheBadgeDefini
   }
 
   @Override
-  public BadgeDefinitionGenericEvent materialize(@NonNull EventIF genericEventRecord) {
-    BadgeDefinitionGenericEvent badgeDefinitionGenericEvent = getBadgeDefinitionGenericEvent(genericEventRecord.asGenericEventRecord());
-    return badgeDefinitionGenericEvent;
+  public BadgeDefinitionGenericEvent materialize(@NonNull EventIF eventIF) {
+    Optional<BadgeDefinitionGenericEvent> badgeDefinitionGenericEvent = getBadgeDefinitionGenericEvent(eventIF.asGenericEventRecord());
+
+    BadgeDefinitionGenericEvent reconstructedBadgeDefinitionGenericEvent = badgeDefinitionGenericEvent
+        .orElseGet(() ->
+            new BadgeDefinitionGenericEvent(eventIF.asGenericEventRecord()));
+    
+    return reconstructedBadgeDefinitionGenericEvent;
   }
 
   @Override
@@ -44,21 +49,22 @@ public class CacheBadgeDefinitionGenericEventService implements CacheBadgeDefini
     return Optional.of(materialize(unpopulatedBadgeDefinitionGenericEvent.get()));
   }
 
-  private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord genericEventRecord) {
+  private Optional<BadgeDefinitionGenericEvent> getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord genericEventRecord) {
     RelayTag relayTag = Filterable.getTypeSpecificTagsStream(RelayTag.class, genericEventRecord)
         .findFirst().orElseThrow(() ->
             new NostrException(
                 String.format(NON_EXISTENT_ADDRESS_TAG, genericEventRecord)));
 
-    GenericEventRecord firstAddressTagAsEvent = cacheDereferenceEventTagServiceIF.getEvent(
+    Optional<GenericEventRecord> firstAddressTagAsEvent = cacheDereferenceEventTagServiceIF.getEvent(
         genericEventRecord.getId(),
-        relayTag.getRelay().getUrl()).orElseThrow(() ->
-        new NostrException(
-            String.format(NON_EXISTENT_DEFINITION_EVENT, genericEventRecord, relayTag.getRelay())));
+        relayTag.getRelay().getUrl());
 
-    BadgeDefinitionGenericEvent addressTagNowBadgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(firstAddressTagAsEvent);
+    if (firstAddressTagAsEvent.isEmpty())
+      return Optional.empty();
 
-    return addressTagNowBadgeDefinitionGenericEvent;
+    BadgeDefinitionGenericEvent addressTagNowBadgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(firstAddressTagAsEvent.get());
+
+    return Optional.of(addressTagNowBadgeDefinitionGenericEvent);
   }
 
   @Override

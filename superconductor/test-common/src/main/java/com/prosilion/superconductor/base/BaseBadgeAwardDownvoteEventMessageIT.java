@@ -54,6 +54,13 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
         superconductorInstanceIdentity,
         IDENTIFIER_TAG, relay);
 
+    EventMessage eventMessageBadgeDefinitionDownvoteEvent = new EventMessage(badgeDefinitionDownvoteEvent);
+    assertTrue(
+        this.nostrRelayService
+            .send(
+                eventMessageBadgeDefinitionDownvoteEvent)
+            .getFlag());
+    
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = new BadgeAwardGenericEvent<>(
         authorIdentity,
         downvotedUserPubKey,
@@ -61,11 +68,11 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
         badgeDefinitionDownvoteEvent);
     eventId = badgeAwardDownvoteEvent.getId();
 
-    EventMessage eventMessage = new EventMessage(badgeAwardDownvoteEvent);
+    EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
     assertTrue(
         this.nostrRelayService
             .send(
-                eventMessage)
+                eventMessageBadgeAwardDownvoteEvent)
             .getFlag());
   }
 

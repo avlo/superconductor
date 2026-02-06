@@ -15,5 +15,4 @@ public interface CacheFollowSetsEventServiceIF extends CacheTagMappedEventServic
   Optional<FollowSetsEvent> getEvent(@NonNull String eventId, @NonNull String url);
 
   Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEventTagEvent(@NonNull String eventId, @NonNull String url);
-//  List<FollowSetsEvent> getEventsByPubkeyTag(@NonNull PublicKey badgeAwardRecipientPublicKey);
 }

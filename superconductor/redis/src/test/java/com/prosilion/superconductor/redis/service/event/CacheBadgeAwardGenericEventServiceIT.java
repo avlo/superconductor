@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.service.event;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -9,6 +8,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.extern.slf4j.Slf4j;
@@ -38,16 +38,16 @@ public class CacheBadgeAwardGenericEventServiceIT {
   public CacheBadgeAwardGenericEventServiceIT(
       @Value("${superconductor.relay.url}") String relayUri,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-      @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventServiceIF) throws ParseException {
+      @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheTagMappedEventServiceIF<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventServiceIF) {
     this.eventServiceIF = eventServiceIF;
-    this.cacheBadgeAwardGenericEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
+    this.cacheBadgeAwardGenericEventServiceIF = (CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>>) cacheBadgeAwardGenericEventServiceIF;
     this.relay = new Relay(relayUri);
     awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
     eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
   }
 
   @Test
-  public void testSaveBadgeAwardGenericEventUpvote() {
+  public void testValidateSaveMaterializedBadgeAwardGenericEventUpvote() {
     PublicKey upvotedUserPublicKey = Identity.generateRandomIdentity().getPublicKey();
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericVoteEvent = new BadgeAwardGenericEvent<>(
         identity,
@@ -56,7 +56,23 @@ public class CacheBadgeAwardGenericEventServiceIT {
         awardUpvoteDefinitionEvent);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericVoteEvent));
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> dbGenericAwardEvent = cacheBadgeAwardGenericEventServiceIF.materialize(badgeAwardGenericVoteEvent);
-    assertEquals(badgeAwardGenericVoteEvent, dbGenericAwardEvent);
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> dbMaterializedGenericAwardEvent =
+        cacheBadgeAwardGenericEventServiceIF.materialize(badgeAwardGenericVoteEvent);
+    assertEquals(badgeAwardGenericVoteEvent, dbMaterializedGenericAwardEvent);
+  }
+
+  @Test
+  public void testValidateGetEventSaveBadgeAwardGenericEventUpvote() {
+    PublicKey upvotedUserPublicKey = Identity.generateRandomIdentity().getPublicKey();
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericVoteEvent = new BadgeAwardGenericEvent<>(
+        identity,
+        upvotedUserPublicKey,
+        relay,
+        awardUpvoteDefinitionEvent);
+
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericVoteEvent));
+
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> dbGetEventGenericAwardEvent = cacheBadgeAwardGenericEventServiceIF.getEvent(badgeAwardGenericVoteEvent.getId(), badgeAwardGenericVoteEvent.getRelayTagRelay().getUrl()).orElseThrow();
+    assertEquals(badgeAwardGenericVoteEvent, dbGetEventGenericAwardEvent);
   }
 }

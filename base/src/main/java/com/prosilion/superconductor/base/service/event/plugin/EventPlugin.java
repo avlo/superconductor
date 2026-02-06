@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class EventPlugin<T extends BaseEvent> implements EventPluginIF<T> {
+public class EventPlugin implements EventPluginIF {
   private final CacheServiceIF cacheServiceIF;
 
   public EventPlugin(@NonNull CacheServiceIF cacheServiceIF) {
@@ -18,7 +18,7 @@ public class EventPlugin<T extends BaseEvent> implements EventPluginIF<T> {
   }
 
   @Override
-  public void processIncomingEvent(@NonNull T event) {
+  public <T extends BaseEvent> void processIncomingEvent(@NonNull T event) {
     log.debug("{} processIncomingEvent() called with event {}", getClass().getSimpleName(), event.createPrettyPrintJson());
     debugLog(event);
     cacheServiceIF.save(event);

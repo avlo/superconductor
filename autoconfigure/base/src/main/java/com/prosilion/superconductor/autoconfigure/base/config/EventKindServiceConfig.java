@@ -9,7 +9,6 @@ import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeSe
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -23,8 +22,7 @@ public class EventKindServiceConfig {
   @Bean(name = "eventKindService")
   @ConditionalOnMissingBean
   EventKindService eventKindService(
-      @NonNull List<EventKindPluginIF> eventKindPlugins,
-      @NonNull Map<String, String> kindClassStringMap) {
+      @NonNull List<EventKindPluginIF> eventKindPlugins) {
     return new EventKindService(eventKindPlugins);
   }
 

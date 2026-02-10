@@ -36,7 +36,7 @@ public class GenericTagJpaEntitiesService {
   public List<GenericTagDto> getGenericTags(@NonNull Long eventId) {
     return repo.findAllById(
             join.findByEventId(eventId).stream()
-                .map(EventEntityGenericTagJpaEntity::getGenericTagId).toList())
+                .map(EventEntityGenericTagJpaEntity::getTagId).toList())
         .stream().map(genericTagJpaEntity ->
             genericTagJpaEntity.convertEntityToDto(
                 service.getElementAttributeList(genericTagJpaEntity.getId()).stream().toList()))

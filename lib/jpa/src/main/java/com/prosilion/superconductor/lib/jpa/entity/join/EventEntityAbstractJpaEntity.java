@@ -19,8 +19,14 @@ public abstract class EventEntityAbstractJpaEntity implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private Long eventId;
+  private Long tagId;
 
   public EventEntityAbstractJpaEntity(Long eventId) {
     this.eventId = eventId;
+  }
+
+  public EventEntityAbstractJpaEntity(Long eventId, Long tagId) {
+    this.eventId = eventId;
+    this.tagId = tagId;
   }
 }

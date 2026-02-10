@@ -1,29 +1,91 @@
-//package com.prosilion.superconductor.redis.service;
-//
-//import com.ezylang.evalex.parser.ParseException;
-//import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
-//import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
-//import com.prosilion.superconductor.service.BaseCacheServiceGenericEventRecordUsingFormulaEventIT;
-//import com.prosilion.superconductor.service.BaseCacheServiceGenericEventRecordUsingReputationDefinitionEventIT;
-//import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.beans.factory.annotation.Qualifier;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.lang.NonNull;
-//import org.springframework.test.annotation.DirtiesContext;
-//import org.springframework.test.context.ActiveProfiles;
-//
-//@Slf4j
-//@EmbeddedRedisStandalone
-//@SpringBootTest
-//@ActiveProfiles("test")
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-//public class RedisCacheServiceBadgeDefinitionReputationEventIT extends BaseCacheServiceGenericEventRecordUsingReputationDefinitionEventIT {
-//  @Autowired
-//  public RedisCacheServiceBadgeDefinitionReputationEventIT(
-//      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPluginIF,
-//      @NonNull CacheEventTagBaseEventServiceIF cacheFormulaEventService) throws ParseException {
-//    super(eventPluginIF, cacheFormulaEventService);
-//  }
-//}
+package com.prosilion.superconductor.redis.service;
+
+import com.ezylang.evalex.parser.ParseException;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.ActiveProfiles;
+
+import static com.prosilion.superconductor.enums.AfterimageKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_REPUTATION;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
+
+@Slf4j
+@EmbeddedRedisStandalone
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
+public class RedisCacheServiceBadgeDefinitionReputationEventIT {
+  public static final Relay relay = new Relay("ws://localhost:5555");
+  private final Identity identity = Identity.generateRandomIdentity();
+
+  private final String PLUS_ONE = "+1";
+  private final String MINUS_ONE = "-1";
+
+  private final IdentifierTag upvoteIdTag = new IdentifierTag(TEST_UNIT_UPVOTE);
+  private final IdentifierTag downvoteIdTag = new IdentifierTag(TEST_UNIT_DOWNVOTE);
+  private final IdentifierTag reputationIdTag = new IdentifierTag(TEST_UNIT_REPUTATION);
+  private final BadgeDefinitionGenericEvent upvoteDefnEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdTag, relay, PLUS_ONE);
+  private final BadgeDefinitionGenericEvent downvoteDefnEvent = new BadgeDefinitionGenericEvent(identity, downvoteIdTag, relay, MINUS_ONE);
+
+  private final CacheServiceIF redisCacheServiceIF;
+
+  @Autowired
+  public RedisCacheServiceBadgeDefinitionReputationEventIT(CacheServiceIF cacheServiceIF) {
+    this.redisCacheServiceIF = cacheServiceIF;
+  }
+
+  @Test
+  void testUnmarshallUpvoteFormula() throws ParseException {
+    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
+        identity,
+        reputationIdTag,
+        relay,
+        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+        List.of(
+            new FormulaEvent(
+                identity,
+                upvoteIdTag,
+                relay,
+                upvoteDefnEvent,
+                PLUS_ONE)));
+  }
+
+  @Test
+  void testMissingFormulaEvent() throws ParseException {
+
+  }
+
+  @Test
+  void testUnmarshallUpvoteDownvoteFormula() throws ParseException {
+    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
+        identity,
+        reputationIdTag,
+        relay,
+        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+        List.of(
+            new FormulaEvent(
+                identity,
+                upvoteIdTag,
+                relay,
+                upvoteDefnEvent,
+                PLUS_ONE),
+            new FormulaEvent(
+                identity,
+                downvoteIdTag,
+                relay,
+                downvoteDefnEvent,
+                MINUS_ONE)));
+  }
+}

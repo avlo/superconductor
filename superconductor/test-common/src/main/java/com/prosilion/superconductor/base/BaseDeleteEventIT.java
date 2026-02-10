@@ -14,8 +14,9 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.util.Factory;
+import com.prosilion.superconductor.base.util.NostrRelayReqService;
 import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,21 +29,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseDeleteEventIT {
-  private final NostrRelayService nostrRelayService;
-
   private static final Identity identity = Identity.generateRandomIdentity();
+  private final String relayUrl;
   private final String eventIdToDeleteId;
   private final String deletionEventId;
 
   public BaseDeleteEventIT(@NonNull String relayUrl) throws IOException, NostrException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+    this.relayUrl = relayUrl;
+    NostrRelayService nostrRelayService = new NostrRelayService(relayUrl);
 
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     this.eventIdToDeleteId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        this.nostrRelayService
+        nostrRelayService
             .send(
                 eventMessage)
             .getFlag());
@@ -55,11 +56,12 @@ public abstract class BaseDeleteEventIT {
 
     EventMessage deletionEventMessage = new EventMessage(deletionEvent);
     assertTrue(
-        this.nostrRelayService
+        nostrRelayService
             .send(
                 deletionEventMessage)
             .getFlag());
     log.debug("end");
+//    nostrRelayService.disconnect();
   }
 
   @Test
@@ -68,8 +70,9 @@ public abstract class BaseDeleteEventIT {
 
     EventFilter deletionEventFilter = new EventFilter(new GenericEventId(eventIdToDeleteId));
 
+    NostrRelayReqService nostrRelayReqService = new NostrRelayReqService();
     ReqMessage deletionReqMessage = new ReqMessage(deletionSubmitterSubscriberId, new Filters(deletionEventFilter));
-    List<BaseMessage> returnedDeltionMessagesShouldBeEmpty = nostrRelayService.send(deletionReqMessage);
+    List<BaseMessage> returnedDeltionMessagesShouldBeEmpty = nostrRelayReqService.send(deletionReqMessage, this.relayUrl);
     List<EventIF> returnedEventIFsShouldBeEmpty = getEventIFs(returnedDeltionMessagesShouldBeEmpty);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -80,12 +83,15 @@ public abstract class BaseDeleteEventIT {
 
     final String subscriberId = Factory.generateRandomHex64String();
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+
+    List<BaseMessage> returnedBaseMessages = nostrRelayReqService.send(reqMessage, this.relayUrl);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedBaseMessages);
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(deletionEventId)));
+
+//    nostrRelayReqService.disconnect(this.relayUrl);
   }
 
   @Test
@@ -93,9 +99,11 @@ public abstract class BaseDeleteEventIT {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     String secondEventShouldNotGetDeleted = event.getId();
 
+    NostrRelayService nostrRelayService = new NostrRelayService(this.relayUrl);
+
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        this.nostrRelayService
+        nostrRelayService
             .send(
                 eventMessage)
             .getFlag());
@@ -103,8 +111,10 @@ public abstract class BaseDeleteEventIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(secondEventShouldNotGetDeleted));
 
     final String subscriberId = Factory.generateRandomHex64String();
+
+    NostrRelayReqService nostrRelayReqService = new NostrRelayReqService();
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrRelayReqService.send(reqMessage, this.relayUrl);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");

@@ -6,7 +6,6 @@ import com.prosilion.superconductor.base.service.event.plugin.DeleteEventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.CanonicalEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonMaterializedEventKindPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class KindClassMapConfig {
 
   @Bean("defaultEventKindPlugin")
   @ConditionalOnMissingBean
-  public EventKindPluginIF defaultEventKindPlugin(
+  public CanonicalEventKindPlugin defaultEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     CanonicalEventKindPlugin canonicalEventKindPlugin = new CanonicalEventKindPlugin(
@@ -68,12 +67,12 @@ public class KindClassMapConfig {
 
   @Bean("deleteEventKindPlugin")
   @ConditionalOnMissingBean
-  public EventKindPluginIF deleteEventKindPlugin(
+  public DeleteEventKindPlugin deleteEventKindPlugin(
       @NonNull CacheServiceIF cacheService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
     return new DeleteEventKindPlugin(
         new NonMaterializedEventKindPlugin(
-            Kind.TEXT_NOTE, eventPlugin),
+            Kind.DELETION, eventPlugin),
         new DeleteEventPlugin(cacheService));
   }
 }

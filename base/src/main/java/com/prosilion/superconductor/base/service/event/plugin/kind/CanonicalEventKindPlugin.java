@@ -2,7 +2,6 @@ package com.prosilion.superconductor.base.service.event.plugin.kind;
 
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -10,10 +9,13 @@ import org.springframework.lang.NonNull;
 @Slf4j
 // our SportsCar extends CarDecorator
 public class CanonicalEventKindPlugin extends PublishingEventKindPlugin {
+  private final NonMaterializedEventKindPlugin nonMaterializedEventKindPlugin;
+
   public CanonicalEventKindPlugin(
       @NonNull NotifierService notifierService,
-      @NonNull EventKindPluginIF eventKindPlugin) {
+      @NonNull NonMaterializedEventKindPlugin eventKindPlugin) {
     super(notifierService, eventKindPlugin);
+    this.nonMaterializedEventKindPlugin = eventKindPlugin;
   }
 
   @Override
@@ -23,12 +25,7 @@ public class CanonicalEventKindPlugin extends PublishingEventKindPlugin {
 
   @Override
   public BaseEvent materialize(EventIF eventIF) {
-    return new CanonicalEvent(eventIF.asGenericEventRecord());
-  }
-
-  private static class CanonicalEvent extends BaseEvent {
-    public CanonicalEvent(@NonNull GenericEventRecord genericEventRecord) {
-      super(genericEventRecord);
-    }
+    BaseEvent materialized = nonMaterializedEventKindPlugin.materialize(eventIF);
+    return materialized;
   }
 }

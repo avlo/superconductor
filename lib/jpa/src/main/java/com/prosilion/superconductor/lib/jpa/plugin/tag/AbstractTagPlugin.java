@@ -8,6 +8,9 @@ import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractJpaEn
 import com.prosilion.superconductor.lib.jpa.repository.AbstractTagJpaEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagJpaEntityRepository;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
 @Getter
 public abstract class AbstractTagPlugin<
     P extends BaseTag,
@@ -19,13 +22,19 @@ public abstract class AbstractTagPlugin<
   private final AbstractTagJpaEntityRepository<R> repo;
   private final EventEntityAbstractTagJpaEntityRepository<S> join;
   private final String code;
+  private final Function<P, R> entityFactory;
+  private final BiFunction<Long, Long, S> joinFactory;
 
   public AbstractTagPlugin(
       @NonNull AbstractTagJpaEntityRepository<R> repo,
       @NonNull EventEntityAbstractTagJpaEntityRepository<S> join,
-      @NonNull String code) {
+      @NonNull String code,
+      @NonNull Function<P, R> entityFactory,
+      @NonNull BiFunction<Long, Long, S> joinFactory) {
     this.repo = repo;
     this.join = join;
     this.code = code;
+    this.entityFactory = entityFactory;
+    this.joinFactory = joinFactory;
   }
 }

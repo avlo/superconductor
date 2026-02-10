@@ -6,8 +6,6 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
-import com.prosilion.superconductor.lib.jpa.dto.standard.AddressTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -43,11 +41,6 @@ public class AddressTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public BaseTag getAsBaseTag() {
     return createAddressTag();
-  }
-
-  @Override
-  public AbstractTagDto convertEntityToDto() {
-    return new AddressTagDto(createAddressTag());
   }
 
   @Override

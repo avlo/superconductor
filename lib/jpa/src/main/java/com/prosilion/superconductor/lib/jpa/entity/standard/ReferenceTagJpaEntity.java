@@ -2,8 +2,6 @@ package com.prosilion.superconductor.lib.jpa.entity.standard;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.ReferenceTag;
-import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
-import com.prosilion.superconductor.lib.jpa.dto.standard.ReferenceTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -31,11 +29,6 @@ public class ReferenceTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public BaseTag getAsBaseTag() {
     return new ReferenceTag(uri);
-  }
-
-  @Override
-  public AbstractTagDto convertEntityToDto() {
-    return new ReferenceTagDto(new ReferenceTag(uri));
   }
 
   @Override

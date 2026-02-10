@@ -17,3 +17,6 @@ build/
 **/dependency-reduced-pom.xml
 
 htmlReport/
+
+.worktrees/
+docs/plans/

@@ -7,6 +7,7 @@ import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.CanonicalEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonMaterializedEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.ParameterizedEventKindPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 
@@ -52,8 +54,8 @@ public class KindClassMapConfig {
 //    return canonicalEventKindPlugin;
 //  }
 
-  @Bean("defaultEventKindPlugin")
-  @ConditionalOnMissingBean
+  @Bean
+  @ConditionalOnMissingBean(ParameterizedEventKindPlugin.class)
   public CanonicalEventKindPlugin defaultEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
@@ -65,7 +67,7 @@ public class KindClassMapConfig {
     return canonicalEventKindPlugin;
   }
 
-  @Bean("deleteEventKindPlugin")
+  @Bean
   @ConditionalOnMissingBean
   public DeleteEventKindPlugin deleteEventKindPlugin(
       @NonNull CacheServiceIF cacheService,

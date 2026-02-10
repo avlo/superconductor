@@ -7,7 +7,8 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(
     basePackageClasses = com.prosilion.superconductor.base.controller.NostrEventController.class,
     basePackages = {
-        "com.prosilion.superconductor.base.plugin.filter"
+//        "com.prosilion.superconductor.base.plugin.filter"
+        "com.prosilion.superconductor.base.service.request.plugin.filter"
     })
 public class WebConfig {
 }

@@ -1,22 +1,21 @@
 package com.prosilion.superconductor.lib.jpa.plugin.tag;
 
-import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.BaseTag;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.AbstractTagJpaEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagJpaEntityRepository;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import org.springframework.lang.NonNull;
 
 public interface TagPlugin<
     P extends BaseTag,
@@ -48,8 +47,7 @@ public interface TagPlugin<
         getJoin().findByEventId(eventId).stream()
             .map(EventEntityAbstractJpaEntity::getTagId)
             .distinct()
-            .toList()
-    );
+            .toList());
   }
 
   default Map<Long, List<R>> getTagsByEventIds(@NonNull Collection<Long> eventIds) {
@@ -58,16 +56,16 @@ public interface TagPlugin<
             EventEntityAbstractJpaEntity::getEventId,
             Collectors.mapping(EventEntityAbstractJpaEntity::getTagId, Collectors.toList())));
 
-    List<Long> allTagIds = eventToTagIds.values().stream()
-        .flatMap(List::stream).distinct().collect(Collectors.toList());
-
-    Map<Long, R> tagsById = getRepo().findAllById(allTagIds).stream()
-        .collect(Collectors.toMap(AbstractTagJpaEntity::getId, Function.identity()));
-
     Map<Long, List<R>> result = new HashMap<>();
+
     eventToTagIds.forEach((eventId, tagIds) ->
         result.put(eventId, tagIds.stream()
-            .map(tagsById::get)
+            .map(getRepo().findAllById(
+                    eventToTagIds.values().stream()
+                        .flatMap(List::stream)
+                        .distinct()
+                        .collect(Collectors.toList())).stream()
+                .collect(Collectors.toMap(AbstractTagJpaEntity::getId, Function.identity()))::get)
             .filter(Objects::nonNull)
             .distinct()
             .collect(Collectors.toList())));

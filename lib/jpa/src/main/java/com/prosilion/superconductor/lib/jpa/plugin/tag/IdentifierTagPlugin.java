@@ -1,10 +1,8 @@
 package com.prosilion.superconductor.lib.jpa.plugin.tag;
 
-import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.IdentifierTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityIdentifierTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.IdentifierTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityIdentifierTagJpaEntityRepository;
@@ -19,17 +17,9 @@ public class IdentifierTagPlugin<
     T extends EventEntityIdentifierTagJpaEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public IdentifierTagPlugin(@NonNull IdentifierTagJpaEntityRepository<R> repo, @NonNull EventEntityIdentifierTagJpaEntityRepository<S> join) {
-    super(repo, join, "d");
-  }
-
-  @Override
-  public ConcreteTagDto getTagDto(@NonNull P identifierTag) {
-    return new ConcreteTagDto<>(identifierTag, IdentifierTagJpaEntity::new);
-  }
-
-  @Override
-  public S getEventEntityTagJpaEntity(@NonNull Long eventId, @NonNull Long identifierTagId) {
-    return (S) new EventEntityIdentifierTagJpaEntity(eventId, identifierTagId);
+  public IdentifierTagPlugin(IdentifierTagJpaEntityRepository<R> repo, EventEntityIdentifierTagJpaEntityRepository<S> join) {
+    super(repo, join, "d",
+        tag -> (R) new IdentifierTagJpaEntity(tag),
+        (eid, tid) -> (S) new EventEntityIdentifierTagJpaEntity(eid, tid));
   }
 }

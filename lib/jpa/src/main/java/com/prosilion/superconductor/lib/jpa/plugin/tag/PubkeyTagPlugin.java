@@ -1,11 +1,8 @@
 package com.prosilion.superconductor.lib.jpa.plugin.tag;
 
-import jakarta.annotation.Nonnull;
-import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.PubKeyTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityPubkeyTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.PubkeyTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityPubkeyTagJpaEntityRepository;
@@ -20,17 +17,9 @@ public class PubkeyTagPlugin<
     T extends EventEntityPubkeyTagJpaEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public PubkeyTagPlugin(@Nonnull PubkeyTagJpaEntityRepository<R> repo, @NonNull EventEntityPubkeyTagJpaEntityRepository<S> join) {
-    super(repo, join, "p");
-  }
-
-  @Override
-  public ConcreteTagDto getTagDto(@NonNull P pubkeyTag) {
-    return new ConcreteTagDto<>(pubkeyTag, PubkeyTagJpaEntity::new);
-  }
-
-  @Override
-  public S getEventEntityTagJpaEntity(@NonNull Long eventId, @NonNull Long pubkeyId) {
-    return (S) new EventEntityPubkeyTagJpaEntity(eventId, pubkeyId);
+  public PubkeyTagPlugin(PubkeyTagJpaEntityRepository<R> repo, EventEntityPubkeyTagJpaEntityRepository<S> join) {
+    super(repo, join, "p",
+        tag -> (R) new PubkeyTagJpaEntity(tag),
+        (eid, tid) -> (S) new EventEntityPubkeyTagJpaEntity(eid, tid));
   }
 }

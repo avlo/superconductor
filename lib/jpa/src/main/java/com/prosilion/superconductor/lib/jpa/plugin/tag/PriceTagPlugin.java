@@ -1,11 +1,8 @@
 package com.prosilion.superconductor.lib.jpa.plugin.tag;
 
-import jakarta.annotation.Nonnull;
-import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.PriceTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.classified.PriceTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.classified.EventEntityPriceTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.classified.PriceTagJpaEntityRepository;
@@ -20,17 +17,9 @@ public class PriceTagPlugin<
     T extends EventEntityPriceTagJpaEntityRepository<S>> extends AbstractTagPlugin<P, Q, R, S, T> {
 
   @Autowired
-  public PriceTagPlugin(@Nonnull PriceTagJpaEntityRepository<R> repo, @NonNull EventEntityPriceTagJpaEntityRepository<S> join) {
-    super(repo, join, "price");
-  }
-
-  @Override
-  public ConcreteTagDto getTagDto(@NonNull P priceTag) {
-    return new ConcreteTagDto<>(priceTag, PriceTagJpaEntity::new);
-  }
-
-  @Override
-  public S getEventEntityTagJpaEntity(@NonNull Long eventId, @NonNull Long pricetagId) {
-    return (S) new EventEntityPriceTagJpaEntity(eventId, pricetagId);
+  public PriceTagPlugin(PriceTagJpaEntityRepository<R> repo, EventEntityPriceTagJpaEntityRepository<S> join) {
+    super(repo, join, "price",
+        tag -> (R) new PriceTagJpaEntity(tag),
+        (eid, tid) -> (S) new EventEntityPriceTagJpaEntity(eid, tid));
   }
 }

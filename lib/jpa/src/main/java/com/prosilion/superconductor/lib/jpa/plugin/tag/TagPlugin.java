@@ -4,7 +4,10 @@ import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.BaseTag;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.BiFunction;
 import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.AbstractTagJpaEntityRepository;
@@ -18,13 +21,21 @@ public interface TagPlugin<
     T extends EventEntityAbstractTagJpaEntityRepository<S>> // event -> dto join table
 {
   String getCode();
-  AbstractTagDto getTagDto(P baseTag);
+  Function<P, R> getEntityFactory();
+  BiFunction<Long, Long, S> getJoinFactory();
   AbstractTagJpaEntityRepository<R> getRepo();
   EventEntityAbstractTagJpaEntityRepository<S> getJoin();
-  S getEventEntityTagJpaEntity(Long eventId, Long baseTagId);
+
+  default AbstractTagDto getTagDto(P baseTag) {
+    return new ConcreteTagDto<>(baseTag, getEntityFactory());
+  }
+
+  default S getEventEntityTagJpaEntity(Long eventId, Long tagId) {
+    return getJoinFactory().apply(eventId, tagId);
+  }
 
   default R convertDtoToJpaEntity(@NonNull P baseTag) {
-    return (R) getTagDto(baseTag).convertDtoToJpaEntity();
+    return getEntityFactory().apply(baseTag);
   }
 
   default List<R> getTags(@NonNull Long eventId) {

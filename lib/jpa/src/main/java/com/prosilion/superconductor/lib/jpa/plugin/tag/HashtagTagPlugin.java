@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.HashtagTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.standard.HashtagTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityHashtagTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.HashtagTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityHashtagTagJpaEntityRepository;
@@ -25,8 +25,8 @@ public class HashtagTagPlugin<
   }
 
   @Override
-  public HashtagTagDto getTagDto(@NonNull P hashtagTag) {
-    return new HashtagTagDto(hashtagTag);
+  public ConcreteTagDto getTagDto(@NonNull P hashtagTag) {
+    return new ConcreteTagDto<>(hashtagTag, HashtagTagJpaEntity::new);
   }
 
   @Override

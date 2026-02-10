@@ -5,7 +5,7 @@ import jakarta.annotation.Nonnull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.standard.ReferenceTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityReferenceTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.ReferenceTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityReferenceTagJpaEntityRepository;
@@ -25,8 +25,8 @@ public class ReferenceTagPlugin<
   }
 
   @Override
-  public ReferenceTagDto getTagDto(@NonNull P referenceTag) {
-    return new ReferenceTagDto(referenceTag);
+  public ConcreteTagDto getTagDto(@NonNull P referenceTag) {
+    return new ConcreteTagDto<>(referenceTag, ReferenceTagJpaEntity::new);
   }
 
   @Override

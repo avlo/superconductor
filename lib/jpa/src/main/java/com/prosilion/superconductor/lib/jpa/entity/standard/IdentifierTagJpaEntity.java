@@ -1,7 +1,5 @@
 package com.prosilion.superconductor.lib.jpa.entity.standard;
 
-import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
-import com.prosilion.superconductor.lib.jpa.dto.standard.IdentifierTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -31,11 +29,6 @@ public class IdentifierTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public BaseTag getAsBaseTag() {
     return new IdentifierTag(uuid);
-  }
-
-  @Override
-  public AbstractTagDto convertEntityToDto() {
-    return new IdentifierTagDto(new IdentifierTag(uuid));
   }
 
   @Override

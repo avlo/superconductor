@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.PubKeyTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.standard.PubkeyTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityPubkeyTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.PubkeyTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityPubkeyTagJpaEntityRepository;
@@ -25,8 +25,8 @@ public class PubkeyTagPlugin<
   }
 
   @Override
-  public PubkeyTagDto getTagDto(@NonNull P pubkeyTag) {
-    return new PubkeyTagDto(pubkeyTag);
+  public ConcreteTagDto getTagDto(@NonNull P pubkeyTag) {
+    return new ConcreteTagDto<>(pubkeyTag, PubkeyTagJpaEntity::new);
   }
 
   @Override

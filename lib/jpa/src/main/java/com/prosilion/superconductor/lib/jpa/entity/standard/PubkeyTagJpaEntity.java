@@ -1,7 +1,5 @@
 package com.prosilion.superconductor.lib.jpa.entity.standard;
 
-import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
-import com.prosilion.superconductor.lib.jpa.dto.standard.PubkeyTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -39,13 +37,6 @@ public class PubkeyTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public BaseTag getAsBaseTag() {
     return new PubKeyTag(new PublicKey(publicKey), mainRelayUrl, petName);
-  }
-
-  @Override
-  public AbstractTagDto convertEntityToDto() {
-    return new PubkeyTagDto(
-        new PubKeyTag(
-            new PublicKey(publicKey), mainRelayUrl, petName));
   }
 
   @Override

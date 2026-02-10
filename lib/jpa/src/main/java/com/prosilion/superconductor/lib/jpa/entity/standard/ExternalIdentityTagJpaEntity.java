@@ -2,8 +2,6 @@ package com.prosilion.superconductor.lib.jpa.entity.standard;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
-import com.prosilion.superconductor.lib.jpa.dto.standard.ExternalIdentityTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -36,11 +34,6 @@ public class ExternalIdentityTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public BaseTag getAsBaseTag() {
     return createExternalIdentityTag();
-  }
-
-  @Override
-  public AbstractTagDto convertEntityToDto() {
-    return new ExternalIdentityTagDto(createExternalIdentityTag());
   }
 
   @Override

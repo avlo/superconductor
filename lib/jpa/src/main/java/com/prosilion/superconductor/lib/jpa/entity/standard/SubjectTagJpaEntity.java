@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.lib.jpa.entity.standard;
 
-import com.prosilion.superconductor.lib.jpa.dto.standard.SubjectTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -30,11 +29,6 @@ public class SubjectTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public BaseTag getAsBaseTag() {
     return new SubjectTag(subject);
-  }
-
-  @Override
-  public SubjectTagDto convertEntityToDto() {
-    return new SubjectTagDto(new SubjectTag(subject));
   }
 
   @Override

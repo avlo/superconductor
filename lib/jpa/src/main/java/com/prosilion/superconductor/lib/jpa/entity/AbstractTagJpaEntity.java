@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 import lombok.Setter;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
 
 @Setter
 @Getter
@@ -28,8 +27,6 @@ public abstract class AbstractTagJpaEntity implements Supplier<List<String>>, Se
   public AbstractTagJpaEntity(@NonNull String code) {
     this.code = code;
   }
-
-  public abstract AbstractTagDto convertEntityToDto();
 
   public abstract BaseTag getAsBaseTag();
 

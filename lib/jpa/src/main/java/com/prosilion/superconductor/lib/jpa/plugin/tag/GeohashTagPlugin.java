@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.GeohashTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.standard.GeohashTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityGeohashTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.GeohashTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityGeohashTagJpaEntityRepository;
@@ -25,8 +25,8 @@ public class GeohashTagPlugin<
   }
 
   @Override
-  public GeohashTagDto getTagDto(@NonNull P geohashTag) {
-    return new GeohashTagDto(geohashTag);
+  public ConcreteTagDto getTagDto(@NonNull P geohashTag) {
+    return new ConcreteTagDto<>(geohashTag, GeohashTagJpaEntity::new);
   }
 
   @Override

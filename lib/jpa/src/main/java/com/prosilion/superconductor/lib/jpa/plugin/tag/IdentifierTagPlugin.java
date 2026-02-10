@@ -4,7 +4,7 @@ import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.IdentifierTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.standard.IdentifierTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityIdentifierTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.IdentifierTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityIdentifierTagJpaEntityRepository;
@@ -24,8 +24,8 @@ public class IdentifierTagPlugin<
   }
 
   @Override
-  public IdentifierTagDto getTagDto(@NonNull P identifierTag) {
-    return new IdentifierTagDto(identifierTag);
+  public ConcreteTagDto getTagDto(@NonNull P identifierTag) {
+    return new ConcreteTagDto<>(identifierTag, IdentifierTagJpaEntity::new);
   }
 
   @Override

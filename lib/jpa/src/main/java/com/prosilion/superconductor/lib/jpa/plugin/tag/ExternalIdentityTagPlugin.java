@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.lib.jpa.plugin.tag;
 
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.superconductor.lib.jpa.dto.standard.ExternalIdentityTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityExternalIdentityTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.ExternalIdentityTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityExternalIdentityTagJpaEntityRepository;
@@ -24,8 +24,8 @@ public class ExternalIdentityTagPlugin<
   }
 
   @Override
-  public ExternalIdentityTagDto getTagDto(@NonNull P externalIdentityTag) {
-    return new ExternalIdentityTagDto(externalIdentityTag);
+  public ConcreteTagDto getTagDto(@NonNull P externalIdentityTag) {
+    return new ConcreteTagDto<>(externalIdentityTag, ExternalIdentityTagJpaEntity::new);
   }
 
   @Override

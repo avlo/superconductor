@@ -1,7 +1,5 @@
 package com.prosilion.superconductor.lib.jpa.entity.classified;
 
-import com.prosilion.superconductor.lib.jpa.dto.AbstractTagDto;
-import com.prosilion.superconductor.lib.jpa.dto.classified.PriceTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -38,11 +36,6 @@ public class PriceTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public BaseTag getAsBaseTag() {
     return new PriceTag(number, currency, frequency);
-  }
-
-  @Override
-  public AbstractTagDto convertEntityToDto() {
-    return new PriceTagDto(new PriceTag(number, currency, frequency));
   }
 
   @Override

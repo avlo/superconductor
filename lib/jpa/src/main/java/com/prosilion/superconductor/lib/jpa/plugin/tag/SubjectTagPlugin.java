@@ -4,7 +4,7 @@ import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.SubjectTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.standard.SubjectTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntitySubjectTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.SubjectTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntitySubjectTagJpaEntityRepository;
@@ -24,8 +24,11 @@ public class SubjectTagPlugin<
   }
 
   @Override
-  public SubjectTagDto getTagDto(@NonNull P subjectTag) {
-    return new SubjectTagDto(subjectTag);
+  public ConcreteTagDto getTagDto(@NonNull P subjectTag) {
+    return new ConcreteTagDto<>(subjectTag, tag -> new SubjectTagJpaEntity(
+        tag.getSubject().chars().limit(80)
+            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+            .toString()));
   }
 
   @Override

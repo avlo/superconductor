@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.PriceTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.classified.PriceTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.classified.PriceTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.classified.EventEntityPriceTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.classified.PriceTagJpaEntityRepository;
@@ -25,8 +25,8 @@ public class PriceTagPlugin<
   }
 
   @Override
-  public PriceTagDto getTagDto(@NonNull P priceTag) {
-    return new PriceTagDto(priceTag);
+  public ConcreteTagDto getTagDto(@NonNull P priceTag) {
+    return new ConcreteTagDto<>(priceTag, PriceTagJpaEntity::new);
   }
 
   @Override

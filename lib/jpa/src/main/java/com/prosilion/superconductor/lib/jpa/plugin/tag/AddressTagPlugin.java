@@ -4,7 +4,7 @@ import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.AddressTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.standard.AddressTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityAddressTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.AddressTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityAddressTagJpaEntityRepository;
@@ -24,8 +24,8 @@ public class AddressTagPlugin<
   }
 
   @Override
-  public AddressTagDto getTagDto(@NonNull P addressTag) {
-    return new AddressTagDto(addressTag);
+  public ConcreteTagDto getTagDto(@NonNull P addressTag) {
+    return new ConcreteTagDto<>(addressTag, AddressTagJpaEntity::new);
   }
 
   @Override

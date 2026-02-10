@@ -3,7 +3,6 @@ package com.prosilion.superconductor.lib.jpa.entity.standard;
 import com.prosilion.nostr.enums.Marker;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.superconductor.lib.jpa.dto.standard.EventTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -41,11 +40,6 @@ public class EventTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public BaseTag getAsBaseTag() {
     return new EventTag(eventIdString, recommendedRelayUrl, marker);
-  }
-
-  @Override
-  public EventTagDto convertEntityToDto() {
-    return new EventTagDto(new EventTag(eventIdString, recommendedRelayUrl, marker));
   }
 
   @Override

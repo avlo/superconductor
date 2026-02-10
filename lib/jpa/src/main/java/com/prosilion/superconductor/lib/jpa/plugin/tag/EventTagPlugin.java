@@ -4,7 +4,7 @@ import org.springframework.lang.NonNull;
 import com.prosilion.nostr.tag.EventTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.prosilion.superconductor.lib.jpa.dto.standard.EventTagDto;
+import com.prosilion.superconductor.lib.jpa.dto.ConcreteTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.join.standard.EventEntityEventTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.standard.EventTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.repository.join.standard.EventEntityEventTagJpaEntityRepository;
@@ -24,8 +24,8 @@ public class EventTagPlugin<
   }
 
   @Override
-  public EventTagDto getTagDto(@NonNull P eventTag) {
-    return new EventTagDto(eventTag);
+  public ConcreteTagDto getTagDto(@NonNull P eventTag) {
+    return new ConcreteTagDto<>(eventTag, EventTagJpaEntity::new);
   }
 
   @Override

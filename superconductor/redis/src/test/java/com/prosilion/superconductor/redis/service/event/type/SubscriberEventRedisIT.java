@@ -59,7 +59,7 @@ class SubscriberEventRedisIT {
         "classified summary",
         new PriceTag(new BigDecimal("2.71"), "BTC", "frequency"));
 
-    classifiedListingEvent = new ClassifiedListingEvent(IDENTITY, Kind.CLASSIFIED_LISTING, identifierTag, new Relay(relayUri), classifiedListing, tags, CONTENT);
+    classifiedListingEvent = new ClassifiedListingEvent(IDENTITY, Kind.CLASSIFIED_LISTING_ACTIVE, identifierTag, new Relay(relayUri), classifiedListing, tags, CONTENT);
   }
 
   @Test

@@ -3,7 +3,13 @@ package com.prosilion.superconductor.lib.jpa.service;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.GenericTag;
 import jakarta.transaction.Transactional;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -41,6 +47,29 @@ public class GenericTagJpaEntitiesService {
             genericTagJpaEntity.convertEntityToDto(
                 service.getElementAttributeList(genericTagJpaEntity.getId()).stream().toList()))
         .toList();
+  }
+
+  public Map<Long, List<GenericTagDto>> getGenericTagsByEventIds(@NonNull Collection<Long> eventIds) {
+    Map<Long, List<Long>> eventToGenericTagIds = join.findByEventIdIn(eventIds).stream()
+        .collect(Collectors.groupingBy(
+            EventEntityGenericTagJpaEntity::getEventId,
+            Collectors.mapping(EventEntityGenericTagJpaEntity::getTagId, Collectors.toList())));
+
+    List<Long> allGenericTagIds = eventToGenericTagIds.values().stream()
+        .flatMap(List::stream).distinct().collect(Collectors.toList());
+
+    Map<Long, GenericTagJpaEntity> tagsById = repo.findAllById(allGenericTagIds).stream()
+        .collect(Collectors.toMap(GenericTagJpaEntity::getId, Function.identity()));
+
+    Map<Long, List<GenericTagDto>> result = new HashMap<>();
+    eventToGenericTagIds.forEach((eventId, tagIds) ->
+        result.put(eventId, tagIds.stream()
+            .map(tagsById::get)
+            .filter(Objects::nonNull)
+            .map(entity -> entity.convertEntityToDto(
+                service.getElementAttributeList(entity.getId())))
+            .collect(Collectors.toList())));
+    return result;
   }
 
   public void saveGenericTags(@NonNull Long eventId, @NonNull List<BaseTag> tags) {

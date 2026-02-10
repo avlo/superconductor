@@ -1,7 +1,11 @@
 package com.prosilion.superconductor.lib.jpa.service;
 
 import com.prosilion.nostr.tag.BaseTag;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +36,17 @@ public class ConcreteTagEntitiesService<
     return tagPlugins.stream().map(tagModule ->
             tagModule.getTags(eventId))
         .flatMap(List::stream).distinct().collect(Collectors.toList());
+  }
+
+  public Map<Long, List<AbstractTagJpaEntity>> getTagsByEventIds(@NonNull Collection<Long> eventIds) {
+    Map<Long, List<AbstractTagJpaEntity>> result = new HashMap<>();
+    tagPlugins.forEach(plugin -> {
+      Map<Long, ? extends List<? extends AbstractTagJpaEntity>> pluginTags =
+          plugin.getTagsByEventIds(eventIds);
+      pluginTags.forEach((eventId, tags) ->
+          result.computeIfAbsent(eventId, k -> new ArrayList<>()).addAll(tags));
+    });
+    return result;
   }
 
   public void saveTags(@NonNull Long eventId, @NonNull List<P> baseTags) {

@@ -9,6 +9,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.event.EntityServiceIF;
 import com.prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
+import com.prosilion.superconductor.lib.jpa.dto.generic.GenericTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
@@ -17,7 +18,9 @@ import com.prosilion.superconductor.lib.jpa.repository.AbstractTagJpaEntityRepos
 import com.prosilion.superconductor.lib.jpa.repository.EventJpaEntityRepository;
 import com.prosilion.superconductor.lib.jpa.repository.join.EventEntityAbstractTagJpaEntityRepository;
 import jakarta.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,7 +71,8 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
 
   @Override
   public List<EventJpaEntityIF> getAll() {
-    return eventJpaEntityRepository.findAll().stream().map(this::populateEventJpaEntity).collect(Collectors.toList());
+    List<EventJpaEntityIF> entities = new ArrayList<>(eventJpaEntityRepository.findAll());
+    return populateEventJpaEntities(entities);
   }
 
   @Override
@@ -138,6 +142,27 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
 //    concreteTagEntitiesService.deleteTags(eventToDelete.getUid(), eventToDelete.getTags());
 //    genericTagEntitiesService.deleteTags(eventToDelete.getTags());
 //    eventEntityRepository.delete(convertDtoToEntity(eventToDelete));
+  }
+
+  private List<EventJpaEntityIF> populateEventJpaEntities(List<EventJpaEntityIF> entities) {
+    List<Long> eventIds = entities.stream().map(EventJpaEntityIF::getUid).toList();
+
+    Map<Long, List<AbstractTagJpaEntity>> concreteTags =
+        concreteTagEntitiesService.getTagsByEventIds(eventIds);
+    Map<Long, List<GenericTagDto>> genericTags =
+        genericTagJpaEntitiesService.getGenericTagsByEventIds(eventIds);
+
+    entities.forEach(entity -> entity.setTags(
+        Stream.concat(
+            concreteTags.getOrDefault(entity.getUid(), List.of()).stream()
+                .map(AbstractTagJpaEntity::getAsBaseTag),
+            genericTags.getOrDefault(entity.getUid(), List.of()).stream()
+                .map(genericTag -> (BaseTag) new GenericTag(
+                    genericTag.code(),
+                    genericTag.atts().stream()
+                        .map(ElementAttributeDto::getElementAttribute).toList()))
+        ).toList()));
+    return entities;
   }
 
   //  TODO: this is a 2nd call to db, needs economic sol'n

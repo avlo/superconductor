@@ -32,6 +32,7 @@
     <module>superconductor/mysql</module>
     <module>superconductor/redis</module>
     <module>superconductor/sqlite</module>
+    <module>superconductor/test-common</module>
 <!--    <module>report-aggregate</module>-->
   </modules>
 

@@ -14,14 +14,9 @@ public class NostrRelayReqService {
   private final ReactiveRequestConsolidator requestConsolidator;
 
   public NostrRelayReqService() {
-    log.debug("{} constructor (using ReactiveRequestConsolidator)", getClass().getSimpleName());
+    log.debug("constructor (using ReactiveRequestConsolidator)");
     this.requestConsolidator = new ReactiveRequestConsolidator();
   }
-
-//  public NostrRelayService(@NonNull String relayUrl, boolean on) {
-//    this(relayUrl);
-//    if (on) log.debug("{} constructor called with relayUrl [{}]", getClass().getSimpleName(), relayUrl);
-//  }
 
 //  public NostrRelayReqService(@Value("${superconductor.relay.url}") @NonNull String relayUrl, @NonNull SslBundles sslBundles) throws ExecutionException, InterruptedException {
 //    log.debug("{} constructor called with relay url {} and sslBundles {}", getClass().getSimpleName(), relayUrl, sslBundles);

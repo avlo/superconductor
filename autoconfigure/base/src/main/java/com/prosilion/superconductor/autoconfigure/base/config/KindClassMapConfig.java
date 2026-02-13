@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 
@@ -32,8 +31,6 @@ public class KindClassMapConfig {
     ResourceBundle relaysBundle = ResourceBundle.getBundle("kind-class-map");
     Map<String, String> collect = relaysBundle.keySet().stream()
         .collect(Collectors.toMap(key -> key, relaysBundle::getString));
-//    log.debug("{} loading kindClassStringMap contents:\n{}", getClass().getSimpleName(), collect.entrySet());
-    System.out.printf("{%s} loading kindClassStringMap contents:\n{%s}%n", getClass().getSimpleName(), collect.entrySet());
     return collect;
   }
 
@@ -63,7 +60,7 @@ public class KindClassMapConfig {
         notifierService,
         new NonMaterializedEventKindPlugin(
             Kind.TEXT_NOTE, eventPlugin));
-    System.out.printf("[%s] loaded canonical defaultEventKindPlugin bean", canonicalEventKindPlugin.getClass().getSimpleName());
+    log.debug("loaded canonical defaultEventKindPlugin bean {}", canonicalEventKindPlugin.getClass().getSimpleName());
     return canonicalEventKindPlugin;
   }
 

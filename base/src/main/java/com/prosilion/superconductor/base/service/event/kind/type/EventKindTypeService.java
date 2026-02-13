@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.base.service.event.kind.type;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
@@ -32,7 +31,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
                 EventKindTypePluginIF::getKindType,
                 Function.identity())));
 
-    log.debug("{} ctor (List<EventKindTypePluginIF>) with values:\n{}", getClass().getSimpleName(),
+    log.debug("ctor (List<EventKindTypePluginIF>) with values:\n{}",
         eventKindTypePlugins.stream()
             .map(eventKindTypePluginIF ->
                 String.format("  %s:%s -> %s",

@@ -107,8 +107,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
    */
   @Override
   public void handleTextMessage(WebSocketSession session, TextMessage baseMessage) throws JsonProcessingException {
-    log.debug("{} handleTextMessage(WebSocketSession, TextMessage) called with session:\n  [{}]\nTextMessage payload:\n{}",
-        getClass().getSimpleName(),
+    log.debug("handleTextMessage(WebSocketSession, TextMessage) called with session:\n  [{}]\nTextMessage payload:\n{}",
         session.getId(),
         Util.prettyFormatJson(baseMessage.getPayload(), 2));
 //    BaseMessage message = BaseMessageDecoder.decode(baseMessage.getPayload());
@@ -126,7 +125,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     String sessionId = message.getSessionId();
     broadcast(sessionId, response);
     log.debug("NostrEventController broadcast to session:\n  {}\nmessage:\n{}",
-        sessionId, 
+        sessionId,
         Util.prettyFormatJson(response.getPayload(), 2));
   }
 

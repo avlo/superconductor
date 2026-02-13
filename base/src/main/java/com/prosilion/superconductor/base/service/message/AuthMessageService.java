@@ -32,7 +32,7 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
   }
 
   public void processIncoming(@NonNull CanonicalAuthenticationMessage authMessage, @NonNull String sessionId) {
-    log.debug("{} processing incoming AUTH message: [{}]", getClass().getSimpleName(), authMessage);
+    log.debug("processing incoming AUTH message: [{}]", authMessage);
     log.debug("AUTH message sessionId: {}", sessionId);
     String challenge = getChallenge(authMessage);
 //    TODO: check non-blank / quality password /etc

@@ -22,8 +22,7 @@ public class EventService implements EventServiceIF {
   @Override
   public void processIncomingEvent(@NonNull EventMessage eventMessage) {
     EventIF event = eventMessage.getEvent();
-    log.debug("{} processIncomingEvent(EventMessage):\n{}\nkind: [{}]",
-        getClass().getSimpleName(),
+    log.debug("processIncomingEvent(EventMessage):\n{}\nkind: [{}]",
         event.createPrettyPrintJson(),
         event.getKind());
 

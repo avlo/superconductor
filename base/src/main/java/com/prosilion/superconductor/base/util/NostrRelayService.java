@@ -21,17 +21,12 @@ public class NostrRelayService {
   private final ReactiveNostrRelayClient nostrRelayService;
 
   public NostrRelayService(@NonNull String relayUrl) {
-    log.debug("{} constructor called with relayUrl [{}]", getClass().getSimpleName(), relayUrl);
+    log.debug("constructor called with relayUrl [{}]", relayUrl);
     this.nostrRelayService = new ReactiveNostrRelayClient(relayUrl);
   }
 
-//  public NostrRelayService(@NonNull String relayUrl, boolean on) {
-//    this(relayUrl);
-//    if (on) log.debug("{} constructor called with relayUrl [{}]", getClass().getSimpleName(), relayUrl);
-//  }
-
   public NostrRelayService(@Value("${superconductor.relay.url}") @NonNull String relayUrl, @NonNull SslBundles sslBundles) throws ExecutionException, InterruptedException {
-    log.debug("{} constructor called with relay url {} and sslBundles {}", getClass().getSimpleName(), relayUrl, sslBundles);
+    log.debug("constructor called with relay url {} and sslBundles {}", relayUrl, sslBundles);
     final SslBundle server = sslBundles.getBundle("server");
     log.debug("sslBundles name: \n{}", server);
     log.debug("sslBundles key: \n{}", server.getKey());

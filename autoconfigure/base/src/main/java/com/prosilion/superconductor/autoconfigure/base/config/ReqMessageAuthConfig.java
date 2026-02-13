@@ -7,8 +7,8 @@ import com.prosilion.superconductor.autoconfigure.base.web.req.ReqApiAuthUi;
 import com.prosilion.superconductor.base.controller.ReqApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
-import com.prosilion.superconductor.base.service.event.auth.ReqAuthCondition;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.ReqAuthCondition;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
 import com.prosilion.superconductor.base.service.message.AuthMessageServiceIF;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class ReqMessageAuthConfig {
   <T, U extends AuthPersistantIF> AutoConfigReqMessageServiceIF autoConfigReqMessageServiceIF(
       @NonNull ReqMessageServiceIF reqMessageServiceIF,
       @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF) {
-    log.debug("{} loading JPA bean (REQ AUTH)", getClass().getSimpleName());
+    log.debug("loading JPA bean (REQ AUTH)");
     return new AutoConfigReqMessageServiceAuthDecorator<>(reqMessageServiceIF, authPersistantServiceIF);
   }
 
@@ -38,7 +38,7 @@ public class ReqMessageAuthConfig {
       @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF,
       @NonNull ClientResponseService okResponseService,
       @NonNull @Value("${superconductor.auth.challenge-relay.url}") String challengeRelayUrl) {
-    log.debug("{} loading REDIS AuthMessageServiceIF bean", getClass().getSimpleName());
+    log.debug("loading REDIS AuthMessageServiceIF bean");
     return new AuthMessageService<>(authPersistantServiceIF, okResponseService, challengeRelayUrl);
   }
 

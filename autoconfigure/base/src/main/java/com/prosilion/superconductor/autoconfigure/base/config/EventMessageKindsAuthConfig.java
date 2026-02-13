@@ -9,10 +9,10 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.event.aut
 import com.prosilion.superconductor.autoconfigure.base.web.event.EventApiAuthUi;
 import com.prosilion.superconductor.base.controller.EventApiUiIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
-import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
-import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthKindPersistantServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
 import com.prosilion.superconductor.base.service.message.AuthMessageService;
 import com.prosilion.superconductor.base.service.message.AuthMessageServiceIF;
 import java.util.List;
@@ -39,7 +39,7 @@ public class EventMessageKindsAuthConfig {
   <T, U extends AuthPersistantIF> AutoConfigEventMessageServiceIF autoConfigEventMessageServiceIF(
       @NonNull EventMessageServiceIF eventMessageServiceIF,
       @NonNull AuthKindPersistantServiceIF<T, U> authKindPersistantServiceIF) {
-    log.debug("{} loading REDIS AutoConfigEventMessageServiceAuthDecorator bean (EVENT+Kind AUTH)", getClass().getSimpleName());
+    log.debug("loading REDIS AutoConfigEventMessageServiceAuthDecorator bean (EVENT+Kind AUTH)");
     return new AutoConfigEventMessageServiceAuthDecorator<>(eventMessageServiceIF, authKindPersistantServiceIF);
   }
 
@@ -49,7 +49,7 @@ public class EventMessageKindsAuthConfig {
       @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF,
       @NonNull ClientResponseService okResponseService,
       @NonNull @Value("${superconductor.auth.challenge-relay.url}") String challengeRelayUrl) {
-    log.debug("{} loading JPA AuthMessageServiceIF bean", getClass().getSimpleName());
+    log.debug("loading JPA AuthMessageServiceIF bean");
     return new AuthMessageService<>(authPersistantServiceIF, okResponseService, challengeRelayUrl);
   }
 

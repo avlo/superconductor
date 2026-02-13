@@ -24,8 +24,7 @@ public class CacheDereferenceEventTagService implements CacheDereferenceEventTag
 
   @Override
   public Optional<GenericEventRecord> getEvent(@NonNull EventTag eventTag) {
-    log.debug("{} getEvent(EventTag) containing eventId: [{}], eventTag URL: [{}]",
-        getClass().getSimpleName(),
+    log.debug("getEvent(EventTag) containing:\neventId: [{}], eventTag URL: [{}]",
         eventTag.getIdEvent(),
         eventTag.getRecommendedRelayUrl());
     Optional<GenericEventRecord> cacheServiceIFEventByEventId = cacheServiceIF.getEventByEventId(eventTag.getIdEvent());

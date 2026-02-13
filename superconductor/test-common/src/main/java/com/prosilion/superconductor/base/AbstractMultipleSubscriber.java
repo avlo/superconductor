@@ -84,7 +84,7 @@ abstract class AbstractMultipleSubscriber {
     String nextHex = getNextHex(increment);
     log.debug("next hex: {}", nextHex);
     String globalEventJson = getGlobalEventJson(nextHex);
-    log.debug("setup() send event:\n  {}", globalEventJson);
+    log.debug("setup() send event:\n{}", globalEventJson);
 //    TODO: update cast
     nostrRelayService.send((EventMessage) BaseMessageDecoder.decode(globalEventJson));
     targetEventIds.add(nextHex); // targetEventId String values utilized by inherited classes
@@ -119,7 +119,7 @@ abstract class AbstractMultipleSubscriber {
     List<BaseMessage> send = nostrRelayService.send(
         (ReqMessage) BaseMessageDecoder.decode(createReqJson(uuidKey)));
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(uuidKey);
-    log.debug("expectedJson:\n  {}", expectedJsonInAnyOrder);
+    log.debug("expectedJson:\n{}", expectedJsonInAnyOrder);
   }
 
   protected synchronized String getNextHex(int i) {

@@ -4,6 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,19 +15,20 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventKindService implements EventKindServiceIF {
+  private static final String FORMATTER = "  %s -> %s";
   private final Map<Kind, EventKindPluginIF> eventKindPluginsMap;
 
   public <T extends BaseEvent> EventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     this.eventKindPluginsMap = eventKindPlugins.stream().collect(
         Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
-    log.info("eventKindPluginsMap: {}", eventKindPluginsMap);
+    log.info("eventKindPluginsMap:\n{}", prettyPrintKindClassStringMap(eventKindPluginsMap));
   }
 
   @Override
   public void processIncomingEvent(EventIF event) {
-    log.debug("{} processIncomingEvent() called with event {}", getClass().getSimpleName(), event.createPrettyPrintJson());
+    log.debug("{} processIncomingEvent() called with event:\n{}", getClass().getSimpleName(), event.createPrettyPrintJson());
     Kind kind = event.getKind();
-    log.debug("{} processIncomingEvent() event.getKind() [{}]", getClass().getSimpleName(), kind);
+    log.debug("{} processIncomingEvent() event.getKind(): [{}]", getClass().getSimpleName(), kind);
 
     EventKindPluginIF kindEventKindPluginIF =
         checkExistingEventKind(kind)
@@ -66,5 +68,16 @@ public class EventKindService implements EventKindServiceIF {
   @Override
   public final List<Kind> getKinds() {
     return List.copyOf(eventKindPluginsMap.keySet());
+  }
+
+  private String prettyPrintKindClassStringMap(Map<Kind, EventKindPluginIF> map) {
+    Function<Kind, String> fxn = kind ->
+        String.format("%-5d: %s", kind.getValue(), kind.getName());
+
+    return map.entrySet().stream()
+        .sorted(Comparator.comparing(o -> o.getKey().getValue()))
+        .map(entry ->
+            String.format(FORMATTER.toUpperCase(), fxn.apply(entry.getKey()), entry.getValue()))
+        .collect(Collectors.joining("\n"));
   }
 }

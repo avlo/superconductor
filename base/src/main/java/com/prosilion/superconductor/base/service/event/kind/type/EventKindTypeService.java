@@ -31,7 +31,15 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
             Collectors.toMap(
                 EventKindTypePluginIF::getKindType,
                 Function.identity())));
-    log.debug("loaded eventKindTypePluginsMap\n{}", new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(eventKindTypePluginsMap));
+
+    log.debug("{} ctor (List<EventKindTypePluginIF>) with values:\n{}", getClass().getSimpleName(),
+        eventKindTypePlugins.stream()
+            .map(eventKindTypePluginIF ->
+                String.format("  %s:%s -> %s",
+                    eventKindTypePluginIF.getKind().getValue(),
+                    eventKindTypePluginIF.getKind().getName(),
+                    eventKindTypePluginIF.getClass().getSimpleName()))
+            .collect(Collectors.joining("\n")));
   }
 
   @Override

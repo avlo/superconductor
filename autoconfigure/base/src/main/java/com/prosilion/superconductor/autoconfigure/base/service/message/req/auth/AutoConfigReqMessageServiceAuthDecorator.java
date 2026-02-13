@@ -1,11 +1,13 @@
 package com.prosilion.superconductor.autoconfigure.base.service.message.req.auth;
 
+import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoConfigReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantServiceIF;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -24,7 +26,11 @@ public class AutoConfigReqMessageServiceAuthDecorator<T, U extends AuthPersistan
 
   @Override
   public void processIncoming(@NonNull ReqMessage reqMessage, @NonNull String sessionId) {
-    log.debug("AUTH REQ decoded, contents: {}", reqMessage);
+    log.debug("{} processIncoming(reqMessage, sessionId) with ReqMessage filters:\n{}",
+        getClass().getSimpleName(),
+        reqMessage.getFiltersList().stream()
+            .map(Filters::toString)
+            .collect(Collectors.joining(",\n")));
     try {
       authPersistantServiceIF.findAuthPersistantBySessionId(sessionId).orElseThrow();
     } catch (NoSuchElementException e) {

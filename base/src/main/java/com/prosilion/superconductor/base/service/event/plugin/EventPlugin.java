@@ -19,7 +19,7 @@ public class EventPlugin implements EventPluginIF {
 
   @Override
   public <T extends BaseEvent> void processIncomingEvent(@NonNull T event) {
-    log.debug("{} processIncomingEvent() called with event {}", getClass().getSimpleName(), event.createPrettyPrintJson());
+    log.debug("{} processIncomingEvent() called with event\n{}", getClass().getSimpleName(), event.createPrettyPrintJson());
     debugLog(event);
     cacheServiceIF.save(event);
   }
@@ -31,7 +31,7 @@ public class EventPlugin implements EventPluginIF {
                 EventIF::getClass,
                 EventIF::asGenericEventRecord))
         .forEach((eventIFClass, genericEventRecord) ->
-            log.debug("Class Type:\n  {}\nSerialized Event Content:\n  {}",
+            log.debug("Class Type:\n  {}\nSerialized Event Content:\n{}",
                 eventIFClass.getSimpleName(),
                 EventIF.createPrettyPrintJson));
   }

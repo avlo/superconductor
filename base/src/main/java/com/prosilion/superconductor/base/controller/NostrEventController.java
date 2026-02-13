@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.Command;
 import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponse;
 import com.prosilion.superconductor.base.service.message.MessageServiceIF;
 import com.prosilion.superconductor.base.service.message.RelayInfoDocServiceIF;
@@ -82,7 +83,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-    log.debug("Connected new session [{}]", session.getId());
+    log.debug("Connected new session: [{}]", session.getId());
     if (isRelayInformationDocumentRequest(session))
       return;
     mapSessions.put(session.getId(), session);
@@ -106,7 +107,10 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
    */
   @Override
   public void handleTextMessage(WebSocketSession session, TextMessage baseMessage) throws JsonProcessingException {
-    log.debug("{} handleTextMessage(...) called with session\n  [{}]\nTextMessage payload  {}", getClass().getSimpleName(), session.getId(), baseMessage.getPayload());
+    log.debug("{} handleTextMessage(WebSocketSession, TextMessage) called with session:\n  [{}]\nTextMessage payload:\n{}",
+        getClass().getSimpleName(),
+        session.getId(),
+        Util.prettyFormatJson(baseMessage.getPayload(), 2));
 //    BaseMessage message = BaseMessageDecoder.decode(baseMessage.getPayload());
     T message = (T) BaseMessageDecoder.decode(baseMessage.getPayload());
     MessageServiceIF<T> tMessageServiceIF = messageServiceMap.get(message.getCommand());
@@ -121,7 +125,9 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     TextMessage response = message.getMessage();
     String sessionId = message.getSessionId();
     broadcast(sessionId, response);
-    log.debug("NostrEventController broadcast to\nsession:\n\t{}\nmessage:\n\t{}", sessionId, response.getPayload());
+    log.debug("NostrEventController broadcast to session:\n  {}\nmessage:\n{}",
+        sessionId, 
+        Util.prettyFormatJson(response.getPayload(), 2));
   }
 
   /**
@@ -133,11 +139,11 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     String sessionId = message.getSessionId();
     broadcast(sessionId, response);
     if (message.isValid()) {
-      log.debug("OK response to\nclient:\n\t{}\npayload:\n\t{}", sessionId, response.getPayload());
+      log.debug("OK response to\nclient:\n{}\npayload:\n{}", sessionId, response.getPayload());
       return;
     }
     closeSession(sessionId);
-    log.debug("CLOSE response to\nclient:\n\t{}\npayload:\n\t{}", sessionId, response.getPayload());
+    log.debug("CLOSE response to\nclient:\n{}\npayload:\n{}", sessionId, response.getPayload());
   }
 
   private void broadcast(String sessionId, TextMessage message) {

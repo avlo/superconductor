@@ -1,8 +1,12 @@
 package com.prosilion.superconductor.base.service.clientresponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.util.Util;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,7 +29,7 @@ public class ClientResponseService {
   }
 
   public void processOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
-    log.debug("Processing event message: {}, reason: {}", eventMessage.getEvent(), reason);
+    log.debug("Processing Ok ClientResponse EventMessage:\n{}", eventMessage.getEvent().createPrettyPrintJson());
     try {
       publisher.publishEvent(new ClientOkResponse(sessionId, eventMessage.getEvent(), true, reason));
     } catch (JsonProcessingException e) {
@@ -56,7 +60,9 @@ public class ClientResponseService {
   }
 
   public void processNotOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
-    log.debug("Processing failed event message: {}, reason: {}", eventMessage.getEvent(), reason);
+    log.debug("Processing Not OK ClientResponse EventMessage:\n{}\nreason:\n  [{}]",
+        Util.prettyFormatJson(eventMessage.getEvent().createPrettyPrintJson()),
+        reason);
     try {
       publisher.publishEvent(new ClientOkResponse(sessionId, eventMessage.getEvent(), false, reason));
     } catch (JsonProcessingException e) {
@@ -67,7 +73,10 @@ public class ClientResponseService {
   }
 
   public void processClientNoticeResponse(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull String reason, boolean valid) {
-    log.debug("Processing failed request message: {}, reason: {}", reqMessage, reason);
+    log.debug("Processing Notice (failed) request message:\n{}\nreason:\n[{}]",
+        getFiltersString(reqMessage.getFiltersList()),
+        reason);
+
     try {
       publisher.publishEvent(new ClientNoticeResponse(sessionId, reason, valid));
     } catch (JsonProcessingException e) {
@@ -75,5 +84,11 @@ public class ClientResponseService {
           "[\"NOTICE\", \"" + reqMessage + "\"]"
       ));
     }
+  }
+
+  private String getFiltersString(List<Filters> filtersList) {
+    return filtersList.stream()
+        .map(Filters::toString)
+        .collect(Collectors.joining(",\n"));
   }
 }

@@ -21,9 +21,12 @@ public class EventService implements EventServiceIF {
 
   @Override
   public void processIncomingEvent(@NonNull EventMessage eventMessage) {
-    log.debug("processing incoming TEXT_NOTE: [{}]", eventMessage);
-
     EventIF event = eventMessage.getEvent();
+    log.debug("{} processIncomingEvent(EventMessage):\n{}\nkind: [{}]",
+        getClass().getSimpleName(),
+        event.createPrettyPrintJson(),
+        event.getKind());
+
 //    TODO: simplify below
     if (matchesKind(event) && hasExternalIdentityTag(event)) {
       eventKindTypeService.processIncomingEvent(event);

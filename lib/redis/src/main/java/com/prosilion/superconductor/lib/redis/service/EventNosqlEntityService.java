@@ -22,6 +22,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Example;
 import org.springframework.lang.NonNull;
 
@@ -42,7 +43,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
             TagInterceptor::getCode,
             Function.identity()));
     log.debug("Created EventNosqlEntityService with interceptors:\n");
-    interceptors.forEach(interceptor -> log.debug("  {}\n", interceptor));
+    interceptors.stream().map(TagInterceptor::toString).map(s -> Strings.concat("  ", s)).forEach(log::debug);
   }
 
   //  TODO: consider an economically efficient alternative

@@ -61,7 +61,7 @@ public class ClientResponseService {
 
   public void processNotOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
     log.debug("Processing Not OK ClientResponse EventMessage:\n{}\nreason:\n  [{}]",
-        Util.prettyFormatJson(eventMessage.getEvent().createPrettyPrintJson()),
+        eventMessage.getEvent().createPrettyPrintJson(),
         reason);
     try {
       publisher.publishEvent(new ClientOkResponse(sessionId, eventMessage.getEvent(), false, reason));
@@ -73,10 +73,9 @@ public class ClientResponseService {
   }
 
   public void processClientNoticeResponse(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull String reason, boolean valid) {
-    log.debug("Processing Notice (failed) request message:\n{}\nreason:\n[{}]",
+    log.debug("Processing Notice (failed) request message:\n  {}\nreason:\n  {}",
         getFiltersString(reqMessage.getFiltersList()),
         reason);
-
     try {
       publisher.publishEvent(new ClientNoticeResponse(sessionId, reason, valid));
     } catch (JsonProcessingException e) {
@@ -89,6 +88,6 @@ public class ClientResponseService {
   private String getFiltersString(List<Filters> filtersList) {
     return filtersList.stream()
         .map(Filters::toString)
-        .collect(Collectors.joining(",\n"));
+        .collect(Collectors.joining(",\n  "));
   }
 }

@@ -21,7 +21,18 @@ public class EventKindService implements EventKindServiceIF {
   public <T extends BaseEvent> EventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     this.eventKindPluginsMap = eventKindPlugins.stream().collect(
         Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
-    log.info("eventKindPluginsMap:\n{}", prettyPrintKindClassStringMap(eventKindPluginsMap));
+
+    log.debug("Ctor (List<EventKindPluginIF>) loaded values:\n{}",
+        eventKindPlugins.stream()
+            .sorted(Comparator.comparing(
+                eventKindPluginIF ->
+                    eventKindPluginIF.getKind().getValue()))
+            .map(eventKindPluginIF ->
+                String.format("  Kind[%s]:%s -> %s",
+                    eventKindPluginIF.getKind().getValue(),
+                    eventKindPluginIF.getKind().getName().toUpperCase(),
+                    eventKindPluginIF.getClass().getSimpleName()))
+            .collect(Collectors.joining("\n")));
   }
 
   @Override
@@ -66,16 +77,5 @@ public class EventKindService implements EventKindServiceIF {
   @Override
   public final List<Kind> getKinds() {
     return List.copyOf(eventKindPluginsMap.keySet());
-  }
-
-  private String prettyPrintKindClassStringMap(Map<Kind, EventKindPluginIF> map) {
-    Function<Kind, String> fxn = kind ->
-        String.format("%-5d: %s", kind.getValue(), kind.getName());
-
-    return map.entrySet().stream()
-        .sorted(Comparator.comparing(o -> o.getKey().getValue()))
-        .map(entry ->
-            String.format(FORMATTER.toUpperCase(), fxn.apply(entry.getKey()), entry.getValue()))
-        .collect(Collectors.joining("\n"));
   }
 }

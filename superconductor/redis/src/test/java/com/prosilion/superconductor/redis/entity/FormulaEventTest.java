@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
-import static com.prosilion.superconductor.enums.AfterimageKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
+import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_DOWNVOTE;
 import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_REPUTATION;
 import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
@@ -108,7 +108,8 @@ public class FormulaEventTest {
 
   @Test
   void formulaContentTest() throws ParseException {
-    assertEquals("TEST_UNIT_REPUTATION == (previous)TEST_UNIT_REPUTATION +1(TEST_UNIT_UPVOTE) -1(TEST_UNIT_DOWNVOTE)",
+    assertEquals(
+        "SuperConductor BadgeDefinitionReputationEvent, default content from FormulaEvent(s) operator(s): TEST_UNIT_REPUTATION == (previous)TEST_UNIT_REPUTATION +1(TEST_UNIT_UPVOTE) -1(TEST_UNIT_DOWNVOTE)",
         new BadgeDefinitionReputationEvent(
             identity,
             new IdentifierTag(
@@ -124,7 +125,8 @@ public class FormulaEventTest {
     IdentifierTag upvoteUniqueIdentifierTag = new IdentifierTag(UNIT_UPVOTE_UNIQUE);
     BadgeDefinitionGenericEvent awardUniqueUpvoteEvent = new BadgeDefinitionGenericEvent(identity, upvoteUniqueIdentifierTag, relay, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA);
 
-    assertEquals("TEST_UNIT_REPUTATION == (previous)TEST_UNIT_REPUTATION +1(TEST_UNIT_UPVOTE) +1(UNIT_UPVOTE_UNIQUE)",
+    assertEquals(
+        "SuperConductor BadgeDefinitionReputationEvent, default content from FormulaEvent(s) operator(s): TEST_UNIT_REPUTATION == (previous)TEST_UNIT_REPUTATION +1(TEST_UNIT_UPVOTE) +1(UNIT_UPVOTE_UNIQUE)",
         new BadgeDefinitionReputationEvent(
             identity,
             new IdentifierTag(

@@ -12,7 +12,6 @@ import org.springframework.lang.NonNull;
 @Slf4j
 @AutoConfiguration
 public class ReqServiceConfig {
-
   @Bean
   ReqServiceIF reqService(
       @NonNull AbstractSubscriberService abstractSubscriberService,

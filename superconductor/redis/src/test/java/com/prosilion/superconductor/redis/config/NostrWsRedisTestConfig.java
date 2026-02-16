@@ -7,29 +7,28 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollow
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
-import com.prosilion.superconductor.base.service.event.plugin.kind.MaterializedEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.kind.MaterializedEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import com.prosilion.superconductor.redis.util.BadgeAwardGenericEventKindRedisPlugin;
 import com.prosilion.superconductor.redis.util.BadgeAwardReputationEventKindTypeRedisPlugin;
-import com.prosilion.superconductor.redis.util.BadgeDefinitionGenericEventKindRedisPlugin;
 import com.prosilion.superconductor.redis.util.BadgeDefinitionReputationEventKindTypeRedisPlugin;
 import com.prosilion.superconductor.redis.util.FollowSetsEventKindRedisPlugin;
 import com.prosilion.superconductor.redis.util.FormulaEventKindPlugin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 
-import static com.prosilion.superconductor.enums.AfterimageKindType.BADGE_AWARD_REPUTATION_KIND_TYPE;
-import static com.prosilion.superconductor.enums.AfterimageKindType.BADGE_DEFINITION_REPUTATION_KIND_TYPE;
+import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_AWARD_REPUTATION_KIND_TYPE;
+import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_KIND_TYPE;
 
 //@Lazy
 @Configuration
@@ -53,20 +52,6 @@ public class NostrWsRedisTestConfig {
                 cacheBadgeAwardGenericEventService),
             cacheBadgeAwardGenericEventService);
     return badgeAwardGenericEventKindRedisPlugin;
-  }
-
-  @Bean
-  EventKindPluginIF badgeDefinitionGenericEventKindPlugin(
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
-      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
-    BadgeDefinitionGenericEventKindRedisPlugin badgeDefinitionGenericEventKindRedisPlugin =
-        new BadgeDefinitionGenericEventKindRedisPlugin(
-            new MaterializedEventKindPlugin(
-                Kind.BADGE_DEFINITION_EVENT,
-                eventPlugin,
-                cacheBadgeDefinitionGenericEventService),
-            cacheBadgeDefinitionGenericEventService);
-    return badgeDefinitionGenericEventKindRedisPlugin;
   }
 
   @Bean
@@ -100,9 +85,11 @@ public class NostrWsRedisTestConfig {
 
   @Bean
   EventKindTypePluginIF badgeDefinitionReputationEventKindTypePlugin(
+      @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
     return new BadgeDefinitionReputationEventKindTypeRedisPlugin(
+        superconductorRelayUrl,
         new EventKindTypePlugin(
             BADGE_DEFINITION_REPUTATION_KIND_TYPE,
             eventPlugin,

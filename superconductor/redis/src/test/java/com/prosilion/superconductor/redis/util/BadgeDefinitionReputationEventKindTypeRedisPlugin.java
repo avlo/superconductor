@@ -2,9 +2,10 @@ package com.prosilion.superconductor.redis.util;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
@@ -28,8 +29,8 @@ public class BadgeDefinitionReputationEventKindTypeRedisPlugin extends NonPublis
   }
 
   @Override
-  public <T extends BaseEvent> void processIncomingEvent(@NonNull T event) {
-    String eventRelaysTagUrl = event.getTypeSpecificTags(RelayTag.class).stream()
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+    String eventRelaysTagUrl = Filterable.getTypeSpecificTagsStream(RelayTag.class, event)
         .map(RelayTag::getRelay)
         .map(Relay::getUrl)
         .findAny().orElseThrow(() ->
@@ -41,7 +42,7 @@ public class BadgeDefinitionReputationEventKindTypeRedisPlugin extends NonPublis
           String.format("RelayTag URL: [%s] does not match relay host SuperConductor URL: [%s]",
               eventRelaysTagUrl, superconductorRelayUrl));
 
-    super.processIncomingEvent(cacheBadgeDefinitionReputationEventService.materialize(event));
+    return super.processIncomingEvent(cacheBadgeDefinitionReputationEventService.materialize(event));
   }
 
   @Override

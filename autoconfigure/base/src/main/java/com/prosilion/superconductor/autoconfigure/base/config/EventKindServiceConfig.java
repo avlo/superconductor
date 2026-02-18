@@ -6,9 +6,11 @@ import com.prosilion.superconductor.base.service.event.kind.EventKindService;
 import com.prosilion.superconductor.base.service.event.kind.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeService;
 import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeServiceIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -21,8 +23,7 @@ import org.springframework.lang.NonNull;
 public class EventKindServiceConfig {
   @Bean(name = "eventKindService")
   @ConditionalOnMissingBean
-  EventKindService eventKindService(
-      @NonNull List<EventKindPluginIF> eventKindPlugins) {
+  EventKindService eventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     return new EventKindService(eventKindPlugins);
   }
 
@@ -36,8 +37,14 @@ public class EventKindServiceConfig {
   @Bean(name = "eventService")
   @ConditionalOnMissingBean
   EventService eventService(
+      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull @Qualifier("eventKindService") EventKindServiceIF eventKindService,
-      @NonNull @Qualifier("eventKindTypeService") EventKindTypeServiceIF eventKindTypeService) {
-    return new EventService(eventKindService, eventKindTypeService);
+      @NonNull @Qualifier("eventKindTypeService") EventKindTypeServiceIF eventKindTypeService,
+      @NonNull Map<String, String> kindClassStringMap) {
+    return new EventService(
+        eventPlugin,
+        eventKindService,
+        eventKindTypeService,
+        kindClassStringMap);
   }
 }

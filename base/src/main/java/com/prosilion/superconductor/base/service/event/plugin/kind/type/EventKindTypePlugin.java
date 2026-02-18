@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.service.event.plugin.kind.type;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterializer;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +36,8 @@ public class EventKindTypePlugin implements EventKindTypePluginIF {
   }
 
   @Override
-  public <T extends BaseEvent> void processIncomingEvent(@NonNull T event) {
-    eventPlugin.processIncomingEvent(event);
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+    return eventPlugin.processIncomingEvent(event);
   }
 
   @Override

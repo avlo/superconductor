@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.config;
 
-import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
@@ -10,7 +9,6 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.award.Cache
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
-import com.prosilion.superconductor.base.service.event.plugin.kind.MaterializedEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
@@ -46,10 +44,7 @@ public class NostrWsRedisTestConfig {
     BadgeAwardGenericEventKindRedisPlugin<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventKindRedisPlugin =
         new BadgeAwardGenericEventKindRedisPlugin<>(
             notifierService,
-            new MaterializedEventKindPlugin(
-                Kind.BADGE_AWARD_EVENT,
-                eventPlugin,
-                cacheBadgeAwardGenericEventService),
+            eventPlugin,
             cacheBadgeAwardGenericEventService);
     return badgeAwardGenericEventKindRedisPlugin;
   }
@@ -58,13 +53,8 @@ public class NostrWsRedisTestConfig {
   EventKindPluginIF formulaEventKindPlugin(
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull CacheFormulaEventService cacheFormulaEventService) {
-    MaterializedEventKindPlugin materializedEventKindPlugin = new MaterializedEventKindPlugin(
-        Kind.ARBITRARY_CUSTOM_APP_DATA,
-        eventPlugin,
-        cacheFormulaEventService);
     FormulaEventKindPlugin formulaEventKindPlugin = new FormulaEventKindPlugin(
-        materializedEventKindPlugin,
-//        TODO: finish below rxr
+        eventPlugin,
         cacheFormulaEventService);
     return formulaEventKindPlugin;
   }
@@ -102,13 +92,9 @@ public class NostrWsRedisTestConfig {
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
       @NonNull NotifierService notifierService,
       @NonNull CacheFollowSetsEventService cacheFollowSetsEventService) {
-    FollowSetsEventKindRedisPlugin followSetsEventKindRedisPlugin = new FollowSetsEventKindRedisPlugin(
+    return new FollowSetsEventKindRedisPlugin(
         notifierService,
-        new MaterializedEventKindPlugin(
-            Kind.FOLLOW_SETS,
-            eventPlugin,
-            cacheFollowSetsEventService),
+        eventPlugin,
         cacheFollowSetsEventService);
-    return followSetsEventKindRedisPlugin;
   }
 }

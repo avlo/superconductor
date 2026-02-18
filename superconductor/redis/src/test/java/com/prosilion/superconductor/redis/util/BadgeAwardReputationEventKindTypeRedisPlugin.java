@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.redis.util;
 
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.PublishingEventKindTypePlugin;
@@ -23,9 +23,8 @@ public class BadgeAwardReputationEventKindTypeRedisPlugin extends PublishingEven
     this.cacheBadgeAwardReputationEventService = cacheBadgeAwardReputationEventService;
   }
 
-  @Override
-  public <T extends BaseEvent> void processIncomingEvent(@NonNull T incomingBadgeAwardReputationEvent) {
-    super.processIncomingEvent(cacheBadgeAwardReputationEventService.materialize(incomingBadgeAwardReputationEvent));
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF incomingBadgeAwardReputationEvent) {
+    return super.processIncomingEvent(cacheBadgeAwardReputationEventService.materialize(incomingBadgeAwardReputationEvent));
   }
 
   @Override

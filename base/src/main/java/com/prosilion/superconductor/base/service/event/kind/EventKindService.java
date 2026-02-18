@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.base.service.event.kind;
 
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -15,24 +16,25 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventKindService implements EventKindServiceIF {
-  private static final String FORMATTER = "  %s -> %s";
   private final Map<Kind, EventKindPluginIF> eventKindPluginsMap;
+  private final String convenientKindMapList;
 
   public <T extends BaseEvent> EventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     this.eventKindPluginsMap = eventKindPlugins.stream().collect(
         Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
 
-    log.debug("Ctor (List<EventKindPluginIF>) loaded values:\n{}",
-        eventKindPlugins.stream()
-            .sorted(Comparator.comparing(
-                eventKindPluginIF ->
-                    eventKindPluginIF.getKind().getValue()))
-            .map(eventKindPluginIF ->
-                String.format("  Kind[%s]:%s -> %s",
-                    eventKindPluginIF.getKind().getValue(),
-                    eventKindPluginIF.getKind().getName().toUpperCase(),
-                    eventKindPluginIF.getClass().getSimpleName()))
-            .collect(Collectors.joining("\n")));
+    this.convenientKindMapList = eventKindPlugins.stream()
+        .sorted(Comparator.comparing(
+            eventKindPluginIF ->
+                eventKindPluginIF.getKind().getValue()))
+        .map(eventKindPluginIF ->
+            String.format("  Kind[%s]:%s -> %s",
+                eventKindPluginIF.getKind().getValue(),
+                eventKindPluginIF.getKind().getName().toUpperCase(),
+                eventKindPluginIF.getClass().getSimpleName()))
+        .collect(Collectors.joining("\n"));
+
+    log.debug("Ctor (List<EventKindPluginIF>) loaded values:\n  {}", convenientKindMapList);
   }
 
   @Override
@@ -41,37 +43,36 @@ public class EventKindService implements EventKindServiceIF {
     Kind kind = event.getKind();
     log.debug("processIncomingEvent() event.getKind(): [{}]", kind);
 
-    EventKindPluginIF kindEventKindPluginIF =
-        checkExistingEventKind(kind)
-            .orElseGet(() ->
-                useDefaultMapEntry(kind));
+    EventKindPluginIF kindEventKindPluginIF = checkExistingEventKind(event);
 
     if (kind.equals(Kind.DELETION)) {
       log.info("sanity check deletion plugin: {}", kindEventKindPluginIF);
-      BaseEvent materialize = kindEventKindPluginIF.materialize(event);
-      kindEventKindPluginIF.processIncomingEvent(materialize); // TODO: remove conditional after done testing
+      kindEventKindPluginIF.processIncomingEvent(event); // TODO: remove conditional after done testing
     } else {
       log.info("sanity check non-deletion plugin: {}", kindEventKindPluginIF);
-      BaseEvent materialize = kindEventKindPluginIF.materialize(event);
-      kindEventKindPluginIF.processIncomingEvent(materialize); // everything else handled as TEXT_NOTE kind
+      kindEventKindPluginIF.processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
     }
   }
 
-  private EventKindPluginIF useDefaultMapEntry(Kind kind) {
-    EventKindPluginIF defaultEntry = eventKindPluginsMap.get(Kind.TEXT_NOTE);
-    log.debug("processIncomingEvent() did not find map value for kind [{}], using default EventKindPluginIF [{}]",
-        kind, defaultEntry);
-    return defaultEntry;
-  }
-
-  private Optional<EventKindPluginIF> checkExistingEventKind(Kind kind) {
+  private EventKindPluginIF checkExistingEventKind(EventIF event) {
+    Kind kind = event.getKind();
     EventKindPluginIF value = eventKindPluginsMap.get(kind);
     Optional<EventKindPluginIF> mapEntry = Optional.ofNullable(value);
-    if (mapEntry.isPresent())
-      log.debug("processIncomingEvent() found map value for kind [{}], using EventKindPluginIF [{}]",
-          kind,
-          value);
-    return mapEntry;
+
+    String kindFormat = String.format("[%s]:%s",
+        event.getKind().getValue(),
+        event.getKind().getName().toUpperCase());
+
+    if (mapEntry.isEmpty()) {
+      throw new NostrException(
+          String.format("  event kind%s\nfrom event:\n%s\nnot present in eventKindPluginsMap:\n  %s",
+              kindFormat,
+              event.createPrettyPrintJson(),
+              convenientKindMapList));
+    }
+
+    log.debug("found map value for kind{}, using EventKindPluginIF [{}]", kindFormat, value);
+    return mapEntry.get();
   }
 
   @Override

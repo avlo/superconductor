@@ -1,7 +1,8 @@
 package com.prosilion.superconductor.base.service.event.plugin.kind;
 
-import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,21 +12,17 @@ import org.springframework.lang.NonNull;
 // our CarDecorator for PublishingEventKind hierarchy
 public abstract class PublishingEventKindPlugin implements EventKindPluginIF {
   private final NotifierService notifierService;
-  private final EventKindPluginIF eventKindPlugin;
+  private final EventPluginIF eventPluginIF;
 
-  public PublishingEventKindPlugin(@NonNull NotifierService notifierService, @NonNull EventKindPluginIF eventKindPlugin) {
+  public PublishingEventKindPlugin(@NonNull NotifierService notifierService, @NonNull EventPluginIF eventPluginIF) {
     this.notifierService = notifierService;
-    this.eventKindPlugin = eventKindPlugin;
+    this.eventPluginIF = eventPluginIF;
   }
 
   @Override
-  public <T extends BaseEvent> void processIncomingEvent(@NonNull T event) {
-    eventKindPlugin.processIncomingEvent(event);
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+    GenericEventRecord genericEventRecord = eventPluginIF.processIncomingEvent(event);
     notifierService.nostrEventHandler(new AddNostrEvent(event));
-  }
-
-  @Override
-  public Kind getKind() {
-    return eventKindPlugin.getKind();
+    return genericEventRecord;
   }
 }

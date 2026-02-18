@@ -1,26 +1,22 @@
 package com.prosilion.superconductor.base.service.event.plugin.kind;
 
-import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 // our CarDecorator for NonPublishingEventKind hierarchy
 public abstract class NonPublishingEventKindPlugin implements EventKindPluginIF {
-  private final EventKindPluginIF eventKindPlugin;
+  private final EventPluginIF eventPluginIF;
 
-  public NonPublishingEventKindPlugin(@NonNull EventKindPluginIF eventKindPlugin) {
-    this.eventKindPlugin = eventKindPlugin;
+  public NonPublishingEventKindPlugin(@NonNull EventPluginIF eventPluginIF) {
+    this.eventPluginIF = eventPluginIF;
   }
 
   @Override
-  public <T extends BaseEvent> void processIncomingEvent(@NonNull T event) {
-    eventKindPlugin.processIncomingEvent(event);
-  }
-
-  @Override
-  public Kind getKind() {
-    return eventKindPlugin.getKind();
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+    return eventPluginIF.processIncomingEvent(event);
   }
 }

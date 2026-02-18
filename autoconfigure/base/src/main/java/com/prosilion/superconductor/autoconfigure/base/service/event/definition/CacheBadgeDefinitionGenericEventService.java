@@ -31,12 +31,12 @@ public class CacheBadgeDefinitionGenericEventService implements CacheBadgeDefini
 
   @Override
   public BadgeDefinitionGenericEvent materialize(@NonNull EventIF eventIF) {
-    Optional<BadgeDefinitionGenericEvent> badgeDefinitionGenericEvent = getBadgeDefinitionGenericEvent(eventIF.asGenericEventRecord());
+    Optional<BadgeDefinitionGenericEvent> badgeDefinitionGenericEvent = getPreExistingBadgeDefinitionGenericEvent(eventIF.asGenericEventRecord());
 
     BadgeDefinitionGenericEvent reconstructedBadgeDefinitionGenericEvent = badgeDefinitionGenericEvent
         .orElseGet(() ->
             new BadgeDefinitionGenericEvent(eventIF.asGenericEventRecord()));
-    
+
     return reconstructedBadgeDefinitionGenericEvent;
   }
 
@@ -49,7 +49,7 @@ public class CacheBadgeDefinitionGenericEventService implements CacheBadgeDefini
     return Optional.of(materialize(unpopulatedBadgeDefinitionGenericEvent.get()));
   }
 
-  private Optional<BadgeDefinitionGenericEvent> getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord genericEventRecord) {
+  private Optional<BadgeDefinitionGenericEvent> getPreExistingBadgeDefinitionGenericEvent(@NonNull GenericEventRecord genericEventRecord) {
     RelayTag relayTag = Filterable.getTypeSpecificTagsStream(RelayTag.class, genericEventRecord)
         .findFirst().orElseThrow(() ->
             new NostrException(

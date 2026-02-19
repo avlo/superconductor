@@ -32,9 +32,9 @@ public class EventKindService implements EventKindServiceIF {
                 eventKindPluginIF.getKind().getValue(),
                 eventKindPluginIF.getKind().getName().toUpperCase(),
                 eventKindPluginIF.getClass().getSimpleName()))
-        .collect(Collectors.joining("\n"));
+        .collect(Collectors.joining("\n  "));
 
-    log.debug("Ctor (List<EventKindPluginIF>) loaded values:\n  {}", convenientKindMapList);
+    log.debug("Ctor (List<EventKindPluginIF>) loaded values:\n{}", convenientKindMapList);
   }
 
   @Override
@@ -65,10 +65,10 @@ public class EventKindService implements EventKindServiceIF {
 
     if (mapEntry.isEmpty()) {
       throw new NostrException(
-          String.format("  event kind%s\nfrom event:\n%s\nnot present in eventKindPluginsMap:\n  %s",
+          String.format("\n  kind%s not present in eventKindPluginsMap:\n  %s,\n  from event:\n%s",
               kindFormat,
-              event.createPrettyPrintJson(),
-              convenientKindMapList));
+              convenientKindMapList,
+              event.createPrettyPrintJson()));
     }
 
     log.debug("found map value for kind{}, using EventKindPluginIF [{}]", kindFormat, value);

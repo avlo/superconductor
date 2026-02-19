@@ -9,7 +9,7 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
-import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrRelayReqService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,23 +19,23 @@ import org.springframework.lang.NonNull;
 
 public interface CacheDereferenceAbstractTagServiceIF<T extends ReferencedAbstractEventTag> {
   Optional<GenericEventRecord> getEvent(T t);
+  String getSuperconductorRelayUrl();
 
   default Optional<GenericEventRecord> remoteEventSupplier(
       @NonNull String recommendedRelayUrl,
       @NonNull T referencedAbstractEventTag,
       @NonNull Function<T, Filters> fxnFilter) {
-    NostrRelayService relayService = new NostrRelayService(recommendedRelayUrl);
+    if (recommendedRelayUrl.equals(getSuperconductorRelayUrl()))
+      return Optional.empty();
 
     try {
-      Optional<GenericEventRecord> eventRecord =
-          getGenericEvents(
-              relayService.send(
-                  new ReqMessage(
-                      generateRandomHex64String(),
-                      fxnFilter.apply(referencedAbstractEventTag))))
-              .findFirst();
-      relayService.disconnect();
-      return eventRecord;
+      return getGenericEvents(
+          new NostrRelayReqService().send(
+              new ReqMessage(
+                  generateRandomHex64String(),
+                  fxnFilter.apply(referencedAbstractEventTag)),
+              recommendedRelayUrl))
+          .findFirst();
     } catch (JsonProcessingException e) {
       throw new NostrException(e);
     }

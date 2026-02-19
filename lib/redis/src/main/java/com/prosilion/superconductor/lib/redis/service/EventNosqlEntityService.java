@@ -99,7 +99,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
       @NonNull IdentifierTag identifierTag) {
     return getEventsByKind(kind).stream()
         .filter(eventNosqlEntityIF ->
-            containsIdentifierTag(identifierTag, eventNosqlEntityIF))
+            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags()))
         .toList();
   }
 
@@ -122,7 +122,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
       @NonNull IdentifierTag identifierTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
         .filter(eventNosqlEntityIF ->
-            containsIdentifierTag(identifierTag, eventNosqlEntityIF))
+            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags()))
         .toList();
   }
 
@@ -133,7 +133,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
       @NonNull IdentifierTag identifierTag) {
     return eventNosqlEntityRepository.findByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
         .filter(eventNosqlEntityIF ->
-            containsIdentifierTag(identifierTag, eventNosqlEntityIF))
+            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags()))
         .toList();
   }
 
@@ -187,10 +187,10 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     return entity;
   }
 
-  private static boolean containsIdentifierTag(IdentifierTag identifierTag, EventNosqlEntityIF eventNosqlEntityIF) {
-    return eventNosqlEntityIF.getTags().stream()
-        .filter(IdentifierTag.class::isInstance)
-        .map(IdentifierTag.class::cast)
-        .collect(Collectors.toSet()).contains(identifierTag);
+  private <T extends BaseTag> boolean containsTypedTargetTag(T targetTagType, List<BaseTag> baseTags) {
+    return baseTags.stream()
+        .filter(targetTagType.getClass()::isInstance)
+        .map(targetTagType.getClass()::cast)
+        .collect(Collectors.toSet()).contains(targetTagType);
   }
 }

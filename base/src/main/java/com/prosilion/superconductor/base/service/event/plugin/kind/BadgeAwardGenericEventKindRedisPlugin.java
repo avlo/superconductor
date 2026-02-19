@@ -1,14 +1,13 @@
-package com.prosilion.superconductor.redis.util;
+package com.prosilion.superconductor.base.service.event.plugin.kind;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
-import com.prosilion.superconductor.base.service.event.plugin.kind.PublishingEventKindPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
@@ -16,19 +15,20 @@ import org.springframework.lang.NonNull;
 @Slf4j
 // our SportsCar extends CarDecorator
 public class BadgeAwardGenericEventKindRedisPlugin<S extends BadgeDefinitionGenericEvent, T extends BadgeAwardGenericEvent<S>> extends PublishingEventKindPlugin {
-  private final CacheBadgeAwardGenericEventServiceIF<S, T> cacheBadgeAwardGenericEventServiceIF;
+  @NonNull Function<EventIF, T> eventMaterializer;
 
   public BadgeAwardGenericEventKindRedisPlugin(
       @NonNull NotifierService notifierService,
       @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
-      @NonNull CacheBadgeAwardGenericEventServiceIF<S, T> cacheBadgeAwardGenericEventServiceIF) {
+      @NonNull Function<EventIF, T> eventMaterializer) {
     super(notifierService, eventPlugin);
-    this.cacheBadgeAwardGenericEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
+    this.eventMaterializer = eventMaterializer;
   }
 
   @Override
   public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
-    return super.processIncomingEvent(event);
+    return super.processIncomingEvent(
+        eventMaterializer.apply(event));
   }
 
   @Override

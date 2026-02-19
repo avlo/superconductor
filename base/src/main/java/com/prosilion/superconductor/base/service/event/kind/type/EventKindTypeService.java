@@ -3,7 +3,6 @@ package com.prosilion.superconductor.base.service.event.kind.type;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
@@ -60,10 +59,9 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
 
     EventKindTypePluginIF eventKindTypePluginIF = optionalEventKindTypePluginIF
         .orElseThrow(() -> new NostrException(
-            String.format("eventKindTypePluginsMap does not contain matching entry for kind [%s], kindtype [%s]", event.getKind(), getKindType(event))));
+            String.format("eventKindTypePluginsMap does not contain matching entry for Kind [%s], KindType [%s]", event.getKind(), getKindType(event))));
 
-    BaseEvent materialized = eventKindTypePluginIF.materialize(event);
-    eventKindTypePluginIF.processIncomingEvent(materialized);
+    eventKindTypePluginIF.processIncomingEvent(event);
   }
 
   @Override

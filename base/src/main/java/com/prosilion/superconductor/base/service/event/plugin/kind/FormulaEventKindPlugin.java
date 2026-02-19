@@ -1,30 +1,29 @@
-package com.prosilion.superconductor.redis.util;
+package com.prosilion.superconductor.base.service.event.plugin.kind;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
-import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 public class FormulaEventKindPlugin extends NonPublishingEventKindPlugin {
-  private final CacheFormulaEventServiceIF cacheFormulaEventServiceIF;
+  private final Function<EventIF, FormulaEvent> eventMaterializer;
 
   public FormulaEventKindPlugin(
       @NonNull EventPluginIF eventPluginIF,
-      @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF) {
+      @NonNull Function<EventIF, FormulaEvent> eventMaterializer) {
     super(eventPluginIF);
-    this.cacheFormulaEventServiceIF = cacheFormulaEventServiceIF;
+    this.eventMaterializer = eventMaterializer;
   }
 
   @Override
   public GenericEventRecord processIncomingEvent(@NonNull EventIF incomingFormulaEvent) {
-    FormulaEvent materialize = cacheFormulaEventServiceIF.materialize(incomingFormulaEvent);
-    return super.processIncomingEvent(materialize);
+    return super.processIncomingEvent(
+        eventMaterializer.apply(incomingFormulaEvent));
   }
 
   @Override

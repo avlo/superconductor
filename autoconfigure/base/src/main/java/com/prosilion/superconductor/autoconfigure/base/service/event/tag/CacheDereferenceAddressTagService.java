@@ -13,15 +13,22 @@ import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagSer
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 public class CacheDereferenceAddressTagService implements CacheDereferenceAddressTagServiceIF {
-  CacheServiceIF cacheServiceIF;
+  private final CacheServiceIF cacheServiceIF;
 
-  public CacheDereferenceAddressTagService(@NonNull CacheServiceIF cacheServiceIF) {
+  @Getter
+  private final String superconductorRelayUrl;
+
+  public CacheDereferenceAddressTagService(
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull String superconductorRelayUrl) {
     this.cacheServiceIF = cacheServiceIF;
+    this.superconductorRelayUrl = superconductorRelayUrl;
   }
 
   @Override

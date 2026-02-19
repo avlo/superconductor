@@ -22,6 +22,7 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
   Optional<EventJpaEntityIF> findByEventId(String eventId);
   List<EventJpaEntityIF> findByPubKey(@NonNull String pubKey, Sort sort);
   List<EventJpaEntityIF> findByKind(@NonNull Integer kind, Sort sort);
+  List<EventJpaEntityIF> findAllByKindAndPubKey(@NonNull Integer kind, String pubKey, Sort sort);
 
 //  TODO: below is properly structured query
 //  SELECT * from EVENT e, PUBKEY_TAG pt, "event-pubkey_tag-join" eptjoin, address_tag at, "event-address_tag-join" atjoin where e.kind = :kind and at.uuid = :uuid and pt.public_key = :public_key and e.event_id = eptjoin.event_id and e.event_id = atjoin.event_id;
@@ -47,27 +48,19 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
   }
 
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
-    assert (false);
-    return findByKind(kind.getValue());
+    return findAllByKindAndPubKey(kind.getValue(), authorPublicKey.toHexString(), DESC_SORT_CREATED_AT);
   }
-
-  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PublicKey referencePubKeyTag) {
-//    return getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag, DESC_SORT_CREATED_AT);
-    return findByKind(kind.getValue());
-  }
-
-  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PublicKey referencePubKeyTag, @NonNull AddressTag addressTag) {
-//    return getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag, DESC_SORT_CREATED_AT);
-    return findByKind(kind.getValue());
-  }
-
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
-    assert (false);
-    return findByKind(kind.getValue());
+    return getEventsByKindAndAuthorPublicKey(kind, authorPublicKey);
   }
 
-  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag) {
-    assert (false);
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PublicKey referencedPubKeyTag) {
     return findByKind(kind.getValue());
+  }
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PublicKey referencedPubKeyTag, @NonNull AddressTag addressTag) {
+    return getEventsByKindAndPubKeyTag(kind, referencedPubKeyTag);
+  }
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubKeyTag, IdentifierTag identifierTag) {
+    return getEventsByKindAndPubKeyTag(kind, referencedPubKeyTag);
   }
 }

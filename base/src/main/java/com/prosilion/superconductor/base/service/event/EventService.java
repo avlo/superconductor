@@ -18,7 +18,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class EventService implements EventServiceIF {
-  public static final String CLASS_STRING_MAP_S = "Class [%s] not found in kindClassStringMap [%s]";
+  private final static String CLASS_STRING_MAP_S = "Class [%s] not found in kindClassStringMap [%s]";
   private final EventPluginIF eventPlugin;
   private final EventKindServiceIF eventKindServiceIF;
   private final EventKindTypeServiceIF eventKindTypeServiceIF;
@@ -39,9 +39,7 @@ public class EventService implements EventServiceIF {
   public void processIncomingEvent(@NonNull EventMessage eventMessage) {
     EventIF event = eventMessage.getEvent();
     Kind kind = event.getKind();
-    log.debug("processIncomingEvent(EventMessage):\n{}\nkind: [{}]",
-        event.createPrettyPrintJson(),
-        kind);
+    log.debug("processIncomingEvent(EventMessage) kind:[{}]\n{}", kind, event.createPrettyPrintJson());
 
     Optional<BaseEvent> typedEvent = createTypedEvent(event);
     if (typedEvent.isPresent()) {

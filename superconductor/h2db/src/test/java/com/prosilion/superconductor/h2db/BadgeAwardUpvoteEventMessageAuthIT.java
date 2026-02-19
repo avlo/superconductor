@@ -13,15 +13,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 @Slf4j
-
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
     "superconductor.auth.event.kinds=BADGE_AWARD_EVENT",
-    "server.port=5556",
-    "superconductor.relay.url=ws://localhost:5556"
+    "server.port=5557",
+    "superconductor.relay.url=ws://localhost:5557"
 })
-
 public class BadgeAwardUpvoteEventMessageAuthIT extends BaseBadgeAwardUpvoteEventMessageAuthIT {
   @Autowired
   BadgeAwardUpvoteEventMessageAuthIT(

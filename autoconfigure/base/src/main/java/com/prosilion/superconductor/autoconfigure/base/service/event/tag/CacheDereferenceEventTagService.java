@@ -10,6 +10,7 @@ import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import java.util.Optional;
 import java.util.function.Function;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -17,9 +18,14 @@ import org.springframework.lang.NonNull;
 public class CacheDereferenceEventTagService implements CacheDereferenceEventTagServiceIF {
   public static final String INVALID_REMOTE_URL = "EventTag [%s] eventID [%s] was not found locally yet also had an invalid remote url [%s]";
   private final CacheServiceIF cacheServiceIF;
+  @Getter
+  private final String superconductorRelayUrl;
 
-  public CacheDereferenceEventTagService(@NonNull CacheServiceIF cacheServiceIF) {
+  public CacheDereferenceEventTagService(
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull String superconductorRelayUrl) {
     this.cacheServiceIF = cacheServiceIF;
+    this.superconductorRelayUrl = superconductorRelayUrl;
   }
 
   @Override

@@ -10,6 +10,7 @@ import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.EventFilter;
 import com.prosilion.nostr.message.BaseMessage;
+import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
@@ -24,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -72,12 +73,14 @@ public abstract class BaseDeleteEventIT {
 
     NostrRelayReqService nostrRelayReqService = new NostrRelayReqService();
     ReqMessage deletionReqMessage = new ReqMessage(deletionSubmitterSubscriberId, new Filters(deletionEventFilter));
-    List<BaseMessage> returnedDeltionMessagesShouldBeEmpty = nostrRelayReqService.send(deletionReqMessage, this.relayUrl);
-    List<EventIF> returnedEventIFsShouldBeEmpty = getEventIFs(returnedDeltionMessagesShouldBeEmpty);
+    List<BaseMessage> returnedDeletionMessagesShouldContainEose = nostrRelayReqService.send(deletionReqMessage, this.relayUrl);
 
     log.debug("okMessage to UniqueSubscriberId:");
-    log.debug("  " + returnedDeltionMessagesShouldBeEmpty);
-    assertFalse(returnedEventIFsShouldBeEmpty.isEmpty());
+    log.debug("  " + returnedDeletionMessagesShouldContainEose);
+    assertEquals(1, returnedDeletionMessagesShouldContainEose.size());
+    assertEquals(1, returnedDeletionMessagesShouldContainEose.stream()
+        .filter(EoseMessage.class::isInstance)
+        .count());
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(deletionEventId));
 
@@ -95,7 +98,7 @@ public abstract class BaseDeleteEventIT {
   }
 
   @Test
-  void testCreateAnotherNoteAndConfirItsNotDeleted() throws IOException {
+  void testCreateAnotherNoteAndConfirmItsNotDeleted() throws IOException {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     String secondEventShouldNotGetDeleted = event.getId();
 

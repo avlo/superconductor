@@ -98,14 +98,16 @@ public class RedisConfig {
 
   @Bean(name = "cacheDereferenceAddressTagService")
   CacheDereferenceAddressTagService cacheDereferenceAddressTagService(
-      @NonNull CacheServiceIF cacheServiceIF) {
-    return new CacheDereferenceAddressTagService(cacheServiceIF);
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull String superconductorRelayUrl) {
+    return new CacheDereferenceAddressTagService(cacheServiceIF, superconductorRelayUrl);
   }
 
   @Bean(name = "cacheDereferenceEventTagService")
   CacheDereferenceEventTagService cacheDereferenceEventTagService(
-      @NonNull CacheServiceIF cacheServiceIF) {
-    return new CacheDereferenceEventTagService(cacheServiceIF);
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull String superconductorRelayUrl) {
+    return new CacheDereferenceEventTagService(cacheServiceIF, superconductorRelayUrl);
   }
 
   @Bean(name = "cacheFormulaEventService")

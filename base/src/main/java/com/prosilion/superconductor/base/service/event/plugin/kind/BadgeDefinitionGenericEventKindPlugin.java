@@ -2,27 +2,28 @@ package com.prosilion.superconductor.base.service.event.plugin.kind;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.RelayTag;
-import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import java.util.List;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 // our SportsCar extends CarDecorator
 public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKindPlugin {
-  private final CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF;
+  @NonNull Function<EventIF, BadgeDefinitionGenericEvent> eventMaterializer;
 
   public BadgeDefinitionGenericEventKindPlugin(
       @NonNull EventPluginIF eventPluginIF,
-      @NonNull CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF) {
+      @NonNull Function<EventIF, BadgeDefinitionGenericEvent> eventMaterializer) {
     super(eventPluginIF);
-    this.cacheBadgeDefinitionGenericEventServiceIF = cacheBadgeDefinitionGenericEventServiceIF;
+    this.eventMaterializer = eventMaterializer;
   }
 
 //  TODO: create IF of this class, overriding:
@@ -47,7 +48,8 @@ public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKin
 //    1) cycle through relaysTagUrls and validate (at least one) exists, or
 //    2) (currently, below) grab first one and continue (or validate exists)
 
-    return super.processIncomingEvent(event);
+    return super.processIncomingEvent(
+        eventMaterializer.apply(event));
   }
 
   @Override

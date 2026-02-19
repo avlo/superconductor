@@ -5,7 +5,7 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
-import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterializer;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -17,9 +17,12 @@ public class EventKindTypePlugin implements EventKindTypePluginIF {
 //    considerations: only current avail candidate bean is TextNote/Canonical
 //                    but maybe a BadgeAwardEvent/etc base class fills that role
   private final EventPluginIF eventPlugin;
-  private final EventMaterializer eventMaterializer;
+  private final Function<EventIF, BaseEvent> eventMaterializer;
 
-  public EventKindTypePlugin(@NonNull KindTypeIF kindType, @NonNull EventPluginIF eventPlugin, @NonNull EventMaterializer eventMaterializer) {
+  public EventKindTypePlugin(
+      @NonNull KindTypeIF kindType,
+      @NonNull EventPluginIF eventPlugin,
+      @NonNull Function<EventIF, BaseEvent> eventMaterializer) {
     this.kindType = kindType;
     this.eventPlugin = eventPlugin;
     this.eventMaterializer = eventMaterializer;
@@ -37,11 +40,7 @@ public class EventKindTypePlugin implements EventKindTypePluginIF {
 
   @Override
   public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
-    return eventPlugin.processIncomingEvent(event);
-  }
-
-  @Override
-  public BaseEvent materialize(EventIF eventIF) {
-    return eventMaterializer.materialize(eventIF);
+    return eventPlugin.processIncomingEvent(
+        eventMaterializer.apply(event));
   }
 }

@@ -4,7 +4,6 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.RelayTag;
@@ -32,7 +31,7 @@ public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKin
 //      BadgeDefinitionGenericEvent void processIncomingEvent(@NonNull T event)
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+  public void processIncomingEvent(@NonNull EventIF event) {
     log.debug("processing incoming BadgeDefinitionGenericEvent:\n  {}", event.createPrettyPrintJson());
     List<String> relaysTagUrls = Filterable.getTypeSpecificTagsStream(RelayTag.class, event)
         .map(RelayTag::getRelay)
@@ -48,7 +47,7 @@ public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKin
 //    1) cycle through relaysTagUrls and validate (at least one) exists, or
 //    2) (currently, below) grab first one and continue (or validate exists)
 
-    return super.processIncomingEvent(
+    super.processIncomingEvent(
         eventMaterializer.apply(event));
   }
 

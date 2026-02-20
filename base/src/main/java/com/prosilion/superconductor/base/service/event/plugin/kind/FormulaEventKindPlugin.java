@@ -3,7 +3,6 @@ package com.prosilion.superconductor.base.service.event.plugin.kind;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,8 @@ public class FormulaEventKindPlugin extends NonPublishingEventKindPlugin {
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF incomingFormulaEvent) {
-    return super.processIncomingEvent(
+  public void processIncomingEvent(@NonNull EventIF incomingFormulaEvent) {
+    super.processIncomingEvent(
         eventMaterializer.apply(incomingFormulaEvent));
   }
 

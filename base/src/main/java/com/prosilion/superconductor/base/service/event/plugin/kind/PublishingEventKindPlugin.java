@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.base.service.event.plugin.kind;
 
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
@@ -20,9 +19,8 @@ public abstract class PublishingEventKindPlugin implements EventKindPluginIF {
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
-    GenericEventRecord genericEventRecord = eventPlugin.processIncomingEvent(event);
+  public void processIncomingEvent(@NonNull EventIF event) {
+    eventPlugin.processIncomingEvent(event);
     notifierService.nostrEventHandler(new AddNostrEvent(event));
-    return genericEventRecord;
   }
 }

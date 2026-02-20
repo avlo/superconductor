@@ -4,7 +4,6 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.function.Function;
@@ -26,8 +25,8 @@ public class BadgeAwardGenericEventKindRedisPlugin<S extends BadgeDefinitionGene
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
-    return super.processIncomingEvent(
+  public void processIncomingEvent(@NonNull EventIF event) {
+    super.processIncomingEvent(
         eventMaterializer.apply(event));
   }
 

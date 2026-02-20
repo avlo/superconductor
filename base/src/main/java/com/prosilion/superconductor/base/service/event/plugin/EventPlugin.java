@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.base.service.event.plugin;
 
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -16,8 +15,8 @@ public class EventPlugin implements EventPluginIF {
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+  public void processIncomingEvent(@NonNull EventIF event) {
     log.debug("processIncomingEvent() called with event\n{}", event.createPrettyPrintJson());
-    return cacheServiceIF.save(event);
+    cacheServiceIF.save(event);
   }
 }

@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.base.service.event.plugin.kind;
 
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -16,7 +15,7 @@ public abstract class NonPublishingEventKindPlugin implements EventKindPluginIF 
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
-    return eventPlugin.processIncomingEvent(event);
+  public void processIncomingEvent(@NonNull EventIF event) {
+    eventPlugin.processIncomingEvent(event);
   }
 }

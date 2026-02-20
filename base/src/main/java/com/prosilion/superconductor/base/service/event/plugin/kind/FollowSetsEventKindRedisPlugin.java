@@ -3,7 +3,6 @@ package com.prosilion.superconductor.base.service.event.plugin.kind;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.function.Function;
@@ -25,8 +24,8 @@ public class FollowSetsEventKindRedisPlugin extends PublishingEventKindPlugin {
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF incomingFollowSetsEvent) {
-    return super.processIncomingEvent(
+  public void processIncomingEvent(@NonNull EventIF incomingFollowSetsEvent) {
+    super.processIncomingEvent(
         eventMaterializer.apply(incomingFollowSetsEvent));
   }
 

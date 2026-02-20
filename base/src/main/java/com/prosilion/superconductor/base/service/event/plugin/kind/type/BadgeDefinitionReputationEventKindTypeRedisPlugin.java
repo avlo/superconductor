@@ -2,7 +2,6 @@ package com.prosilion.superconductor.base.service.event.plugin.kind.type;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.RelayTag;
@@ -22,7 +21,7 @@ public class BadgeDefinitionReputationEventKindTypeRedisPlugin extends NonPublis
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+  public void processIncomingEvent(@NonNull EventIF event) {
     String eventRelaysTagUrl = Filterable.getTypeSpecificTagsStream(RelayTag.class, event)
         .map(RelayTag::getRelay)
         .map(Relay::getUrl)
@@ -35,6 +34,6 @@ public class BadgeDefinitionReputationEventKindTypeRedisPlugin extends NonPublis
           String.format("RelayTag URL: [%s] does not match relay host SuperConductor URL: [%s]",
               eventRelaysTagUrl, superconductorRelayUrl));
 
-    return super.processIncomingEvent(event);
+    super.processIncomingEvent(event);
   }
 }

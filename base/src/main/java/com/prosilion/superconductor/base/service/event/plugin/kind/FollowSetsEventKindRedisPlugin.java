@@ -4,8 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
-import com.prosilion.superconductor.base.service.event.plugin.kind.PublishingEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ public class FollowSetsEventKindRedisPlugin extends PublishingEventKindPlugin {
 
   public FollowSetsEventKindRedisPlugin(
       @NonNull NotifierService notifierService,
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
       @NonNull Function<EventIF, FollowSetsEvent> eventMaterializer) {
     super(notifierService, eventPlugin);
     this.eventMaterializer = eventMaterializer;

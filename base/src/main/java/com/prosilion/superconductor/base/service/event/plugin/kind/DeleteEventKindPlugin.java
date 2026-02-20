@@ -4,7 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -13,9 +13,9 @@ public class DeleteEventKindPlugin extends NonPublishingEventKindPlugin {
   private final CacheServiceIF cacheServiceIF;
 
   public DeleteEventKindPlugin(
-      @NonNull EventPluginIF eventPluginIF,
+      @NonNull EventPlugin eventPlugin,
       @NonNull CacheServiceIF cacheServiceIF) {
-    super(eventPluginIF);
+    super(eventPlugin);
     this.cacheServiceIF = cacheServiceIF;
   }
 

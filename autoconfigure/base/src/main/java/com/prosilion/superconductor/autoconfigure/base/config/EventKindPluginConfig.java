@@ -9,7 +9,7 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.award.Cache
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardGenericEventKindRedisPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
@@ -38,7 +38,7 @@ public class EventKindPluginConfig {
   @Bean("badgeAwardGenericEventKindPlugin")
   EventKindPluginIF badgeAwardGenericEventKindPlugin(
       @NonNull NotifierService notifierService,
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
       @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService) {
     BadgeAwardGenericEventKindRedisPlugin<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventKindRedisPlugin =
         new BadgeAwardGenericEventKindRedisPlugin<>(
@@ -50,7 +50,7 @@ public class EventKindPluginConfig {
 
   @Bean
   EventKindPluginIF formulaEventKindPlugin(
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
       @NonNull CacheFormulaEventService cacheFormulaEventService) {
     FormulaEventKindPlugin formulaEventKindPlugin = new FormulaEventKindPlugin(
         eventPlugin,
@@ -61,7 +61,7 @@ public class EventKindPluginConfig {
   @Bean
   EventKindTypePluginIF badgeAwardReputationEventKindTypePlugin(
       @NonNull NotifierService notifierService,
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
       @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService) {
     return new BadgeAwardReputationEventKindTypeRedisPlugin(
         notifierService,
@@ -74,7 +74,7 @@ public class EventKindPluginConfig {
   @Bean
   EventKindTypePluginIF badgeDefinitionReputationEventKindTypePlugin(
       @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
       @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
     return new BadgeDefinitionReputationEventKindTypeRedisPlugin(
         superconductorRelayUrl,
@@ -86,7 +86,7 @@ public class EventKindPluginConfig {
 
   @Bean
   EventKindPluginIF followSetsEventKindRedisPlugin(
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
       @NonNull NotifierService notifierService,
       @NonNull CacheFollowSetsEventService cacheFollowSetsEventService) {
     return new FollowSetsEventKindRedisPlugin(
@@ -99,7 +99,7 @@ public class EventKindPluginConfig {
   @ConditionalOnMissingBean
   public DeleteEventKindPlugin deleteEventKindPlugin(
       @NonNull CacheServiceIF cacheService,
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin) {
+      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin) {
     return new DeleteEventKindPlugin(eventPlugin, cacheService);
   }
 
@@ -107,7 +107,7 @@ public class EventKindPluginConfig {
   @Bean
   @ConditionalOnMissingBean
   public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
       @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
     return new BadgeDefinitionGenericEventKindPlugin(
         eventPlugin,

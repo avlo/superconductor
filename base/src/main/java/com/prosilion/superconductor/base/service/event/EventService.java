@@ -9,7 +9,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.service.event.kind.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeServiceIF;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +19,13 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class EventService implements EventServiceIF {
   private final static String CLASS_STRING_MAP_S = "Class [%s] not found in kindClassStringMap [%s]";
-  private final EventPluginIF eventPlugin;
+  private final EventPlugin eventPlugin;
   private final EventKindServiceIF eventKindServiceIF;
   private final EventKindTypeServiceIF eventKindTypeServiceIF;
   private final Map<String, String> kindClassStringMap;
 
   public EventService(
-      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPlugin,
+      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
       @NonNull EventKindServiceIF eventKindServiceIF,
       @NonNull EventKindTypeServiceIF eventKindTypeServiceIF,
       @NonNull Map<String, String> kindClassStringMap) {

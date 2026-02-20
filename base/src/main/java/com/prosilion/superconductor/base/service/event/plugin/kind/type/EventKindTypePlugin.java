@@ -4,7 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -16,12 +16,12 @@ public class EventKindTypePlugin implements EventKindTypePluginIF {
   //  TODO: review below, potential candidate for replacement with EventKindPlugin/IF
 //    considerations: only current avail candidate bean is TextNote/Canonical
 //                    but maybe a BadgeAwardEvent/etc base class fills that role
-  private final EventPluginIF eventPlugin;
+  private final EventPlugin eventPlugin;
   private final Function<EventIF, BaseEvent> eventMaterializer;
 
   public EventKindTypePlugin(
       @NonNull KindTypeIF kindType,
-      @NonNull EventPluginIF eventPlugin,
+      @NonNull EventPlugin eventPlugin,
       @NonNull Function<EventIF, BaseEvent> eventMaterializer) {
     this.kindType = kindType;
     this.eventPlugin = eventPlugin;

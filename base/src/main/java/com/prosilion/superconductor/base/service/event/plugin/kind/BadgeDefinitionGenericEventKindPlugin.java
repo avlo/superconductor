@@ -8,7 +8,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.RelayTag;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import java.util.List;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +20,9 @@ public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKin
   @NonNull Function<EventIF, BadgeDefinitionGenericEvent> eventMaterializer;
 
   public BadgeDefinitionGenericEventKindPlugin(
-      @NonNull EventPluginIF eventPluginIF,
+      @NonNull EventPlugin eventPlugin,
       @NonNull Function<EventIF, BadgeDefinitionGenericEvent> eventMaterializer) {
-    super(eventPluginIF);
+    super(eventPlugin);
     this.eventMaterializer = eventMaterializer;
   }
 

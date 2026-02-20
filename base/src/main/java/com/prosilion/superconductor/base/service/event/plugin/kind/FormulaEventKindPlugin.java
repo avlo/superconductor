@@ -4,7 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -14,9 +14,9 @@ public class FormulaEventKindPlugin extends NonPublishingEventKindPlugin {
   private final Function<EventIF, FormulaEvent> eventMaterializer;
 
   public FormulaEventKindPlugin(
-      @NonNull EventPluginIF eventPluginIF,
+      @NonNull EventPlugin eventPlugin,
       @NonNull Function<EventIF, FormulaEvent> eventMaterializer) {
-    super(eventPluginIF);
+    super(eventPlugin);
     this.eventMaterializer = eventMaterializer;
   }
 

@@ -23,7 +23,6 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //  private static final Identity IDENTITY = Factory.createNewIdentity();
 
   private final EventPluginIF eventPluginIF;
-  private final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent;
   private final FormulaEvent formulaEvent;
 
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
@@ -31,8 +30,9 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 
   public BaseCacheServiceGenericEventRecordUsingFormulaEventIT(EventPluginIF eventPluginIF, @NonNull Identity superconductorInstanceIdentity) throws ParseException {
     this.eventPluginIF = eventPluginIF;
-    this.badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, IDENTIFIER_TAG, relay);
+    BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, IDENTIFIER_TAG, relay);
 
+    eventPluginIF.processIncomingEvent(badgeDefinitionUpvoteEvent);
 //    BadgeAwardGenericEvent badgeAwardUpvoteEvent = new BadgeAwardGenericEvent(
 //        authorIdentity,
 //        upvotedUserPubKey,

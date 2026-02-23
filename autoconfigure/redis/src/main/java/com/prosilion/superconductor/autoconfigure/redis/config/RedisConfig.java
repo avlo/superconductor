@@ -1,8 +1,11 @@
 package com.prosilion.superconductor.autoconfigure.redis.config;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
@@ -36,6 +39,8 @@ import com.prosilion.superconductor.lib.redis.service.DeletionEventNoSqlEntitySe
 import com.prosilion.superconductor.lib.redis.service.EventNosqlEntityService;
 import com.prosilion.superconductor.lib.redis.service.RedisCacheService;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -164,8 +169,16 @@ public class RedisConfig {
 
   @Bean(name = "eventPlugin")
   @ConditionalOnMissingBean
-  EventPlugin eventPlugin(@NonNull RedisCacheService cacheService) {
-    return new EventPlugin(cacheService);
+  EventPlugin eventPlugin(
+      @NonNull RedisCacheService cacheService,
+      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers,
+      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers,
+      @NonNull Map<String, String> kindClassStringMap) {
+    return new EventPlugin(
+        cacheService,
+        eventKindMaterializers,
+        eventKindTypeMaterializers,
+        kindClassStringMap);
   }
 
   @Bean

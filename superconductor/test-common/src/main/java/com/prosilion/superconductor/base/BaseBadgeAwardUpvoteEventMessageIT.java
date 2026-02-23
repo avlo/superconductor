@@ -18,8 +18,8 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
 import java.util.List;
@@ -49,7 +49,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
     this.nostrRelayService = new NostrRelayService(relayUrl);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     Relay relay = new Relay(relayUrl);
-    
+
     BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(
         superconductorInstanceIdentity,
         IDENTIFIER_TAG, relay);
@@ -60,8 +60,8 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
             .send(
                 eventMessageBadgeDefinitionUpvoteEvent)
             .getFlag());
-    
-    BadgeAwardGenericEvent badgeAwardUpvoteEvent = new BadgeAwardGenericEvent(
+
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
         authorIdentity,
         upvotedUserPubKey,
         relay,

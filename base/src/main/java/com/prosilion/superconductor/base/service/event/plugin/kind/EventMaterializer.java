@@ -5,6 +5,6 @@ import com.prosilion.nostr.event.EventIF;
 import org.springframework.lang.NonNull;
 
 @FunctionalInterface
-public interface EventMaterializer {
-  BaseEvent materialize(@NonNull EventIF eventIF);
+public interface EventMaterializer<T extends BaseEvent> {
+  T materialize(@NonNull EventIF eventIF);
 }

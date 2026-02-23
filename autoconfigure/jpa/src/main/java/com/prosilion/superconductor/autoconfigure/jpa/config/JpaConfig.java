@@ -1,8 +1,11 @@
 package com.prosilion.superconductor.autoconfigure.jpa.config;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.user.Identity;
@@ -35,6 +38,8 @@ import com.prosilion.superconductor.lib.jpa.service.DeletionEventJpaEntityServic
 import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
 import com.prosilion.superconductor.lib.jpa.service.GenericTagJpaEntitiesService;
 import com.prosilion.superconductor.lib.jpa.service.JpaCacheService;
+import java.util.Map;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -166,9 +171,16 @@ public class JpaConfig {
   }
 
   @Bean(name = "eventPlugin")
-  @ConditionalOnMissingBean
-  EventPlugin eventPlugin(@NonNull JpaCacheService cacheService) {
-    return new EventPlugin(cacheService);
+  EventPlugin eventPlugin(
+      @NonNull JpaCacheService cacheService,
+      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers,
+      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers,
+      @NonNull Map<String, String> kindClassStringMap) {
+    return new EventPlugin(
+        cacheService,
+        eventKindMaterializers,
+        eventKindTypeMaterializers,
+        kindClassStringMap);
   }
 
   @Bean

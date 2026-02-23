@@ -3,14 +3,15 @@ package com.prosilion.superconductor.base.cache;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
+import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterializer;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public interface CacheBadgeAwardGenericEventServiceIF
-    <S extends BadgeDefinitionGenericEvent, T extends BadgeAwardGenericEvent<S>> extends CacheTagMappedEventServiceIF<T> {
+public interface CacheBadgeAwardGenericEventServiceIF<S extends BadgeDefinitionGenericEvent, T extends BadgeAwardGenericEvent<S>> extends CacheTagMappedEventServiceIF<T>, EventMaterializer<BaseEvent> {
   String INVALID_REMOTE_URL = "EventTag [%s] is missing remote url";
 
   @Override

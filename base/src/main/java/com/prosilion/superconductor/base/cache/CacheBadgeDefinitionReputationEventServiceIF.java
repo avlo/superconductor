@@ -1,8 +1,6 @@
 package com.prosilion.superconductor.base.cache;
 
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +11,4 @@ public interface CacheBadgeDefinitionReputationEventServiceIF
   @Override
   Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull String url);
   List<BadgeDefinitionReputationEvent> getExistingReputationDefinitionEvents();
-
-  @Override
-  BadgeDefinitionReputationEvent materialize(@NonNull EventIF eventIF) throws NostrException;
 }

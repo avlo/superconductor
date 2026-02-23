@@ -1,7 +1,9 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.DeletionEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
@@ -21,8 +23,10 @@ import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeDef
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,68 +42,52 @@ public class EventKindPluginConfig {
   @Bean("badgeAwardGenericEventKindPlugin")
   EventKindPluginIF badgeAwardGenericEventKindPlugin(
       @NonNull NotifierService notifierService,
-      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
-      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService) {
-    BadgeAwardGenericEventKindRedisPlugin<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventKindRedisPlugin =
-        new BadgeAwardGenericEventKindRedisPlugin<>(
-            notifierService,
-            eventPlugin,
-            cacheBadgeAwardGenericEventService::materialize);
-    return badgeAwardGenericEventKindRedisPlugin;
+      @NonNull EventPlugin eventPlugin) {
+    return new BadgeAwardGenericEventKindRedisPlugin<>(
+        notifierService,
+        eventPlugin);
   }
 
   @Bean
   EventKindPluginIF formulaEventKindPlugin(
-      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
-      @NonNull CacheFormulaEventService cacheFormulaEventService) {
-    FormulaEventKindPlugin formulaEventKindPlugin = new FormulaEventKindPlugin(
-        eventPlugin,
-        cacheFormulaEventService::materialize);
-    return formulaEventKindPlugin;
+      @NonNull EventPlugin eventPlugin) {
+    return new FormulaEventKindPlugin(eventPlugin);
   }
 
   @Bean
   EventKindTypePluginIF badgeAwardReputationEventKindTypePlugin(
       @NonNull NotifierService notifierService,
-      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
-      @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService) {
+      @NonNull EventPlugin eventPlugin) {
     return new BadgeAwardReputationEventKindTypeRedisPlugin(
         notifierService,
         new EventKindTypePlugin(
             BADGE_AWARD_REPUTATION_KIND_TYPE,
-            eventPlugin,
-            cacheBadgeAwardReputationEventService::materialize));
+            eventPlugin));
   }
 
   @Bean
   EventKindTypePluginIF badgeDefinitionReputationEventKindTypePlugin(
       @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
-      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
-      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
+      @NonNull EventPlugin eventPlugin) {
     return new BadgeDefinitionReputationEventKindTypeRedisPlugin(
         superconductorRelayUrl,
         new EventKindTypePlugin(
             BADGE_DEFINITION_REPUTATION_KIND_TYPE,
-            eventPlugin,
-            cacheBadgeDefinitionReputationEventService::materialize));
+            eventPlugin));
   }
 
   @Bean
   EventKindPluginIF followSetsEventKindRedisPlugin(
-      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
-      @NonNull NotifierService notifierService,
-      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService) {
-    return new FollowSetsEventKindRedisPlugin(
-        notifierService,
-        eventPlugin,
-        cacheFollowSetsEventService::materialize);
+      @NonNull EventPlugin eventPlugin,
+      @NonNull NotifierService notifierService) {
+    return new FollowSetsEventKindRedisPlugin(notifierService, eventPlugin);
   }
 
   @Bean
   @ConditionalOnMissingBean
   public DeleteEventKindPlugin deleteEventKindPlugin(
       @NonNull CacheServiceIF cacheService,
-      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin) {
+      @NonNull EventPlugin eventPlugin) {
     return new DeleteEventKindPlugin(eventPlugin, cacheService);
   }
 
@@ -107,10 +95,56 @@ public class EventKindPluginConfig {
   @Bean
   @ConditionalOnMissingBean
   public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
-      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
-      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
-    return new BadgeDefinitionGenericEventKindPlugin(
-        eventPlugin,
+      @NonNull EventPlugin eventPlugin) {
+    return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
+  }
+
+  @Bean
+  Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers(
+      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
+      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
+      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
+      @NonNull CacheFormulaEventService cacheFormulaEventService) {
+    Map<Kind, Function<EventIF, BaseEvent>> kindFxnMap = new HashMap<>();
+
+    kindFxnMap.put(
+        Kind.BADGE_AWARD_EVENT,
+        cacheBadgeAwardGenericEventService::materialize);
+
+    kindFxnMap.put(
+        Kind.BADGE_DEFINITION_EVENT,
         cacheBadgeDefinitionGenericEventService::materialize);
+
+    kindFxnMap.put(
+        Kind.FOLLOW_SETS,
+        cacheFollowSetsEventService::materialize);
+
+    kindFxnMap.put(
+        Kind.ARBITRARY_CUSTOM_APP_DATA,
+        cacheFormulaEventService::materialize);
+
+    kindFxnMap.put(
+        Kind.DELETION,
+        eventIF -> new DeletionEvent(
+            eventIF.asGenericEventRecord()));
+
+    return kindFxnMap;
+  }
+
+  @Bean
+  Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers(
+      @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
+      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
+    Map<Kind, Function<EventIF, BaseEvent>> kindFxnMap = new HashMap<>();
+
+    kindFxnMap.put(
+        Kind.BADGE_AWARD_EVENT,
+        cacheBadgeAwardReputationEventService::materialize);
+
+    kindFxnMap.put(
+        Kind.BADGE_DEFINITION_EVENT,
+        cacheBadgeDefinitionReputationEventService::materialize);
+
+    return kindFxnMap;
   }
 }

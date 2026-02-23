@@ -1,20 +1,29 @@
 package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
+import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.util.Factory;
+import com.prosilion.superconductor.util.Utils;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -51,12 +60,12 @@ public class CacheFollowSetsEventServiceIT {
   private final EventServiceIF eventServiceIF;
 
   public CacheFollowSetsEventServiceIT(
-      @Value("${superconductor.relay.url}") String relayUri,
+      @Value("${superconductor.relay.url}") String relayUrl,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
-    this.relay = new Relay(relayUri);
+    this.relay = new Relay(relayUrl);
 
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
     eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
@@ -81,7 +90,7 @@ public class CacheFollowSetsEventServiceIT {
   }
 
   @Test
-  public void testSaveBadgeAwardReputationEventUpvote() {
+  public void testSaveBadgeAwardReputationEventUpvote() throws JsonProcessingException {
     final String FOLLOW_SETS_EVENT = "FOLLOW_SETS_EVENT";
     final IdentifierTag followSetsIdentifierTag = new IdentifierTag(FOLLOW_SETS_EVENT);
 
@@ -104,5 +113,19 @@ public class CacheFollowSetsEventServiceIT {
     assertEquals(matchPubkey, reputationRecipientPublicKey);
 
     assertEquals(followSetsEvent.getContainedAddressableEvents(), dbFollowSetsEventByEventId.getContainedAddressableEvents());
+
+    List<EventIF> returnedEventIFs = Utils.getEventIFs(
+        new NostrRelayService(relay.getUrl())
+            .send(
+                new ReqMessage(
+                    Factory.generateRandomHex64String(),
+                    new Filters(
+                        new KindFilter(
+                            Kind.FOLLOW_SETS)))));
+
+    log.debug("returned events:");
+    log.debug("  {}", returnedEventIFs);
+
+    assertTrue(returnedEventIFs.stream().map(EventIF::getKind).toList().contains(Kind.FOLLOW_SETS));
   }
 }

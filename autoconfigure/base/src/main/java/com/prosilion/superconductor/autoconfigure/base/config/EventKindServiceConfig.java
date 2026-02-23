@@ -35,7 +35,7 @@ public class EventKindServiceConfig {
   @Bean(name = "eventService")
   @ConditionalOnMissingBean
   EventService eventService(
-      @NonNull @Qualifier("eventPlugin") EventPlugin eventPlugin,
+      @NonNull EventPlugin eventPlugin,
       @NonNull @Qualifier("eventKindService") EventKindServiceIF eventKindService,
       @NonNull @Qualifier("eventKindTypeService") EventKindTypeServiceIF eventKindTypeService) {
     return new EventService(eventPlugin, eventKindService, eventKindTypeService);

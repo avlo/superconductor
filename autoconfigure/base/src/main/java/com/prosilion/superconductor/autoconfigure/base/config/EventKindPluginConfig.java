@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -12,16 +14,14 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.definition.
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardGenericEventKindRedisPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
-import com.prosilion.superconductor.base.service.event.plugin.kind.FollowSetsEventKindRedisPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.FollowSetsEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeAwardReputationEventKindTypeRedisPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeDefinitionReputationEventKindTypeRedisPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeAwardReputationEventKindTypePlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeDefinitionReputationEventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,26 +39,29 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 @Slf4j
 @AutoConfiguration
 public class EventKindPluginConfig {
-  @Bean("badgeAwardGenericEventKindPlugin")
-  EventKindPluginIF badgeAwardGenericEventKindPlugin(
+  @Bean
+  @ConditionalOnMissingBean
+  BadgeAwardGenericEventKindPlugin<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventPlugin eventPlugin) {
-    return new BadgeAwardGenericEventKindRedisPlugin<>(
+    return new BadgeAwardGenericEventKindPlugin<>(
         notifierService,
         eventPlugin);
   }
 
   @Bean
-  EventKindPluginIF formulaEventKindPlugin(
+  @ConditionalOnMissingBean
+  FormulaEventKindPlugin formulaEventKindPlugin(
       @NonNull EventPlugin eventPlugin) {
     return new FormulaEventKindPlugin(eventPlugin);
   }
 
   @Bean
-  EventKindTypePluginIF badgeAwardReputationEventKindTypePlugin(
+  @ConditionalOnMissingBean
+  BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventPlugin eventPlugin) {
-    return new BadgeAwardReputationEventKindTypeRedisPlugin(
+    return new BadgeAwardReputationEventKindTypePlugin(
         notifierService,
         new EventKindTypePlugin(
             BADGE_AWARD_REPUTATION_KIND_TYPE,
@@ -66,10 +69,11 @@ public class EventKindPluginConfig {
   }
 
   @Bean
-  EventKindTypePluginIF badgeDefinitionReputationEventKindTypePlugin(
+  @ConditionalOnMissingBean
+  BadgeDefinitionReputationEventKindTypePlugin badgeDefinitionReputationEventKindTypePlugin(
       @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
       @NonNull EventPlugin eventPlugin) {
-    return new BadgeDefinitionReputationEventKindTypeRedisPlugin(
+    return new BadgeDefinitionReputationEventKindTypePlugin(
         superconductorRelayUrl,
         new EventKindTypePlugin(
             BADGE_DEFINITION_REPUTATION_KIND_TYPE,
@@ -77,10 +81,11 @@ public class EventKindPluginConfig {
   }
 
   @Bean
-  EventKindPluginIF followSetsEventKindRedisPlugin(
+  @ConditionalOnMissingBean
+  FollowSetsEventKindPlugin followSetsEventKindPlugin(
       @NonNull EventPlugin eventPlugin,
       @NonNull NotifierService notifierService) {
-    return new FollowSetsEventKindRedisPlugin(notifierService, eventPlugin);
+    return new FollowSetsEventKindPlugin(notifierService, eventPlugin);
   }
 
   @Bean
@@ -100,6 +105,7 @@ public class EventKindPluginConfig {
   }
 
   @Bean
+  @ConditionalOnMissingBean
   Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers(
       @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
       @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
@@ -132,6 +138,7 @@ public class EventKindPluginConfig {
   }
 
   @Bean
+  @ConditionalOnMissingBean
   Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers(
       @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
       @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {

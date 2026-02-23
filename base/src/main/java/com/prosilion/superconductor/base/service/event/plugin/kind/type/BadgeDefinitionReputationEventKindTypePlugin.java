@@ -10,10 +10,10 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 // our SportsCar extends CarDecorator
-public class BadgeDefinitionReputationEventKindTypeRedisPlugin extends NonPublishingEventKindTypePlugin {
+public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingEventKindTypePlugin {
   private final String superconductorRelayUrl;
 
-  public BadgeDefinitionReputationEventKindTypeRedisPlugin(
+  public BadgeDefinitionReputationEventKindTypePlugin(
       @NonNull String superconductorRelayUrl,
       @NonNull EventKindTypePluginIF eventKindTypePlugin) {
     super(eventKindTypePlugin);

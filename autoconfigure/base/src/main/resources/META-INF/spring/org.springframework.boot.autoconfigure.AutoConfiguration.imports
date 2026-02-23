@@ -1,3 +1,4 @@
+com.prosilion.superconductor.autoconfigure.base.config.EventServiceConfig
 com.prosilion.superconductor.autoconfigure.base.config.EventKindServiceConfig
 com.prosilion.superconductor.autoconfigure.base.config.EventKindPluginConfig
 com.prosilion.superconductor.autoconfigure.base.config.EventMessageKindsAuthConfig

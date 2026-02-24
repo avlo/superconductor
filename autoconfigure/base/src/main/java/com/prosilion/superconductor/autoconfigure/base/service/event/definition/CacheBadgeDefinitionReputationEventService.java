@@ -9,7 +9,6 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
@@ -49,7 +48,7 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull String url) {
-    Optional<GenericEventRecord> unpopulatedBadgeDefinitionReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId));
+    Optional<GenericEventRecord> unpopulatedBadgeDefinitionReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedBadgeDefinitionReputationEvent.isEmpty())
       return Optional.empty();
 

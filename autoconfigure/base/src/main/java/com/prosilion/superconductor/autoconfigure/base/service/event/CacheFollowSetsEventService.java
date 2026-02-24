@@ -38,7 +38,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     if (unpopulatedFollowSetsEvent.isEmpty())
       return Optional.empty();
 
-    return Optional.of(materialize(unpopulatedFollowSetsEvent.get()));
+    FollowSetsEvent materialize = materialize(unpopulatedFollowSetsEvent.get());
+    return Optional.of(materialize);
   }
 
   @Override

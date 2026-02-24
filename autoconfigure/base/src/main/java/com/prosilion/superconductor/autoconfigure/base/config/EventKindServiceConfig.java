@@ -20,7 +20,7 @@ import org.springframework.lang.NonNull;
 @Slf4j
 @AutoConfiguration
 public class EventKindServiceConfig {
-  @Bean(name = "eventKindService")
+  @Bean(name = "eventKindService")              
   @ConditionalOnMissingBean
   EventKindService eventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     return new EventKindService(eventKindPlugins);

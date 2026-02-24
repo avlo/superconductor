@@ -41,7 +41,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
 
   @Override
   public Optional<BadgeAwardReputationEvent> getEvent(@NonNull String eventId, @NonNull String url) {
-    Optional<GenericEventRecord> unpopulatedBadgeAwardReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId));
+    Optional<GenericEventRecord> unpopulatedBadgeAwardReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedBadgeAwardReputationEvent.isEmpty())
       return Optional.empty();
 
@@ -91,7 +91,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> getEventTagEvent(@NonNull String eventId, @NonNull String url) {
-    Optional<GenericEventRecord> unpopulatedBadgeAwardReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId, url));
+    Optional<GenericEventRecord> unpopulatedBadgeAwardReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedBadgeAwardReputationEvent.isEmpty())
       throw new NostrException(String.format(NON_EXISTENT_EVENT_TAG, eventId, url));
 

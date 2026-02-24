@@ -62,7 +62,7 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
 
   @Override
   public Optional<BadgeDefinitionGenericEvent> getEventTagEvent(@NonNull String eventId, @NonNull String url) {
-    Optional<GenericEventRecord> unpopulatedBadgeDefinitionGenericEvent = cacheDereferenceEventTagServiceIF.getEvent(new EventTag(eventId, url));
+    Optional<GenericEventRecord> unpopulatedBadgeDefinitionGenericEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedBadgeDefinitionGenericEvent.isEmpty())
       throw new NostrException(String.format(NOT_FOUND, eventId, url));
 

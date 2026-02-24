@@ -122,8 +122,8 @@ public class EventServiceConfig {
   @ConditionalOnMissingBean
   EventPlugin eventPlugin(
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers,
-      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers,
+      @NonNull @Qualifier("eventKindMaterializers") Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers,
+      @NonNull @Qualifier("eventKindTypeMaterializers") Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers,
       @NonNull Map<String, String> kindClassStringMap) {
     return new EventPlugin(
         cacheServiceIF,

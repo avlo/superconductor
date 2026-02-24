@@ -40,15 +40,15 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 @AutoConfiguration
 public class EventKindPluginConfig {
   //  TODO: flexible autoconfigure variant of below, consider loading iff boolean/true is sets in app<xyz>.properties file
-  @Bean("badgeDefinitionGenericEventKindPlugin")
+  @Bean
   @ConditionalOnMissingBean
   public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
       @NonNull EventPlugin eventPlugin) {
     return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
   }
 
-  @Bean("badgeAwardGenericEventKindPlugin")
-//  @ConditionalOnMissingBean
+  @Bean
+  @ConditionalOnMissingBean
   BadgeAwardGenericEventKindPlugin<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventPlugin eventPlugin) {
@@ -104,7 +104,7 @@ public class EventKindPluginConfig {
     return new DeleteEventKindPlugin(eventPlugin, cacheService);
   }
 
-  @Bean("eventKindMaterializers")
+  @Bean
   @ConditionalOnMissingBean
   Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers(
       @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
@@ -137,7 +137,7 @@ public class EventKindPluginConfig {
     return kindFxnMap;
   }
 
-  @Bean("eventKindTypeMaterializers")
+  @Bean
   @ConditionalOnMissingBean
   Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers(
       @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,

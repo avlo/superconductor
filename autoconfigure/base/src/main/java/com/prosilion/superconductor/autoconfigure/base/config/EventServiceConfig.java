@@ -35,6 +35,7 @@ import org.springframework.lang.NonNull;
 @AutoConfiguration
 @ComponentScan(
     basePackages = {
+        "com.prosilion.superconductor.autoconfigure.base.config",
         "com.prosilion.superconductor.autoconfigure.base.service",
         "com.prosilion.superconductor.base.service.clientresponse",
         "com.prosilion.superconductor.base.service.request",

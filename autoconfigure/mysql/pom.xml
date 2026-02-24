@@ -16,14 +16,13 @@
   <dependencies>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-lib-mysql</artifactId>
+      <artifactId>superconductor-autoconfigure-base</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure</artifactId>
-      <version>${spring-boot.version}</version>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-lib-mysql</artifactId>
+      <version>${project.parent.version}</version>
     </dependency>
   </dependencies>
 </project>

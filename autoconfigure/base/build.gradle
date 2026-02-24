@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     api project(':superconductor-base')
+    annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure'
 }

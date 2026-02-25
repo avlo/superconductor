@@ -47,8 +47,8 @@ public class EventKindPluginConfig {
     return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
   }
 
-  @Bean
-  @ConditionalOnMissingBean
+  @Bean("badgeAwardGenericEventKindPlugin")
+  @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPlugin")
   BadgeAwardGenericEventKindPlugin<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventKindPlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventPlugin eventPlugin) {
@@ -57,8 +57,8 @@ public class EventKindPluginConfig {
         eventPlugin);
   }
 
-  @Bean
-  @ConditionalOnMissingBean
+  @Bean("formulaEventKindPlugin")
+  @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
   FormulaEventKindPlugin formulaEventKindPlugin(
       @NonNull EventPlugin eventPlugin) {
     return new FormulaEventKindPlugin(eventPlugin);
@@ -88,8 +88,8 @@ public class EventKindPluginConfig {
             eventPlugin));
   }
 
-  @Bean
-  @ConditionalOnMissingBean
+  @Bean("followSetsEventKindPlugin")
+  @ConditionalOnMissingBean(name = "followSetsEventKindPlugin")
   FollowSetsEventKindPlugin followSetsEventKindPlugin(
       @NonNull EventPlugin eventPlugin,
       @NonNull NotifierService notifierService) {
@@ -104,8 +104,8 @@ public class EventKindPluginConfig {
     return new DeleteEventKindPlugin(eventPlugin, cacheService);
   }
 
-  @Bean
-  @ConditionalOnMissingBean
+  @Bean("eventKindMaterializers")
+  @ConditionalOnMissingBean(name = "eventKindMaterializers")
   Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers(
       @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
       @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
@@ -137,8 +137,8 @@ public class EventKindPluginConfig {
     return kindFxnMap;
   }
 
-  @Bean
-  @ConditionalOnMissingBean
+  @Bean("eventKindTypeMaterializers")
+  @ConditionalOnMissingBean(name = "eventKindTypeMaterializers")
   Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers(
       @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
       @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {

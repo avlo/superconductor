@@ -32,7 +32,7 @@ public class EventKindService implements EventKindServiceIF {
                 eventKindPluginIF.getKind().getValue(),
                 eventKindPluginIF.getKind().getName().toUpperCase(),
                 eventKindPluginIF.getClass().getSimpleName()))
-        .collect(Collectors.joining("\n  "));
+        .collect(Collectors.joining("\n"));
 
     log.debug("Ctor (List<EventKindPluginIF>) loaded values:\n{}", convenientKindMapList);
   }

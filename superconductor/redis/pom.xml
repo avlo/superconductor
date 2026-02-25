@@ -71,15 +71,29 @@
   <build>
     <finalName>${project.name}-${project.version}</finalName>
     <plugins>
+<!--      <plugin>-->
+<!--        <groupId>org.graalvm.buildtools</groupId>-->
+<!--        <artifactId>native-maven-plugin</artifactId>-->
+<!--      </plugin>-->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <image>
-						<builder>paketobuildpacks/builder-jammy-base:latest</builder>
-<!--            <builder>bellsoft/buildpacks.builder:musl</builder> -->
+            <env>
+              <BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
+              <BP_JVM_JLINK_ENABLED>true</BP_JVM_JLINK_ENABLED>
+            </env>
+            <builder>bellsoft/buildpacks.builder:musl</builder>
           </image>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build-image-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 <!--      <plugin>-->
 <!--        <groupId>org.apache.maven.plugins</groupId>-->

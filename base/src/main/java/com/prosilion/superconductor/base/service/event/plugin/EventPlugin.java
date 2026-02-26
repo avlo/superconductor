@@ -77,36 +77,29 @@ public class EventPlugin implements EventPluginIF {
 
   Function<EventIF, BaseEvent> getEventKindFxn(EventIF eventIF) {
     Kind kind = eventIF.getKind();
+    log.debug("getEventKindFxn() for kind\n  [{}]: {}",
+        kind.getValue(), kind.getName().toUpperCase());
 
     Optional<ExternalIdentityTag> externalIdentityTagOptional = Filterable.getTypeSpecificTagsStream(ExternalIdentityTag.class, eventIF).findFirst();
 
-    boolean containsKindKey = eventKindMaterializers.containsKey(kind);
-    if (containsKindKey) {
-      boolean containsKindTypeKey = eventKindTypeMaterializers.containsKey(kind);
-      if (containsKindTypeKey) {
-        boolean identityTagOptionalPresent = externalIdentityTagOptional.isPresent();
-        if (identityTagOptionalPresent)
-          return eventKindTypeMaterializers.get(kind);
-      }
+    if (!eventKindTypeMaterializers.containsKey(kind)) {
+      Function<EventIF, BaseEvent> eventKindMaterializerFxn = eventKindMaterializers.get(kind);
+      log.debug("eventKindTypeMaterializers did not contain kind, return eventKindMaterializer:\n  {}",
+          eventKindMaterializerFxn.getClass().getSimpleName());
+      return eventKindMaterializerFxn;
     }
-    return eventKindMaterializers.get(kind);
-  }
 
-  Function<EventIF, BaseEvent> getEventKindTypeFxn(EventIF eventIF) {
-    Kind kind = eventIF.getKind();
-
-    Optional<ExternalIdentityTag> externalIdentityTagOptional = Filterable.getTypeSpecificTagsStream(ExternalIdentityTag.class, eventIF).findFirst();
-
-    boolean containsKindKey = eventKindMaterializers.containsKey(kind);
-    if (containsKindKey) {
-      boolean containsKindTypeKey = eventKindTypeMaterializers.containsKey(kind);
-      if (containsKindTypeKey) {
-        boolean identityTagOptionalPresent = externalIdentityTagOptional.isPresent();
-        if (identityTagOptionalPresent)
-          return eventKindTypeMaterializers.get(kind);
-      }
+    if (externalIdentityTagOptional.isEmpty()) {
+      Function<EventIF, BaseEvent> eventKindMaterializerFxn = eventKindMaterializers.get(kind);
+      log.debug("event did not contain externalIdentityTag, return eventKindMaterializer:\n  {}",
+          eventKindMaterializerFxn.getClass().getSimpleName());
+      return eventKindMaterializerFxn;
     }
-    return eventKindMaterializers.get(kind);
+
+    Function<EventIF, BaseEvent> eventKindTypeMaterializerFxn = eventKindTypeMaterializers.get(kind);
+    log.debug("return eventKindTypeMaterializer:\n  {}",
+        eventKindTypeMaterializerFxn.getClass().getSimpleName());
+    return eventKindTypeMaterializerFxn;
   }
 
   public Optional<BaseEvent> createTypedEvent(EventIF eventIF) {

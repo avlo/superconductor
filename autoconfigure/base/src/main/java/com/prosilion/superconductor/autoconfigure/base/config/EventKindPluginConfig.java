@@ -64,8 +64,8 @@ public class EventKindPluginConfig {
     return new FormulaEventKindPlugin(eventPlugin);
   }
 
-  @Bean
-  @ConditionalOnMissingBean
+  @Bean("badgeAwardReputationEventKindTypePlugin")
+  @ConditionalOnMissingBean(name = "badgeAwardReputationEventKindTypePlugin")
   BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin(
       @NonNull NotifierService notifierService,
       @NonNull EventPlugin eventPlugin) {
@@ -76,8 +76,8 @@ public class EventKindPluginConfig {
             eventPlugin));
   }
 
-  @Bean
-  @ConditionalOnMissingBean
+  @Bean("badgeDefinitionReputationEventKindTypePlugin")
+  @ConditionalOnMissingBean(name = "badgeDefinitionReputationEventKindTypePlugin")
   BadgeDefinitionReputationEventKindTypePlugin badgeDefinitionReputationEventKindTypePlugin(
       @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
       @NonNull EventPlugin eventPlugin) {

@@ -67,81 +67,74 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
     <finalName>${project.name}-${project.version}</finalName>
     <plugins>
-<!--      <plugin>-->
-<!--        <groupId>org.graalvm.buildtools</groupId>-->
-<!--        <artifactId>native-maven-plugin</artifactId>-->
-<!--      </plugin>-->
+      <!--      <plugin>-->
+      <!--        <groupId>org.graalvm.buildtools</groupId>-->
+      <!--        <artifactId>native-maven-plugin</artifactId>-->
+      <!--      </plugin>-->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <image>
             <env>
-              <BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
               <BP_JVM_JLINK_ENABLED>true</BP_JVM_JLINK_ENABLED>
             </env>
             <builder>bellsoft/buildpacks.builder:musl</builder>
+            <!--            <builder>paketobuildpacks/builder-jammy-base:latest</builder>-->
           </image>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>build-image-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
-<!--      <plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-shade-plugin</artifactId>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <phase>package</phase>-->
-<!--            <goals>-->
-<!--              <goal>shade</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <finalName>${project.build.finalName}</finalName>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
+      <!--      <plugin>-->
+      <!--        <groupId>org.apache.maven.plugins</groupId>-->
+      <!--        <artifactId>maven-shade-plugin</artifactId>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <phase>package</phase>-->
+      <!--            <goals>-->
+      <!--              <goal>shade</goal>-->
+      <!--            </goals>-->
+      <!--            <configuration>-->
+      <!--              <finalName>${project.build.finalName}</finalName>-->
+      <!--            </configuration>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--      </plugin>-->
 
-<!--      <plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-install-plugin</artifactId>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <phase>install</phase>-->
-<!--            <goals>-->
-<!--              <goal>install-file</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <file>target/superconductor-app-redis-1.17.2.war</file>-->
-<!--              <groupId>com.prosilion.superconductor</groupId>-->
-<!--              <artifactId>superconductor-app-redis</artifactId>-->
-<!--              <version>1.17.2</version>-->
-<!--              <packaging>war</packaging>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
-<!--      <plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-war-plugin</artifactId>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <phase>package</phase>-->
-<!--            <goals>-->
-<!--              <goal>war</goal>-->
-<!--            </goals>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
+      <!--      <plugin>-->
+      <!--        <groupId>org.apache.maven.plugins</groupId>-->
+      <!--        <artifactId>maven-install-plugin</artifactId>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <phase>install</phase>-->
+      <!--            <goals>-->
+      <!--              <goal>install-file</goal>-->
+      <!--            </goals>-->
+      <!--            <configuration>-->
+      <!--              <file>target/superconductor-app-redis-1.17.2.war</file>-->
+      <!--              <groupId>com.prosilion.superconductor</groupId>-->
+      <!--              <artifactId>superconductor-app-redis</artifactId>-->
+      <!--              <version>1.17.2</version>-->
+      <!--              <packaging>war</packaging>-->
+      <!--            </configuration>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--      </plugin>-->
+      <!--      <plugin>-->
+      <!--        <groupId>org.apache.maven.plugins</groupId>-->
+      <!--        <artifactId>maven-war-plugin</artifactId>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <phase>package</phase>-->
+      <!--            <goals>-->
+      <!--              <goal>war</goal>-->
+      <!--            </goals>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--      </plugin>-->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

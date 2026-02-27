@@ -36,8 +36,8 @@ public class EventPlugin implements EventPluginIF {
     this.eventKindMaterializers = eventKindMaterializers;
     this.eventKindTypeMaterializers = eventKindTypeMaterializers;
     this.kindClassStringMap = kindClassStringMap;
-    System.out.println("loaded kindClassStringMap:");
-    this.kindClassStringMap.forEach((key, value) -> System.out.printf("  %s : %s\n", key.toUpperCase(), value));
+    log.debug("loaded kindClassStringMap:");
+    this.kindClassStringMap.forEach((key, value) -> log.debug("  {} : {}\n", key.toUpperCase(), value));
   }
 
   @Override
@@ -45,33 +45,21 @@ public class EventPlugin implements EventPluginIF {
     log.debug("processIncomingEvent() called with event\n{}", event.createPrettyPrintJson());
     Optional<EventIF> eventAlreadyExists = eventAlreadyExistsFxn.apply(cacheServiceIF, event);
     if (eventAlreadyExists.isPresent()) {
-      System.out.println("00000000000000000000000000");
-      System.out.println("00000000000000000000000000");
-      System.out.printf("event already exists in db, do not materialize, just return\n  %s\n", event.createPrettyPrintJson());
-      System.out.println("00000000000000000000000000");
-      System.out.println("00000000000000000000000000");
+      log.debug("event already exists in db, do not materialize, just return\n  {}\n", event.createPrettyPrintJson());
       return;
     }
 
     boolean isEventKind = eventKindMaterializers.containsKey(event.getKind());
     boolean isEventKindType = eventKindTypeMaterializers.containsKey(event.getKind());
     if (isEventKind || isEventKindType) {
-      System.out.println("11111111111111111111111111");
-      System.out.println("11111111111111111111111111");
-      System.out.printf("kind/kindType event does not yet exist in db, materialize...\n  %s\n", event.createPrettyPrintJson());
+      log.debug("kind/kindType event does not yet exist in db, materialize...\n  {}\n", event.createPrettyPrintJson());
       BaseEvent apply = getEventKindFxn(event).apply(event);
-      System.out.println("11111111111111111111111111");
-      System.out.println("11111111111111111111111111");
       cacheServiceIF.save(apply);
       return;
     }
 
-    System.out.println("22222222222222222222222222");
-    System.out.println("22222222222222222222222222");
-    System.out.printf("creating canonical kind event...\n  %s\n", event.createPrettyPrintJson());
+    log.debug("creating canonical kind event...\n  {}\n", event.createPrettyPrintJson());
     BaseEvent typedEvent = createTypedEvent(event).orElseThrow();
-    System.out.println("22222222222222222222222222");
-    System.out.println("22222222222222222222222222");
     cacheServiceIF.save(typedEvent);
   }
 

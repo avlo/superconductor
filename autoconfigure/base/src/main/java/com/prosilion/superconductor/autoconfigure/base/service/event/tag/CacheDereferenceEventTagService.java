@@ -67,6 +67,10 @@ public class CacheDereferenceEventTagService implements CacheDereferenceEventTag
             eventTag,
             eventTagFiltersFunction);
 
+    optionalGenericEventRecord.ifPresent(genericEventRecord -> 
+        log.debug("fetched remote event {} saved to local DB", genericEventRecord));
+    optionalGenericEventRecord.ifPresent(cacheServiceIF::save);
+
     return optionalGenericEventRecord;
   }
 }

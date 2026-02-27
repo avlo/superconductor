@@ -70,6 +70,10 @@ public class CacheDereferenceAddressTagService implements CacheDereferenceAddres
             addressTag,
             addressTagFiltersFunction);
 
+    optionalGenericEventRecord.ifPresent(genericEventRecord ->
+        log.debug("fetched remote event {} saved to local DB", genericEventRecord));
+    optionalGenericEventRecord.ifPresent(cacheServiceIF::save);
+
     return optionalGenericEventRecord;
   }
 

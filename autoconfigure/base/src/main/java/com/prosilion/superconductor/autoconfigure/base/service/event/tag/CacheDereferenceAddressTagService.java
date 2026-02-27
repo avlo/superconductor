@@ -19,6 +19,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class CacheDereferenceAddressTagService implements CacheDereferenceAddressTagServiceIF {
+  public static final String FORMATTED_ADDRESS_TAG = "AddressTag[kind=%d, publicKey=%s, identifierTag=IdentifierTag[uuid=%s], relay=Relay[url=%s]]";
   private final CacheServiceIF cacheServiceIF;
 
   @Getter
@@ -33,7 +34,7 @@ public class CacheDereferenceAddressTagService implements CacheDereferenceAddres
 
   @Override
   public Optional<GenericEventRecord> getEvent(@NonNull AddressTag addressTag) {
-    log.debug("getEvent(AddressTag):\n  {}", addressTag);
+    log.debug("getEvent(AddressTag): {}", pubKeySubstring(addressTag));
 
     List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag = cacheServiceIF
         .getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
@@ -42,9 +43,12 @@ public class CacheDereferenceAddressTagService implements CacheDereferenceAddres
             addressTag.getIdentifierTag());
 
     boolean hasContents = !eventsByKindAndAuthorPublicKeyAndIdentifierTag.isEmpty();
-    if (hasContents)
+    if (hasContents) {
+      log.debug("... returning local AddressTag: {}\n", pubKeySubstring(addressTag));
       return eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().findFirst();
+    }
 
+    log.debug("local AddressTag not found, calling remoteEventSupplier...");
     return getGenericEventRecord(addressTag);
   }
 
@@ -67,5 +71,13 @@ public class CacheDereferenceAddressTagService implements CacheDereferenceAddres
             addressTagFiltersFunction);
 
     return optionalGenericEventRecord;
+  }
+
+  private String pubKeySubstring(AddressTag addressTag) {
+    return String.format(FORMATTED_ADDRESS_TAG,
+        addressTag.getKind().getValue(),
+        addressTag.getPublicKey().toHexString().substring(0, 7).concat("..."),
+        addressTag.getIdentifierTag().getUuid(),
+        addressTag.getRelay().getUrl());
   }
 }

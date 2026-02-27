@@ -22,7 +22,7 @@ public class DeletionEventNoSqlEntityService {
   }
 
   protected void addDeletionEvent(@NonNull EventNosqlEntityIF event) {
-    log.debug("added deleteEventEntity type EventNosqlEntityIF: {}", event);
+    log.debug("added deleteEventEntity, type EventNosqlEntityIF:\n{}", event.asGenericEventRecord().createPrettyPrintJson());
     repo.save(DeletionEventNosqlEntity.of(event.getId()));
   }
 

@@ -46,7 +46,6 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
   @Override
   public FormulaEvent materialize(@NonNull EventIF incomingFormulaEvent) {
-    log.debug("processing incoming EventIF as FORMULA EVENT: [{}]", incomingFormulaEvent);
     BadgeDefinitionGenericEvent badgeDefinitionGenericEvent = getBadgeDefinitionGenericEvent(incomingFormulaEvent.asGenericEventRecord());
 
     FormulaEvent formulaEvent = new FormulaEvent(

@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.prosilion.superconductor</groupId>
     <artifactId>superconductor-parent</artifactId>
-    <version>1.17.2</version>
+    <version>1.17.3</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -99,10 +99,10 @@
 <!--              <goal>install-file</goal>-->
 <!--            </goals>-->
 <!--            <configuration>-->
-<!--              <file>target/superconductor-app-mysql-1.17.2.war</file>-->
+<!--              <file>target/superconductor-app-mysql-1.17.3.war</file>-->
 <!--              <groupId>com.prosilion.superconductor</groupId>-->
 <!--              <artifactId>superconductor-app-mysql</artifactId>-->
-<!--              <version>1.17.2</version>-->
+<!--              <version>1.17.3</version>-->
 <!--              <packaging>war</packaging>-->
 <!--            </configuration>-->
 <!--          </execution>-->

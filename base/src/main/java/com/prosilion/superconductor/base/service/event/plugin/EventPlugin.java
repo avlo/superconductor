@@ -41,12 +41,12 @@ public class EventPlugin implements EventPluginIF {
   }
 
   @Override
-  public void processIncomingEvent(@NonNull EventIF event) {
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
     log.debug("processIncomingEvent() called with event\n{}", event.createPrettyPrintJson());
     Optional<EventIF> eventAlreadyExists = eventAlreadyExistsFxn.apply(cacheServiceIF, event);
     if (eventAlreadyExists.isPresent()) {
       log.debug("event already exists in db, do not materialize, just return\n  {}\n", event.createPrettyPrintJson());
-      return;
+      return event.asGenericEventRecord();
     }
 
     boolean isEventKind = eventKindMaterializers.containsKey(event.getKind());
@@ -54,13 +54,12 @@ public class EventPlugin implements EventPluginIF {
     if (isEventKind || isEventKindType) {
       log.debug("kind/kindType event does not yet exist in db, materialize...\n  {}\n", event.createPrettyPrintJson());
       BaseEvent apply = getEventKindFxn(event).apply(event);
-      cacheServiceIF.save(apply);
-      return;
+      return cacheServiceIF.save(apply);
     }
 
     log.debug("creating canonical kind event...\n  {}\n", event.createPrettyPrintJson());
     BaseEvent typedEvent = createTypedEvent(event).orElseThrow();
-    cacheServiceIF.save(typedEvent);
+    return cacheServiceIF.save(typedEvent);
   }
 
   Function<EventIF, BaseEvent> getEventKindFxn(EventIF eventIF) {

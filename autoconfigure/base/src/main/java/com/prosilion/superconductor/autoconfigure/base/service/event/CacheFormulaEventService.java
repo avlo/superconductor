@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -14,6 +15,7 @@ import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import java.util.Optional;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -36,7 +38,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   }
 
   @Override
-  public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url) {
+  public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException {
     Optional<GenericEventRecord> unpopulatedFormulaEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedFormulaEvent.isEmpty())
       return Optional.empty();
@@ -82,8 +84,6 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
     String dbFormula = dbOptionalFormulaEvent.get().content();
     String incomingFormula = formulaEvent.getContent();
-// 		if formula content different
-// 			throw exception
     if (!dbFormula.equals(incomingFormula)) {
       throw new NostrException(
           String.format(FORMATTED, dbFormula, incomingFormula));
@@ -93,6 +93,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     return formulaEvent;
   }
 
+  @SneakyThrows
   private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord genericEventRecord) {
     AddressTag firstAddressTag = Filterable.getTypeSpecificTagsStream(AddressTag.class, genericEventRecord)
         .findFirst().orElseThrow(() ->
@@ -107,20 +108,6 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
     return addressTagNowBadgeDefinitionGenericEvent;
   }
-
-//  @Override
-//  public List<FormulaEvent> getFormulaEventsGivenAssociatedBadgeDefinitionGenericEvent(@NonNull BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
-//    List<FormulaEvent> formulaEvents = cacheServiceIF.getByKind(
-//            Kind.ARBITRARY_CUSTOM_APP_DATA).stream()
-//        .map(ger ->
-//            new FormulaEvent(ger, aTag ->
-//                getBadgeDefinitionGenericEvent(ger)))
-//        .filter(formulaEvent ->
-//            formulaEvent.getBadgeDefinitionGenericEvent().equals(badgeDefinitionGenericEvent))
-//        .toList();
-//
-//    return formulaEvents;
-//  }
 
   public Kind getKind() {
     return Kind.ARBITRARY_CUSTOM_APP_DATA;

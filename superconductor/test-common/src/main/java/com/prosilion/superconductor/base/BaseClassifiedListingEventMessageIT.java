@@ -28,7 +28,7 @@ import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.util.NostrRelayReqService;
+import com.prosilion.superconductor.base.util.SingleReqSubscriptionManager;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
@@ -120,10 +120,10 @@ public abstract class BaseClassifiedListingEventMessageIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
-    NostrRelayReqService nostrRelayService = new NostrRelayReqService();
-    
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
+
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, this.relayUrl);
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -140,10 +140,10 @@ public abstract class BaseClassifiedListingEventMessageIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
-    NostrRelayReqService nostrRelayService = new NostrRelayReqService();
-    
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
+
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, this.relayUrl);
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -153,7 +153,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2, this.relayUrl);
+    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -171,10 +171,10 @@ public abstract class BaseClassifiedListingEventMessageIT {
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    
-    NostrRelayReqService nostrRelayService = new NostrRelayReqService();
-        
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, this.relayUrl);
+
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
+
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to testReqFilteredByEventId:");
@@ -183,7 +183,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2, this.relayUrl);
+    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -201,9 +201,9 @@ public abstract class BaseClassifiedListingEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
-    NostrRelayReqService nostrRelayService = new NostrRelayReqService();
-    
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, this.relayUrl);
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
+
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
 
     log.debug("okMessage to testReqFilteredByAuthor:");
     log.debug("  " + returnedBaseMessages);
@@ -212,7 +212,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(authorFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2, this.relayUrl);
+    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -229,10 +229,10 @@ public abstract class BaseClassifiedListingEventMessageIT {
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(nonMatchingEventId));
 
-    NostrRelayReqService nostrRelayService = new NostrRelayReqService();
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
     ReqMessage reqMessage = new ReqMessage(nonMatchingSubscriberId, new Filters(eventFilter));
-    
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, this.relayUrl);
+
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
@@ -242,7 +242,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
         .map(EoseMessage.class::cast)
         .findAny().isPresent());
     assertTrue(returnedEvents.isEmpty());
-    
+
     nostrRelayService.disconnect(nonMatchingSubscriberId);
   }
 

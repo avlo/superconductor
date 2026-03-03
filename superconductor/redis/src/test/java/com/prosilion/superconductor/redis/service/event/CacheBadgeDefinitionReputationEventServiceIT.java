@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
@@ -62,7 +63,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
   }
 
   @Test
-  public void testSaveBadgeDefinitionReputationEventUpvote() throws ParseException {
+  public void testSaveBadgeDefinitionReputationEventUpvote() throws ParseException, JsonProcessingException {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
         identity,
         reputationIdentifierTag,

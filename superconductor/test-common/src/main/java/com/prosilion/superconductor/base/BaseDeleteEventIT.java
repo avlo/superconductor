@@ -15,7 +15,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.util.NostrRelayReqService;
+import com.prosilion.superconductor.base.util.SingleReqSubscriptionManager;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
@@ -71,9 +71,9 @@ public abstract class BaseDeleteEventIT {
 
     EventFilter deletionEventFilter = new EventFilter(new GenericEventId(eventIdToDeleteId));
 
-    NostrRelayReqService nostrRelayReqService = new NostrRelayReqService();
+    SingleReqSubscriptionManager nostrRelayReqConsolidatorService = new SingleReqSubscriptionManager(this.relayUrl);
     ReqMessage deletionReqMessage = new ReqMessage(deletionSubmitterSubscriberId, new Filters(deletionEventFilter));
-    List<BaseMessage> returnedDeletionMessagesShouldContainEose = nostrRelayReqService.send(deletionReqMessage, this.relayUrl);
+    List<BaseMessage> returnedDeletionMessagesShouldContainEose = nostrRelayReqConsolidatorService.send(deletionReqMessage);
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedDeletionMessagesShouldContainEose);
@@ -87,7 +87,7 @@ public abstract class BaseDeleteEventIT {
     final String subscriberId = Factory.generateRandomHex64String();
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayReqService.send(reqMessage, this.relayUrl);
+    List<BaseMessage> returnedBaseMessages = nostrRelayReqConsolidatorService.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -115,9 +115,9 @@ public abstract class BaseDeleteEventIT {
 
     final String subscriberId = Factory.generateRandomHex64String();
 
-    NostrRelayReqService nostrRelayReqService = new NostrRelayReqService();
+    SingleReqSubscriptionManager nostrRelayReqConsolidatorService = new SingleReqSubscriptionManager(this.relayUrl);
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages = nostrRelayReqService.send(reqMessage, this.relayUrl);
+    List<BaseMessage> returnedBaseMessages = nostrRelayReqConsolidatorService.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");

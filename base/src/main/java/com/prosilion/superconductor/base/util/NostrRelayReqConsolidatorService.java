@@ -5,15 +5,18 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.subdivisions.client.reactive.ReactiveRequestConsolidator;
+import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.core.DurationFactory;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class NostrRelayReqService {
+public class NostrRelayReqConsolidatorService {
   private final ReactiveRequestConsolidator requestConsolidator;
 
-  public NostrRelayReqService() {
+  public NostrRelayReqConsolidatorService() {
     log.debug("constructor (using ReactiveRequestConsolidator)");
     this.requestConsolidator = new ReactiveRequestConsolidator();
   }
@@ -28,9 +31,12 @@ public class NostrRelayReqService {
 //  }
 
   public List<BaseMessage> send(@NonNull ReqMessage reqMessage, @NonNull String relayUrl) throws JsonProcessingException, NostrException {
-    RequestSubscriber<BaseMessage> subscriber = new RequestSubscriber<>();
-    this.requestConsolidator.addRelay(reqMessage.getSubscriptionId(), relayUrl);
-    this.requestConsolidator.send(reqMessage, subscriber);
+    return this.send(reqMessage, relayUrl, DurationFactory.of(3, TimeUnit.SECONDS));
+  }
+
+  public List<BaseMessage> send(@NonNull ReqMessage reqMessage, @NonNull String relayUrl, Duration timeout) throws JsonProcessingException, NostrException {
+    RequestSubscriber<BaseMessage> subscriber = new RequestSubscriber<>(timeout);
+    this.requestConsolidator.send(reqMessage, subscriber, relayUrl);
     return subscriber.getItems();
   }
 

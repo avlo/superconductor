@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.base.cache.tag;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
@@ -9,7 +8,8 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
-import com.prosilion.superconductor.base.util.NostrRelayReqService;
+import com.prosilion.superconductor.base.util.NostrRelayReqConsolidatorService;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,27 +18,25 @@ import java.util.stream.Stream;
 import org.springframework.lang.NonNull;
 
 public interface CacheDereferenceAbstractTagServiceIF<T extends ReferencedAbstractEventTag> {
-  Optional<GenericEventRecord> getEvent(T t);
+  Optional<GenericEventRecord> getEvent(T t) throws JsonProcessingException;
   String getSuperconductorRelayUrl();
+  NostrRelayReqConsolidatorService getNostrRelayReqConsolidatorService();
 
   default Optional<GenericEventRecord> remoteEventSupplier(
       @NonNull String recommendedRelayUrl,
       @NonNull T referencedAbstractEventTag,
-      @NonNull Function<T, Filters> fxnFilter) {
+      @NonNull Function<T, Filters> fxnFilter,
+      @NonNull Duration timeout) throws JsonProcessingException {
     if (recommendedRelayUrl.equals(getSuperconductorRelayUrl()))
       return Optional.empty();
 
-    try {
-      return getGenericEvents(
-          new NostrRelayReqService().send(
-              new ReqMessage(
-                  generateRandomHex64String(),
-                  fxnFilter.apply(referencedAbstractEventTag)),
-              recommendedRelayUrl))
-          .findFirst();
-    } catch (JsonProcessingException e) {
-      throw new NostrException(e);
-    }
+    return getGenericEvents(getNostrRelayReqConsolidatorService()
+        .send(
+            new ReqMessage(
+                generateRandomHex64String(),
+                fxnFilter.apply(referencedAbstractEventTag)),
+            recommendedRelayUrl,
+            timeout)).findFirst();
   }
 
   default Stream<GenericEventRecord> getGenericEvents(List<BaseMessage> returnedBaseMessages) {

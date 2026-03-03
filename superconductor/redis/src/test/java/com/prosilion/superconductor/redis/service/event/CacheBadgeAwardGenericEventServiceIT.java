@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.redis.service.event;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -62,7 +63,7 @@ public class CacheBadgeAwardGenericEventServiceIT {
   }
 
   @Test
-  public void testValidateGetEventSaveBadgeAwardGenericEventUpvote() {
+  public void testValidateGetEventSaveBadgeAwardGenericEventUpvote() throws JsonProcessingException {
     PublicKey upvotedUserPublicKey = Identity.generateRandomIdentity().getPublicKey();
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericVoteEvent = new BadgeAwardGenericEvent<>(
         identity,

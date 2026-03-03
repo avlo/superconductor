@@ -3,7 +3,7 @@ package com.prosilion.superconductor.base.service.event.plugin.kind;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -14,8 +14,8 @@ public class BadgeAwardGenericEventKindPlugin<S extends BadgeDefinitionGenericEv
 
   public BadgeAwardGenericEventKindPlugin(
       @NonNull NotifierService notifierService,
-      @NonNull EventPlugin eventPlugin) {
-    super(notifierService, eventPlugin);
+      @NonNull EventPluginIF eventPluginIF) {
+    super(notifierService, eventPluginIF);
   }
 
   @Override

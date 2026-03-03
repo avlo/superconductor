@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.base.cache;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -15,11 +16,11 @@ public interface CacheBadgeAwardGenericEventServiceIF<S extends BadgeDefinitionG
   String INVALID_REMOTE_URL = "EventTag [%s] is missing remote url";
 
   @Override
-  T materialize(@NonNull EventIF eventIF) throws NostrException;
+  T materialize(@NonNull EventIF eventIF);
 
-  Optional<S> getEventTagEvent(@NonNull String eventId, @NonNull String url);
+  Optional<S> getEventTagEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException;
 
-  default Optional<S> getEventTagEvent(@NonNull EventTag eventTag) {
+  default Optional<S> getEventTagEvent(@NonNull EventTag eventTag) throws JsonProcessingException {
     return getEventTagEvent(
         eventTag.getIdEvent(),
         Optional.ofNullable(

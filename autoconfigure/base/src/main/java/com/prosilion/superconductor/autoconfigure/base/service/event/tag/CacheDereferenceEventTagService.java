@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.tag;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -8,6 +9,8 @@ import com.prosilion.nostr.filter.event.EventFilter;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.util.NostrRelayReqConsolidatorService;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.Getter;
@@ -20,16 +23,20 @@ public class CacheDereferenceEventTagService implements CacheDereferenceEventTag
   private final CacheServiceIF cacheServiceIF;
   @Getter
   private final String superconductorRelayUrl;
+  @Getter
+  private final NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService;
 
   public CacheDereferenceEventTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl) {
+    log.debug("Ctor() loaded CacheDereferenceEventTag relay URL: {}", superconductorRelayUrl);
     this.cacheServiceIF = cacheServiceIF;
     this.superconductorRelayUrl = superconductorRelayUrl;
+    this.nostrRelayReqConsolidatorService = new NostrRelayReqConsolidatorService();
   }
 
   @Override
-  public Optional<GenericEventRecord> getEvent(@NonNull EventTag eventTag) {
+  public Optional<GenericEventRecord> getEvent(@NonNull EventTag eventTag, Duration timeout) throws JsonProcessingException {
     log.debug("getEvent(EventTag), id: [{}], eventTag URL: [{}]",
         eventTag.getIdEvent(),
         eventTag.getRecommendedRelayUrl());
@@ -44,10 +51,10 @@ public class CacheDereferenceEventTagService implements CacheDereferenceEventTag
     }
 
     log.debug("local EventTag not found, calling remoteEventSupplier...");
-    return getGenericEventRecord(eventTag);
+    return getGenericEventRecord(eventTag, timeout);
   }
 
-  private Optional<GenericEventRecord> getGenericEventRecord(EventTag eventTag) {
+  private Optional<GenericEventRecord> getGenericEventRecord(EventTag eventTag, Duration timeout) throws JsonProcessingException {
     String recommendedRelayUrl = Optional.ofNullable(
         eventTag.getRecommendedRelayUrl()).orElseThrow(() ->
         new NostrException(
@@ -65,9 +72,10 @@ public class CacheDereferenceEventTagService implements CacheDereferenceEventTag
         remoteEventSupplier(
             recommendedRelayUrl,
             eventTag,
-            eventTagFiltersFunction);
+            eventTagFiltersFunction,
+            timeout);
 
-    optionalGenericEventRecord.ifPresent(genericEventRecord -> 
+    optionalGenericEventRecord.ifPresent(genericEventRecord ->
         log.debug("fetched remote event {} saved to local DB", genericEventRecord));
     optionalGenericEventRecord.ifPresent(cacheServiceIF::save);
 

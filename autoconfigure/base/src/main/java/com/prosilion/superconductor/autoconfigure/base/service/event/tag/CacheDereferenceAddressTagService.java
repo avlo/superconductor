@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.tag;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
@@ -10,6 +11,8 @@ import com.prosilion.nostr.filter.tag.IdentifierTagFilter;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.util.NostrRelayReqConsolidatorService;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -21,19 +24,22 @@ import org.springframework.lang.NonNull;
 public class CacheDereferenceAddressTagService implements CacheDereferenceAddressTagServiceIF {
   public static final String FORMATTED_ADDRESS_TAG = "AddressTag[kind=%d, publicKey=%s, identifierTag=IdentifierTag[uuid=%s], relay=Relay[url=%s]]";
   private final CacheServiceIF cacheServiceIF;
-
   @Getter
   private final String superconductorRelayUrl;
+  @Getter
+  private final NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService;
 
   public CacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl) {
+    log.debug("Ctor() loaded CacheDereferenceAddressTagService relay URL: {}", superconductorRelayUrl);
     this.cacheServiceIF = cacheServiceIF;
     this.superconductorRelayUrl = superconductorRelayUrl;
+    this.nostrRelayReqConsolidatorService = new NostrRelayReqConsolidatorService();
   }
 
   @Override
-  public Optional<GenericEventRecord> getEvent(@NonNull AddressTag addressTag) {
+  public Optional<GenericEventRecord> getEvent(@NonNull AddressTag addressTag, Duration timeout) throws JsonProcessingException {
     log.debug("getEvent(AddressTag): {}", pubKeySubstring(addressTag));
 
     List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag = cacheServiceIF
@@ -49,10 +55,10 @@ public class CacheDereferenceAddressTagService implements CacheDereferenceAddres
     }
 
     log.debug("local AddressTag not found, calling remoteEventSupplier...");
-    return getGenericEventRecord(addressTag);
+    return getGenericEventRecord(addressTag, timeout);
   }
 
-  private Optional<GenericEventRecord> getGenericEventRecord(AddressTag addressTag) {
+  private Optional<GenericEventRecord> getGenericEventRecord(AddressTag addressTag, Duration timeout) throws JsonProcessingException {
     String recommendedRelayUrl = Optional.ofNullable(
         addressTag.getRelay()).map(Relay::getUrl).orElseThrow(() ->
         new NostrException(
@@ -68,7 +74,8 @@ public class CacheDereferenceAddressTagService implements CacheDereferenceAddres
         remoteEventSupplier(
             recommendedRelayUrl,
             addressTag,
-            addressTagFiltersFunction);
+            addressTagFiltersFunction,
+            timeout);
 
     optionalGenericEventRecord.ifPresent(genericEventRecord ->
         log.debug("fetched remote event {} saved to local DB", genericEventRecord));

@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.base.cache.mapped;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.AddressableEvent;
@@ -9,14 +10,15 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import java.lang.reflect.Constructor;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.SneakyThrows;
 import org.springframework.lang.NonNull;
 
 public interface CacheAddressableEventServiceIF<T extends AddressableEvent> {
-  T materialize(@NonNull EventIF eventIF);
-  Optional<T> getAddressTagEvent(@NonNull AddressTag addressTag) throws NostrException;
+  T materialize(@NonNull EventIF eventIF) throws JsonProcessingException;
+  Optional<T> getAddressTagEvent(@NonNull AddressTag addressTag, Duration timeout) throws NostrException, JsonProcessingException;
   Kind getKind();
   @SneakyThrows
   default <S extends ReferencedAbstractEventTag, T extends BaseEvent> T createTypedFxnEvent(

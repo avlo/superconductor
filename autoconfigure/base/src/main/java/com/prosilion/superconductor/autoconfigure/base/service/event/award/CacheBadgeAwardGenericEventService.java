@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
@@ -8,12 +9,14 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.core.DurationFactory;
 import org.springframework.lang.NonNull;
 
 @Slf4j
@@ -31,7 +34,7 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
   }
 
   @Override
-  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEvent(@NonNull String eventId, @NonNull String url) {
+  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException {
     Optional<GenericEventRecord> unpopulatedBadgeAwardGenericEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedBadgeAwardGenericEvent.isEmpty())
       return Optional.empty();
@@ -51,17 +54,19 @@ public class CacheBadgeAwardGenericEventService implements CacheBadgeAwardGeneri
     return badgeAwardGenericEvent;
   }
 
+  @SneakyThrows
   private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(GenericEventRecord incomingBadgeAwardGenericEvent) {
     AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, incomingBadgeAwardGenericEvent).stream().findFirst().orElseThrow(() ->
         new NostrException(
             String.format(MISSING_ADDRESS_TAG, getClass().getSimpleName(), incomingBadgeAwardGenericEvent)));
 
-    Optional<BadgeDefinitionGenericEvent> badgeDefinitionGenericEvent = cacheBadgeDefinitionGenericEventServiceIF.getAddressTagEvent(addressTag);
+    Optional<BadgeDefinitionGenericEvent> badgeDefinitionGenericEvent =
+        cacheBadgeDefinitionGenericEventServiceIF.getAddressTagEvent(addressTag, DurationFactory.of(10, TimeUnit.SECONDS));
     return badgeDefinitionGenericEvent.orElseThrow();
   }
 
   @Override
-  public Optional<BadgeDefinitionGenericEvent> getEventTagEvent(@NonNull String eventId, @NonNull String url) {
+  public Optional<BadgeDefinitionGenericEvent> getEventTagEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException {
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionGenericEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedBadgeDefinitionGenericEvent.isEmpty())
       throw new NostrException(String.format(NOT_FOUND, eventId, url));

@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -11,7 +12,9 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.core.DurationFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +54,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
   }
 
   @Test
-  public void testSaveBadgeDefinitionGenericEvent() {
+  public void testSaveBadgeDefinitionGenericEvent() throws JsonProcessingException {
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
         authorIdentity,
         reputationRecipientPublicKey,
@@ -60,7 +63,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent));
     BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getAddressTagEvent(
-        badgeAwardUpvoteEvent.getAddressTag()).orElseThrow();
+        badgeAwardUpvoteEvent.getAddressTag(), DurationFactory.of(10, TimeUnit.SECONDS)).orElseThrow();
 
     assertEquals(badgeAwardUpvoteEvent.getBadgeDefinitionGenericEvent(), dbDefinitionGenericEvent);
     assertEquals(upvoteIdentifierTag, dbDefinitionGenericEvent.getIdentifierTag());

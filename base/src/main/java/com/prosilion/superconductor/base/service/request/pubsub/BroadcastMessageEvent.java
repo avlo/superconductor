@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.message.BaseMessage;
 import lombok.Getter;
-import org.springframework.lang.NonNull;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 import org.springframework.web.socket.TextMessage;
 
 @Setter
@@ -14,8 +14,12 @@ public class BroadcastMessageEvent<T extends BaseMessage> {
   private final TextMessage message;
   private final String sessionId;
 
-  public BroadcastMessageEvent(@NonNull String sessionId, @NonNull T incoming) throws JsonProcessingException, NostrException {
+  public BroadcastMessageEvent(@NonNull String sessionId, @NonNull T incoming) throws NostrException {
     this.sessionId = sessionId;
-    this.message = new TextMessage((incoming).encode());
+    try {
+      this.message = new TextMessage((incoming).encode());
+    } catch (JsonProcessingException e) {
+      throw new NostrException("BroadcastMessageEvent encountered a JsonProcessingException", e);
+    }
   }
 }

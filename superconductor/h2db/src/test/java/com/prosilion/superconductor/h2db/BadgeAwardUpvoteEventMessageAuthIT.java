@@ -3,6 +3,7 @@ package com.prosilion.superconductor.h2db;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.BaseBadgeAwardUpvoteEventMessageAuthIT;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +25,8 @@ public class BadgeAwardUpvoteEventMessageAuthIT extends BaseBadgeAwardUpvoteEven
   @Autowired
   BadgeAwardUpvoteEventMessageAuthIT(
       @NonNull Identity superconductorInstanceIdentity,
-      @NonNull @Value("${superconductor.relay.url}") String relayUri) throws NostrException {
-    super(superconductorInstanceIdentity, relayUri);
+      @NonNull @Value("${superconductor.relay.url}") String relayUri,
+      Duration requestTimeoutDuration) throws NostrException {
+    super(superconductorInstanceIdentity, relayUri, requestTimeoutDuration);
   }
 }

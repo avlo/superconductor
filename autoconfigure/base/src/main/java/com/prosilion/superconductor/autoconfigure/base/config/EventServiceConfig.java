@@ -39,16 +39,24 @@ public class EventServiceConfig {
   @ConditionalOnMissingBean
   CacheDereferenceAddressTagService cacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull String superconductorRelayUrl) {
-    return new CacheDereferenceAddressTagService(cacheServiceIF, superconductorRelayUrl);
+      @NonNull String superconductorRelayUrl,
+      @NonNull NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService) {
+    return new CacheDereferenceAddressTagService(
+        cacheServiceIF,
+        superconductorRelayUrl,
+        nostrRelayReqConsolidatorService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheDereferenceEventTagService cacheDereferenceEventTagService(
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull String superconductorRelayUrl) {
-    return new CacheDereferenceEventTagService(cacheServiceIF, superconductorRelayUrl);
+      @NonNull String superconductorRelayUrl,
+      @NonNull NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService) {
+    return new CacheDereferenceEventTagService(
+        cacheServiceIF,
+        superconductorRelayUrl,
+        nostrRelayReqConsolidatorService);
   }
 
   @Bean

@@ -18,6 +18,7 @@ import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -34,8 +35,8 @@ public abstract class BaseMatchingAddressTagIT {
   private final PublicKey aTagPubkey = Identity.generateRandomIdentity().getPublicKey();
   private final String uuid = Factory.generateRandomHex64String();
 
-  public BaseMatchingAddressTagIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseMatchingAddressTagIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))

@@ -4,10 +4,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.awaitility.Awaitility;
-import org.awaitility.core.DurationFactory;
 import org.reactivestreams.Subscription;
 import org.springframework.lang.NonNull;
 import reactor.core.publisher.BaseSubscriber;
@@ -18,10 +16,6 @@ public class RequestSubscriber<T> extends BaseSubscriber<T> {
   private Subscription subscription;
   private final Duration timeout;
 
-  public RequestSubscriber() {
-    this(DurationFactory.of(3, TimeUnit.SECONDS));
-  }
-
   public RequestSubscriber(Duration timeout) {
     this.timeout = timeout;
   }
@@ -29,13 +23,13 @@ public class RequestSubscriber<T> extends BaseSubscriber<T> {
   @Override
   public void hookOnSubscribe(@NonNull Subscription subscription) {
     this.subscription = subscription;
-    subscription.request(1);
+    subscription.request(Long.MAX_VALUE);
   }
 
   @Override
   public void hookOnNext(@NonNull T value) {
     completed.set(false);
-    subscription.request(1);
+    subscription.request(Long.MAX_VALUE);
     completed.set(true);
     items.add(value);
   }

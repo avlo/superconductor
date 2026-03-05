@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base.service.event.kind.type;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
@@ -23,7 +22,7 @@ import org.springframework.lang.NonNull;
 public class EventKindTypeService implements EventKindTypeServiceIF {
   private final Map<Kind, Map<KindTypeIF, EventKindTypePluginIF>> eventKindTypePluginsMap;
 
-  public EventKindTypeService(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) throws JsonProcessingException {
+  public EventKindTypeService(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) {
     this.eventKindTypePluginsMap = eventKindTypePlugins.stream()
         .collect(Collectors.groupingBy(
             EventKindTypePluginIF::getKind,

@@ -15,6 +15,7 @@ import com.prosilion.nostr.tag.GeohashTag;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
@@ -39,11 +40,13 @@ public abstract class BaseMatchingMultipleGenericTagQuerySingleLetterIT {
   private final String genericTagStringG;
   private final String genericTagStringH;
 
-  public BaseMatchingMultipleGenericTagQuerySingleLetterIT(@NonNull String relayUrl) throws IOException {
+  public BaseMatchingMultipleGenericTagQuerySingleLetterIT(
+      @NonNull String relayUrl,
+      Duration requestTimeoutDuration) throws IOException {
     this.eventId = Factory.generateRandomHex64String();
     this.genericTagStringG = Factory.generateRandomHex64String();
     this.genericTagStringH = Factory.generateRandomHex64String();
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))

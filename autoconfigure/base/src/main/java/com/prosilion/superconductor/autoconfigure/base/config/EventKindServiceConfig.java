@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.superconductor.base.service.event.EventService;
 import com.prosilion.superconductor.base.service.event.kind.EventKindService;
 import com.prosilion.superconductor.base.service.event.kind.EventKindServiceIF;
@@ -28,7 +27,7 @@ public class EventKindServiceConfig {
 
   @Bean(name = "eventKindTypeService")
   @ConditionalOnMissingBean
-  EventKindTypeService eventKindTypeService(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) throws JsonProcessingException {
+  EventKindTypeService eventKindTypeService(@NonNull List<EventKindTypePluginIF> eventKindTypePlugins) {
     return new EventKindTypeService(eventKindTypePlugins);
   }
 

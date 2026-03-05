@@ -16,6 +16,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -29,8 +30,10 @@ public abstract class BaseReqMessageIT {
   private final String eventId;
   private final PublicKey authorPubkey;
 
-  public BaseReqMessageIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseReqMessageIT(
+      @NonNull String relayUrl,
+      Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     Identity author = Identity.generateRandomIdentity();
     this.authorPubkey = author.getPublicKey();
 

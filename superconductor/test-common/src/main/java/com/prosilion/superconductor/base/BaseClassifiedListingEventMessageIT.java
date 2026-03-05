@@ -28,11 +28,12 @@ import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.util.SingleReqSubscriptionManager;
 import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.SingleReqSubscriptionManager;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -71,11 +72,13 @@ public abstract class BaseClassifiedListingEventMessageIT {
   private final String eventId;
   private static final String globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
   private final String content;
+  Duration requestTimeoutDuration;
 
-  public BaseClassifiedListingEventMessageIT(@NonNull String relayUrl) throws IOException, NostrException {
+  public BaseClassifiedListingEventMessageIT(@NonNull String relayUrl, @NonNull Duration requestTimeoutDuration) throws IOException, NostrException {
     this.relayUrl = relayUrl;
+    this.requestTimeoutDuration = requestTimeoutDuration;
     Relay relay = new Relay(relayUrl);
-    NostrRelayService nostrRelayService = new NostrRelayService(relayUrl);
+    NostrRelayService nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     this.content = Factory.lorumIpsum(getClass());
 
     senderPubkey = new PublicKey(identity.getPublicKey().toString());
@@ -120,7 +123,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
-    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl, requestTimeoutDuration);
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -140,7 +143,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
-    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl, requestTimeoutDuration);
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
@@ -172,7 +175,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
 
-    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl, requestTimeoutDuration);
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
@@ -201,7 +204,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
-    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl, requestTimeoutDuration);
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
 
@@ -229,7 +232,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(nonMatchingEventId));
 
-    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl);
+    SingleReqSubscriptionManager nostrRelayService = new SingleReqSubscriptionManager(this.relayUrl, requestTimeoutDuration);
     ReqMessage reqMessage = new ReqMessage(nonMatchingSubscriberId, new Filters(eventFilter));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);

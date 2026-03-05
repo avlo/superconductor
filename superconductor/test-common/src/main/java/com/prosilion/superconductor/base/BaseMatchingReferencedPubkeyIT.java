@@ -16,6 +16,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -34,8 +35,8 @@ public abstract class BaseMatchingReferencedPubkeyIT {
   private final String eventId = Factory.generateRandomHex64String();
   private final PublicKey referencedPubkey = Identity.generateRandomIdentity().getPublicKey();
 
-  public BaseMatchingReferencedPubkeyIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseMatchingReferencedPubkeyIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
@@ -109,7 +110,8 @@ public abstract class BaseMatchingReferencedPubkeyIT {
         "      ],\n" +
         "      [\n" +
         "        \"e\",\n" +
-        "        \"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\"\n" +
+        "        \"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\",\n" +
+        "        \"wss://nostr.example.com\"\n" +        
         "      ],\n" +
         "      [\n" +
         "        \"g\",\n" +

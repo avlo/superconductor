@@ -14,6 +14,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -24,13 +25,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
+  private final String relayUrl = "wss://nostr.example.com";
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
   private final String referenceEventId = Factory.generateRandomHex64String();
   private final String referencePubKey = Factory.generateRandomHex64String();
 
-  public BaseMatchingOneOfMultipleFilterAttributesIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseMatchingOneOfMultipleFilterAttributesIT(
+      @NonNull String relayUrl,
+      Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
 
     assertTrue(
         nostrRelayService.send(
@@ -47,7 +51,7 @@ public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
             new ReferencedEventFilter(
-                new EventTag(referenceEventId)),
+                new EventTag(referenceEventId, relayUrl)),
             new ReferencedEventFilter(
                 new EventTag(referencedEventIdNoMatch))));
 
@@ -112,7 +116,8 @@ public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
         "      ],\n" +
         "      [\n" +
         "        \"e\",\n" +
-        "        \"" + referenceEventId + "\"\n" +
+        "        \"" + referenceEventId + "\",\n" +
+        "        \"wss://nostr.example.com\"\n" +
         "      ],\n" +
         "      [\n" +
         "        \"g\",\n" +

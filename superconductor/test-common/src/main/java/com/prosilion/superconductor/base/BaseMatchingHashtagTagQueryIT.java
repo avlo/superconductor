@@ -15,6 +15,7 @@ import com.prosilion.nostr.tag.HashtagTag;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -29,8 +30,8 @@ public abstract class BaseMatchingHashtagTagQueryIT {
   private final String eventId = Factory.generateRandomHex64String();
   private final NostrRelayService nostrRelayService;
 
-  public BaseMatchingHashtagTagQueryIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseMatchingHashtagTagQueryIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(nostrRelayService.send(
             (EventMessage) BaseMessageDecoder.decode(getEvent()))
         .getFlag());

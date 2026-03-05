@@ -19,6 +19,7 @@ import com.prosilion.superconductor.base.util.SingleReqSubscriptionManager;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +35,12 @@ public abstract class BaseDeleteEventIT {
   private final String relayUrl;
   private final String eventIdToDeleteId;
   private final String deletionEventId;
+  Duration requestTimeoutDuration;
 
-  public BaseDeleteEventIT(@NonNull String relayUrl) throws IOException, NostrException {
+  public BaseDeleteEventIT(@NonNull String relayUrl, @NonNull Duration requestTimeoutDuration) throws IOException, NostrException {
     this.relayUrl = relayUrl;
-    NostrRelayService nostrRelayService = new NostrRelayService(relayUrl);
+    this.requestTimeoutDuration = requestTimeoutDuration;
+    NostrRelayService nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
 
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     this.eventIdToDeleteId = event.getId();
@@ -50,7 +53,7 @@ public abstract class BaseDeleteEventIT {
             .getFlag());
 
     List<EventTag> eventDeletionTags = new ArrayList<>();
-    eventDeletionTags.add(new EventTag(eventIdToDeleteId));
+    eventDeletionTags.add(new EventTag(eventIdToDeleteId, relayUrl));
 
     BaseEvent deletionEvent = new DeletionEvent(identity, eventDeletionTags, Factory.lorumIpsum());
     this.deletionEventId = deletionEvent.getId();
@@ -71,7 +74,7 @@ public abstract class BaseDeleteEventIT {
 
     EventFilter deletionEventFilter = new EventFilter(new GenericEventId(eventIdToDeleteId));
 
-    SingleReqSubscriptionManager nostrRelayReqConsolidatorService = new SingleReqSubscriptionManager(this.relayUrl);
+    SingleReqSubscriptionManager nostrRelayReqConsolidatorService = new SingleReqSubscriptionManager(this.relayUrl, requestTimeoutDuration);
     ReqMessage deletionReqMessage = new ReqMessage(deletionSubmitterSubscriberId, new Filters(deletionEventFilter));
     List<BaseMessage> returnedDeletionMessagesShouldContainEose = nostrRelayReqConsolidatorService.send(deletionReqMessage);
 
@@ -102,7 +105,7 @@ public abstract class BaseDeleteEventIT {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     String secondEventShouldNotGetDeleted = event.getId();
 
-    NostrRelayService nostrRelayService = new NostrRelayService(this.relayUrl);
+    NostrRelayService nostrRelayService = new NostrRelayService(this.relayUrl, requestTimeoutDuration);
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
@@ -115,7 +118,7 @@ public abstract class BaseDeleteEventIT {
 
     final String subscriberId = Factory.generateRandomHex64String();
 
-    SingleReqSubscriptionManager nostrRelayReqConsolidatorService = new SingleReqSubscriptionManager(this.relayUrl);
+    SingleReqSubscriptionManager nostrRelayReqConsolidatorService = new SingleReqSubscriptionManager(this.relayUrl, requestTimeoutDuration);
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
     List<BaseMessage> returnedBaseMessages = nostrRelayReqConsolidatorService.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);

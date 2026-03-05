@@ -2,6 +2,7 @@ package com.prosilion.superconductor.base;
 
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +25,9 @@ public abstract class BaseMultipleZapRequestEventMessageIT extends AbstractMulti
       @NonNull String relayUrl,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.hexNumberOfBytes}") Integer hexNumberOfBytes,
-      @Value("${superconductor.test.req.instances}") Integer reqInstances) {
-    super(new NostrRelayService(relayUrl), hexCounterSeed, hexNumberOfBytes, reqInstances);
+      @Value("${superconductor.test.req.instances}") Integer reqInstances,
+      Duration requestTimeoutDuration) {
+    super(new NostrRelayService(relayUrl, requestTimeoutDuration), hexCounterSeed, hexNumberOfBytes, reqInstances);
 
     this.eventTagId = Factory.generateRandomHex64String();
     this.authorPubKey = Factory.generateRandomHex64String();
@@ -38,11 +40,21 @@ public abstract class BaseMultipleZapRequestEventMessageIT extends AbstractMulti
   }
 
   public String getGlobalEventJson(String startEventId) {
-    return "[\"EVENT\",{\"id\":\"" + startEventId + "\", \"kind\": 9734, \"content\": \"" + content + "\", \"pubkey\": \"" + authorPubKey + "\", \"created_at\": 1719016694217, \"tags\": [[\"e\",\"" + eventTagId + "\"], [\"g\",\"" + geoTagText + "\"], [\"t\",\"" + hashTagText + "\"], [\"p\",\"" + pubKeyTagPubKey + "\"], [\"relays\",\"wss://localhost:5555\"], [\"subject\",\"" + subject + "\"], [\"amount\",\"271.00\"], [\"lnurl\",\"" + lnUrl + "\"]], \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
+    return "[\"EVENT\",{\"id\":\"" + startEventId + "\", \"kind\": 9734, \"content\": \"" + content + "\", \"pubkey\": \"" + authorPubKey + "\", \"created_at\": 1719016694217, \"tags\": [" +
+        "[\"e\", \"" +
+        eventTagId + "\",\n" +
+        "\"wss://nostr.example.com\"\n" +
+        "]," +
+        " [\"g\",\"" + geoTagText + "\"], [\"t\",\"" + hashTagText + "\"], [\"p\",\"" + pubKeyTagPubKey + "\"], [\"relays\",\"wss://localhost:5555\"], [\"subject\",\"" + subject + "\"], [\"amount\",\"271.00\"], [\"lnurl\",\"" + lnUrl + "\"]], \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
   }
 
   public String getExpectedJsonInAnyOrder(String startEventId) {
-    return "{\"id\":\"" + startEventId + "\", \"pubkey\": \"" + authorPubKey + "\", \"created_at\": 1719016694217, \"tags\": [[\"e\",\"" + eventTagId + "\"], [\"p\",\"" + pubKeyTagPubKey + "\"], [\"g\",\"" + geoTagText + "\"], [\"t\",\"" + hashTagText + "\"], [\"relays\",\"wss://localhost:5555\"], [\"subject\",\"" + this.subject + "\"], [\"amount\",\"271.00\"], [\"lnurl\",\"" + lnUrl + "\"]], \"kind\": 9734, \"content\": \"" + content + "\", \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}";
+    return "{\"id\":\"" + startEventId + "\", \"pubkey\": \"" + authorPubKey + "\", \"created_at\": 1719016694217, \"tags\": [" +
+        "[\"e\", \"" +
+        eventTagId + "\",\n" +
+        "\"wss://nostr.example.com\"\n" +
+        "]," +
+        "[\"p\",\"" + pubKeyTagPubKey + "\"], [\"g\",\"" + geoTagText + "\"], [\"t\",\"" + hashTagText + "\"], [\"relays\",\"wss://localhost:5555\"], [\"subject\",\"" + this.subject + "\"], [\"amount\",\"271.00\"], [\"lnurl\",\"" + lnUrl + "\"]], \"kind\": 9734, \"content\": \"" + content + "\", \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}";
   }
 
   public String createReqJson(@NonNull String uuid) {

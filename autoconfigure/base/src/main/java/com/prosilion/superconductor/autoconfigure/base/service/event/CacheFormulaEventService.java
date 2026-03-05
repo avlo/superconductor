@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -10,12 +9,12 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import java.util.Optional;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -30,7 +29,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
   public CacheFormulaEventService(
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
+      @NonNull CacheDereferenceEventTagService cacheDereferenceEventTagServiceIF,
       @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
@@ -38,7 +37,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   }
 
   @Override
-  public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException {
+  public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url) {
     Optional<GenericEventRecord> unpopulatedFormulaEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedFormulaEvent.isEmpty())
       return Optional.empty();
@@ -93,7 +92,6 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     return formulaEvent;
   }
 
-  @SneakyThrows
   private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord genericEventRecord) {
     AddressTag firstAddressTag = Filterable.getTypeSpecificTagsStream(AddressTag.class, genericEventRecord)
         .findFirst().orElseThrow(() ->

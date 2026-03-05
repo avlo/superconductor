@@ -8,6 +8,7 @@ import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.subdivisions.client.reactive.ReactiveNostrRelayClient;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +20,11 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class NostrRelayService {
   private final ReactiveNostrRelayClient nostrRelayService;
+  Duration requestTimeoutDuration;
 
-  public NostrRelayService(@NonNull String relayUrl) {
+  public NostrRelayService(@NonNull String relayUrl, Duration requestTimeoutDuration) {
     log.debug("constructor called with relayUrl [{}]", relayUrl);
+    this.requestTimeoutDuration = requestTimeoutDuration;
     this.nostrRelayService = new ReactiveNostrRelayClient(relayUrl);
   }
 
@@ -35,13 +38,13 @@ public class NostrRelayService {
   }
 
   public OkMessage send(@NonNull EventMessage eventMessage) throws IOException {
-    RequestSubscriber<OkMessage> subscriber = new RequestSubscriber<>();
+    RequestSubscriber<OkMessage> subscriber = new RequestSubscriber<>(requestTimeoutDuration);
     nostrRelayService.send(eventMessage, subscriber);
     return subscriber.getItems().getFirst();
   }
 
   public List<BaseMessage> send(@NonNull ReqMessage reqMessage) throws JsonProcessingException, NostrException {
-    RequestSubscriber<BaseMessage> subscriber = new RequestSubscriber<>();
+    RequestSubscriber<BaseMessage> subscriber = new RequestSubscriber<>(requestTimeoutDuration);
     nostrRelayService.send(reqMessage, subscriber);
     return subscriber.getItems();
   }

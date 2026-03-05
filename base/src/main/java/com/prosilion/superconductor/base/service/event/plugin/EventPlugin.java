@@ -9,11 +9,11 @@ import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -71,8 +71,7 @@ public class EventPlugin implements EventPluginIF {
 
     if (!eventKindTypeMaterializers.containsKey(kind)) {
       Function<EventIF, BaseEvent> eventKindMaterializerFxn = eventKindMaterializers.get(kind);
-      log.debug("eventKindTypeMaterializers did not contain kind, return eventKindMaterializer:\n  {}",
-          eventKindMaterializerFxn.getClass().getSimpleName());
+      log.debug("... eventKindTypeMaterializers did not contain kind, return eventKindMaterializer: ...\n");
       return eventKindMaterializerFxn;
     }
 
@@ -117,16 +116,15 @@ public class EventPlugin implements EventPluginIF {
         String.format(CLASS_STRING_MAP_S, lookupKind, kindClassStringMap));
   }
 
-  @SneakyThrows
   private <T extends BaseEvent> T createTypedSimpleEvent(
       @NonNull GenericEventRecord genericEventRecord,
       @NonNull Class<T> baseEventFromKind) {
     Constructor<T> constructor;
     try {
       constructor = baseEventFromKind.getConstructor(GenericEventRecord.class);
-    } catch (NoSuchMethodException e) {
-      throw new RuntimeException(e);
+      return constructor.newInstance(genericEventRecord);
+    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+      throw new NostrException(e);
     }
-    return constructor.newInstance(genericEventRecord);
   }
 }

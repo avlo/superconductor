@@ -11,6 +11,7 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -25,8 +26,10 @@ public abstract class BaseSinceUntilIT {
   private final String eventId = Factory.generateRandomHex64String();
   private final String publicKey = Factory.generateRandomHex64String();
 
-  public BaseSinceUntilIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseSinceUntilIT(
+      @NonNull String relayUrl,
+      Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
@@ -248,7 +251,8 @@ public abstract class BaseSinceUntilIT {
         "      ],\n" +
         "      [\n" +
         "        \"e\",\n" +
-        "        \"aaabbbac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\"\n" +
+        "        \"aaabbbac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\",\n" +
+        "        \"wss://nostr.example.com\"\n" +
         "      ],\n" +
         "      [\n" +
         "        \"g\",\n" +

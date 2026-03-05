@@ -1,53 +1,10 @@
 package com.prosilion.superconductor.base.cache.tag;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.filter.Filters;
-import com.prosilion.nostr.message.BaseMessage;
-import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
-import com.prosilion.superconductor.base.util.NostrRelayReqConsolidatorService;
-import java.time.Duration;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Stream;
-import org.springframework.lang.NonNull;
 
 public interface CacheDereferenceAbstractTagServiceIF<T extends ReferencedAbstractEventTag> {
-  Optional<GenericEventRecord> getEvent(T t) throws JsonProcessingException;
+  Optional<GenericEventRecord> getEvent(T t);
   String getSuperconductorRelayUrl();
-  NostrRelayReqConsolidatorService getNostrRelayReqConsolidatorService();
-
-  default Optional<GenericEventRecord> remoteEventSupplier(
-      @NonNull String recommendedRelayUrl,
-      @NonNull T referencedAbstractEventTag,
-      @NonNull Function<T, Filters> fxnFilter,
-      @NonNull Duration timeout) throws JsonProcessingException {
-    if (recommendedRelayUrl.equals(getSuperconductorRelayUrl()))
-      return Optional.empty();
-
-    return getGenericEvents(getNostrRelayReqConsolidatorService()
-        .send(
-            new ReqMessage(
-                generateRandomHex64String(),
-                fxnFilter.apply(referencedAbstractEventTag)),
-            recommendedRelayUrl,
-            timeout)).findFirst();
-  }
-
-  default Stream<GenericEventRecord> getGenericEvents(List<BaseMessage> returnedBaseMessages) {
-    return returnedBaseMessages.stream()
-        .filter(EventMessage.class::isInstance)
-        .map(EventMessage.class::cast)
-        .map(EventMessage::getEvent)
-        .map(EventIF::asGenericEventRecord);
-  }
-
-  default String generateRandomHex64String() {
-    return UUID.randomUUID().toString().concat(UUID.randomUUID().toString()).replaceAll("[^A-Za-z0-9]", "");
-  }
 }

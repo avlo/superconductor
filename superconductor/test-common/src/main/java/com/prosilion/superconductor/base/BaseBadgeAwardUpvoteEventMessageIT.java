@@ -22,6 +22,7 @@ import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +46,9 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
 
   protected BaseBadgeAwardUpvoteEventMessageIT(
       @NonNull String relayUrl,
-      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+      @NonNull Identity superconductorInstanceIdentity,
+      Duration requestTimeoutDuration) throws IOException, NostrException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     Relay relay = new Relay(relayUrl);
 

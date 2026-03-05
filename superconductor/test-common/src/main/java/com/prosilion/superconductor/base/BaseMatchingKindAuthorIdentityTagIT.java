@@ -17,6 +17,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -32,8 +33,10 @@ public abstract class BaseMatchingKindAuthorIdentityTagIT {
   private static final String authorPubKey = Factory.generateRandomHex64String();
   private static final String content = Factory.lorumIpsum();
 
-  public BaseMatchingKindAuthorIdentityTagIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseMatchingKindAuthorIdentityTagIT(
+      @NonNull String relayUrl,
+      Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))

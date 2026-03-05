@@ -7,18 +7,19 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.subdivisions.client.reactive.ReactiveRelaySubscriptionsManager;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.core.DurationFactory;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 public class SingleReqSubscriptionManager {
   private final ReactiveRelaySubscriptionsManager reactiveRelaySubscriptionsManager;
+  private final Duration timeout;
 
-  public SingleReqSubscriptionManager(String relayUrl) {
+  public SingleReqSubscriptionManager(
+      String relayUrl, Duration duration) {
     log.debug("constructor (using ReactiveRelaySubscriptionsManager)");
     this.reactiveRelaySubscriptionsManager = new ReactiveRelaySubscriptionsManager(relayUrl);
+    this.timeout = duration;
   }
 
 //  public NostrRelayReqService(@Value("${superconductor.relay.url}") @NonNull String relayUrl, @NonNull SslBundles sslBundles) throws ExecutionException, InterruptedException {
@@ -31,7 +32,7 @@ public class SingleReqSubscriptionManager {
 //  }
 
   public List<BaseMessage> send(@NonNull ReqMessage reqMessage) throws JsonProcessingException, NostrException {
-    return send(reqMessage, DurationFactory.of(5, TimeUnit.SECONDS));
+    return send(reqMessage, timeout);
   }
 
   public List<BaseMessage> send(@NonNull ReqMessage reqMessage, @NonNull Duration duration) throws JsonProcessingException, NostrException {

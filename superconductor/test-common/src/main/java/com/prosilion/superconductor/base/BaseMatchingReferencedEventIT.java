@@ -14,6 +14,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -24,11 +25,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingReferencedEventIT {
+  private final String relayUrl = "wss://nostr.example.com";
   private final NostrRelayService nostrRelayService;
   private final String eventId = Factory.generateRandomHex64String();
 
-  public BaseMatchingReferencedEventIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseMatchingReferencedEventIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
@@ -40,7 +42,7 @@ public abstract class BaseMatchingReferencedEventIT {
     String subscriberId = Factory.generateRandomHex64String();
     String referencedEventId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
 
-    EventTag eventTag = new EventTag(referencedEventId);
+    EventTag eventTag = new EventTag(referencedEventId, relayUrl);
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
             new ReferencedEventFilter(eventTag)));
@@ -101,7 +103,8 @@ public abstract class BaseMatchingReferencedEventIT {
         "      ],\n" +
         "      [\n" +
         "        \"e\",\n" +
-        "        \"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\"\n" +
+        "        \"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\",\n" +
+        "        \"wss://nostr.example.com\"\n" +        
         "      ],\n" +
         "      [\n" +
         "        \"g\",\n" +

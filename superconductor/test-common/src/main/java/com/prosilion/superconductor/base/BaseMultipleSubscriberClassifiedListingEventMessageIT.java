@@ -2,6 +2,7 @@ package com.prosilion.superconductor.base;
 
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +25,9 @@ public abstract class BaseMultipleSubscriberClassifiedListingEventMessageIT exte
       @NonNull String relayUrl,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.hexNumberOfBytes}") Integer hexNumberOfBytes,
-      @Value("${superconductor.test.req.instances}") Integer reqInstances) {
-    super(new NostrRelayService(relayUrl), hexCounterSeed, hexNumberOfBytes, reqInstances);
+      @Value("${superconductor.test.req.instances}") Integer reqInstances,
+      Duration requestTimeoutDuration) {
+    super(new NostrRelayService(relayUrl, requestTimeoutDuration), hexCounterSeed, hexNumberOfBytes, reqInstances);
 
     this.eventTagId = Factory.generateRandomHex64String();
     this.authorPubKey = Factory.generateRandomHex64String();
@@ -54,7 +56,12 @@ public abstract class BaseMultipleSubscriberClassifiedListingEventMessageIT exte
   }
 
   public String getGlobalEventJson(String startEventId) {
-    return "[\"EVENT\", {\"id\":\"" + startEventId + "\", \"kind\": 30402, \"content\": \"" + content + "\", \"tags\": [[\"subject\", \"" + subject + "\"], [\"title\", \"" + title + "\"], [\"published_at\", \"1718843251760\"], [\"summary\", \"" + summary + "\"], [\"location\", \"classified peroulades\"], [\"price\", \"271.00\", \"BTC\", \"1\"], [\"e\", \"" + eventTagId + "\"], [\"p\", \"" + pubKeyTagPubKey + "\"], [\"t\", \"classified hash-tag-1111\"], [\"g\", \"" + geoTagText + "\" ]], \"pubkey\": \"" + authorPubKey + "\", \"created_at\": 1718843251760, \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
+    return "[\"EVENT\", {\"id\":\"" + startEventId + "\", \"kind\": 30402, \"content\": \"" + content + "\", \"tags\": [[\"subject\", \"" + subject + "\"], [\"title\", \"" + title + "\"], [\"published_at\", \"1718843251760\"], [\"summary\", \"" + summary + "\"], [\"location\", \"classified peroulades\"], [\"price\", \"271.00\", \"BTC\", \"1\"], " +
+        "[\"e\", \"" + 
+        eventTagId + "\",\n" +
+        "\"wss://nostr.example.com\"\n" +
+        "]," +
+        " [\"p\", \"" + pubKeyTagPubKey + "\"], [\"t\", \"classified hash-tag-1111\"], [\"g\", \"" + geoTagText + "\" ]], \"pubkey\": \"" + authorPubKey + "\", \"created_at\": 1718843251760, \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
   }
 
   public String getExpectedJsonInAnyOrder(String startEventId) {

@@ -26,7 +26,6 @@ import com.prosilion.superconductor.base.service.request.subscriber.NotifierServ
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -105,7 +104,6 @@ public class EventKindPluginConfig {
     return new DeleteEventKindPlugin(eventPlugin, cacheService);
   }
 
-  @SneakyThrows
   @Bean("eventKindMaterializers")
   @ConditionalOnMissingBean(name = "eventKindMaterializers")
   Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers(

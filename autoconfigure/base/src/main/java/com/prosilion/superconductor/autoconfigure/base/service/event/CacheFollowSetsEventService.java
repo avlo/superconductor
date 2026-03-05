@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
@@ -14,11 +13,9 @@ import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -36,7 +33,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
-  public Optional<FollowSetsEvent> getEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException {
+  public Optional<FollowSetsEvent> getEvent(@NonNull String eventId, @NonNull String url) {
     Optional<GenericEventRecord> unpopulatedFollowSetsEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedFollowSetsEvent.isEmpty())
       return Optional.empty();
@@ -45,28 +42,27 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     return Optional.of(materialize);
   }
 
-  @SneakyThrows
   @Override
   public FollowSetsEvent materialize(@NonNull EventIF incomingFollowSetsEvent) {
+    log.debug("materialize(EventIF incomingFollowSetsEvent):\n  {}", incomingFollowSetsEvent.createPrettyPrintJson());
+
     List<EventTag> voteEventsAsEventTags = Filterable.getTypeSpecificTags(EventTag.class, incomingFollowSetsEvent).stream().toList();
 
     if (voteEventsAsEventTags.isEmpty())
       throw new NostrException(
           String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
 
-    List<GenericEventRecord> voteEventGenericEventRecords = new ArrayList<>();
-    for (EventTag voteEventsAsEventTag : voteEventsAsEventTags) {
-      GenericEventRecord eventRecord = cacheDereferenceEventTagServiceIF.getEvent(voteEventsAsEventTag).orElseThrow(() ->
-          new NostrException(
-              String.format(NON_EXISTENT_EVENT_ID_S, incomingFollowSetsEvent, voteEventsAsEventTag)));
-      voteEventGenericEventRecords.add(eventRecord);
-    }
+    List<GenericEventRecord> voteEventGenericEventRecords =
+        cacheDereferenceEventTagServiceIF.getEvents(
+            voteEventsAsEventTags).stream().toList();
 
     Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> eventTagToVoteEventFxn = eventTag ->
         voteEventGenericEventRecords.stream()
             .filter(badgeAwardGenericEvent ->
                 badgeAwardGenericEvent.getId().equals(eventTag.getIdEvent()))
-            .map(this::apply)
+            .map(genericEventRecord -> getEventTagEvent(
+                genericEventRecord.getId(),
+                Filterable.getTypeSpecificTagsStream(RelayTag.class, genericEventRecord).findFirst().orElseThrow().getRelay().getUrl()))
             .flatMap(Optional::stream)
             .findFirst().orElseThrow();
 
@@ -77,16 +73,18 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
-  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEventTagEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException {
+  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEventTagEvent(@NonNull String eventId, @NonNull String url) {
 //  TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up    
 //    if (eventTagsOfFollowSetsEvent.size() != 1)
 //      throw new NostrException(
 //          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedFollowSetsEvent, eventTagsOfFollowSetsEvent.size()));    
-    Optional<GenericEventRecord> unpopulatedFollowSetsEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
+    Optional<GenericEventRecord> unpopulatedFollowSetsEvent =
+        cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedFollowSetsEvent.isEmpty())
       return Optional.empty();
 
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeGenericAwardEvent = getCacheBadgeGenericAwardEvent(unpopulatedFollowSetsEvent.get(), url);
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEvent.get().getId(), url);
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeGenericAwardEvent = event;
 
     return cacheBadgeGenericAwardEvent;
   }
@@ -107,17 +105,5 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   @Override
   public Kind getKind() {
     return Kind.FOLLOW_SETS;
-  }
-
-  private Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getCacheBadgeGenericAwardEvent(GenericEventRecord genericEventRecord, String url) throws JsonProcessingException {
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(genericEventRecord.getId(), url);
-    return event;
-  }
-
-  @SneakyThrows
-  private Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> apply(GenericEventRecord genericEventRecord) {
-    return getEventTagEvent(
-        genericEventRecord.getId(),
-        Filterable.getTypeSpecificTagsStream(RelayTag.class, genericEventRecord).findFirst().orElseThrow().getRelay().getUrl());
   }
 }

@@ -12,6 +12,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -25,8 +26,8 @@ public abstract class BaseMatchingIdentityTagIT {
   private static final String eventId = Factory.generateRandomHex64String();
   private static final String uuid = Factory.generateRandomHex64String();
 
-  public BaseMatchingIdentityTagIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseMatchingIdentityTagIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(
         nostrRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))

@@ -2,6 +2,7 @@ package com.prosilion.superconductor.h2db;
 
 import com.prosilion.superconductor.base.BaseMatchingHashtagTagQueryIT;
 import java.io.IOException;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class MatchingHashtagTagQueryIT extends BaseMatchingHashtagTagQueryIT {
   @Autowired
-  MatchingHashtagTagQueryIT(@NonNull @Value("${superconductor.relay.url}") String relayUrl) throws IOException {
-    super(relayUrl);
+  MatchingHashtagTagQueryIT(@NonNull @Value("${superconductor.relay.url}") String relayUrl, Duration requestTimeoutDuration) throws IOException {
+    super(relayUrl, requestTimeoutDuration);
   }
 }

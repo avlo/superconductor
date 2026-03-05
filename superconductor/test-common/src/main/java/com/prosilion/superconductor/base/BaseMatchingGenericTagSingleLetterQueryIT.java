@@ -15,6 +15,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,8 @@ public abstract class BaseMatchingGenericTagSingleLetterQueryIT {
   Identity identity = Factory.createNewIdentity();
   String content = Factory.lorumIpsum(getClass());
 
-  public BaseMatchingGenericTagSingleLetterQueryIT(@NonNull String relayUrl) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl);
+  public BaseMatchingGenericTagSingleLetterQueryIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
+    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(
         nostrRelayService
             .send(

@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -69,7 +68,7 @@ public class CacheFormulaEventServiceIT {
   }
 
   @Test
-  public void testSaveFormulae() throws ParseException, JsonProcessingException {
+  public void testSaveFormulae() throws ParseException {
     eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
     eventServiceIF.processIncomingEvent(new EventMessage(awardDownvoteDefinitionEvent));
 

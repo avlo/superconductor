@@ -12,9 +12,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.core.DurationFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,7 +61,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent));
     BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getAddressTagEvent(
-        badgeAwardUpvoteEvent.getAddressTag(), DurationFactory.of(10, TimeUnit.SECONDS)).orElseThrow();
+        badgeAwardUpvoteEvent.getAddressTag()).orElseThrow();
 
     assertEquals(badgeAwardUpvoteEvent.getBadgeDefinitionGenericEvent(), dbDefinitionGenericEvent);
     assertEquals(upvoteIdentifierTag, dbDefinitionGenericEvent.getIdentifierTag());

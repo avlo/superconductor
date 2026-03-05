@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.definition;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
@@ -22,10 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.core.DurationFactory;
 import org.springframework.lang.NonNull;
 
 import static com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService.NON_EXISTENT_ADDRESS_TAG;
@@ -51,9 +47,9 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException {
+  public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull String url) {
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionReputationEvent =
-        cacheDereferenceEventTagServiceIF.getEvent(eventId, url, DurationFactory.of(10, TimeUnit.SECONDS));
+        cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedBadgeDefinitionReputationEvent.isEmpty())
       return Optional.empty();
 
@@ -71,7 +67,6 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
                 String.format(NON_EXISTENT_ADDRESS_TAG, incomingBadgeDefinitionReputationEvent))));
   }
 
-  @SneakyThrows
   private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord genericEventRecord) {
     List<AddressTag> addressTagsOfFormulaEvents = Filterable.getTypeSpecificTagsStream(AddressTag.class, genericEventRecord).toList();
 
@@ -82,7 +77,7 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
     Map<GenericEventRecord, String> formulaEventsAsGenericEventRecords =
         new HashMap<>();
     for (AddressTag addressTag : addressTagsOfFormulaEvents) {
-      if (formulaEventsAsGenericEventRecords.put(cacheDereferenceAddressTagServiceIF.getEvent(addressTag, DurationFactory.of(10, TimeUnit.SECONDS)).orElseThrow(() ->
+      if (formulaEventsAsGenericEventRecords.put(cacheDereferenceAddressTagServiceIF.getEvent(addressTag).orElseThrow(() ->
           new NostrException(
               String.format(NON_EXISTENT_ADDRESS_TAG_EVENT, getClass().getSimpleName(), addressTag))), addressTag.getRelay().getUrl()) != null) {
         throw new IllegalStateException("Duplicate key");
@@ -96,7 +91,10 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
     List<FormulaEvent> formulaEvents;
     formulaEvents = formulaEventsAsGenericEventRecords
         .entrySet().stream()
-        .map(this::apply)
+        .map(genericEventRecordStringEntry ->
+            cacheFormulaEventService.getEvent(
+                genericEventRecordStringEntry.getKey().getId(),
+                genericEventRecordStringEntry.getValue()))
         .flatMap(Optional::stream).toList();
 
     return formulaEvents;
@@ -108,26 +106,16 @@ public class CacheBadgeDefinitionReputationEventService implements CacheBadgeDef
             Kind.BADGE_DEFINITION_EVENT).stream()
         .filter(ger ->
             !Filterable.getTypeSpecificTags(ExternalIdentityTag.class, ger).isEmpty())
-        .map(this::apply)
+        .map(genericEventRecord -> getEvent(genericEventRecord.getId(),
+            Filterable.getTypeSpecificTagsStream(RelayTag.class, genericEventRecord)
+                .findFirst()
+                .map(RelayTag::getRelay)
+                .map(Relay::getUrl).orElseThrow()))
         .flatMap(Optional::stream).toList();
   }
 
   @Override
   public Kind getKind() {
     return Kind.BADGE_DEFINITION_EVENT;
-  }
-
-  @SneakyThrows
-  private Optional<FormulaEvent> apply(Map.Entry<GenericEventRecord, String> genericEventRecordStringEntry) {
-    return cacheFormulaEventService.getEvent(genericEventRecordStringEntry.getKey().getId(), genericEventRecordStringEntry.getValue());
-  }
-
-  @SneakyThrows
-  private Optional<BadgeDefinitionReputationEvent> apply(GenericEventRecord genericEventRecord) {
-    return getEvent(genericEventRecord.getId(),
-        Filterable.getTypeSpecificTagsStream(RelayTag.class, genericEventRecord)
-            .findFirst()
-            .map(RelayTag::getRelay)
-            .map(Relay::getUrl).orElseThrow());
   }
 }

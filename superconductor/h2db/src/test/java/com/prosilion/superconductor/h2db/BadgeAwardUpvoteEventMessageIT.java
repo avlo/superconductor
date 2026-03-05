@@ -4,6 +4,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.BaseBadgeAwardUpvoteEventMessageIT;
 import java.io.IOException;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,8 @@ public class BadgeAwardUpvoteEventMessageIT extends BaseBadgeAwardUpvoteEventMes
   @Autowired
   BadgeAwardUpvoteEventMessageIT(
       @NonNull @Value("${superconductor.relay.url}") String relayUrl,
-      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
-    super(relayUrl, superconductorInstanceIdentity);
+      @NonNull Identity superconductorInstanceIdentity,
+      Duration requestTimeoutDuration) throws IOException, NostrException {
+    super(relayUrl, superconductorInstanceIdentity, requestTimeoutDuration);
   }
 }

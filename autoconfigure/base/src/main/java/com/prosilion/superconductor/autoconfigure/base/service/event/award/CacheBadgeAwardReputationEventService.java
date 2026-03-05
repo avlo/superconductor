@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
@@ -17,11 +16,8 @@ import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagSer
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.core.DurationFactory;
 import org.springframework.lang.NonNull;
 
 // TODO: likely replaceable by CacheBadgeAwardGenericEventService
@@ -43,7 +39,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
   }
 
   @Override
-  public Optional<BadgeAwardReputationEvent> getEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException {
+  public Optional<BadgeAwardReputationEvent> getEvent(@NonNull String eventId, @NonNull String url) {
     Optional<GenericEventRecord> unpopulatedBadgeAwardReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedBadgeAwardReputationEvent.isEmpty())
       return Optional.empty();
@@ -63,8 +59,11 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
               incomingBadgeAwardReputationEventAddressTags.size()));
 
     List<BadgeDefinitionReputationEvent> badgeDefinitionReputationEvents = incomingBadgeAwardReputationEventAddressTags.stream()
-        .map(this::apply)
-        .map(this::apply)
+        .map(addressTag1 -> cacheDereferenceAddressTagServiceIF.getEvent(addressTag1)
+            .orElseThrow(() ->
+                new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG_S, addressTag1))))
+        .map(genericEventRecord -> getBadgeDefinitionReputationEvent(genericEventRecord,
+            getRelayTagUrl(genericEventRecord)))
         .flatMap(Optional::stream)
         .toList();
 
@@ -88,7 +87,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getEventTagEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException {
+  public Optional<BadgeDefinitionReputationEvent> getEventTagEvent(@NonNull String eventId, @NonNull String url) {
     Optional<GenericEventRecord> unpopulatedBadgeAwardReputationEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedBadgeAwardReputationEvent.isEmpty())
       throw new NostrException(String.format(NON_EXISTENT_EVENT_TAG, eventId, url));
@@ -107,25 +106,12 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
             new NostrException(""));
   }
 
-  private Optional<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvent(@NonNull GenericEventRecord genericEventRecord, @NonNull String url) throws JsonProcessingException {
+  private Optional<BadgeDefinitionReputationEvent> getBadgeDefinitionReputationEvent(@NonNull GenericEventRecord genericEventRecord, @NonNull String url) {
     return cacheBadgeDefinitionReputationEventService.getEvent(genericEventRecord.getId(), url);
   }
 
   @Override
   public Kind getKind() {
     return Kind.BADGE_AWARD_EVENT;
-  }
-
-  @SneakyThrows
-  private GenericEventRecord apply(AddressTag addressTag) {
-    return cacheDereferenceAddressTagServiceIF.getEvent(addressTag, DurationFactory.of(10, TimeUnit.SECONDS))
-        .orElseThrow(() ->
-            new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG_S, addressTag)));
-  }
-
-  @SneakyThrows
-  private Optional<BadgeDefinitionReputationEvent> apply(GenericEventRecord genericEventRecord) {
-    return getBadgeDefinitionReputationEvent(genericEventRecord,
-        getRelayTagUrl(genericEventRecord));
   }
 }

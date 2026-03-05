@@ -11,6 +11,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
@@ -28,9 +29,10 @@ public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
 
   public BaseBadgeAwardUpvoteEventMessageAuthIT(
       @NonNull Identity superconductorInstanceIdentity,
-      @NonNull String relayUri) throws NostrException {
+      @NonNull String relayUri,
+      Duration requestTimeoutDuration) throws NostrException {
 
-    this.nostrRelayService = new NostrRelayService(relayUri);
+    this.nostrRelayService = new NostrRelayService(relayUri, requestTimeoutDuration);
     Identity authorIdentity = Identity.generateRandomIdentity();
     this.event = new BadgeAwardGenericEvent<>(
         authorIdentity,

@@ -22,18 +22,18 @@ import org.springframework.lang.NonNull;
 @Table(name = "event_tag")
 public class EventTagJpaEntity extends AbstractTagJpaEntity {
   private String eventIdString;
-  private Marker marker;
   private String recommendedRelayUrl;
+  private Marker marker;
 
   public EventTagJpaEntity(@NonNull EventTag eventTag) {
-    this(eventTag.getIdEvent(), eventTag.getMarker(), eventTag.recommendedRelayUrl());
+    this(eventTag.getIdEvent(), eventTag.recommendedRelayUrl(), eventTag.getMarker());
   }
 
-  public EventTagJpaEntity(@NonNull String eventIdString, Marker marker, String recommendedRelayUrl) {
+  public EventTagJpaEntity(@NonNull String eventIdString, String recommendedRelayUrl, Marker marker) {
     super("e");
     this.eventIdString = eventIdString;
-    this.marker = marker;
     this.recommendedRelayUrl = recommendedRelayUrl;
+    this.marker = marker;
   }
 
   @Override
@@ -47,8 +47,8 @@ public class EventTagJpaEntity extends AbstractTagJpaEntity {
   public List<String> get() {
     return Stream.of(
             eventIdString,
-            Optional.ofNullable(marker).map(Marker::getValue).toString(),
-            Optional.ofNullable(recommendedRelayUrl).toString())
+            Optional.ofNullable(recommendedRelayUrl).orElseThrow(),
+            Optional.ofNullable(marker).map(Marker::getValue).toString())
         .toList();
   }
 }

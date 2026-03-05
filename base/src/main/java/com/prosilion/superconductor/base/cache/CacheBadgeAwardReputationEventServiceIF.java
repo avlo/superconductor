@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base.cache;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -11,5 +10,5 @@ public interface CacheBadgeAwardReputationEventServiceIF extends CacheBadgeAward
   @Override
   BadgeAwardReputationEvent materialize(@NonNull EventIF eventIF);
   @Override
-  Optional<BadgeDefinitionReputationEvent> getEventTagEvent(@NonNull String eventId, @NonNull String url) throws JsonProcessingException;
+  Optional<BadgeDefinitionReputationEvent> getEventTagEvent(@NonNull String eventId, @NonNull String url);
 }

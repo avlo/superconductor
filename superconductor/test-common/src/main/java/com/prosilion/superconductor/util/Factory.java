@@ -50,7 +50,7 @@ public class Factory {
   }
 
   public static <T> EventTag createEventTag(Class<T> clazz) {
-    return new EventTag(createGenericEventId().getId());
+    return new EventTag(createGenericEventId().getId(), "ws://localhost:5555");
   }
 
   public static PriceTag createPriceTag() {

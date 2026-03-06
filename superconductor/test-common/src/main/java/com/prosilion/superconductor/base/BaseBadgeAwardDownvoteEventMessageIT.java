@@ -18,6 +18,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
@@ -46,6 +47,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
 
   protected BaseBadgeAwardDownvoteEventMessageIT(
       @NonNull String relayUrl,
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull Identity superconductorInstanceIdentity,
       Duration requestTimeoutDuration) throws IOException, NostrException {
     this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
@@ -56,13 +58,8 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
         superconductorInstanceIdentity,
         IDENTIFIER_TAG, relay);
 
-    EventMessage eventMessageBadgeDefinitionDownvoteEvent = new EventMessage(badgeDefinitionDownvoteEvent);
-    assertTrue(
-        this.nostrRelayService
-            .send(
-                eventMessageBadgeDefinitionDownvoteEvent)
-            .getFlag());
-    
+    cacheServiceIF.save(badgeDefinitionDownvoteEvent);
+
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = new BadgeAwardGenericEvent<>(
         authorIdentity,
         downvotedUserPubKey,

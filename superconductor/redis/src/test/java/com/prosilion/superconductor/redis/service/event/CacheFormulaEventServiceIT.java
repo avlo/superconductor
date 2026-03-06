@@ -10,10 +10,12 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,8 +54,10 @@ public class CacheFormulaEventServiceIT {
   private final Relay relay;
   private final EventServiceIF eventServiceIF;
 
+  @Autowired
   public CacheFormulaEventServiceIT(
       @Value("${superconductor.relay.url}") String relayUri,
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheFormulaEventService") CacheFormulaEventService cacheFormulaEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
@@ -65,13 +69,13 @@ public class CacheFormulaEventServiceIT {
 
     this.awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, downvoteIdentifierTag, relay, MINUS_ONE_FORMULA);
     this.formulaEventDownvote = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
+
+    cacheServiceIF.save(awardUpvoteDefinitionEvent);
+    cacheServiceIF.save(awardDownvoteDefinitionEvent);
   }
 
   @Test
   public void testSaveFormulae() throws ParseException {
-    eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
-    eventServiceIF.processIncomingEvent(new EventMessage(awardDownvoteDefinitionEvent));
-
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote));
     FormulaEvent dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(formulaEventUpvote, dbPlusOneFormulaEvent);

@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.util.Factory;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +29,14 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("UNIT_UPVOTE");
   public final String PLUS_ONE_FORMULA = "+1";
 
-  public BaseCacheServiceGenericEventRecordUsingFormulaEventIT(EventPluginIF eventPluginIF, @NonNull Identity superconductorInstanceIdentity) throws ParseException {
+  public BaseCacheServiceGenericEventRecordUsingFormulaEventIT(
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull EventPluginIF eventPluginIF,
+      @NonNull Identity superconductorInstanceIdentity) throws ParseException {
     this.eventPluginIF = eventPluginIF;
     BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, IDENTIFIER_TAG, relay);
 
-    eventPluginIF.processIncomingEvent(badgeDefinitionUpvoteEvent);
+    cacheServiceIF.save(badgeDefinitionUpvoteEvent);
 //    BadgeAwardGenericEvent badgeAwardUpvoteEvent = new BadgeAwardGenericEvent(
 //        authorIdentity,
 //        upvotedUserPubKey,

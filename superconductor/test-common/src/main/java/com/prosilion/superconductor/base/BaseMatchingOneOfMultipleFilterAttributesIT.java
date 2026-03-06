@@ -53,7 +53,7 @@ public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
             new ReferencedEventFilter(
                 new EventTag(referenceEventId, relayUrl)),
             new ReferencedEventFilter(
-                new EventTag(referencedEventIdNoMatch))));
+                new EventTag(referencedEventIdNoMatch, relayUrl))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);

@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -10,10 +9,12 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,8 +40,10 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
   private final Relay relay;
   private final EventServiceIF eventServiceIF;
 
+  @Autowired
   public CacheBadgeDefinitionGenericEventServiceIT(
       @Value("${superconductor.relay.url}") String relayUri,
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
@@ -48,11 +51,11 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
     this.relay = new Relay(relayUri);
 
     awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(authorIdentity, upvoteIdentifierTag, relay);
-    eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
+    cacheServiceIF.save(awardUpvoteDefinitionEvent);
   }
 
   @Test
-  public void testSaveBadgeDefinitionGenericEvent() throws JsonProcessingException {
+  public void testSaveBadgeDefinitionGenericEvent() {
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
         authorIdentity,
         reputationRecipientPublicKey,

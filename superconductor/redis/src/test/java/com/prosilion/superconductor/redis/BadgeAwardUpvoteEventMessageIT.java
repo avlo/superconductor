@@ -3,6 +3,7 @@ package com.prosilion.superconductor.redis;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.BaseBadgeAwardUpvoteEventMessageIT;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
 import java.time.Duration;
@@ -22,8 +23,9 @@ public class BadgeAwardUpvoteEventMessageIT extends BaseBadgeAwardUpvoteEventMes
   @Autowired
   BadgeAwardUpvoteEventMessageIT(
       @NonNull @Value("${superconductor.relay.url}") String relayUrl,
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull Identity superconductorInstanceIdentity,
       Duration requestTimeoutDuration) throws IOException, NostrException {
-    super(relayUrl, superconductorInstanceIdentity, requestTimeoutDuration);
+    super(relayUrl, cacheServiceIF, superconductorInstanceIdentity, requestTimeoutDuration);
   }
 }

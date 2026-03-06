@@ -69,7 +69,7 @@ public abstract class BaseMatchingReferencedEventIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedEventFilter(new EventTag(nonMatchingReferencedEventId))));
+            new ReferencedEventFilter(new EventTag(nonMatchingReferencedEventId, relayUrl))));
 
     List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);

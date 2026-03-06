@@ -2,6 +2,7 @@ package com.prosilion.superconductor.redis.service;
 
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.service.BaseCacheServiceGenericEventRecordUsingFormulaEventIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -19,8 +20,9 @@ import org.springframework.test.context.ActiveProfiles;
 public class RedisCacheServiceGenericEventRecordUsingFormulaEventIT extends BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
   @Autowired
   public RedisCacheServiceGenericEventRecordUsingFormulaEventIT(
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull EventPlugin eventPlugin,
       @NonNull Identity superconductorInstanceIdentity) throws ParseException {
-    super(eventPlugin, superconductorInstanceIdentity);
+    super(cacheServiceIF, eventPlugin, superconductorInstanceIdentity);
   }
 }

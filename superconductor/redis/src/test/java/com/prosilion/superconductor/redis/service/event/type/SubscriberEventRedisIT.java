@@ -51,7 +51,7 @@ class SubscriberEventRedisIT {
     IdentifierTag identifierTag = new IdentifierTag("ClassifiedListingUuid");
 
     List<BaseTag> tags = new ArrayList<>();
-    tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346"));
+    tags.add(new EventTag("494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346", relayUri));
     tags.add(new PubKeyTag(new PublicKey("2bed79f81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984")));
     tags.add(new SubjectTag("SUBJECT"));
 

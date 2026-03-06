@@ -161,7 +161,7 @@ public abstract class BaseCacheServiceIT {
 
     List<String> allDeletionJpaEventEntitiesBeforeDeletion = cacheServiceIF.getAllDeletionEventIds();
 
-    EventTag eventTag = new EventTag(eventToDelete.getId());
+    EventTag eventTag = new EventTag(eventToDelete.getId(), "ws://localhost:5555");
 
     DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(deletionEvent.getTags().contains(eventTag));
@@ -206,7 +206,7 @@ public abstract class BaseCacheServiceIT {
         .map(EventIF::getId)
         .anyMatch(secondEventToDelete.getId()::equals));
 
-    EventTag eventTag = new EventTag(secondEventToDelete.getId());
+    EventTag eventTag = new EventTag(secondEventToDelete.getId(), "ws://localhost:5555");
 
     DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
     assertTrue(secondDeletionEvent.getTags().contains(eventTag));

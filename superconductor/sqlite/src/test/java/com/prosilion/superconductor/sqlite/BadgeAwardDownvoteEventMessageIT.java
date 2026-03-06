@@ -3,6 +3,7 @@ package com.prosilion.superconductor.sqlite;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.BaseBadgeAwardDownvoteEventMessageIT;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.io.IOException;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +21,9 @@ public class BadgeAwardDownvoteEventMessageIT extends BaseBadgeAwardDownvoteEven
   @Autowired
   BadgeAwardDownvoteEventMessageIT(
       @NonNull @Value("${superconductor.relay.url}") String relayUrl,
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull Identity superconductorInstanceIdentity,
       Duration requestTimeoutDuration) throws IOException, NostrException {
-    super(relayUrl, superconductorInstanceIdentity, requestTimeoutDuration);
+    super(relayUrl, cacheServiceIF, superconductorInstanceIdentity, requestTimeoutDuration);
   }
 }

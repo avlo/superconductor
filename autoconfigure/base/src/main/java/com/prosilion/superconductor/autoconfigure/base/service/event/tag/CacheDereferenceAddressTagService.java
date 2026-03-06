@@ -6,9 +6,9 @@ import com.prosilion.nostr.filter.event.AuthorFilter;
 import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.filter.tag.IdentifierTagFilter;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.superconductor.autoconfigure.base.config.NostrRelayReqConsolidatorService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +21,12 @@ public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractT
   public CacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService) {
-    super(cacheServiceIF, superconductorRelayUrl, nostrRelayReqConsolidatorService);
+      @NonNull Duration requestTimeoutDuration) {
+    super(cacheServiceIF, superconductorRelayUrl, requestTimeoutDuration);
   }
 
   @Override
-  Optional<GenericEventRecord> getEventFxn(AddressTag addressTag) {
+  Optional<GenericEventRecord> getLocalEventFxn(AddressTag addressTag) {
     List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag = cacheServiceIF
         .getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
             addressTag.getKind(),

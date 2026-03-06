@@ -25,11 +25,12 @@ public class ReqServiceConfig {
     return DurationFactory.of(duration, TimeUnit.valueOf(units));
   }
 
-  @Bean
-  @ConditionalOnMissingBean
-  NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService(Duration requestTimeoutDuration) {
-    return new NostrRelayReqConsolidatorService(requestTimeoutDuration);
-  }
+//
+//  @Bean
+//  @ConditionalOnMissingBean
+//  NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService(Duration requestTimeoutDuration) {
+//    return new NostrRelayReqConsolidatorService(requestTimeoutDuration);
+//  }
 
   @Bean
   ReqServiceIF reqService(

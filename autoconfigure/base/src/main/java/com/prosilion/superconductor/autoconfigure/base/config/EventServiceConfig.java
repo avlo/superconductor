@@ -13,6 +13,7 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDe
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
+import java.time.Duration;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +41,11 @@ public class EventServiceConfig {
   CacheDereferenceAddressTagService cacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService) {
+      @NonNull Duration requestTimeoutDuration) {
     return new CacheDereferenceAddressTagService(
         cacheServiceIF,
         superconductorRelayUrl,
-        nostrRelayReqConsolidatorService);
+        requestTimeoutDuration);
   }
 
   @Bean
@@ -52,11 +53,11 @@ public class EventServiceConfig {
   CacheDereferenceEventTagService cacheDereferenceEventTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService) {
+      @NonNull Duration requestTimeoutDuration) {
     return new CacheDereferenceEventTagService(
         cacheServiceIF,
         superconductorRelayUrl,
-        nostrRelayReqConsolidatorService);
+        requestTimeoutDuration);
   }
 
   @Bean

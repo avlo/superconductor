@@ -20,6 +20,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.Factory;
@@ -56,6 +57,7 @@ public abstract class BaseFollowSetsEventServiceIT {
 
   public BaseFollowSetsEventServiceIT(
       @Value("${superconductor.relay.url}") String relayUrl,
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService,
       Duration requestTimeoutDuration) throws ParseException {
@@ -65,7 +67,7 @@ public abstract class BaseFollowSetsEventServiceIT {
     this.relay = new Relay(relayUrl);
 
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
-    eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
+    cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
     FormulaEvent plusOneFormulaEvent = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
     eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent));

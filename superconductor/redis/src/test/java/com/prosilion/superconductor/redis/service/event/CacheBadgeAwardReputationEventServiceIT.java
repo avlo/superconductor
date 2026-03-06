@@ -12,11 +12,13 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.math.BigDecimal;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,17 +50,18 @@ public class CacheBadgeAwardReputationEventServiceIT {
   private final EventServiceIF eventServiceIF;
   private final Relay relay;
 
+  @Autowired
   public CacheBadgeAwardReputationEventServiceIT(
       @Value("${superconductor.relay.url}") String relayUri,
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheBadgeAwardReputationEventService") CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeAwardReputationEventService = cacheBadgeAwardReputationEventService;
     this.relay = new Relay(relayUri);
 
-    eventServiceIF.processIncomingEvent(
-        new EventMessage(
-            new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay)));
+    cacheServiceIF.save(
+        new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay));
 
     eventServiceIF.processIncomingEvent(
         new EventMessage(

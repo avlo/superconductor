@@ -5,9 +5,9 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.EventFilter;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.superconductor.autoconfigure.base.config.NostrRelayReqConsolidatorService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -20,20 +20,20 @@ public class CacheDereferenceEventTagService extends CacheDereferenceAbstractTag
   public CacheDereferenceEventTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull NostrRelayReqConsolidatorService nostrRelayReqConsolidatorService) {
-    super(cacheServiceIF, superconductorRelayUrl, nostrRelayReqConsolidatorService);
+      @NonNull Duration requestTimeoutDuration) {
+    super(cacheServiceIF, superconductorRelayUrl, requestTimeoutDuration);
   }
 
   @Override
   public List<GenericEventRecord> getEvents(List<EventTag> eventTags) {
     return eventTags
-        .parallelStream()
+        .stream().parallel()
         .map(this::getEvent)
         .flatMap(Optional::stream).toList();
   }
 
   @Override
-  Optional<GenericEventRecord> getEventFxn(EventTag eventTag) {
+  Optional<GenericEventRecord> getLocalEventFxn(EventTag eventTag) {
     log.debug("getEvent(EventTag), id: [{}], eventTag URL: [{}]",
         eventTag.getIdEvent(),
         eventTag.getRecommendedRelayUrl());

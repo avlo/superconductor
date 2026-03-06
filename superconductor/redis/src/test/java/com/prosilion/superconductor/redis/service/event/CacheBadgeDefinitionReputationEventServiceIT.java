@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
@@ -11,11 +10,13 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,6 +40,9 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
   public final IdentifierTag reputationIdentifierTag = new IdentifierTag(TEST_UNIT_REPUTATION);
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
 
+  public final String BADGE_DEFINITION_VOTE = "BADGE_DEFINITION_VOTE";
+  public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(BADGE_DEFINITION_VOTE);
+
   public final Identity identity = Identity.generateRandomIdentity();
 
   private final FormulaEvent plusOneFormulaEvent;
@@ -47,8 +51,12 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
   private final Relay relay;
   private final EventServiceIF eventServiceIF;
 
+  BadgeDefinitionGenericEvent awardDownvoteDefinitionEvent;
+
+  @Autowired
   public CacheBadgeDefinitionReputationEventServiceIT(
       @Value("${superconductor.relay.url}") String relayUri,
+      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
       @NonNull @Qualifier("cacheBadgeDefinitionReputationEventService") CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
@@ -56,14 +64,17 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
     this.relay = new Relay(relayUri);
 
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
-    eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent));
+    cacheServiceIF.save(awardUpvoteDefinitionEvent);
+
+    this.awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, downvoteIdentifierTag, relay);
+    cacheServiceIF.save(this.awardDownvoteDefinitionEvent);
 
     plusOneFormulaEvent = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
     eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent));
   }
 
   @Test
-  public void testSaveBadgeDefinitionReputationEventUpvote() throws ParseException, JsonProcessingException {
+  public void testSaveBadgeDefinitionReputationEventUpvote() throws ParseException {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
         identity,
         reputationIdentifierTag,
@@ -87,11 +98,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         .map(BadgeDefinitionGenericEvent::getIdentifierTag)
         .map(IdentifierTag::getUuid).toList().contains(TEST_UNIT_UPVOTE));
 
-    String BADGE_DEFINITION_VOTE = "BADGE_DEFINITION_VOTE";
     String MINUS_ONE_FORMULA = "-1";
-    IdentifierTag downvoteIdentifierTag = new IdentifierTag(BADGE_DEFINITION_VOTE);
-
-    BadgeDefinitionGenericEvent awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, downvoteIdentifierTag, relay);
     FormulaEvent minusOneFormulaEvent = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneMinusOne = new BadgeDefinitionReputationEvent(
@@ -117,7 +124,6 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
 //                uniqueBadgeDefinitionReputationEventIdentifierTag.serialize(),
 //                uniqueBadgeDefinitionReputationEventIdentifierTag.getId())));
 
-    eventServiceIF.processIncomingEvent(new EventMessage(awardDownvoteDefinitionEvent));
     eventServiceIF.processIncomingEvent(new EventMessage(minusOneFormulaEvent));
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEvent));
 

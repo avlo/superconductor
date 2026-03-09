@@ -37,7 +37,7 @@ public class EventPlugin implements EventPluginIF {
     this.eventKindTypeMaterializers = eventKindTypeMaterializers;
     this.kindClassStringMap = kindClassStringMap;
     log.debug("loaded kindClassStringMap:");
-    this.kindClassStringMap.forEach((key, value) -> log.debug("  {} : {}\n", key.toUpperCase(), value));
+    this.kindClassStringMap.forEach((key, value) -> log.debug("  {} : {}", key.toUpperCase(), value));
   }
 
   @Override

@@ -41,7 +41,7 @@ public class CacheDereferenceEventTagService extends CacheDereferenceAbstractTag
 
     boolean present = cacheServiceIFEventByEventId.isPresent();
     if (present) {
-      log.debug("... returning local EventTag, id: [{}], eventTag URL: [{}]\n",
+      log.debug("... returning local EventTag, id: [{}], eventTag URL: [{}]",
           eventTag.getIdEvent(),
           eventTag.getRecommendedRelayUrl());
       return cacheServiceIFEventByEventId;

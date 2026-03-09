@@ -63,7 +63,7 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
     Optional<GenericEventRecord> localGenericEventRecordOptional = getLocalEventFxn(abstractTag);
 
     if (localGenericEventRecordOptional.isPresent()) {
-      log.debug("... returning local AbstractTag, id: [{}], URL: [{}]\n",
+      log.debug("... returning local AbstractTag, id: [{}], URL: [{}]",
           localGenericEventRecordOptional.get().getId(),
           abstractTag.getRelay().getUrl());
       return localGenericEventRecordOptional;

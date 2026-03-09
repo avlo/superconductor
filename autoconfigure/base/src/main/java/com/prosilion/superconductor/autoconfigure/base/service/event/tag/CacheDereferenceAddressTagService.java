@@ -35,7 +35,7 @@ public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractT
 
     boolean hasContents = !eventsByKindAndAuthorPublicKeyAndIdentifierTag.isEmpty();
     if (hasContents) {
-      log.debug("... returning local AddressTag: {}\n", pubKeySubstring(addressTag));
+      log.debug("... returning local AddressTag: {}", pubKeySubstring(addressTag));
       return eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().findFirst();
     }
 

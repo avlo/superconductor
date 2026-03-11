@@ -22,7 +22,7 @@ public class AutoConfigEventMessageServiceAuthDecorator<T, U extends AuthPersist
   }
 
   public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
-    log.debug("AUTHENTICATED EVENT message type: {}", eventMessage.getEvent());
+    log.debug("AUTHENTICATED EVENT message type:\n{}", eventMessage.getEvent().createPrettyPrintJson());
     try {
       authKindPersistantServiceIF.findAuthPersistantBySessionIdAndKind(sessionId, eventMessage.getEvent().getKind());
     } catch (NoSuchElementException e) {

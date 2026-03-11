@@ -138,18 +138,18 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     String sessionId = message.getSessionId();
     broadcast(sessionId, response);
     if (message.isValid()) {
-      log.debug("OK response to session:\n  [{}]\npayload:\n{}", sessionId, response.getPayload());
+      log.debug("OK response to session:\n  [{}]\npayload:\n  {}", sessionId, response.getPayload());
       return;
     }
     closeSession(sessionId);
-    log.debug("CLOSE response to session:\n  [{}]\npayload:\n{}", sessionId, response.getPayload());
+    log.debug("CLOSE response to session:\n  [{}]\npayload:\n  {}", sessionId, response.getPayload());
   }
 
   private void broadcast(String sessionId, TextMessage message) {
     try {
       mapSessions.get(Optional.ofNullable(sessionId).orElseThrow()).sendMessage(message);
     } catch (Exception e) {
-      log.debug("Orphaned client session:\n  [{}]\nmessage:\n{}\nnot sent", sessionId, message);
+      log.debug("Orphaned client session:\n  [{}]\nmessage:\n  {}\nnot sent", sessionId, message);
     }
   }
 

@@ -15,7 +15,7 @@ public class AutoConfigEventMessageServiceNoAuthDecorator implements AutoConfigE
   }
 
   public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
-    log.debug("EVENT message type: {}", eventMessage.getEvent());
+    log.debug("EVENT message type:\n{}", eventMessage.getEvent().createPrettyPrintJson());
     eventMessageServiceIF.processIncoming(eventMessage, sessionId);
   }
 

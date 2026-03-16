@@ -21,7 +21,7 @@ dependencies {
 
     def springBootEmbeddedRedis = '1.0.1'
     testImplementation('io.github.tobi-laa:spring-boot-embedded-redis:' + springBootEmbeddedRedis)
-    testImplementation('io.projectreactor:reactor-test')
+    testImplementation('io.projectreactor:reactor-test:3.8.4')
     
     testImplementation project(':test-common')
 }

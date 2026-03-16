@@ -25,7 +25,7 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
   public AuthMessageService(
       @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF,
       @NonNull ClientResponseService okResponseService,
-      @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl) {
+      @NonNull String superconductorRelayUrl) {
     this.authPersistantServiceIF = authPersistantServiceIF;
     this.okResponseService = okResponseService;
     this.superconductorRelayUrl = superconductorRelayUrl;

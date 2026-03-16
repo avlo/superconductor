@@ -29,7 +29,7 @@ public class ClientResponseService {
   }
 
   public void processOkClientResponse(@NonNull String sessionId, @NonNull EventMessage eventMessage, @NonNull String reason) {
-    log.debug("Processing Ok ClientResponse EventMessage:\n{}", eventMessage.getEvent().createPrettyPrintJson());
+    log.debug("Processing Ok ClientResponse to session ID: [{}]", sessionId);
     try {
       publisher.publishEvent(new ClientOkResponse(sessionId, eventMessage.getEvent(), true, reason));
     } catch (JsonProcessingException e) {

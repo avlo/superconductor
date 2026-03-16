@@ -79,7 +79,7 @@ public class EventKindPluginConfig {
   @Bean("badgeDefinitionReputationEventKindTypePlugin")
   @ConditionalOnMissingBean(name = "badgeDefinitionReputationEventKindTypePlugin")
   BadgeDefinitionReputationEventKindTypePlugin badgeDefinitionReputationEventKindTypePlugin(
-      @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
+      @NonNull String superconductorRelayUrl,
       @NonNull EventPlugin eventPlugin) {
     return new BadgeDefinitionReputationEventKindTypePlugin(
         superconductorRelayUrl,

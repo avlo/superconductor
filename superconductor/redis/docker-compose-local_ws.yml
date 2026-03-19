@@ -5,8 +5,8 @@ services:
     hostname: localhost
     ports:
       - "6379:6379"
-    environment:
-      - "REDIS_ARGS=--appendonly yes"
+#    environment:
+#      - "REDIS_ARGS=--appendonly yes"
 volumes:
   superconductor-db:
     driver: local

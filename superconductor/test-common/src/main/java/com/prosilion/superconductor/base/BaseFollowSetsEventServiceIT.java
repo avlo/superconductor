@@ -22,7 +22,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
-import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.time.Duration;
@@ -114,7 +114,7 @@ public abstract class BaseFollowSetsEventServiceIT {
     assertEquals(followSetsEvent.getContainedAddressableEvents(), dbFollowSetsEventByEventId.getContainedAddressableEvents());
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        new NostrRelayService(relay.getUrl(), requestTimeoutDuration)
+        new NostrComprehensiveRelayService(relay.getUrl(), requestTimeoutDuration)
             .send(
                 new ReqMessage(
                     Factory.generateRandomHex64String(),

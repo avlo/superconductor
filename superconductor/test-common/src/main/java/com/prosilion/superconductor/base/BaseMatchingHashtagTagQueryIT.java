@@ -13,7 +13,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.HashtagTag;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -28,11 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public abstract class BaseMatchingHashtagTagQueryIT {
   private final String eventId = Factory.generateRandomHex64String();
-  private final NostrRelayService nostrRelayService;
+  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
 
   public BaseMatchingHashtagTagQueryIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
-    assertTrue(nostrRelayService.send(
+    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    assertTrue(nostrComprehensiveRelayService.send(
             (EventMessage) BaseMessageDecoder.decode(getEvent()))
         .getFlag());
   }
@@ -46,7 +46,7 @@ public abstract class BaseMatchingHashtagTagQueryIT {
         new Filters(new HashtagTagFilter(
             new HashtagTag(hashtagTagString))));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
 
@@ -67,7 +67,7 @@ public abstract class BaseMatchingHashtagTagQueryIT {
         new Filters(new GenericTagQueryFilter(
             new GenericTagQuery("#t", genericTagString))));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
@@ -91,7 +91,7 @@ public abstract class BaseMatchingHashtagTagQueryIT {
         new Filters(new HashtagTagFilter(
             new HashtagTag(hashtagTagString))));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");

@@ -18,7 +18,6 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
@@ -34,53 +33,63 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseBadgeAwardDownvoteEventMessageIT {
+public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
   public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
-  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
   private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
   private final Identity superconductorInstanceIdentity;
 
+  private final NostrComprehensiveRelayService awardEventNostrComprehensiveRelayService;
   private final String eventId;
 
-  protected BaseBadgeAwardDownvoteEventMessageIT(
-      @NonNull String relayUrl,
-      @NonNull CacheServiceIF cacheServiceIF,
+  protected BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT(
+      @NonNull String superconductorRelayUrl,
+      @NonNull String definitionEventRelayUrl,
+      @NonNull String awardEventRelayUrl,
       @NonNull Identity superconductorInstanceIdentity,
       Duration requestTimeoutDuration) throws IOException, NostrException {
-    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
-    Relay relay = new Relay(relayUrl);
+
+    Relay definitionEventRelay = new Relay("ws://superconductor-app-two:5555");
+    Relay awardEventRelay = new Relay("ws://superconductor-app-three:5555");
 
     BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent = new BadgeDefinitionGenericEvent(
         superconductorInstanceIdentity,
-        IDENTIFIER_TAG, relay);
+        IDENTIFIER_TAG,
+        definitionEventRelay);
 
-    cacheServiceIF.save(badgeDefinitionDownvoteEvent);
+    NostrComprehensiveRelayService definitionEventNostrComprehensiveRelayService = new NostrComprehensiveRelayService(definitionEventRelayUrl, requestTimeoutDuration);
+    EventMessage eventMessageBadgeDefinitionDownvoteEvent = new EventMessage(badgeDefinitionDownvoteEvent);
+    assertTrue(
+        definitionEventNostrComprehensiveRelayService
+            .send(
+                eventMessageBadgeDefinitionDownvoteEvent)
+            .getFlag());
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = new BadgeAwardGenericEvent<>(
         authorIdentity,
         downvotedUserPubKey,
-        relay,
+        awardEventRelay,
         badgeDefinitionDownvoteEvent);
     eventId = badgeAwardDownvoteEvent.getId();
 
+    this.awardEventNostrComprehensiveRelayService = new NostrComprehensiveRelayService(awardEventRelayUrl, requestTimeoutDuration);
     EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
     assertTrue(
-        this.nostrComprehensiveRelayService
+        awardEventNostrComprehensiveRelayService
             .send(
                 eventMessageBadgeAwardDownvoteEvent)
             .getFlag());
   }
 
   @Test
-  void testValidExistingEventThenAfterImageReputationRequestGenral() throws IOException, NostrException {
+  void testValidExistingEventThenAfterImageReputationRequestGeneral() throws IOException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        nostrComprehensiveRelayService.send(
+        awardEventNostrComprehensiveRelayService.send(
             new ReqMessage(
                 subscriberId,
                 new Filters(
@@ -108,7 +117,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        nostrComprehensiveRelayService.send(
+        awardEventNostrComprehensiveRelayService.send(
             new ReqMessage(
                 subscriberId,
                 new Filters(

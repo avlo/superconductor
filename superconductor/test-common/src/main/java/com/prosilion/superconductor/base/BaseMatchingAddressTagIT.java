@@ -15,7 +15,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
 import java.time.Duration;
@@ -29,16 +29,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingAddressTagIT {
-  private final NostrRelayService nostrRelayService;
+  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
   private final String eventId = Factory.generateRandomHex64String();
   private final PublicKey publicKey = Identity.generateRandomIdentity().getPublicKey();
   private final PublicKey aTagPubkey = Identity.generateRandomIdentity().getPublicKey();
   private final String uuid = Factory.generateRandomHex64String();
 
   public BaseMatchingAddressTagIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
     assertTrue(
-        nostrRelayService.send(
+        nostrComprehensiveRelayService.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -53,7 +53,7 @@ public abstract class BaseMatchingAddressTagIT {
     );
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new AddressTagFilter(addressTag)));
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEvents = Utils.getEventIFs(returnedBaseMessages);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);

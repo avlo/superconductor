@@ -5,9 +5,7 @@ import com.prosilion.superconductor.base.service.request.ReqServiceIF;
 import com.prosilion.superconductor.base.service.request.subscriber.AbstractSubscriberService;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.core.DurationFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -20,9 +18,8 @@ public class ReqServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   Duration requestTimeoutDuration(
-      @NonNull @Value("${superconductor.timeout.duration}") Long duration,
-      @NonNull @Value("${superconductor.timeout.units}") String units) {
-    return DurationFactory.of(duration, TimeUnit.valueOf(units));
+      @NonNull @Value("${superconductor.timeout.duration.millis}") Long durationMillis) {
+    return Duration.ofMillis(durationMillis);
   }
 
 //

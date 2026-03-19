@@ -10,16 +10,18 @@ import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrRelayService;
 import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -48,7 +49,7 @@ abstract class AbstractMultipleSubscriber {
   @Getter
   private final Integer targetCount;
   @Getter
-  private final NostrRelayService nostrRelayService;
+  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
   @Getter
   private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -57,11 +58,11 @@ abstract class AbstractMultipleSubscriber {
   private final List<String> targetEventIds = new ArrayList<>();
 
   AbstractMultipleSubscriber(
-      @NonNull NostrRelayService nostrRelayService,
+      @NonNull NostrComprehensiveRelayService nostrComprehensiveRelayService,
       @NonNull String hexCounterSeed,
       @NonNull Integer hexNumberOfBytes,
       @NonNull Integer reqInstances) {
-    this.nostrRelayService = nostrRelayService;
+    this.nostrComprehensiveRelayService = nostrComprehensiveRelayService;
     this.hexStartNumber = Integer.parseInt(hexCounterSeed.repeat(2 * hexNumberOfBytes), 16);
     this.targetCount = reqInstances;
   }
@@ -73,9 +74,9 @@ abstract class AbstractMultipleSubscriber {
                 assertAll(() -> createEvent(value)))
         , executorService);
 
-    await()
-        .timeout(1, TimeUnit.MINUTES)
-        .until(voidCompletableFuture::isDone);
+    await(
+        Duration.of(3000, ChronoUnit.MILLIS),
+        voidCompletableFuture::isDone);
 
     assertFalse(voidCompletableFuture.isCompletedExceptionally());
   }
@@ -86,7 +87,7 @@ abstract class AbstractMultipleSubscriber {
     String globalEventJson = getGlobalEventJson(nextHex);
     log.debug("setup() send event:\n{}", globalEventJson);
 //    TODO: update cast
-    nostrRelayService.send((EventMessage) BaseMessageDecoder.decode(globalEventJson));
+    nostrComprehensiveRelayService.send((EventMessage) BaseMessageDecoder.decode(globalEventJson));
     targetEventIds.add(nextHex); // targetEventId String values utilized by inherited classes
   }
 
@@ -106,9 +107,9 @@ abstract class AbstractMultipleSubscriber {
                 assertAll(() -> sendRequest(value)))
         , executorService);
 
-    await()
-        .timeout(1, TimeUnit.MINUTES)
-        .until(voidCompletableFuture::isDone);
+    await(
+        Duration.of(3000, ChronoUnit.MILLIS),
+        voidCompletableFuture::isDone);
 
     assertFalse(voidCompletableFuture.isCompletedExceptionally());
 
@@ -116,7 +117,7 @@ abstract class AbstractMultipleSubscriber {
   }
 
   private void sendRequest(String uuidKey) throws JsonProcessingException, NostrException {
-    List<BaseMessage> send = nostrRelayService.send(
+    List<BaseMessage> send = nostrComprehensiveRelayService.send(
         (ReqMessage) BaseMessageDecoder.decode(createReqJson(uuidKey)));
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(uuidKey);
     log.debug("expectedJson:\n{}", expectedJsonInAnyOrder);
@@ -133,5 +134,23 @@ abstract class AbstractMultipleSubscriber {
   protected static boolean compareWithoutOrder(String payloadString, String expectedJson) throws JsonProcessingException {
     JsonNode jsonNode = MAPPER_AFTERBURNER.readTree(payloadString);
     return OrderAgnosticJsonComparator.equalsJson(MAPPER_AFTERBURNER.readTree(expectedJson), jsonNode);
+  }
+
+  private static void await(Duration timeout, BooleanSupplier conditionSupplier) {
+    long timeoutNs = timeout.toNanos();
+    long startTime = System.nanoTime();
+    do {
+      if (conditionSupplier.getAsBoolean()) {
+        return;
+      }
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new RuntimeException(e);
+      }
+    }
+    while (System.nanoTime() - startTime < timeoutNs);
+    throw new NostrException("TestSubscriber timed out");
   }
 }

@@ -13,7 +13,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.GeohashTag;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -30,11 +30,11 @@ public abstract class BaseMatchingGeohashTagQueryIT {
   private final String subscriberId = Factory.generateRandomHex64String();
   private final String eventId = Factory.generateRandomHex64String();
   private final String geohashTagString = Factory.generateRandomHex64String();
-  private final NostrRelayService nostrRelayService;
+  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
 
   public BaseMatchingGeohashTagQueryIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
-    assertTrue(nostrRelayService.send(
+    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    assertTrue(nostrComprehensiveRelayService.send(
             (EventMessage) BaseMessageDecoder.decode(getEvent()))
         .getFlag());
   }
@@ -46,7 +46,7 @@ public abstract class BaseMatchingGeohashTagQueryIT {
         new Filters(new GenericTagQueryFilter(
             new GenericTagQuery("#g", "textnote-geo-tag-non-existent"))));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
 
@@ -66,7 +66,7 @@ public abstract class BaseMatchingGeohashTagQueryIT {
         new Filters(new GenericTagQueryFilter(
             new GenericTagQuery("#g", geohashTagString))));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
@@ -88,7 +88,7 @@ public abstract class BaseMatchingGeohashTagQueryIT {
         new Filters(new GeohashTagFilter(
             new GeohashTag(geohashTagString))));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");

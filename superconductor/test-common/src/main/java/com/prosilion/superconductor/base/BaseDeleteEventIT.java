@@ -15,8 +15,8 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.util.SingleReqSubscriptionManager;
-import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.subdivisions.client.reactive.NostrRequestService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.time.Duration;
@@ -40,14 +40,14 @@ public abstract class BaseDeleteEventIT {
   public BaseDeleteEventIT(@NonNull String relayUrl, @NonNull Duration requestTimeoutDuration) throws IOException, NostrException {
     this.relayUrl = relayUrl;
     this.requestTimeoutDuration = requestTimeoutDuration;
-    NostrRelayService nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
+    NostrComprehensiveRelayService nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
 
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     this.eventIdToDeleteId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        nostrRelayService
+        nostrComprehensiveRelayService
             .send(
                 eventMessage)
             .getFlag());
@@ -60,7 +60,7 @@ public abstract class BaseDeleteEventIT {
 
     EventMessage deletionEventMessage = new EventMessage(deletionEvent);
     assertTrue(
-        nostrRelayService
+        nostrComprehensiveRelayService
             .send(
                 deletionEventMessage)
             .getFlag());
@@ -74,9 +74,9 @@ public abstract class BaseDeleteEventIT {
 
     EventFilter deletionEventFilter = new EventFilter(new GenericEventId(eventIdToDeleteId));
 
-    SingleReqSubscriptionManager nostrRelayReqConsolidatorService = new SingleReqSubscriptionManager(this.relayUrl, requestTimeoutDuration);
     ReqMessage deletionReqMessage = new ReqMessage(deletionSubmitterSubscriberId, new Filters(deletionEventFilter));
-    List<BaseMessage> returnedDeletionMessagesShouldContainEose = nostrRelayReqConsolidatorService.send(deletionReqMessage);
+    NostrRequestService nostrRelayService = new NostrRequestService();
+    List<BaseMessage> returnedDeletionMessagesShouldContainEose = nostrRelayService.send(deletionReqMessage, relayUrl);
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedDeletionMessagesShouldContainEose);
@@ -90,7 +90,7 @@ public abstract class BaseDeleteEventIT {
     final String subscriberId = Factory.generateRandomHex64String();
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayReqConsolidatorService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(deletionReqMessage, relayUrl);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -105,11 +105,11 @@ public abstract class BaseDeleteEventIT {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     String secondEventShouldNotGetDeleted = event.getId();
 
-    NostrRelayService nostrRelayService = new NostrRelayService(this.relayUrl, requestTimeoutDuration);
+    NostrComprehensiveRelayService nostrComprehensiveRelayService = new NostrComprehensiveRelayService(this.relayUrl, requestTimeoutDuration);
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        nostrRelayService
+        nostrComprehensiveRelayService
             .send(
                 eventMessage)
             .getFlag());
@@ -118,9 +118,9 @@ public abstract class BaseDeleteEventIT {
 
     final String subscriberId = Factory.generateRandomHex64String();
 
-    SingleReqSubscriptionManager nostrRelayReqConsolidatorService = new SingleReqSubscriptionManager(this.relayUrl, requestTimeoutDuration);
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages = nostrRelayReqConsolidatorService.send(reqMessage);
+    NostrRequestService nostrRelayReqConsolidatorService = new NostrRequestService();
+    List<BaseMessage> returnedBaseMessages = nostrRelayReqConsolidatorService.send(reqMessage, relayUrl);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");

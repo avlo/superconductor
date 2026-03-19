@@ -42,7 +42,6 @@
     <spring-boot.version>3.5.6</spring-boot.version>
     <nostr-java-core.version>1.1.0</nostr-java-core.version>
 
-    <awaitility.version>4.2.0</awaitility.version>
     <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
     <commons-collections4.version>4.5.0</commons-collections4.version>
     <commons-lang3.version>3.17.0</commons-lang3.version>

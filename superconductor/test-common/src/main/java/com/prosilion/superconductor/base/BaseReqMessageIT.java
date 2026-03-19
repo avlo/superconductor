@@ -14,7 +14,7 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -26,14 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseReqMessageIT {
-  private final NostrRelayService nostrRelayService;
+  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
   private final String eventId;
   private final PublicKey authorPubkey;
 
   public BaseReqMessageIT(
       @NonNull String relayUrl,
       Duration requestTimeoutDuration) throws IOException {
-    this.nostrRelayService = new NostrRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
     Identity author = Identity.generateRandomIdentity();
     this.authorPubkey = author.getPublicKey();
 
@@ -42,7 +42,7 @@ public abstract class BaseReqMessageIT {
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        this.nostrRelayService
+        this.nostrComprehensiveRelayService
             .send(
                 eventMessage)
             .getFlag());
@@ -57,7 +57,7 @@ public abstract class BaseReqMessageIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEventIFs = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
@@ -70,7 +70,7 @@ public abstract class BaseReqMessageIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEventIFs = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
@@ -84,7 +84,7 @@ public abstract class BaseReqMessageIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEventIFs = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorPubkey)));

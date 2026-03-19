@@ -22,6 +22,13 @@ dependencies {
     def springBootEmbeddedRedis = '1.0.1'
     testImplementation('io.github.tobi-laa:spring-boot-embedded-redis:' + springBootEmbeddedRedis)
     testImplementation('io.projectreactor:reactor-test:3.8.4')
+
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+    
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    def testcontainers = '1.21.3'
+    testImplementation "org.testcontainers:testcontainers:" + testcontainers
+    testImplementation 'org.testcontainers:junit-jupiter:' + testcontainers
     
     testImplementation project(':test-common')
 }

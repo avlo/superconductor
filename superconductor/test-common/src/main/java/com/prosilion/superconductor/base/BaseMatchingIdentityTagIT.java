@@ -9,10 +9,9 @@ import com.prosilion.nostr.filter.tag.IdentifierTagFilter;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -26,8 +25,8 @@ public abstract class BaseMatchingIdentityTagIT {
   private static final String eventId = Factory.generateRandomHex64String();
   private static final String uuid = Factory.generateRandomHex64String();
 
-  public BaseMatchingIdentityTagIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
+  public BaseMatchingIdentityTagIT(@NonNull String relayUrl) throws IOException {
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
     assertTrue(
         nostrComprehensiveClient.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))

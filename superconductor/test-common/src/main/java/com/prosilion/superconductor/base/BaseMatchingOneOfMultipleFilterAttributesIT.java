@@ -11,10 +11,9 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -32,9 +31,8 @@ public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
   private final String referencePubKey = Factory.generateRandomHex64String();
 
   public BaseMatchingOneOfMultipleFilterAttributesIT(
-      @NonNull String relayUrl,
-      Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
+      @NonNull String relayUrl) throws IOException {
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
 
     assertTrue(
         nostrComprehensiveClient.send(

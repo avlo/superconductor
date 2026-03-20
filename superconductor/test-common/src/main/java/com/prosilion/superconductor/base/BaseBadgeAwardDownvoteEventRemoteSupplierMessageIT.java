@@ -18,11 +18,10 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +47,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
       @NonNull String superconductorRelayUrl,
       @NonNull String definitionEventRelayUrl,
       @NonNull String awardEventRelayUrl,
-      @NonNull Identity superconductorInstanceIdentity,
-      Duration requestTimeoutDuration) throws IOException, NostrException {
+      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
 
     Relay definitionEventRelay = new Relay("ws://superconductor-app-two:5555");
@@ -60,7 +58,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
         IDENTIFIER_TAG,
         definitionEventRelay);
 
-    NostrComprehensiveClient definitionEventNostrComprehensiveClient = new NostrComprehensiveClient(definitionEventRelayUrl, requestTimeoutDuration);
+    NostrComprehensiveClient definitionEventNostrComprehensiveClient = new NostrComprehensiveClient(definitionEventRelayUrl);
     EventMessage eventMessageBadgeDefinitionDownvoteEvent = new EventMessage(badgeDefinitionDownvoteEvent);
     assertTrue(
         definitionEventNostrComprehensiveClient
@@ -75,7 +73,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
         badgeDefinitionDownvoteEvent);
     eventId = badgeAwardDownvoteEvent.getId();
 
-    this.awardEventNostrComprehensiveClient = new NostrComprehensiveClient(awardEventRelayUrl, requestTimeoutDuration);
+    this.awardEventNostrComprehensiveClient = new NostrComprehensiveClient(awardEventRelayUrl);
     EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
     assertTrue(
         awardEventNostrComprehensiveClient

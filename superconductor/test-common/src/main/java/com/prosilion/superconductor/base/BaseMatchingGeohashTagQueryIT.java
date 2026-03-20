@@ -12,10 +12,9 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.GeohashTag;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -32,8 +31,8 @@ public abstract class BaseMatchingGeohashTagQueryIT {
   private final String geohashTagString = Factory.generateRandomHex64String();
   private final NostrComprehensiveClient nostrComprehensiveClient;
 
-  public BaseMatchingGeohashTagQueryIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
+  public BaseMatchingGeohashTagQueryIT(@NonNull String relayUrl) throws IOException {
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
     assertTrue(nostrComprehensiveClient.send(
             (EventMessage) BaseMessageDecoder.decode(getEvent()))
         .getFlag());

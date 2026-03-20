@@ -19,10 +19,10 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.time.Duration;
@@ -114,7 +114,7 @@ public abstract class BaseFollowSetsEventServiceIT {
     assertEquals(followSetsEvent.getContainedAddressableEvents(), dbFollowSetsEventByEventId.getContainedAddressableEvents());
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        new NostrComprehensiveClient(relay.getUrl(), requestTimeoutDuration)
+        new NostrComprehensiveClient(relay.getUrl())
             .send(
                 new ReqMessage(
                     Factory.generateRandomHex64String(),

@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class MatchingIdentityTagIT extends BaseMatchingIdentityTagIT {
   @Autowired
-  MatchingIdentityTagIT(@NonNull @Value("${superconductor.relay.url}") String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    super(relayUrl, requestTimeoutDuration);
+  MatchingIdentityTagIT(@NonNull @Value("${superconductor.relay.url}") String relayUrl) throws IOException {
+    super(relayUrl);
   }
 }

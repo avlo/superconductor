@@ -8,10 +8,9 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -27,9 +26,8 @@ public abstract class BaseSinceUntilIT {
   private final String publicKey = Factory.generateRandomHex64String();
 
   public BaseSinceUntilIT(
-      @NonNull String relayUrl,
-      Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
+      @NonNull String relayUrl) throws IOException {
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
     assertTrue(
         nostrComprehensiveClient.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))

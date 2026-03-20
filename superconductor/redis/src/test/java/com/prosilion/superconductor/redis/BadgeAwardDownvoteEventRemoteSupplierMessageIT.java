@@ -6,7 +6,6 @@ import com.prosilion.superconductor.base.BaseBadgeAwardDownvoteEventRemoteSuppli
 import com.prosilion.superconductor.redis.config.SingleContainerTestConfig;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
-import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,8 +26,7 @@ public class BadgeAwardDownvoteEventRemoteSupplierMessageIT extends BaseBadgeAwa
       @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
       @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo,
       @NonNull @Value("${superconductor.relay.url.three}") String superconductorRelayUrlThree,
-      @NonNull Identity superconductorInstanceIdentity,
-      Duration requestTimeoutDuration) throws IOException, NostrException {
-    super(superconductorRelayUrl, superconductorRelayUrlTwo, superconductorRelayUrlThree, superconductorInstanceIdentity, requestTimeoutDuration);
+      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
+    super(superconductorRelayUrl, superconductorRelayUrlTwo, superconductorRelayUrlThree, superconductorInstanceIdentity);
   }
 }

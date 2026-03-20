@@ -11,10 +11,9 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -29,8 +28,8 @@ public abstract class BaseMatchingReferencedEventIT {
   private final NostrComprehensiveClient nostrComprehensiveClient;
   private final String eventId = Factory.generateRandomHex64String();
 
-  public BaseMatchingReferencedEventIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
+  public BaseMatchingReferencedEventIT(@NonNull String relayUrl) throws IOException {
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
     assertTrue(
         nostrComprehensiveClient.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
@@ -104,7 +103,7 @@ public abstract class BaseMatchingReferencedEventIT {
         "      [\n" +
         "        \"e\",\n" +
         "        \"494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\",\n" +
-        "        \"wss://nostr.example.com\"\n" +        
+        "        \"wss://nostr.example.com\"\n" +
         "      ],\n" +
         "      [\n" +
         "        \"g\",\n" +

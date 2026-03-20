@@ -2,7 +2,6 @@ package com.prosilion.superconductor.sqlite;
 
 import com.prosilion.superconductor.base.BaseReqMessageIT;
 import java.io.IOException;
-import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class ReqMessageIT extends BaseReqMessageIT {
   @Autowired
-  ReqMessageIT(@NonNull @Value("${superconductor.relay.url}") String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    super(relayUrl, requestTimeoutDuration);
+  ReqMessageIT(@NonNull @Value("${superconductor.relay.url}") String relayUrl) throws IOException {
+    super(relayUrl);
   }
 }

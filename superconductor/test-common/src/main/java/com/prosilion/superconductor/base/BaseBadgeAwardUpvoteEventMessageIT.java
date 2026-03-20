@@ -18,12 +18,11 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +47,8 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
   protected BaseBadgeAwardUpvoteEventMessageIT(
       @NonNull String relayUrl,
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull Identity superconductorInstanceIdentity,
-      Duration requestTimeoutDuration) throws IOException, NostrException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
+      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     Relay relay = new Relay(relayUrl);
 

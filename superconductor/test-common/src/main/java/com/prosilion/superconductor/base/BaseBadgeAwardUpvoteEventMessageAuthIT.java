@@ -8,10 +8,9 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
-import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
@@ -29,10 +28,9 @@ public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
 
   public BaseBadgeAwardUpvoteEventMessageAuthIT(
       @NonNull Identity superconductorInstanceIdentity,
-      @NonNull String relayUri,
-      Duration requestTimeoutDuration) throws NostrException {
+      @NonNull String relayUri) throws NostrException {
 
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUri, requestTimeoutDuration);
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUri);
     Identity authorIdentity = Identity.generateRandomIdentity();
     this.event = new BadgeAwardGenericEvent<>(
         authorIdentity,

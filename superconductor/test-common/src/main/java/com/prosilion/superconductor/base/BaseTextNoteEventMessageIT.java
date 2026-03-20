@@ -14,10 +14,9 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -35,10 +34,8 @@ public abstract class BaseTextNoteEventMessageIT {
   private static final String globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
   private final String content;
 
-  public BaseTextNoteEventMessageIT(
-      @NonNull String relayUrl,
-      Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
+  public BaseTextNoteEventMessageIT(@NonNull String relayUrl) throws IOException {
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
     this.content = Factory.lorumIpsum(getClass());
 
     BaseEvent event = new TextNoteEvent(identity, content);

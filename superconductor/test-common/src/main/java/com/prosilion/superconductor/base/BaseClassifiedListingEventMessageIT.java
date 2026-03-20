@@ -28,8 +28,7 @@ import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.tag.SubjectTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.subdivisions.client.reactive.NostrRequestService;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -73,12 +72,15 @@ public abstract class BaseClassifiedListingEventMessageIT {
   private static final String globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
   private final String content;
   Duration requestTimeoutDuration;
+  NostrComprehensiveClient nostrComprehensiveRelayService;
 
-  public BaseClassifiedListingEventMessageIT(@NonNull String relayUrl, @NonNull Duration requestTimeoutDuration) throws IOException, NostrException {
+  public BaseClassifiedListingEventMessageIT(
+      @NonNull String relayUrl,
+      @NonNull Duration requestTimeoutDuration) throws IOException, NostrException {
     this.relayUrl = relayUrl;
     this.requestTimeoutDuration = requestTimeoutDuration;
     Relay relay = new Relay(relayUrl);
-    NostrComprehensiveRelayService nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveRelayService = new NostrComprehensiveClient(relayUrl);
     this.content = Factory.lorumIpsum(getClass());
 
     senderPubkey = new PublicKey(identity.getPublicKey().toString());
@@ -124,8 +126,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
-    NostrRequestService nostrRelayService = new NostrRequestService();
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, relayUrl);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -143,8 +144,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
-    NostrRequestService nostrRelayService = new NostrRequestService();
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, relayUrl);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -154,7 +154,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2, relayUrl);
+    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveRelayService.send(reqMessage2);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -171,8 +171,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
 
-    NostrRequestService nostrRelayService = new NostrRequestService();
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, relayUrl);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
 
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
@@ -182,7 +181,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2, relayUrl);
+    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveRelayService.send(reqMessage2);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -198,8 +197,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
-    NostrRequestService nostrRelayService = new NostrRequestService();
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, relayUrl);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
 
     log.debug("okMessage to testReqFilteredByAuthor:");
     log.debug("  " + returnedBaseMessages);
@@ -208,7 +206,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(authorFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrRelayService.send(reqMessage2, relayUrl);
+    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveRelayService.send(reqMessage2);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -224,8 +222,7 @@ public abstract class BaseClassifiedListingEventMessageIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(nonMatchingEventId));
 
     ReqMessage reqMessage = new ReqMessage(nonMatchingSubscriberId, new Filters(eventFilter));
-    NostrRequestService nostrRelayService = new NostrRequestService();
-    List<BaseMessage> returnedBaseMessages = nostrRelayService.send(reqMessage, relayUrl);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
 
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
     log.debug("okMessage:");

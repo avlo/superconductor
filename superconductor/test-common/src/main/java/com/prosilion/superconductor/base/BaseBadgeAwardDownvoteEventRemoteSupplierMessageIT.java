@@ -18,7 +18,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
@@ -41,7 +41,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
   private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
   private final Identity superconductorInstanceIdentity;
 
-  private final NostrComprehensiveRelayService awardEventNostrComprehensiveRelayService;
+  private final NostrComprehensiveClient awardEventNostrComprehensiveClient;
   private final String eventId;
 
   protected BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT(
@@ -60,10 +60,10 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
         IDENTIFIER_TAG,
         definitionEventRelay);
 
-    NostrComprehensiveRelayService definitionEventNostrComprehensiveRelayService = new NostrComprehensiveRelayService(definitionEventRelayUrl, requestTimeoutDuration);
+    NostrComprehensiveClient definitionEventNostrComprehensiveClient = new NostrComprehensiveClient(definitionEventRelayUrl, requestTimeoutDuration);
     EventMessage eventMessageBadgeDefinitionDownvoteEvent = new EventMessage(badgeDefinitionDownvoteEvent);
     assertTrue(
-        definitionEventNostrComprehensiveRelayService
+        definitionEventNostrComprehensiveClient
             .send(
                 eventMessageBadgeDefinitionDownvoteEvent)
             .getFlag());
@@ -75,10 +75,10 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
         badgeDefinitionDownvoteEvent);
     eventId = badgeAwardDownvoteEvent.getId();
 
-    this.awardEventNostrComprehensiveRelayService = new NostrComprehensiveRelayService(awardEventRelayUrl, requestTimeoutDuration);
+    this.awardEventNostrComprehensiveClient = new NostrComprehensiveClient(awardEventRelayUrl, requestTimeoutDuration);
     EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
     assertTrue(
-        awardEventNostrComprehensiveRelayService
+        awardEventNostrComprehensiveClient
             .send(
                 eventMessageBadgeAwardDownvoteEvent)
             .getFlag());
@@ -89,7 +89,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        awardEventNostrComprehensiveRelayService.send(
+        awardEventNostrComprehensiveClient.send(
             new ReqMessage(
                 subscriberId,
                 new Filters(
@@ -117,7 +117,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        awardEventNostrComprehensiveRelayService.send(
+        awardEventNostrComprehensiveClient.send(
             new ReqMessage(
                 subscriberId,
                 new Filters(

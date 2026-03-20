@@ -18,8 +18,8 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class BaseBadgeAwardDownvoteEventMessageIT {
   public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
-  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
+  private final NostrComprehensiveClient nostrComprehensiveRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
   private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
@@ -50,7 +50,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull Identity superconductorInstanceIdentity,
       Duration requestTimeoutDuration) throws IOException, NostrException {
-    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveRelayService = new NostrComprehensiveClient(relayUrl);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     Relay relay = new Relay(relayUrl);
 

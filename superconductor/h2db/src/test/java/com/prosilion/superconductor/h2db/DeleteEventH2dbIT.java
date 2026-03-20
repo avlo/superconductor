@@ -3,6 +3,7 @@ package com.prosilion.superconductor.h2db;
 import com.prosilion.superconductor.base.BaseDeleteEventIT;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,7 @@ public class DeleteEventH2dbIT extends BaseDeleteEventIT {
   @Autowired
   DeleteEventH2dbIT(
       @NonNull @Value("${superconductor.relay.url}") String relayUrl,
-      Duration requestTimeoutDuration) throws IOException {
+      Duration requestTimeoutDuration) throws IOException, ExecutionException, InterruptedException {
     super(relayUrl, requestTimeoutDuration);
   }
 }

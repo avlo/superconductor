@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.config;
 
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,9 +20,9 @@ public class NostrWsConfig {
 
   @Bean
   @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-  public NostrComprehensiveRelayService nostrRelayService(
+  public NostrComprehensiveClient nostrRelayService(
       @Value("${superconductor.relay.url}") String relayUri,
       Duration requestTimeoutDuration) throws ExecutionException, InterruptedException {
-    return new NostrComprehensiveRelayService(relayUri, requestTimeoutDuration);
+    return new NostrComprehensiveClient(relayUri, requestTimeoutDuration);
   }
 }

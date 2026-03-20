@@ -14,7 +14,7 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.time.Duration;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseTextNoteEventMessageIT {
-  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
+  private final NostrComprehensiveClient nostrComprehensiveClient;
 
   private static final Identity identity = Identity.generateRandomIdentity();
   private final String eventId;
@@ -38,7 +38,7 @@ public abstract class BaseTextNoteEventMessageIT {
   public BaseTextNoteEventMessageIT(
       @NonNull String relayUrl,
       Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
     this.content = Factory.lorumIpsum(getClass());
 
     BaseEvent event = new TextNoteEvent(identity, content);
@@ -46,7 +46,7 @@ public abstract class BaseTextNoteEventMessageIT {
 
     EventMessage eventMessageFromTextNoteGenericEventRecord = new EventMessage(event.getGenericEventRecord());
     assertTrue(
-        this.nostrComprehensiveRelayService
+        this.nostrComprehensiveClient
             .send(
                 eventMessageFromTextNoteGenericEventRecord)
             .getFlag());
@@ -59,7 +59,7 @@ public abstract class BaseTextNoteEventMessageIT {
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to testReqFilteredByEventId:");
@@ -68,7 +68,7 @@ public abstract class BaseTextNoteEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveRelayService.send(reqMessage2);
+    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveClient.send(reqMessage2);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -85,7 +85,7 @@ public abstract class BaseTextNoteEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -103,7 +103,7 @@ public abstract class BaseTextNoteEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -113,7 +113,7 @@ public abstract class BaseTextNoteEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveRelayService.send(reqMessage2);
+    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveClient.send(reqMessage2);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -130,7 +130,7 @@ public abstract class BaseTextNoteEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
 
     log.debug("okMessage to testReqFilteredByAuthor:");
     log.debug("  " + returnedBaseMessages);
@@ -139,7 +139,7 @@ public abstract class BaseTextNoteEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(authorFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveRelayService.send(reqMessage2);
+    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveClient.send(reqMessage2);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -156,7 +156,7 @@ public abstract class BaseTextNoteEventMessageIT {
 
     ReqMessage reqMessage = new ReqMessage(nonMatchingSubscriberId, new Filters(eventFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);

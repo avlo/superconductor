@@ -13,7 +13,7 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.HashtagTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -27,14 +27,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingGenericTagSingleLetterQueryIT {
-  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
+  private final NostrComprehensiveClient nostrComprehensiveClient;
   Identity identity = Factory.createNewIdentity();
   String content = Factory.lorumIpsum(getClass());
 
   public BaseMatchingGenericTagSingleLetterQueryIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
     assertTrue(
-        nostrComprehensiveRelayService
+        nostrComprehensiveClient
             .send(
                 new EventMessage(
                     new TextNoteEvent(
@@ -50,7 +50,7 @@ public abstract class BaseMatchingGenericTagSingleLetterQueryIT {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String hashTagString = "textnote-geo-tag-2";
 
-    List<BaseMessage> baseMessages = nostrComprehensiveRelayService.send(
+    List<BaseMessage> baseMessages = nostrComprehensiveClient.send(
         new ReqMessage(subscriberId, new Filters(
             new HashtagTagFilter(new HashtagTag(hashTagString)))));
     assertEquals(1, baseMessages.size());
@@ -67,7 +67,7 @@ public abstract class BaseMatchingGenericTagSingleLetterQueryIT {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String hashTagString = "h-tag-1";
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient
         .send(
             new ReqMessage(subscriberId, new Filters(
                 new HashtagTagFilter(new HashtagTag(hashTagString)))));

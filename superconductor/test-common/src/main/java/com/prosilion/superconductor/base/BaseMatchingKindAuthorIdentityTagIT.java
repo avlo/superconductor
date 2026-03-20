@@ -15,7 +15,7 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingKindAuthorIdentityTagIT {
-  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
+  private final NostrComprehensiveClient nostrComprehensiveClient;
   private static final String uuid = Factory.generateRandomHex64String();
   private static final String eventId = Factory.generateRandomHex64String();
   private static final String authorPubKey = Factory.generateRandomHex64String();
@@ -36,9 +36,9 @@ public abstract class BaseMatchingKindAuthorIdentityTagIT {
   public BaseMatchingKindAuthorIdentityTagIT(
       @NonNull String relayUrl,
       Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
     assertTrue(
-        nostrComprehensiveRelayService.send(
+        nostrComprehensiveClient.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -56,7 +56,7 @@ public abstract class BaseMatchingKindAuthorIdentityTagIT {
         new Filters(
             kindFilter, authorFilter, identifierTagFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
     log.debug("  " + returnedEvents);
 

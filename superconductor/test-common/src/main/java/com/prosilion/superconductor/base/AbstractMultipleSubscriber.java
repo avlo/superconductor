@@ -10,7 +10,7 @@ import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import java.io.IOException;
@@ -49,7 +49,7 @@ abstract class AbstractMultipleSubscriber {
   @Getter
   private final Integer targetCount;
   @Getter
-  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
+  private final NostrComprehensiveClient nostrComprehensiveRelayService;
   @Getter
   private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -58,7 +58,7 @@ abstract class AbstractMultipleSubscriber {
   private final List<String> targetEventIds = new ArrayList<>();
 
   AbstractMultipleSubscriber(
-      @NonNull NostrComprehensiveRelayService nostrComprehensiveRelayService,
+      @NonNull NostrComprehensiveClient nostrComprehensiveRelayService,
       @NonNull String hexCounterSeed,
       @NonNull Integer hexNumberOfBytes,
       @NonNull Integer reqInstances) {

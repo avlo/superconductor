@@ -6,6 +6,7 @@ import com.prosilion.nostr.filter.event.AuthorFilter;
 import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.filter.tag.IdentifierTagFilter;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.subdivisions.client.reactive.NostrRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
 import java.time.Duration;
@@ -21,8 +22,9 @@ public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractT
   public CacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull Duration requestTimeoutDuration) {
-    super(cacheServiceIF, superconductorRelayUrl, requestTimeoutDuration);
+      @NonNull Duration requestTimeoutDuration,
+      @NonNull NostrRequestService nostrRequestService) {
+    super(cacheServiceIF, superconductorRelayUrl, requestTimeoutDuration, nostrRequestService);
   }
 
   @Override

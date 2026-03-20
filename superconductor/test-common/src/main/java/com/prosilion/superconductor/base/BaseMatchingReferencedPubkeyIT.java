@@ -14,7 +14,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -31,14 +31,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 public abstract class BaseMatchingReferencedPubkeyIT {
-  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
+  private final NostrComprehensiveClient nostrComprehensiveClient;
   private final String eventId = Factory.generateRandomHex64String();
   private final PublicKey referencedPubkey = Identity.generateRandomIdentity().getPublicKey();
 
   public BaseMatchingReferencedPubkeyIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
     assertTrue(
-        nostrComprehensiveRelayService.send(
+        nostrComprehensiveClient.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -52,7 +52,7 @@ public abstract class BaseMatchingReferencedPubkeyIT {
         new Filters(
             new ReferencedPublicKeyFilter(pubKeyTag)));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
@@ -78,7 +78,7 @@ public abstract class BaseMatchingReferencedPubkeyIT {
         new Filters(
             new ReferencedPublicKeyFilter(pubKeyTag)));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertTrue(returnedEvents.isEmpty());

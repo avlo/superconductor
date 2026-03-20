@@ -9,9 +9,9 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.nostr.util.Util;
+import com.prosilion.subdivisions.client.reactive.NostrRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAbstractTagServiceIF;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -27,14 +27,17 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
   protected final CacheServiceIF cacheServiceIF;
   private final String superconductorRelayUrl;
   private final Duration requestTimeoutDuration;
+  private final NostrRequestService nostrRequestService;
 
   public CacheDereferenceAbstractTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull Duration requestTimeoutDuration) {
+      @NonNull Duration requestTimeoutDuration,
+      @NonNull NostrRequestService nostrRequestService) {
     this.cacheServiceIF = cacheServiceIF;
     this.superconductorRelayUrl = superconductorRelayUrl;
     this.requestTimeoutDuration = requestTimeoutDuration;
+    this.nostrRequestService = nostrRequestService;
     log.debug("Ctor() loaded CacheDereferenceAbstractTagService relay URL: {}", superconductorRelayUrl);
   }
 
@@ -51,6 +54,9 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
           localGenericEventRecordOptional.get().getId(),
           abstractTag.getRelay().getUrl());
       return localGenericEventRecordOptional;
+//      log.debug("... found BUT TEMP NOT RETURNING, TESTING MULTI-HOP REQUEST, local AbstractTag, id: [{}], URL: [{}]",
+//          localGenericEventRecordOptional.get().getId(),
+//          abstractTag.getRelay().getUrl());
     }
 
     String recommendedRelayUrl = Optional.ofNullable(abstractTag.getRelay().getUrl()).orElseThrow(() ->
@@ -86,9 +92,8 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
         generateRandomHex64String(),
         apply);
     log.debug("reactiveRequestConsolidator request to URL:\n  [{}]\nwith ReqMessage:\n  {}", relayUrl, Util.prettyFormatJson(reqMessage.encode()));
-    NostrComprehensiveRelayService nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
-    List<BaseMessage> eventList = nostrComprehensiveRelayService.send(reqMessage);
-    nostrComprehensiveRelayService.disconnect();
+    List<BaseMessage> eventList = nostrRequestService.send(reqMessage, relayUrl, requestTimeoutDuration);
+//    nostrRequestService.disconnect();
 
     log.debug("... getReqConsolidatorResult() (2 of 3) retrieved results...");
     Optional<GenericEventRecord> first = getGenericEvents(eventList).findFirst();

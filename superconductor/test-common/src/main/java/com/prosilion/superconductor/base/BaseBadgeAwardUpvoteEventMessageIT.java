@@ -19,7 +19,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class BaseBadgeAwardUpvoteEventMessageIT {
   public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
-  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
+  private final NostrComprehensiveClient nostrComprehensiveClient;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
   private final PublicKey upvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
@@ -50,7 +50,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull Identity superconductorInstanceIdentity,
       Duration requestTimeoutDuration) throws IOException, NostrException {
-    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     Relay relay = new Relay(relayUrl);
 
@@ -69,7 +69,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
 
     EventMessage eventMessageBadgeAwardUpvoteEvent = new EventMessage(badgeAwardUpvoteEvent);
     assertTrue(
-        this.nostrComprehensiveRelayService
+        this.nostrComprehensiveClient
             .send(
                 eventMessageBadgeAwardUpvoteEvent)
             .getFlag());
@@ -80,7 +80,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        nostrComprehensiveRelayService.send(
+        nostrComprehensiveClient.send(
             new ReqMessage(
                 subscriberId,
                 new Filters(
@@ -102,7 +102,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
     assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
     assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
 
-    nostrComprehensiveRelayService.disconnect();
+//    nostrComprehensiveClient.disconnect();
   }
 
   @Test
@@ -110,7 +110,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        nostrComprehensiveRelayService.send(
+        nostrComprehensiveClient.send(
             new ReqMessage(
                 subscriberId,
                 new Filters(
@@ -137,6 +137,6 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
     assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
     assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
 
-    nostrComprehensiveRelayService.disconnect();
+//    nostrComprehensiveClient.disconnect();
   }
 }

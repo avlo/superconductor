@@ -12,7 +12,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.base.util.NostrComprehensiveRelayService;
+import com.prosilion.superconductor.base.util.NostrComprehensiveClient;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -26,13 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public abstract class BaseMatchingReferencedEventIT {
   private final String relayUrl = "wss://nostr.example.com";
-  private final NostrComprehensiveRelayService nostrComprehensiveRelayService;
+  private final NostrComprehensiveClient nostrComprehensiveClient;
   private final String eventId = Factory.generateRandomHex64String();
 
   public BaseMatchingReferencedEventIT(@NonNull String relayUrl, Duration requestTimeoutDuration) throws IOException {
-    this.nostrComprehensiveRelayService = new NostrComprehensiveRelayService(relayUrl, requestTimeoutDuration);
+    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl, requestTimeoutDuration);
     assertTrue(
-        nostrComprehensiveRelayService.send(
+        nostrComprehensiveClient.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -47,7 +47,7 @@ public abstract class BaseMatchingReferencedEventIT {
         new Filters(
             new ReferencedEventFilter(eventTag)));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
@@ -71,7 +71,7 @@ public abstract class BaseMatchingReferencedEventIT {
         new Filters(
             new ReferencedEventFilter(new EventTag(nonMatchingReferencedEventId, relayUrl))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertTrue(returnedEvents.isEmpty());

@@ -5,7 +5,6 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.EventFilter;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.subdivisions.client.reactive.NostrRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import java.time.Duration;
@@ -21,9 +20,8 @@ public class CacheDereferenceEventTagService extends CacheDereferenceAbstractTag
   public CacheDereferenceEventTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull Duration requestTimeoutDuration,
-      @NonNull NostrRequestService nostrRequestService) {
-    super(cacheServiceIF, superconductorRelayUrl, requestTimeoutDuration, nostrRequestService);
+      @NonNull Duration requestTimeoutDuration) {
+    super(cacheServiceIF, superconductorRelayUrl, requestTimeoutDuration);
   }
 
   @Override

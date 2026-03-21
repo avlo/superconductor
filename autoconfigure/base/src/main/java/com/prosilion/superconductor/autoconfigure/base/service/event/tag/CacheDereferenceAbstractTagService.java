@@ -9,7 +9,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.subdivisions.client.reactive.NostrRequestService;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRelayRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAbstractTagServiceIF;
 import java.time.Duration;
@@ -27,17 +27,14 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
   protected final CacheServiceIF cacheServiceIF;
   private final String superconductorRelayUrl;
   private final Duration requestTimeoutDuration;
-  private final NostrRequestService nostrRequestService;
 
   public CacheDereferenceAbstractTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull Duration requestTimeoutDuration,
-      @NonNull NostrRequestService nostrRequestService) {
+      @NonNull Duration requestTimeoutDuration) {
     this.cacheServiceIF = cacheServiceIF;
     this.superconductorRelayUrl = superconductorRelayUrl;
     this.requestTimeoutDuration = requestTimeoutDuration;
-    this.nostrRequestService = nostrRequestService;
     log.debug("Ctor() loaded CacheDereferenceAbstractTagService relay URL: {}", superconductorRelayUrl);
   }
 
@@ -92,7 +89,7 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
         generateRandomHex64String(),
         apply);
     log.debug("reactiveRequestConsolidator request to URL:\n  [{}]\nwith ReqMessage:\n  {}", relayUrl, Util.prettyFormatJson(reqMessage.encode()));
-    List<BaseMessage> eventList = nostrRequestService.send(reqMessage, relayUrl, requestTimeoutDuration);
+    List<BaseMessage> eventList = new NostrSingleRelayRequestService(relayUrl).send(reqMessage, requestTimeoutDuration);
 //    nostrRequestService.disconnect();
 
     log.debug("... getReqConsolidatorResult() (2 of 3) retrieved results...");

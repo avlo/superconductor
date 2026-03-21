@@ -3,8 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.subdivisions.client.reactive.NostrRequestService;
-import com.prosilion.subdivisions.client.reactive.ReactiveRequestConsolidator;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRelayRequestService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
@@ -38,22 +37,15 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class EventServiceConfig {
   @Bean
-  NostrRequestService nostrRequestService() {
-    return new NostrRequestService(new ReactiveRequestConsolidator());
-  }
-
-  @Bean
   @ConditionalOnMissingBean
   CacheDereferenceAddressTagService cacheDereferenceAddressTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull Duration requestTimeoutDuration,
-      @NonNull NostrRequestService nostrRequestService) {
+      @NonNull Duration requestTimeoutDuration) {
     return new CacheDereferenceAddressTagService(
         cacheServiceIF,
         superconductorRelayUrl,
-        requestTimeoutDuration,
-        nostrRequestService);
+        requestTimeoutDuration);
   }
 
   @Bean
@@ -61,13 +53,11 @@ public class EventServiceConfig {
   CacheDereferenceEventTagService cacheDereferenceEventTagService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull String superconductorRelayUrl,
-      @NonNull Duration requestTimeoutDuration,
-      @NonNull NostrRequestService nostrRequestService) {
+      @NonNull Duration requestTimeoutDuration) {
     return new CacheDereferenceEventTagService(
         cacheServiceIF,
         superconductorRelayUrl,
-        requestTimeoutDuration,
-        nostrRequestService);
+        requestTimeoutDuration);
   }
 
   @Bean

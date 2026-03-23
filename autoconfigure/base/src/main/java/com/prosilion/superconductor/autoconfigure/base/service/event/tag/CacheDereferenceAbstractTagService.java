@@ -8,7 +8,6 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
-import com.prosilion.nostr.util.Util;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRelayRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAbstractTagServiceIF;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.lang.NonNull;
@@ -60,12 +58,10 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
         new NostrException(
             String.format("AbstractTag [%s] does not contain a (valid) url", abstractTag)));
 
-    if (recommendedRelayUrl.equals(superconductorRelayUrl)) {
-      log.debug("AbstractTag [%s] has local url [%s], yet event not found locally (likely not yet saved), so return Optional.empty()", abstractTag, recommendedRelayUrl);
-      return Optional.empty();
-//      throw new NostrException(
-//          String.format("AbstractTag [%s] has local url [%s], yet event not found locally", abstractTag, recommendedRelayUrl));
-    }
+//    if (recommendedRelayUrl.equals(superconductorRelayUrl)) {
+//      log.debug("AbstractTag [{}] has local url [{}], yet event not found locally (likely not yet saved), so return Optional.empty()", abstractTag, recommendedRelayUrl);
+//      return Optional.empty();
+//    }
 
     log.debug("local AbstractTag not found, calling remoteEventSupplier...");
     return getRemoteEventGenericEventRecord(abstractTag, recommendedRelayUrl);
@@ -83,12 +79,11 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
     return optionalGenericEventRecord;
   }
 
-  @SneakyThrows
   private Optional<GenericEventRecord> sendConsolidatorReq(String relayUrl, Filters apply) {
     ReqMessage reqMessage = new ReqMessage(
         generateRandomHex64String(),
         apply);
-    log.debug("reactiveRequestConsolidator request to URL:\n  [{}]\nwith ReqMessage:\n  {}", relayUrl, Util.prettyFormatJson(reqMessage.encode()));
+//    log.debug("reactiveRequestConsolidator request to URL:\n  [{}]\nwith ReqMessage:\n  {}", relayUrl, Util.prettyFormatJson(reqMessage.encode()));
     List<BaseMessage> eventList = new NostrSingleRelayRequestService(relayUrl).send(reqMessage, requestTimeoutDuration);
 //    nostrRequestService.disconnect();
 

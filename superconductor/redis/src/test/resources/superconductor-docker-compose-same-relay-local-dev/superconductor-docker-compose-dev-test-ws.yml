@@ -1,0 +1,41 @@
+services:
+#  SC Redis 6378
+  superconductor-db-two:
+    image: "redis:8.0.0"
+    hostname: superconductor-db-two
+    ports:
+      - "6378:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli" ,"ping", "superconductor-db-two" ]
+      retries: 3
+      interval: 1s
+      timeout: 2s
+#  SC App 5554
+  superconductor-app-two:
+    image: superconductor-app-redis:1.17.3
+    ports:
+      - "5554:5555"
+    depends_on:
+      superconductor-db-two:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SUPERCONDUCTOR_RELAY_URL: ws://superconductor-app-two:5555
+      SUPERCONDUCTOR_KEY_PRIVATE: fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac
+      SUPERCONDUCTOR_KEY_PUBLIC: e04e1c1c30df6058433f61681644fd24914f2e02e420496086c61f53eb504c04
+      SERVER_PORT: 5555
+      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_CONTROLLER: debug
+      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_SERVICE_EVENT: info
+      SPRING_DATA_REDIS_HOST: superconductor-db-two
+      SUPERCONDUCTOR_TIMEOUT_DURATION_MILLIS: 3000
+#
+#
+#
+volumes:
+  superconductor-db-two:
+    driver: local
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"

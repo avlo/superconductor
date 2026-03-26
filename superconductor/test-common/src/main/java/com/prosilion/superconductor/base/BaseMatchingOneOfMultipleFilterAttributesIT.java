@@ -11,7 +11,8 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
@@ -24,18 +25,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
-  private final String relayUrl = "wss://nostr.example.com";
-  private final NostrComprehensiveClient nostrComprehensiveClient;
+  private final String exampleRelayUrl = "wss://nostr.example.com";
   private final String eventId = Factory.generateRandomHex64String();
   private final String referenceEventId = Factory.generateRandomHex64String();
   private final String referencePubKey = Factory.generateRandomHex64String();
+  private final String relayUrl;
 
-  public BaseMatchingOneOfMultipleFilterAttributesIT(
-      @NonNull String relayUrl) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+  public BaseMatchingOneOfMultipleFilterAttributesIT(@NonNull String relayUrl) throws IOException {
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
 
     assertTrue(
-        nostrComprehensiveClient.send(
+        nostrEventPublisher.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -49,11 +50,11 @@ public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
             new ReferencedEventFilter(
-                new EventTag(referenceEventId, relayUrl)),
+                new EventTag(referenceEventId, exampleRelayUrl)),
             new ReferencedEventFilter(
-                new EventTag(referencedEventIdNoMatch, relayUrl))));
+                new EventTag(referencedEventIdNoMatch, exampleRelayUrl))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
@@ -77,7 +78,7 @@ public abstract class BaseMatchingOneOfMultipleFilterAttributesIT {
             new ReferencedPublicKeyFilter(
                 new PubKeyTag(new PublicKey(referencedPubkeyNoMatch)))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");

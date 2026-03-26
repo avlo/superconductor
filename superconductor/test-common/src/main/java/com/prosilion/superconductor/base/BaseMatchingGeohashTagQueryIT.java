@@ -12,7 +12,8 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.GeohashTag;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
@@ -29,11 +30,12 @@ public abstract class BaseMatchingGeohashTagQueryIT {
   private final String subscriberId = Factory.generateRandomHex64String();
   private final String eventId = Factory.generateRandomHex64String();
   private final String geohashTagString = Factory.generateRandomHex64String();
-  private final NostrComprehensiveClient nostrComprehensiveClient;
+  private final String relayUrl;
 
   public BaseMatchingGeohashTagQueryIT(@NonNull String relayUrl) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
-    assertTrue(nostrComprehensiveClient.send(
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
+    assertTrue(nostrEventPublisher.send(
             (EventMessage) BaseMessageDecoder.decode(getEvent()))
         .getFlag());
   }
@@ -45,7 +47,7 @@ public abstract class BaseMatchingGeohashTagQueryIT {
         new Filters(new GenericTagQueryFilter(
             new GenericTagQuery("#g", "textnote-geo-tag-non-existent"))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     log.debug("okMessage:");
     log.debug("  " + returnedBaseMessages);
 
@@ -65,7 +67,7 @@ public abstract class BaseMatchingGeohashTagQueryIT {
         new Filters(new GenericTagQueryFilter(
             new GenericTagQuery("#g", geohashTagString))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
@@ -87,7 +89,7 @@ public abstract class BaseMatchingGeohashTagQueryIT {
         new Filters(new GeohashTagFilter(
             new GeohashTag(geohashTagString))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");

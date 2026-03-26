@@ -18,7 +18,8 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
 import java.io.IOException;
@@ -40,8 +41,9 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
   private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
   private final Identity superconductorInstanceIdentity;
 
-  private final NostrComprehensiveClient awardEventNostrComprehensiveClient;
   private final String eventId;
+  private final String definitionEventRelayUrl;
+  private final String awardEventRelayUrl;
 
   protected BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT(
       @NonNull String superconductorRelayUrl,
@@ -49,6 +51,8 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
       @NonNull String awardEventRelayUrl,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
+    this.definitionEventRelayUrl = definitionEventRelayUrl;
+    this.awardEventRelayUrl = awardEventRelayUrl;
 
     Relay definitionEventRelay = new Relay("ws://superconductor-app-two:5555");
     Relay awardEventRelay = new Relay("ws://superconductor-app-three:5555");
@@ -58,10 +62,10 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
         IDENTIFIER_TAG,
         definitionEventRelay);
 
-    NostrComprehensiveClient definitionEventNostrComprehensiveClient = new NostrComprehensiveClient(definitionEventRelayUrl);
+    NostrEventPublisher definitionEventNostrEventPublisher = new NostrEventPublisher(definitionEventRelayUrl);
     EventMessage eventMessageBadgeDefinitionDownvoteEvent = new EventMessage(badgeDefinitionDownvoteEvent);
     assertTrue(
-        definitionEventNostrComprehensiveClient
+        definitionEventNostrEventPublisher
             .send(
                 eventMessageBadgeDefinitionDownvoteEvent)
             .getFlag());
@@ -73,7 +77,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
         badgeDefinitionDownvoteEvent);
     eventId = badgeAwardDownvoteEvent.getId();
 
-    this.awardEventNostrComprehensiveClient = new NostrComprehensiveClient(awardEventRelayUrl);
+    NostrEventPublisher awardEventNostrComprehensiveClient = new NostrEventPublisher(awardEventRelayUrl);
     EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
     assertTrue(
         awardEventNostrComprehensiveClient
@@ -87,7 +91,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        awardEventNostrComprehensiveClient.send(
+        new NostrSingleRequestService().send(
             new ReqMessage(
                 subscriberId,
                 new Filters(
@@ -95,7 +99,8 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
                         Kind.BADGE_AWARD_EVENT),
                     new ReferencedPublicKeyFilter(
                         new PubKeyTag(
-                            downvotedUserPubKey))))));
+                            downvotedUserPubKey)))),
+            awardEventRelayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -115,7 +120,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        awardEventNostrComprehensiveClient.send(
+        new NostrSingleRequestService().send(
             new ReqMessage(
                 subscriberId,
                 new Filters(
@@ -128,7 +133,8 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
                         new AddressTag(
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
-                            IDENTIFIER_TAG))))));
+                            IDENTIFIER_TAG)))),
+            awardEventRelayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);

@@ -14,7 +14,8 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
@@ -27,15 +28,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseTextNoteEventMessageIT {
-  private final NostrComprehensiveClient nostrComprehensiveClient;
-
   private static final Identity identity = Identity.generateRandomIdentity();
   private final String eventId;
   private static final String globalSubscriberId = Factory.generateRandomHex64String(); // global subscriber UUID
   private final String content;
+  private final String relayUrl;
 
   public BaseTextNoteEventMessageIT(@NonNull String relayUrl) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
     this.content = Factory.lorumIpsum(getClass());
 
     BaseEvent event = new TextNoteEvent(identity, content);
@@ -43,20 +44,21 @@ public abstract class BaseTextNoteEventMessageIT {
 
     EventMessage eventMessageFromTextNoteGenericEventRecord = new EventMessage(event.getGenericEventRecord());
     assertTrue(
-        this.nostrComprehensiveClient
+        nostrEventPublisher
             .send(
                 eventMessageFromTextNoteGenericEventRecord)
             .getFlag());
+    nostrEventPublisher.closeSocket();
   }
 
   @Test
-  void testReqFilteredByEventId() throws JsonProcessingException, NostrException {
+  void testReqFilteredByEventId() throws NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to testReqFilteredByEventId:");
@@ -65,7 +67,7 @@ public abstract class BaseTextNoteEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getContent().equals(content)));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveClient.send(reqMessage2);
+    List<BaseMessage> returnedBaseMessages2 = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -82,7 +84,7 @@ public abstract class BaseTextNoteEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -100,7 +102,7 @@ public abstract class BaseTextNoteEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -110,7 +112,7 @@ public abstract class BaseTextNoteEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(eventFilter, authorFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveClient.send(reqMessage2);
+    List<BaseMessage> returnedBaseMessages2 = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -127,7 +129,7 @@ public abstract class BaseTextNoteEventMessageIT {
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(authorFilter));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
 
     log.debug("okMessage to testReqFilteredByAuthor:");
     log.debug("  " + returnedBaseMessages);
@@ -136,7 +138,7 @@ public abstract class BaseTextNoteEventMessageIT {
     assertTrue(returnedEvents.stream().anyMatch(event -> event.getPublicKey().equals(identity.getPublicKey())));
 
     ReqMessage reqMessage2 = new ReqMessage(globalSubscriberId, new Filters(authorFilter));
-    List<BaseMessage> returnedBaseMessages2 = nostrComprehensiveClient.send(reqMessage2);
+    List<BaseMessage> returnedBaseMessages2 = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents2 = getEventIFs(returnedBaseMessages2);
 
     log.debug("okMessage:");
@@ -153,7 +155,7 @@ public abstract class BaseTextNoteEventMessageIT {
 
     ReqMessage reqMessage = new ReqMessage(nonMatchingSubscriberId, new Filters(eventFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = getEventIFs(returnedBaseMessages);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);

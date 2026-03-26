@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base;
 
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,7 @@ public abstract class BaseMultipleSubscriberTextEventMessageIT extends AbstractM
       @Value("${superconductor.test.req.hexNumberOfBytes}") Integer hexNumberOfBytes,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
       Duration requestTimeoutDuration) {
-    super(new NostrComprehensiveClient(relayUrl), hexCounterSeed, hexNumberOfBytes, reqInstances);
+    super(relayUrl, hexCounterSeed, hexNumberOfBytes, reqInstances);
 
     this.authorPubKey = Factory.generateRandomHex64String();
     this.addressableTagAuthorPubKey = Factory.generateRandomHex64String();

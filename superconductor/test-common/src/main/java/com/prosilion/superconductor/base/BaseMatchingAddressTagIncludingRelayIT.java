@@ -15,7 +15,8 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -30,17 +31,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public abstract class BaseMatchingAddressTagIncludingRelayIT {
   public static final String WS_LOCALHOST_5555 = "ws://localhost:5555";
-  private final NostrComprehensiveClient nostrComprehensiveClient;
   private final String eventId = Factory.generateRandomHex64String();
   private final PublicKey publicKey = Identity.generateRandomIdentity().getPublicKey();
   private final PublicKey aTagPubkey = Identity.generateRandomIdentity().getPublicKey();
   private final String uuid = Factory.generateRandomHex64String();
+  private final String relayUrl;
 
-  public BaseMatchingAddressTagIncludingRelayIT(
-      @NonNull String relayUrl) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+  public BaseMatchingAddressTagIncludingRelayIT(@NonNull String relayUrl) throws IOException {
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
     assertTrue(
-        nostrComprehensiveClient.send(
+        nostrEventPublisher.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
 
@@ -66,7 +67,7 @@ public abstract class BaseMatchingAddressTagIncludingRelayIT {
         Kind.TEXT_NOTE, aTagPubkey, identifierTag, new Relay(WS_LOCALHOST_5555));
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new AddressTagFilter(addressTag)));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);

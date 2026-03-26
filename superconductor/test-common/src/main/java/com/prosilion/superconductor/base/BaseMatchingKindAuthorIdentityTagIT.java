@@ -14,7 +14,8 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
@@ -26,17 +27,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingKindAuthorIdentityTagIT {
-  private final NostrComprehensiveClient nostrComprehensiveClient;
   private static final String uuid = Factory.generateRandomHex64String();
   private static final String eventId = Factory.generateRandomHex64String();
   private static final String authorPubKey = Factory.generateRandomHex64String();
   private static final String content = Factory.lorumIpsum();
+  private final String relayUrl;
 
-  public BaseMatchingKindAuthorIdentityTagIT(
-      @NonNull String relayUrl) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+  public BaseMatchingKindAuthorIdentityTagIT(@NonNull String relayUrl) throws IOException {
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
     assertTrue(
-        nostrComprehensiveClient.send(
+        nostrEventPublisher.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -54,7 +55,7 @@ public abstract class BaseMatchingKindAuthorIdentityTagIT {
         new Filters(
             kindFilter, authorFilter, identifierTagFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
     log.debug("  " + returnedEvents);
 

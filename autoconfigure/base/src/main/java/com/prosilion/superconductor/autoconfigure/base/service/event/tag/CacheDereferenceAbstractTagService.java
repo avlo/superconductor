@@ -8,7 +8,7 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
-import com.prosilion.subdivisions.client.reactive.NostrSingleRelayRequestService;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAbstractTagServiceIF;
 import java.time.Duration;
@@ -84,7 +84,7 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
         generateRandomHex64String(),
         apply);
 //    log.debug("reactiveRequestConsolidator request to URL:\n  [{}]\nwith ReqMessage:\n  {}", relayUrl, Util.prettyFormatJson(reqMessage.encode()));
-    List<BaseMessage> eventList = new NostrSingleRelayRequestService(relayUrl).send(reqMessage, requestTimeoutDuration);
+    List<BaseMessage> eventList = new NostrSingleRequestService().send(reqMessage, relayUrl, requestTimeoutDuration);
 //    nostrRequestService.disconnect();
 
     log.debug("... getReqConsolidatorResult() (2 of 3) retrieved results...");

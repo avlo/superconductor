@@ -18,7 +18,8 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
@@ -36,19 +37,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class BaseBadgeAwardUpvoteEventMessageIT {
   public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
-  private final NostrComprehensiveClient nostrComprehensiveClient;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
   private final PublicKey upvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
   private final Identity superconductorInstanceIdentity;
 
   private final String eventId;
+  private final String relayUrl;
 
   protected BaseBadgeAwardUpvoteEventMessageIT(
       @NonNull String relayUrl,
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     Relay relay = new Relay(relayUrl);
 
@@ -67,7 +69,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
 
     EventMessage eventMessageBadgeAwardUpvoteEvent = new EventMessage(badgeAwardUpvoteEvent);
     assertTrue(
-        this.nostrComprehensiveClient
+        nostrEventPublisher
             .send(
                 eventMessageBadgeAwardUpvoteEvent)
             .getFlag());
@@ -78,7 +80,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        nostrComprehensiveClient.send(
+        new NostrSingleRequestService().send(
             new ReqMessage(
                 subscriberId,
                 new Filters(
@@ -86,7 +88,8 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
                         Kind.BADGE_AWARD_EVENT),
                     new ReferencedPublicKeyFilter(
                         new PubKeyTag(
-                            upvotedUserPubKey))))));
+                            upvotedUserPubKey)))),
+            relayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -108,7 +111,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        nostrComprehensiveClient.send(
+        new NostrSingleRequestService().send(
             new ReqMessage(
                 subscriberId,
                 new Filters(
@@ -121,7 +124,8 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
                         new AddressTag(
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
-                            IDENTIFIER_TAG))))));
+                            IDENTIFIER_TAG)))),
+            relayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);

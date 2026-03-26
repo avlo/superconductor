@@ -10,7 +10,8 @@ import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import java.io.IOException;
@@ -49,22 +50,24 @@ abstract class AbstractMultipleSubscriber {
   @Getter
   private final Integer targetCount;
   @Getter
-  private final NostrComprehensiveClient nostrComprehensiveRelayService;
+  private final NostrEventPublisher nostrEventPublisher;
   @Getter
   private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
   private final int hexStartNumber;
   @Getter
   private final List<String> targetEventIds = new ArrayList<>();
+  private final String relayUrl;
 
   AbstractMultipleSubscriber(
-      @NonNull NostrComprehensiveClient nostrComprehensiveRelayService,
+      @NonNull String relayUrl,
       @NonNull String hexCounterSeed,
       @NonNull Integer hexNumberOfBytes,
       @NonNull Integer reqInstances) {
-    this.nostrComprehensiveRelayService = nostrComprehensiveRelayService;
+    this.nostrEventPublisher = new NostrEventPublisher(relayUrl);
     this.hexStartNumber = Integer.parseInt(hexCounterSeed.repeat(2 * hexNumberOfBytes), 16);
     this.targetCount = reqInstances;
+    this.relayUrl = relayUrl;
   }
 
   @BeforeAll
@@ -87,7 +90,7 @@ abstract class AbstractMultipleSubscriber {
     String globalEventJson = getGlobalEventJson(nextHex);
     log.debug("setup() send event:\n{}", globalEventJson);
 //    TODO: update cast
-    nostrComprehensiveRelayService.send((EventMessage) BaseMessageDecoder.decode(globalEventJson));
+    nostrEventPublisher.send((EventMessage) BaseMessageDecoder.decode(globalEventJson));
     targetEventIds.add(nextHex); // targetEventId String values utilized by inherited classes
   }
 
@@ -117,8 +120,10 @@ abstract class AbstractMultipleSubscriber {
   }
 
   private void sendRequest(String uuidKey) throws JsonProcessingException, NostrException {
-    List<BaseMessage> send = nostrComprehensiveRelayService.send(
-        (ReqMessage) BaseMessageDecoder.decode(createReqJson(uuidKey)));
+    List<BaseMessage> send = new NostrSingleRequestService()
+        .send(
+            (ReqMessage) BaseMessageDecoder.decode(createReqJson(uuidKey)),
+            relayUrl);
     String expectedJsonInAnyOrder = getExpectedJsonInAnyOrder(uuidKey);
     log.debug("expectedJson:\n{}", expectedJsonInAnyOrder);
   }

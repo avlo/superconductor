@@ -12,7 +12,8 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.HashtagTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
@@ -26,14 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingGenericTagSingleLetterQueryIT {
-  private final NostrComprehensiveClient nostrComprehensiveClient;
   Identity identity = Factory.createNewIdentity();
   String content = Factory.lorumIpsum(getClass());
+  private final String relayUrl;
 
   public BaseMatchingGenericTagSingleLetterQueryIT(@NonNull String relayUrl) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
     assertTrue(
-        nostrComprehensiveClient
+        nostrEventPublisher
             .send(
                 new EventMessage(
                     new TextNoteEvent(
@@ -49,9 +51,10 @@ public abstract class BaseMatchingGenericTagSingleLetterQueryIT {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String hashTagString = "textnote-geo-tag-2";
 
-    List<BaseMessage> baseMessages = nostrComprehensiveClient.send(
+    List<BaseMessage> baseMessages = new NostrSingleRequestService().send(
         new ReqMessage(subscriberId, new Filters(
-            new HashtagTagFilter(new HashtagTag(hashTagString)))));
+            new HashtagTagFilter(new HashtagTag(hashTagString)))),
+        relayUrl);
     assertEquals(1, baseMessages.size());
     assertTrue(baseMessages
         .stream()
@@ -66,10 +69,11 @@ public abstract class BaseMatchingGenericTagSingleLetterQueryIT {
     //    TODO: impl another test containing a space in string, aka "textnote geo-tag-1"
     String hashTagString = "h-tag-1";
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService()
         .send(
             new ReqMessage(subscriberId, new Filters(
-                new HashtagTagFilter(new HashtagTag(hashTagString)))));
+                new HashtagTagFilter(new HashtagTag(hashTagString)))),
+            relayUrl);
 
     List<EventIF> events = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 

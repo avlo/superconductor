@@ -18,7 +18,8 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.Utils;
@@ -37,20 +38,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class BaseBadgeAwardDownvoteEventMessageIT {
   public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
   public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
-  private final NostrComprehensiveClient nostrComprehensiveRelayService;
 
   private final Identity authorIdentity = Identity.generateRandomIdentity();
   private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
   private final Identity superconductorInstanceIdentity;
 
   private final String eventId;
+  private final String relayUrl;
 
   protected BaseBadgeAwardDownvoteEventMessageIT(
       @NonNull String relayUrl,
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull Identity superconductorInstanceIdentity,
       Duration requestTimeoutDuration) throws IOException, NostrException {
-    this.nostrComprehensiveRelayService = new NostrComprehensiveClient(relayUrl);
+    this.relayUrl = relayUrl;
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     Relay relay = new Relay(relayUrl);
 
@@ -69,7 +71,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
 
     EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
     assertTrue(
-        this.nostrComprehensiveRelayService
+        nostrEventPublisher
             .send(
                 eventMessageBadgeAwardDownvoteEvent)
             .getFlag());
@@ -79,16 +81,16 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
   void testValidExistingEventThenAfterImageReputationRequestGenral() throws IOException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
+    ReqMessage reqMessage = new ReqMessage(
+        subscriberId,
+        new Filters(
+            new KindFilter(
+                Kind.BADGE_AWARD_EVENT),
+            new ReferencedPublicKeyFilter(
+                new PubKeyTag(
+                    downvotedUserPubKey))));
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        nostrComprehensiveRelayService.send(
-            new ReqMessage(
-                subscriberId,
-                new Filters(
-                    new KindFilter(
-                        Kind.BADGE_AWARD_EVENT),
-                    new ReferencedPublicKeyFilter(
-                        new PubKeyTag(
-                            downvotedUserPubKey))))));
+        new NostrSingleRequestService().send(reqMessage, relayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -108,7 +110,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = Utils.getEventIFs(
-        nostrComprehensiveRelayService.send(
+        new NostrSingleRequestService().send(
             new ReqMessage(
                 subscriberId,
                 new Filters(
@@ -121,7 +123,8 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
                         new AddressTag(
                             Kind.BADGE_DEFINITION_EVENT,
                             superconductorInstanceIdentity.getPublicKey(),
-                            IDENTIFIER_TAG))))));
+                            IDENTIFIER_TAG)))),
+            relayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);

@@ -9,7 +9,8 @@ import com.prosilion.nostr.filter.tag.IdentifierTagFilter;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
@@ -21,14 +22,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingIdentityTagIT {
-  private final NostrComprehensiveClient nostrComprehensiveClient;
   private static final String eventId = Factory.generateRandomHex64String();
   private static final String uuid = Factory.generateRandomHex64String();
+  private final String relayUrl;
 
   public BaseMatchingIdentityTagIT(@NonNull String relayUrl) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
     assertTrue(
-        nostrComprehensiveClient.send(
+        nostrEventPublisher.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -41,12 +43,13 @@ public abstract class BaseMatchingIdentityTagIT {
 
     List<EventIF> returnedEvents =
         BaseTextNoteEventMessageIT.getEventIFs(
-            nostrComprehensiveClient.send(
+            new NostrSingleRequestService().send(
                 new ReqMessage(
                     subscriberId,
                     new Filters(
                         new IdentifierTagFilter(
-                            identifierTag)))));
+                            identifierTag))),
+                relayUrl));
 
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);

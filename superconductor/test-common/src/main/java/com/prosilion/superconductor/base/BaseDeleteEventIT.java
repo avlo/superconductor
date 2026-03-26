@@ -15,7 +15,8 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.time.Duration;
@@ -36,19 +37,18 @@ public abstract class BaseDeleteEventIT {
   private final String eventIdToDeleteId;
   private final String deletionEventId;
   Duration requestTimeoutDuration;
-  NostrComprehensiveClient nostrComprehensiveRelayService;
 
   public BaseDeleteEventIT(@NonNull String relayUrl, @NonNull Duration requestTimeoutDuration) throws IOException, NostrException, ExecutionException, InterruptedException {
     this.relayUrl = relayUrl;
     this.requestTimeoutDuration = requestTimeoutDuration;
-    this.nostrComprehensiveRelayService = new NostrComprehensiveClient(relayUrl);
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
 
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     this.eventIdToDeleteId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        nostrComprehensiveRelayService
+        nostrEventPublisher
             .send(
                 eventMessage)
             .getFlag());
@@ -61,7 +61,7 @@ public abstract class BaseDeleteEventIT {
 
     EventMessage deletionEventMessage = new EventMessage(deletionEvent);
     assertTrue(
-        nostrComprehensiveRelayService
+        nostrEventPublisher
             .send(
                 deletionEventMessage)
             .getFlag());
@@ -76,7 +76,7 @@ public abstract class BaseDeleteEventIT {
     EventFilter deletionEventFilter = new EventFilter(new GenericEventId(eventIdToDeleteId));
 
     ReqMessage deletionReqMessage = new ReqMessage(deletionSubmitterSubscriberId, new Filters(deletionEventFilter));
-    List<BaseMessage> returnedDeletionMessagesShouldContainEose = nostrComprehensiveRelayService.send(deletionReqMessage);
+    List<BaseMessage> returnedDeletionMessagesShouldContainEose = new NostrSingleRequestService().send(deletionReqMessage, relayUrl);
 
     log.debug("okMessage to UniqueSubscriberId:");
     log.debug("  " + returnedDeletionMessagesShouldContainEose);
@@ -90,7 +90,7 @@ public abstract class BaseDeleteEventIT {
     final String subscriberId = Factory.generateRandomHex64String();
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");
@@ -104,10 +104,11 @@ public abstract class BaseDeleteEventIT {
   void testCreateAnotherNoteAndConfirmItsNotDeleted() throws IOException {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     String secondEventShouldNotGetDeleted = event.getId();
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        nostrComprehensiveRelayService
+        nostrEventPublisher
             .send(
                 eventMessage)
             .getFlag());
@@ -117,7 +118,7 @@ public abstract class BaseDeleteEventIT {
     final String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(eventFilter));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveRelayService.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEventIFs = getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage to UniqueSubscriberId:");

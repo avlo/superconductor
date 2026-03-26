@@ -12,7 +12,8 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.GeohashTag;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
@@ -34,19 +35,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("test")
 public abstract class BaseMatchingMultipleGenericTagQuerySingleLetterIT {
-  private final NostrComprehensiveClient nostrComprehensiveClient;
   private final String eventId;
   private final String genericTagStringG;
   private final String genericTagStringH;
+  private final String relayUrl;
 
   public BaseMatchingMultipleGenericTagQuerySingleLetterIT(
       @NonNull String relayUrl) throws IOException {
     this.eventId = Factory.generateRandomHex64String();
     this.genericTagStringG = Factory.generateRandomHex64String();
     this.genericTagStringH = Factory.generateRandomHex64String();
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
     assertTrue(
-        nostrComprehensiveClient.send(
+        nostrEventPublisher.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -66,7 +68,7 @@ public abstract class BaseMatchingMultipleGenericTagQuerySingleLetterIT {
             new GenericTagQueryFilter(
                 new GenericTagQuery("#h", genericTagStringHPresent))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
@@ -91,7 +93,7 @@ public abstract class BaseMatchingMultipleGenericTagQuerySingleLetterIT {
             new GenericTagQueryFilter(
                 new GenericTagQuery("#h", genericTagStringHPresent))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
@@ -113,7 +115,7 @@ public abstract class BaseMatchingMultipleGenericTagQuerySingleLetterIT {
             new GenericTagQueryFilter(
                 new GenericTagQuery("#h", genericTagStringH))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     log.debug("okMessage:");
@@ -140,7 +142,7 @@ public abstract class BaseMatchingMultipleGenericTagQuerySingleLetterIT {
             new GenericTagQueryFilter(
                 new GenericTagQuery("#h", genericTagStringH))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());

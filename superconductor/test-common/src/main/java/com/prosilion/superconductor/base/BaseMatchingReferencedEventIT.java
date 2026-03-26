@@ -11,7 +11,8 @@ import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
@@ -24,14 +25,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseMatchingReferencedEventIT {
-  private final String relayUrl = "wss://nostr.example.com";
-  private final NostrComprehensiveClient nostrComprehensiveClient;
+  private final String exampleRelayUrl = "wss://nostr.example.com";
   private final String eventId = Factory.generateRandomHex64String();
+  private final String relayUrl;
 
   public BaseMatchingReferencedEventIT(@NonNull String relayUrl) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+    this.relayUrl = relayUrl;
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
     assertTrue(
-        nostrComprehensiveClient.send(
+        nostrEventPublisher.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -41,12 +43,12 @@ public abstract class BaseMatchingReferencedEventIT {
     String subscriberId = Factory.generateRandomHex64String();
     String referencedEventId = "494001ac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346";
 
-    EventTag eventTag = new EventTag(referencedEventId, relayUrl);
+    EventTag eventTag = new EventTag(referencedEventId, exampleRelayUrl);
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
             new ReferencedEventFilter(eventTag)));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
@@ -68,9 +70,9 @@ public abstract class BaseMatchingReferencedEventIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId,
         new Filters(
-            new ReferencedEventFilter(new EventTag(nonMatchingReferencedEventId, relayUrl))));
+            new ReferencedEventFilter(new EventTag(nonMatchingReferencedEventId, exampleRelayUrl))));
 
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertTrue(returnedEvents.isEmpty());

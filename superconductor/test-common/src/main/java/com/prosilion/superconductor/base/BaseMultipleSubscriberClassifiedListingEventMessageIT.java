@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base;
 
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
 import com.prosilion.superconductor.util.Factory;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,7 @@ public abstract class BaseMultipleSubscriberClassifiedListingEventMessageIT exte
       @Value("${superconductor.test.req.hexNumberOfBytes}") Integer hexNumberOfBytes,
       @Value("${superconductor.test.req.instances}") Integer reqInstances,
       Duration requestTimeoutDuration) {
-    super(new NostrComprehensiveClient(relayUrl), hexCounterSeed, hexNumberOfBytes, reqInstances);
+    super(relayUrl, hexCounterSeed, hexNumberOfBytes, reqInstances);
 
     this.eventTagId = Factory.generateRandomHex64String();
     this.authorPubKey = Factory.generateRandomHex64String();
@@ -57,7 +56,7 @@ public abstract class BaseMultipleSubscriberClassifiedListingEventMessageIT exte
 
   public String getGlobalEventJson(String startEventId) {
     return "[\"EVENT\", {\"id\":\"" + startEventId + "\", \"kind\": 30402, \"content\": \"" + content + "\", \"tags\": [[\"subject\", \"" + subject + "\"], [\"title\", \"" + title + "\"], [\"published_at\", \"1718843251760\"], [\"summary\", \"" + summary + "\"], [\"location\", \"classified peroulades\"], [\"price\", \"271.00\", \"BTC\", \"1\"], " +
-        "[\"e\", \"" + 
+        "[\"e\", \"" +
         eventTagId + "\",\n" +
         "\"wss://nostr.example.com\"\n" +
         "]," +

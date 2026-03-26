@@ -8,7 +8,8 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EoseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
@@ -21,15 +22,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseSinceUntilIT {
-  private final NostrComprehensiveClient nostrComprehensiveClient;
   private final String eventId = Factory.generateRandomHex64String();
   private final String publicKey = Factory.generateRandomHex64String();
+  private final String relayUrl;
 
   public BaseSinceUntilIT(
       @NonNull String relayUrl) throws IOException {
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUrl);
+    NostrEventPublisher definitionEventNostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.relayUrl = relayUrl;
     assertTrue(
-        nostrComprehensiveClient.send(
+        definitionEventNostrEventPublisher.send(
                 (EventMessage) BaseMessageDecoder.decode(getEvent()))
             .getFlag());
   }
@@ -39,7 +41,7 @@ public abstract class BaseSinceUntilIT {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqCreatedDateAfterSinceUntilDatesJson(subscriberId));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
     
     /*
@@ -61,7 +63,7 @@ public abstract class BaseSinceUntilIT {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqCreatedDateBeforeSinceUntilDatesJson(subscriberId));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     /*
@@ -83,7 +85,7 @@ public abstract class BaseSinceUntilIT {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqCreatedDateBetweenSinceUntilDatesJson(subscriberId));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
@@ -113,7 +115,7 @@ public abstract class BaseSinceUntilIT {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqUntilDateGreaterThanCreatedDateJson(subscriberId, until));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
@@ -138,7 +140,7 @@ public abstract class BaseSinceUntilIT {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqUntilDateGreaterThanCreatedDatePubKeyTagJson(subscriberId, uuid));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     assertFalse(returnedEvents.isEmpty());
@@ -162,7 +164,7 @@ public abstract class BaseSinceUntilIT {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqUntilDateLessThanCreatedDateJson(subscriberId));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     /*
@@ -184,7 +186,7 @@ public abstract class BaseSinceUntilIT {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqSinceDateGreaterThanCreatedDateJson(subscriberId));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     /*
@@ -207,7 +209,7 @@ public abstract class BaseSinceUntilIT {
     String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = ReqMessage.decode(subscriberId, createReqSinceDateLessThanCreatedDateJson(subscriberId, since));
-    List<BaseMessage> returnedBaseMessages = nostrComprehensiveClient.send(reqMessage);
+    List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
     List<EventIF> returnedEvents = BaseTextNoteEventMessageIT.getEventIFs(returnedBaseMessages);
 
     /*

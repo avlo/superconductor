@@ -8,7 +8,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.OkMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.subdivisions.client.reactive.NostrComprehensiveClient;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
@@ -23,14 +23,13 @@ public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
   public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
 
   public static final Relay relay = new Relay("ws://localhost:5555");
-  private final NostrComprehensiveClient nostrComprehensiveClient;
   private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event;
+  private final String relayUrl;
 
   public BaseBadgeAwardUpvoteEventMessageAuthIT(
       @NonNull Identity superconductorInstanceIdentity,
-      @NonNull String relayUri) throws NostrException {
-
-    this.nostrComprehensiveClient = new NostrComprehensiveClient(relayUri);
+      @NonNull String relayUrl) throws NostrException {
+    this.relayUrl = relayUrl;
     Identity authorIdentity = Identity.generateRandomIdentity();
     this.event = new BadgeAwardGenericEvent<>(
         authorIdentity,
@@ -44,7 +43,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
 
   @Test
   void testValidExistingEventThenAfterImageReputationRequest() throws IOException, NostrException {
-    OkMessage send = nostrComprehensiveClient.send(new EventMessage(event));
+    OkMessage send = new NostrEventPublisher(relayUrl).send(new EventMessage(event));
     assertFalse(send.getFlag());
     assertTrue(send.getMessage().contains("auth-required:"));
   }

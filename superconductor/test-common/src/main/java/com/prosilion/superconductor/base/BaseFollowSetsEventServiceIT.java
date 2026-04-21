@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.base;
 
 import com.ezylang.evalex.parser.ParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -24,7 +23,7 @@ import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.util.Utils;
+import com.prosilion.superconductor.util.TestUtils;
 import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +46,7 @@ public abstract class BaseFollowSetsEventServiceIT {
   public final Identity identity = Identity.generateRandomIdentity();
   private final PublicKey reputationRecipientPublicKey = Identity.generateRandomIdentity().getPublicKey();
 
+  private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
 
@@ -72,7 +72,7 @@ public abstract class BaseFollowSetsEventServiceIT {
     FormulaEvent plusOneFormulaEvent = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
     eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent));
 
-    BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
+    this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
         identity,
         reputationIdentifierTag,
         relay,
@@ -89,7 +89,7 @@ public abstract class BaseFollowSetsEventServiceIT {
   }
 
   @Test
-  public void testSaveBadgeAwardReputationEventUpvote() throws JsonProcessingException {
+  public void testSaveBadgeAwardReputationEventUpvote() {
     final String FOLLOW_SETS_EVENT = "FOLLOW_SETS_EVENT";
     final IdentifierTag followSetsIdentifierTag = new IdentifierTag(FOLLOW_SETS_EVENT);
 
@@ -113,7 +113,7 @@ public abstract class BaseFollowSetsEventServiceIT {
 
     assertEquals(followSetsEvent.getContainedAddressableEvents(), dbFollowSetsEventByEventId.getContainedAddressableEvents());
 
-    List<EventIF> returnedEventIFs = Utils.getEventIFs(
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
         new NostrSingleRequestService()
             .send(
                 new ReqMessage(
@@ -127,5 +127,9 @@ public abstract class BaseFollowSetsEventServiceIT {
     log.debug("  {}", returnedEventIFs);
 
     assertTrue(returnedEventIFs.stream().map(EventIF::getKind).toList().contains(Kind.FOLLOW_SETS));
+
+    assertTrue(badgeAwardAbstractEvents.stream()
+        .map(BadgeAwardGenericEvent::getBadgeDefinitionGenericEvent)
+        .anyMatch(badgeDefinitionReputationEventPlusOneFormula::equals));
   }
 }

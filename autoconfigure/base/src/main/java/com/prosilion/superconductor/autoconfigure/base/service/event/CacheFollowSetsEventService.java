@@ -53,10 +53,13 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
       throw new NostrException(
           String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
 
+    log.debug("...calling cacheDereferenceEventTagServiceIF.getEvents(voteEventsAsEventTags)...");
     List<GenericEventRecord> voteEventEventTagsAsGenericEventRecords =
         cacheDereferenceEventTagServiceIF.getEvents(
             voteEventsAsEventTags).stream().toList();
+    log.debug("...successfully returned voteEventEventTagsAsGenericEventRecords...");
 
+    log.debug("...materializing voteEventEventTagsAsGenericEventRecords using getEventTagEvent()...");
     List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> materializedEventTagEvents =
         voteEventEventTagsAsGenericEventRecords.stream()
             .map(genericEventRecord ->
@@ -68,6 +71,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
                                 String.format("FollowSetsEvent did not contain a RelayTag\n  [%s]", genericEventRecord.createPrettyPrintJson())))
                         .getRelay().getUrl()))
             .flatMap(Optional::stream).toList();
+    log.debug("...successfully returned materializedEventTagEvents...");
 
     Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> eventTagToVoteEventFxn = eventTag ->
         materializedEventTagEvents.stream()
@@ -89,16 +93,19 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
   @Override
   public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEventTagEvent(@NonNull String eventId, @NonNull String url) {
-//  TODO: follow sets event should not exist without at least single event tag, but doesn't necessarily break any logic.  needs follow up    
-//    if (eventTagsOfFollowSetsEvent.size() != 1)
-//      throw new NostrException(
-//          String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]", unpopulatedFollowSetsEvent, eventTagsOfFollowSetsEvent.size()));    
+    log.debug("getEventTagEvent(@NonNull String eventId, @NonNull String url)");
     Optional<GenericEventRecord> unpopulatedFollowSetsEventTagEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
 
-    if (unpopulatedFollowSetsEventTagEvent.isEmpty())
-      return Optional.empty();
+    if (unpopulatedFollowSetsEventTagEvent.isEmpty()) {
+      log.debug("unpopulatedFollowSetsEventTagEvent GenericEventRecord not found, throw exception");
+      throw new NostrException(
+          String.format("FollowSetsEvent EventTag's GenericEventRecord eventId: [%s], url: [%s] not found", eventId, url));
+    }
 
-    return cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.get().getId(), url);
+    log.debug("unpopulatedFollowSetsEventTagEvent GenericEventRecord found, call cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.getId, url) to populate it");
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.get().getId(), url);
+    log.debug("returning populated BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>:\n  {}", event.orElseThrow().createPrettyPrintJson());
+    return event;
   }
 
 //  @Override

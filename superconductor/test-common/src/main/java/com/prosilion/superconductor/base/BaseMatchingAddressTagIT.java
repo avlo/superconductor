@@ -17,7 +17,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.util.Utils;
+import com.prosilion.superconductor.util.TestUtils;
 import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public abstract class BaseMatchingAddressTagIT {
 
     ReqMessage reqMessage = new ReqMessage(subscriberId, new Filters(new AddressTagFilter(addressTag)));
     List<BaseMessage> returnedBaseMessages = new NostrSingleRequestService().send(reqMessage, relayUrl);
-    List<EventIF> returnedEvents = Utils.getEventIFs(returnedBaseMessages);
+    List<EventIF> returnedEvents = TestUtils.getEventIFs(returnedBaseMessages);
     log.debug("okMessage:");
     log.debug("  " + returnedEvents);
 

@@ -5,7 +5,7 @@ import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import java.util.List;
 
-public class Utils {
+public class TestUtils {
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {
     return returnedBaseMessages.stream()
         .filter(EventMessage.class::isInstance)

@@ -151,7 +151,8 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
         eventIF.getCreatedAt(),
         eventIF.getContent(),
         eventIF.getSignature().toString());
-
+    
+    log.debug("processInterceptors(...), pre intercept...");
     entity.setTags(
         Stream.concat(
                 eventIF.getTags().stream().map(baseTag ->
@@ -161,6 +162,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
                             (BaseTag) interceptor.intercept(baseTag)).toList()).flatMap(Collection::stream),
                 eventIF.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
             .toList());
+    log.debug("processInterceptors(...), post intercept, done");
 
     return entity;
   }
@@ -174,6 +176,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
         eventIf.getContent(),
         eventIf.getSignature().toString());
 
+    log.debug("revertInterceptor(...), pre canonicalize...");
     entity.setTags(
         Stream.concat(
                 eventIf.getTags().stream().map(baseTag ->
@@ -184,13 +187,18 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
                 eventIf.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
             .toList());
 
+    log.debug("revertInterceptor(...), post canonicalize, done");
     return entity;
   }
 
   private <T extends BaseTag> boolean containsTypedTargetTag(T targetTagType, List<BaseTag> baseTags) {
-    return baseTags.stream()
+    log.debug("containsTypedTargetTag(T targetTagType, List<BaseTag> baseTags)...");
+    log.debug("targetTagType: {}", targetTagType);
+    boolean contains = baseTags.stream()
         .filter(targetTagType.getClass()::isInstance)
         .map(targetTagType.getClass()::cast)
         .collect(Collectors.toSet()).contains(targetTagType);
+    log.debug("containsTypedTargetTag(...) done");
+    return contains;
   }
 }

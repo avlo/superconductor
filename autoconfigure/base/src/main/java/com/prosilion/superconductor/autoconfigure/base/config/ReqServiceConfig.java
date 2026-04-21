@@ -17,8 +17,7 @@ import org.springframework.lang.NonNull;
 public class ReqServiceConfig {
   @Bean
   @ConditionalOnMissingBean
-  Duration requestTimeoutDuration(
-      @NonNull @Value("${superconductor.timeout.duration.millis}") Long durationMillis) {
+  Duration requestTimeoutDuration(@NonNull @Value("${superconductor.timeout.duration.millis}") Long durationMillis) {
     return Duration.ofMillis(durationMillis);
   }
 

@@ -21,7 +21,7 @@ import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.util.Utils;
+import com.prosilion.superconductor.util.TestUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -90,7 +90,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
   void testValidExistingEventThenAfterImageReputationRequestGeneral() throws IOException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    List<EventIF> returnedEventIFs = Utils.getEventIFs(
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
         new NostrSingleRequestService().send(
             new ReqMessage(
                 subscriberId,
@@ -119,7 +119,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
   void testValidExistingEventThenAfterImageReputationRequestSpecific() throws IOException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    List<EventIF> returnedEventIFs = Utils.getEventIFs(
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
         new NostrSingleRequestService().send(
             new ReqMessage(
                 subscriberId,

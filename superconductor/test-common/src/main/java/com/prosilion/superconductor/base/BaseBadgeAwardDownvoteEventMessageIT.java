@@ -22,7 +22,7 @@ import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.util.Utils;
+import com.prosilion.superconductor.util.TestUtils;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -89,7 +89,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
             new ReferencedPublicKeyFilter(
                 new PubKeyTag(
                     downvotedUserPubKey))));
-    List<EventIF> returnedEventIFs = Utils.getEventIFs(
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
         new NostrSingleRequestService().send(reqMessage, relayUrl));
 
     log.debug("returned events:");
@@ -109,7 +109,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
   void testValidExistingEventThenAfterImageReputationRequestSpecific() throws IOException, NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
-    List<EventIF> returnedEventIFs = Utils.getEventIFs(
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
         new NostrSingleRequestService().send(
             new ReqMessage(
                 subscriberId,

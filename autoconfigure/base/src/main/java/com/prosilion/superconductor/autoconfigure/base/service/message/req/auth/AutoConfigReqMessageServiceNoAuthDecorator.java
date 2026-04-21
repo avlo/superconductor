@@ -18,10 +18,12 @@ public class AutoConfigReqMessageServiceNoAuthDecorator implements AutoConfigReq
 
   @Override
   public void processIncoming(@NonNull ReqMessage reqMessage, @NonNull String sessionId) {
-    log.debug("processIncoming(reqMessage, sessionId) with ReqMessage filters:\n  [ {} ]",
+    log.debug("processIncoming(reqMessage, sessionId):\n  sessionId:  [{}]\n  reqMesage.subscriptionId:  [{}]\n  with List<Filters>:\n  {}",
+        sessionId,
+        reqMessage.getSubscriptionId(),
         reqMessage.getFiltersList().stream()
-            .map(Filters::toString)
-            .collect(Collectors.joining(" ],[ ")));
+            .map(filters -> filters.toString(2))
+            .collect(Collectors.joining("],\n  [")));
 
     reqMessageService.processIncoming(reqMessage, sessionId);
   }

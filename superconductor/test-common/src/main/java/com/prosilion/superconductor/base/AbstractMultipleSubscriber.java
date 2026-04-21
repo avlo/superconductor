@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.base;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
@@ -10,10 +9,10 @@ import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.subdivisions.client.RequestSubscriber;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
-import com.prosilion.superconductor.util.OrderAgnosticJsonComparator;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +75,7 @@ abstract class AbstractMultipleSubscriber {
                 assertAll(() -> createEvent(value)))
         , executorService);
 
-    await(
+    RequestSubscriber.await(
         Duration.of(3000, ChronoUnit.MILLIS),
         voidCompletableFuture::isDone);
 
@@ -110,7 +108,7 @@ abstract class AbstractMultipleSubscriber {
                 assertAll(() -> sendRequest(value)))
         , executorService);
 
-    await(
+    RequestSubscriber.await(
         Duration.of(3000, ChronoUnit.MILLIS),
         voidCompletableFuture::isDone);
 
@@ -134,28 +132,5 @@ abstract class AbstractMultipleSubscriber {
     return Factory.generateRandomHex64String()
         .substring(0, 64 - incrementedHexNumber.length())
         .concat(incrementedHexNumber);
-  }
-
-  protected static boolean compareWithoutOrder(String payloadString, String expectedJson) throws JsonProcessingException {
-    JsonNode jsonNode = MAPPER_AFTERBURNER.readTree(payloadString);
-    return OrderAgnosticJsonComparator.equalsJson(MAPPER_AFTERBURNER.readTree(expectedJson), jsonNode);
-  }
-
-  private static void await(Duration timeout, BooleanSupplier conditionSupplier) {
-    long timeoutNs = timeout.toNanos();
-    long startTime = System.nanoTime();
-    do {
-      if (conditionSupplier.getAsBoolean()) {
-        return;
-      }
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        throw new RuntimeException(e);
-      }
-    }
-    while (System.nanoTime() - startTime < timeoutNs);
-    throw new NostrException("TestSubscriber timed out");
   }
 }

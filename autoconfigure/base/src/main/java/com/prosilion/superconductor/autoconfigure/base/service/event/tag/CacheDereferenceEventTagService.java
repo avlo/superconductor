@@ -26,15 +26,17 @@ public class CacheDereferenceEventTagService extends CacheDereferenceAbstractTag
 
   @Override
   public List<GenericEventRecord> getEvents(List<EventTag> eventTags) {
-    return eventTags
-        .stream().parallel()
+    log.debug("getEvents(List<EventTag> eventTags), calling getEvent()...");
+    List<GenericEventRecord> genericEventRecords = eventTags
+        .stream()
         .map(this::getEvent)
         .flatMap(Optional::stream).toList();
+    return genericEventRecords;
   }
 
   @Override
   Optional<GenericEventRecord> getLocalEventFxn(EventTag eventTag) {
-    log.debug("getEvent(EventTag), id: [{}], eventTag URL: [{}]",
+    log.debug("getLocalEventFxn(EventTag), id: [{}], eventTag URL: [{}]",
         eventTag.getIdEvent(),
         eventTag.getRecommendedRelayUrl());
     Optional<GenericEventRecord> cacheServiceIFEventByEventId = cacheServiceIF.getEventByEventId(eventTag.getIdEvent());
@@ -49,7 +51,6 @@ public class CacheDereferenceEventTagService extends CacheDereferenceAbstractTag
 
     return Optional.empty();
   }
-
 
   @Override
   Filters getAbstractTagFilters(EventTag eventTag) {

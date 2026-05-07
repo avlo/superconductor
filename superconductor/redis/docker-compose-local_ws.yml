@@ -5,6 +5,8 @@ services:
     hostname: localhost
     ports:
       - "6379:6379"
+    command:
+      --loglevel debug
 #    environment:
 #      - "REDIS_ARGS=--appendonly yes"
 volumes:

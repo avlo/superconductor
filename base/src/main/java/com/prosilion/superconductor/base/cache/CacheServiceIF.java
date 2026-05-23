@@ -16,6 +16,7 @@ public interface CacheServiceIF {
   List<GenericEventRecord> getByKind(Kind kind);
   List<GenericEventRecord> getEventsByKindAndAuthorPublicKey(Kind kind, PublicKey authorPublicKey);
   List<GenericEventRecord> getEventsByKindAndPubKeyTag(Kind kind, PublicKey referencePubKeyTag);
+  List<GenericEventRecord> getEventsByKindAndAddressTag(Kind kind, AddressTag addressTag);
   List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PublicKey referencePubKeyTag, AddressTag addressTag);
   List<GenericEventRecord> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubkeyTag, IdentifierTag identifierTag);
   List<GenericEventRecord> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag);

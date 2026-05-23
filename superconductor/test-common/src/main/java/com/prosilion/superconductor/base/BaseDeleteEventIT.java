@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
@@ -18,11 +17,8 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
-import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
@@ -36,19 +32,17 @@ public abstract class BaseDeleteEventIT {
   private final String relayUrl;
   private final String eventIdToDeleteId;
   private final String deletionEventId;
-  Duration requestTimeoutDuration;
 
-  public BaseDeleteEventIT(@NonNull String relayUrl, @NonNull Duration requestTimeoutDuration) throws IOException, NostrException, ExecutionException, InterruptedException {
+  public BaseDeleteEventIT(@NonNull String relayUrl) throws NostrException {
     this.relayUrl = relayUrl;
-    this.requestTimeoutDuration = requestTimeoutDuration;
-    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    NostrEventPublisher textNoteEventPublisher = new NostrEventPublisher(relayUrl);
 
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     this.eventIdToDeleteId = event.getId();
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        nostrEventPublisher
+        textNoteEventPublisher
             .send(
                 eventMessage)
             .getFlag());
@@ -59,9 +53,10 @@ public abstract class BaseDeleteEventIT {
     BaseEvent deletionEvent = new DeletionEvent(identity, eventDeletionTags, Factory.lorumIpsum());
     this.deletionEventId = deletionEvent.getId();
 
+    NostrEventPublisher deletionEventPublisher = new NostrEventPublisher(relayUrl);
     EventMessage deletionEventMessage = new EventMessage(deletionEvent);
     assertTrue(
-        nostrEventPublisher
+        deletionEventPublisher
             .send(
                 deletionEventMessage)
             .getFlag());
@@ -70,7 +65,7 @@ public abstract class BaseDeleteEventIT {
   }
 
   @Test
-  void testSingleTextNoteEventDeletion() throws JsonProcessingException, NostrException {
+  void testSingleTextNoteEventDeletion() throws NostrException {
     final String deletionSubmitterSubscriberId = Factory.generateRandomHex64String();
 
     EventFilter deletionEventFilter = new EventFilter(new GenericEventId(eventIdToDeleteId));
@@ -101,7 +96,7 @@ public abstract class BaseDeleteEventIT {
   }
 
   @Test
-  void testCreateAnotherNoteAndConfirmItsNotDeleted() throws IOException {
+  void testCreateAnotherNoteAndConfirmItsNotDeleted() {
     BaseEvent event = new TextNoteEvent(identity, Factory.lorumIpsum());
     String secondEventShouldNotGetDeleted = event.getId();
     NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);

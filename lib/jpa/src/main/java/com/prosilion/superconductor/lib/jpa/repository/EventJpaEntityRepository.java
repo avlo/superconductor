@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.lib.jpa.repository;
 
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -57,6 +58,12 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PublicKey referencedPubKeyTag) {
     return findByKind(kind.getValue());
   }
+
+  //  TODO: needs impl
+  default @NonNull Optional<EventJpaEntityIF> getEventsByKindAndAddressTag(@NonNull Kind kind, @NonNull AddressTag addressTag) {
+    throw new NostrException("JPA getEventsByKindAndAddressTag not yet implemented");
+  }
+
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PublicKey referencedPubKeyTag, @NonNull AddressTag addressTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPubKeyTag);
   }

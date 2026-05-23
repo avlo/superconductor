@@ -11,9 +11,9 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.definition.
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceEventTagService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceKindAddressTagService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import java.time.Duration;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
@@ -37,26 +37,20 @@ import org.springframework.lang.NonNull;
 public class EventServiceConfig {
   @Bean
   @ConditionalOnMissingBean
-  CacheDereferenceAddressTagService cacheDereferenceAddressTagService(
-      @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull String superconductorRelayUrl,
-      @NonNull Duration requestTimeoutDuration) {
-    return new CacheDereferenceAddressTagService(
-        cacheServiceIF,
-        superconductorRelayUrl,
-        requestTimeoutDuration);
+  CacheDereferenceAddressTagService cacheDereferenceAddressTagService(@NonNull CacheServiceIF cacheServiceIF) {
+    return new CacheDereferenceAddressTagService(cacheServiceIF);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  CacheDereferenceEventTagService cacheDereferenceEventTagService(
-      @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull String superconductorRelayUrl,
-      @NonNull Duration requestTimeoutDuration) {
-    return new CacheDereferenceEventTagService(
-        cacheServiceIF,
-        superconductorRelayUrl,
-        requestTimeoutDuration);
+  CacheDereferenceEventTagService cacheDereferenceEventTagService(@NonNull CacheServiceIF cacheServiceIF) {
+    return new CacheDereferenceEventTagService(cacheServiceIF);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  CacheDereferenceKindAddressTagService cacheKindAddressTagService(@NonNull CacheServiceIF cacheServiceIF) {
+    return new CacheDereferenceKindAddressTagService(cacheServiceIF);
   }
 
   @Bean
@@ -64,8 +58,9 @@ public class EventServiceConfig {
   CacheFormulaEventService cacheFormulaEventService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull CacheDereferenceEventTagService cacheDereferenceEventTagService,
-      @NonNull CacheDereferenceAddressTagService cacheDereferenceAddressTagService) {
-    return new CacheFormulaEventService(cacheServiceIF, cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
+      @NonNull CacheDereferenceAddressTagService cacheDereferenceAddressTagService,
+      @NonNull CacheDereferenceKindAddressTagService cacheDereferenceKindAddressTagService) {
+    return new CacheFormulaEventService(cacheServiceIF, cacheDereferenceEventTagService, cacheDereferenceAddressTagService, cacheDereferenceKindAddressTagService);
   }
 
   @Bean

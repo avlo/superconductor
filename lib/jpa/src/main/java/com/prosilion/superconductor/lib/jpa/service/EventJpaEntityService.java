@@ -120,6 +120,15 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
   }
 
   @Override
+  public Optional<EventJpaEntityIF> getEventsByKindAndAddressTag(@NonNull Kind kind, @NonNull AddressTag addressTag) {
+    return eventJpaEntityRepository
+        .getEventsByKindAndAddressTag(kind, addressTag)
+        .map(this::populateEventJpaEntity)
+        .filter(eventJpaEntityIF ->
+            containsTypedTargetTag(addressTag, eventJpaEntityIF.getTags()));
+  }
+
+  @Override
   public List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PublicKey referencedPubkeyTag, @NonNull AddressTag addressTag) {
     return eventJpaEntityRepository
         .getEventsByKindAndPubKeyTagAndAddressTag(kind, referencedPubkeyTag, addressTag)

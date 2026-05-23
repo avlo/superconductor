@@ -77,6 +77,22 @@ public class RedisCacheService implements RedisCacheServiceIF {
   }
 
   @Override
+  public List<GenericEventRecord> getEventsByKindAndAddressTag(
+      @NonNull Kind kind,
+      @NonNull AddressTag addressTag) {
+    Optional<EventNosqlEntityIF> eventsByKindAndAddressTagPreDeletion = eventNosqlEntityService.getEventsByKindAndAddressTag(kind, addressTag);
+    log.debug("eventsByKindAndAddressTagPreDeletion:\n{}", eventsByKindAndAddressTagPreDeletion.stream().map(EventIF::createPrettyPrintJson));
+    
+    List<EventNosqlEntityIF> eventsByKindAndAddressTag = eventsByKindAndAddressTagPreDeletion
+        .stream().filter(filterDeletionEvents()).toList();
+
+    log.debug("eventsByKindAndAddressTagPostDeletion:\n{}", eventsByKindAndAddressTag.stream().map(EventIF::createPrettyPrintJson));
+    
+    List<GenericEventRecord> matches = eventsByKindAndAddressTag.stream().map(EventIF::asGenericEventRecord).toList();
+    return matches;
+  }
+  
+  @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(
       @NonNull Kind kind,
       @NonNull PublicKey referencePubKeyTag,
@@ -103,7 +119,8 @@ public class RedisCacheService implements RedisCacheServiceIF {
       @NonNull Kind kind,
       @NonNull PublicKey authorPublicKey,
       @NonNull IdentifierTag identifierTag) {
-    List<EventNosqlEntityIF> eventsByKindAndAuthorPublicKeyAndIdentifierTag = eventNosqlEntityService.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag).stream()
+    List<EventNosqlEntityIF> eventsByKindAndAuthorPublicKeyAndIdentifierTag = eventNosqlEntityService
+        .getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag).stream()
         .filter(filterDeletionEvents()).toList();
     List<GenericEventRecord> matches = eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().map(EventIF::asGenericEventRecord).toList();
     return matches;

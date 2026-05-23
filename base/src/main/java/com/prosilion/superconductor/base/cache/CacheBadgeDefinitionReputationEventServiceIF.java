@@ -2,10 +2,11 @@ package com.prosilion.superconductor.base.cache;
 
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import java.util.List;
 import java.util.Optional;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.lang.NonNull;
 
 public interface CacheBadgeDefinitionReputationEventServiceIF extends CacheTagMappedEventServiceIF<BadgeDefinitionReputationEvent> {
   @Override
@@ -13,4 +14,5 @@ public interface CacheBadgeDefinitionReputationEventServiceIF extends CacheTagMa
   @Override
   BadgeDefinitionReputationEvent materialize(@NonNull EventIF eventIF);
   List<BadgeDefinitionReputationEvent> getExistingReputationDefinitionEvents();
+  Optional<BadgeDefinitionReputationEvent> getExistingReputationDefinitionEvent(@NonNull AddressTag addressTag);
 }

@@ -21,7 +21,9 @@ public interface EventNosqlEntityRepository extends ListCrudRepository<EventNosq
   List<EventNosqlEntity> findAll(@NonNull Sort sort);
 
   @NonNull
-  Optional<EventNosqlEntity> findById(@NonNull String eventId);
+  Optional<EventNosqlEntity> findById(@NonNull String id);
+
+  Optional<EventNosqlEntity> findByEventId(@NonNull String eventId, Sort sort);
 
   List<EventNosqlEntity> findByPubKey(@NonNull String pubKey, Sort sort);
 
@@ -35,8 +37,8 @@ public interface EventNosqlEntityRepository extends ListCrudRepository<EventNosq
     return Collections.unmodifiableList(findAll(DESC_SORT_CREATED_AT));
   }
 
-  default @NonNull Optional<EventNosqlEntityIF> findByEventId(String eventId) {
-    return Optional.of(findById(eventId).map(EventNosqlEntityIF.class::cast)).orElse(Optional.empty());
+  default @NonNull Optional<EventNosqlEntityIF> findByEventId(@NonNull String eventId) {
+    return Optional.of(findByEventId(eventId, DESC_SORT_CREATED_AT).map(EventNosqlEntityIF.class::cast)).orElse(Optional.empty());
   }
 
   default @NonNull List<EventNosqlEntityIF> findByKind(@NonNull Kind kind) {

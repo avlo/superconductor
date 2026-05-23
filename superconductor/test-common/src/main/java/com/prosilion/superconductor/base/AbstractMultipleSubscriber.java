@@ -44,11 +44,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @ActiveProfiles("test")
 @TestMethodOrder(OrderAnnotation.class) // exists because MultipleSubscriberEventIdAndAuthorIT has additional tests
 abstract class AbstractMultipleSubscriber {
+  public static final Duration DEFAULT_TIMEOUT_5000_MS = Duration.of(3000, ChronoUnit.MILLIS);
   private static final ObjectMapper MAPPER_AFTERBURNER = JsonMapper.builder().addModule(new AfterburnerModule()).build();
   @Getter
   private final Integer targetCount;
-  @Getter
-  private final NostrEventPublisher nostrEventPublisher;
   @Getter
   private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -62,7 +61,6 @@ abstract class AbstractMultipleSubscriber {
       @NonNull String hexCounterSeed,
       @NonNull Integer hexNumberOfBytes,
       @NonNull Integer reqInstances) {
-    this.nostrEventPublisher = new NostrEventPublisher(relayUrl);
     this.hexStartNumber = Integer.parseInt(hexCounterSeed.repeat(2 * hexNumberOfBytes), 16);
     this.targetCount = reqInstances;
     this.relayUrl = relayUrl;
@@ -76,7 +74,7 @@ abstract class AbstractMultipleSubscriber {
         , executorService);
 
     RequestSubscriber.await(
-        Duration.of(3000, ChronoUnit.MILLIS),
+        DEFAULT_TIMEOUT_5000_MS,
         voidCompletableFuture::isDone);
 
     assertFalse(voidCompletableFuture.isCompletedExceptionally());
@@ -88,7 +86,7 @@ abstract class AbstractMultipleSubscriber {
     String globalEventJson = getGlobalEventJson(nextHex);
     log.debug("setup() send event:\n{}", globalEventJson);
 //    TODO: update cast
-    nostrEventPublisher.send((EventMessage) BaseMessageDecoder.decode(globalEventJson));
+    new NostrEventPublisher(relayUrl).send((EventMessage) BaseMessageDecoder.decode(globalEventJson));
     targetEventIds.add(nextHex); // targetEventId String values utilized by inherited classes
   }
 
@@ -109,7 +107,7 @@ abstract class AbstractMultipleSubscriber {
         , executorService);
 
     RequestSubscriber.await(
-        Duration.of(3000, ChronoUnit.MILLIS),
+        DEFAULT_TIMEOUT_5000_MS,
         voidCompletableFuture::isDone);
 
     assertFalse(voidCompletableFuture.isCompletedExceptionally());

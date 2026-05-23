@@ -10,13 +10,13 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.RelayTag;
+import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -80,14 +80,15 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
             .findFirst().orElseThrow(() ->
                 new NostrException(
                     String.format("FollowSetsEvent materializedEventTagEvents:\n  [%s]\ndid not contain a match for EventTag:\n  [%s]",
-                        materializedEventTagEvents.stream()
-                            .map(EventIF::createPrettyPrintJson)
-                            .collect(Collectors.joining(",\n  ")),
+                        Util.prettyPrintGenericEventRecords(materializedEventTagEvents.stream()
+                            .map(BadgeAwardGenericEvent::getGenericEventRecord)
+                            .toList()),
                         eventTag)));
 
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
         incomingFollowSetsEvent.asGenericEventRecord(), eventTagToVoteEventFxn);
 
+    log.debug("...returning materialized FollowSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
     return followSetsEvent;
   }
 

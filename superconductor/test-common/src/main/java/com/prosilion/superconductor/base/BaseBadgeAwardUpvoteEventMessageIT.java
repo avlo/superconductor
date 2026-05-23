@@ -23,7 +23,6 @@ import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +75,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
   }
 
   @Test
-  void testValidExistingEventThenAfterImageReputationRequestGeneral() throws IOException, NostrException {
+  void testValidExistingEventThenAfterImageReputationRequestGeneral() throws NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
@@ -107,7 +106,7 @@ public abstract class BaseBadgeAwardUpvoteEventMessageIT {
   }
 
   @Test
-  void testValidExistingEventThenAfterImageReputationRequestSpecific() throws IOException, NostrException {
+  void testValidExistingEventThenAfterImageReputationRequestSpecific() throws NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(

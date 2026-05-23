@@ -5,11 +5,12 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.EventFilter;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -17,20 +18,18 @@ import org.springframework.lang.NonNull;
 public class CacheDereferenceEventTagService extends CacheDereferenceAbstractTagService<EventTag> implements CacheDereferenceEventTagServiceIF {
   public static final String INVALID_REMOTE_URL = "AbstractEventTag [%s] does not contain a (valid) Relay";
 
-  public CacheDereferenceEventTagService(
-      @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull String superconductorRelayUrl,
-      @NonNull Duration requestTimeoutDuration) {
-    super(cacheServiceIF, superconductorRelayUrl, requestTimeoutDuration);
+  public CacheDereferenceEventTagService(@NonNull CacheServiceIF cacheServiceIF) {
+    super(cacheServiceIF);
   }
 
   @Override
   public List<GenericEventRecord> getEvents(List<EventTag> eventTags) {
-    log.debug("getEvents(List<EventTag> eventTags), calling getEvent()...");
+    log.debug("getEvents(List<EventTag> eventTags), calling streamed getEvent()...");
     List<GenericEventRecord> genericEventRecords = eventTags
         .stream()
         .map(this::getEvent)
         .flatMap(Optional::stream).toList();
+    log.debug("streamed getEvent() returning:\n {}", Util.prettyPrintGenericEventRecords(genericEventRecords));
     return genericEventRecords;
   }
 

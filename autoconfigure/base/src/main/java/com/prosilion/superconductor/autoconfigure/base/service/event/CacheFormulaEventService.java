@@ -6,14 +6,17 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.RelayTag;
+import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -26,84 +29,101 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
   private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
   private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
+  private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
 
   public CacheFormulaEventService(
       @NonNull CacheServiceIF cacheServiceIF,
       @NonNull CacheDereferenceEventTagService cacheDereferenceEventTagServiceIF,
-      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
+      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
+      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
     this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;
+    this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
   }
 
   @Override
   public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url) {
-    Optional<GenericEventRecord> unpopulatedFormulaEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
-    if (unpopulatedFormulaEvent.isEmpty())
+    log.debug("insdice getEvent(@NonNull String eventId, @NonNull String url)");
+    log.debug("  eventId:  [{}]", eventId);
+    log.debug("  relayUrl: [{}]", url);
+    Optional<GenericEventRecord> unpopulatedFormulaEventGER = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
+    if (unpopulatedFormulaEventGER.isEmpty()) {
+      log.debug("call to cacheDereferenceEventTagServiceIF.getEvent(eventId, url) returned EMPTY unpopulatedFormulaEventGER", url);
       return Optional.empty();
+    }
 
-    return Optional.of(materialize(unpopulatedFormulaEvent.get()));
+    log.debug("call to cacheDereferenceEventTagServiceIF.getEvent(eventId, url) returned unpopulatedFormulaEventGER:\n  {}", unpopulatedFormulaEventGER.get().createPrettyPrintJson());
+
+    log.debug("calling materialize(unpopulatedFormulaEvent.get()) ...", url);
+    return Optional.of(materialize(unpopulatedFormulaEventGER.get()));
   }
 
   @Override
   public FormulaEvent materialize(@NonNull EventIF incomingFormulaEvent) {
+    log.debug("inside materialize(EventIF incomingFormulaEvent):\n  {}", incomingFormulaEvent.createPrettyPrintJson());
+    
     BadgeDefinitionGenericEvent badgeDefinitionGenericEvent = getBadgeDefinitionGenericEvent(incomingFormulaEvent.asGenericEventRecord());
+    log.debug("getBadgeDefinitionGenericEvent(incomingFormulaEvent):\n  {}", badgeDefinitionGenericEvent.createPrettyPrintJson());
 
     FormulaEvent formulaEvent = new FormulaEvent(
         incomingFormulaEvent.asGenericEventRecord(),
         addressTag -> badgeDefinitionGenericEvent);
 
-// check for existing formula event using pubkey and identifier tag
-    Optional<GenericEventRecord> dbOptionalFormulaEvent = cacheServiceIF.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
-        formulaEvent.getKind(),
-        formulaEvent.getPublicKey(),
-        formulaEvent.getIdentifierTag()).stream().findFirst();
-
-// 	if existing formula event not found:
-    if (dbOptionalFormulaEvent.isEmpty()) {
-//      log.debug("saving new FormulaEvent {}...", incomingFormulaEvent);
-//      cacheServiceIF.save(incomingFormulaEvent);
-//      log.debug("...done");
-      return formulaEvent;
-    }
-
-// existing formula event was found    
-// check non-conflicting formula content
-    IdentifierTag incomingFormulaIdentifierTag = formulaEvent.getIdentifierTag();
-    IdentifierTag dbIdentifierTag =
-        Filterable.getTypeSpecificTagsStream(IdentifierTag.class, dbOptionalFormulaEvent.get()).findFirst().orElseThrow();
-
-//    identifier tag different, ok to save incomingFormulaEvent
-    if (!dbIdentifierTag.equals(incomingFormulaIdentifierTag)) {
-//      log.debug("saving new FormulaEvent {}...", incomingFormulaEvent);
-//      cacheServiceIF.save(incomingFormulaEvent);
-//      log.debug("...done");
-      return formulaEvent;
-    }
-
-    String dbFormula = dbOptionalFormulaEvent.get().content();
-    String incomingFormula = formulaEvent.getContent();
-    if (!dbFormula.equals(incomingFormula)) {
-      throw new NostrException(
-          String.format(FORMATTED, dbFormula, incomingFormula));
-    }
-
-    log.debug("Identical FormulaEvent already exists, return it");
+    log.debug("return reCreated formulaEvent:\n  {}", formulaEvent.createPrettyPrintJson());
     return formulaEvent;
   }
 
-  private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord genericEventRecord) {
-    AddressTag firstAddressTag = Filterable.getTypeSpecificTagsStream(AddressTag.class, genericEventRecord)
+  @Override
+  public Optional<FormulaEvent> getAddressTagAsFormulaEvent(@NonNull AddressTag addressTag) {
+    log.debug("getAddressTagAsFormulaEvent(AddressTag addressTag):{}", Util.prettyPrintAddressTags(addressTag));
+
+    Optional<GenericEventRecord> formulaEventGER = cacheKindAddressTagServiceIF.getEventByKindAndAddressTag(
+        Kind.ARBITRARY_CUSTOM_APP_DATA, addressTag);
+    
+    if (formulaEventGER.isEmpty()) {
+      log.debug("cacheKindAddressTagServiceIF.getEventByKindAndAddressTag(ARBITRARY_CUSTOM_APP_DATA, addressTag) returned EMPTY formulaEventGER");
+      return Optional.empty();
+    }
+
+    log.debug("cacheKindAddressTagServiceIF.getEventByKindAndAddressTag(ARBITRARY_CUSTOM_APP_DATA, addressTag) returned formulaEventGER:\n  {}", formulaEventGER.get().createPrettyPrintJson());
+    log.debug("formulaEventGER eventId: [{}]", formulaEventGER.get().getId());
+
+    String formulaEventRelayUrl = Filterable.getTypeSpecificTagsStream(RelayTag.class, formulaEventGER.get())
+        .findFirst()
+        .map(relayTag ->
+            Optional.of(relayTag).orElseThrow(() ->
+                new NostrException("getTypeSpecificTagsStream(RelayTag) shit the bed")))
+        .map(RelayTag::getRelay)
+        .map(Relay::getUrl).orElseThrow(() ->
+            new NostrException("RelayTag URL shit the bed"));
+    log.debug("formulaEventGER relayUrl: [{}]", formulaEventRelayUrl);
+
+    Optional<FormulaEvent> formulaEvent = getEvent(formulaEventGER.get().getId(), formulaEventRelayUrl);
+    log.debug("returning formulaEvent:\n  {}", formulaEvent.get().createPrettyPrintJson());
+
+    return formulaEvent;
+  }
+
+  private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord unpopulatedFormulaEventGER) {
+    log.debug("inside getBadgeDefinitionGenericEvent(GenericEventRecord unpopulatedFormulaEventGER");
+
+    log.debug("calling Filterable.getTypeSpecificTagsStream(AddressTag.class, unpopulatedFormulaEventGER)");
+    AddressTag firstAddressTag = Filterable.getTypeSpecificTagsStream(AddressTag.class, unpopulatedFormulaEventGER)
         .findFirst().orElseThrow(() ->
             new NostrException(
-                String.format(NON_EXISTENT_ADDRESS_TAG, genericEventRecord)));
+                String.format(NON_EXISTENT_ADDRESS_TAG, unpopulatedFormulaEventGER)));
+    log.debug("returned firstAddressTag:\n  {}", Util.prettyPrintAddressTags(firstAddressTag));
 
-    GenericEventRecord firstAddressTagAsEvent = cacheDereferenceAddressTagServiceIF.getEvent(firstAddressTag).orElseThrow(() ->
+    log.debug("calling cacheDereferenceAddressTagServiceIF.getEvent(firstAddressTag)");
+    GenericEventRecord firstAddressTagAsEventGER = cacheDereferenceAddressTagServiceIF.getEvent(firstAddressTag).orElseThrow(() ->
         new NostrException(
-            String.format(NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S, genericEventRecord)));
+            String.format(NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S, unpopulatedFormulaEventGER)));
+    log.debug("returned unpopulatedFormulaEventGER's firstAddressTagAsEventGER (is a BadgeDefinition[Upvote]Event):\n  {}", firstAddressTagAsEventGER.createPrettyPrintJson());
 
-    BadgeDefinitionGenericEvent addressTagNowBadgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(firstAddressTagAsEvent);
-
+    BadgeDefinitionGenericEvent addressTagNowBadgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(firstAddressTagAsEventGER);
+    log.debug("returneding addressTagNowBadgeDefinitionGenericEvent:\n  {}", addressTagNowBadgeDefinitionGenericEvent.createPrettyPrintJson());
+    
     return addressTagNowBadgeDefinitionGenericEvent;
   }
 

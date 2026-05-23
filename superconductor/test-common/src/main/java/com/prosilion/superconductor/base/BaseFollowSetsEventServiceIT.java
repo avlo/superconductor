@@ -40,8 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class BaseFollowSetsEventServiceIT {
   public static final String PLUS_ONE_FORMULA = "+1";
 
-  public final IdentifierTag reputationIdentifierTag = new IdentifierTag("EST_UNIT_REPUTATION");
-  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("TEST_UNIT_UPVOTE");
+  public final IdentifierTag reputationIdentifierTag = new IdentifierTag("BADGE_DEFINITION_UNIT_REPUTATION");
+  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("BADGE_DEFINITION_UNIT_UPVOTE");
 
   public final Identity identity = Identity.generateRandomIdentity();
   private final PublicKey reputationRecipientPublicKey = Identity.generateRandomIdentity().getPublicKey();
@@ -69,7 +69,8 @@ public abstract class BaseFollowSetsEventServiceIT {
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
-    FormulaEvent plusOneFormulaEvent = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
+    IdentifierTag formulaUnitUpvoteIdentifierTag = new IdentifierTag("FORMULA_UNIT_UPVOTE");
+    FormulaEvent plusOneFormulaEvent = new FormulaEvent(identity, formulaUnitUpvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
     eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent));
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(

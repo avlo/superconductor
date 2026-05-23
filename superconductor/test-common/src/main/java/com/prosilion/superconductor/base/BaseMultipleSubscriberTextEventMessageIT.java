@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.base;
 
 import com.prosilion.superconductor.util.Factory;
-import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +23,7 @@ public abstract class BaseMultipleSubscriberTextEventMessageIT extends AbstractM
       @NonNull String relayUrl,
       @Value("${superconductor.test.req.hexCounterSeed}") String hexCounterSeed,
       @Value("${superconductor.test.req.hexNumberOfBytes}") Integer hexNumberOfBytes,
-      @Value("${superconductor.test.req.instances}") Integer reqInstances,
-      Duration requestTimeoutDuration) {
+      @Value("${superconductor.test.req.instances}") Integer reqInstances) {
     super(relayUrl, hexCounterSeed, hexNumberOfBytes, reqInstances);
 
     this.authorPubKey = Factory.generateRandomHex64String();

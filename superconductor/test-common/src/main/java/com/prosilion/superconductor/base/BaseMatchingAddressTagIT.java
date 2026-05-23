@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.Kind;
@@ -45,7 +44,7 @@ public abstract class BaseMatchingAddressTagIT {
   }
 
   @Test
-  void testReqMessages() throws JsonProcessingException, NostrException {
+  void testReqMessages() throws NostrException {
     String subscriberId = Factory.generateRandomHex64String();
     IdentifierTag identifierTag = new IdentifierTag(uuid);
 

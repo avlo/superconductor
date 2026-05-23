@@ -48,7 +48,6 @@ public abstract class BaseTextNoteEventMessageIT {
             .send(
                 eventMessageFromTextNoteGenericEventRecord)
             .getFlag());
-    nostrEventPublisher.closeSocket();
   }
 
   @Test

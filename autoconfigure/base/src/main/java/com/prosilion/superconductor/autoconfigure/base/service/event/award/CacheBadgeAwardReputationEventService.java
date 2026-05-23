@@ -10,6 +10,7 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.RelayTag;
+import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
@@ -55,7 +56,7 @@ public class CacheBadgeAwardReputationEventService implements CacheBadgeAwardRep
     if (incomingBadgeAwardReputationEventAddressTags.size() != 1)
       throw new NostrException(
           String.format("BadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]",
-              EventIF.serialize(incomingBadgeAwardReputationEvent.asGenericEventRecord()),
+              Util.prettyPrintGenericEventRecords(incomingBadgeAwardReputationEvent.asGenericEventRecord()),
               incomingBadgeAwardReputationEventAddressTags.size()));
 
     List<BadgeDefinitionReputationEvent> badgeDefinitionReputationEvents = incomingBadgeAwardReputationEventAddressTags.stream()

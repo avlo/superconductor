@@ -63,11 +63,12 @@ public class CacheBadgeAwardReputationEventServiceIT {
     cacheServiceIF.save(
         new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay));
 
+    IdentifierTag formulaUnitUpvoteIdentifierTag = new IdentifierTag("FORMULA_UNIT_UPVOTE");
     eventServiceIF.processIncomingEvent(
         new EventMessage(
             new FormulaEvent(
                 identity,
-                upvoteIdentifierTag,
+                formulaUnitUpvoteIdentifierTag,
                 relay,
                 new BadgeDefinitionGenericEvent(
                     identity,
@@ -80,7 +81,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
         reputationIdentifierTag,
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-        new FormulaEvent(identity, upvoteIdentifierTag, relay, new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay), PLUS_ONE_FORMULA));
+        new FormulaEvent(identity, formulaUnitUpvoteIdentifierTag, relay, new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay), PLUS_ONE_FORMULA));
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula));
 

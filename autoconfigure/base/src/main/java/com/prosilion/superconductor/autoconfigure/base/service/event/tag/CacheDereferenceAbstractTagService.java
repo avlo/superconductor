@@ -12,6 +12,8 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbstractEventTag> extends CacheDereferenceBaseAbstractTagService<T> implements CacheDereferenceAbstractTagServiceIF<T> {
+  private static final String STRING = "inside getRemoteEventGenericEventRecord(abstractTag, relayUrl): [{}], [{}]";
+
   public CacheDereferenceAbstractTagService(@NonNull CacheServiceIF cacheServiceIF) {
     super(cacheServiceIF);
   }
@@ -19,7 +21,7 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
   abstract Optional<GenericEventRecord> getLocalEventFxn(T tag);
 
   protected Optional<GenericEventRecord> getRemoteEventGenericEventRecord(T abstractTag, String relayUrl) {
-    log.debug("inside getRemoteEventGenericEventRecord(T abstractTag, String relayUrl):\nabstractTag:\n  {}\nrelayUrl:\n  {}", Util.prettyPrintReferencedAbstractEventTag(abstractTag), relayUrl);
+    log.debug(STRING, Util.prettyPrintReferencedAbstractEventTag(abstractTag), relayUrl);
 
     Optional<GenericEventRecord> optionalGenericEventRecord = sendConsolidatorReq(
         relayUrl,
@@ -47,7 +49,7 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
     Optional<GenericEventRecord> localGenericEventRecordOptional = getLocalEventFxn(abstractTag);
 
     if (localGenericEventRecordOptional.isPresent()) {
-      log.debug("... found returning local localGenericEventRecordOptional:{}", Util.prettyPrintGenericEventRecords(localGenericEventRecordOptional.get()));
+      log.debug("... returning local GenericEventRecord:{}", localGenericEventRecordOptional.get().createPrettyPrintJson());
       return localGenericEventRecordOptional;
     }
 

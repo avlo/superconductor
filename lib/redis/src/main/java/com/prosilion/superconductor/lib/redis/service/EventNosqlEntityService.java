@@ -112,13 +112,14 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     EventNosqlEntity eventNosqlEntity = new EventNosqlEntity();
     eventNosqlEntity.setKind(kind.getValue());
     eventNosqlEntity.setPublicKey(addressTag.getPublicKey().toHexString());
-    return eventNosqlEntityByExampleRepository.findAll(Example.of(eventNosqlEntity)).stream()
+    Stream<EventNosqlEntityIF> eventNosqlEntityIFStream = eventNosqlEntityByExampleRepository.findAll(Example.of(eventNosqlEntity)).stream()
         .map(this::revertInterceptor)
         .filter(eventNosqlEntityIF ->
             eventNosqlEntityIF.getTags().stream()
                 .filter(IdentifierTag.class::isInstance)
                 .map(IdentifierTag.class::cast)
-                .anyMatch(addressTag.getIdentifierTag()::equals)).findFirst();
+                .anyMatch(addressTag.getIdentifierTag()::equals));
+    return eventNosqlEntityIFStream.findFirst();
   }
 
   //  TODO: replace with JPQL  
@@ -129,8 +130,14 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     EventNosqlEntity eventNosqlEntity = new EventNosqlEntity();
     eventNosqlEntity.setKind(kind.getValue());
     eventNosqlEntity.setTags(List.of(new PubKeyTag(referencedPublicKey), addressTag));
-    return eventNosqlEntityByExampleRepository.findAll(Example.of(eventNosqlEntity)).stream()
-        .map(this::revertInterceptor).toList();
+    Stream<EventNosqlEntityIF> eventNosqlEntityIFStream = eventNosqlEntityByExampleRepository.findAll(Example.of(eventNosqlEntity)).stream()
+        .map(this::revertInterceptor)
+        .filter(eventNosqlEntityIF ->
+            eventNosqlEntityIF.getTags().stream()
+                .filter(AddressTag.class::isInstance)
+                .map(AddressTag.class::cast)
+                .anyMatch(addressTag::equals));
+    return eventNosqlEntityIFStream.toList();
   }
 
   //  TODO: replace with JPQL  
@@ -138,10 +145,12 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
       @NonNull Kind kind,
       @NonNull PublicKey referencedPublicKey,
       @NonNull IdentifierTag identifierTag) {
-    return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
+    List<EventNosqlEntityIF> eventsByKindAndIdentifierTag = getEventsByKindAndIdentifierTag(kind, identifierTag);
+    List<EventNosqlEntityIF> list = eventsByKindAndIdentifierTag.stream()
         .filter(eventNosqlEntityIF ->
-            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags()))
+            containsTypedTargetTag(new PubKeyTag(referencedPublicKey), eventNosqlEntityIF.getTags()))
         .toList();
+    return list;
   }
 
   //  TODO: replace with JPQL

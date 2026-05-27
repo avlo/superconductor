@@ -43,6 +43,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
 
   public final Identity identity = Identity.generateRandomIdentity();
   public final PublicKey upvotedUserPublicKey = Identity.generateRandomIdentity().getPublicKey();
+  public final PublicKey reputationDefinitionCreatorPublicKey = Identity.generateRandomIdentity().getPublicKey();
 
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService;
@@ -78,6 +79,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
         identity,
+        reputationDefinitionCreatorPublicKey,
         reputationIdentifierTag,
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,

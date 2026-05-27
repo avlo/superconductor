@@ -40,11 +40,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class BaseFollowSetsEventServiceIT {
   public static final String PLUS_ONE_FORMULA = "+1";
 
-  public final IdentifierTag reputationIdentifierTag = new IdentifierTag("BADGE_DEFINITION_UNIT_REPUTATION");
-  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag("BADGE_DEFINITION_UNIT_UPVOTE");
+  private final IdentifierTag reputationIdentifierTag = new IdentifierTag("BADGE_DEFINITION_UNIT_REPUTATION");
+  private final IdentifierTag upvoteIdentifierTag = new IdentifierTag("BADGE_DEFINITION_UNIT_UPVOTE");
 
-  public final Identity identity = Identity.generateRandomIdentity();
+  private final Identity identity = Identity.generateRandomIdentity();
   private final PublicKey reputationRecipientPublicKey = Identity.generateRandomIdentity().getPublicKey();
+  private final PublicKey reputationDefinitionCreatorPublicKey = Identity.generateRandomIdentity().getPublicKey();
 
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent;
@@ -75,6 +76,7 @@ public abstract class BaseFollowSetsEventServiceIT {
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
         identity,
+        reputationDefinitionCreatorPublicKey,
         reputationIdentifierTag,
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
@@ -96,8 +98,7 @@ public abstract class BaseFollowSetsEventServiceIT {
 
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
         identity,
-        reputationRecipientPublicKey,
-        followSetsIdentifierTag,
+        badgeDefinitionReputationEventPlusOneFormula,
         relay,
         List.of(badgeAwardUpvoteEvent));
 

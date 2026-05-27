@@ -1,6 +1,9 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.tag;
 
+import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
 import com.prosilion.nostr.filter.event.KindFilter;
@@ -17,6 +20,7 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractTagService<AddressTag> implements CacheDereferenceAddressTagServiceIF {
   public static final String FORMATTED_ADDRESS_TAG = "AddressTag[kind=%d, publicKey=%s, identifierTag=IdentifierTag[uuid=%s], relay=Relay[url=%s]]";
+  public static final String NON_EXISTENT_ADDRESS_TAG_EVENT = "AddressTag [%s] references non-existent Event";
 
   public CacheDereferenceAddressTagService(@NonNull CacheServiceIF cacheServiceIF) {
     super(cacheServiceIF);
@@ -36,8 +40,7 @@ public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractT
     log.debug("found List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag:\n  {}",
         eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().map(GenericEventRecord::createPrettyPrintJson));
 
-    boolean hasContents = !eventsByKindAndAuthorPublicKeyAndIdentifierTag.isEmpty();
-    if (hasContents) {
+    if (!eventsByKindAndAuthorPublicKeyAndIdentifierTag.isEmpty()) {
       Optional<GenericEventRecord> first = eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().findFirst();
       log.debug("... returning first local AddressTag as GER:\n  {}", Util.prettyPrintGenericEventRecords(first.get()));
       return first;
@@ -48,18 +51,23 @@ public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractT
   }
 
   @Override
+  public List<GenericEventRecord> getEventIFAddressTagsAsGenericEventRecords(@NonNull EventIF eventIF) {
+    List<AddressTag> eventIFAddressTags =
+        Filterable.getTypeSpecificTagsStream(AddressTag.class, eventIF).distinct().toList();
+
+    List<GenericEventRecord> genericEventRecords = eventIFAddressTags.stream()
+        .map(addressTag1 -> getEvent(addressTag1)
+            .orElseThrow(() ->
+                new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG_EVENT, addressTag1)))).toList();
+
+    return genericEventRecords;
+  }
+
+  @Override
   Filters getAbstractTagFilters(AddressTag addressTag) {
     return new Filters(
         new KindFilter(addressTag.getKind()), // should always be 30009
         new AuthorFilter(addressTag.getPublicKey()),
         new IdentifierTagFilter(addressTag.getIdentifierTag()));
-  }
-
-  private String pubKeySubstring(AddressTag addressTag) {
-    return String.format(FORMATTED_ADDRESS_TAG,
-        addressTag.getKind().getValue(),
-        addressTag.getPublicKey().toHexString().substring(0, 7).concat("..."),
-        addressTag.getIdentifierTag().getUuid(),
-        addressTag.getRelay().getUrl());
   }
 }

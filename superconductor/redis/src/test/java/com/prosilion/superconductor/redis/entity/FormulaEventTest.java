@@ -8,6 +8,7 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.user.PublicKey;
 import java.util.List;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ public class FormulaEventTest {
   public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(TEST_UNIT_DOWNVOTE);
 
   public final Identity identity = Identity.generateRandomIdentity();
+  public final PublicKey reputationDefinitionCreatorPublicKey = Identity.generateRandomIdentity().getPublicKey();
 
   public final String PLUS_ONE_FORMULA = "+1";
   public final String MINUS_ONE_FORMULA = "-1";
@@ -112,6 +114,7 @@ public class FormulaEventTest {
         "SuperConductor BadgeDefinitionReputationEvent, default content from FormulaEvent(s) operator(s): BADGE_DEFINITION_UNIT_REPUTATION == (previous)BADGE_DEFINITION_UNIT_REPUTATION +1(BADGE_DEFINITION_UNIT_UPVOTE) -1(BADGE_DEFINITION_UNIT_DOWNVOTE)",
         new BadgeDefinitionReputationEvent(
             identity,
+            reputationDefinitionCreatorPublicKey,
             new IdentifierTag(
                 TEST_UNIT_REPUTATION),
             relay,
@@ -129,6 +132,7 @@ public class FormulaEventTest {
         "SuperConductor BadgeDefinitionReputationEvent, default content from FormulaEvent(s) operator(s): BADGE_DEFINITION_UNIT_REPUTATION == (previous)BADGE_DEFINITION_UNIT_REPUTATION +1(BADGE_DEFINITION_UNIT_UPVOTE) +1(UNIT_UPVOTE_UNIQUE)",
         new BadgeDefinitionReputationEvent(
             identity,
+            reputationDefinitionCreatorPublicKey,
             new IdentifierTag(
                 TEST_UNIT_REPUTATION),
             relay,

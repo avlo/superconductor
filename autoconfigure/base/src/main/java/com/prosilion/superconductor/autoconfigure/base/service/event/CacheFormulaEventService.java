@@ -6,11 +6,10 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.util.Util;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardAbstractEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -62,7 +61,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   @Override
   public FormulaEvent materialize(@NonNull EventIF incomingFormulaEvent) {
     log.debug("inside materialize(EventIF incomingFormulaEvent):\n  {}", incomingFormulaEvent.createPrettyPrintJson());
-    
+
     BadgeDefinitionGenericEvent badgeDefinitionGenericEvent = getBadgeDefinitionGenericEvent(incomingFormulaEvent.asGenericEventRecord());
     log.debug("getBadgeDefinitionGenericEvent(incomingFormulaEvent):\n  {}", badgeDefinitionGenericEvent.createPrettyPrintJson());
 
@@ -80,7 +79,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
     Optional<GenericEventRecord> formulaEventGER = cacheKindAddressTagServiceIF.getEventByKindAndAddressTag(
         Kind.ARBITRARY_CUSTOM_APP_DATA, addressTag);
-    
+
     if (formulaEventGER.isEmpty()) {
       log.debug("cacheKindAddressTagServiceIF.getEventByKindAndAddressTag(ARBITRARY_CUSTOM_APP_DATA, addressTag) returned EMPTY formulaEventGER");
       return Optional.empty();
@@ -89,14 +88,8 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     log.debug("cacheKindAddressTagServiceIF.getEventByKindAndAddressTag(ARBITRARY_CUSTOM_APP_DATA, addressTag) returned formulaEventGER:\n  {}", formulaEventGER.get().createPrettyPrintJson());
     log.debug("formulaEventGER eventId: [{}]", formulaEventGER.get().getId());
 
-    String formulaEventRelayUrl = Filterable.getTypeSpecificTagsStream(RelayTag.class, formulaEventGER.get())
-        .findFirst()
-        .map(relayTag ->
-            Optional.of(relayTag).orElseThrow(() ->
-                new NostrException("getTypeSpecificTagsStream(RelayTag) shit the bed")))
-        .map(RelayTag::getRelay)
-        .map(Relay::getUrl).orElseThrow(() ->
-            new NostrException("RelayTag URL shit the bed"));
+    String formulaEventRelayUrl = CacheBadgeAwardAbstractEventService.getRelayTagUrl(
+        formulaEventGER.get().asGenericEventRecord());
     log.debug("formulaEventGER relayUrl: [{}]", formulaEventRelayUrl);
 
     Optional<FormulaEvent> formulaEvent = getEvent(formulaEventGER.get().getId(), formulaEventRelayUrl);
@@ -123,7 +116,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
     BadgeDefinitionGenericEvent addressTagNowBadgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(firstAddressTagAsEventGER);
     log.debug("returneding addressTagNowBadgeDefinitionGenericEvent:\n  {}", addressTagNowBadgeDefinitionGenericEvent.createPrettyPrintJson());
-    
+
     return addressTagNowBadgeDefinitionGenericEvent;
   }
 

@@ -19,6 +19,8 @@ public abstract class BaseMultipleSubscriberClassifiedListingEventMessageIT exte
   private final String subject;
   private final String eventTagId;
   private final String geoTagText;
+  private final String uuid;
+  private final String relayTagUrl;
 
   public BaseMultipleSubscriberClassifiedListingEventMessageIT(
       @NonNull String relayUrl,
@@ -36,6 +38,8 @@ public abstract class BaseMultipleSubscriberClassifiedListingEventMessageIT exte
     this.summary = Factory.lorumIpsum(getClass());
     this.pubKeyTagPubKey = Factory.generateRandomHex64String();
     this.geoTagText = Factory.lorumIpsum(getClass());
+    this.uuid = Factory.generateRandomHex64String();
+    this.relayTagUrl = relayUrl;
 
 //    unused here, but might be useful for later/other tests reference
 //    List<BaseTag> tags = new ArrayList<>();
@@ -60,6 +64,8 @@ public abstract class BaseMultipleSubscriberClassifiedListingEventMessageIT exte
         eventTagId + "\",\n" +
         "\"wss://nostr.example.com\"\n" +
         "]," +
+        " [\"d\", \"" + uuid + "\"]," +
+        " [\"relay\", \"" + relayTagUrl + "\"]," +
         " [\"p\", \"" + pubKeyTagPubKey + "\"], [\"t\", \"classified hash-tag-1111\"], [\"g\", \"" + geoTagText + "\" ]], \"pubkey\": \"" + authorPubKey + "\", \"created_at\": 1718843251760, \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"}]";
   }
 

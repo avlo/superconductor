@@ -74,11 +74,10 @@ public class EventServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
-      @NonNull CacheServiceIF cacheServiceIF,
       @NonNull CacheDereferenceEventTagService cacheDereferenceEventTagService,
       @NonNull CacheDereferenceAddressTagService cacheDereferenceAddressTagService,
       @NonNull CacheFormulaEventService cacheFormulaEventService) {
-    return new CacheBadgeDefinitionReputationEventService(cacheServiceIF, cacheDereferenceEventTagService, cacheDereferenceAddressTagService, cacheFormulaEventService);
+    return new CacheBadgeDefinitionReputationEventService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService, cacheFormulaEventService);
   }
 
   @Bean
@@ -107,10 +106,16 @@ public class EventServiceConfig {
   @ConditionalOnMissingBean
   CacheFollowSetsEventService cacheFollowSetsEventService(
       @NonNull CacheDereferenceEventTagService cacheDereferenceEventTagService,
-      @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService) {
+      @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
+      @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
+      @NonNull CacheDereferenceKindAddressTagService cacheDereferenceKindAddressTagService,
+      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
     return new CacheFollowSetsEventService(
         cacheDereferenceEventTagService,
-        cacheBadgeAwardGenericEventService);
+        cacheBadgeAwardGenericEventService,
+        cacheBadgeAwardReputationEventService,
+        cacheDereferenceKindAddressTagService,
+        cacheBadgeDefinitionReputationEventService);
   }
 
   @Bean

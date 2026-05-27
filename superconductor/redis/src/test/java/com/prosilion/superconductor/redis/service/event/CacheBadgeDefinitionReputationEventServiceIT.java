@@ -9,6 +9,7 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
@@ -43,6 +44,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
   public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(TEST_UNIT_DOWNVOTE);
 
   public final Identity identity = Identity.generateRandomIdentity();
+  public final PublicKey reputationDefinitionCreatorPublicKey = Identity.generateRandomIdentity().getPublicKey();
 
   private final FormulaEvent plusOneFormulaEvent;
   private final CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService;
@@ -83,6 +85,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
   public void testSaveBadgeDefinitionReputationEventUpvote() throws ParseException {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
         identity,
+        reputationDefinitionCreatorPublicKey,
         reputationIdentifierTag,
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
@@ -110,6 +113,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneMinusOne = new BadgeDefinitionReputationEvent(
         identity,
+        reputationDefinitionCreatorPublicKey,
         reputationIdentifierTag,
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,

@@ -5,7 +5,7 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import java.util.Optional;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.springframework.lang.NonNull;
 
 public interface CacheFormulaEventServiceIF extends CacheTagMappedEventServiceIF<FormulaEvent> {
   @Override

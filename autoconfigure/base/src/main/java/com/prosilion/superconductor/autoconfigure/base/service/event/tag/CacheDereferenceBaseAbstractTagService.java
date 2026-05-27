@@ -183,12 +183,4 @@ public abstract class CacheDereferenceBaseAbstractTagService<T extends Reference
       log.debug(baseMessage.toString());
     }
   }
-
-  private Optional<EventIF> filterEventMessageEvent(BaseMessage returnedBaseMessage) {
-    Optional<EventIF> eventIF = Optional.of(returnedBaseMessage)
-        .filter(EventMessage.class::isInstance)
-        .map(EventMessage.class::cast)
-        .map(EventMessage::getEvent);
-    return eventIF;
-  }
 }

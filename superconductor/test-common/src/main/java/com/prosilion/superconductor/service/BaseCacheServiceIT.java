@@ -235,7 +235,7 @@ public abstract class BaseCacheServiceIT {
     PubKeyTag pubKeyTag = new PubKeyTag(IDENTITY.getPublicKey());
     TextNoteEvent secondEventToDelete = new TextNoteEvent(IDENTITY, List.of(pubKeyTag, addressTag), "findByKindAndPubKeyAndAddressTagContent");
     Assertions.assertEquals(secondEventToDelete.getId(), cacheServiceIF.save(secondEventToDelete).getId());
-    List<GenericEventRecord> eventsByKindAndAddressTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(textNoteKind, IDENTITY.getPublicKey(), addressTag).stream().toList();
+    List<GenericEventRecord> eventsByKindAndAddressTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(textNoteKind, pubKeyTag, addressTag).stream().toList();
     assertTrue(eventsByKindAndAddressTag.stream().map(GenericEventRecord::getTags).flatMap(List::stream).toList().contains(addressTag));
     assertTrue(eventsByKindAndAddressTag.stream().map(GenericEventRecord::getTags).flatMap(List::stream).toList().contains(pubKeyTag));
   }

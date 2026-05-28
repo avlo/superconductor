@@ -4,6 +4,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
@@ -55,7 +56,7 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
     return getEventsByKindAndAuthorPublicKey(kind, authorPublicKey);
   }
 
-  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PublicKey referencedPubKeyTag) {
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PubKeyTag referencedPubKeyTag) {
     return findByKind(kind.getValue());
   }
 
@@ -64,10 +65,10 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
     throw new NostrException("JPA getEventsByKindAndAddressTag not yet implemented");
   }
 
-  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PublicKey referencedPubKeyTag, @NonNull AddressTag addressTag) {
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PubKeyTag referencedPubKeyTag, @NonNull AddressTag addressTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPubKeyTag);
   }
-  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PublicKey referencedPubKeyTag, IdentifierTag identifierTag) {
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag referencedPubKeyTag, IdentifierTag identifierTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPubKeyTag);
   }
 }

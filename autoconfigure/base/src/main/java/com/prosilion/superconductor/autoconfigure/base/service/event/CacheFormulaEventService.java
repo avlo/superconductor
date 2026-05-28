@@ -75,8 +75,12 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   public Optional<FormulaEvent> getAddressTagAsFormulaEvent(@NonNull AddressTag addressTag) {
     log.debug("getAddressTagAsFormulaEvent(AddressTag addressTag):{}", Util.prettyPrintAddressTags(addressTag));
 
-    Optional<GenericEventRecord> formulaEventGER = cacheKindAddressTagServiceIF.getEventByKindAndAddressTag(
-        Kind.ARBITRARY_CUSTOM_APP_DATA, addressTag);
+    Optional<GenericEventRecord> formulaEventGER = cacheDereferenceAddressTagServiceIF.getEvent(addressTag);
+//    Optional<GenericEventRecord> formulaEventGER = getEventByKindAndAuthorPublicKeyAndIdentifierTag(
+//        addressTag.getKind(),
+//        addressTag.getPublicKey(),
+//        addressTag.getIdentifierTag(),
+//        addressTag.getRelay().getUrl());
 
     if (formulaEventGER.isEmpty()) {
       log.debug("cacheKindAddressTagServiceIF.getEventByKindAndAddressTag(ARBITRARY_CUSTOM_APP_DATA, addressTag) returned EMPTY formulaEventGER");

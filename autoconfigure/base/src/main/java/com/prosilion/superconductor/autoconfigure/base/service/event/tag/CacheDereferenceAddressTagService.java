@@ -29,13 +29,11 @@ public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractT
   Optional<GenericEventRecord> getLocalEventFxn(AddressTag addressTag) {
     log.debug("inside getLocalEventFxn(AddressTag) with addressTag:\n  {}", Util.prettyPrintAddressTags(addressTag));
 
-    List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag = cacheServiceIF
-        .getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
+    Optional<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag = cacheServiceIF
+        .getEventByKindAndAuthorPublicKeyAndIdentifierTag(
             addressTag.getKind(),
             addressTag.publicKey(),
             addressTag.getIdentifierTag());
-    log.debug("found List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag size: [{}]",
-        eventsByKindAndAuthorPublicKeyAndIdentifierTag.size());
     log.debug("found List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag:\n  {}",
         eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().map(GenericEventRecord::createPrettyPrintJson));
 

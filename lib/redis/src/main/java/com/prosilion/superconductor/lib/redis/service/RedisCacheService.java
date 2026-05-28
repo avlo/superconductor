@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.lib.redis.entity.DeletionEventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
@@ -63,7 +64,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTag(
       @NonNull Kind kind,
-      @NonNull PublicKey publicKey) {
+      @NonNull PubKeyTag publicKey) {
     return filteredGER.apply(
         eventNosqlEntityService.getEventsByKindAndPubKeyTag(kind, publicKey));
   }
@@ -88,7 +89,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(
       @NonNull Kind kind,
-      @NonNull PublicKey referencePubKeyTag,
+      @NonNull PubKeyTag referencePubKeyTag,
       @NonNull AddressTag addressTag) {
     return filteredGER.apply(
         eventNosqlEntityService.getEventsByKindAndPubKeyTagAndAddressTag(
@@ -100,7 +101,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndIdentifierTag(
       @NonNull Kind kind,
-      @NonNull PublicKey referencePubKeyTag,
+      @NonNull PubKeyTag referencePubKeyTag,
       @NonNull IdentifierTag identifierTag) {
     return filteredGER.apply(
         eventNosqlEntityService.getEventsByKindAndPubKeyTagAndIdentifierTag(
@@ -110,15 +111,19 @@ public class RedisCacheService implements RedisCacheServiceIF {
   }
 
   @Override
-  public List<GenericEventRecord> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
+  public Optional<GenericEventRecord> getEventByKindAndAuthorPublicKeyAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull PublicKey authorPublicKey,
       @NonNull IdentifierTag identifierTag) {
-    return filteredGER.apply(
-        eventNosqlEntityService.getEventsByKindAndAuthorPublicKeyAndIdentifierTag(
-            kind,
-            authorPublicKey,
-            identifierTag));
+
+    Optional<GenericEventRecord> apply =
+        filteredGER.apply(
+                eventNosqlEntityService.getEventByKindAndAuthorPublicKeyAndIdentifierTag(
+                    kind,
+                    authorPublicKey,
+                    identifierTag).stream().toList())
+            .stream().findFirst();
+    return apply;
   }
 
   @Override

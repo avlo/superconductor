@@ -15,8 +15,6 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDefinitionGenericEvent> {
-  public static final String MISSING_ADDRESS_TAG = "incoming BadgeAwardGenericEvent %s did not contain an AddressTag";
-
   private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
   private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
 

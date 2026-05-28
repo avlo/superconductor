@@ -46,7 +46,7 @@ public class CacheDereferenceKindAddressTagService extends CacheDereferenceBaseA
 
   @Override
   public Optional<GenericEventRecord> getEventByKindAndPubKeyTagAndIdentifierTag(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag, @NonNull String relayUrl) {
-    Optional<GenericEventRecord> localGenericEventRecordOptional = getLocalEventFxn(kind, pubKeyTag.getPublicKey(), identifierTag);
+    Optional<GenericEventRecord> localGenericEventRecordOptional = getLocalEventFxn(kind, pubKeyTag, identifierTag);
 
     if (localGenericEventRecordOptional.isPresent()) {
       log.debug("... localGenericEventRecordOptional found locally:\n  {}",
@@ -128,10 +128,10 @@ public class CacheDereferenceKindAddressTagService extends CacheDereferenceBaseA
     return Optional.empty();
   }
 
-  private Optional<GenericEventRecord> getLocalEventFxn(@NonNull Kind kind, @NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag) {
+  private Optional<GenericEventRecord> getLocalEventFxn(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
     log.debug("inside getLocalEventFxn(Kind kind, IdentifierTag) with\n  kind:{}\nidentifierTag:  {}", kind, identifierTag);
 
-    List<GenericEventRecord> eventsByKindAndPubKeyTagAndIdentifierTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, publicKey, identifierTag);
+    List<GenericEventRecord> eventsByKindAndPubKeyTagAndIdentifierTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, pubKeyTag, identifierTag);
     log.debug("found List<GenericEventRecord> eventsByKindAndPubKeyTagAndIdentifierTag size: [{}]", eventsByKindAndPubKeyTagAndIdentifierTag.size());
     log.debug("found List<GenericEventRecord> eventsByKindAndPubKeyTagAndIdentifierTag:\n  {}", Util.prettyPrintGenericEventRecords(eventsByKindAndPubKeyTagAndIdentifierTag));
 

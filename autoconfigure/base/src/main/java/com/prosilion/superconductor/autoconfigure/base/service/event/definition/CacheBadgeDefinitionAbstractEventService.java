@@ -30,7 +30,18 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
   public abstract T materialize(@NonNull EventIF eventIF);
 
   public Optional<T> getExistingDefinitionEvent(@NonNull GenericEventRecord genericEventRecord) {
-    GenericEventRecord existingBadgeDefinitionReputationEventGER = getExistingDefinitionEventRxR(genericEventRecord);
+    AddressTag addressTag = genericEventRecord.requireFirstTag(AddressTag.class);
+
+    if (!addressTag.getKind().equals(Kind.BADGE_DEFINITION_EVENT))
+      throw new NostrException(
+          String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
+
+    Optional<GenericEventRecord> badgeDefinitionAbstractEventGEROptional = cacheDereferenceAddressTagServiceIF.getEvent(addressTag);
+    if (badgeDefinitionAbstractEventGEROptional.isEmpty())
+      throw new NostrException(
+          String.format("cacheDereferenceAddressTagServiceIF.getEvent(addressTag) using addressTag:\n  %s\nnot found", Util.prettyPrintAddressTags(addressTag)));
+
+    GenericEventRecord existingBadgeDefinitionReputationEventGER = badgeDefinitionAbstractEventGEROptional.get();
     log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER);
 
     String relayTagUrl = existingBadgeDefinitionReputationEventGER.getRelayTagUrl();
@@ -61,21 +72,6 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
 
     return unpopulatedBadgeDefinitionAbstractEvent.map(this::materialize);
 
-  }
-
-  protected GenericEventRecord getExistingDefinitionEventRxR(@NonNull GenericEventRecord genericEventRecord) {
-    AddressTag addressTag = genericEventRecord.requireFirstTag(AddressTag.class);
-
-    if (!addressTag.getKind().equals(Kind.BADGE_DEFINITION_EVENT))
-      throw new NostrException(
-          String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
-
-    Optional<GenericEventRecord> badgeDefinitionAbstractEventGEROptional = cacheDereferenceAddressTagServiceIF.getEvent(addressTag);
-    if (badgeDefinitionAbstractEventGEROptional.isEmpty())
-      throw new NostrException(
-          String.format("cacheDereferenceAddressTagServiceIF.getEvent(addressTag) using addressTag:\n  %s\nnot found", Util.prettyPrintAddressTags(addressTag)));
-
-    return badgeDefinitionAbstractEventGEROptional.get();
   }
 
   public Kind getKind() {

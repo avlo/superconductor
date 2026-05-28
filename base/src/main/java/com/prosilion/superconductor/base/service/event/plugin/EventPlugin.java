@@ -61,6 +61,7 @@ public class EventPlugin implements EventPluginIF {
     return cacheServiceIF.save(typedEvent);
   }
 
+//  TODO: cleanup/refactor below
   Function<EventIF, BaseEvent> getEventKindFxn(EventIF eventIF) {
     Kind kind = eventIF.getKind();
     log.debug("getEventKindFxn() for kind\n  [{}]: {}",

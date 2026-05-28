@@ -121,18 +121,20 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 //  }
 
   @Override
-  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEventTagEvent(@NonNull String eventId, @NonNull String url) {
+  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEventTagEvent(@NonNull EventTag eventTag) {
     log.debug("getEventTagEvent(@NonNull String eventId, @NonNull String url)");
-    Optional<GenericEventRecord> unpopulatedFollowSetsEventTagEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
+    Optional<GenericEventRecord> unpopulatedFollowSetsEventTagEvent =
+        cacheDereferenceEventTagServiceIF.getEvent(eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl());
 
     if (unpopulatedFollowSetsEventTagEvent.isEmpty()) {
       log.debug("unpopulatedFollowSetsEventTagEvent GenericEventRecord not found, throw exception");
       throw new NostrException(
-          String.format("FollowSetsEvent EventTag's GenericEventRecord eventId: [%s], url: [%s] not found", eventId, url));
+          String.format("FollowSetsEvent EventTag's GenericEventRecord eventId: [%s], url: [%s] not found",
+              eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl()));
     }
 
     log.debug("unpopulatedFollowSetsEventTagEvent GenericEventRecord found, call cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.getId, url) to populate it");
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.get().getId(), url);
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.get().getId(), unpopulatedFollowSetsEventTagEvent.get().getRelayTagUrl());
     log.debug("returning populated BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>:\n  {}", event.orElseThrow().createPrettyPrintJson());
     return event;
   }

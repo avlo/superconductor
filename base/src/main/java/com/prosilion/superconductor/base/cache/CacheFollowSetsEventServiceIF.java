@@ -4,6 +4,7 @@ import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import java.util.Optional;
 import org.springframework.lang.NonNull;
@@ -15,5 +16,5 @@ public interface CacheFollowSetsEventServiceIF extends CacheTagMappedEventServic
   FollowSetsEvent materialize(@NonNull EventIF eventIF);
 
   //  Optional<BadgeAwardReputationEvent> getBadgeAwardReputationEvent(@NonNull FollowSetsEvent followSetsEvent);
-  Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEventTagEvent(@NonNull String eventId, @NonNull String url);
+  Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEventTagEvent(@NonNull EventTag eventTag);
 }

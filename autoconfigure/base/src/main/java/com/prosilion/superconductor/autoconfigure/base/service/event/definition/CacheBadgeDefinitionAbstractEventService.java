@@ -7,7 +7,6 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardAbstractEventService;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import java.util.Optional;
@@ -34,7 +33,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     GenericEventRecord existingBadgeDefinitionReputationEventGER = getExistingDefinitionEventRxR(genericEventRecord);
     log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER);
 
-    String relayTagUrl = CacheBadgeAwardAbstractEventService.getRelayTagUrl(existingBadgeDefinitionReputationEventGER);
+    String relayTagUrl = existingBadgeDefinitionReputationEventGER.getRelayTagUrl();
 
     log.debug("calling getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl with eventId: [{}], relayUrl: [{}]",
         existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
@@ -54,20 +53,18 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
 
   public Optional<T> getEvent(@NonNull String eventId, @NonNull String url) {
     log.debug("inside getEvent(eventId, url): [{}], [{}]", eventId, url);
-    
+
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionAbstractEvent =
         cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
     log.debug("return unpopulatedBadgeDefinitionAbstractEvent:\n{}",
         unpopulatedBadgeDefinitionAbstractEvent.map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
-    
+
     return unpopulatedBadgeDefinitionAbstractEvent.map(this::materialize);
 
   }
 
   protected GenericEventRecord getExistingDefinitionEventRxR(@NonNull GenericEventRecord genericEventRecord) {
-    AddressTag addressTag = genericEventRecord.getTypeSpecificTagStream(AddressTag.class).findFirst().orElseThrow(() ->
-        new NostrException(
-            String.format(MISSING_ADDRESS_TAG, genericEventRecord)));
+    AddressTag addressTag = genericEventRecord.requireFirstTag(AddressTag.class);
 
     if (!addressTag.getKind().equals(Kind.BADGE_DEFINITION_EVENT))
       throw new NostrException(

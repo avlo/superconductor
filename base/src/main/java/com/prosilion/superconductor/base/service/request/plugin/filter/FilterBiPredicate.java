@@ -9,7 +9,7 @@ public interface FilterBiPredicate<T extends BaseTag> extends FilterPlugin {
 
   default BiPredicate<Filterable, AddNostrEvent> getBiPredicate(Class<T> clazz) {
     return (filterable, addNostrEvent) ->
-        Filterable.getTypeSpecificTagsStream(clazz, addNostrEvent.event())
+        addNostrEvent.event().getTypeSpecificTags(clazz).stream()
             .anyMatch(tag ->
                 filterable.getPredicate().test(addNostrEvent.event()));
   }

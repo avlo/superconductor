@@ -65,7 +65,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent));
     BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getAddressTagEvent(badgeAwardUpvoteEvent.asGenericEventRecord()).orElseThrow();
 
-    assertEquals(badgeAwardUpvoteEvent.getBadgeDefinitionGenericEvent(), dbDefinitionGenericEvent);
+    assertEquals(badgeAwardUpvoteEvent.getBadgeDefinitionEvent(), dbDefinitionGenericEvent);
     assertEquals(upvoteIdentifierTag, dbDefinitionGenericEvent.getIdentifierTag());
 
     String BADGE_DEFINITION_VOTE = "BADGE_DEFINITION_DOWNVOTE";

@@ -108,6 +108,6 @@ public class CacheBadgeAwardReputationEventServiceIT {
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardReputationEvent));
     BadgeAwardReputationEvent dbRepAwardEvent = cacheBadgeAwardReputationEventService.materialize(badgeAwardReputationEvent.asGenericEventRecord());
-    assertEquals(badgeDefinitionReputationEventPlusOneFormula, dbRepAwardEvent.getBadgeDefinitionGenericEvent());
+    assertEquals(badgeDefinitionReputationEventPlusOneFormula, dbRepAwardEvent.getBadgeDefinitionEvent());
   }
 }

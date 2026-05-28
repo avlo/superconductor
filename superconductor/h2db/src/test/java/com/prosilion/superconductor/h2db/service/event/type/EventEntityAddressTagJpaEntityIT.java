@@ -4,13 +4,12 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.lib.jpa.service.EventJpaEntityService;
+import com.prosilion.superconductor.util.Factory;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -55,7 +54,7 @@ class EventEntityAddressTagJpaEntityIT {
 
   @Test
   void saveAndGetEventWithPublicKey() {
-    List<AddressTag> typeSpecificTags = Filterable.getTypeSpecificTags(AddressTag.class, eventJpaEntityService.getEventByUid(savedEventId).orElseThrow());
+    List<AddressTag> typeSpecificTags = eventJpaEntityService.getEventByUid(savedEventId).orElseThrow().asGenericEventRecord().getTypeSpecificTags(AddressTag.class);
 
     assertTrue(typeSpecificTags.stream().anyMatch(tag ->
         Optional.ofNullable(tag.getIdentifierTag()).map(IdentifierTag::getUuid).orElseThrow().equals(IDENTIFIER_TAG.getUuid())));

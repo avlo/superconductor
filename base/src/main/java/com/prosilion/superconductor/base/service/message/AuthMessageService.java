@@ -1,18 +1,15 @@
 package com.prosilion.superconductor.base.service.message;
 
 import com.prosilion.nostr.enums.Command;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.message.CanonicalAuthenticationMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.GenericTag;
-import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantServiceIF;
 import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 
 @Slf4j
@@ -72,7 +69,8 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
   }
 
   private String getChallenge(CanonicalAuthenticationMessage authMessage) {
-    return Filterable.getTypeSpecificTagsStream(GenericTag.class, authMessage.getEvent())
+    return authMessage.getEvent().getTypeSpecificTags(GenericTag.class)
+        .stream()
         .filter(tag ->
             tag.getCode().equalsIgnoreCase(CHALLENGE))
         .map(GenericTag::getAttributes)
@@ -80,9 +78,6 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
   }
 
   private String getRelay(CanonicalAuthenticationMessage authMessage) {
-    return Filterable.getTypeSpecificTagsStream(RelayTag.class, authMessage.getEvent())
-        .findFirst()
-        .map(RelayTag::getRelay).orElseThrow()
-        .getUrl();
+    return authMessage.getEvent().getRelayTagUrl();
   }
 }

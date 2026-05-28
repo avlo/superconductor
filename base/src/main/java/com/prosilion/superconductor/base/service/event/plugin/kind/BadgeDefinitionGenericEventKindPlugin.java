@@ -4,11 +4,8 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -27,20 +24,10 @@ public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKin
   @Override
   public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
     log.debug("processing incoming BadgeDefinitionGenericEvent:\n  {}", event.createPrettyPrintJson());
-    List<String> relaysTagUrls = Filterable.getTypeSpecificTagsStream(RelayTag.class, event)
-        .map(RelayTag::getRelay)
-        .map(Relay::getUrl)
-        .toList();
-
-    String eventRelaysTagUrl = relaysTagUrls.stream()
-        .findAny().orElseThrow(() ->
+    event.findFirstTag(RelayTag.class)
+        .orElseThrow(() ->
             new NostrException(
                 String.format("BadgeDefinitionAwardEvent\n%s\nmissing required RelayTag", event.createPrettyPrintJson())));
-
-//  TODO: either:
-//    1) cycle through relaysTagUrls and validate (at least one) exists, or
-//    2) (currently, below) grab first one and continue (or validate exists)
-
     return super.processIncomingEvent(event);
   }
 

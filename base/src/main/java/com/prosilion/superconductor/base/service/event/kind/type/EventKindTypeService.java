@@ -3,7 +3,6 @@ package com.prosilion.superconductor.base.service.event.kind.type;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.KindTypeIF;
@@ -91,8 +90,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
   }
 
   private static String getExternalIdentifierIdentity(EventIF event) {
-    ExternalIdentityTag externalIdentityTag = Filterable.getTypeSpecificTags(ExternalIdentityTag.class, event).stream()
-        .findFirst().orElseThrow();
+    ExternalIdentityTag externalIdentityTag = event.requireFirstTag(ExternalIdentityTag.class);
     String identity = externalIdentityTag.getIdentity();
     return identity;
   }

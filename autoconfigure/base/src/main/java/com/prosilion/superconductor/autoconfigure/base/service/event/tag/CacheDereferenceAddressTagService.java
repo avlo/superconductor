@@ -3,7 +3,6 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.tag;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
 import com.prosilion.nostr.filter.event.KindFilter;
@@ -52,8 +51,7 @@ public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractT
 
   @Override
   public List<GenericEventRecord> getEventIFAddressTagsAsGenericEventRecords(@NonNull EventIF eventIF) {
-    List<AddressTag> eventIFAddressTags =
-        Filterable.getTypeSpecificTagsStream(AddressTag.class, eventIF).distinct().toList();
+    List<AddressTag> eventIFAddressTags = eventIF.getTypeSpecificTags(AddressTag.class);
 
     List<GenericEventRecord> genericEventRecords = eventIFAddressTags.stream()
         .map(addressTag1 -> getEvent(addressTag1)

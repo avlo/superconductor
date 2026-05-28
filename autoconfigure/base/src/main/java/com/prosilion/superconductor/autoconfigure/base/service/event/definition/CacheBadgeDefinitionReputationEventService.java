@@ -41,21 +41,21 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     log.debug("... materialized formulaEvents ...\n  {}", formulaEvents.stream().map(EventIF::asGenericEventRecord).map(GenericEventRecord::createPrettyPrintJson).toList());
 
     log.debug("formulaEvents as addressTags:");
-    formulaEvents.stream().map(AddressableEvent::asAddressTag).map(Util::prettyPrintAddressTags).toList().forEach(log::debug);
+    formulaEvents.stream().map(AddressableEvent::asAddressableEventAddressTag).map(Util::prettyPrintAddressTags).toList().forEach(log::debug);
 
     return new BadgeDefinitionReputationEvent(
         incomingBadgeDefinitionReputationEvent.asGenericEventRecord(), addressTag ->
         formulaEvents.stream().filter(formulaEvent ->
-            formulaEvent.asAddressTag().equals(addressTag)).findFirst().orElseThrow(() ->
+            formulaEvent.asAddressableEventAddressTag().equals(addressTag)).findFirst().orElseThrow(() ->
             new NostrException(
                 String.format(NON_EXISTENT_ADDRESS_TAG, incomingBadgeDefinitionReputationEvent))));
   }
 
-//  TODO: refactor back in after debug
+  //  TODO: refactor back in after debug
   private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord badgeDefinitionReputationEventGER) {
     log.debug("getFormulaEvents(@NonNull GenericEventRecord badgeDefinitionReputationEventGER):\n{}", badgeDefinitionReputationEventGER.createPrettyPrintJson());
 
-    List<AddressTag> addressTagsOfFormulaEvents = badgeDefinitionReputationEventGER.getTypeSpecificTagStream(AddressTag.class).toList();
+    List<AddressTag> addressTagsOfFormulaEvents = badgeDefinitionReputationEventGER.getTypeSpecificTags(AddressTag.class);
     log.debug("addressTagsOfFormulaEventsOriginalList.toList() size:  [{}]", addressTagsOfFormulaEvents.size());
     log.debug("addressTagsOfFormulaEventsOriginalList.toList():{}", Util.prettyPrintAddressTags(addressTagsOfFormulaEvents));
 

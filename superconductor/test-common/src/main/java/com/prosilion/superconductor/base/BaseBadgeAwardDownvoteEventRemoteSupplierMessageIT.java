@@ -6,7 +6,6 @@ import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.filter.tag.AddressTagFilter;
@@ -108,7 +107,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
 
-    AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
+    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
     assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
@@ -142,7 +141,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
 
-    AddressTag addressTag = Filterable.getTypeSpecificTags(AddressTag.class, returnedEventIFs.getFirst()).getFirst();
+    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
     assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());

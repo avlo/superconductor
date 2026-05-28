@@ -58,6 +58,6 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
   protected Optional<BadgeDefinitionReputationEvent> getBadgeDefinitionEvent(@NonNull GenericEventRecord genericEventRecord) {
     return cacheBadgeDefinitionReputationEventService.getEvent(
         genericEventRecord.getId(),
-        getRelayTagUrl(genericEventRecord));
+        genericEventRecord.getRelayTagUrl());
   }
 }

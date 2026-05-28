@@ -2,7 +2,6 @@ package com.prosilion.superconductor.base.service.event;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.service.event.kind.EventKindServiceIF;
@@ -57,7 +56,7 @@ public class EventService implements EventServiceIF {
   }
 
   private boolean hasExternalIdentityTag(EventIF event) {
-    boolean b = !Filterable.getTypeSpecificTags(ExternalIdentityTag.class, event).isEmpty();
+    boolean b = !event.asGenericEventRecord().getTypeSpecificTags(ExternalIdentityTag.class).isEmpty();
     return b;
   }
 }

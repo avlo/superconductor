@@ -9,13 +9,11 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
@@ -110,10 +108,13 @@ public abstract class BaseFollowSetsEventServiceIT {
     List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
     assertTrue(badgeAwardAbstractEvents.contains(badgeAwardUpvoteEvent));
 
-    PublicKey matchPubkey = Filterable.getTypeSpecificTags(PubKeyTag.class, dbFollowSetsEventByEventId).stream().map(PubKeyTag::getPublicKey).findFirst().orElseThrow();
+    PublicKey matchPubkey = dbFollowSetsEventByEventId.getAwardRecipientPulicKey();
     assertEquals(matchPubkey, reputationRecipientPublicKey);
 
-    assertEquals(followSetsEvent.getContainedAddressableEvents(), dbFollowSetsEventByEventId.getContainedAddressableEvents());
+    assertEquals(followSetsEvent.getAddressTag(), dbFollowSetsEventByEventId.getAddressTag());
+    assertEquals(followSetsEvent.getEventTags(), dbFollowSetsEventByEventId.getEventTags());
+    assertEquals(followSetsEvent.getBadgeAwardGenericEvents(), dbFollowSetsEventByEventId.getBadgeAwardGenericEvents());
+    assertEquals(followSetsEvent.getBadgeDefinitionReputationEvent(), dbFollowSetsEventByEventId.getBadgeDefinitionReputationEvent());
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
         new NostrSingleRequestService()
@@ -131,7 +132,7 @@ public abstract class BaseFollowSetsEventServiceIT {
     assertTrue(returnedEventIFs.stream().map(EventIF::getKind).toList().contains(Kind.FOLLOW_SETS));
 
     assertTrue(badgeAwardAbstractEvents.stream()
-        .map(BadgeAwardGenericEvent::getBadgeDefinitionGenericEvent)
+        .map(BadgeAwardGenericEvent::getBadgeDefinitionEvent)
         .anyMatch(badgeDefinitionReputationEventPlusOneFormula::equals));
   }
 }

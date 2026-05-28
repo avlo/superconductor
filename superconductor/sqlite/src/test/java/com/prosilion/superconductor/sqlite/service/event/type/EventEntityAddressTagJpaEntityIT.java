@@ -4,7 +4,6 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.TextNoteEvent;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
@@ -54,7 +53,7 @@ class EventEntityAddressTagJpaEntityIT {
 
   @Test
   void saveAndGetEventWithPublicKey() {
-    List<AddressTag> typeSpecificTags = Filterable.getTypeSpecificTags(AddressTag.class, eventJpaEntityService.getEventByUid(savedEventId).orElseThrow());
+    List<AddressTag> typeSpecificTags = eventJpaEntityService.getEventByUid(savedEventId).orElseThrow().asGenericEventRecord().getTypeSpecificTags(AddressTag.class);
 
     assertTrue(typeSpecificTags.stream().anyMatch(tag ->
         tag.getIdentifierTag().getUuid().equals(IDENTIFIER_TAG.getUuid())));

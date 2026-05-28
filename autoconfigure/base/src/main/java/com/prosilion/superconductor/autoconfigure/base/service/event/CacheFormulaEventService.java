@@ -6,10 +6,8 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardAbstractEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -88,8 +86,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     log.debug("cacheKindAddressTagServiceIF.getEventByKindAndAddressTag(ARBITRARY_CUSTOM_APP_DATA, addressTag) returned formulaEventGER:\n  {}", formulaEventGER.get().createPrettyPrintJson());
     log.debug("formulaEventGER eventId: [{}]", formulaEventGER.get().getId());
 
-    String formulaEventRelayUrl = CacheBadgeAwardAbstractEventService.getRelayTagUrl(
-        formulaEventGER.get().asGenericEventRecord());
+    String formulaEventRelayUrl = formulaEventGER.get().getRelayTagUrl();
     log.debug("formulaEventGER relayUrl: [{}]", formulaEventRelayUrl);
 
     Optional<FormulaEvent> formulaEvent = getEvent(formulaEventGER.get().getId(), formulaEventRelayUrl);
@@ -101,11 +98,8 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord unpopulatedFormulaEventGER) {
     log.debug("inside getBadgeDefinitionGenericEvent(GenericEventRecord unpopulatedFormulaEventGER");
 
-    log.debug("calling Filterable.getTypeSpecificTagsStream(AddressTag.class, unpopulatedFormulaEventGER)");
-    AddressTag firstAddressTag = Filterable.getTypeSpecificTagsStream(AddressTag.class, unpopulatedFormulaEventGER)
-        .findFirst().orElseThrow(() ->
-            new NostrException(
-                String.format(NON_EXISTENT_ADDRESS_TAG, unpopulatedFormulaEventGER)));
+    log.debug("calling unpopulatedFormulaEventGER.requireFirstTag(AddressTag.class)");
+    AddressTag firstAddressTag = unpopulatedFormulaEventGER.requireFirstTag(AddressTag.class);
     log.debug("returned firstAddressTag:\n  {}", Util.prettyPrintAddressTags(firstAddressTag));
 
     log.debug("calling cacheDereferenceAddressTagServiceIF.getEvent(firstAddressTag)");

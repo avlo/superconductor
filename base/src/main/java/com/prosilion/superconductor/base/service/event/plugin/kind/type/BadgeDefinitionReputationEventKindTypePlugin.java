@@ -3,9 +3,7 @@ package com.prosilion.superconductor.base.service.event.plugin.kind.type;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.filter.Filterable;
-import com.prosilion.nostr.tag.RelayTag;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -23,12 +21,11 @@ public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingE
 
   @Override
   public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
-    String eventRelaysTagUrl = Filterable.getTypeSpecificTagsStream(RelayTag.class, event)
-        .map(RelayTag::getRelay)
-        .map(Relay::getUrl)
-        .findAny().orElseThrow(() ->
-            new NostrException(
-                String.format("BadgeDefinitionEvent\n  %s\nmissing required RelayTag", event.createPrettyPrintJson())));
+    String eventRelaysTagUrl =
+        Optional.ofNullable(event.getRelayTagUrl())
+            .orElseThrow(() ->
+                new NostrException(
+                    String.format("BadgeDefinitionAwardEvent\n%s\nmissing required RelayTag", event.createPrettyPrintJson())));
 
     if (!superconductorRelayUrl.equals(eventRelaysTagUrl))
       throw new NostrException(

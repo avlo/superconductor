@@ -76,7 +76,7 @@ public class CacheBadgeAwardGenericEventServiceIT {
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericVoteEvent));
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> dbGetEventGenericAwardEvent = cacheBadgeAwardGenericEventServiceIF.getEvent(badgeAwardGenericVoteEvent.getId(), badgeAwardGenericVoteEvent.getRelayTagRelay().getUrl()).orElseThrow();
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> dbGetEventGenericAwardEvent = cacheBadgeAwardGenericEventServiceIF.getEvent(badgeAwardGenericVoteEvent.getId(), badgeAwardGenericVoteEvent.getEventOriginRelay().getUrl()).orElseThrow();
     assertEquals(badgeAwardGenericVoteEvent, dbGetEventGenericAwardEvent);
   }
 }

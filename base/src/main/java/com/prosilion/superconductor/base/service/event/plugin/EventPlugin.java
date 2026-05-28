@@ -5,7 +5,6 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.lang.reflect.Constructor;
@@ -67,7 +66,7 @@ public class EventPlugin implements EventPluginIF {
     log.debug("getEventKindFxn() for kind\n  [{}]: {}",
         kind.getValue(), kind.getName().toUpperCase());
 
-    Optional<ExternalIdentityTag> externalIdentityTagOptional = Filterable.getTypeSpecificTagsStream(ExternalIdentityTag.class, eventIF).findFirst();
+    Optional<ExternalIdentityTag> externalIdentityTagOptional = eventIF.findFirstTag(ExternalIdentityTag.class);
 
     if (!eventKindTypeMaterializers.containsKey(kind)) {
       Function<EventIF, BaseEvent> eventKindMaterializerFxn = eventKindMaterializers.get(kind);

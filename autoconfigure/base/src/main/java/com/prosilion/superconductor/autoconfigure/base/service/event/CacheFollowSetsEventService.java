@@ -9,12 +9,10 @@ import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardAbstractEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
@@ -63,7 +61,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   public FollowSetsEvent materialize(@NonNull EventIF incomingFollowSetsEvent) {
     log.debug("materialize(EventIF incomingFollowSetsEvent):\n  {}", incomingFollowSetsEvent.createPrettyPrintJson());
 
-    List<EventTag> voteEventsAsEventTags = Filterable.getTypeSpecificTags(EventTag.class, incomingFollowSetsEvent).stream().toList();
+    List<EventTag> voteEventsAsEventTags = incomingFollowSetsEvent.asGenericEventRecord().getTypeSpecificTags(EventTag.class);
     if (voteEventsAsEventTags.isEmpty())
       throw new NostrException(
           String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
@@ -107,16 +105,16 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
   @Override
   public Optional<BadgeAwardReputationEvent> getBadgeAwardReputationEvent(@NonNull FollowSetsEvent followSetsEvent) {
-    AddressTag addressableAddressTag = followSetsEvent.getAddressableAddressTag();
+    AddressTag addressableAddressTag = followSetsEvent.getAddressTag();
     log.debug("... calling getBadgeAwardReputationEvent(FollowSetsEventfollowSetsEvent) with followSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
     Optional<BadgeAwardReputationEvent> badgeAwardReputationEvent = cacheKindAddressTagServiceIF.getEventByKindAndPubKeyTagAndAddressTag(
             Kind.BADGE_AWARD_EVENT,
-            new PubKeyTag(followSetsEvent.getPubKeyTagPublicKey()),
+            new PubKeyTag(followSetsEvent.getAwardRecipientPulicKey()),
             addressableAddressTag)
         .flatMap(event ->
             cacheBadgeAwardReputationEventServiceIF.getEvent(
                     event.getId(),
-                    CacheBadgeAwardAbstractEventService.getRelayTagUrl(event))
+                    event.getRelayTagUrl())
                 .stream().findFirst());
 
     log.debug("... returning badgeAwardReputationEvent:\n{}", badgeAwardReputationEvent.map(EventIF::createPrettyPrintJson)

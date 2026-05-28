@@ -11,5 +11,5 @@ public interface CacheDereferenceAddressTagServiceIF extends CacheDereferenceAbs
 
   @Override
   Optional<GenericEventRecord> getEvent(AddressTag t);
-  List<GenericEventRecord> getEventIFAddressTagsAsGenericEventRecords(@NonNull EventIF eventIF);
+  List<GenericEventRecord> getEventAddressTagsAsGenericEventRecords(@NonNull EventIF eventIF);
 }

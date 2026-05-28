@@ -50,7 +50,7 @@ public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractT
   }
 
   @Override
-  public List<GenericEventRecord> getEventIFAddressTagsAsGenericEventRecords(@NonNull EventIF eventIF) {
+  public List<GenericEventRecord> getEventAddressTagsAsGenericEventRecords(@NonNull EventIF eventIF) {
     List<AddressTag> eventIFAddressTags = eventIF.getTypeSpecificTags(AddressTag.class);
 
     List<GenericEventRecord> genericEventRecords = eventIFAddressTags.stream()

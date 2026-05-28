@@ -3,15 +3,12 @@ package com.prosilion.superconductor.autoconfigure.base.service.event;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
@@ -103,25 +100,25 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     return followSetsEvent;
   }
 
-  @Override
-  public Optional<BadgeAwardReputationEvent> getBadgeAwardReputationEvent(@NonNull FollowSetsEvent followSetsEvent) {
-    AddressTag addressableAddressTag = followSetsEvent.getAddressTag();
-    log.debug("... calling getBadgeAwardReputationEvent(FollowSetsEventfollowSetsEvent) with followSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
-    Optional<BadgeAwardReputationEvent> badgeAwardReputationEvent = cacheKindAddressTagServiceIF.getEventByKindAndPubKeyTagAndAddressTag(
-            Kind.BADGE_AWARD_EVENT,
-            new PubKeyTag(followSetsEvent.getAwardRecipientPulicKey()),
-            addressableAddressTag)
-        .flatMap(event ->
-            cacheBadgeAwardReputationEventServiceIF.getEvent(
-                    event.getId(),
-                    event.getRelayTagUrl())
-                .stream().findFirst());
-
-    log.debug("... returning badgeAwardReputationEvent:\n{}", badgeAwardReputationEvent.map(EventIF::createPrettyPrintJson)
-        .orElse("returning EMPTY badgeAwardReputationEvent"));
-
-    return badgeAwardReputationEvent;
-  }
+//  @Override
+//  public Optional<BadgeAwardReputationEvent> getBadgeAwardReputationEvent(@NonNull FollowSetsEvent followSetsEvent) {
+//    AddressTag addressableAddressTag = followSetsEvent.getAddressTag();
+//    log.debug("... calling getBadgeAwardReputationEvent(FollowSetsEventfollowSetsEvent) with followSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
+//    Optional<BadgeAwardReputationEvent> badgeAwardReputationEvent = cacheKindAddressTagServiceIF.getEventByKindAndPubKeyTagAndAddressTag(
+//            Kind.BADGE_AWARD_EVENT,
+//            new PubKeyTag(followSetsEvent.getAwardRecipientPulicKey()),
+//            addressableAddressTag)
+//        .flatMap(event ->
+//            cacheBadgeAwardReputationEventServiceIF.getEvent(
+//                    event.getId(),
+//                    event.getRelayTagUrl())
+//                .stream().findFirst());
+//
+//    log.debug("... returning badgeAwardReputationEvent:\n{}", badgeAwardReputationEvent.map(EventIF::createPrettyPrintJson)
+//        .orElse("returning EMPTY badgeAwardReputationEvent"));
+//
+//    return badgeAwardReputationEvent;
+//  }
 
   @Override
   public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getEventTagEvent(@NonNull String eventId, @NonNull String url) {

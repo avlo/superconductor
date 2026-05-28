@@ -10,7 +10,6 @@ import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventSer
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
@@ -34,7 +33,7 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
   public BadgeAwardReputationEvent materialize(@NonNull EventIF incomingBadgeAwardReputationEvent) {
     log.debug("... materialize incomingBadgeAwardReputationEvent:\n{}", incomingBadgeAwardReputationEvent.createPrettyPrintJson());
 
-    List<GenericEventRecord> addressTagsAsGenericEventRecord = cacheDereferenceAddressTagServiceIF.getEventIFAddressTagsAsGenericEventRecords(incomingBadgeAwardReputationEvent);
+    List<GenericEventRecord> addressTagsAsGenericEventRecord = cacheDereferenceAddressTagServiceIF.getEventAddressTagsAsGenericEventRecords(incomingBadgeAwardReputationEvent);
 
     if (addressTagsAsGenericEventRecord.size() != 1)
       throw new NostrException(
@@ -43,7 +42,9 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
               addressTagsAsGenericEventRecord.size()));
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent =
-        getBadgeDefinitionEvent(addressTagsAsGenericEventRecord.getFirst()).orElseThrow(() ->
+        cacheBadgeDefinitionReputationEventService.getEvent(
+            addressTagsAsGenericEventRecord.getFirst().getId(),
+            addressTagsAsGenericEventRecord.getFirst().getRelayTagUrl()).orElseThrow(() ->
             new NostrException(BADGE_DEFN_NOT_FOUND));
 
     BadgeAwardReputationEvent badgeAwardReputationEvent = new BadgeAwardReputationEvent(
@@ -52,12 +53,5 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
     log.debug("... return materialized badgeAwardReputationEvent:\n{}", badgeAwardReputationEvent.createPrettyPrintJson());
 
     return badgeAwardReputationEvent;
-  }
-
-  @Override
-  protected Optional<BadgeDefinitionReputationEvent> getBadgeDefinitionEvent(@NonNull GenericEventRecord genericEventRecord) {
-    return cacheBadgeDefinitionReputationEventService.getEvent(
-        genericEventRecord.getId(),
-        genericEventRecord.getRelayTagUrl());
   }
 }

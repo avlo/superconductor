@@ -4,7 +4,6 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
@@ -29,7 +28,7 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
   public BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> materialize(@NonNull EventIF incomingBadgeAwardGenericEvent) {
     log.debug("... materialize incomingBadgeAwardGenericEvent:\n{}", incomingBadgeAwardGenericEvent.createPrettyPrintJson());
 
-    Optional<BadgeDefinitionGenericEvent> dbBadgeDefinitionGenericEvent = getBadgeDefinitionEvent(incomingBadgeAwardGenericEvent.asGenericEventRecord());
+    Optional<BadgeDefinitionGenericEvent> dbBadgeDefinitionGenericEvent = cacheBadgeDefinitionGenericEventServiceIF.getAddressTagEvent(incomingBadgeAwardGenericEvent.asGenericEventRecord());
 
     if (dbBadgeDefinitionGenericEvent.isEmpty())
       throw new NostrException(BADGE_DEFN_NOT_FOUND);
@@ -41,10 +40,5 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
     log.debug("... return materialized badgeAwardGenericEvent:\n{}", badgeAwardGenericEvent.createPrettyPrintJson());
 
     return badgeAwardGenericEvent;
-  }
-
-  @Override
-  protected Optional<BadgeDefinitionGenericEvent> getBadgeDefinitionEvent(@NonNull GenericEventRecord genericEventRecord) {
-    return cacheBadgeDefinitionGenericEventServiceIF.getAddressTagEvent(genericEventRecord);
   }
 }

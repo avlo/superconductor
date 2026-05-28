@@ -40,6 +40,4 @@ public abstract class CacheBadgeAwardAbstractEventService<S extends BadgeDefinit
   }
 
   protected abstract T materialize(@NonNull EventIF eventIF);
-
-  protected abstract Optional<S> getBadgeDefinitionEvent(@NonNull GenericEventRecord genericEventRecord);
 }

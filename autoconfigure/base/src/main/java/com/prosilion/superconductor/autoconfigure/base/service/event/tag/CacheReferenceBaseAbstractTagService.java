@@ -29,13 +29,13 @@ import org.springframework.lang.NonNull;
 import reactor.core.publisher.Hooks;
 
 @Slf4j
-public abstract class CacheDereferenceBaseAbstractTagService<T extends ReferencedAbstractEventTag> {
+public abstract class CacheReferenceBaseAbstractTagService<T extends ReferencedAbstractEventTag> {
   static int padding = 4;
   private final static String blankPadding = " ".repeat(padding);
 
   protected final CacheServiceIF cacheServiceIF;
 
-  public CacheDereferenceBaseAbstractTagService(@NonNull CacheServiceIF cacheServiceIF) {
+  public CacheReferenceBaseAbstractTagService(@NonNull CacheServiceIF cacheServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
   }
 
@@ -48,7 +48,7 @@ public abstract class CacheDereferenceBaseAbstractTagService<T extends Reference
     log.debug("... sendConsolidatorReq() (1 of 3) sending request message to:\nURL:  {}\nusing subscriberId:  [{}]\nand filters:\n  {}",
         relayUrl,
         reqMessage.getSubscriptionId(),
-        apply.toString().replace(lineBreak, Strings.concat(lineBreak, CacheDereferenceBaseAbstractTagService.blankPadding))
+        apply.toString().replace(lineBreak, Strings.concat(lineBreak, CacheReferenceBaseAbstractTagService.blankPadding))
     );
 
 //    TODO: finalize which awaitXXX() variant given below awaitXXX() options
@@ -113,7 +113,7 @@ public abstract class CacheDereferenceBaseAbstractTagService<T extends Reference
     log.debug("... remoteGenericEventRecordSubscriber.dispose() ...");
 
     log.debug("awaitUsingNostrSingleRequestService (2of2) ... complete. returned baseMessages (count {}):", baseMessages.size());
-    baseMessages.forEach(CacheDereferenceBaseAbstractTagService::debugPrintBaseMessage);
+    baseMessages.forEach(CacheReferenceBaseAbstractTagService::debugPrintBaseMessage);
     return baseMessages;
   }
 
@@ -122,7 +122,7 @@ public abstract class CacheDereferenceBaseAbstractTagService<T extends Reference
     NostrSingleRequestService nostrSingleRequestService = new NostrSingleRequestService();
     List<BaseMessage> baseMessages = nostrSingleRequestService.send(reqMessage, relayUrl, Duration.of(10, ChronoUnit.SECONDS));
     log.debug("awaitUsingNostrSingleRequestService (2of2) ... complete. returned baseMessages (count {}):", baseMessages.size());
-    baseMessages.forEach(CacheDereferenceBaseAbstractTagService::debugPrintBaseMessage);
+    baseMessages.forEach(CacheReferenceBaseAbstractTagService::debugPrintBaseMessage);
     return baseMessages;
   }
 
@@ -139,7 +139,7 @@ public abstract class CacheDereferenceBaseAbstractTagService<T extends Reference
     subscriber.dispose();
     log.debug("awaitUsingRequestSubscriberFxns (4of5) ... done, calling manager.closeAllSessions() ...");
     log.debug("awaitUsingRequestSubscriberFxns (5of5) ... complete. returned baseMessages (count {}):", baseMessages.size());
-    baseMessages.forEach(CacheDereferenceBaseAbstractTagService::debugPrintBaseMessage);
+    baseMessages.forEach(CacheReferenceBaseAbstractTagService::debugPrintBaseMessage);
     return baseMessages;
   }
 

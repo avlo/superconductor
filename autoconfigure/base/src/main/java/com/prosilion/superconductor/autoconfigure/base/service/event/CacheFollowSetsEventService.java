@@ -17,8 +17,8 @@ import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServic
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheDereferenceKindAddressTagServiceIF;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -28,22 +28,22 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceIF {
   public static final String NON_EXISTENT_EVENT_ID_S = "FollowSetsEvent [%s] contains EventTag [%s] referencing non-existent BadgeAwardGeneric(Upvote/Downvote)Event";
-  private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
+  private final CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
   private final CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeGenericAwardEventServiceIF;
   private final CacheBadgeAwardReputationEventServiceIF cacheBadgeAwardReputationEventServiceIF;
-  private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
+  private final CacheDereferenceKindAddressTagServiceIF cacheDereferenceKindAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
 
   public CacheFollowSetsEventService(
-      @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
+      @NonNull CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventServiceIF,
       @NonNull CacheBadgeAwardReputationEventServiceIF cacheBadgeAwardReputationEventServiceIF,
-      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
+      @NonNull CacheDereferenceKindAddressTagServiceIF cacheDereferenceKindAddressTagServiceIF,
       @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF) {
     this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
     this.cacheBadgeGenericAwardEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
     this.cacheBadgeAwardReputationEventServiceIF = cacheBadgeAwardReputationEventServiceIF;
-    this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
+    this.cacheDereferenceKindAddressTagServiceIF = cacheDereferenceKindAddressTagServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
   }
 
@@ -107,7 +107,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   public Optional<BadgeAwardReputationEvent> getBadgeAwardReputationEvent(@NonNull FollowSetsEvent followSetsEvent) {
     AddressTag addressableAddressTag = followSetsEvent.getAddressTag();
     log.debug("... calling getBadgeAwardReputationEvent(FollowSetsEventfollowSetsEvent) with followSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
-    Optional<BadgeAwardReputationEvent> badgeAwardReputationEvent = cacheKindAddressTagServiceIF.getEventByKindAndPubKeyTagAndAddressTag(
+    Optional<BadgeAwardReputationEvent> badgeAwardReputationEvent = cacheDereferenceKindAddressTagServiceIF.getEventByKindAndPubKeyTagAndAddressTag(
             Kind.BADGE_AWARD_EVENT,
             new PubKeyTag(followSetsEvent.getAwardRecipientPulicKey()),
             addressableAddressTag)

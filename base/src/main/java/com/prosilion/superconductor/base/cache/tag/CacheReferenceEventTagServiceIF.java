@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.lang.NonNull;
 
-public interface CacheDereferenceEventTagServiceIF extends CacheDereferenceAbstractTagServiceIF<EventTag> {
+public interface CacheReferenceEventTagServiceIF extends CacheReferenceAbstractTagServiceIF<EventTag> {
   List<GenericEventRecord> getEvents(List<EventTag> t);
 
   default Optional<GenericEventRecord> getEvent(@NonNull String eventId, @NonNull String url) {

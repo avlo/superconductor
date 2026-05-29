@@ -5,16 +5,16 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAbstractTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceAbstractTagServiceIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbstractEventTag> extends CacheDereferenceBaseAbstractTagService<T> implements CacheDereferenceAbstractTagServiceIF<T> {
+public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstractEventTag> extends CacheReferenceBaseAbstractTagService<T> implements CacheReferenceAbstractTagServiceIF<T> {
   private static final String STRING = "inside getRemoteEventGenericEventRecord(abstractTag, relayUrl): [{}], [{}]";
 
-  public CacheDereferenceAbstractTagService(@NonNull CacheServiceIF cacheServiceIF) {
+  public CacheReferenceAbstractTagService(@NonNull CacheServiceIF cacheServiceIF) {
     super(cacheServiceIF);
   }
 
@@ -31,7 +31,7 @@ public abstract class CacheDereferenceAbstractTagService<T extends ReferencedAbs
             log.debug("fetched remote event saved to local DB\n  {}", genericEventRecord.createPrettyPrintJson()),
         () -> {
           log.debug("sendConsolidatorReq() did not find an event, throw NostrException");
-          new NostrException("sendConsolidatorReq() did not find an event");
+          throw new NostrException("sendConsolidatorReq() did not find an event");
         });
 
     optionalGenericEventRecord.ifPresent(cacheServiceIF::save);

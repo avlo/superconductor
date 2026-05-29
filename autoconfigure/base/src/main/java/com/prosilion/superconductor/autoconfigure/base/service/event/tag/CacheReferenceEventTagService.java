@@ -7,15 +7,15 @@ import com.prosilion.nostr.filter.event.EventFilter;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class CacheDereferenceEventTagService extends CacheDereferenceAbstractTagService<EventTag> implements CacheDereferenceEventTagServiceIF {
-  public CacheDereferenceEventTagService(@NonNull CacheServiceIF cacheServiceIF) {
+public class CacheReferenceEventTagService extends CacheReferenceAbstractTagService<EventTag> implements CacheReferenceEventTagServiceIF {
+  public CacheReferenceEventTagService(@NonNull CacheServiceIF cacheServiceIF) {
     super(cacheServiceIF);
   }
 

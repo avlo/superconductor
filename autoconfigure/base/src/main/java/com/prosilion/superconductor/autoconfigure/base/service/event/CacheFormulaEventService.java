@@ -8,12 +8,12 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheDereferenceEventTagService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheDereferenceKindAddressTagServiceIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -24,19 +24,19 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   public static final String NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S = "FormulaEvent [%s] contains AddressTag referencing non-existent BadgeDefinitionGenericEvent";
   public static final String FORMATTED = "formula event found with matching author public key and identifier tag (UUID) but with different formula:\n  (db) [%s]\n    -vs- (incoming formula) [%s]\n";
   private final CacheServiceIF cacheServiceIF;
-  private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
-  private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
-  private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
+  private final CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
+  private final CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
+  private final CacheDereferenceKindAddressTagServiceIF cacheDereferenceKindAddressTagServiceIF;
 
   public CacheFormulaEventService(
       @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull CacheDereferenceEventTagService cacheDereferenceEventTagServiceIF,
-      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
-      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
+      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagServiceIF,
+      @NonNull CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
+      @NonNull CacheDereferenceKindAddressTagServiceIF cacheDereferenceKindAddressTagServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
     this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;
-    this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
+    this.cacheDereferenceKindAddressTagServiceIF = cacheDereferenceKindAddressTagServiceIF;
   }
 
   @Override

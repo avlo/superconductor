@@ -10,8 +10,8 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,8 +25,8 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   private final CacheFormulaEventService cacheFormulaEventService;
 
   public CacheBadgeDefinitionReputationEventService(
-      @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
-      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
+      @NonNull CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
+      @NonNull CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
       @NonNull CacheFormulaEventService cacheFormulaEventService) {
     super(cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagServiceIF);
     this.cacheFormulaEventService = cacheFormulaEventService;

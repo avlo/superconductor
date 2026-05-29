@@ -7,20 +7,20 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
 public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDefinitionGenericEvent> {
-  private final CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
-  private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
+  private final CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
+  private final CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
 
   public CacheBadgeDefinitionAbstractEventService(
-      @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
-      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
+      @NonNull CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
+      @NonNull CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
     this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
     this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;
   }

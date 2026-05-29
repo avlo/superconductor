@@ -7,8 +7,8 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -17,12 +17,12 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionReputationEvent, BadgeAwardReputationEvent> implements CacheBadgeAwardReputationEventServiceIF {
   private static final String BADGE_DEFN_NOT_FOUND = "getBadgeDefinitionEvent(addressTagsAsGenericEventRecord) returned EMPTY optional";
-  private final CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
+  private final CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService;
 
   public CacheBadgeAwardReputationEventService(
-      @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
-      @NonNull CacheDereferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
+      @NonNull CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
+      @NonNull CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
       @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
     super(cacheDereferenceEventTagServiceIF);
     this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;

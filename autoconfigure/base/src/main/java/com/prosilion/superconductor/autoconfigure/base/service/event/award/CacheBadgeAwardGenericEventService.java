@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -18,7 +18,7 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
   private final CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF;
 
   public CacheBadgeAwardGenericEventService(
-      @NonNull CacheDereferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
+      @NonNull CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
       @NonNull CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF) {
     super(cacheDereferenceEventTagServiceIF);
     this.cacheBadgeDefinitionGenericEventServiceIF = cacheBadgeDefinitionGenericEventServiceIF;

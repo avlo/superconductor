@@ -10,18 +10,18 @@ import com.prosilion.nostr.filter.tag.IdentifierTagFilter;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheDereferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class CacheDereferenceAddressTagService extends CacheDereferenceAbstractTagService<AddressTag> implements CacheDereferenceAddressTagServiceIF {
+public class CacheReferenceAddressTagService extends CacheReferenceAbstractTagService<AddressTag> implements CacheReferenceAddressTagServiceIF {
   public static final String FORMATTED_ADDRESS_TAG = "AddressTag[kind=%d, publicKey=%s, identifierTag=IdentifierTag[uuid=%s], relay=Relay[url=%s]]";
   public static final String NON_EXISTENT_ADDRESS_TAG_EVENT = "AddressTag [%s] references non-existent Event";
 
-  public CacheDereferenceAddressTagService(@NonNull CacheServiceIF cacheServiceIF) {
+  public CacheReferenceAddressTagService(@NonNull CacheServiceIF cacheServiceIF) {
     super(cacheServiceIF);
   }
 

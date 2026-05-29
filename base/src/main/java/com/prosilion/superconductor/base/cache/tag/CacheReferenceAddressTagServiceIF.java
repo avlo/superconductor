@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.lang.NonNull;
 
-public interface CacheDereferenceAddressTagServiceIF extends CacheDereferenceAbstractTagServiceIF<AddressTag> {
+public interface CacheReferenceAddressTagServiceIF extends CacheReferenceAbstractTagServiceIF<AddressTag> {
 
   @Override
   Optional<GenericEventRecord> getEvent(AddressTag t);

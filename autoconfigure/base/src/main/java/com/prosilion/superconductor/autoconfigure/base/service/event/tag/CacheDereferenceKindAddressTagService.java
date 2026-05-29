@@ -14,14 +14,14 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheDereferenceKindAddressTagServiceIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public class CacheDereferenceKindAddressTagService extends CacheDereferenceBaseAbstractTagService<AddressTag> implements CacheKindAddressTagServiceIF {
+public class CacheDereferenceKindAddressTagService extends CacheReferenceBaseAbstractTagService<AddressTag> implements CacheDereferenceKindAddressTagServiceIF {
   public CacheDereferenceKindAddressTagService(@NonNull CacheServiceIF cacheServiceIF) {
     super(cacheServiceIF);
   }

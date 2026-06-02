@@ -4,6 +4,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
@@ -40,5 +41,10 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
     log.debug("... return materialized badgeAwardGenericEvent:\n{}", badgeAwardGenericEvent.createPrettyPrintJson());
 
     return badgeAwardGenericEvent;
+  }
+
+  @Override
+  public BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getReferencedEvent(ReferencedAbstractEventTag referencedAbstractEventTag) {
+    return null;
   }
 }

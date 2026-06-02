@@ -24,7 +24,7 @@ public class CacheReferenceEventTagService extends CacheReferenceAbstractTagServ
     log.debug("getEvents(List<EventTag> eventTags), calling streamed getEvent()...");
     List<GenericEventRecord> genericEventRecords = eventTags
         .stream()
-        .map(this::getEvent)
+        .map(this::getReferencedEvent)
         .flatMap(Optional::stream).toList();
     log.debug("streamed getEvent() returning:\n {}", Util.prettyPrintGenericEventRecords(genericEventRecords));
     return genericEventRecords;

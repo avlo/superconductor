@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
@@ -33,6 +34,10 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
   public BadgeAwardReputationEvent materialize(@NonNull EventIF incomingBadgeAwardReputationEvent) {
     log.debug("... materialize incomingBadgeAwardReputationEvent:\n{}", incomingBadgeAwardReputationEvent.createPrettyPrintJson());
 
+    /*
+    1. get aTag
+    2. call BadgeDefinitionReputationEventService getReferencedAddressTag(aTag), calls getByKindAuthorPublicKeyIdentifierTag(30009,aTag.vars)
+     */
     List<GenericEventRecord> addressTagsAsGenericEventRecord = cacheDereferenceAddressTagServiceIF.getEventAddressTagsAsGenericEventRecords(incomingBadgeAwardReputationEvent);
 
     if (addressTagsAsGenericEventRecord.size() != 1)
@@ -53,5 +58,10 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
     log.debug("... return materialized badgeAwardReputationEvent:\n{}", badgeAwardReputationEvent.createPrettyPrintJson());
 
     return badgeAwardReputationEvent;
+  }
+
+  @Override
+  public BadgeAwardReputationEvent getReferencedEvent(ReferencedAbstractEventTag referencedAbstractEventTag) {
+    return null;
   }
 }

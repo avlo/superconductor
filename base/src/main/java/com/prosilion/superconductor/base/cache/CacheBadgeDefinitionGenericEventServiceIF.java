@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.base.cache;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheAddressableEventServiceIF;
 
 /**
@@ -11,4 +12,5 @@ import com.prosilion.superconductor.base.cache.mapped.CacheAddressableEventServi
  *    CacheAddressableEventServiceIF<BadgeDefinitionGenericEvent> variableName;
  */
 public interface CacheBadgeDefinitionGenericEventServiceIF extends CacheAddressableEventServiceIF<BadgeDefinitionGenericEvent> {
+  BadgeDefinitionGenericEvent getReferencedEvent(ReferencedAbstractEventTag referencedAbstractEventTag);
 }

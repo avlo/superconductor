@@ -52,9 +52,9 @@ public class CacheReferenceAddressTagService extends CacheReferenceAbstractTagSe
     List<AddressTag> eventIFAddressTags = eventIF.getTypeSpecificTags(AddressTag.class);
 
     List<GenericEventRecord> genericEventRecords = eventIFAddressTags.stream()
-        .map(addressTag1 -> getEvent(addressTag1)
+        .map(addressTag -> getReferencedEvent(addressTag)
             .orElseThrow(() ->
-                new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG_EVENT, addressTag1)))).toList();
+                new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG_EVENT, addressTag)))).toList();
 
     return genericEventRecords;
   }

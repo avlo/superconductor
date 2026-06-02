@@ -42,7 +42,7 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
   }
 
   @Override
-  public Optional<GenericEventRecord> getEvent(@NonNull T abstractTag) {
+  public Optional<GenericEventRecord> getReferencedEvent(@NonNull T abstractTag) {
     log.debug("inside getEvent(@NonNull T abstractTag) with abstractTag:{}", Util.prettyPrintReferencedAbstractEventTag(abstractTag));
 
     log.debug("... calling getLocalEventFxn(abstractTag) ...");

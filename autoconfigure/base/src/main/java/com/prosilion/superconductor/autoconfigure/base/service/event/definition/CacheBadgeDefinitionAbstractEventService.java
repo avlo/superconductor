@@ -34,7 +34,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
       throw new NostrException(
           String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
 
-    Optional<GenericEventRecord> badgeDefinitionAbstractEventGEROptional = cacheDereferenceAddressTagServiceIF.getEvent(addressTag);
+    Optional<GenericEventRecord> badgeDefinitionAbstractEventGEROptional = cacheDereferenceAddressTagServiceIF.getReferencedEvent(addressTag);
     if (badgeDefinitionAbstractEventGEROptional.isEmpty())
       throw new NostrException(
           String.format("cacheDereferenceAddressTagServiceIF.getEvent(addressTag) using addressTag:\n  %s\nnot found", Util.prettyPrintAddressTags(addressTag)));
@@ -60,6 +60,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     return event;
   }
 
+  @Deprecated
   public Optional<T> getEvent(@NonNull String eventId, @NonNull String url) {
     log.debug("inside getEvent(eventId, url): [{}], [{}]", eventId, url);
 

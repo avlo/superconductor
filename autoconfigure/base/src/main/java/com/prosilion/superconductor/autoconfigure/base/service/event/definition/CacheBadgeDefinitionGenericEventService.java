@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.definition
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
@@ -29,5 +30,10 @@ public class CacheBadgeDefinitionGenericEventService extends CacheBadgeDefinitio
     log.debug("... materialize(incomingBadgeDefinitionGenericEvent)...\n{}", incomingBadgeDefinitionGenericEvent.createPrettyPrintJson());
 
     return new BadgeDefinitionGenericEvent(incomingBadgeDefinitionGenericEvent.asGenericEventRecord());
+  }
+
+  @Override
+  public BadgeDefinitionGenericEvent getReferencedEvent(ReferencedAbstractEventTag referencedAbstractEventTag) {
+    return null;
   }
 }

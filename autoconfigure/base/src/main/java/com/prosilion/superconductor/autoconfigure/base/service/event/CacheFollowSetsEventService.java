@@ -12,6 +12,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
@@ -45,6 +46,11 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     this.cacheBadgeAwardReputationEventServiceIF = cacheBadgeAwardReputationEventServiceIF;
     this.cacheDereferenceKindAddressTagServiceIF = cacheDereferenceKindAddressTagServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
+  }
+
+  @Override
+  public FollowSetsEvent getReferencedEvent(ReferencedAbstractEventTag referencedAbstractEventTag) {
+    return null;
   }
 
   @Override

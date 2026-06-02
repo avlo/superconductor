@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
@@ -82,5 +83,10 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
     log.debug("formulaEvents size matches addressTag size, return formulaEvents");
     return formulaEvents;
+  }
+
+  @Override
+  public BadgeDefinitionReputationEvent getReferencedEvent(ReferencedAbstractEventTag referencedAbstractEventTag) {
+    return null;
   }
 }

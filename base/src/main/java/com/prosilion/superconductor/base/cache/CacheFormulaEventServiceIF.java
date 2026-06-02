@@ -7,10 +7,10 @@ import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventService
 import java.util.Optional;
 import org.springframework.lang.NonNull;
 
-public interface CacheFormulaEventServiceIF extends CacheTagMappedEventServiceIF<FormulaEvent> {
+public interface CacheFormulaEventServiceIF extends CacheTagMappedEventServiceIF<FormulaEvent, AddressTag> {
   @Override
   Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url);
   @Override
   FormulaEvent materialize(@NonNull EventIF eventIF);
-  Optional<FormulaEvent> getAddressTagAsFormulaEvent(@NonNull AddressTag addressTag);
+  Optional<FormulaEvent> getBy(@NonNull AddressTag addressTag);
 }

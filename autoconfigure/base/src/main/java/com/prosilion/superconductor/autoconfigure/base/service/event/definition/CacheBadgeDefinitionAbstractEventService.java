@@ -15,29 +15,28 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDefinitionGenericEvent> {
-  private final CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
-  private final CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
+  private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
+  private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
 
   public CacheBadgeDefinitionAbstractEventService(
-      @NonNull CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
-      @NonNull CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF) {
-    this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
-    this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;
+      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
+      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF) {
+    this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
+    this.cacheReferenceAddressTagServiceIF = cacheReferenceAddressTagServiceIF;
   }
 
   public abstract T materialize(@NonNull EventIF eventIF);
 
-  public Optional<T> getExistingDefinitionEvent(@NonNull GenericEventRecord genericEventRecord) {
-    AddressTag addressTag = genericEventRecord.requireFirstTag(AddressTag.class);
 
+  public Optional<T> getBy(@NonNull AddressTag addressTag) {
     if (!addressTag.getKind().equals(Kind.BADGE_DEFINITION_EVENT))
       throw new NostrException(
           String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
 
-    Optional<GenericEventRecord> badgeDefinitionAbstractEventGEROptional = cacheDereferenceAddressTagServiceIF.getReferencedEvent(addressTag);
+    Optional<GenericEventRecord> badgeDefinitionAbstractEventGEROptional = cacheReferenceAddressTagServiceIF.getBy(addressTag);
     if (badgeDefinitionAbstractEventGEROptional.isEmpty())
       throw new NostrException(
-          String.format("cacheDereferenceAddressTagServiceIF.getEvent(addressTag) using addressTag:\n  %s\nnot found", Util.prettyPrintAddressTags(addressTag)));
+          String.format("cacheReferenceAddressTagServiceIF.getEvent(addressTag) using addressTag:\n  %s\nnot found", Util.prettyPrintAddressTags(addressTag)));
 
     GenericEventRecord existingBadgeDefinitionReputationEventGER = badgeDefinitionAbstractEventGEROptional.get();
     log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER);
@@ -65,7 +64,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     log.debug("inside getEvent(eventId, url): [{}], [{}]", eventId, url);
 
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionAbstractEvent =
-        cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
+        cacheReferenceEventTagServiceIF.getEvent(eventId, url);
     log.debug("return unpopulatedBadgeDefinitionAbstractEvent:\n{}",
         unpopulatedBadgeDefinitionAbstractEvent.map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
 

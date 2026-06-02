@@ -5,5 +5,5 @@ import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import java.util.Optional;
 
 public interface CacheReferenceAbstractTagServiceIF<T extends ReferencedAbstractEventTag> {
-  Optional<GenericEventRecord> getReferencedEvent(T t);
+  Optional<GenericEventRecord> getBy(T t);
 }

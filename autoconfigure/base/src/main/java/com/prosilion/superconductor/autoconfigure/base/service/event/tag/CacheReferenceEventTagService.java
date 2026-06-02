@@ -15,23 +15,25 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public class CacheReferenceEventTagService extends CacheReferenceAbstractTagService<EventTag> implements CacheReferenceEventTagServiceIF {
-  public CacheReferenceEventTagService(@NonNull CacheServiceIF cacheServiceIF) {
-    super(cacheServiceIF);
+  public CacheReferenceEventTagService(
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull RemoteAbstractTagService remoteAbstractTagService) {
+    super(cacheServiceIF, remoteAbstractTagService);
   }
 
   @Override
-  public List<GenericEventRecord> getEvents(List<EventTag> eventTags) {
+  public List<GenericEventRecord> getEvents(@NonNull List<EventTag> eventTags) {
     log.debug("getEvents(List<EventTag> eventTags), calling streamed getEvent()...");
     List<GenericEventRecord> genericEventRecords = eventTags
         .stream()
-        .map(this::getReferencedEvent)
+        .map(this::getLocalEventFxn)
         .flatMap(Optional::stream).toList();
     log.debug("streamed getEvent() returning:\n {}", Util.prettyPrintGenericEventRecords(genericEventRecords));
     return genericEventRecords;
   }
 
   @Override
-  Optional<GenericEventRecord> getLocalEventFxn(EventTag eventTag) {
+  Optional<GenericEventRecord> getLocalEventFxn(@NonNull EventTag eventTag) {
     log.debug("getLocalEventFxn(EventTag), id: [{}], eventTag URL: [{}]",
         eventTag.getIdEvent(),
         eventTag.getRecommendedRelayUrl());
@@ -49,7 +51,7 @@ public class CacheReferenceEventTagService extends CacheReferenceAbstractTagServ
   }
 
   @Override
-  Filters getAbstractTagFilters(EventTag eventTag) {
+  Filters getAbstractTagFilters(@NonNull EventTag eventTag) {
     return new Filters(
         new EventFilter(
             new GenericEventId(eventTag.getIdEvent())));

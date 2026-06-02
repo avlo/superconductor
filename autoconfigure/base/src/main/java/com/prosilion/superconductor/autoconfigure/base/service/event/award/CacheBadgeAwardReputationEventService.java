@@ -1,32 +1,35 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 
-import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.ExternalIdentityTag;
+import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 // TODO: likely replaceable by CacheBadgeAwardGenericEventService
 @Slf4j
 public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionReputationEvent, BadgeAwardReputationEvent> implements CacheBadgeAwardReputationEventServiceIF {
-  private static final String BADGE_DEFN_NOT_FOUND = "getBadgeDefinitionEvent(addressTagsAsGenericEventRecord) returned EMPTY optional";
-  private final CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF;
+  private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService;
 
   public CacheBadgeAwardReputationEventService(
-      @NonNull CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
-      @NonNull CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
+      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
+      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
       @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
-    super(cacheDereferenceEventTagServiceIF);
-    this.cacheDereferenceAddressTagServiceIF = cacheDereferenceAddressTagServiceIF;
+    super(cacheReferenceEventTagServiceIF);
+    this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
     this.cacheBadgeDefinitionReputationEventService = cacheBadgeDefinitionReputationEventService;
   }
 
@@ -34,23 +37,9 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
   public BadgeAwardReputationEvent materialize(@NonNull EventIF incomingBadgeAwardReputationEvent) {
     log.debug("... materialize incomingBadgeAwardReputationEvent:\n{}", incomingBadgeAwardReputationEvent.createPrettyPrintJson());
 
-    /*
-    1. get aTag
-    2. call BadgeDefinitionReputationEventService getReferencedAddressTag(aTag), calls getByKindAuthorPublicKeyIdentifierTag(30009,aTag.vars)
-     */
-    List<GenericEventRecord> addressTagsAsGenericEventRecord = cacheDereferenceAddressTagServiceIF.getEventAddressTagsAsGenericEventRecords(incomingBadgeAwardReputationEvent);
-
-    if (addressTagsAsGenericEventRecord.size() != 1)
-      throw new NostrException(
-          String.format("incomingBadgeAwardReputationEvent [%s] requires a single AddressTag but had [%s]",
-              incomingBadgeAwardReputationEvent.asGenericEventRecord().createPrettyPrintJson(),
-              addressTagsAsGenericEventRecord.size()));
-
-    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent =
-        cacheBadgeDefinitionReputationEventService.getEvent(
-            addressTagsAsGenericEventRecord.getFirst().getId(),
-            addressTagsAsGenericEventRecord.getFirst().getRelayTagUrl()).orElseThrow(() ->
-            new NostrException(BADGE_DEFN_NOT_FOUND));
+    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = cacheBadgeDefinitionReputationEventService.getBy(
+        incomingBadgeAwardReputationEvent.requireFirstTag(PubKeyTag.class),
+        incomingBadgeAwardReputationEvent.requireFirstTag(AddressTag.class)).orElseThrow();
 
     BadgeAwardReputationEvent badgeAwardReputationEvent = new BadgeAwardReputationEvent(
         incomingBadgeAwardReputationEvent.asGenericEventRecord(),
@@ -61,7 +50,28 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
   }
 
   @Override
-  public BadgeAwardReputationEvent getReferencedEvent(ReferencedAbstractEventTag referencedAbstractEventTag) {
-    return null;
+  public Optional<BadgeAwardReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+    List<GenericEventRecord> addressTagsAsGenericEventRecord =
+        cacheKindAddressTagServiceIF.getBy(
+            Kind.BADGE_AWARD_EVENT,
+            pubKeyTag,
+            addressTag);
+
+    if (addressTagsAsGenericEventRecord.isEmpty()) {
+      log.debug("... BadgeAwardReputationEvent does not exist- getBy(pubKeyTag, addressTag) was EMPTY");
+      return Optional.empty();
+    }
+
+    Optional<GenericEventRecord> badgeAwardReputationEventOptGER = addressTagsAsGenericEventRecord.stream()
+        .filter(ger ->
+            ger.findFirstTag(ExternalIdentityTag.class).isPresent()).findFirst();
+
+    Optional<BadgeAwardReputationEvent> badgeAwardReputationEventOpt = badgeAwardReputationEventOptGER.map(genericEventRecord ->
+        getEvent(
+            genericEventRecord.getId(),
+            genericEventRecord.requireFirstTag(RelayTag.class).getRelay().getUrl()).orElseThrow());
+
+    log.debug("... return materialized badgeAwardReputationEvent:\n{}", badgeAwardReputationEventOpt.map(EventIF::createPrettyPrintJson).orElse("EMPTY Optional"));
+    return badgeAwardReputationEventOpt;
   }
 }

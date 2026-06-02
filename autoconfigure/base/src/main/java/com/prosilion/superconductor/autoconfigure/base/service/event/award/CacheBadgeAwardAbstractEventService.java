@@ -13,16 +13,16 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public abstract class CacheBadgeAwardAbstractEventService<S extends BadgeDefinitionGenericEvent, T extends BadgeAwardGenericEvent<S>> {
   private static final String EMPTY_OPTIONAL = "[EMPTY OPTIONAL]";
-  protected final CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF;
+  protected final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
 
-  public CacheBadgeAwardAbstractEventService(CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF) {
-    this.cacheDereferenceEventTagServiceIF = cacheDereferenceEventTagServiceIF;
+  public CacheBadgeAwardAbstractEventService(@NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF) {
+    this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
   }
 
   public Optional<T> getEvent(@NonNull String eventId, @NonNull String url) {
-    log.debug("... calling cacheDereferenceEventTagServiceIF.getEvent(eventId, url): [{}], [{}]", eventId, url);
+    log.debug("... calling cacheReferenceEventTagServiceIF.getEvent(eventId, url): [{}], [{}]", eventId, url);
 
-    Optional<GenericEventRecord> unpopulatedEvent = cacheDereferenceEventTagServiceIF.getEvent(eventId, url);
+    Optional<GenericEventRecord> unpopulatedEvent = cacheReferenceEventTagServiceIF.getEvent(eventId, url);
     log.debug("returned pre-materialized optGER:\n{}",
         unpopulatedEvent.map(GenericEventRecord::createPrettyPrintJson).orElse(EMPTY_OPTIONAL));
 

@@ -63,7 +63,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
         awardUpvoteDefinitionEvent);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent));
-    BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getAddressTagEvent(badgeAwardUpvoteEvent.asGenericEventRecord()).orElseThrow();
+    BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getBy(badgeAwardUpvoteEvent.getAddressTag()).orElseThrow();
 
     assertEquals(badgeAwardUpvoteEvent.getBadgeDefinitionEvent(), dbDefinitionGenericEvent);
     assertEquals(upvoteIdentifierTag, dbDefinitionGenericEvent.getIdentifierTag());

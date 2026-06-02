@@ -7,7 +7,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
@@ -26,10 +26,10 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   private final CacheFormulaEventService cacheFormulaEventService;
 
   public CacheBadgeDefinitionReputationEventService(
-      @NonNull CacheReferenceEventTagServiceIF cacheDereferenceEventTagServiceIF,
-      @NonNull CacheReferenceAddressTagServiceIF cacheDereferenceAddressTagServiceIF,
+      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
+      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
       @NonNull CacheFormulaEventService cacheFormulaEventService) {
-    super(cacheDereferenceEventTagServiceIF, cacheDereferenceAddressTagServiceIF);
+    super(cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
     this.cacheFormulaEventService = cacheFormulaEventService;
   }
 
@@ -52,33 +52,32 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
                 String.format(NON_EXISTENT_ADDRESS_TAG, incomingBadgeDefinitionReputationEvent))));
   }
 
-  //  TODO: refactor back in after debug
   private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord badgeDefinitionReputationEventGER) {
     log.debug("getFormulaEvents(@NonNull GenericEventRecord badgeDefinitionReputationEventGER):\n{}", badgeDefinitionReputationEventGER.createPrettyPrintJson());
 
-    List<AddressTag> addressTagsOfFormulaEvents = badgeDefinitionReputationEventGER.getTypeSpecificTags(AddressTag.class);
-    log.debug("addressTagsOfFormulaEventsOriginalList.toList() size:  [{}]", addressTagsOfFormulaEvents.size());
-    log.debug("addressTagsOfFormulaEventsOriginalList.toList():{}", Util.prettyPrintAddressTags(addressTagsOfFormulaEvents));
+    List<AddressTag> addressTagsAreFormulaEvents = badgeDefinitionReputationEventGER.getTypeSpecificTags(AddressTag.class);
+    log.debug("addressTagsAreFormulaEventsOriginalList.toList() size:  [{}]", addressTagsAreFormulaEvents.size());
+    log.debug("addressTagsAreFormulaEventsOriginalList.toList():{}", Util.prettyPrintAddressTags(addressTagsAreFormulaEvents));
 
-    if (addressTagsOfFormulaEvents.isEmpty()) {
-      log.debug("addressTagsOfFormulaEvents was Empty. throwing exception");
+    if (addressTagsAreFormulaEvents.isEmpty()) {
+      log.debug("addressTagsAreFormulaEvents was Empty. throwing exception");
       throw new NostrException(
           String.format(NON_EXISTENT_ADDRESS_TAG, badgeDefinitionReputationEventGER));
     }
 
-    List<FormulaEvent> formulaEvents = addressTagsOfFormulaEvents.stream()
-        .map(cacheFormulaEventService::getAddressTagAsFormulaEvent)
+    List<FormulaEvent> formulaEvents = addressTagsAreFormulaEvents.stream()
+        .map(cacheFormulaEventService::getBy)
         .flatMap(Optional::stream).toList();
     log.debug("cacheFormulaEventService::getAddressTagAsFormulaEvent returned:\n  {}",
         formulaEvents.stream().map(EventIF::asGenericEventRecord).map(GenericEventRecord::createPrettyPrintJson).toList());
 
-    log.debug("addressTagsOfFormulaEvents.size(): [{}], formulaEvents.size(): [{}]",
-        addressTagsOfFormulaEvents.size(), formulaEvents.size());
+    log.debug("addressTagsAreFormulaEvents.size(): [{}], formulaEvents.size(): [{}]",
+        addressTagsAreFormulaEvents.size(), formulaEvents.size());
 
-    if (!Objects.equals(addressTagsOfFormulaEvents.size(), formulaEvents.size()))
+    if (!Objects.equals(addressTagsAreFormulaEvents.size(), formulaEvents.size()))
       throw new NostrException(
           String.format("Unequal count AddressTags vs FormulaEvents:%s\nFormulaEvent:\n%s",
-              Util.prettyPrintAddressTags(addressTagsOfFormulaEvents),
+              Util.prettyPrintAddressTags(addressTagsAreFormulaEvents),
               Util.prettyPrintGenericEventRecords(formulaEvents.stream().map(FormulaEvent::getGenericEventRecord).toList())));
 
     log.debug("formulaEvents size matches addressTag size, return formulaEvents");
@@ -86,7 +85,8 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   }
 
   @Override
-  public BadgeDefinitionReputationEvent getReferencedEvent(ReferencedAbstractEventTag referencedAbstractEventTag) {
-    return null;
+  public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+    Optional<BadgeDefinitionReputationEvent> existingDefinitionEvent = getBy(addressTag);
+    return existingDefinitionEvent;
   }
 }

@@ -2,6 +2,7 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.tag;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -11,38 +12,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
 @Slf4j
-public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstractEventTag> extends CacheReferenceBaseAbstractTagService<T> implements CacheReferenceAbstractTagServiceIF<T> {
+public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstractEventTag> implements CacheReferenceAbstractTagServiceIF<T> {
   private static final String STRING = "inside getRemoteEventGenericEventRecord(abstractTag, relayUrl): [{}], [{}]";
+  protected final CacheServiceIF cacheServiceIF;
+  private final RemoteAbstractTagService remoteAbstractTagService;
 
-  public CacheReferenceAbstractTagService(@NonNull CacheServiceIF cacheServiceIF) {
-    super(cacheServiceIF);
+  public CacheReferenceAbstractTagService(
+      @NonNull CacheServiceIF cacheServiceIF,
+      @NonNull RemoteAbstractTagService remoteAbstractTagService) {
+    this.cacheServiceIF = cacheServiceIF;
+    this.remoteAbstractTagService = remoteAbstractTagService;
   }
 
-  abstract Optional<GenericEventRecord> getLocalEventFxn(T tag);
-
-  protected Optional<GenericEventRecord> getRemoteEventGenericEventRecord(T abstractTag, String relayUrl) {
-    log.debug(STRING, Util.prettyPrintReferencedAbstractEventTag(abstractTag), relayUrl);
-
-    Optional<GenericEventRecord> optionalGenericEventRecord = sendConsolidatorReq(
-        relayUrl,
-        getAbstractTagFilters(abstractTag));
-
-    optionalGenericEventRecord.ifPresentOrElse(genericEventRecord ->
-            log.debug("fetched remote event saved to local DB\n  {}", genericEventRecord.createPrettyPrintJson()),
-        () -> {
-          log.debug("sendConsolidatorReq() did not find an event, throw NostrException");
-          throw new NostrException("sendConsolidatorReq() did not find an event");
-        });
-
-    optionalGenericEventRecord.ifPresent(cacheServiceIF::save);
-    optionalGenericEventRecord.ifPresent(genericEventRecord ->
-        log.debug("fetched remote event saved to local DB\n  {}", genericEventRecord.createPrettyPrintJson()));
-
-    return optionalGenericEventRecord;
-  }
+  abstract Filters getAbstractTagFilters(@NonNull T tag);
+  abstract Optional<GenericEventRecord> getLocalEventFxn(@NonNull T tag);
 
   @Override
-  public Optional<GenericEventRecord> getReferencedEvent(@NonNull T abstractTag) {
+  public Optional<GenericEventRecord> getBy(@NonNull T abstractTag) {
     log.debug("inside getEvent(@NonNull T abstractTag) with abstractTag:{}", Util.prettyPrintReferencedAbstractEventTag(abstractTag));
 
     log.debug("... calling getLocalEventFxn(abstractTag) ...");
@@ -59,5 +45,26 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
 
     log.debug("local AbstractTag not found, calling getRemoteEventGenericEventRecord ...");
     return getRemoteEventGenericEventRecord(abstractTag, recommendedRelayUrl);
+  }
+
+  protected Optional<GenericEventRecord> getRemoteEventGenericEventRecord(T abstractTag, String relayUrl) {
+    log.debug(STRING, Util.prettyPrintReferencedAbstractEventTag(abstractTag), relayUrl);
+
+    Optional<GenericEventRecord> optionalGenericEventRecord = remoteAbstractTagService.sendRemoteReq(
+        relayUrl,
+        getAbstractTagFilters(abstractTag)).stream().findFirst();
+
+    optionalGenericEventRecord.ifPresentOrElse(genericEventRecord ->
+            log.debug("fetched remote event saved to local DB\n  {}", genericEventRecord.createPrettyPrintJson()),
+        () -> {
+          log.debug("sendConsolidatorReq() did not find an event, throw NostrException");
+          throw new NostrException("sendConsolidatorReq() did not find an event");
+        });
+
+    optionalGenericEventRecord.ifPresent(cacheServiceIF::save);
+    optionalGenericEventRecord.ifPresent(genericEventRecord ->
+        log.debug("fetched remote event saved to local DB\n  {}", genericEventRecord.createPrettyPrintJson()));
+
+    return optionalGenericEventRecord;
   }
 }

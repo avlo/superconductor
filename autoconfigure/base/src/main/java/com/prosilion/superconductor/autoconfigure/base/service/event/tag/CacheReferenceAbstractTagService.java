@@ -29,7 +29,7 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
 
   @Override
   public Optional<GenericEventRecord> getBy(@NonNull T abstractTag) {
-    log.debug("inside getEvent(@NonNull T abstractTag) with abstractTag:{}", Util.prettyPrintReferencedAbstractEventTag(abstractTag));
+    log.debug("inside getEvent(T abstractTag) with abstractTag:\n{}", Util.prettyPrintReferencedAbstractEventTag(abstractTag));
 
     log.debug("... calling getLocalEventFxn(abstractTag) ...");
     Optional<GenericEventRecord> localGenericEventRecordOptional = getLocalEventFxn(abstractTag);
@@ -39,12 +39,8 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
       return localGenericEventRecordOptional;
     }
 
-    String recommendedRelayUrl = Optional.ofNullable(abstractTag.getRelay().getUrl()).orElseThrow(() ->
-        new NostrException(
-            String.format("AbstractTag [%s] does not contain a (valid) url", abstractTag)));
-
     log.debug("local AbstractTag not found, calling getRemoteEventGenericEventRecord ...");
-    return getRemoteEventGenericEventRecord(abstractTag, recommendedRelayUrl);
+    return getRemoteEventGenericEventRecord(abstractTag, abstractTag.requireRelay().getUrl());
   }
 
   protected Optional<GenericEventRecord> getRemoteEventGenericEventRecord(T abstractTag, String relayUrl) {

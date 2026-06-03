@@ -11,7 +11,6 @@ import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import java.util.List;
@@ -39,38 +38,50 @@ public class CacheKindAddressTagService implements CacheKindAddressTagServiceIF 
 
   @Override
   public Optional<GenericEventRecord> getBy(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag, @NonNull String relayUrl) {
-    Optional<GenericEventRecord> localGenericEventRecordOptional = cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, pubKeyTag, identifierTag).stream().findFirst();
+    log.debug("inside getBy(kind, pubKeyTag, identifierTag) with:\n  kind: [{}]\npubKeyTag:  [{}]\nidentifierTag:{}",
+        kind,
+        pubKeyTag.getPublicKey().toHexString(),
+        identifierTag);
 
-    if (localGenericEventRecordOptional.isPresent()) {
-      log.debug("... localGenericEventRecordOptional found locally:\n  {}",
-          localGenericEventRecordOptional.get().createPrettyPrintJson());
-      return localGenericEventRecordOptional;
+    log.debug("... calling cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, pubKeyTag, identifierTag) ...");
+    List<GenericEventRecord> getByKindPubkeyTagIdentifierTagList = cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, pubKeyTag, identifierTag);
+    log.debug("cacheServiceIF returned kindPubkeyTagIdentifierTagList size:  [{}]", getByKindPubkeyTagIdentifierTagList.size());
+    log.debug("cacheServiceIF returned kindPubkeyTagIdentifierTagList contents:\n  {}", getByKindPubkeyTagIdentifierTagList.stream().map(GenericEventRecord::createPrettyPrintJson));
+
+    Optional<GenericEventRecord> firstGetByKindPubkeyTagIdentifierTag = getByKindPubkeyTagIdentifierTagList.stream().findFirst();
+    if (firstGetByKindPubkeyTagIdentifierTag.isPresent()) {
+      log.debug("... returning firstGetByKindPubkeyTagIdentifierTag found locally:\n  {}", firstGetByKindPubkeyTagIdentifierTag.get().createPrettyPrintJson());
+      return firstGetByKindPubkeyTagIdentifierTag;
     }
 
-    log.debug("local addressTag not found, calling getRemoteEventGenericEventRecord ...");
     Filters abstractTagFilters = new Filters(
         new KindFilter(kind),
         new ReferencedPublicKeyFilter(pubKeyTag),
         new IdentifierTagFilter(identifierTag));
+    log.debug("no local kindPubkeyTagIdentifierTag match, call remote w/ filters:{}", abstractTagFilters.toString(2));
 
     return getRemoteEventGenericEventRecords(abstractTagFilters, relayUrl).stream().findFirst();
   }
 
   @Override
   public List<GenericEventRecord> getBy(@NonNull Kind kind, @NonNull AddressTag addressTag) {
-    log.debug("inside getEventByKindAndAddressTag(Kind kind, AddressTag) with:\n  kind: [{}]\naddressTag:  {}", kind, Util.prettyPrintAddressTags(addressTag));
-    log.debug("... calling getLocalEventFxn(kind, addressTag) ...");
-    List<GenericEventRecord> localGenericEventRecords = cacheServiceIF.getEventsByKindAndAddressTag(kind, addressTag);
+    log.debug("inside getBy(kind, AddressTag) with:\n  kind: [{}]\naddressTag:\n    {}", kind, addressTag.toStringPrettyPrint());
+    
+    log.debug("... calling cacheServiceIF.getEventsByKindAndAddressTag(kind, addressTag) ...");
+    List<GenericEventRecord> getByKindAddressTagList = cacheServiceIF.getEventsByKindAndAddressTag(kind, addressTag);
+    log.debug("cacheServiceIF returned getByKindAddressTagList size:  [{}]", getByKindAddressTagList.size());
+    log.debug("cacheServiceIF returned getByKindAddressTagList contents:\n  {}", getByKindAddressTagList.stream().map(GenericEventRecord::createPrettyPrintJson));
 
-    if (!localGenericEventRecords.isEmpty()) {
-      log.debug("... localGenericEventRecords found locally:\n  {}",
-          localGenericEventRecords.stream().map(GenericEventRecord::createPrettyPrintJson));
-      return localGenericEventRecords;
+    if (!getByKindAddressTagList.isEmpty()) {
+      log.debug("... return getByKindAddressTagList found locally:\n  {}",
+          getByKindAddressTagList.stream().map(GenericEventRecord::createPrettyPrintJson));
+      return getByKindAddressTagList;
     }
 
-    log.debug("local addressTag not found, calling getRemoteEventGenericEventRecord ...");
     Filters abstractTagFilters = getAbstractTagFilters(addressTag);
     abstractTagFilters.add(new KindFilter(kind));
+    log.debug("no local kindAddressTag found, call remote w/ filters:\n{}", abstractTagFilters.toString(4));
+
     List<GenericEventRecord> remoteEventGenericEventRecords = getRemoteEventGenericEventRecords(
         abstractTagFilters,
         Optional.ofNullable(addressTag.getRelay().getUrl()).orElseThrow(() ->
@@ -80,7 +91,7 @@ public class CacheKindAddressTagService implements CacheKindAddressTagServiceIF 
   }
 
   private List<GenericEventRecord> getRemoteEventGenericEventRecords(Filters abstractTagFilters, String relayUrl) {
-    log.debug("getRemoteEventGenericEventRecord filters:\n  {}", abstractTagFilters);
+    log.debug("getRemoteEventGenericEventRecord filters:\n  {}", abstractTagFilters.toString(4));
     List<GenericEventRecord> optionalGenericEventRecords = remoteAbstractTagService.sendRemoteReq(
         relayUrl,
         abstractTagFilters);

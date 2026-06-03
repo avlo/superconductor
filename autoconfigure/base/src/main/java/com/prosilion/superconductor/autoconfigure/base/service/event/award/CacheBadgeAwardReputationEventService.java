@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
@@ -38,8 +39,10 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
     log.debug("... materialize incomingBadgeAwardReputationEvent:\n{}", incomingBadgeAwardReputationEvent.createPrettyPrintJson());
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = cacheBadgeDefinitionReputationEventService.getBy(
-        incomingBadgeAwardReputationEvent.requireFirstTag(PubKeyTag.class),
-        incomingBadgeAwardReputationEvent.requireFirstTag(AddressTag.class)).orElseThrow();
+            incomingBadgeAwardReputationEvent.requireFirstTag(PubKeyTag.class),
+            incomingBadgeAwardReputationEvent.requireFirstTag(AddressTag.class))
+        .orElseThrow(() ->
+            new NostrException("badgeDefinitionReputationEvent not found"));
 
     BadgeAwardReputationEvent badgeAwardReputationEvent = new BadgeAwardReputationEvent(
         incomingBadgeAwardReputationEvent.asGenericEventRecord(),

@@ -23,18 +23,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class RemoteAbstractTagService {
-  static int padding = 4;
-  private final static String blankPadding = " ".repeat(padding);
+  protected List<GenericEventRecord> sendRemoteReq(String relayUrl, Filters filters) {
+    ReqMessage reqMessage = new ReqMessage(Util.generateRandomHex64String(), filters);
 
-  protected List<GenericEventRecord> sendRemoteReq(String relayUrl, Filters apply) {
-    ReqMessage reqMessage = new ReqMessage(Util.generateRandomHex64String(), apply);
-
-    String lineBreak = "\n";
-    log.debug("... sendConsolidatorReq() (1 of 3) sending request message to:\nURL:  {}\nusing subscriberId:  [{}]\nand filters:\n  {}",
+    log.debug("... sendConsolidatorReq() (1 of 3) sending request message to:\nURL: [{}]\nusing subscriberId:\n  [{}]\nand filters:\n{}",
         relayUrl,
         reqMessage.getSubscriptionId(),
-        apply.toString().replace(lineBreak, Strings.concat(lineBreak, RemoteAbstractTagService.blankPadding))
-    );
+        filters.toString(4));
 
 //    TODO: finalize which awaitXXX() variant given below awaitXXX() options
     List<BaseMessage> eventList = awaitUsingWebSocketClient(reqMessage, relayUrl);

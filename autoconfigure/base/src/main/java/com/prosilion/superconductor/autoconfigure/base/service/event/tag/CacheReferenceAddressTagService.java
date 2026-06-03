@@ -11,6 +11,7 @@ import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.lang.NonNull;
 
 @Slf4j
@@ -23,15 +24,18 @@ public class CacheReferenceAddressTagService extends CacheReferenceAbstractTagSe
 
   @Override
   Optional<GenericEventRecord> getLocalEventFxn(@NonNull AddressTag addressTag) {
-    log.debug("inside getLocalEventFxn(AddressTag) with addressTag:\n  {}", Util.prettyPrintAddressTags(addressTag));
+    log.debug("inside getLocalEventFxn(AddressTag) with addressTag:{}", Util.prettyPrintAddressTags(addressTag));
 
     Optional<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag = cacheServiceIF
         .getEventByKindAndAuthorPublicKeyAndIdentifierTag(
             addressTag.getKind(),
             addressTag.publicKey(),
             addressTag.getIdentifierTag());
-    log.debug("found List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag:\n  {}",
-        eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().map(GenericEventRecord::createPrettyPrintJson));
+    log.debug("received List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag:{}",
+        eventsByKindAndAuthorPublicKeyAndIdentifierTag
+            .map(GenericEventRecord::createPrettyPrintJson)
+            .map(s -> Strings.concat("\n  ", s))
+            .orElse("[EMPTY OPTIONAL]"));
 
     if (!eventsByKindAndAuthorPublicKeyAndIdentifierTag.isEmpty()) {
       Optional<GenericEventRecord> first = eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().findFirst();

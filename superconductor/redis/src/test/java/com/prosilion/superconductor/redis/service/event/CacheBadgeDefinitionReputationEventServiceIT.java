@@ -38,6 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 public class CacheBadgeDefinitionReputationEventServiceIT {
   public static final String PLUS_ONE_FORMULA = "+1";
+  private static final String FORMULA_UNIT_UPVOTE = "FORMULA_UNIT_UPVOTE";
+  private static final String FORMULA_UNIT_DOWNVOTE = "FORMULA_UNIT_DOWNVOTE";
 
   public final IdentifierTag reputationIdentifierTag = new IdentifierTag(TEST_UNIT_REPUTATION);
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
@@ -70,7 +72,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
     this.awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, downvoteIdentifierTag, relay);
     cacheServiceIF.save(this.awardDownvoteDefinitionEvent);
 
-    IdentifierTag formulaUnitUpvoteIdentifierTag = new IdentifierTag("FORMULA_UNIT_UPVOTE");
+    IdentifierTag formulaUnitUpvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_UPVOTE);
     plusOneFormulaEvent = new FormulaEvent(
         identity,
         formulaUnitUpvoteIdentifierTag,
@@ -108,7 +110,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         .map(IdentifierTag::getUuid).toList().contains(TEST_UNIT_UPVOTE));
 
     String MINUS_ONE_FORMULA = "-1";
-    IdentifierTag formulaUnitDownvoteIdentifierTag = new IdentifierTag("FORMULA_UNIT_DOWNVOTE");
+    IdentifierTag formulaUnitDownvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_DOWNVOTE);
     FormulaEvent minusOneFormulaEvent = new FormulaEvent(identity, formulaUnitDownvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneMinusOne = new BadgeDefinitionReputationEvent(

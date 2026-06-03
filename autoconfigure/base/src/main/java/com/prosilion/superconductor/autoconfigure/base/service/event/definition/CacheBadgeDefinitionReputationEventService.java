@@ -53,11 +53,11 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   }
 
   private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord badgeDefinitionReputationEventGER) {
-    log.debug("getFormulaEvents(@NonNull GenericEventRecord badgeDefinitionReputationEventGER):\n{}", badgeDefinitionReputationEventGER.createPrettyPrintJson());
+    log.debug("getFormulaEvents(badgeDefinitionReputationEventGER):\n{}", badgeDefinitionReputationEventGER.createPrettyPrintJson());
 
     List<AddressTag> addressTagsAreFormulaEvents = badgeDefinitionReputationEventGER.getTypeSpecificTags(AddressTag.class);
     log.debug("addressTagsAreFormulaEventsOriginalList.toList() size:  [{}]", addressTagsAreFormulaEvents.size());
-    log.debug("addressTagsAreFormulaEventsOriginalList.toList():{}", Util.prettyPrintAddressTags(addressTagsAreFormulaEvents));
+    log.debug("addressTagsAreFormulaEventsOriginalList.toList():\n{}", Util.prettyPrintAddressTags(addressTagsAreFormulaEvents));
 
     if (addressTagsAreFormulaEvents.isEmpty()) {
       log.debug("addressTagsAreFormulaEvents was Empty. throwing exception");
@@ -66,9 +66,11 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     }
 
     List<FormulaEvent> formulaEvents = addressTagsAreFormulaEvents.stream()
-        .map(cacheFormulaEventService::getBy)
-        .flatMap(Optional::stream).toList();
-    log.debug("cacheFormulaEventService::getAddressTagAsFormulaEvent returned:\n  {}",
+        .map(addressTag ->
+            cacheFormulaEventService.getBy(
+                addressTag.getPublicKey(),
+                addressTag.getIdentifierTag())).flatMap(Optional::stream).toList();
+    log.debug("cacheFormulaEventService.getBy(publicKey, identifierTag) returned:\n  {}",
         formulaEvents.stream().map(EventIF::asGenericEventRecord).map(GenericEventRecord::createPrettyPrintJson).toList());
 
     log.debug("addressTagsAreFormulaEvents.size(): [{}], formulaEvents.size(): [{}]",

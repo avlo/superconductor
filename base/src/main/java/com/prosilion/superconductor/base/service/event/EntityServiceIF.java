@@ -16,7 +16,7 @@ public interface EntityServiceIF<T, U extends EventIF> {
   List<U> getEventsByKind(Kind kind);
   List<U> getEventsByKindAndAuthorPublicKey(Kind kind, PublicKey authorPublicKey);
   List<U> getEventsByKindAndPubKeyTag(Kind kind, PubKeyTag referencePubKeyTag);
-  Optional<U> getEventsByKindAndAddressTag(Kind kind, AddressTag addressTag);
+  List<U> getEventsByKindAndAddressTag(Kind kind, AddressTag addressTag);
   List<U> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PubKeyTag referencePubKeyTag, AddressTag addressTag);
   List<U> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag referencedPubkeyTag, IdentifierTag identifierTag);
   Optional<U> getEventByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag);

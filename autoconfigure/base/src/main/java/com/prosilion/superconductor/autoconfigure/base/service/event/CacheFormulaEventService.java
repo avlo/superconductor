@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
@@ -80,8 +81,8 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   }
 
   @Override
-  public Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag) {
-    AddressTag addressTag = new AddressTag(Kind.ARBITRARY_CUSTOM_APP_DATA, publicKey, identifierTag);
+  public Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
+    AddressTag addressTag = new AddressTag(Kind.ARBITRARY_CUSTOM_APP_DATA, publicKey, identifierTag, relay);
     log.debug("calling cacheReferenceAddressTagServiceIF.getBy(addressTag) with:\n{}", addressTag.toStringPrettyPrint());
 
     Optional<GenericEventRecord> formulaEventGERs = cacheReferenceAddressTagServiceIF.getBy(addressTag);

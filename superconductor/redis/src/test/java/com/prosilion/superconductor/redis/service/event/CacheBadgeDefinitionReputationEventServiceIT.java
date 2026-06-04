@@ -4,9 +4,11 @@ import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
@@ -153,7 +155,6 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         .map(FormulaEvent::getBadgeDefinitionGenericEvent)
         .map(BadgeDefinitionGenericEvent::getIdentifierTag).toList().contains(downvoteIdentifierTag));
 
-
     BadgeDefinitionReputationEvent reconstructed = cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord());
     assertEquals(dbRepDefnEventPlusMinus, reconstructed);
 //    assertTrue(
@@ -162,5 +163,13 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
 //                String.join("", NON_EXISTENT_ADDRESS_TAG_S),
 //                uniqueBadgeDefinitionReputationEventIdentifierTag.serialize(),
 //                uniqueBadgeDefinitionReputationEventIdentifierTag.getId())));
+
+    AddressTag formulaEventAddressableEventAddressTag = plusOneFormulaEvent.asAddressableEventAddressTag();
+    List<BadgeDefinitionReputationEvent> byDirectTag = cacheBadgeDefinitionReputationEventService.getByDirectTag(formulaEventAddressableEventAddressTag);
+    System.out.println("111111111111111111111");
+    System.out.println("111111111111111111111");
+    System.out.println(byDirectTag.stream().map(EventIF::createPrettyPrintJson));
+    System.out.println("111111111111111111111");
+    System.out.println("111111111111111111111");
   }
 }

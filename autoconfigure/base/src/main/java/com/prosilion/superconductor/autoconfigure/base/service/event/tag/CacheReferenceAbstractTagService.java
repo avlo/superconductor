@@ -13,7 +13,7 @@ import org.springframework.lang.NonNull;
 
 @Slf4j
 public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstractEventTag> implements CacheReferenceAbstractTagServiceIF<T> {
-  private static final String STRING = "inside getRemoteEventGenericEventRecord(abstractTag, relayUrl): [{}], [{}]";
+  private static final String STRING = "inside getRemoteEventGenericEventRecord(abstractTag, relayUrl):\n  [{}],\n  [{}]";
   protected final CacheServiceIF cacheServiceIF;
   private final RemoteAbstractTagService remoteAbstractTagService;
 

@@ -82,8 +82,13 @@ public class EventServiceConfig {
   CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
       @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
       @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
-      @NonNull CacheFormulaEventService cacheFormulaEventService) {
-    return new CacheBadgeDefinitionReputationEventService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService, cacheFormulaEventService);
+      @NonNull CacheFormulaEventService cacheFormulaEventService,
+      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
+    return new CacheBadgeDefinitionReputationEventService(
+        cacheDereferenceEventTagService,
+        cacheDereferenceAddressTagService,
+        cacheFormulaEventService,
+        cacheKindAddressTagService);
   }
 
   @Bean

@@ -2,6 +2,7 @@ package com.prosilion.superconductor.base.cache;
 
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
@@ -15,5 +16,5 @@ public interface CacheFormulaEventServiceIF extends CacheTagMappedEventServiceIF
   @Override
   FormulaEvent materialize(@NonNull EventIF eventIF);
   Optional<FormulaEvent> getBy(@NonNull AddressTag addressTag);
-  Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag);
+  Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay);
 }

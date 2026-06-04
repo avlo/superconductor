@@ -69,7 +69,6 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
         unpopulatedBadgeDefinitionAbstractEvent.map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
 
     return unpopulatedBadgeDefinitionAbstractEvent.map(this::materialize);
-
   }
 
   public Kind getKind() {

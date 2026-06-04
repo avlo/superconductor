@@ -1,15 +1,19 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.definition;
 
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.AddressableEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
@@ -24,13 +28,16 @@ import static com.prosilion.superconductor.autoconfigure.base.service.event.Cach
 @Slf4j
 public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceIF {
   private final CacheFormulaEventService cacheFormulaEventService;
+  private final CacheKindAddressTagService cacheKindAddressTagService;
 
   public CacheBadgeDefinitionReputationEventService(
       @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
       @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
-      @NonNull CacheFormulaEventService cacheFormulaEventService) {
+      @NonNull CacheFormulaEventService cacheFormulaEventService,
+      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
     super(cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
     this.cacheFormulaEventService = cacheFormulaEventService;
+    this.cacheKindAddressTagService = cacheKindAddressTagService;
   }
 
   @Override
@@ -69,7 +76,8 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
         .map(addressTag ->
             cacheFormulaEventService.getBy(
                 addressTag.getPublicKey(),
-                addressTag.getIdentifierTag())).flatMap(Optional::stream).toList();
+                addressTag.getIdentifierTag(),
+                addressTag.requireRelay())).flatMap(Optional::stream).toList();
     log.debug("cacheFormulaEventService.getBy(publicKey, identifierTag) returned:\n  {}",
         formulaEvents.stream().map(EventIF::asGenericEventRecord).map(GenericEventRecord::createPrettyPrintJson).toList());
 
@@ -90,5 +98,28 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     Optional<BadgeDefinitionReputationEvent> existingDefinitionEvent = getBy(addressTag);
     return existingDefinitionEvent;
+  }
+
+  @Override
+  public List<BadgeDefinitionReputationEvent> getByDirectTag(@NonNull AddressTag addressTag) {
+    List<GenericEventRecord> badgeDefinitionEventGERs =
+        cacheKindAddressTagService.getBy(Kind.BADGE_DEFINITION_EVENT, addressTag).stream().filter(ger ->
+            ger.findFirstTag(ExternalIdentityTag.class).isPresent()).toList();
+    log.debug("cacheKindAddressTagService.getBy(Kind.BADGE_DEFINITION_EVENT, addressTag) returned:\n {}",
+        badgeDefinitionEventGERs.stream().map(GenericEventRecord::createPrettyPrintJson));
+
+    List<EventTag> eventTagStream = badgeDefinitionEventGERs.stream().map(ger ->
+        new EventTag(ger.getId(), ger.getRelayTagUrl())).toList();
+
+    List<BadgeDefinitionReputationEvent> badgeDefinitionReputationEvents =
+        eventTagStream.stream()
+            .map(eventTag ->
+                getEvent(eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl()))
+            .flatMap(Optional::stream).toList();
+
+    log.debug("getEvent(eventId, url) returned:\n {}",
+        badgeDefinitionReputationEvents.stream().map(EventIF::createPrettyPrintJson));
+
+    return badgeDefinitionReputationEvents;
   }
 }

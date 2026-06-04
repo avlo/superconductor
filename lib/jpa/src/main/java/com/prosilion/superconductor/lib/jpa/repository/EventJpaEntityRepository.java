@@ -61,7 +61,7 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
   }
 
   //  TODO: needs impl
-  default @NonNull Optional<EventJpaEntityIF> getEventsByKindAndAddressTag(@NonNull Kind kind, @NonNull AddressTag addressTag) {
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndAddressTag(@NonNull Kind kind, @NonNull AddressTag addressTag) {
     throw new NostrException("JPA getEventsByKindAndAddressTag not yet implemented");
   }
 

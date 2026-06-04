@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.lib.jpa.repository;
 
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -52,23 +51,29 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
     return findAllByKindAndPubKey(kind.getValue(), authorPublicKey.toHexString(), DESC_SORT_CREATED_AT);
   }
-  default @NonNull List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
+  
+  //  TODO: below identifierTag (unused, needs fix) filter handled by callers
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(@NonNull Kind kind, @NonNull PublicKey authorPublicKey, @NonNull IdentifierTag identifierTag) {
     return getEventsByKindAndAuthorPublicKey(kind, authorPublicKey);
   }
 
+  //  TODO: below PubKeyTag (unused, needs fix) filter handled by callers  
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PubKeyTag referencedPubKeyTag) {
     return findByKind(kind.getValue());
   }
 
-  //  TODO: needs impl
+  //  TODO: below AddressTag (unused, needs fix) filter handled by callers  
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndAddressTag(@NonNull Kind kind, @NonNull AddressTag addressTag) {
-    throw new NostrException("JPA getEventsByKindAndAddressTag not yet implemented");
+    return findByKind(kind.getValue());
   }
 
+  //  TODO: below PubKeyTag, AddressTag (unused, needs fix) filter handled by callers  
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PubKeyTag referencedPubKeyTag, @NonNull AddressTag addressTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPubKeyTag);
   }
-  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag referencedPubKeyTag, IdentifierTag identifierTag) {
+
+  //  TODO: below PubKeyTag, IdentifierTag (unused, needs fix) filter handled by callers
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(@NonNull Kind kind, @NonNull PubKeyTag referencedPubKeyTag, @NonNull IdentifierTag identifierTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPubKeyTag);
   }
 }

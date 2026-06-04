@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -108,15 +107,19 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
   @Override
   public Optional<EventJpaEntityIF> getEventByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
     return eventJpaEntityRepository
-        .getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag)
-        .stream().map(this::populateEventJpaEntity).findFirst();
+        .getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag).stream()
+        .map(this::populateEventJpaEntity)
+        .filter(eventJpaEntityIF ->
+            containsTypedTargetTag(identifierTag, eventJpaEntityIF)).findFirst();
   }
 
   @Override
   public List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(Kind kind, PubKeyTag referencePubKeyTag) {
     return eventJpaEntityRepository
         .getEventsByKindAndPubKeyTag(kind, referencePubKeyTag)
-        .stream().map(this::populateEventJpaEntity).toList();
+        .stream().map(this::populateEventJpaEntity)
+        .filter(eventJpaEntityIF ->
+            containsTypedTargetTag(referencePubKeyTag, eventJpaEntityIF)).toList();
   }
 
   @Override
@@ -125,7 +128,7 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
         .getEventsByKindAndAddressTag(kind, addressTag).stream()
         .map(this::populateEventJpaEntity)
         .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(addressTag, eventJpaEntityIF.getTags())).toList();
+            containsTypedTargetTag(addressTag, eventJpaEntityIF)).toList();
   }
 
   @Override
@@ -134,9 +137,9 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
         .getEventsByKindAndPubKeyTagAndAddressTag(kind, referencedPubkeyTag, addressTag)
         .stream().map(this::populateEventJpaEntity)
         .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(referencedPubkeyTag, eventJpaEntityIF.getTags()))
+            containsTypedTargetTag(referencedPubkeyTag, eventJpaEntityIF))
         .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(addressTag, eventJpaEntityIF.getTags()))
+            containsTypedTargetTag(addressTag, eventJpaEntityIF))
         .toList();
   }
 
@@ -146,13 +149,14 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
         .getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencedPubkeyTag, identifierTag)
         .stream().map(this::populateEventJpaEntity)
         .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(referencedPubkeyTag, eventJpaEntityIF.getTags()))
+            containsTypedTargetTag(referencedPubkeyTag, eventJpaEntityIF))
         .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(identifierTag, eventJpaEntityIF.getTags()))
+            containsTypedTargetTag(identifierTag, eventJpaEntityIF))
         .toList();
   }
 
-  //  TODO: this is a 2nd call to db, needs economic sol'n
+  //  TODO: below called after save() (which returns a Long instead of EventJpaEntityIF)
+  //    resulting in a 2nd db call (in addition to the original save()), needs economic sol'n
   public Optional<EventJpaEntityIF> getEventByUid(@NonNull Long id) {
     return eventJpaEntityRepository
         .findByUid(id).map(this::populateEventJpaEntity);
@@ -203,10 +207,10 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
     return new EventJpaEntity(dto.getId(), dto.getKind().getValue(), dto.getPublicKey().toString(), dto.getCreatedAt(), dto.getSignature().toString(), dto.getContent());
   }
 
-  private <T extends BaseTag> boolean containsTypedTargetTag(T targetTagType, List<BaseTag> baseTags) {
-    return baseTags.stream()
-        .filter(targetTagType.getClass()::isInstance)
-        .map(targetTagType.getClass()::cast)
-        .collect(Collectors.toSet()).contains(targetTagType);
+  private <T extends BaseTag> boolean containsTypedTargetTag(T targetTagType, EventJpaEntityIF eventJpaEntityIF) {
+    return eventJpaEntityIF
+        .findFirstTag(targetTagType.getClass()).stream()
+        .map(targetTagType::equals)
+        .findAny().isPresent();
   }
 }

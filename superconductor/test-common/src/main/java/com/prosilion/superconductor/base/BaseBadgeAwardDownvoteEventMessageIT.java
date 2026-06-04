@@ -77,7 +77,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
   }
 
   @Test
-  void testValidExistingEventThenAfterImageReputationRequestGenral() throws IOException, NostrException {
+  void testValidExistingEventThenAfterImageReputationRequestGenral() throws NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     ReqMessage reqMessage = new ReqMessage(
@@ -105,7 +105,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
   }
 
   @Test
-  void testValidExistingEventThenAfterImageReputationRequestSpecific() throws IOException, NostrException {
+  void testValidExistingEventThenAfterImageReputationRequestSpecific() throws NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(

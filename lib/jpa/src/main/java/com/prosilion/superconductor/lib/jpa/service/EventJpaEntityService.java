@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -76,90 +78,70 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
             eventJpaEntityRepository.findAll()));
   }
 
+  private final Function<List<EventJpaEntityIF>, Stream<EventJpaEntityIF>> populateFxn =
+      eventJpaEntityIFs -> eventJpaEntityIFs.stream().map(this::populateEventJpaEntity);
+
   @Override
   public Optional<EventJpaEntityIF> findByEventIdString(@NonNull String eventIdString) {
-    return eventJpaEntityRepository
-        .findByEventId(eventIdString)
-        .map(this::populateEventJpaEntity);
+    return populateFxn.apply(eventJpaEntityRepository
+        .findByEventId(eventIdString).stream().toList()).findFirst();
   }
 
   public List<EventJpaEntityIF> getEventsByPublicKey(@NonNull PublicKey publicKey) {
-    return eventJpaEntityRepository
-        .findByPubKey(
-            publicKey.toHexString())
-        .stream().map(this::populateEventJpaEntity).toList();
+    return populateFxn.apply(eventJpaEntityRepository
+        .findByPubKey(publicKey.toHexString())).toList();
   }
 
   @Override
   public List<EventJpaEntityIF> getEventsByKind(@NonNull Kind kind) {
-    return eventJpaEntityRepository
-        .findByKind(kind.getValue())
-        .stream().map(this::populateEventJpaEntity).toList();
+    return populateFxn.apply(eventJpaEntityRepository
+        .findByKind(kind.getValue())).toList();
   }
 
   @Override
   public List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
-    return eventJpaEntityRepository
-        .getEventsByKindAndAuthorPublicKey(kind, authorPublicKey)
-        .stream().map(this::populateEventJpaEntity).toList();
+    return populateFxn.apply(eventJpaEntityRepository
+        .getEventsByKindAndAuthorPublicKey(kind, authorPublicKey)).toList();
   }
+
+  private final BiFunction<BaseTag, Stream<EventJpaEntityIF>, Stream<EventJpaEntityIF>> typedTagFxn =
+      (baseTag, eventJpaEntityIFs) ->
+          eventJpaEntityIFs.filter(entity -> containsTypedTargetTag(baseTag, entity));
 
   @Override
   public Optional<EventJpaEntityIF> getEventByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
-    return eventJpaEntityRepository
-        .getEventsByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag).stream()
-        .map(this::populateEventJpaEntity)
-        .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(identifierTag, eventJpaEntityIF)).findFirst();
+    return typedTagFxn.apply(identifierTag,
+        getEventsByKindAndAuthorPublicKey(kind, authorPublicKey).stream()).findFirst();
   }
 
   @Override
-  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(Kind kind, PubKeyTag referencePubKeyTag) {
-    return eventJpaEntityRepository
-        .getEventsByKindAndPubKeyTag(kind, referencePubKeyTag)
-        .stream().map(this::populateEventJpaEntity)
-        .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(referencePubKeyTag, eventJpaEntityIF)).toList();
+  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(Kind kind, PubKeyTag pubKeyTag) {
+    return typedTagFxn.apply(pubKeyTag,
+        populateFxn.apply(eventJpaEntityRepository
+            .getEventsByKindAndPubKeyTag(kind, pubKeyTag))).toList();
   }
 
   @Override
   public List<EventJpaEntityIF> getEventsByKindAndAddressTag(@NonNull Kind kind, @NonNull AddressTag addressTag) {
-    return eventJpaEntityRepository
-        .getEventsByKindAndAddressTag(kind, addressTag).stream()
-        .map(this::populateEventJpaEntity)
-        .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(addressTag, eventJpaEntityIF)).toList();
+    return typedTagFxn.apply(addressTag,
+        populateFxn.apply(eventJpaEntityRepository
+            .getEventsByKindAndAddressTag(kind, addressTag))).toList();
   }
 
   @Override
-  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PubKeyTag referencedPubkeyTag, @NonNull AddressTag addressTag) {
-    return eventJpaEntityRepository
-        .getEventsByKindAndPubKeyTagAndAddressTag(kind, referencedPubkeyTag, addressTag)
-        .stream().map(this::populateEventJpaEntity)
-        .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(referencedPubkeyTag, eventJpaEntityIF))
-        .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(addressTag, eventJpaEntityIF))
-        .toList();
+  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+    return typedTagFxn.apply(addressTag, getEventsByKindAndPubKeyTag(kind, pubKeyTag).stream()).toList();
   }
 
   @Override
-  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag referencedPubkeyTag, IdentifierTag identifierTag) {
-    return eventJpaEntityRepository
-        .getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencedPubkeyTag, identifierTag)
-        .stream().map(this::populateEventJpaEntity)
-        .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(referencedPubkeyTag, eventJpaEntityIF))
-        .filter(eventJpaEntityIF ->
-            containsTypedTargetTag(identifierTag, eventJpaEntityIF))
-        .toList();
+  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag pubKeyTag, IdentifierTag identifierTag) {
+    return typedTagFxn.apply(identifierTag, getEventsByKindAndPubKeyTag(kind, pubKeyTag).stream()).toList();
   }
 
   //  TODO: below called after save() (which returns a Long instead of EventJpaEntityIF)
   //    resulting in a 2nd db call (in addition to the original save()), needs economic sol'n
   public Optional<EventJpaEntityIF> getEventByUid(@NonNull Long id) {
-    return eventJpaEntityRepository
-        .findByUid(id).map(this::populateEventJpaEntity);
+    return eventJpaEntityRepository.findByUid(id).map(this::populateEventJpaEntity);
   }
 
   //  TODO: perhaps below as admin fxnality

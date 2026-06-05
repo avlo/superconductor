@@ -176,12 +176,12 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
   private EventJpaEntityIF populateEventJpaEntity(EventJpaEntityIF entityIF) {
     entityIF.setTags(
         Stream.concat(
-            concreteTagEntitiesService.getTags(entityIF.getUid()).stream().map(AbstractTagJpaEntity::getAsBaseTag).toList().stream(),
+            concreteTagEntitiesService.getTags(entityIF.getUid()).stream().map(AbstractTagJpaEntity::getAsBaseTag),
             genericTagJpaEntitiesService.getGenericTags(entityIF.getUid()).stream().map(genericTag ->
                     new GenericTag(
                         genericTag.code(),
-                        genericTag.atts().stream().map(ElementAttributeDto::getElementAttribute).toList())).toList().stream()
-                .map(BaseTag.class::cast).toList().stream()).toList());
+                        genericTag.atts().stream().map(ElementAttributeDto::getElementAttribute).toList()))
+                .map(BaseTag.class::cast)).toList());
     return entityIF;
   }
 

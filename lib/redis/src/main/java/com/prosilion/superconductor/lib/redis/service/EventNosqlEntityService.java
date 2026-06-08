@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.data.domain.Example;
 import org.springframework.lang.NonNull;
 
 @Slf4j
@@ -85,36 +84,24 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
       @NonNull PubKeyTag referencedPublicKey) {
     return getEventsByKind(kind).stream()
         .filter(eventNosqlEntityIF ->
-            eventNosqlEntityIF.getTags().stream()
-                .filter(PubKeyTag.class::isInstance)
-                .map(PubKeyTag.class::cast)
-                .map(PubKeyTag::getPublicKey)
-                .collect(Collectors.toSet()).contains(referencedPublicKey))
-        .toList();
+            containsTypedTargetTag(referencedPublicKey, eventNosqlEntityIF.getTags())).toList();
   }
 
   //  TODO: replace with JPQL
   public List<EventNosqlEntityIF> getEventsByKindAndIdentifierTag(
       @NonNull Kind kind,
       @NonNull IdentifierTag identifierTag) {
-    EventNosqlEntity eventNosqlEntity = new EventNosqlEntity();
-    eventNosqlEntity.setKind(kind.getValue());
-    return eventNosqlEntityByExampleRepository.findAll(Example.of(eventNosqlEntity)).stream()
-        .map(this::revertInterceptor)
+    return getEventsByKind(kind).stream()
         .filter(eventNosqlEntityIF ->
-            eventNosqlEntityIF.getTags().stream()
-                .filter(IdentifierTag.class::isInstance)
-                .map(IdentifierTag.class::cast)
-                .anyMatch(identifierTag::equals)).toList();
+            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).toList();
   }
 
-  public List<EventNosqlEntityIF> getEventsByKindAndAddressTag(Kind kind, AddressTag addressTag) {
-    EventNosqlEntity eventNosqlEntity = new EventNosqlEntity();
-    eventNosqlEntity.setKind(kind.getValue());
-    eventNosqlEntity.setTags(List.of(addressTag));
-    return eventNosqlEntityByExampleRepository
-        .findAll(Example.of(eventNosqlEntity)).stream()
-        .map(this::revertInterceptor).toList();
+  public List<EventNosqlEntityIF> getEventsByKindAndAddressTag(
+      @NonNull Kind kind,
+      @NonNull AddressTag addressTag) {
+    return getEventsByKind(kind).stream()
+        .filter(eventNosqlEntityIF ->
+            containsTypedTargetTag(addressTag, eventNosqlEntityIF.getTags())).toList();
   }
 
   //  TODO: replace with JPQL  
@@ -122,17 +109,9 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
       @NonNull Kind kind,
       @NonNull PubKeyTag referencedPublicKey,
       @NonNull AddressTag addressTag) {
-    EventNosqlEntity eventNosqlEntity = new EventNosqlEntity();
-    eventNosqlEntity.setKind(kind.getValue());
-    eventNosqlEntity.setTags(List.of(referencedPublicKey, addressTag));
-    return eventNosqlEntityByExampleRepository
-        .findAll(Example.of(eventNosqlEntity)).stream()
-        .map(this::revertInterceptor)
+    return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
         .filter(eventNosqlEntityIF ->
-            eventNosqlEntityIF.getTags().stream()
-                .filter(AddressTag.class::isInstance)
-                .map(AddressTag.class::cast)
-                .anyMatch(addressTag::equals)).toList();
+            containsTypedTargetTag(addressTag, eventNosqlEntityIF.getTags())).toList();
   }
 
   //  TODO: replace with JPQL  
@@ -140,9 +119,9 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
       @NonNull Kind kind,
       @NonNull PubKeyTag referencedPublicKey,
       @NonNull IdentifierTag identifierTag) {
-    return getEventsByKindAndIdentifierTag(kind, identifierTag).stream()
+    return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
         .filter(eventNosqlEntityIF ->
-            containsTypedTargetTag(referencedPublicKey, eventNosqlEntityIF.getTags())).toList();
+            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).toList();
   }
 
   //  TODO: replace with JPQL
@@ -150,16 +129,9 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
       @NonNull Kind kind,
       @NonNull PublicKey authorPublicKey,
       @NonNull IdentifierTag identifierTag) {
-    EventNosqlEntity eventNosqlEntity = new EventNosqlEntity();
-    eventNosqlEntity.setKind(kind.getValue());
-    eventNosqlEntity.setPublicKey(authorPublicKey.toHexString());
-    return eventNosqlEntityByExampleRepository.findAll(Example.of(eventNosqlEntity)).stream()
-        .map(this::revertInterceptor)
+    return getEventsByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
         .filter(eventNosqlEntityIF ->
-            eventNosqlEntityIF.getTags().stream()
-                .filter(IdentifierTag.class::isInstance)
-                .map(IdentifierTag.class::cast)
-                .anyMatch(identifierTag::equals)).findFirst();
+            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).findFirst();
   }
 
   private EventNosqlEntity convertDtoToNosqlEntity(EventIF dto) {
@@ -167,7 +139,6 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   }
 
   //  TODO: functionalize below two methods into one
-
   private EventNosqlEntity processInterceptors(EventIF eventIF) {
     EventNosqlEntity entity = EventNosqlEntity.of(
         eventIF.getId(),

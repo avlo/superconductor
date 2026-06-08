@@ -33,9 +33,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
 
   @Override
   public GenericEventRecord save(EventIF event) {
-    EventNosqlEntityIF eventNosqlEntityIF = eventNosqlEntityService.save(event);
-    GenericEventRecord saved = eventNosqlEntityIF.asGenericEventRecord();
-    return saved;
+    return eventNosqlEntityService.save(event).asGenericEventRecord();
   }
 
   private final Function<List<EventNosqlEntityIF>, List<GenericEventRecord>> filteredGER = eventNosqlEntityIFS ->
@@ -44,9 +42,9 @@ public class RedisCacheService implements RedisCacheServiceIF {
 
   @Override
   public Optional<GenericEventRecord> getEventByEventId(@NonNull String eventId) {
-    return filteredGER.apply(
-            eventNosqlEntityService.findByEventIdString(eventId).stream().toList())
-        .stream().findFirst();
+    return eventNosqlEntityService.findByEventIdString(eventId)
+        .filter(filterDeletionEvents())
+        .map(EventIF::asGenericEventRecord);
   }
 
   @Override
@@ -115,7 +113,6 @@ public class RedisCacheService implements RedisCacheServiceIF {
       @NonNull Kind kind,
       @NonNull PublicKey authorPublicKey,
       @NonNull IdentifierTag identifierTag) {
-
     Optional<GenericEventRecord> apply =
         filteredGER.apply(
                 eventNosqlEntityService.getEventByKindAndAuthorPublicKeyAndIdentifierTag(
@@ -158,9 +155,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   private void deleteEventTags(
       @NonNull EventIF event,
       @NonNull Consumer<EventNosqlEntityIF> addDeletionEvent) {
-    event.getTags().stream()
-        .filter(EventTag.class::isInstance)
-        .map(EventTag.class::cast)
+    event.getTypeSpecificTags(EventTag.class).stream()
         .map(EventTag::getIdEvent)
         .map(eventNosqlEntityService::findByEventIdString)
         .flatMap(Optional::stream)

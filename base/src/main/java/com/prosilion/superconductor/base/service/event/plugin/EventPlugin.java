@@ -42,7 +42,7 @@ public class EventPlugin implements EventPluginIF {
   @Override
   public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
     log.debug("processIncomingEvent() called with event\n{}", event.createPrettyPrintJson());
-    Optional<EventIF> eventAlreadyExists = eventAlreadyExistsFxn.apply(cacheServiceIF, event);
+    Optional<GenericEventRecord> eventAlreadyExists = eventAlreadyExistsFxn.apply(cacheServiceIF, event);
     if (eventAlreadyExists.isPresent()) {
       log.debug("event already exists in db, do not materialize, just return\n  {}\n", event.createPrettyPrintJson());
       return event.asGenericEventRecord();
@@ -61,7 +61,7 @@ public class EventPlugin implements EventPluginIF {
     return cacheServiceIF.save(typedEvent);
   }
 
-//  TODO: cleanup/refactor below
+  //  TODO: cleanup/refactor below
   Function<EventIF, BaseEvent> getEventKindFxn(EventIF eventIF) {
     Kind kind = eventIF.getKind();
     log.debug("getEventKindFxn() for kind\n  [{}]: {}",

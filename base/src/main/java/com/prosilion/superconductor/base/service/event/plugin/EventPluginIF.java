@@ -9,8 +9,7 @@ import java.util.function.BiFunction;
 public interface EventPluginIF {
   GenericEventRecord processIncomingEvent(EventIF event);
 
-  BiFunction<CacheServiceIF, EventIF, Optional<EventIF>> eventAlreadyExistsFxn =
+  BiFunction<CacheServiceIF, EventIF, Optional<GenericEventRecord>> eventAlreadyExistsFxn =
       (cacheServiceIF, eventIF) ->
-          cacheServiceIF.getEventByEventId(eventIF.getId())
-              .map(EventIF.class::cast);
+          cacheServiceIF.getEventByEventId(eventIF.getId());
 }

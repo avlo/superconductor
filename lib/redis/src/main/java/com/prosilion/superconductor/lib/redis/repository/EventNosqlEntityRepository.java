@@ -7,6 +7,7 @@ import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.lang.NonNull;
@@ -38,7 +39,7 @@ public interface EventNosqlEntityRepository extends ListCrudRepository<EventNosq
   }
 
   default @NonNull Optional<EventNosqlEntityIF> findByEventId(@NonNull String eventId) {
-    return Optional.of(findByEventId(eventId, DESC_SORT_CREATED_AT).map(EventNosqlEntityIF.class::cast)).orElse(Optional.empty());
+    return findByEventId(eventId, DESC_SORT_CREATED_AT).map(Function.identity());
   }
 
   default @NonNull List<EventNosqlEntityIF> findByKind(@NonNull Kind kind) {

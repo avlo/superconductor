@@ -19,8 +19,8 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServi
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
@@ -32,9 +32,9 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
 
   public CacheFormulaEventService(
-      @NonNull CacheReferenceEventTagService cacheReferenceEventTagServiceIF,
-      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
-      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
+     @NonNull CacheReferenceEventTagService cacheReferenceEventTagServiceIF,
+     @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
+     @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
     this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
     this.cacheReferenceAddressTagServiceIF = cacheReferenceAddressTagServiceIF;
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
@@ -65,8 +65,8 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     log.debug("getBadgeDefinitionGenericEvent(incomingFormulaEvent):\n  {}", badgeDefinitionGenericEvent.createPrettyPrintJson());
 
     FormulaEvent formulaEvent = new FormulaEvent(
-        incomingFormulaEvent.asGenericEventRecord(),
-        addressTag -> badgeDefinitionGenericEvent);
+       incomingFormulaEvent.asGenericEventRecord(),
+       addressTag -> badgeDefinitionGenericEvent);
 
     log.debug("return reCreated formulaEvent:\n  {}", formulaEvent.createPrettyPrintJson());
     return formulaEvent;
@@ -76,7 +76,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   public Optional<FormulaEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     log.debug("getBy(pubKeyTag, AddressTag):\n{}", addressTag.toStringPrettyPrint());
     Optional<GenericEventRecord> formulaEventAsOptGER = cacheKindAddressTagServiceIF
-        .getBy(Kind.ARBITRARY_CUSTOM_APP_DATA, pubKeyTag, addressTag).stream().findFirst();
+       .getBy(Kind.ARBITRARY_CUSTOM_APP_DATA, pubKeyTag, addressTag).stream().findFirst();
     return getFormulaEventById(formulaEventAsOptGER);
   }
 
@@ -119,7 +119,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     log.debug("getFormulaEvent(formulaEventOptGER):\n  {}", formulaEventOptGER.get().createPrettyPrintJson());
     log.debug("formulaEventOptGER eventId: [{}]", formulaEventOptGER.get().getId());
 
-    String formulaEventRelayUrl = formulaEventOptGER.get().getRelayTagUrl();
+    String formulaEventRelayUrl = formulaEventOptGER.get().requireRelayTagUrl();
     log.debug("formulaEventOptGER relayUrl: [{}]", formulaEventRelayUrl);
 
     Optional<FormulaEvent> formulaEvent = getEvent(formulaEventOptGER.get().getId(), formulaEventRelayUrl);
@@ -137,8 +137,8 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
     log.debug("calling cacheReferenceAddressTagServiceIF.getEvent(firstAddressTag)");
     GenericEventRecord firstAddressTagAsEventGER = cacheReferenceAddressTagServiceIF.getBy(firstAddressTag).orElseThrow(() ->
-        new NostrException(
-            String.format(NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S, unpopulatedFormulaEventGER)));
+       new NostrException(
+          String.format(NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S, unpopulatedFormulaEventGER)));
     log.debug("returned unpopulatedFormulaEventGER's firstAddressTagAsEventGER (is a BadgeDefinition[Upvote]Event):\n  {}", firstAddressTagAsEventGER.createPrettyPrintJson());
 
     BadgeDefinitionGenericEvent addressTagNowBadgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(firstAddressTagAsEventGER);

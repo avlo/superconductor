@@ -10,8 +10,8 @@ import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDefinitionGenericEvent> {
@@ -19,8 +19,8 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
 
   public CacheBadgeDefinitionAbstractEventService(
-      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
-      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF) {
+     @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
+     @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF) {
     this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
     this.cacheReferenceAddressTagServiceIF = cacheReferenceAddressTagServiceIF;
   }
@@ -31,26 +31,26 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
   public Optional<T> getBy(@NonNull AddressTag addressTag) {
     if (!addressTag.getKind().equals(Kind.BADGE_DEFINITION_EVENT))
       throw new NostrException(
-          String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
+         String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
 
     Optional<GenericEventRecord> badgeDefinitionAbstractEventGEROptional = cacheReferenceAddressTagServiceIF.getBy(addressTag);
     if (badgeDefinitionAbstractEventGEROptional.isEmpty())
       throw new NostrException(
-          String.format("cacheReferenceAddressTagServiceIF.getEvent(addressTag) using addressTag:\n  %s\nnot found", Util.prettyPrintAddressTags(addressTag)));
+         String.format("cacheReferenceAddressTagServiceIF.getEvent(addressTag) using addressTag:\n  %s\nnot found", Util.prettyPrintAddressTags(addressTag)));
 
     GenericEventRecord existingBadgeDefinitionReputationEventGER = badgeDefinitionAbstractEventGEROptional.get();
     log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER);
 
-    String relayTagUrl = existingBadgeDefinitionReputationEventGER.getRelayTagUrl();
+    String relayTagUrl = existingBadgeDefinitionReputationEventGER.requireRelayTagUrl();
 
     log.debug("calling getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl with eventId: [{}], relayUrl: [{}]",
-        existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
+       existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
     Optional<T> event = getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
 
     if (event.isEmpty()) {
       log.debug("badgeDefinitionReputationEvent.getId()) [%s] not found, throwing exception");
       throw new NostrException(
-          String.format("getEvent(badgeDefinitionReputationEvent.getId()) [%s] not found", existingBadgeDefinitionReputationEventGER.getId()));
+         String.format("getEvent(badgeDefinitionReputationEvent.getId()) [%s] not found", existingBadgeDefinitionReputationEventGER.getId()));
     }
 
     log.debug("... returning found badgeDefinitionReputationEvent:\n {}", event.get());
@@ -64,9 +64,9 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     log.debug("inside getEvent(eventId, url): [{}], [{}]", eventId, url);
 
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionAbstractEvent =
-        cacheReferenceEventTagServiceIF.getEvent(eventId, url);
+       cacheReferenceEventTagServiceIF.getEvent(eventId, url);
     log.debug("return unpopulatedBadgeDefinitionAbstractEvent:\n{}",
-        unpopulatedBadgeDefinitionAbstractEvent.map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
+       unpopulatedBadgeDefinitionAbstractEvent.map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
 
     return unpopulatedBadgeDefinitionAbstractEvent.map(this::materialize);
   }

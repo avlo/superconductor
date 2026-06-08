@@ -115,7 +115,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
        .map(event ->
           cacheBadgeAwardReputationEventServiceIF.getEvent(
              event.getId(),
-             event.getRelayTagUrl()))
+             event.requireRelayTagUrl()))
        .flatMap(Optional::stream)
        .findFirst();
 
@@ -139,7 +139,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     }
 
     log.debug("unpopulatedFollowSetsEventTagEvent GenericEventRecord found, call cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.getId, url) to populate it");
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.get().getId(), unpopulatedFollowSetsEventTagEvent.get().getRelayTagUrl());
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.get().getId(), unpopulatedFollowSetsEventTagEvent.get().requireRelayTagUrl());
     log.debug("returning populated BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>:\n  {}", event.orElseThrow().createPrettyPrintJson());
     return event;
   }

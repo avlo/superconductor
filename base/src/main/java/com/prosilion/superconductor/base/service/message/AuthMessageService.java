@@ -9,8 +9,8 @@ import com.prosilion.superconductor.base.service.clientresponse.ClientResponseSe
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantServiceIF;
 import java.time.Instant;
-import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMessageServiceIF {
@@ -20,9 +20,9 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
   private final String superconductorRelayUrl;
 
   public AuthMessageService(
-      @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF,
-      @NonNull ClientResponseService okResponseService,
-      @NonNull String superconductorRelayUrl) {
+     @NonNull AuthPersistantServiceIF<T, U> authPersistantServiceIF,
+     @NonNull ClientResponseService okResponseService,
+     @NonNull String superconductorRelayUrl) {
     this.authPersistantServiceIF = authPersistantServiceIF;
     this.okResponseService = okResponseService;
     this.superconductorRelayUrl = superconductorRelayUrl;
@@ -35,28 +35,28 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
 //    TODO: check non-blank / quality password /etc
     log.debug("AUTH message challenge string: {}, matched", challenge);
 
-    String relayUriString = getRelay(authMessage);
+    String relayUriString = authMessage.getEvent().requireRelayTagUrl();
     PublicKey pubKey = authMessage.getEvent().getPublicKey();
     if (!relayUriString.equalsIgnoreCase(superconductorRelayUrl)) {
       log.debug("AUTH message failed, relay URI string: [{}]", relayUriString);
       sendAuthFailed(authMessage, sessionId,
-          String.format("restricted: provided authentication relay URI [%s] does not match this relay host's URI [%s]", relayUriString, superconductorRelayUrl)
+         String.format("restricted: provided authentication relay URI [%s] does not match this relay host's URI [%s]", relayUriString, superconductorRelayUrl)
       );
       return;
     }
 
     Long createdAt = Instant.now().toEpochMilli();
     authPersistantServiceIF.save(
-        sessionId,
-        pubKey,
-        challenge,
-        createdAt);
+       sessionId,
+       pubKey,
+       challenge,
+       createdAt);
     log.debug("auth saved for pubkey [{}], session [{}], createdAt [{}]", pubKey, sessionId, createdAt);
 
     okResponseService.processOkClientResponse(
-        sessionId,
-        new EventMessage(authMessage.getEvent(), sessionId),
-        String.format("success: auth saved for pubkey [%s], session [%s], created at [%s]", pubKey, sessionId, createdAt));
+       sessionId,
+       new EventMessage(authMessage.getEvent(), sessionId),
+       String.format("success: auth saved for pubkey [%s], session [%s], created at [%s]", pubKey, sessionId, createdAt));
   }
 
   @Override
@@ -70,14 +70,10 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
 
   private String getChallenge(CanonicalAuthenticationMessage authMessage) {
     return authMessage.getEvent().getTypeSpecificTags(GenericTag.class)
-        .stream()
-        .filter(tag ->
-            tag.getCode().equalsIgnoreCase(CHALLENGE))
-        .map(GenericTag::getAttributes)
-        .toList().getFirst().getFirst().getValue().toString();
-  }
-
-  private String getRelay(CanonicalAuthenticationMessage authMessage) {
-    return authMessage.getEvent().getRelayTagUrl();
+       .stream()
+       .filter(tag ->
+          tag.getCode().equalsIgnoreCase(CHALLENGE))
+       .map(GenericTag::getAttributes)
+       .toList().getFirst().getFirst().getValue().toString();
   }
 }

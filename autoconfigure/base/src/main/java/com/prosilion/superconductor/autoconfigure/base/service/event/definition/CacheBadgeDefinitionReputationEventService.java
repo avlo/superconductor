@@ -128,7 +128,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
        badgeDefinitionEventGERs.stream().map(GenericEventRecord::createPrettyPrintJson));
 
     List<EventTag> eventTagStream = badgeDefinitionEventGERs.stream().map(ger ->
-       new EventTag(ger.getId(), ger.getRelayTagUrl())).toList();
+       new EventTag(ger.getId(), ger.requireRelayTagUrl())).toList();
 
     List<BadgeDefinitionReputationEvent> badgeDefinitionReputationEvents =
        eventTagStream.stream()

@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.service.event;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -12,13 +11,13 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.definition.
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import lombok.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
 import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
@@ -42,10 +41,10 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
 
   @Autowired
   public CacheBadgeDefinitionGenericEventServiceIT(
-      @Value("${superconductor.relay.url}") String relayUri,
-      @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-      @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) throws ParseException {
+     @Value("${superconductor.relay.url}") String relayUri,
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
+     @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeDefinitionGenericEventService = cacheBadgeDefinitionGenericEventService;
     this.relay = new Relay(relayUri);
@@ -57,10 +56,10 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
   @Test
   public void testSaveBadgeDefinitionGenericEvent() {
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
-        authorIdentity,
-        reputationRecipientPublicKey,
-        relay,
-        awardUpvoteDefinitionEvent);
+       authorIdentity,
+       reputationRecipientPublicKey,
+       relay,
+       awardUpvoteDefinitionEvent);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent));
     BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getBy(badgeAwardUpvoteEvent.getAddressTag()).orElseThrow();
@@ -74,9 +73,9 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
     BadgeDefinitionGenericEvent awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(authorIdentity, downvoteIdentifierTag, relay);
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEventMinusOne = new BadgeAwardGenericEvent<>(
-        authorIdentity,
-        reputationRecipientPublicKey,
-        relay,
-        awardDownvoteDefinitionEvent);
+       authorIdentity,
+       reputationRecipientPublicKey,
+       relay,
+       awardDownvoteDefinitionEvent);
   }
 }

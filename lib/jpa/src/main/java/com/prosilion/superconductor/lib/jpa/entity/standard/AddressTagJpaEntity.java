@@ -15,8 +15,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.NonNull;
+import lombok.Setter;
 
 @Setter
 @Getter
@@ -33,8 +33,8 @@ public class AddressTagJpaEntity extends AbstractTagJpaEntity {
     super("a");
     this.kind = addressTag.getKind().getValue();
     this.pubKey = addressTag.getPublicKey().toHexString();
-    Optional.ofNullable(addressTag.getIdentifierTag()).ifPresent(uuid -> this.uuid = uuid.getUuid());
-    Optional.ofNullable(addressTag.getRelay()).ifPresent(relay -> this.relayUri = relay.getUrl());
+    addressTag.findIdentifierTag().ifPresent(uuid -> this.uuid = uuid.getUuid());
+    addressTag.findRelay().ifPresent(relay -> this.relayUri = relay.getUrl());
   }
 
   @Override
@@ -47,11 +47,11 @@ public class AddressTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public List<String> get() {
     return Stream.of(
-            kind.toString(),
-            pubKey,
-            Optional.ofNullable(uuid).toString(),
-            relayUri)
-        .toList();
+          kind.toString(),
+          pubKey,
+          Optional.ofNullable(uuid).toString(),
+          relayUri)
+       .toList();
   }
 
   //  TODO: stream-ify below
@@ -61,24 +61,24 @@ public class AddressTagJpaEntity extends AbstractTagJpaEntity {
 
     if (identifierTag.isPresent() && relayTag.isPresent()) {
       return new AddressTag(
-          Kind.valueOf(kind),
-          new PublicKey(pubKey),
-          identifierTag.orElseThrow(),
-          relayTag.get()
+         Kind.valueOf(kind),
+         new PublicKey(pubKey),
+         identifierTag.orElseThrow(),
+         relayTag.get()
       );
     }
 
     if (identifierTag.isPresent()) {
       return new AddressTag(
-          Kind.valueOf(kind),
-          new PublicKey(pubKey),
-          identifierTag.orElseThrow()
+         Kind.valueOf(kind),
+         new PublicKey(pubKey),
+         identifierTag.orElseThrow()
       );
     }
 
     return new AddressTag(
-        Kind.valueOf(kind),
-        new PublicKey(pubKey)
+       Kind.valueOf(kind),
+       new PublicKey(pubKey)
     );
   }
 }

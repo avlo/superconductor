@@ -1,14 +1,17 @@
 package com.prosilion.superconductor.lib.redis.interceptor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.Key;
 import com.prosilion.nostr.tag.Tag;
+import java.util.Optional;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
@@ -16,10 +19,10 @@ import org.springframework.lang.Nullable;
 @JsonPropertyOrder({"kind", "publicKey", "identifierTag", "relay"})
 @JsonSerialize(using = RedisAddressTagSerializer.class)
 public record RedisAddressTag(
-    @Getter @Key Kind kind,
-    @Getter @Key String publicKey,
-    @Getter @Nullable @Key @JsonInclude(JsonInclude.Include.NON_NULL) IdentifierTag identifierTag,
-    @Getter @Nullable @Key @JsonInclude(JsonInclude.Include.NON_NULL) Relay relay) implements BaseTag, RedisBaseTagIF {
+   @Getter @Key Kind kind,
+   @Getter @Key String publicKey,
+   @Getter @Nullable @Key @JsonInclude(JsonInclude.Include.NON_NULL) IdentifierTag identifierTag,
+   @Getter @Nullable @Key @JsonInclude(JsonInclude.Include.NON_NULL) Relay relay) implements BaseTag, RedisBaseTagIF {
 
   public RedisAddressTag(Kind kind, String publicKey) {
     this(kind, publicKey, null);
@@ -34,5 +37,16 @@ public record RedisAddressTag(
     this.publicKey = publicKey;
     this.identifierTag = identifierTag;
     this.relay = relay;
+  }
+
+  @JsonIgnore
+  public Optional<IdentifierTag> findIdentifierTag() {
+    return Optional.ofNullable(identifierTag);
+  }
+
+  @JsonIgnore
+  public IdentifierTag requireIdentifierTag() {
+    return Optional.ofNullable(identifierTag).orElseThrow(() ->
+       new NostrException("required IdentifierTag is null"));
   }
 }

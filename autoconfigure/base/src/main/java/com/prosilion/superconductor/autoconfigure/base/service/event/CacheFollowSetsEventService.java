@@ -22,8 +22,8 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagService
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceIF {
@@ -34,11 +34,11 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
 
   public CacheFollowSetsEventService(
-      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
-      @NonNull CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventServiceIF,
-      @NonNull CacheBadgeAwardReputationEventServiceIF cacheBadgeAwardReputationEventServiceIF,
-      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
-      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF) {
+     @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
+     @NonNull CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventServiceIF,
+     @NonNull CacheBadgeAwardReputationEventServiceIF cacheBadgeAwardReputationEventServiceIF,
+     @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
+     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF) {
     this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
     this.cacheBadgeGenericAwardEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
     this.cacheBadgeAwardReputationEventServiceIF = cacheBadgeAwardReputationEventServiceIF;
@@ -63,41 +63,41 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     List<EventTag> voteEventsAsEventTags = incomingFollowSetsEvent.asGenericEventRecord().getTypeSpecificTags(EventTag.class);
     if (voteEventsAsEventTags.isEmpty())
       throw new NostrException(
-          String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
+         String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
 
     log.debug("...materializing voteEventEventTagsAsGenericEventRecords using getEventTagEvent()...");
     List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> materializedEventTagEvents = voteEventsAsEventTags.stream()
-        .map(eventTag -> cacheBadgeGenericAwardEventServiceIF.getEvent(
-            eventTag.getIdEvent(),
-            eventTag.getRecommendedRelayUrl()))
-        .flatMap(Optional::stream).toList();
+       .map(eventTag -> cacheBadgeGenericAwardEventServiceIF.getEvent(
+          eventTag.getIdEvent(),
+          eventTag.requireRecommendedRelayUrl()))
+       .flatMap(Optional::stream).toList();
     log.debug("...successfully returned materializedEventTagEvents...");
 
     Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> eventTagToVoteEventFxn = eventTag ->
-        materializedEventTagEvents.stream()
-            .filter(event -> event.getId().equals(
-                eventTag.getIdEvent()))
-            .findFirst().orElseThrow(() ->
-                new NostrException(
-                    String.format("FollowSetsEvent materializedEventTagEvents:\n  [%s]\ndid not contain a match for EventTag:\n  [%s]",
-                        Util.prettyPrintGenericEventRecords(materializedEventTagEvents.stream()
-                            .map(BadgeAwardGenericEvent::getGenericEventRecord)
-                            .toList()),
-                        eventTag)));
+       materializedEventTagEvents.stream()
+          .filter(event -> event.getId().equals(
+             eventTag.getIdEvent()))
+          .findFirst().orElseThrow(() ->
+             new NostrException(
+                String.format("FollowSetsEvent materializedEventTagEvents:\n  [%s]\ndid not contain a match for EventTag:\n  [%s]",
+                   Util.prettyPrintGenericEventRecords(materializedEventTagEvents.stream()
+                      .map(BadgeAwardGenericEvent::getGenericEventRecord)
+                      .toList()),
+                   eventTag)));
 
     BadgeDefinitionReputationEvent existingReputationDefinitionEvent = cacheBadgeDefinitionReputationEventServiceIF.getBy(
-        incomingFollowSetsEvent.asGenericEventRecord().requireFirstTag(PubKeyTag.class),
-        incomingFollowSetsEvent.asGenericEventRecord().requireFirstTag(AddressTag.class)).orElseThrow();
+       incomingFollowSetsEvent.asGenericEventRecord().requireFirstTag(PubKeyTag.class),
+       incomingFollowSetsEvent.asGenericEventRecord().requireFirstTag(AddressTag.class)).orElseThrow();
     log.debug("... existingReputationDefinitionEvent:\n{}", existingReputationDefinitionEvent.createPrettyPrintJson());
 
     log.debug("... creating FollowSetsEvent with incomingFollowSetsEventGER:\n{}\nmaterializedEventTagEvents:\n  {}\nexistingReputationDefinitionEvent:\n  {}",
-        incomingFollowSetsEvent.createPrettyPrintJson(),
-        materializedEventTagEvents.stream().map(EventIF::createPrettyPrintJson),
-        existingReputationDefinitionEvent.createPrettyPrintJson());
+       incomingFollowSetsEvent.createPrettyPrintJson(),
+       materializedEventTagEvents.stream().map(EventIF::createPrettyPrintJson),
+       existingReputationDefinitionEvent.createPrettyPrintJson());
 
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
-        incomingFollowSetsEvent.asGenericEventRecord(),
-        eventTagToVoteEventFxn, addressTag -> existingReputationDefinitionEvent);
+       incomingFollowSetsEvent.asGenericEventRecord(),
+       eventTagToVoteEventFxn, addressTag -> existingReputationDefinitionEvent);
 
     log.debug("...returning materialized FollowSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
     return followSetsEvent;
@@ -108,19 +108,19 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     log.debug("... calling getBadgeAwardReputationEvent(FollowSetsEventfollowSetsEvent) with followSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
 
     Optional<BadgeAwardReputationEvent> badgeAwardReputationEvent = cacheKindAddressTagServiceIF.getBy(
-            Kind.BADGE_AWARD_EVENT,
-            new PubKeyTag(followSetsEvent.getAwardRecipientPulicKey()),
-            followSetsEvent.getAddressTag())
-        .stream()
-        .map(event ->
-            cacheBadgeAwardReputationEventServiceIF.getEvent(
-                event.getId(),
-                event.getRelayTagUrl()))
-        .flatMap(Optional::stream)
-        .findFirst();
+          Kind.BADGE_AWARD_EVENT,
+          new PubKeyTag(followSetsEvent.getAwardRecipientPulicKey()),
+          followSetsEvent.getAddressTag())
+       .stream()
+       .map(event ->
+          cacheBadgeAwardReputationEventServiceIF.getEvent(
+             event.getId(),
+             event.getRelayTagUrl()))
+       .flatMap(Optional::stream)
+       .findFirst();
 
     log.debug("... returning badgeAwardReputationEvent:\n{}", badgeAwardReputationEvent.map(EventIF::createPrettyPrintJson)
-        .orElse("returning EMPTY badgeAwardReputationEvent"));
+       .orElse("returning EMPTY badgeAwardReputationEvent"));
 
     return badgeAwardReputationEvent;
   }
@@ -129,13 +129,13 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getBy(@NonNull EventTag eventTag) {
     log.debug("getEventTagEvent(@NonNull String eventId, @NonNull String url)");
     Optional<GenericEventRecord> unpopulatedFollowSetsEventTagEvent =
-        cacheReferenceEventTagServiceIF.getEvent(eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl());
+       cacheReferenceEventTagServiceIF.getEvent(eventTag.getIdEvent(), eventTag.requireRecommendedRelayUrl());
 
     if (unpopulatedFollowSetsEventTagEvent.isEmpty()) {
       log.debug("unpopulatedFollowSetsEventTagEvent GenericEventRecord not found, throw exception");
       throw new NostrException(
-          String.format("FollowSetsEvent EventTag's GenericEventRecord eventId: [%s], url: [%s] not found",
-              eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl()));
+         String.format("FollowSetsEvent EventTag's GenericEventRecord eventId: [%s], url: [%s] not found",
+            eventTag.getIdEvent(), eventTag.requireRecommendedRelayUrl()));
     }
 
     log.debug("unpopulatedFollowSetsEventTagEvent GenericEventRecord found, call cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.getId, url) to populate it");

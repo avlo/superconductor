@@ -9,7 +9,7 @@ public class AddressTagInterceptor<T extends AddressTag, U extends RedisAddressT
 
   @Override
   public U intercept(T addressTag) {
-    return (U) new RedisAddressTag(addressTag.getKind(), addressTag.publicKey().toString(), addressTag.identifierTag(), addressTag.getRelay());
+    return (U) new RedisAddressTag(addressTag.getKind(), addressTag.publicKey().toString(), addressTag.getIdentifierTag(), addressTag.getRelay());
   }
 
   @Override

@@ -10,15 +10,15 @@ import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import java.util.Optional;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
-import lombok.NonNull;
 
 @Slf4j
 public class CacheReferenceAddressTagService extends CacheReferenceAbstractTagService<AddressTag> implements CacheReferenceAddressTagServiceIF {
   public CacheReferenceAddressTagService(
-      @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull RemoteAbstractTagService remoteAbstractTagService) {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull RemoteAbstractTagService remoteAbstractTagService) {
     super(cacheServiceIF, remoteAbstractTagService);
   }
 
@@ -27,17 +27,17 @@ public class CacheReferenceAddressTagService extends CacheReferenceAbstractTagSe
     log.debug("inside getLocalEventFxn(AddressTag) with addressTag:{}", Util.prettyPrintAddressTags(addressTag));
 
     Optional<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag = cacheServiceIF
-        .getEventByKindAndAuthorPublicKeyAndIdentifierTag(
-            addressTag.getKind(),
-            addressTag.publicKey(),
-            addressTag.getIdentifierTag());
+       .getEventByKindAndAuthorPublicKeyAndIdentifierTag(
+          addressTag.getKind(),
+          addressTag.publicKey(),
+          addressTag.requireIdentifierTag());
     log.debug("received List<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag:{}",
-        eventsByKindAndAuthorPublicKeyAndIdentifierTag
-            .map(GenericEventRecord::createPrettyPrintJson)
-            .map(s -> Strings.concat("\n  ", s))
-            .orElse("[EMPTY OPTIONAL]"));
+       eventsByKindAndAuthorPublicKeyAndIdentifierTag
+          .map(GenericEventRecord::createPrettyPrintJson)
+          .map(s -> Strings.concat("\n  ", s))
+          .orElse("[EMPTY OPTIONAL]"));
 
-    if (!eventsByKindAndAuthorPublicKeyAndIdentifierTag.isEmpty()) {
+    if (eventsByKindAndAuthorPublicKeyAndIdentifierTag.isPresent()) {
       Optional<GenericEventRecord> first = eventsByKindAndAuthorPublicKeyAndIdentifierTag.stream().findFirst();
       log.debug("... returning first local AddressTag as GER:\n  {}", Util.prettyPrintGenericEventRecords(first.get()));
       return first;
@@ -50,8 +50,8 @@ public class CacheReferenceAddressTagService extends CacheReferenceAbstractTagSe
   @Override
   Filters getAbstractTagFilters(@NonNull AddressTag addressTag) {
     return new Filters(
-        new KindFilter(addressTag.getKind()), // should always be 30009
-        new AuthorFilter(addressTag.getPublicKey()),
-        new IdentifierTagFilter(addressTag.getIdentifierTag()));
+       new KindFilter(addressTag.getKind()), // should always be 30009
+       new AuthorFilter(addressTag.getPublicKey()),
+       new IdentifierTagFilter(addressTag.requireIdentifierTag()));
   }
 }

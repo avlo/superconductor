@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.prosilion.nostr.tag.IdentifierTag;
 import java.io.IOException;
-import java.util.Optional;
 
 public class RedisAddressTagSerializer extends JsonSerializer<RedisAddressTag> {
   @Override
@@ -13,9 +12,9 @@ public class RedisAddressTagSerializer extends JsonSerializer<RedisAddressTag> {
     jsonGenerator.writeStartArray();
     jsonGenerator.writeString("a");
     jsonGenerator.writeString(
-        value.getKind() + ":" +
-            value.getPublicKey() + ":" +
-            Optional.ofNullable(value.getIdentifierTag()).map(IdentifierTag::getUuid).orElse("")
+       value.getKind() + ":" +
+          value.getPublicKey() + ":" +
+          value.findIdentifierTag().map(IdentifierTag::getUuid).orElse("")
     );
 
     if (value.getRelay() != null) {

@@ -18,29 +18,30 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
-import lombok.NonNull;
 
 @Slf4j
 public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntityIF, EventNosqlEntityIF> {
   private final EventNosqlEntityRepository eventNosqlEntityRepository;
-//  private final EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository;
+  //  private final EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository;
   private final Map<String, TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors;
 
   public EventNosqlEntityService(
-      @NonNull EventNosqlEntityRepository eventNosqlEntityRepository,
-      @NonNull EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository, // TODO: impl later 
-      @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
+     @NonNull EventNosqlEntityRepository eventNosqlEntityRepository,
+     @NonNull EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository, // TODO: impl later 
+     @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
     this.eventNosqlEntityRepository = eventNosqlEntityRepository;
 //    this.eventNosqlEntityByExampleRepository = eventNosqlEntityByExampleRepository;
     this.interceptors = interceptors.stream().collect(
-        Collectors.toMap(
-            TagInterceptor::getCode,
-            Function.identity()));
+       Collectors.toMap(
+          TagInterceptor::getCode,
+          Function.identity()));
     log.debug("Created EventNosqlEntityService with interceptors:\n");
     interceptors.stream().map(TagInterceptor::toString).map(s -> Strings.concat("  ", s)).forEach(log::debug);
   }
@@ -49,15 +50,15 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   @Override
   public List<EventNosqlEntityIF> getAll() {
     return eventNosqlEntityRepository.findAllCustom().stream()
-        .map(this::revertInterceptor)
-        .toList();
+       .map(this::revertInterceptor)
+       .toList();
   }
 
   @Override
   public EventNosqlEntityIF save(@NonNull EventIF eventNosqlEntity) {
     return revertInterceptor(
-        eventNosqlEntityRepository.save(
-            processInterceptors(eventNosqlEntity)));
+       eventNosqlEntityRepository.save(
+          processInterceptor(eventNosqlEntity)));
   }
 
   @Override
@@ -69,119 +70,109 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   @Override
   public List<EventNosqlEntityIF> getEventsByKind(@NonNull Kind kind) {
     return eventNosqlEntityRepository.findByKind(kind).stream()
-        .map(this::revertInterceptor)
-        .toList();
+       .map(this::revertInterceptor)
+       .toList();
   }
 
   @Override
   public List<EventNosqlEntityIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
     return eventNosqlEntityRepository.findByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
-        .map(this::revertInterceptor)
-        .toList();
+       .map(this::revertInterceptor)
+       .toList();
   }
 
   //  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(
-      @NonNull Kind kind,
-      @NonNull PubKeyTag referencedPublicKey) {
+     @NonNull Kind kind,
+     @NonNull PubKeyTag referencedPublicKey) {
     return getEventsByKind(kind).stream()
-        .filter(eventNosqlEntityIF ->
-            containsTypedTargetTag(referencedPublicKey, eventNosqlEntityIF.getTags())).toList();
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(referencedPublicKey, eventNosqlEntityIF.getTags())).toList();
   }
 
   //  TODO: replace with JPQL
   public List<EventNosqlEntityIF> getEventsByKindAndIdentifierTag(
-      @NonNull Kind kind,
-      @NonNull IdentifierTag identifierTag) {
+     @NonNull Kind kind,
+     @NonNull IdentifierTag identifierTag) {
     return getEventsByKind(kind).stream()
-        .filter(eventNosqlEntityIF ->
-            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).toList();
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).toList();
   }
 
   public List<EventNosqlEntityIF> getEventsByKindAndAddressTag(
-      @NonNull Kind kind,
-      @NonNull AddressTag addressTag) {
+     @NonNull Kind kind,
+     @NonNull AddressTag addressTag) {
     return getEventsByKind(kind).stream()
-        .filter(eventNosqlEntityIF ->
-            containsTypedTargetTag(addressTag, eventNosqlEntityIF.getTags())).toList();
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(addressTag, eventNosqlEntityIF.getTags())).toList();
   }
 
   //  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(
-      @NonNull Kind kind,
-      @NonNull PubKeyTag referencedPublicKey,
-      @NonNull AddressTag addressTag) {
+     @NonNull Kind kind,
+     @NonNull PubKeyTag referencedPublicKey,
+     @NonNull AddressTag addressTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
-        .filter(eventNosqlEntityIF ->
-            containsTypedTargetTag(addressTag, eventNosqlEntityIF.getTags())).toList();
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(addressTag, eventNosqlEntityIF.getTags())).toList();
   }
 
   //  TODO: replace with JPQL  
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(
-      @NonNull Kind kind,
-      @NonNull PubKeyTag referencedPublicKey,
-      @NonNull IdentifierTag identifierTag) {
+     @NonNull Kind kind,
+     @NonNull PubKeyTag referencedPublicKey,
+     @NonNull IdentifierTag identifierTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
-        .filter(eventNosqlEntityIF ->
-            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).toList();
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).toList();
   }
 
   //  TODO: replace with JPQL
   public Optional<EventNosqlEntityIF> getEventByKindAndAuthorPublicKeyAndIdentifierTag(
-      @NonNull Kind kind,
-      @NonNull PublicKey authorPublicKey,
-      @NonNull IdentifierTag identifierTag) {
+     @NonNull Kind kind,
+     @NonNull PublicKey authorPublicKey,
+     @NonNull IdentifierTag identifierTag) {
     return getEventsByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
-        .filter(eventNosqlEntityIF ->
-            containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).findFirst();
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).findFirst();
   }
 
-  //  TODO: functionalize below two methods into one
-  private EventNosqlEntity processInterceptors(EventIF eventIF) {
-    EventNosqlEntity entity = EventNosqlEntity.of(
-        eventIF.getId(),
-        eventIF.getKind().getValue(),
-        eventIF.getPublicKey().toString(),
-        eventIF.getCreatedAt(),
-        eventIF.getContent(),
-        eventIF.getSignature().toString());
-
-    log.debug("processInterceptors(...), pre intercept...");
-    entity.setTags(
-        Stream.concat(
-                eventIF.getTags().stream().map(baseTag ->
-                    Optional.ofNullable(
-                            interceptors.get(baseTag.getCode()))
-                        .stream().map(interceptor ->
-                            (BaseTag) interceptor.intercept(baseTag)).toList()).flatMap(Collection::stream),
-                eventIF.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
-            .toList());
-    log.debug("processInterceptors(...), post intercept, done");
-
-    return entity;
+  private EventNosqlEntity processInterceptor(EventIF eventIF) {
+    return intercept(eventIF,
+       (interceptor, baseTag) -> (BaseTag) interceptor.intercept(baseTag),
+       "intercepting");
   }
 
-  protected EventNosqlEntityIF revertInterceptor(EventNosqlEntityIF eventIf) {
+  private EventNosqlEntityIF revertInterceptor(EventIF eventIF) {
+    return intercept(eventIF,
+       (interceptor, baseTag) -> interceptor.canonicalize((RedisBaseTagIF) baseTag),
+       "canonicalizing");
+  }
+
+  private EventNosqlEntity intercept(EventIF eventIf, BiFunction<TagInterceptor<BaseTag, RedisBaseTagIF>, BaseTag, BaseTag> fxn, String mode) {
     EventNosqlEntity entity = EventNosqlEntity.of(
-        eventIf.getId(),
-        eventIf.getKind().getValue(),
-        eventIf.getPublicKey().toString(),
-        eventIf.getCreatedAt(),
-        eventIf.getContent(),
-        eventIf.getSignature().toString());
+       eventIf.getId(),
+       eventIf.getKind().getValue(),
+       eventIf.getPublicKey().toString(),
+       eventIf.getCreatedAt(),
+       eventIf.getContent(),
+       eventIf.getSignature().toString());
 
-    log.debug("revertInterceptor(...), pre canonicalize...");
     entity.setTags(
-        Stream.concat(
-                eventIf.getTags().stream().map(baseTag ->
-                    Optional.ofNullable(
-                            interceptors.get(baseTag.getCode()))
-                        .stream().map(interceptor ->
-                            interceptor.canonicalize((RedisBaseTagIF) baseTag)).toList()).flatMap(Collection::stream),
-                eventIf.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
-            .toList());
+       Stream.concat(
+             eventIf.getTags().stream().map(baseTag ->
+                   Optional.ofNullable(
+                         interceptors.get(baseTag.getCode()))
+                      .stream()
+                      .map(interceptor ->
+                         fxn.apply(interceptor, baseTag)).toList())
+                .flatMap(Collection::stream),
+             eventIf.getTags().stream().filter(baseTag -> !interceptors.containsKey(baseTag.getCode())))
+          .toList());
 
-    log.debug("revertInterceptor(...), post canonicalize, done");
+    log.debug("{}... [{}] ... done", mode, entity.getTags().stream()
+       .map(BaseTag::getClass)
+       .map(Class::getSimpleName).collect(Collectors.joining("] ,[")));
     return entity;
   }
 
@@ -189,9 +180,9 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     log.debug("containsTypedTargetTag(T targetTagType, List<BaseTag> baseTags)...");
     log.debug("targetTagType: {}", targetTagType);
     boolean contains = baseTags.stream()
-        .filter(targetTagType.getClass()::isInstance)
-        .map(targetTagType.getClass()::cast)
-        .collect(Collectors.toSet()).contains(targetTagType);
+       .filter(targetTagType.getClass()::isInstance)
+       .map(targetTagType.getClass()::cast)
+       .collect(Collectors.toSet()).contains(targetTagType);
     log.debug("containsTypedTargetTag(...) done");
     return contains;
   }

@@ -87,7 +87,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
      @NonNull PubKeyTag referencedPublicKey) {
     return getEventsByKind(kind).stream()
        .filter(eventNosqlEntityIF ->
-          containsTypedTargetTag(referencedPublicKey, eventNosqlEntityIF.getTags())).toList();
+          containsTypedTargetTag(referencedPublicKey, eventNosqlEntityIF)).toList();
   }
 
   //  TODO: replace with JPQL
@@ -96,7 +96,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
      @NonNull IdentifierTag identifierTag) {
     return getEventsByKind(kind).stream()
        .filter(eventNosqlEntityIF ->
-          containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).toList();
+          containsTypedTargetTag(identifierTag, eventNosqlEntityIF)).toList();
   }
 
   public List<EventNosqlEntityIF> getEventsByKindAndAddressTag(
@@ -104,7 +104,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
      @NonNull AddressTag addressTag) {
     return getEventsByKind(kind).stream()
        .filter(eventNosqlEntityIF ->
-          containsTypedTargetTag(addressTag, eventNosqlEntityIF.getTags())).toList();
+          containsTypedTargetTag(addressTag, eventNosqlEntityIF)).toList();
   }
 
   //  TODO: replace with JPQL  
@@ -114,7 +114,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
      @NonNull AddressTag addressTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
        .filter(eventNosqlEntityIF ->
-          containsTypedTargetTag(addressTag, eventNosqlEntityIF.getTags())).toList();
+          containsTypedTargetTag(addressTag, eventNosqlEntityIF)).toList();
   }
 
   //  TODO: replace with JPQL  
@@ -124,7 +124,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
      @NonNull IdentifierTag identifierTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
        .filter(eventNosqlEntityIF ->
-          containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).toList();
+          containsTypedTargetTag(identifierTag, eventNosqlEntityIF)).toList();
   }
 
   //  TODO: replace with JPQL
@@ -134,13 +134,13 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
      @NonNull IdentifierTag identifierTag) {
     return getEventsByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
        .filter(eventNosqlEntityIF ->
-          containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).findFirst();
+          containsTypedTargetTag(identifierTag, eventNosqlEntityIF)).findFirst();
   }
 
   private EventNosqlEntity processInterceptor(EventIF eventIF) {
     return intercept(eventIF,
        (interceptor, baseTag) -> (BaseTag) interceptor.intercept(baseTag),
-       "intercepting");
+       "  intercepting");
   }
 
   private EventNosqlEntityIF revertInterceptor(EventIF eventIF) {
@@ -177,14 +177,24 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     return entity;
   }
 
-  private <T extends BaseTag> boolean containsTypedTargetTag(T targetTagType, List<BaseTag> baseTags) {
-    log.debug("containsTypedTargetTag(T targetTagType, List<BaseTag> baseTags)...");
-    log.debug("targetTagType: {}", targetTagType);
-    boolean contains = baseTags.stream()
+  private <T extends BaseTag> boolean containsTypedTargetTag(final T targetTagType, final EventIF eventIF) {
+//    final String simpleName = targetTagType.getClass().getSimpleName();
+//    final List<String> sorted = eventIF.getTags().stream().map(Object::getClass).map(Class::getSimpleName).sorted().toList();
+//    final String join = String.join("], [", sorted);
+//    boolean empty = sorted.contains(simpleName);
+//    log.debug("baseTags contains typedTarget?  [{}]", empty);
+//    log.debug("typedTarget:\n  [{}]\n  baseTags:\n  [{}]", simpleName, join);
+//    return empty;
+//    log.debug("containsTypedTargetTag(T targetTagType, List<BaseTag> baseTags)...");
+//    log.debug("targetTagType: {}", targetTagType);
+
+//    TODO: below line investigate why doesn't work (caused BaseCacheServiceIT failure)
+//      potential relation to <T extends BaseTag> param
+//    return eventIF.getTypeSpecificTags(targetTagType.getClass()).isEmpty();
+
+    return eventIF.getTags().stream()
        .filter(targetTagType.getClass()::isInstance)
        .map(targetTagType.getClass()::cast)
        .collect(Collectors.toSet()).contains(targetTagType);
-    log.debug("containsTypedTargetTag(...) done");
-    return contains;
   }
 }

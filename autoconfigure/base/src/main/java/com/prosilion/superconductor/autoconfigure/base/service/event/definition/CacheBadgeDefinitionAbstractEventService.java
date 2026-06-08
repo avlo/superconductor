@@ -39,11 +39,11 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
          String.format("cacheReferenceAddressTagServiceIF.getEvent(addressTag) using addressTag:\n  %s\nnot found", Util.prettyPrintAddressTags(addressTag)));
 
     GenericEventRecord existingBadgeDefinitionReputationEventGER = badgeDefinitionAbstractEventGEROptional.get();
-    log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER);
+    log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER.createPrettyPrintJson());
 
     String relayTagUrl = existingBadgeDefinitionReputationEventGER.requireRelayTagUrl();
 
-    log.debug("calling getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl with eventId: [{}], relayUrl: [{}]",
+    log.debug("calling getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl with eventId:\n  [{}],\n  relayUrl: [{}]",
        existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
     Optional<T> event = getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
 
@@ -61,7 +61,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
 
   @Deprecated
   public Optional<T> getEvent(@NonNull String eventId, @NonNull String url) {
-    log.debug("inside getEvent(eventId, url): [{}], [{}]", eventId, url);
+    log.debug("inside getEvent(eventId, url):\n  [{}],\n  [{}]", eventId, url);
 
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionAbstractEvent =
        cacheReferenceEventTagServiceIF.getEvent(eventId, url);

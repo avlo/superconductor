@@ -172,7 +172,8 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
 
     log.debug("{}... [{}] ... done", mode, entity.getTags().stream()
        .map(BaseTag::getClass)
-       .map(Class::getSimpleName).collect(Collectors.joining("] ,[")));
+       .map(Class::getSimpleName).sorted()
+       .collect(Collectors.joining(", ")));
     return entity;
   }
 

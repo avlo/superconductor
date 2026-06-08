@@ -33,6 +33,11 @@ public class RedisCacheService implements RedisCacheServiceIF {
 
   @Override
   public GenericEventRecord save(EventIF event) {
+//    log.debug("(1of3save) save(EventIF event):\n  {}", event.createPrettyPrintJson());
+//    EventNosqlEntityIF save = eventNosqlEntityService.save(event);
+//    log.debug("... (2of3save) returned EventNosqlEntityIF toString()...:\n  {}", save);
+//    GenericEventRecord genericEventRecord = save.asGenericEventRecord();
+//    log.debug("... (3of3save) returned EventNosqlEntityIF asGenericEventRecord()...:\n  {}", genericEventRecord);
     return eventNosqlEntityService.save(event).asGenericEventRecord();
   }
 

@@ -51,12 +51,14 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     log.debug("formulaEvents as addressTags:");
     formulaEvents.stream().map(AddressableEvent::asAddressableEventAddressTag).map(Util::prettyPrintAddressTags).toList().forEach(log::debug);
 
-    return new BadgeDefinitionReputationEvent(
+    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
         incomingBadgeDefinitionReputationEvent.asGenericEventRecord(), addressTag ->
         formulaEvents.stream().filter(formulaEvent ->
             formulaEvent.asAddressableEventAddressTag().equals(addressTag)).findFirst().orElseThrow(() ->
             new NostrException(
                 String.format(NON_EXISTENT_ADDRESS_TAG, incomingBadgeDefinitionReputationEvent))));
+    log.debug("returning badgeDefinitionReputationEvent:\n{}", incomingBadgeDefinitionReputationEvent.createPrettyPrintJson());
+    return badgeDefinitionReputationEvent;
   }
 
   private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord badgeDefinitionReputationEventGER) {
@@ -96,8 +98,8 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    Optional<BadgeDefinitionReputationEvent> existingDefinitionEvent = getBy(addressTag);
-    return existingDefinitionEvent;
+    return getBy(addressTag).filter(event ->
+        event.findFirstTag(PubKeyTag.class).stream().toList().contains(pubKeyTag));
   }
 
   @Override

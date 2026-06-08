@@ -48,12 +48,12 @@ public class EventPlugin implements EventPluginIF {
       return event.asGenericEventRecord();
     }
 
+//    TODO: rectify similarities below 
     boolean isEventKind = eventKindMaterializers.containsKey(event.getKind());
     boolean isEventKindType = eventKindTypeMaterializers.containsKey(event.getKind());
     if (isEventKind || isEventKindType) {
       log.debug("kind/kindType event does not yet exist in db, materialize...\n  {}\n", event.createPrettyPrintJson());
-      BaseEvent apply = getEventKindFxn(event).apply(event);
-      return cacheServiceIF.save(apply);
+      return cacheServiceIF.save(getEventKindFxn(event).apply(event));
     }
 
     log.debug("creating canonical kind event...\n  {}\n", event.createPrettyPrintJson());
@@ -64,8 +64,7 @@ public class EventPlugin implements EventPluginIF {
   //  TODO: cleanup/refactor below
   Function<EventIF, BaseEvent> getEventKindFxn(EventIF eventIF) {
     Kind kind = eventIF.getKind();
-    log.debug("getEventKindFxn() for kind\n  [{}]: {}",
-        kind.getValue(), kind.getName().toUpperCase());
+    log.debug("getEventKindFxn() for kind\n  [{}]: {}", kind.getValue(), kind.getName().toUpperCase());
 
     Optional<ExternalIdentityTag> externalIdentityTagOptional = eventIF.findFirstTag(ExternalIdentityTag.class);
 
@@ -83,8 +82,7 @@ public class EventPlugin implements EventPluginIF {
     }
 
     Function<EventIF, BaseEvent> eventKindTypeMaterializerFxn = eventKindTypeMaterializers.get(kind);
-    log.debug("return eventKindTypeMaterializer:\n  {}",
-        eventKindTypeMaterializerFxn.getClass().getSimpleName());
+    log.debug("return eventKindTypeMaterializer:\n  {}", eventKindTypeMaterializerFxn.getClass().getSimpleName());
     return eventKindTypeMaterializerFxn;
   }
 

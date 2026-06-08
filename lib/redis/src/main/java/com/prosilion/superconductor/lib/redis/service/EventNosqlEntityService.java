@@ -28,15 +28,15 @@ import org.springframework.lang.NonNull;
 @Slf4j
 public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntityIF, EventNosqlEntityIF> {
   private final EventNosqlEntityRepository eventNosqlEntityRepository;
-  private final EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository;
+//  private final EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository;
   private final Map<String, TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors;
 
   public EventNosqlEntityService(
       @NonNull EventNosqlEntityRepository eventNosqlEntityRepository,
-      @NonNull EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository,
+      @NonNull EventNosqlEntityByExampleRepository eventNosqlEntityByExampleRepository, // TODO: impl later 
       @NonNull List<TagInterceptor<BaseTag, RedisBaseTagIF>> interceptors) {
     this.eventNosqlEntityRepository = eventNosqlEntityRepository;
-    this.eventNosqlEntityByExampleRepository = eventNosqlEntityByExampleRepository;
+//    this.eventNosqlEntityByExampleRepository = eventNosqlEntityByExampleRepository;
     this.interceptors = interceptors.stream().collect(
         Collectors.toMap(
             TagInterceptor::getCode,
@@ -55,7 +55,9 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
 
   @Override
   public EventNosqlEntityIF save(@NonNull EventIF eventNosqlEntity) {
-    return eventNosqlEntityRepository.save(convertDtoToNosqlEntity(eventNosqlEntity));
+    return revertInterceptor(
+        eventNosqlEntityRepository.save(
+            processInterceptors(eventNosqlEntity)));
   }
 
   @Override
@@ -132,10 +134,6 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     return getEventsByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
         .filter(eventNosqlEntityIF ->
             containsTypedTargetTag(identifierTag, eventNosqlEntityIF.getTags())).findFirst();
-  }
-
-  private EventNosqlEntity convertDtoToNosqlEntity(EventIF dto) {
-    return processInterceptors(dto);
   }
 
   //  TODO: functionalize below two methods into one

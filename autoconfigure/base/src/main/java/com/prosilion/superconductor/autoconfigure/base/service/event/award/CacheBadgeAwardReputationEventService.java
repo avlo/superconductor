@@ -43,17 +43,18 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
             incomingBadgeAwardReputationEvent.requireFirstTag(AddressTag.class))
         .orElseThrow(() ->
             new NostrException("badgeDefinitionReputationEvent not found"));
+    log.debug("... received badgeDefinitionReputationEvent:\n{}", badgeDefinitionReputationEvent.createPrettyPrintJson());
 
     BadgeAwardReputationEvent badgeAwardReputationEvent = new BadgeAwardReputationEvent(
         incomingBadgeAwardReputationEvent.asGenericEventRecord(),
         addressTag -> badgeDefinitionReputationEvent);
-    log.debug("... return materialized badgeAwardReputationEvent:\n{}", badgeAwardReputationEvent.createPrettyPrintJson());
-
+    log.debug("... returning materialized badgeAwardReputationEvent:\n{}", badgeAwardReputationEvent.createPrettyPrintJson());
     return badgeAwardReputationEvent;
   }
 
   @Override
   public Optional<BadgeAwardReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+    log.debug("... getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag):\n");
     List<GenericEventRecord> addressTagsAsGenericEventRecord =
         cacheKindAddressTagServiceIF.getBy(
             Kind.BADGE_AWARD_EVENT,
@@ -74,7 +75,7 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
             genericEventRecord.getId(),
             genericEventRecord.requireFirstTag(RelayTag.class).getRelay().getUrl()).orElseThrow());
 
-    log.debug("... return materialized badgeAwardReputationEvent:\n{}", badgeAwardReputationEventOpt.map(EventIF::createPrettyPrintJson).orElse("EMPTY Optional"));
+    log.debug("... returning badgeAwardReputationEventOpt:\n{}", badgeAwardReputationEventOpt.map(EventIF::createPrettyPrintJson).orElse("EMPTY Optional"));
     return badgeAwardReputationEventOpt;
   }
 }

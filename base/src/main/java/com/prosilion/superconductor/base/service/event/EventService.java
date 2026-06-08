@@ -8,7 +8,7 @@ import com.prosilion.superconductor.base.service.event.kind.EventKindServiceIF;
 import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class EventService implements EventServiceIF {

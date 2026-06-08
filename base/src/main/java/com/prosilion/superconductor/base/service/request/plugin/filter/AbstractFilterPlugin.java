@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.base.service.request.plugin.filter;
 
 import lombok.Getter;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Getter
 public abstract class AbstractFilterPlugin implements FilterPlugin {

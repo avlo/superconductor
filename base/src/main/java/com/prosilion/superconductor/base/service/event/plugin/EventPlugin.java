@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class EventPlugin implements EventPluginIF {

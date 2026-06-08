@@ -6,7 +6,7 @@ import com.prosilion.superconductor.base.service.request.subscriber.AbstractSubs
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j

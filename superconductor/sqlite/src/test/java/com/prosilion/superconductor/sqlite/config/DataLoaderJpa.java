@@ -3,7 +3,7 @@ package com.prosilion.superconductor.sqlite.config;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public class DataLoaderJpa implements DataLoaderJpaIF {
   private final EventPlugin eventPlugin;

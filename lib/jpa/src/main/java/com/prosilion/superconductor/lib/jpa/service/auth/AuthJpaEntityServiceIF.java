@@ -3,7 +3,7 @@ package com.prosilion.superconductor.lib.jpa.service.auth;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantServiceIF;
 import com.prosilion.superconductor.lib.jpa.entity.auth.AuthJpaEntityIF;
 import java.util.Optional;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public interface AuthJpaEntityServiceIF extends AuthPersistantServiceIF<Long, AuthJpaEntityIF> {
   Long save(AuthJpaEntityIF authEntity);

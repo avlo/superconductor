@@ -3,7 +3,7 @@ package com.prosilion.superconductor.base.service.clientresponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.message.NoticeMessage;
 import lombok.Getter;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import org.springframework.web.socket.TextMessage;
 
 @Getter

@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 // our CarDecorator for PublishingEventKindType hierarchy

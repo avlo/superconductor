@@ -1,7 +1,7 @@
 //package com.prosilion.superconductor.h2db.config;
 //
 //import com.prosilion.superconductor.h2db.util.NostrRelayService;
-//import org.springframework.lang.NonNull;
+//import lombok.NonNull;
 //import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 //import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

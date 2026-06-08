@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.lib.jpa.plugin.tag;
 
 import lombok.Getter;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.EventEntityAbstractJpaEntity;

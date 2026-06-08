@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import java.util.Optional;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public interface CacheBadgeAwardReputationEventServiceIF extends CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionReputationEvent, BadgeAwardReputationEvent> {
 

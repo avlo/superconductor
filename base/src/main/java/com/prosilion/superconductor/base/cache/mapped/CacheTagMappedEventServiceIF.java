@@ -7,7 +7,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterializer;
 import java.util.Optional;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 /**
  * Maps EventTag/AddressTag to an Event

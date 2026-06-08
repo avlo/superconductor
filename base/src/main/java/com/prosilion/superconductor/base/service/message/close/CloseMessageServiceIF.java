@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base.service.message.close;
 
 import com.prosilion.nostr.enums.Command;
 import com.prosilion.superconductor.base.service.message.MessageServiceIF;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import com.prosilion.nostr.message.CloseMessage;
 
 public interface CloseMessageServiceIF<T extends CloseMessage> extends MessageServiceIF<T> {

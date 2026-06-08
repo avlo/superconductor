@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base.service.event.auth;
 
 import com.prosilion.nostr.user.PublicKey;
 import java.util.Optional;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public interface AuthPersistantServiceIF<T, U extends AuthPersistantIF> {
   void save(String sessionId, PublicKey publicKey, String challenge, Long createdAt);

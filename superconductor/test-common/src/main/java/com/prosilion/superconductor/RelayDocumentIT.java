@@ -4,7 +4,7 @@ import com.prosilion.superconductor.base.util.NostrMediaType;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @Slf4j

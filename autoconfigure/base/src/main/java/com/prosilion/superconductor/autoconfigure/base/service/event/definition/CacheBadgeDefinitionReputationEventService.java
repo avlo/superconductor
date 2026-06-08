@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 import static com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService.NON_EXISTENT_ADDRESS_TAG;
 
@@ -98,8 +98,25 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    return getBy(addressTag).filter(event ->
-        event.findFirstTag(PubKeyTag.class).stream().toList().contains(pubKeyTag));
+    log.debug("... inside getBy(pubKeyTag, addressTag), values:\npubKeyTag:  [{}],\naddressTag:  [{}]",
+        pubKeyTag, addressTag.toStringPrettyPrint());
+    Optional<BadgeDefinitionReputationEvent> byAddressTag = getBy(addressTag);
+
+    if (byAddressTag.isEmpty())
+      return Optional.empty();
+
+    log.debug("... getBy returned:\n  {}", byAddressTag.get().createPrettyPrintJson());
+    String dbTag = byAddressTag.get().requireFirstTag(PubKeyTag.class).getPublicKey().toHexString();
+    String paramTag = pubKeyTag.getPublicKey().toHexString();
+    log.debug("do pubkeyTags match?\n [{}] -vs- [{}]\nequals?  {}", dbTag, paramTag,
+        Boolean.valueOf(dbTag.equals(paramTag)).toString().toUpperCase());
+
+    return byAddressTag
+//        .filter(event ->
+//            event.findFirstTag(PubKeyTag.class)
+//                .map(PubKeyTag::getPublicKey).stream()
+//                .anyMatch(pubKeyTag.getPublicKey()::equals)).stream().findFirst()
+        ;
   }
 
   @Override

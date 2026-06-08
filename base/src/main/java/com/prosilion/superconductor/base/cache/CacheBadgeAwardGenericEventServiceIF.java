@@ -7,7 +7,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterializer;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public interface CacheBadgeAwardGenericEventServiceIF<S extends BadgeDefinitionGenericEvent, T extends BadgeAwardGenericEvent<S>> extends CacheTagMappedEventServiceIF<T, AddressTag>, EventMaterializer<BaseEvent> {
   @Override

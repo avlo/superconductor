@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public interface TagPlugin<
     P extends BaseTag,

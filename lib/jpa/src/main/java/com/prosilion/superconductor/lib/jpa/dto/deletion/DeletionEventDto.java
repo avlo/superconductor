@@ -2,7 +2,7 @@ package com.prosilion.superconductor.lib.jpa.dto.deletion;
 
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJpaEntityIF;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public class DeletionEventDto {
   private final Long eventId;

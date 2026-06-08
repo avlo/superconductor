@@ -24,7 +24,7 @@
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-//import org.springframework.lang.NonNull;
+//import lombok.NonNull;
 //import org.springframework.test.context.ActiveProfiles;
 //
 //import static com.prosilion.superconductor.h2db.TextNoteEventMessageH2dbIT.getEventIFs;

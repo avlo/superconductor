@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import com.prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.lib.jpa.entity.generic.ElementAttributeJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.join.generic.GenericTagEntityElementAttributeJpaEntity;

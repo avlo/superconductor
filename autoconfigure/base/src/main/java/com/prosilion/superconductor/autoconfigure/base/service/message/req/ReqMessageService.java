@@ -5,7 +5,7 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.request.ReqServiceIF;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public class ReqMessageService implements ReqMessageServiceIF {
   public static final String AUTH_REQUIRED = "auth-required: ";

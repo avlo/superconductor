@@ -6,7 +6,7 @@ import com.prosilion.superconductor.lib.redis.entity.AuthNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.repository.auth.AuthNosqlEntityRepository;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class AuthNosqlEntityService implements AuthNosqlEntityServiceIF {

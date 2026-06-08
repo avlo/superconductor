@@ -2,7 +2,7 @@ package com.prosilion.superconductor.lib.jpa.dto;
 
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 import java.util.function.Function;
 

@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import lombok.Setter;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.nostr.tag.BaseTag;

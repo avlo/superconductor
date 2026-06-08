@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import lombok.Setter;
 import com.prosilion.nostr.tag.BaseTag;
 

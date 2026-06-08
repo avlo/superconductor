@@ -5,7 +5,7 @@ import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public class EventKindsAuth implements EventKindsAuthIF {
   private final List<Kind> eventAuthenticationKinds;

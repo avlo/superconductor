@@ -6,7 +6,7 @@ import com.prosilion.superconductor.base.service.event.auth.EventKindsAuthIF;
 import com.prosilion.superconductor.lib.jpa.entity.auth.AuthJpaEntityIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class AuthKindJpaEntityService implements AuthKindJpaEntityServiceIF {

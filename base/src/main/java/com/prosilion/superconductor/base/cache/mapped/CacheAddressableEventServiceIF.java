@@ -5,7 +5,7 @@ import com.prosilion.nostr.event.AddressableEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import java.util.Optional;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public interface CacheAddressableEventServiceIF<T extends AddressableEvent, U extends ReferencedAbstractEventTag> {
   T materialize(@NonNull EventIF eventIF);

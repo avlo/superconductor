@@ -4,7 +4,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class DataLoaderRedisTest implements DataLoaderRedisTestIF {

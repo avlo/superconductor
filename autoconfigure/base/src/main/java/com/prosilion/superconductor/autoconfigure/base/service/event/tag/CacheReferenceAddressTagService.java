@@ -12,7 +12,7 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServi
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class CacheReferenceAddressTagService extends CacheReferenceAbstractTagService<AddressTag> implements CacheReferenceAddressTagServiceIF {

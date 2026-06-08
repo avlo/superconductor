@@ -8,7 +8,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)

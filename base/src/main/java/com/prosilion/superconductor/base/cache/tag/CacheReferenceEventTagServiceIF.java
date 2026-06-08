@@ -4,7 +4,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.EventTag;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public interface CacheReferenceEventTagServiceIF extends CacheReferenceAbstractTagServiceIF<EventTag> {
   List<GenericEventRecord> getEvents(List<EventTag> t);

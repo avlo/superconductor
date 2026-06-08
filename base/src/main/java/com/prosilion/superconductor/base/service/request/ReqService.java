@@ -5,7 +5,7 @@ import com.prosilion.superconductor.base.service.request.subscriber.AbstractSubs
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import com.prosilion.superconductor.base.service.request.subscriber.Subscriber;
 import com.prosilion.superconductor.base.util.EmptyFiltersException;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public class ReqService implements ReqServiceIF {
   private final AbstractSubscriberService abstractSubscriberService;

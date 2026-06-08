@@ -7,7 +7,7 @@ import com.prosilion.superconductor.base.service.request.pubsub.BroadcastMessage
 import com.prosilion.superconductor.base.service.request.pubsub.EoseNotice;
 import com.prosilion.superconductor.base.service.request.pubsub.FireNostrEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public abstract class AbstractSubscriberService implements SubscriberService {
   private final ApplicationEventPublisher publisher;

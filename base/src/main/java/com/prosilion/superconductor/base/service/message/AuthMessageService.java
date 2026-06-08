@@ -10,7 +10,7 @@ import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantServiceIF;
 import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMessageServiceIF {

@@ -8,7 +8,7 @@ import com.prosilion.superconductor.base.util.NoExistingUserException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class CloseMessageService<T extends CloseMessage> implements CloseMessageServiceIF<T> {

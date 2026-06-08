@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base.service.request.subscriber;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.Serializable;

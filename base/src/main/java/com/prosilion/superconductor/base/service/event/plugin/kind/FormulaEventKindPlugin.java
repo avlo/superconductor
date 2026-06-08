@@ -3,7 +3,7 @@ package com.prosilion.superconductor.base.service.event.plugin.kind;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class FormulaEventKindPlugin extends NonPublishingEventKindPlugin {

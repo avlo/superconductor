@@ -4,7 +4,7 @@ import com.prosilion.nostr.filter.Filters;
 import com.prosilion.superconductor.base.util.EmptyFiltersException;
 import com.prosilion.superconductor.base.util.NoExistingUserException;
 import jakarta.validation.constraints.NotEmpty;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 import java.util.List;
 import java.util.Map;

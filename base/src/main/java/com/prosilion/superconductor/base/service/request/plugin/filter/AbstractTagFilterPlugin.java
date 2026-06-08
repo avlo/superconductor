@@ -4,7 +4,7 @@ import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import java.util.function.BiPredicate;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 abstract class AbstractTagFilterPlugin<U extends BaseTag> extends AbstractFilterPlugin implements FilterBiPredicate<U> {
 

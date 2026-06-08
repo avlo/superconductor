@@ -12,7 +12,7 @@ import com.prosilion.superconductor.util.Factory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {

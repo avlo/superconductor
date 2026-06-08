@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @AutoConfiguration
 @EnableRedisRepositories(

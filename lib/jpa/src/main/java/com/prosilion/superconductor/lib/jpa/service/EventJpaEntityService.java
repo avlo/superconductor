@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEntityIF> {

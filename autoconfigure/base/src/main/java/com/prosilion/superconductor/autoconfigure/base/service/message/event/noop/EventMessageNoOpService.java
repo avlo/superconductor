@@ -4,7 +4,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class EventMessageNoOpService implements EventMessageServiceIF {

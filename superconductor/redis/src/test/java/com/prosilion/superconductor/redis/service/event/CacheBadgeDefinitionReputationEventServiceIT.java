@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
@@ -123,21 +123,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
         List.of(plusOneFormulaEvent, minusOneFormulaEvent));
 
-//    IdentifierTag uniqueIdentifierTag = new IdentifierTag("UNIQUE_" + TEST_UNIT_REPUTATION);
-//    BadgeDefinitionReputationEvent uniqueBadgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
-//        identity,
-//        uniqueIdentifierTag,
-//        relay,
-//        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-//        List.of(plusOneFormulaEvent, minusOneFormulaEvent));
-
     assertThrows(NostrException.class, () -> cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord()));
-//    assertTrue(
-//        messageMissingEventId.contains(
-//            String.format(
-//                String.join("", NON_EXISTENT_ADDRESS_TAG_S),
-//                uniqueBadgeDefinitionReputationEventIdentifierTag.serialize(),
-//                uniqueBadgeDefinitionReputationEventIdentifierTag.getId())));
 
     eventServiceIF.processIncomingEvent(new EventMessage(minusOneFormulaEvent));
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneMinusOne));
@@ -157,19 +143,5 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
 
     BadgeDefinitionReputationEvent reconstructed = cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord());
     assertEquals(dbRepDefnEventPlusMinus, reconstructed);
-//    assertTrue(
-//        messageMissingEventId.contains(
-//            String.format(
-//                String.join("", NON_EXISTENT_ADDRESS_TAG_S),
-//                uniqueBadgeDefinitionReputationEventIdentifierTag.serialize(),
-//                uniqueBadgeDefinitionReputationEventIdentifierTag.getId())));
-
-    AddressTag formulaEventAddressableEventAddressTag = plusOneFormulaEvent.asAddressableEventAddressTag();
-    List<BadgeDefinitionReputationEvent> byDirectTag = cacheBadgeDefinitionReputationEventService.getByDirectTag(formulaEventAddressableEventAddressTag);
-    System.out.println("111111111111111111111");
-    System.out.println("111111111111111111111");
-    System.out.println(byDirectTag.stream().map(EventIF::createPrettyPrintJson));
-    System.out.println("111111111111111111111");
-    System.out.println("111111111111111111111");
   }
 }

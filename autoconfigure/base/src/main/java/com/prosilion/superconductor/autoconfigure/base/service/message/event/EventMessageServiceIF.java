@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.service.message.event;
 
 import com.prosilion.nostr.message.EventMessage;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public interface EventMessageServiceIF {
   void processIncoming(EventMessage eventMessage, String sessionId);

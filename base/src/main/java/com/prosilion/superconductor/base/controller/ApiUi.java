@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.base.controller;
 
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public class ApiUi implements ReqApiEventApiUi {
   private final ReqApiUiIF reqApiUiIF;

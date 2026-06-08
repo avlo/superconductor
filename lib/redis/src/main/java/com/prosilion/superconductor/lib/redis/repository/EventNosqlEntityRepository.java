@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import org.springframework.stereotype.Repository;
 
 @Repository

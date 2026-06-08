@@ -5,7 +5,7 @@ import com.prosilion.superconductor.base.service.request.pubsub.EoseNotice;
 import com.prosilion.superconductor.base.service.request.pubsub.FireNostrEvent;
 import com.prosilion.superconductor.base.util.FilterMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service

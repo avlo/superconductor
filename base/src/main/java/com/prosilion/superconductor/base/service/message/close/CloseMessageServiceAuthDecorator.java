@@ -2,7 +2,7 @@
 //
 //import com.prosilion.superconductor.base.request.service.AbstractSubscriberService;
 //import com.prosilion.superconductor.service.event.AuthEntityService;
-//import org.springframework.lang.NonNull;
+//import lombok.NonNull;
 //import lombok.extern.slf4j.Slf4j;
 //import com.prosilion.nostr.message.CloseMessage;
 //import org.springframework.beans.factory.annotation.Autowired;

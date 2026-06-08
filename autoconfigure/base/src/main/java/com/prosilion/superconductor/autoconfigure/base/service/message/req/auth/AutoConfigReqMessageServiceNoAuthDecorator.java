@@ -6,7 +6,7 @@ import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoC
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 @Slf4j
 public class AutoConfigReqMessageServiceNoAuthDecorator implements AutoConfigReqMessageServiceIF {

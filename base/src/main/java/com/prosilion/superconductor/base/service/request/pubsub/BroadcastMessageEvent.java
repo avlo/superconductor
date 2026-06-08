@@ -5,7 +5,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.message.BaseMessage;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import org.springframework.web.socket.TextMessage;
 
 @Setter

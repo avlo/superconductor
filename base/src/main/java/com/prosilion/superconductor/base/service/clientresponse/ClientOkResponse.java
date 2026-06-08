@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.message.OkMessage;
 import lombok.Getter;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import org.springframework.web.socket.TextMessage;
 
 @Getter

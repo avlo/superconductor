@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service.message.event;
 import com.prosilion.nostr.enums.Command;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.base.service.message.MessageServiceIF;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 public interface AutoConfigEventMessageServiceIF extends MessageServiceIF<EventMessage> {
   void processOkClientResponse(EventMessage eventMessage, @NonNull String sessionId);

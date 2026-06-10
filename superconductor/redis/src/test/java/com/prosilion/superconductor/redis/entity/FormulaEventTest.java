@@ -111,7 +111,7 @@ public class FormulaEventTest {
   @Test
   void formulaContentTest() throws ParseException {
     assertEquals(
-        "SuperConductor BadgeDefinitionReputationEvent, default content from FormulaEvent(s) operator(s): BADGE_DEFINITION_UNIT_REPUTATION == (previous)BADGE_DEFINITION_UNIT_REPUTATION +1(BADGE_DEFINITION_UNIT_UPVOTE) -1(BADGE_DEFINITION_UNIT_DOWNVOTE)",
+        "BadgeDefinitionReputationEvent FormulaEvent(s) operator(s) default content: BADGE_DEFINITION_UNIT_REPUTATION == (previous)BADGE_DEFINITION_UNIT_REPUTATION +1(BADGE_DEFINITION_UNIT_UPVOTE) -1(BADGE_DEFINITION_UNIT_DOWNVOTE)",
         new BadgeDefinitionReputationEvent(
             identity,
             reputationDefinitionCreatorPublicKey,
@@ -129,7 +129,7 @@ public class FormulaEventTest {
     BadgeDefinitionGenericEvent awardUniqueUpvoteEvent = new BadgeDefinitionGenericEvent(identity, upvoteUniqueIdentifierTag, relay, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA);
 
     assertEquals(
-        "SuperConductor BadgeDefinitionReputationEvent, default content from FormulaEvent(s) operator(s): BADGE_DEFINITION_UNIT_REPUTATION == (previous)BADGE_DEFINITION_UNIT_REPUTATION +1(BADGE_DEFINITION_UNIT_UPVOTE) +1(UNIT_UPVOTE_UNIQUE)",
+        "BadgeDefinitionReputationEvent FormulaEvent(s) operator(s) default content: BADGE_DEFINITION_UNIT_REPUTATION == (previous)BADGE_DEFINITION_UNIT_REPUTATION +1(BADGE_DEFINITION_UNIT_UPVOTE) +1(UNIT_UPVOTE_UNIQUE)",
         new BadgeDefinitionReputationEvent(
             identity,
             reputationDefinitionCreatorPublicKey,

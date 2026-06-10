@@ -96,27 +96,40 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     return formulaEvents;
   }
 
+//  TODO:  pubKeyTag in getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) currently unused, needs resolution
   @Override
   public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     log.debug("... inside getBy(pubKeyTag, addressTag), values:\npubKeyTag:  [{}],\naddressTag:  [{}]",
        pubKeyTag, addressTag.toStringPrettyPrint());
-    Optional<BadgeDefinitionReputationEvent> byAddressTag = getBy(addressTag);
+    Optional<BadgeDefinitionReputationEvent> foundEvent = getBy(addressTag);
 
-    if (byAddressTag.isEmpty())
+    if (foundEvent.isEmpty()) {
+      log.debug("... no match found for addressTag:\n  {}", addressTag.toStringPrettyPrint());
+      log.debug("... return Optional.empty()");
       return Optional.empty();
+    }
+    final String addressTagPretty = foundEvent.get().createPrettyPrintJson();
+    log.debug("... matching addressTag found:\n  {}", addressTagPretty);
 
-    log.debug("... getBy returned:\n  {}", byAddressTag.get().createPrettyPrintJson());
-    String dbTag = byAddressTag.get().requireFirstTag(PubKeyTag.class).getPublicKey().toHexString();
-    String paramTag = pubKeyTag.getPublicKey().toHexString();
-    log.debug("do pubkeyTags match?\n [{}] -vs- [{}]\nequals?  {}", dbTag, paramTag,
-       Boolean.valueOf(dbTag.equals(paramTag)).toString().toUpperCase());
+//    TODO: test below inclusion of returnedPubKeyTagPublicKey.equals(inputPubKeyTagPublicKey)
+//    log.debug("... checking PubKeyTag match ...");
+//    PublicKey returnedPubKeyTagPublicKey = foundEvent.get().requireFirstTag(PubKeyTag.class).getPublicKey();
+//    PublicKey inputPubKeyTagPublicKey = pubKeyTag.getPublicKey();
+//    if (returnedPubKeyTagPublicKey.equals(inputPubKeyTagPublicKey)) {
+//      log.debug("... returned BadgeDefinitionReputationEvent pubKeyTag:  [{}] ...", returnedPubKeyTagPublicKey.toHexString());
+//      log.debug("... did not match target pubKeyTag:  [{}] ...", inputPubKeyTagPublicKey);
+//      log.debug("... return Optional.empty()");
+//      return Optional.empty();
+//    }
 
-    return byAddressTag
-//        .filter(event ->
-//            event.findFirstTag(PubKeyTag.class)
-//                .map(PubKeyTag::getPublicKey).stream()
-//                .anyMatch(pubKeyTag.getPublicKey()::equals)).stream().findFirst()
-       ;
+    log.debug("... PubKeyTag match SKIPPED (needs review), checking for ExternalIdentityTag ...");
+    if (foundEvent.get().findFirstTag(ExternalIdentityTag.class).isEmpty()) {
+      log.debug("... missing ExternalIdentityTag.  return Optional.empty()");
+      return Optional.empty();
+    }
+
+    log.debug("... getBy(PubKeyTag, AddressTag) matches all passed, returning BadgeDefinitionReputationEvent:\n  {}", addressTagPretty);
+    return foundEvent;
   }
 
   @Override

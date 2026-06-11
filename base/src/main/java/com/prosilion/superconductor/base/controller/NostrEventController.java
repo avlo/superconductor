@@ -94,7 +94,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
    * {@link #handleTextMessage(WebSocketSession, TextMessage) }
    */
   @Override
-  public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+  public void afterConnectionClosed(WebSocketSession session, @NonNull CloseStatus status) {
     log.debug("client initiated close, sessionId [{}]", session.getId());
     publisher.publishEvent(new TerminatedSocket(session.getId()));
     closeSession(session);

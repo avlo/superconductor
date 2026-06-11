@@ -76,8 +76,7 @@ public abstract class BaseMatchingHashtagTagQueryIT {
 
     assertFalse(returnedEvents.isEmpty());
     //    associated event
-    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(
-        eventId)));
+    assertTrue(returnedEvents.stream().anyMatch(s -> s.getId().equals(eventId)));
     assertTrue(returnedEvents.stream().map(event ->
         event.getTags().stream().anyMatch(s -> s.toString().equals(genericTagString))).findAny().isPresent());
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));

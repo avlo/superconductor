@@ -21,7 +21,7 @@ public class FilterMatcher {
   @Autowired
   public FilterMatcher(List<FilterPlugin> filterPlugins) {
     filterPlugins.forEach(filterPlugin ->
-        filterPluginsMap.put(filterPlugin.getCode(), filterPlugin));
+       filterPluginsMap.put(filterPlugin.getCode(), filterPlugin));
   }
 
   public Optional<AddNostrEvent> intersectFilterMatches(Filters requestFilters, AddNostrEvent eventToCheck) {
@@ -31,9 +31,9 @@ public class FilterMatcher {
     {
       FilterPlugin filterPlugin = filterPluginsMap.getOrDefault(key, filterPluginsMap.get(""));
       combos.add(
-          new Combo<>(
-              value,
-              filterPlugin.getBiPredicate()));
+         new Combo<>(
+            value,
+            filterPlugin.getBiPredicate()));
     });
 
     return getFilterMatchingEvents(combos, eventToCheck) ? Optional.of(eventToCheck) : Optional.empty();
@@ -60,7 +60,7 @@ public class FilterMatcher {
   }
 
   @Getter
-  class Combo<V extends Filterable> {
+  static class Combo<V extends Filterable> {
     List<V> filterable;
     BiPredicate<V, AddNostrEvent> biPredicate;
 

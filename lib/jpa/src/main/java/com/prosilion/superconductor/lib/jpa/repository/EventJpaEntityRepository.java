@@ -18,7 +18,9 @@ import org.springframework.stereotype.Repository;
 public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, Long> {
   Sort DESC_SORT_CREATED_AT = Sort.by(Sort.Direction.DESC, "createdAt");
 
+  @NonNull
   List<EventJpaEntity> findAll(@NonNull Sort sort);
+  
   Optional<EventJpaEntityIF> findByUid(@NonNull Long uid);
   Optional<EventJpaEntityIF> findByEventId(String eventId);
   List<EventJpaEntityIF> findByPubKey(@NonNull String pubKey, Sort sort);

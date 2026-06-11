@@ -39,7 +39,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
   }
 
-//  TODO: duplicate in @CacheFollowsEventSeervice, consolidate  
+  //  TODO: duplicate in @CacheFollowsEventSeervice, consolidate  
   @Override
   public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url) {
     log.debug("inside getEvent(eventId, url)");
@@ -114,10 +114,10 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     String formulaEventRelayUrl = formulaEventOptGER.get().requireRelayTagUrl();
     log.debug("formulaEventOptGER relayUrl: [{}]", formulaEventRelayUrl);
 
-    Optional<FormulaEvent> formulaEvent = getEvent(formulaEventOptGER.get().getId(), formulaEventRelayUrl);
-    log.debug("returning formulaEvent:\n  {}", formulaEvent.get().createPrettyPrintJson());
+    FormulaEvent formulaEvent = getEvent(formulaEventOptGER.get().getId(), formulaEventRelayUrl).orElseThrow();
+    log.debug("returning formulaEvent:\n  {}", formulaEvent.createPrettyPrintJson());
 
-    return formulaEvent;
+    return Optional.of(formulaEvent);
   }
 
   private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord unpopulatedFormulaEventGER) {

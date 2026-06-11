@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class EventPlugin implements EventPluginIF {
@@ -26,10 +26,10 @@ public class EventPlugin implements EventPluginIF {
   private final Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers;
 
   public EventPlugin(
-      @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers,
-      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers,
-      @NonNull Map<String, String> kindClassStringMap) {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers,
+     @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers,
+     @NonNull Map<String, String> kindClassStringMap) {
     log.debug("class is adding cacheServiceIF implementation class: {}", cacheServiceIF.getClass().getSimpleName());
     this.cacheServiceIF = cacheServiceIF;
     this.eventKindMaterializers = eventKindMaterializers;
@@ -77,7 +77,7 @@ public class EventPlugin implements EventPluginIF {
     if (externalIdentityTagOptional.isEmpty()) {
       Function<EventIF, BaseEvent> eventKindMaterializerFxn = eventKindMaterializers.get(kind);
       log.debug("event did not contain externalIdentityTag, return eventKindMaterializer:\n  {}",
-          eventKindMaterializerFxn.getClass().getSimpleName());
+         eventKindMaterializerFxn.getClass().getSimpleName());
       return eventKindMaterializerFxn;
     }
 
@@ -93,30 +93,27 @@ public class EventPlugin implements EventPluginIF {
     if (optionalLookupKind.isEmpty())
       return Optional.empty();
 
-    Class<? extends BaseEvent> aClass = null;
+    Class<? extends BaseEvent> aClass;
     try {
       aClass = (Class<? extends BaseEvent>) Class.forName(optionalLookupKind.get());
     } catch (ClassNotFoundException e) {
       throw lookupKindNotFound(lookupKind);
     }
 
-    Class<? extends BaseEvent> finalAClass = aClass;
-    Optional<BaseEvent> baseEvent = optionalLookupKind.map(s ->
-        createTypedSimpleEvent(
-            eventIF.asGenericEventRecord(),
-            finalAClass));
-
-    return baseEvent;
+    return optionalLookupKind.map(s ->
+       createTypedSimpleEvent(
+          eventIF.asGenericEventRecord(),
+          aClass));
   }
 
   private NostrException lookupKindNotFound(String lookupKind) {
     return new NostrException(
-        String.format(CLASS_STRING_MAP_S, lookupKind, kindClassStringMap));
+       String.format(CLASS_STRING_MAP_S, lookupKind, kindClassStringMap));
   }
 
   private <T extends BaseEvent> T createTypedSimpleEvent(
-      @NonNull GenericEventRecord genericEventRecord,
-      @NonNull Class<T> baseEventFromKind) {
+     @NonNull GenericEventRecord genericEventRecord,
+     @NonNull Class<T> baseEventFromKind) {
     Constructor<T> constructor;
     try {
       constructor = baseEventFromKind.getConstructor(GenericEventRecord.class);

@@ -13,7 +13,7 @@ import static java.util.stream.StreamSupport.stream;
 
 public class OrderAgnosticJsonComparator implements Comparator<Iterable<? extends JsonNode>> {
 
-  private boolean ignoreElementOrderInArrays = true;
+  private final boolean ignoreElementOrderInArrays = true;
 
   public static boolean equalsJson(JsonNode target, JsonNode other) {
     return new OrderAgnosticJsonComparator().compare(target, other) == 0;

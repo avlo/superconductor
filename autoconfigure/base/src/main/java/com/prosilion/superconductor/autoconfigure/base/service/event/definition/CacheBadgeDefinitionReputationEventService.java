@@ -95,7 +95,6 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     return formulaEvents;
   }
 
-  //  TODO:  pubKeyTag in getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) currently unused, needs resolution
   @Override
   public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull AddressTag addressTag) {
     log.debug("... inside getBy(addressTag), value: addressTag:  [{}]", addressTag.toStringPrettyPrint());
@@ -132,6 +131,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> getByDirectTag(@NonNull AddressTag addressTag) {
+    log.debug("... inside getByDirectTag(addressTag), value: addressTag:  [{}]", addressTag.toStringPrettyPrint());
     List<GenericEventRecord> badgeDefinitionEventGERs =
        cacheKindAddressTagService.getBy(Kind.BADGE_DEFINITION_EVENT, addressTag).stream().filter(ger ->
           ger.findFirstTag(ExternalIdentityTag.class).isPresent()).toList();

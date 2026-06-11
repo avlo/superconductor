@@ -39,14 +39,15 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
   }
 
+//  TODO: duplicate in @CacheFollowsEventSeervice, consolidate  
   @Override
   public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url) {
-    log.debug("insdice getEvent(@NonNull String eventId, @NonNull String url)");
+    log.debug("inside getEvent(eventId, url)");
     log.debug("  eventId:  [{}]", eventId);
     log.debug("  relayUrl: [{}]", url);
     Optional<GenericEventRecord> unpopulatedFormulaEventGER = cacheReferenceEventTagServiceIF.getEvent(eventId, url);
     if (unpopulatedFormulaEventGER.isEmpty()) {
-      log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, url) returned EMPTY unpopulatedFormulaEventGER", url);
+      log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, url) returned EMPTY unpopulatedFormulaEventGER");
       return Optional.empty();
     }
 

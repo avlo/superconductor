@@ -71,7 +71,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
           eventTag.getIdEvent(),
           eventTag.requireRecommendedRelayUrl()))
        .flatMap(Optional::stream).toList();
-    log.debug("...successfully returned materializedEventTagEvents...");
+    log.debug("...successfully returned materializedEventTagEvents:\n  {}",
+       materializedEventTagEvents.stream().map(EventIF::createPrettyPrintJson));
 
     Function<EventTag, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> eventTagToVoteEventFxn = eventTag ->
        materializedEventTagEvents.stream()
@@ -86,7 +87,6 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
                    eventTag)));
 
     BadgeDefinitionReputationEvent existingReputationDefinitionEvent = cacheBadgeDefinitionReputationEventServiceIF.getBy(
-       incomingFollowSetsEvent.asGenericEventRecord().requireFirstTag(PubKeyTag.class),
        incomingFollowSetsEvent.asGenericEventRecord().requireFirstTag(AddressTag.class)).orElseThrow();
     log.debug("... existingReputationDefinitionEvent:\n{}", existingReputationDefinitionEvent.createPrettyPrintJson());
 
@@ -150,8 +150,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
-  public Optional<FollowSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    List<GenericEventRecord> genericEventRecords = cacheKindAddressTagServiceIF.getBy(Kind.FOLLOW_SETS, pubKeyTag, addressTag);
+  public Optional<FollowSetsEvent> getBy(@NonNull AddressTag addressTag) {
+    List<GenericEventRecord> genericEventRecords = cacheKindAddressTagServiceIF.getBy(Kind.FOLLOW_SETS, addressTag);
     List<FollowSetsEvent> list = genericEventRecords.stream().map(this::materialize).toList();
     return list.stream().findFirst();
   }

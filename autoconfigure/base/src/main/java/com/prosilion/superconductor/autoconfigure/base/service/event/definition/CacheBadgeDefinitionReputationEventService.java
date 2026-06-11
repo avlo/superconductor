@@ -10,7 +10,6 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
@@ -96,12 +95,11 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     return formulaEvents;
   }
 
-//  TODO:  pubKeyTag in getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) currently unused, needs resolution
+  //  TODO:  pubKeyTag in getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) currently unused, needs resolution
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    log.debug("... inside getBy(pubKeyTag, addressTag), values:\npubKeyTag:  [{}],\naddressTag:  [{}]",
-       pubKeyTag, addressTag.toStringPrettyPrint());
-    Optional<BadgeDefinitionReputationEvent> foundEvent = getBy(addressTag);
+  public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull AddressTag addressTag) {
+    log.debug("... inside getBy(addressTag), value: addressTag:  [{}]", addressTag.toStringPrettyPrint());
+    Optional<BadgeDefinitionReputationEvent> foundEvent = super.getBy(addressTag);
 
     if (foundEvent.isEmpty()) {
       log.debug("... no match found for addressTag:\n  {}", addressTag.toStringPrettyPrint());
@@ -133,7 +131,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   }
 
   @Override
-  public List<BadgeDefinitionReputationEvent> getByDirectTag(@NonNull AddressTag addressTag) {
+  public Optional<BadgeDefinitionReputationEvent> getByDirectTag(@NonNull AddressTag addressTag) {
     List<GenericEventRecord> badgeDefinitionEventGERs =
        cacheKindAddressTagService.getBy(Kind.BADGE_DEFINITION_EVENT, addressTag).stream().filter(ger ->
           ger.findFirstTag(ExternalIdentityTag.class).isPresent()).toList();
@@ -149,9 +147,21 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
              getEvent(eventTag.getIdEvent(), eventTag.requireRecommendedRelayUrl()))
           .flatMap(Optional::stream).toList();
 
+    int size = badgeDefinitionReputationEvents.size();
+    if (size > 1) {
+      log.debug("11111111111111111111111111111111111");
+      log.debug("11111111111111111111111111111111111");
+      log.debug("---  WARNING  /  REVISIT / TODO  ---");
+      log.debug("cacheKindAddressTagService.getBy(kind, addressTag) returned badgeDefinitionReputationEvents.size() [{}] is > 1", size);
+      log.debug("current implementation naively returns first item");
+      log.debug("---  WARNING  /  REVISIT / TODO  ---");
+      log.debug("11111111111111111111111111111111111");
+      log.debug("11111111111111111111111111111111111");
+    }
+
     log.debug("getEvent(eventId, url) returned:\n {}",
        badgeDefinitionReputationEvents.stream().map(EventIF::createPrettyPrintJson));
 
-    return badgeDefinitionReputationEvents;
+    return badgeDefinitionReputationEvents.stream().findFirst();
   }
 }

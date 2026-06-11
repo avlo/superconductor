@@ -9,7 +9,6 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
@@ -70,14 +69,6 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
     log.debug("return reCreated formulaEvent:\n  {}", formulaEvent.createPrettyPrintJson());
     return formulaEvent;
-  }
-
-  @Override
-  public Optional<FormulaEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    log.debug("getBy(pubKeyTag, AddressTag):\n{}", addressTag.toStringPrettyPrint());
-    Optional<GenericEventRecord> formulaEventAsOptGER = cacheKindAddressTagServiceIF
-       .getBy(Kind.ARBITRARY_CUSTOM_APP_DATA, pubKeyTag, addressTag).stream().findFirst();
-    return getFormulaEventById(formulaEventAsOptGER);
   }
 
   @Override

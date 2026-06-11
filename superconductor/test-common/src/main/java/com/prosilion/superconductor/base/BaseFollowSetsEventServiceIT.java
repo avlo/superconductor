@@ -24,11 +24,11 @@ import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
 import java.time.Duration;
 import java.util.List;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import lombok.NonNull;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,14 +36,39 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseFollowSetsEventServiceIT {
+  public static final String REPUTATION = "TEST_REPUTATION";
+  public static final String AWARD_UNIT_UPVOTE = "TEST_UNIT_UPVOTE";
+  public static final String FORMULA_UNIT_UPVOTE = "FORMULA_UNIT_UPVOTE";
+  public static final String FORMULA_UNIT_DOWNVOTE = "FORMULA_UNIT_DOWNVOTE";
+
   public static final String PLUS_ONE_FORMULA = "+1";
 
-  private final IdentifierTag reputationIdentifierTag = new IdentifierTag("BADGE_DEFINITION_UNIT_REPUTATION");
-  private final IdentifierTag upvoteIdentifierTag = new IdentifierTag("BADGE_DEFINITION_UNIT_UPVOTE");
+  protected final IdentifierTag reputationIdentifierTag = new IdentifierTag(REPUTATION);
+  protected final IdentifierTag upvoteIdentifierTag = new IdentifierTag(AWARD_UNIT_UPVOTE);
+  protected final IdentifierTag formulaUpvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_UPVOTE);
+  protected final IdentifierTag formulaDownvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_DOWNVOTE);
 
   private final Identity identity = Identity.generateRandomIdentity();
-  private final PublicKey reputationRecipientPublicKey = Identity.generateRandomIdentity().getPublicKey();
-  private final PublicKey reputationDefinitionCreatorPublicKey = Identity.generateRandomIdentity().getPublicKey();
+
+  protected final Identity submitter =
+//     Identity.generateRandomIdentity();
+     Identity.create("aaa4585483196998204846989544737603523651520600328805626488477202");
+
+  protected final Identity upvoteDefnCreator =
+//     Identity.generateRandomIdentity();
+     Identity.create("bbb4585483196998204846989544737603523651520600328805626488477202");
+
+  protected final Identity recipient =
+//     Identity.generateRandomIdentity();
+     Identity.create("ccc4585483196998204846989544737603523651520600328805626488477202");
+
+  protected final Identity formulaCreator =
+//     Identity.generateRandomIdentity();
+     Identity.create("ddd4585483196998204846989544737603523651520600328805626488477202");
+
+  protected final Identity repDefnCreator =
+//     Identity.generateRandomIdentity();
+     Identity.create("eee4585483196998204846989544737603523651520600328805626488477202");
 
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent;
@@ -55,50 +80,47 @@ public abstract class BaseFollowSetsEventServiceIT {
   Duration requestTimeoutDuration;
 
   public BaseFollowSetsEventServiceIT(
-      @Value("${superconductor.relay.url}") String relayUrl,
-      @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-      @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService,
-      Duration requestTimeoutDuration) throws ParseException {
+     @Value("${superconductor.relay.url}") String relayUrl,
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
+     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService,
+     Duration requestTimeoutDuration) throws ParseException {
     this.eventServiceIF = eventServiceIF;
     this.requestTimeoutDuration = requestTimeoutDuration;
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
     this.relay = new Relay(relayUrl);
 
-    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
+    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator, upvoteIdentifierTag, relay);
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
-    IdentifierTag formulaUnitUpvoteIdentifierTag = new IdentifierTag("FORMULA_UNIT_UPVOTE");
-    FormulaEvent plusOneFormulaEvent = new FormulaEvent(identity, formulaUnitUpvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
+    FormulaEvent plusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
     eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent));
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-        identity,
-        reputationDefinitionCreatorPublicKey,
-        reputationIdentifierTag,
-        relay,
-        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-        plusOneFormulaEvent);
+       repDefnCreator,
+       submitter.getPublicKey(),
+       reputationIdentifierTag,
+       relay,
+       BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+       plusOneFormulaEvent);
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula));
 
     this.badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
-        identity,
-        reputationRecipientPublicKey,
-        relay,
-        badgeDefinitionReputationEventPlusOneFormula);
+       submitter,
+       recipient.getPublicKey(),
+       relay,
+       badgeDefinitionReputationEventPlusOneFormula);
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent));
   }
 
   @Test
   public void testSaveBadgeAwardReputationEventUpvote() {
-    final String FOLLOW_SETS_EVENT = "FOLLOW_SETS_EVENT";
-    final IdentifierTag followSetsIdentifierTag = new IdentifierTag(FOLLOW_SETS_EVENT);
-
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
-        identity,
-        badgeDefinitionReputationEventPlusOneFormula,
-        relay,
-        List.of(badgeAwardUpvoteEvent));
+       identity,
+       badgeDefinitionReputationEventPlusOneFormula,
+       relay,
+       List.of(badgeAwardUpvoteEvent));
 
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent));
 
@@ -109,7 +131,7 @@ public abstract class BaseFollowSetsEventServiceIT {
     assertTrue(badgeAwardAbstractEvents.contains(badgeAwardUpvoteEvent));
 
     PublicKey matchPubkey = dbFollowSetsEventByEventId.getAwardRecipientPulicKey();
-    assertEquals(matchPubkey, reputationRecipientPublicKey);
+    assertEquals(matchPubkey, recipient.getPublicKey());
 
     assertEquals(followSetsEvent.getAddressTag(), dbFollowSetsEventByEventId.getAddressTag());
     assertEquals(followSetsEvent.getEventTags(), dbFollowSetsEventByEventId.getEventTags());
@@ -117,14 +139,14 @@ public abstract class BaseFollowSetsEventServiceIT {
     assertEquals(followSetsEvent.getBadgeDefinitionReputationEvent(), dbFollowSetsEventByEventId.getBadgeDefinitionReputationEvent());
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-        new NostrSingleRequestService()
-            .send(
-                new ReqMessage(
-                    Factory.generateRandomHex64String(),
-                    new Filters(
-                        new KindFilter(
-                            Kind.FOLLOW_SETS))),
-                relay.getUrl()));
+       new NostrSingleRequestService()
+          .send(
+             new ReqMessage(
+                Factory.generateRandomHex64String(),
+                new Filters(
+                   new KindFilter(
+                      Kind.FOLLOW_SETS))),
+             relay.getUrl()));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -132,7 +154,7 @@ public abstract class BaseFollowSetsEventServiceIT {
     assertTrue(returnedEventIFs.stream().map(EventIF::getKind).toList().contains(Kind.FOLLOW_SETS));
 
     assertTrue(badgeAwardAbstractEvents.stream()
-        .map(BadgeAwardGenericEvent::getBadgeDefinitionEvent)
-        .anyMatch(badgeDefinitionReputationEventPlusOneFormula::equals));
+       .map(BadgeAwardGenericEvent::getBadgeDefinitionEvent)
+       .anyMatch(badgeDefinitionReputationEventPlusOneFormula::equals));
   }
 }

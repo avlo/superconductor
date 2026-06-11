@@ -12,7 +12,7 @@ services:
       timeout: 2s
 #  SC App 5554
   superconductor-app-two:
-    image: superconductor-app-redis:1.17.3
+    image: superconductor-app-redis:1.18.0
     ports:
       - "5554:5555"
     depends_on:

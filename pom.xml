@@ -6,7 +6,7 @@
   <groupId>com.prosilion.superconductor</groupId>
   <artifactId>superconductor-parent</artifactId>
   <name>superconductor-parent</name>
-  <version>1.17.3</version>
+  <version>1.18.0</version>
   <description>SuperConductor Java Nostr-Relay Framework and Web Application</description>
   <packaging>pom</packaging>
 
@@ -38,9 +38,9 @@
 
   <properties>
     <java.version>21</java.version>
-    <project.version>1.17.3</project.version>
+    <project.version>1.18.0</project.version>
     <spring-boot.version>3.5.6</spring-boot.version>
-    <nostr-java-core.version>1.1.0</nostr-java-core.version>
+    <nostr-java-core.version>1.2.0</nostr-java-core.version>
 
     <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
     <commons-collections4.version>4.5.0</commons-collections4.version>
@@ -60,7 +60,7 @@
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <mysql-connector-j.version>9.1.0</mysql-connector-j.version>
     <postgresql.version>42.7.3</postgresql.version>
-    <subdivisions.version>1.3.2</subdivisions.version>
+    <subdivisions.version>1.4.0</subdivisions.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <mapstruct.version>1.6.3</mapstruct.version>
   </properties>

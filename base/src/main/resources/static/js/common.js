@@ -2,8 +2,8 @@ let ws
 
 function connect() {
   ws = new WebSocket("/");
-  ws.onmessage = function (messageEvent) {
-    showEvent(messageEvent.data);
+  ws.onmessage = function (baseMessage) {
+    showResponse(baseMessage.data);
   }
   setConnected(true);
 }
@@ -77,11 +77,14 @@ function addEventMessageWrapper(id_hash) {
       + "]";
 }
 
-function showEvent(content) {
+function showResponse(baseMessageJson) {
+  if (baseMessageJson.includes("EVENT"))
+    baseMessageJson = GenericEventRecord.fromJson(baseMessageJson).toPrettyJson();
+  else
+    baseMessageJson = JSON.stringify(JSON.parse(baseMessageJson), null, 2)
+
   $("#events").append("<tr><td><pre>" +
-      syntaxHighlight(
-          GenericEventRecord.fromJson(content)
-              .toPrettyJson()) +
+      syntaxHighlight(baseMessageJson) +
       "</pre></td></tr>");
 }
 

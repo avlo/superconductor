@@ -44,8 +44,7 @@ class GenericEventRecord {
   }
 
   static fromJson(json) {
-    const node = GenericEventRecord.unwrapEventJson(json);
-    return GenericEventRecord.fromObject(node);
+    return GenericEventRecord.fromObject(GenericEventRecord.unwrapEventJson(json));
   }
 
   toObject() {

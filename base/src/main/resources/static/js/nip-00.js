@@ -26,7 +26,7 @@ function replaceHash00(id_hash) {
             {
                 'id': id_hash,
                 'kind': $("#00-kind").val(),
-                'content': '{"name": "Michael", "about": "Software Engineer", "picture": "me.png", "nip05": "mikkthemagnificent@getalby.com", "other": [{"test_key": "test_value"}]}',
+                'content': 'sample content',
                 'pubkey': $("#00-pubkey").val(),
                 'created_at': Date.now(),
                 'sig': '86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546'

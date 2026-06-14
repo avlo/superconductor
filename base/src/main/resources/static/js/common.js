@@ -37,9 +37,9 @@ function disconnect() {
   console.log("Disconnected via WS close");
 }
 
-function createEvent(typeScriptEvent) {
-  console.log("createEvent() created event JSON: \n\n" + typeScriptEvent + "\n\n");
-  signEvent(typeScriptEvent).then((fullyPopulatedSignedEvent) => sendContent(fullyPopulatedSignedEvent));
+function createEvent(unsignedEventContent) {
+  console.log("createEvent(unsignedEventContent): \n\n" + unsignedEventContent + "\n\n");
+  signEvent(unsignedEventContent).then((fullyPopulatedSignedEvent) => sendContent(fullyPopulatedSignedEvent));
 }
 
 async function signEvent(event) {

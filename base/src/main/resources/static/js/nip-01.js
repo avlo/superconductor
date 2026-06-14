@@ -1,20 +1,23 @@
 $(function () {
-    $("#send01").click(() => createEvent(generate01TypeScriptEvent()));
+    $("#send01").click(() => createEvent(gatherUnsignedEventConent()));
 });
 
-function generate01TypeScriptEvent() {
+function getTags() {
     const tags = [
         ['e', $("#01-e_tag").val()],
         ['p', $("#01-p_tag").val()],
         ['g', $("#01-g_tag").val()]
     ];
+    return tags;
+}
 
+function gatherUnsignedEventConent() {
     let event = {
         id: '',
         kind: Number($("#01-kind").val()),
         created_at: Math.floor(Date.now() / 1000),
         content: $("#01-content").val(),
-        tags: tags,
+        tags: getTags(),
         pubkey: '',
         sig: ''
     }

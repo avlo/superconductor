@@ -3,11 +3,11 @@ $(function () {
 });
 
 function createAndSaveGenericEventRecord() {
-  const unsignedEventContent = gatherUnsignedGenericEventConent();
+  const unsignedEventContent = gatherUnsignedGenericEventContent();
   createEvent(unsignedEventContent);
 }
 
-function gatherUnsignedGenericEventConent() {
+function gatherUnsignedGenericEventContent() {
   return {
     id: '',
     kind: Number($("#generic-kind").val()),

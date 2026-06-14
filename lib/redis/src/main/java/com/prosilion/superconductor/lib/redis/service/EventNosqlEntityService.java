@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 
 @Slf4j
 public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntityIF, EventNosqlEntityIF> {
@@ -42,8 +41,8 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
        Collectors.toMap(
           TagInterceptor::getCode,
           Function.identity()));
-    log.debug("Created EventNosqlEntityService with interceptors:\n");
-    interceptors.stream().map(TagInterceptor::toString).map(s -> Strings.concat("  ", s)).forEach(log::debug);
+    log.debug("Created EventNosqlEntityService with interceptors:\n  {}", 
+       interceptors.stream().map(TagInterceptor::toString).collect(Collectors.joining(",\n  ")));
   }
 
   //  TODO: consider an economically efficient alternative

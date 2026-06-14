@@ -18,7 +18,7 @@ const TAG_DEFINITIONS = {
 
 $(function () {
   $("#send-generic").click(() => createEvent(gatherUnsignedEventContent()));
-  addTagRow();
+  $("#add-tag").click(() => addTagRow());
 });
 
 function addTagRow($afterRow) {

@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class EventPlugin implements EventPluginIF {
   private final static String CLASS_STRING_MAP_S = "Class [%s] not found in kindClassStringMap [%s]";
 
   @Getter private final CacheServiceIF cacheServiceIF;
-  private final Map<String, String> kindClassStringMap;
+  private final Map<Kind, String> kindClassStringMap;
   private final Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers;
   private final Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers;
 
@@ -29,14 +30,14 @@ public class EventPlugin implements EventPluginIF {
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers,
      @NonNull Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers,
-     @NonNull Map<String, String> kindClassStringMap) {
+     @NonNull Map<Kind, String> kindClassStringMap) {
     log.debug("class is adding cacheServiceIF implementation class: {}", cacheServiceIF.getClass().getSimpleName());
     this.cacheServiceIF = cacheServiceIF;
     this.eventKindMaterializers = eventKindMaterializers;
     this.eventKindTypeMaterializers = eventKindTypeMaterializers;
     this.kindClassStringMap = kindClassStringMap;
-    log.debug("loaded kindClassStringMap:");
-    this.kindClassStringMap.forEach((key, value) -> log.debug("  {} : {}", key.toUpperCase(), value));
+    log.debug("loaded kindClassStringMap:\n{}", this.kindClassStringMap.entrySet().stream().map(entry ->
+       String.format("  %s : %s", entry.getKey().getName().toUpperCase(), entry.getValue())).collect(Collectors.joining(",\n")));
   }
 
   @Override
@@ -49,14 +50,15 @@ public class EventPlugin implements EventPluginIF {
     }
 
 //    TODO: rectify similarities below 
-    boolean isEventKind = eventKindMaterializers.containsKey(event.getKind());
-    boolean isEventKindType = eventKindTypeMaterializers.containsKey(event.getKind());
+    Kind kind = event.getKind();
+    boolean isEventKind = eventKindMaterializers.containsKey(kind);
+    boolean isEventKindType = eventKindTypeMaterializers.containsKey(kind);
     if (isEventKind || isEventKindType) {
       log.debug("kind/kindType event does not yet exist in db, materialize...\n  {}\n", event.createPrettyPrintJson());
       return cacheServiceIF.save(getEventKindFxn(event).apply(event));
     }
 
-    log.debug("creating canonical kind event...\n  {}\n", event.createPrettyPrintJson());
+    log.debug("creating canonical kind event...\n  {}", event.createPrettyPrintJson());
     BaseEvent typedEvent = createTypedEvent(event).orElseThrow();
     return cacheServiceIF.save(typedEvent);
   }
@@ -87,28 +89,27 @@ public class EventPlugin implements EventPluginIF {
   }
 
   public Optional<BaseEvent> createTypedEvent(EventIF eventIF) {
-    String lookupKind = eventIF.getKind().getName().toUpperCase();
-    Optional<String> optionalLookupKind = Optional.ofNullable(kindClassStringMap.get(lookupKind));
+    Optional<String> mappedKindClassString = Optional.ofNullable(kindClassStringMap.get(eventIF.getKind()));
 
-    if (optionalLookupKind.isEmpty())
+    if (mappedKindClassString.isEmpty())
       return Optional.empty();
 
     Class<? extends BaseEvent> aClass;
     try {
-      aClass = (Class<? extends BaseEvent>) Class.forName(optionalLookupKind.get());
+      aClass = (Class<? extends BaseEvent>) Class.forName(mappedKindClassString.get());
     } catch (ClassNotFoundException e) {
-      throw lookupKindNotFound(lookupKind);
+      throw lookupKindNotFound(eventIF.getKind());
     }
 
-    return optionalLookupKind.map(s ->
+    return mappedKindClassString.map(s ->
        createTypedSimpleEvent(
           eventIF.asGenericEventRecord(),
           aClass));
   }
 
-  private NostrException lookupKindNotFound(String lookupKind) {
+  private NostrException lookupKindNotFound(Kind lookupKind) {
     return new NostrException(
-       String.format(CLASS_STRING_MAP_S, lookupKind, kindClassStringMap));
+       String.format(CLASS_STRING_MAP_S, lookupKind.getName().toUpperCase(), kindClassStringMap));
   }
 
   private <T extends BaseEvent> T createTypedSimpleEvent(

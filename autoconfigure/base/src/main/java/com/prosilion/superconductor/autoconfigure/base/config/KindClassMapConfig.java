@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
+import com.prosilion.nostr.enums.Kind;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -15,11 +16,10 @@ import org.springframework.context.annotation.PropertySource;
 public class KindClassMapConfig {
   @Bean("kindClassStringMap")
   @ConditionalOnMissingBean(name = "kindClassStringMap")
-  public Map<String, String> kindClassStringMap() {
+  public Map<Kind, String> kindClassStringMap() {
     ResourceBundle relaysBundle = ResourceBundle.getBundle("kind-class-map");
-    Map<String, String> collect = relaysBundle.keySet().stream()
-        .collect(Collectors.toMap(key -> key, relaysBundle::getString));
-    return collect;
+    return relaysBundle.keySet().stream()
+       .collect(Collectors.toMap(Kind::valueOf, relaysBundle::getString));
   }
 }
 

@@ -7,22 +7,29 @@ import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeSe
 import com.prosilion.superconductor.base.service.event.kind.type.EventKindTypeServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
+import com.prosilion.superconductor.base.service.event.plugin.kind.StandardEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import java.util.List;
+import java.util.stream.Stream;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import lombok.NonNull;
 
 @Slf4j
 @AutoConfiguration
 public class EventKindServiceConfig {
   @Bean(name = "eventKindService")
   @ConditionalOnMissingBean
-  EventKindService eventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
-    return new EventKindService(eventKindPlugins);
+  EventKindService eventKindService(
+     @NonNull List<EventKindPluginIF> eventKindPlugins,
+     @NonNull List<StandardEventKindPlugin> standardEventKindPlugins) {
+    return new EventKindService(
+       Stream.concat(
+          eventKindPlugins.stream(),
+          standardEventKindPlugins.stream()).toList());
   }
 
   @Bean(name = "eventKindTypeService")
@@ -34,9 +41,9 @@ public class EventKindServiceConfig {
   @Bean(name = "eventService")
   @ConditionalOnMissingBean
   EventService eventService(
-      @NonNull EventPlugin eventPlugin,
-      @NonNull @Qualifier("eventKindService") EventKindServiceIF eventKindService,
-      @NonNull @Qualifier("eventKindTypeService") EventKindTypeServiceIF eventKindTypeService) {
+     @NonNull EventPlugin eventPlugin,
+     @NonNull @Qualifier("eventKindService") EventKindServiceIF eventKindService,
+     @NonNull @Qualifier("eventKindTypeService") EventKindTypeServiceIF eventKindTypeService) {
     return new EventService(eventPlugin, eventKindService, eventKindTypeService);
   }
 }

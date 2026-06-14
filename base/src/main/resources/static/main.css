@@ -189,6 +189,7 @@ p {
     .label {
         width: auto;
         flex: 1 1 160px;
+        min-width: 160px;
         border-radius: 10px 10px 0 0;
         border-bottom: solid 2px #000;
     }

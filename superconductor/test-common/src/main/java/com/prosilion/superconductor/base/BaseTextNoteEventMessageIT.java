@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -19,9 +18,9 @@ import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.io.IOException;
 import java.util.List;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import lombok.NonNull;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,10 +43,10 @@ public abstract class BaseTextNoteEventMessageIT {
 
     EventMessage eventMessageFromTextNoteGenericEventRecord = new EventMessage(event.getGenericEventRecord());
     assertTrue(
-        nostrEventPublisher
-            .send(
-                eventMessageFromTextNoteGenericEventRecord)
-            .getFlag());
+       nostrEventPublisher
+          .send(
+             eventMessageFromTextNoteGenericEventRecord)
+          .getFlag());
   }
 
   @Test
@@ -76,7 +75,7 @@ public abstract class BaseTextNoteEventMessageIT {
   }
 
   @Test
-  void testReqSingleSubscriberFilteredByEventAndAuthorViaReqMessage() throws JsonProcessingException, NostrException {
+  void testReqSingleSubscriberFilteredByEventAndAuthorViaReqMessage() throws NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
@@ -94,7 +93,7 @@ public abstract class BaseTextNoteEventMessageIT {
   }
 
   @Test
-  void testReqTwoSubscribersFilteredByEventAndAuthorViaReqMessage() throws JsonProcessingException, NostrException {
+  void testReqTwoSubscribersFilteredByEventAndAuthorViaReqMessage() throws NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(eventId));
@@ -122,7 +121,7 @@ public abstract class BaseTextNoteEventMessageIT {
   }
 
   @Test
-  void testReqFilteredByAuthor() throws JsonProcessingException, NostrException {
+  void testReqFilteredByAuthor() throws NostrException {
     final String subscriberId = Factory.generateRandomHex64String();
 
     AuthorFilter authorFilter = new AuthorFilter(identity.getPublicKey());
@@ -146,7 +145,7 @@ public abstract class BaseTextNoteEventMessageIT {
   }
 
   @Test
-  void testReqNonMatchingEvent() throws JsonProcessingException, NostrException {
+  void testReqNonMatchingEvent() throws NostrException {
     String nonMatchingSubscriberId = Factory.generateRandomHex64String();
     String nonMatchingEventId = Factory.generateRandomHex64String();
 
@@ -160,17 +159,17 @@ public abstract class BaseTextNoteEventMessageIT {
     log.debug("  " + returnedEvents);
     assertEquals(1, returnedBaseMessages.size());
     assertTrue(returnedBaseMessages.stream()
-        .filter(EoseMessage.class::isInstance)
-        .map(EoseMessage.class::cast)
-        .findAny().isPresent());
+       .filter(EoseMessage.class::isInstance)
+       .map(EoseMessage.class::cast)
+       .findAny().isPresent());
     assertTrue(returnedEvents.isEmpty());
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {
     return returnedBaseMessages.stream()
-        .filter(EventMessage.class::isInstance)
-        .map(EventMessage.class::cast)
-        .map(EventMessage::getEvent)
-        .toList();
+       .filter(EventMessage.class::isInstance)
+       .map(EventMessage.class::cast)
+       .map(EventMessage::getEvent)
+       .toList();
   }
 }

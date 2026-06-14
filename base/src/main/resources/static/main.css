@@ -29,6 +29,12 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; white-space:pre-wrap; f
     display: block;
 }
 
+.tag-values {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 .alternate-color {
     background-color: #e5e5e5
 }

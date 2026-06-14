@@ -35,6 +35,26 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; white-space:pre-wrap; f
     gap: 4px;
 }
 
+.btn-light-green {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.btn-light-green:hover {
+    background-color: #c3e6cb;
+}
+
+.btn-light-red {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.btn-light-red:hover {
+    background-color: #f5c6cb;
+}
+
 .alternate-color {
     background-color: #e5e5e5
 }

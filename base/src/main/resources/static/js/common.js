@@ -12,6 +12,7 @@ function setConnected(connected) {
   $("#connect").prop("disabled", connected);
   $("#disconnect").prop("disabled", !connected);
   $("#reqclose").prop("disabled", !connected);
+  $("#send-generic").prop("disabled", !connected);
 
   $("#sendregister").prop("disabled", !connected);
   $("#send00").prop("disabled", !connected);

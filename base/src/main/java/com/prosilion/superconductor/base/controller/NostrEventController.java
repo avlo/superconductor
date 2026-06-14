@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.prosilion.nostr.codec.BaseMessageDecoder;
 import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponse;
@@ -68,6 +69,7 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
 
   @GetMapping("/generic-event.html")
   public String genericEvent(Model model) {
+    model.addAttribute("kinds", Kind.values());
     return "thymeleaf/generic-event";
   }
 

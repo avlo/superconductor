@@ -33,7 +33,9 @@
         <form class="form-inline">
           <div class="form-group">
             <label for="ger-kind">Kind:</label>
-            <input tabindex="1" type="number" id="ger-kind" class="form-control" value="1" placeholder="kind">
+            <select tabindex="1" id="ger-kind" class="form-control">
+              <option th:each="k : ${kinds}" th:value="${k.value}" th:text="${k.value} + ': ' + ${k.name.toUpperCase}" th:selected="${k.value == 1}"></option>
+            </select>
           </div>
           <div class="form-group gap">
             <label for="ger-content">Content:</label>

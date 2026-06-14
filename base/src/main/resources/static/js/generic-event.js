@@ -1,11 +1,5 @@
 let tagRowCount = 0;
 
-const _origSetConnected = setConnected;
-function setConnected(connected) {
-  _origSetConnected(connected);
-  $("#send-generic").prop("disabled", !connected);
-}
-
 $(function () {
   $("#send-generic").click(() => createEvent(gatherUnsignedEventContent()));
   $("#add-tag").click(() => addTagRow());

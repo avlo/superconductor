@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="shortcut icon" href="/favicon.ico">
+<head>
+  <title>Generic Event</title>
+  <link rel="stylesheet" href="/bootstrap-3.3.7.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="/main.css" rel="stylesheet">
+  <script src="/js/jquery-3.7.1.min.js"></script>
+  <script src="/js/GenericEventRecord.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/generic-event.js"></script>
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Enable Javascript to view this page</h2></noscript>
+<main>
+  <h1>Generic Event</h1>
+
+  <form class="form-inline center">
+    <div class="form-group">
+      <button tabindex="1" id="connect" class="btn btn-default" type="submit">Connect</button>
+      <button tabindex="1" id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect</button>
+    </div>
+  </form>
+
+  <hr>
+
+  <div id="conversation" style="display: none;">
+
+    <div class="row">
+      <div class="col-md-6">
+        <h4>Create Event</h4>
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="ger-kind">Kind:</label>
+            <input tabindex="1" type="number" id="ger-kind" class="form-control" value="1" placeholder="kind">
+          </div>
+          <div class="form-group gap">
+            <label for="ger-content">Content:</label>
+            <input tabindex="1" type="text" id="ger-content" class="form-control" placeholder="content...">
+          </div>
+
+          <div class="gap">
+            <label>Tags:</label>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Value</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tag-rows"></tbody>
+            </table>
+            <button type="button" id="add-tag" class="btn btn-default btn-sm">Add Tag</button>
+          </div>
+
+          <div class="center gap">
+            <button tabindex="1" id="send-generic" class="btn btn-primary" type="button" disabled="disabled">
+              Send Event
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <hr>
+
+    <h4>Received Events</h4>
+    <div class="row">
+      <div class="col-md-12">
+        <table class="table table-striped">
+          <tbody id="events"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+</body>
+</html>

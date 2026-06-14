@@ -66,6 +66,11 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     return reqApiEventApiUi.getEventApiUi();
   }
 
+  @GetMapping("/generic-event.html")
+  public String genericEvent(Model model) {
+    return "thymeleaf/generic-event";
+  }
+
   @GetMapping("/request-test.html")
   public String requestTest(Model model) {
 //    model.addAttribute("authActive", authReqActive);

@@ -14,6 +14,8 @@
   <script src="/js/nip-99.js"></script>
   <script src="/js/nip-2112.js"></script>
   <script src="/js/common.js"></script>
+  <script src="/js/GenericEventRecord.js"></script>
+  <script src="/js/generic-event-ui.js"></script>
 </head>
 <body>
 <noscript><h2 style="color: #ff0000">Enable Javascript to view this page</h2></noscript>
@@ -285,6 +287,52 @@
                 <div class="center gap">
                   <button id="send2112" class="btn btn-default" type="submit" disabled="disabled">Send Nip-2112 Event
                   </button>
+                </div>
+              </div>
+
+              <input class="radiotab" tabindex="1" name="tabs" type="radio" id="tabseven">
+              <label class="label" for="tabseven">Generic Event</label>
+              <div class="panel">
+                <div class="col-md-6">
+                  <form class="form-inline">
+                    <div class="form-group">
+                      <label for="generic-kind">Kind: </label>
+                      <input tabindex="1" type="number" value="1" id="generic-kind" class="form-control" placeholder="kind">
+                    </div>
+                    <div class="form-group">
+                      <label for="generic-content">Content: </label>
+                      <textarea tabindex="1" id="generic-content" class="form-control generic-event-content-input"
+                                placeholder="event content">GenericEventRecord content</textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="generic-e_tag">e tag: </label>
+                      <input tabindex="1" type="text" value="" id="generic-e_tag" class="form-control" placeholder="event ref">
+                    </div>
+                    <div class="form-group">
+                      <label for="generic-p_tag">p tag: </label>
+                      <input tabindex="1" type="text" value="" id="generic-p_tag" class="form-control" placeholder="pubkey ref">
+                    </div>
+                    <div class="form-group">
+                      <label for="generic-g_tag">g tag: </label>
+                      <input tabindex="1" type="text" value="" id="generic-g_tag" class="form-control" placeholder="geo ref">
+                    </div>
+                    <div class="form-group">
+                      <label for="generic-custom-tags">Custom tags (csv per line): </label>
+                      <textarea tabindex="1" id="generic-custom-tags" class="form-control generic-event-tags-input"
+                                placeholder="t,hashtag"></textarea>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-inline">
+                          <div class="center gap">
+                            <button id="sendGenericEvent" class="btn btn-default" type="submit" disabled="disabled">Create &
+                              Save Generic Event
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>

@@ -19,6 +19,7 @@ function setConnected(connected) {
   $("#send57").prop("disabled", !connected);
   $("#send99").prop("disabled", !connected);
   $("#send2112").prop("disabled", !connected);
+  $("#sendGenericEvent").prop("disabled", !connected);
   $("#sendrequest").prop("disabled", !connected);
 
   if (connected) {
@@ -78,13 +79,20 @@ function addEventMessageWrapper(id_hash) {
 }
 
 function showResponse(baseMessageJson) {
-  if (baseMessageJson.includes("EVENT"))
-    baseMessageJson = GenericEventRecord.fromJson(baseMessageJson).toPrettyJson();
-  else
-    baseMessageJson = JSON.stringify(JSON.parse(baseMessageJson), null, 2)
+  const genericEventRecord = parseGenericEventRecord(baseMessageJson);
+  if (genericEventRecord != null) {
+    $("#events").append("<tr><td>" + renderGenericEventRecord(genericEventRecord) + "</td></tr>");
+    return;
+  }
 
+  let formattedJson = baseMessageJson;
+  try {
+    formattedJson = JSON.stringify(JSON.parse(baseMessageJson), null, 2);
+  } catch (e) {
+    formattedJson = JSON.stringify({message: baseMessageJson}, null, 2);
+  }
   $("#events").append("<tr><td><pre>" +
-      syntaxHighlight(baseMessageJson) +
+      syntaxHighlight(formattedJson) +
       "</pre></td></tr>");
 }
 
@@ -111,4 +119,43 @@ function syntaxHighlight(json) {
     }
     return '<span class="' + cls + '">' + match + '</span>';
   });
+}
+
+function parseGenericEventRecord(baseMessageJson) {
+  try {
+    return GenericEventRecord.fromJson(baseMessageJson);
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderGenericEventRecord(genericEventRecord) {
+  const eventObject = genericEventRecord.toObject();
+  const createdAtDisplay = eventObject.created_at != null
+      ? new Date(eventObject.created_at * 1000).toISOString()
+      : "";
+
+  return "<div class=\"generic-event-card\">"
+      + "<div class=\"generic-event-card-header\">EVENT · kind " + escapeHtml(String(eventObject.kind ?? "")) + "</div>"
+      + "<dl class=\"generic-event-card-grid\">"
+      + "<dt>Id</dt><dd class=\"generic-event-break\">" + escapeHtml(String(eventObject.id ?? "")) + "</dd>"
+      + "<dt>Pubkey</dt><dd class=\"generic-event-break\">" + escapeHtml(String(eventObject.pubkey ?? "")) + "</dd>"
+      + "<dt>Created At</dt><dd>" + escapeHtml(createdAtDisplay) + "</dd>"
+      + "<dt>Tags</dt><dd class=\"generic-event-break\">" + escapeHtml(JSON.stringify(eventObject.tags ?? [])) + "</dd>"
+      + "</dl>"
+      + "<div class=\"generic-event-content-label\">Content</div>"
+      + "<pre class=\"generic-event-content\">" + escapeHtml(String(eventObject.content ?? "")) + "</pre>"
+      + "<details><summary>Raw JSON</summary><pre>"
+      + syntaxHighlight(genericEventRecord.toPrettyJson())
+      + "</pre></details>"
+      + "</div>";
+}
+
+function escapeHtml(value) {
+  return value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 }

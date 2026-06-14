@@ -130,13 +130,65 @@ p {
     display: block;
 }
 
+.generic-event-content-input {
+    min-width: 320px;
+    min-height: 90px;
+}
+
+.generic-event-tags-input {
+    min-width: 320px;
+    min-height: 70px;
+}
+
+.generic-event-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 5px;
+    background: #fff;
+}
+
+.generic-event-card-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.generic-event-card-grid {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    row-gap: 6px;
+    column-gap: 8px;
+    margin: 0 0 8px 0;
+}
+
+.generic-event-card-grid dt {
+    font-weight: 600;
+}
+
+.generic-event-card-grid dd {
+    margin: 0;
+}
+
+.generic-event-break {
+    word-break: break-all;
+}
+
+.generic-event-content-label {
+    font-weight: 600;
+}
+
+.generic-event-content {
+    margin-top: 6px;
+}
+
 @media (min-width: 600px) {
     .panel {
         order: 99;
     }
 
     .label {
-        width: 20%;
+        width: auto;
+        flex: 1 1 160px;
         border-radius: 10px 10px 0 0;
         border-bottom: solid 2px #000;
     }

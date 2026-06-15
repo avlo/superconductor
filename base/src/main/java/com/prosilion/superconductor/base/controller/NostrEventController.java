@@ -19,10 +19,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
-import lombok.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,14 +47,14 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   private final ReqApiEventApiUi reqApiEventApiUi;
 
   public NostrEventController(
-      @NonNull List<MessageServiceIF<T>> messageServices,
-      @NonNull RelayInfoDocServiceIF relayInfoDocService,
-      @NonNull ApplicationEventPublisher publisher,
-      @NonNull ReqApiEventApiUi reqApiEventApiUi) {
+     @NonNull List<MessageServiceIF<T>> messageServices,
+     @NonNull RelayInfoDocServiceIF relayInfoDocService,
+     @NonNull ApplicationEventPublisher publisher,
+     @NonNull ReqApiEventApiUi reqApiEventApiUi) {
     this.messageServiceMap = messageServices.stream().collect(
-        Collectors.toMap(
-            MessageServiceIF<T>::getCommand,
-            Function.identity()));
+       Collectors.toMap(
+          MessageServiceIF<T>::getCommand,
+          Function.identity()));
     this.relayInfoDocService = relayInfoDocService;
     this.publisher = publisher;
     this.reqApiEventApiUi = reqApiEventApiUi;
@@ -63,14 +63,8 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   @GetMapping("/api-tests.html")
   public String apiTests(Model model) {
 //    model.addAttribute("authActive", authEventActive);
-//    return "thymeleaf/api-tests";
-    return reqApiEventApiUi.getEventApiUi();
-  }
-
-  @GetMapping("/generic-event.html")
-  public String genericEvent(Model model) {
     model.addAttribute("kinds", Kind.values());
-    return "thymeleaf/generic-event";
+    return reqApiEventApiUi.getEventApiUi();
   }
 
   @GetMapping("/request-test.html")
@@ -83,9 +77,9 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry.addHandler(this, "/")
-        .setHandshakeHandler(
-            new DefaultHandshakeHandler(
-                new TomcatRequestUpgradeStrategy()));
+       .setHandshakeHandler(
+          new DefaultHandshakeHandler(
+             new TomcatRequestUpgradeStrategy()));
   }
 
   @Override
@@ -115,8 +109,8 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
   @Override
   public void handleTextMessage(WebSocketSession session, TextMessage baseMessage) throws JsonProcessingException {
     log.debug("handleTextMessage(WebSocketSession, TextMessage) called with session:\n  [{}]\nTextMessage payload:\n{}",
-        session.getId(),
-        Util.prettyFormatJson(baseMessage.getPayload(), 2));
+       session.getId(),
+       Util.prettyFormatJson(baseMessage.getPayload(), 2));
 //    BaseMessage message = BaseMessageDecoder.decode(baseMessage.getPayload());
     T message = (T) BaseMessageDecoder.decode(baseMessage.getPayload());
     MessageServiceIF<T> tMessageServiceIF = messageServiceMap.get(message.getCommand());
@@ -132,8 +126,8 @@ public class NostrEventController<T extends BaseMessage> extends TextWebSocketHa
     String sessionId = message.getSessionId();
     broadcast(sessionId, response);
     log.debug("NostrEventController broadcast to session:\n  [{}]\nmessage:\n{}",
-        sessionId,
-        Util.prettyFormatJson(response.getPayload(), 2));
+       sessionId,
+       Util.prettyFormatJson(response.getPayload(), 2));
   }
 
   /**

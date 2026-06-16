@@ -25,7 +25,7 @@ public class EventKindServiceConfig {
   @ConditionalOnMissingBean
   EventKindService eventKindService(
      @NonNull List<EventKindPluginIF> eventKindPlugins,
-     @NonNull List<StandardEventKindPlugin> standardEventKindPlugins) {
+     @NonNull @Qualifier("standardEventKindPlugins") List<StandardEventKindPlugin> standardEventKindPlugins) {
     return new EventKindService(
        Stream.concat(
           eventKindPlugins.stream(),

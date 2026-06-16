@@ -43,7 +43,7 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 public class EventKindPluginConfig {
   //  TODO: flexible autoconfigure variant of below, consider loading iff boolean/true is sets in app<xyz>.properties file
 
-  @Bean
+  @Bean("standardEventKindPlugins")
   @ConditionalOnMissingBean
   List<StandardEventKindPlugin> standardEventKindPlugins(
      @NonNull NotifierService notifierService,

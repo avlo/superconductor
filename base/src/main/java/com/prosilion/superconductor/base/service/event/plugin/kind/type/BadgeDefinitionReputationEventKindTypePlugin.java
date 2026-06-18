@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.service.event.plugin.kind.type;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.util.Util;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,6 +17,7 @@ public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingE
      @NonNull EventKindTypePluginIF eventKindTypePlugin) {
     super(eventKindTypePlugin);
     this.superconductorRelayUrl = superconductorRelayUrl;
+    Util.debug(log, "using superconductorRelayUrl: [{}]", superconductorRelayUrl, true, '0');
   }
 
   @Override

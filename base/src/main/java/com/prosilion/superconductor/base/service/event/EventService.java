@@ -47,17 +47,14 @@ public class EventService implements EventServiceIF {
   }
 
   private boolean matchesKind(EventIF event) {
-    boolean b = eventKindServiceIF.getKinds().stream().anyMatch(event.getKind()::equals);
-    return b;
+    return eventKindServiceIF.getKinds().stream().anyMatch(event.getKind()::equals);
   }
 
   private boolean matchesKindType(EventIF event) {
-    boolean b = eventKindTypeServiceIF.getKinds().stream().anyMatch(event.getKind()::equals);
-    return b;
+    return eventKindTypeServiceIF.getKinds().stream().anyMatch(event.getKind()::equals);
   }
 
   private boolean hasExternalIdentityTag(EventIF event) {
-    boolean b = !event.asGenericEventRecord().getTypeSpecificTags(ExternalIdentityTag.class).isEmpty();
-    return b;
+    return !event.asGenericEventRecord().getTypeSpecificTags(ExternalIdentityTag.class).isEmpty();
   }
 }

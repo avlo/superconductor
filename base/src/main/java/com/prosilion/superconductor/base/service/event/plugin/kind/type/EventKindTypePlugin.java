@@ -5,8 +5,9 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // our BasicCar
@@ -18,8 +19,8 @@ public class EventKindTypePlugin implements EventKindTypePluginIF {
   private final EventPlugin eventPlugin;
 
   public EventKindTypePlugin(
-      @NonNull KindTypeIF kindType,
-      @NonNull EventPlugin eventPlugin) {
+     @NonNull KindTypeIF kindType,
+     @NonNull EventPlugin eventPlugin) {
     this.kindType = kindType;
     this.eventPlugin = eventPlugin;
   }
@@ -35,7 +36,7 @@ public class EventKindTypePlugin implements EventKindTypePluginIF {
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     return eventPlugin.processIncomingEvent(event, relay);
   }
 }

@@ -13,5 +13,5 @@ public interface CacheBadgeAwardReputationEventServiceIF extends CacheBadgeAward
   Optional<BadgeAwardReputationEvent> getBy(@NonNull AddressTag addressTag);
 
   @Override
-  BadgeAwardReputationEvent materialize(@NonNull EventIF eventIF);
+  Optional<BadgeAwardReputationEvent> materialize(@NonNull EventIF eventIF);
 }

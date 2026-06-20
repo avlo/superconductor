@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.util.Util;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +23,7 @@ public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingE
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     String eventRelaysTagUrl = event.requireRelayTagUrl();
 
     if (!superconductorRelayUrl.equals(eventRelaysTagUrl))

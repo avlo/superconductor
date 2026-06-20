@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
@@ -34,20 +33,13 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
   }
 
   @Override
-  public BadgeAwardReputationEvent materialize(@NonNull EventIF incomingBadgeAwardReputationEvent) {
+  public Optional<BadgeAwardReputationEvent> materialize(@NonNull EventIF incomingBadgeAwardReputationEvent) {
     log.debug("... materialize incomingBadgeAwardReputationEvent:\n{}", incomingBadgeAwardReputationEvent.createPrettyPrintJson());
-
-    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = cacheBadgeDefinitionReputationEventService.getBy(
-          incomingBadgeAwardReputationEvent.requireFirstTag(AddressTag.class))
-       .orElseThrow(() ->
-          new NostrException("badgeDefinitionReputationEvent not found"));
-    log.debug("... received badgeDefinitionReputationEvent:\n{}", badgeDefinitionReputationEvent.createPrettyPrintJson());
-
-    BadgeAwardReputationEvent badgeAwardReputationEvent = new BadgeAwardReputationEvent(
-       incomingBadgeAwardReputationEvent.asGenericEventRecord(),
-       addressTag -> badgeDefinitionReputationEvent);
-    log.debug("... returning materialized badgeAwardReputationEvent:\n{}", badgeAwardReputationEvent.createPrettyPrintJson());
-    return badgeAwardReputationEvent;
+    return cacheBadgeDefinitionReputationEventService
+       .getBy(incomingBadgeAwardReputationEvent.requireFirstTag(AddressTag.class))
+       .map(event -> new BadgeAwardReputationEvent(
+          incomingBadgeAwardReputationEvent.asGenericEventRecord(),
+          addressTag -> event));
   }
 
   @Override

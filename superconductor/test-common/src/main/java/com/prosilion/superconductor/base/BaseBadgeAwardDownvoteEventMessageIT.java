@@ -69,11 +69,12 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
     eventId = badgeAwardDownvoteEvent.getId();
 
     EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
+    Boolean flag = nostrEventPublisher
+       .send(
+          eventMessageBadgeAwardDownvoteEvent, Duration.ofMinutes(10))
+       .getFlag();
     assertTrue(
-        nostrEventPublisher
-            .send(
-                eventMessageBadgeAwardDownvoteEvent)
-            .getFlag());
+       flag);
   }
 
   @Test

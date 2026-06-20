@@ -4,8 +4,9 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // our CarDecorator for NonPublishingEventKindType hierarchy
@@ -17,7 +18,7 @@ public abstract class NonPublishingEventKindTypePlugin implements EventKindTypeP
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     return eventKindTypePlugin.processIncomingEvent(event, relay);
   }
 

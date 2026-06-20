@@ -7,8 +7,8 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class CacheBadgeAwardAbstractEventService<S extends BadgeDefinitionGenericEvent, T extends BadgeAwardGenericEvent<S>> {
@@ -24,13 +24,13 @@ public abstract class CacheBadgeAwardAbstractEventService<S extends BadgeDefinit
 
     Optional<GenericEventRecord> unpopulatedEvent = cacheReferenceEventTagServiceIF.getEvent(eventId, url);
     log.debug("returned pre-materialized optGER:\n{}",
-        unpopulatedEvent.map(GenericEventRecord::createPrettyPrintJson).orElse(EMPTY_OPTIONAL));
+       unpopulatedEvent.map(GenericEventRecord::createPrettyPrintJson).orElse(EMPTY_OPTIONAL));
 
     log.debug("... calling unpopulatedEvent.map(this::materialize ...");
-    Optional<T> t = unpopulatedEvent.map(this::materialize);
+    Optional<T> t = unpopulatedEvent.flatMap(this::materialize);
     log.debug("... returned materialized event type [{}]:\n{}",
-        t.map(T::getClass).map(Class::getSimpleName),
-        t.map(EventIF::createPrettyPrintJson).orElse(EMPTY_OPTIONAL));
+       t.map(T::getClass).map(Class::getSimpleName),
+       t.map(EventIF::createPrettyPrintJson).orElse(EMPTY_OPTIONAL));
 
     return t;
   }
@@ -39,5 +39,5 @@ public abstract class CacheBadgeAwardAbstractEventService<S extends BadgeDefinit
     return Kind.BADGE_AWARD_EVENT;
   }
 
-  protected abstract T materialize(@NonNull EventIF eventIF);
+  protected abstract Optional<T> materialize(@NonNull EventIF eventIF);
 }

@@ -40,7 +40,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   }
 
   @Override
-  public BadgeDefinitionReputationEvent materialize(@NonNull EventIF incomingBadgeDefinitionReputationEvent) {
+  public Optional<BadgeDefinitionReputationEvent> materialize(@NonNull EventIF incomingBadgeDefinitionReputationEvent) {
     log.debug("... materialize(incomingBadgeDefinitionReputationEvent)...\n{}", incomingBadgeDefinitionReputationEvent.createPrettyPrintJson());
 
     List<FormulaEvent> formulaEvents = getFormulaEvents(incomingBadgeDefinitionReputationEvent.asGenericEventRecord());
@@ -53,11 +53,13 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
        incomingBadgeDefinitionReputationEvent.asGenericEventRecord(), addressTag ->
        formulaEvents.stream().filter(formulaEvent ->
+//          TODO: revisit throw -vs- Optional.empty()
           formulaEvent.asAddressableEventAddressTag().equals(addressTag)).findFirst().orElseThrow(() ->
           new NostrException(
              String.format(NON_EXISTENT_ADDRESS_TAG, incomingBadgeDefinitionReputationEvent))));
+
     log.debug("returning badgeDefinitionReputationEvent:\n{}", incomingBadgeDefinitionReputationEvent.createPrettyPrintJson());
-    return badgeDefinitionReputationEvent;
+    return Optional.of(badgeDefinitionReputationEvent);
   }
 
   private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord badgeDefinitionReputationEventGER) {
@@ -69,6 +71,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
     if (addressTagsAreFormulaEvents.isEmpty()) {
       log.debug("addressTagsAreFormulaEvents was Empty. throwing exception");
+//          TODO: revisit throw -vs- Optional.empty()      
       throw new NostrException(
          String.format(NON_EXISTENT_ADDRESS_TAG, badgeDefinitionReputationEventGER));
     }
@@ -86,6 +89,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
        addressTagsAreFormulaEvents.size(), formulaEvents.size());
 
     if (!Objects.equals(addressTagsAreFormulaEvents.size(), formulaEvents.size()))
+//  TODO: revisit throw -vs- Optional.empty() since unfound formulas may occur- might add awareness of that to the content/other tag       
       throw new NostrException(
          String.format("Unequal count AddressTags vs FormulaEvents:%s\nFormulaEvent:\n%s",
             Util.prettyPrintAddressTags(addressTagsAreFormulaEvents),

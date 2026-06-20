@@ -47,7 +47,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
   }
 
-//  TODO: duplicate in @CacheFormulaEventService, consolidate
+  //  TODO: duplicate in @CacheFormulaEventService, consolidate
   @Override
   public Optional<FollowSetsEvent> getEvent(@NonNull String eventId, @NonNull String url) {
     log.debug("inside getEvent(eventId, url)");
@@ -59,15 +59,15 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
       return Optional.empty();
     }
 
-    FollowSetsEvent materialize = materialize(unpopulatedFollowSetsEvent.get());
-    return Optional.of(materialize);
+    return materialize(unpopulatedFollowSetsEvent.get());
   }
 
   @Override
-  public FollowSetsEvent materialize(@NonNull EventIF incomingFollowSetsEvent) {
+  public Optional<FollowSetsEvent> materialize(@NonNull EventIF incomingFollowSetsEvent) {
     log.debug("materialize(EventIF incomingFollowSetsEvent):\n  {}", incomingFollowSetsEvent.createPrettyPrintJson());
 
     List<EventTag> voteEventsAsEventTags = incomingFollowSetsEvent.asGenericEventRecord().getTypeSpecificTags(EventTag.class);
+//    TODO: revisit throw -vs- return Optional
     if (voteEventsAsEventTags.isEmpty())
       throw new NostrException(
          String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
@@ -114,7 +114,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
        eventTagToVoteEventFxn, addressTag -> existingDefinitionReputationEvent);
 
     log.debug("...returning materialized FollowSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
-    return followSetsEvent;
+    return Optional.of(followSetsEvent);
   }
 
   @Override
@@ -145,24 +145,19 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     Optional<GenericEventRecord> unpopulatedFollowSetsEventTagEvent =
        cacheReferenceEventTagServiceIF.getEvent(eventTag.getIdEvent(), eventTag.requireRecommendedRelayUrl());
 
-    if (unpopulatedFollowSetsEventTagEvent.isEmpty()) {
-      log.debug("unpopulatedFollowSetsEventTagEvent GenericEventRecord not found, throw exception");
-      throw new NostrException(
-         String.format("FollowSetsEvent EventTag's GenericEventRecord eventId: [%s], url: [%s] not found",
-            eventTag.getIdEvent(), eventTag.requireRecommendedRelayUrl()));
-    }
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEvent = unpopulatedFollowSetsEventTagEvent.map(GenericEventRecord::getId).flatMap(id ->
+       cacheBadgeGenericAwardEventServiceIF.getEvent(
+          id, unpopulatedFollowSetsEventTagEvent.get().requireRelayTagUrl()));
 
-    log.debug("unpopulatedFollowSetsEventTagEvent GenericEventRecord found, call cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.getId, url) to populate it");
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> event = cacheBadgeGenericAwardEventServiceIF.getEvent(unpopulatedFollowSetsEventTagEvent.get().getId(), unpopulatedFollowSetsEventTagEvent.get().requireRelayTagUrl());
-    log.debug("returning populated BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>:\n  {}", event.orElseThrow().createPrettyPrintJson());
-    return event;
+    return badgeAwardGenericEvent;
   }
 
   @Override
   public Optional<FollowSetsEvent> getBy(@NonNull AddressTag addressTag) {
     return cacheKindAddressTagServiceIF
-       .getBy(Kind.FOLLOW_SETS, addressTag).stream()
-       .map(this::materialize).findFirst();
+       .getBy(Kind.FOLLOW_SETS, addressTag)
+       .stream()
+       .map(this::materialize).flatMap(Optional::stream).findFirst();
   }
 
   @Override

@@ -6,7 +6,6 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
@@ -25,7 +24,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     this.cacheReferenceAddressTagServiceIF = cacheReferenceAddressTagServiceIF;
   }
 
-  public abstract T materialize(@NonNull EventIF eventIF);
+  public abstract Optional<T> materialize(@NonNull EventIF eventIF);
 
 
   public Optional<T> getBy(@NonNull AddressTag addressTag) {
@@ -35,8 +34,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
 
     Optional<GenericEventRecord> badgeDefinitionAbstractEventGEROptional = cacheReferenceAddressTagServiceIF.getBy(addressTag);
     if (badgeDefinitionAbstractEventGEROptional.isEmpty())
-      throw new NostrException(
-         String.format("cacheReferenceAddressTagServiceIF.getEvent(addressTag) using addressTag:\n  %s\nnot found", Util.prettyPrintAddressTags(addressTag)));
+      return Optional.empty();
 
     GenericEventRecord existingBadgeDefinitionReputationEventGER = badgeDefinitionAbstractEventGEROptional.get();
     log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER.createPrettyPrintJson());
@@ -48,9 +46,8 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     Optional<T> event = getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
 
     if (event.isEmpty()) {
-      log.debug("badgeDefinitionReputationEvent.getId()) [%s] not found, throwing exception");
-      throw new NostrException(
-         String.format("getEvent(badgeDefinitionReputationEvent.getId()) [%s] not found", existingBadgeDefinitionReputationEventGER.getId()));
+      log.debug("badgeDefinitionReputationEvent.getId()) [%s] not found, return Optional.empty()");
+      return Optional.empty();
     }
 
     log.debug("... returning found badgeDefinitionReputationEvent:\n {}", event.get());
@@ -68,7 +65,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     log.debug("return unpopulatedBadgeDefinitionAbstractEvent:\n{}",
        unpopulatedBadgeDefinitionAbstractEvent.map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
 
-    return unpopulatedBadgeDefinitionAbstractEvent.map(this::materialize);
+    return unpopulatedBadgeDefinitionAbstractEvent.flatMap(this::materialize);
   }
 
   public Kind getKind() {

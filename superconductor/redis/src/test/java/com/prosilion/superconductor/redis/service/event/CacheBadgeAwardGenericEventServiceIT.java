@@ -62,7 +62,7 @@ public class CacheBadgeAwardGenericEventServiceIT {
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericVoteEvent), relay);
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> dbMaterializedGenericAwardEvent =
-       cacheBadgeAwardGenericEventServiceIF.materialize(badgeAwardGenericVoteEvent);
+       cacheBadgeAwardGenericEventServiceIF.materialize(badgeAwardGenericVoteEvent).get();
     assertEquals(badgeAwardGenericVoteEvent, dbMaterializedGenericAwardEvent);
   }
 

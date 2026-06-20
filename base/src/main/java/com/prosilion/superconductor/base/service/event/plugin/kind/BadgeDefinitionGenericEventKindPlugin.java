@@ -7,8 +7,9 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // our SportsCar extends CarDecorator
@@ -23,12 +24,12 @@ public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKin
 //      BadgeDefinitionGenericEvent void processIncomingEvent(@NonNull T event)
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     log.debug("processing incoming BadgeDefinitionGenericEvent:\n  {}", event.createPrettyPrintJson());
     event.findFirstTag(RelayTag.class)
-        .orElseThrow(() ->
-            new NostrException(
-                String.format("BadgeDefinitionAwardEvent\n%s\nmissing required RelayTag", event.createPrettyPrintJson())));
+       .orElseThrow(() ->
+          new NostrException(
+             String.format("BadgeDefinitionAwardEvent\n%s\nmissing required RelayTag", event.createPrettyPrintJson())));
     return super.processIncomingEvent(event, relay);
   }
 

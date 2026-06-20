@@ -27,6 +27,7 @@ import com.prosilion.superconductor.base.service.request.subscriber.NotifierServ
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -119,12 +120,12 @@ public class EventKindPluginConfig {
 
   @Bean("eventKindMaterializers")
   @ConditionalOnMissingBean(name = "eventKindMaterializers")
-  Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers(
+  Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers(
      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
      @NonNull CacheFormulaEventService cacheFormulaEventService) {
-    Map<Kind, Function<EventIF, BaseEvent>> kindFxnMap = new HashMap<>();
+    Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
 
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
@@ -144,18 +145,18 @@ public class EventKindPluginConfig {
 
     kindFxnMap.put(
        Kind.DELETION,
-       eventIF -> new DeletionEvent(
-          eventIF.asGenericEventRecord()));
+       eventIF -> Optional.of(new DeletionEvent(
+          eventIF.asGenericEventRecord())));
 
     return kindFxnMap;
   }
 
   @Bean("eventKindTypeMaterializers")
   @ConditionalOnMissingBean(name = "eventKindTypeMaterializers")
-  Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers(
+  Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindTypeMaterializers(
      @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
-    Map<Kind, Function<EventIF, BaseEvent>> kindFxnMap = new HashMap<>();
+    Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
 
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,

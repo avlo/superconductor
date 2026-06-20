@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import lombok.NonNull;
 
 public interface EventPluginIF {
-  GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay);
+  Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay);
 
   BiFunction<CacheServiceIF, EventIF, Optional<GenericEventRecord>> eventAlreadyExistsFxn =
      (cacheServiceIF, eventIF) ->

@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event;
 
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -10,13 +9,11 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
-import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -54,22 +51,19 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, url) returned unpopulatedFormulaEventGER:\n  {}", unpopulatedFormulaEventGER.get().createPrettyPrintJson());
 
     log.debug("calling materialize(unpopulatedFormulaEvent.get()) ...", url);
-    return Optional.of(materialize(unpopulatedFormulaEventGER.get()));
+    return materialize(unpopulatedFormulaEventGER.get());
   }
 
   @Override
-  public FormulaEvent materialize(@NonNull EventIF incomingFormulaEvent) {
+  public Optional<FormulaEvent> materialize(@NonNull EventIF incomingFormulaEvent) {
     log.debug("inside materialize(EventIF incomingFormulaEvent):\n  {}", incomingFormulaEvent.createPrettyPrintJson());
-
-    BadgeDefinitionGenericEvent badgeDefinitionGenericEvent = getBadgeDefinitionGenericEvent(incomingFormulaEvent.asGenericEventRecord());
-    log.debug("getBadgeDefinitionGenericEvent(incomingFormulaEvent):\n  {}", badgeDefinitionGenericEvent.createPrettyPrintJson());
-
-    FormulaEvent formulaEvent = new FormulaEvent(
-       incomingFormulaEvent.asGenericEventRecord(),
-       addressTag -> badgeDefinitionGenericEvent);
-
-    log.debug("return reCreated formulaEvent:\n  {}", formulaEvent.createPrettyPrintJson());
-    return formulaEvent;
+    return cacheReferenceAddressTagServiceIF
+       .getBy(incomingFormulaEvent.requireFirstTag(AddressTag.class))
+       .map(BadgeDefinitionGenericEvent::new)
+       .map(event ->
+          new FormulaEvent(
+             incomingFormulaEvent.asGenericEventRecord(),
+             addressTag -> event));
   }
 
   @Override
@@ -77,66 +71,31 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     AddressTag addressTag = new AddressTag(Kind.ARBITRARY_CUSTOM_APP_DATA, publicKey, identifierTag, relay);
     log.debug("calling cacheReferenceAddressTagServiceIF.getBy(addressTag) with:\n{}", addressTag.toStringPrettyPrint());
 
-    Optional<GenericEventRecord> formulaEventGERs = cacheReferenceAddressTagServiceIF.getBy(addressTag);
-    return getFormulaEvents(formulaEventGERs.stream().toList());
+    return cacheReferenceAddressTagServiceIF.getBy(addressTag).flatMap(event -> getFormulaEventById(event));
   }
 
   @Override
   public Optional<FormulaEvent> getBy(@NonNull AddressTag addressTag) {
     log.debug("getBy(AddressTag):\n{}", addressTag.toStringPrettyPrint());
 
-    List<GenericEventRecord> formulaEventGERs = cacheKindAddressTagServiceIF.getBy(Kind.ARBITRARY_CUSTOM_APP_DATA, addressTag);
-    return getFormulaEvents(formulaEventGERs);
-  }
-
-  @NonNull
-  private Optional<FormulaEvent> getFormulaEvents(List<GenericEventRecord> formulaEventGERs) {
-    log.debug("cacheKindAddressTagServiceIF.getBy(Kind.ARBITRARY_CUSTOM_APP_DATA, addressTag) returned:");
-    log.debug("formulaEventGERs size:  [{}]", formulaEventGERs.size());
+    Optional<GenericEventRecord> formulaEventGERs = cacheKindAddressTagServiceIF.getBy(Kind.ARBITRARY_CUSTOM_APP_DATA, addressTag).stream().findFirst();
     log.debug("formulaEventGERs contents:\n  {}", formulaEventGERs.stream().map(GenericEventRecord::createPrettyPrintJson));
 
-    Optional<GenericEventRecord> formulaEventAsOptGER = formulaEventGERs.stream().findFirst();
-    log.debug("first formulaEventGER:\n  {}", formulaEventAsOptGER.map(GenericEventRecord::createPrettyPrintJson));
-
-    Optional<FormulaEvent> formulaEvent = getFormulaEventById(formulaEventAsOptGER);
-    log.debug("get first formulaEventGER:\n{}", formulaEvent.map(EventIF::createPrettyPrintJson).orElse("OPTIONAL EMPTY"));
-    return formulaEvent;
+    return formulaEventGERs.flatMap(event -> getFormulaEventById(event));
   }
 
   @NonNull
-  private Optional<FormulaEvent> getFormulaEventById(Optional<GenericEventRecord> formulaEventOptGER) {
-    if (formulaEventOptGER.isEmpty())
-      return Optional.empty();
+  private Optional<FormulaEvent> getFormulaEventById(GenericEventRecord formulaEventOptGER) {
+    log.debug("getFormulaEvent(formulaEventOptGER):\n  {}", formulaEventOptGER.createPrettyPrintJson());
+    log.debug("formulaEventOptGER eventId: [{}]", formulaEventOptGER.getId());
 
-    log.debug("getFormulaEvent(formulaEventOptGER):\n  {}", formulaEventOptGER.get().createPrettyPrintJson());
-    log.debug("formulaEventOptGER eventId: [{}]", formulaEventOptGER.get().getId());
-
-    String formulaEventRelayUrl = formulaEventOptGER.get().requireRelayTagUrl();
+    String formulaEventRelayUrl = formulaEventOptGER.requireRelayTagUrl();
     log.debug("formulaEventOptGER relayUrl: [{}]", formulaEventRelayUrl);
 
-    FormulaEvent formulaEvent = getEvent(formulaEventOptGER.get().getId(), formulaEventRelayUrl).orElseThrow();
-    log.debug("returning formulaEvent:\n  {}", formulaEvent.createPrettyPrintJson());
+    Optional<FormulaEvent> formulaEvent = getEvent(formulaEventOptGER.getId(), formulaEventRelayUrl);
+    log.debug("returning formulaEvent:\n  {}", formulaEvent.map(EventIF::createPrettyPrintJson).orElse("FORMULA EVENT: EMPTY OPTIONAL "));
 
-    return Optional.of(formulaEvent);
-  }
-
-  private BadgeDefinitionGenericEvent getBadgeDefinitionGenericEvent(@NonNull GenericEventRecord unpopulatedFormulaEventGER) {
-    log.debug("inside getBadgeDefinitionGenericEvent(GenericEventRecord unpopulatedFormulaEventGER");
-
-    log.debug("calling unpopulatedFormulaEventGER.requireFirstTag(AddressTag.class)");
-    AddressTag firstAddressTag = unpopulatedFormulaEventGER.requireFirstTag(AddressTag.class);
-    log.debug("returned firstAddressTag:\n  {}", Util.prettyPrintAddressTags(firstAddressTag));
-
-    log.debug("calling cacheReferenceAddressTagServiceIF.getEvent(firstAddressTag)");
-    GenericEventRecord firstAddressTagAsEventGER = cacheReferenceAddressTagServiceIF.getBy(firstAddressTag).orElseThrow(() ->
-       new NostrException(
-          String.format(NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S, unpopulatedFormulaEventGER)));
-    log.debug("returned unpopulatedFormulaEventGER's firstAddressTagAsEventGER (is a BadgeDefinition[Upvote]Event):\n  {}", firstAddressTagAsEventGER.createPrettyPrintJson());
-
-    BadgeDefinitionGenericEvent addressTagNowBadgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(firstAddressTagAsEventGER);
-    log.debug("returneding addressTagNowBadgeDefinitionGenericEvent:\n  {}", addressTagNowBadgeDefinitionGenericEvent.createPrettyPrintJson());
-
-    return addressTagNowBadgeDefinitionGenericEvent;
+    return formulaEvent;
   }
 
   public Kind getKind() {

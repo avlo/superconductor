@@ -1,17 +1,14 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
-import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -32,27 +29,21 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
   }
 
   @Override
-  public BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> materialize(@NonNull EventIF incomingBadgeAwardGenericEvent) {
+  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> materialize(@NonNull EventIF incomingBadgeAwardGenericEvent) {
     log.debug("... materialize incomingBadgeAwardGenericEvent:\n{}", incomingBadgeAwardGenericEvent.createPrettyPrintJson());
-
-    Optional<BadgeDefinitionGenericEvent> dbBadgeDefinitionGenericEvent = cacheBadgeDefinitionGenericEventServiceIF
-       .getBy(incomingBadgeAwardGenericEvent.asGenericEventRecord().requireFirstTag(AddressTag.class));
-
-    if (dbBadgeDefinitionGenericEvent.isEmpty())
-      throw new NostrException(BADGE_DEFN_NOT_FOUND);
-
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
-       new BadgeAwardGenericEvent<>(
+    Optional<BadgeDefinitionGenericEvent> by = cacheBadgeDefinitionGenericEventServiceIF
+       .getBy(incomingBadgeAwardGenericEvent.requireFirstTag(AddressTag.class));
+    
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEvent = by
+       .map(event -> new BadgeAwardGenericEvent<>(
           incomingBadgeAwardGenericEvent.asGenericEventRecord(),
-          addressTag -> dbBadgeDefinitionGenericEvent.get());
-    log.debug("... return materialized badgeAwardGenericEvent:\n{}", badgeAwardGenericEvent.createPrettyPrintJson());
-
+          addressTag -> event));
+    
     return badgeAwardGenericEvent;
   }
 
   @Override
   public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getBy(@NonNull AddressTag addressTag) {
-    List<GenericEventRecord> genericEventRecords = cacheKindAddressTagServiceIF.getBy(Kind.BADGE_AWARD_EVENT, addressTag);
-    return genericEventRecords.stream().map(this::materialize).findFirst();
+    return materialize(cacheKindAddressTagServiceIF.getBy(Kind.BADGE_AWARD_EVENT, addressTag).getFirst());
   }
 }

@@ -6,8 +6,9 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.superconductor.base.service.request.pubsub.AddNostrEvent;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // our CarDecorator for PublishingEventKindType hierarchy
@@ -21,9 +22,10 @@ public abstract class PublishingEventKindTypePlugin implements EventKindTypePlug
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
-    GenericEventRecord genericEventRecord = eventKindTypePlugin.processIncomingEvent(event, relay);
-    notifierService.nostrEventHandler(new AddNostrEvent(event));
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+    Optional<GenericEventRecord> genericEventRecord = eventKindTypePlugin.processIncomingEvent(event, relay);
+    genericEventRecord.ifPresent(ger ->
+       notifierService.nostrEventHandler(new AddNostrEvent(ger)));
     return genericEventRecord;
   }
 

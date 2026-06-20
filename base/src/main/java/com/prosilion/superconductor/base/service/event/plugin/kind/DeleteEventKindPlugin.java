@@ -6,25 +6,26 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DeleteEventKindPlugin extends NonPublishingEventKindPlugin {
   private final CacheServiceIF cacheServiceIF;
 
   public DeleteEventKindPlugin(
-      @NonNull EventPlugin eventPlugin,
-      @NonNull CacheServiceIF cacheServiceIF) {
+     @NonNull EventPlugin eventPlugin,
+     @NonNull CacheServiceIF cacheServiceIF) {
     super(eventPlugin);
     this.cacheServiceIF = cacheServiceIF;
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     log.debug("processing incoming DELETE EVENT:\n  {}", event.createPrettyPrintJson());
-    GenericEventRecord genericEventRecord = super.processIncomingEvent(event, relay);// NIP-09 req's saving of event itself
-    cacheServiceIF.deleteEvent(event);
+    Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(event, relay);// NIP-09 req's saving of event itself
+    genericEventRecord.ifPresent(cacheServiceIF::deleteEvent);
     return genericEventRecord;
   }
 

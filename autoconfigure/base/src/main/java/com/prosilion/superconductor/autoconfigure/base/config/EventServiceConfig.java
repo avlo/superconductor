@@ -16,6 +16,7 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.tag.RemoteA
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -135,8 +136,8 @@ public class EventServiceConfig {
   @ConditionalOnMissingBean
   EventPlugin eventPlugin(
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("eventKindMaterializers") Map<Kind, Function<EventIF, BaseEvent>> eventKindMaterializers,
-     @NonNull @Qualifier("eventKindTypeMaterializers") Map<Kind, Function<EventIF, BaseEvent>> eventKindTypeMaterializers,
+     @NonNull @Qualifier("eventKindMaterializers") Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers,
+     @NonNull @Qualifier("eventKindTypeMaterializers") Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindTypeMaterializers,
      @NonNull @Qualifier("kindClassStringMap") Map<Kind, String> kindClassStringMap) {
     return new EventPlugin(
        cacheServiceIF,

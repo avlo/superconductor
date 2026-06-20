@@ -8,7 +8,7 @@ import java.util.Optional;
 import lombok.NonNull;
 
 public interface CacheAddressableEventServiceIF<T extends AddressableEvent, U extends ReferencedAbstractEventTag> {
-  T materialize(@NonNull EventIF eventIF);
+  Optional<T> materialize(@NonNull EventIF eventIF);
 //  Optional<T> getAddressTagEvent(@NonNull GenericEventRecord genericEventRecord);
 
   Optional<T> getBy(U referencedAbstractEventTag);

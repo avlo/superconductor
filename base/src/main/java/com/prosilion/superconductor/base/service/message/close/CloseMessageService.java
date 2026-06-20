@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.base.service.message.close;
 
 import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.CloseMessage;
 import com.prosilion.superconductor.base.service.request.subscriber.AbstractSubscriberService;
 import com.prosilion.superconductor.base.service.request.pubsub.RemoveSubscriberFilter;
@@ -23,7 +24,7 @@ public class CloseMessageService<T extends CloseMessage> implements CloseMessage
   }
 
   @Override
-  public void processIncoming(@NonNull T closeMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull T closeMessage, @NonNull String sessionId, @NonNull Relay relay) {
     log.debug("processing CLOSE event, sessionId [{}]", sessionId);
     removeSubscriberBySessionId(sessionId);
   }

@@ -72,38 +72,38 @@ public class CacheFormulaEventServiceIT {
 
   @Test
   public void testSaveFormulae() throws ParseException {
-    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote));
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote), relay);
     FormulaEvent dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(formulaEventUpvote, dbPlusOneFormulaEvent);
     assertEquals(PLUS_ONE_FORMULA, dbPlusOneFormulaEvent.getContent());
     assertEquals(TEST_UNIT_UPVOTE, dbPlusOneFormulaEvent.getBadgeDefinitionGenericEvent().getIdentifierTag().getUuid());
 
-    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvote));
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvote), relay);
     FormulaEvent dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(formulaEventDownvote, dbMinusOneFormulaEvent);
     assertEquals(MINUS_ONE_FORMULA, dbMinusOneFormulaEvent.getContent());
     assertEquals(TEST_BADGE_DEFINITION_VOTE, dbMinusOneFormulaEvent.getBadgeDefinitionGenericEvent().getIdentifierTag().getUuid());
 
-    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote));
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote), relay);
     dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(formulaEventUpvote, dbPlusOneFormulaEvent);
     assertEquals(PLUS_ONE_FORMULA, dbPlusOneFormulaEvent.getContent());
     assertEquals(TEST_UNIT_UPVOTE, dbPlusOneFormulaEvent.getBadgeDefinitionGenericEvent().getIdentifierTag().getUuid());
 
-    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvote));
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvote), relay);
     dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(formulaEventDownvote, dbMinusOneFormulaEvent);
     assertEquals(MINUS_ONE_FORMULA, dbMinusOneFormulaEvent.getContent());
     assertEquals(TEST_BADGE_DEFINITION_VOTE, dbMinusOneFormulaEvent.getBadgeDefinitionGenericEvent().getIdentifierTag().getUuid());
 
     FormulaEvent formulaEventUpvoteIdentical = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, "+1");
-    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvoteIdentical));
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvoteIdentical), relay);
     dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(PLUS_ONE_FORMULA, formulaEventUpvoteIdentical.getContent());
     assertEquals(TEST_UNIT_UPVOTE, formulaEventUpvoteIdentical.getBadgeDefinitionGenericEvent().getIdentifierTag().getUuid());
 
     FormulaEvent formulaEventDownvoteIdentical = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-1");
-    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvoteIdentical));
+    eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvoteIdentical), relay);
     dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId(), relay.getUrl()).orElseThrow();
     assertEquals(MINUS_ONE_FORMULA, formulaEventDownvoteIdentical.getContent());
     assertEquals(TEST_BADGE_DEFINITION_VOTE, formulaEventDownvoteIdentical.getBadgeDefinitionGenericEvent().getIdentifierTag().getUuid());

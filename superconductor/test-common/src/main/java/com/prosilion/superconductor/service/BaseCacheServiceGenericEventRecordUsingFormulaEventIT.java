@@ -48,7 +48,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
   @Test
   @Order(10)
   void testSaveFormulaEvent() {
-    eventPluginIF.processIncomingEvent(this.formulaEvent);
+    eventPluginIF.processIncomingEvent(this.formulaEvent, this.formulaEvent.getRelay());
   }
 
 //  @Test

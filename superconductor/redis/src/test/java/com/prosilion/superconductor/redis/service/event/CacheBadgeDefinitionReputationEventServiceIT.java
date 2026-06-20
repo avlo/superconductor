@@ -4,11 +4,9 @@ import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
@@ -82,7 +80,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         awardUpvoteDefinitionEvent,
         PLUS_ONE_FORMULA);
     
-    eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent));
+    eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent), relay);
   }
 
   @Test
@@ -95,7 +93,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
         plusOneFormulaEvent);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula));
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), relay);
     BadgeDefinitionReputationEvent dbRepDefnEvent = cacheBadgeDefinitionReputationEventService.getEvent(badgeDefinitionReputationEventPlusOneFormula.getId(), relay.getUrl()).orElseThrow();
     assertTrue(dbRepDefnEvent.getFormulaEvents().contains(plusOneFormulaEvent));
     assertEquals(reputationIdentifierTag, dbRepDefnEvent.getIdentifierTag());
@@ -125,8 +123,8 @@ public class CacheBadgeDefinitionReputationEventServiceIT {
 
     assertThrows(NostrException.class, () -> cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord()));
 
-    eventServiceIF.processIncomingEvent(new EventMessage(minusOneFormulaEvent));
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneMinusOne));
+    eventServiceIF.processIncomingEvent(new EventMessage(minusOneFormulaEvent), relay);
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneMinusOne), relay);
 
     BadgeDefinitionReputationEvent dbRepDefnEventPlusMinus = cacheBadgeDefinitionReputationEventService.getEvent(badgeDefinitionReputationEventPlusOneMinusOne.getId(), relay.getUrl()).orElseThrow();
     assertTrue(dbRepDefnEventPlusMinus.getFormulaEvents().contains(plusOneFormulaEvent));

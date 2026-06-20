@@ -5,6 +5,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.lang.reflect.Constructor;
@@ -41,7 +42,7 @@ public class EventPlugin implements EventPluginIF {
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     log.debug("processIncomingEvent() called with event\n{}", event.createPrettyPrintJson());
     Optional<GenericEventRecord> eventAlreadyExists = eventAlreadyExistsFxn.apply(cacheServiceIF, event);
     if (eventAlreadyExists.isPresent()) {

@@ -95,7 +95,7 @@ public abstract class BaseFollowSetsEventServiceIT {
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
     FormulaEvent plusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
-    eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent));
+    eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent), plusOneFormulaEvent.getRelay());
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
        repDefnCreator,
@@ -104,14 +104,14 @@ public abstract class BaseFollowSetsEventServiceIT {
        relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
        plusOneFormulaEvent);
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula));
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), badgeDefinitionReputationEventPlusOneFormula.getRelay());
 
     this.badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
        submitter,
        recipient.getPublicKey(),
        relay,
        badgeDefinitionReputationEventPlusOneFormula);
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent));
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent), badgeAwardUpvoteEvent.getRelay());
   }
 
   @Test
@@ -122,7 +122,7 @@ public abstract class BaseFollowSetsEventServiceIT {
        relay,
        List.of(badgeAwardUpvoteEvent));
 
-    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent));
+    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay());
 
     FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId(), relay.getUrl()).orElseThrow();
     assertEquals(followSetsEvent, dbFollowSetsEventByEventId);

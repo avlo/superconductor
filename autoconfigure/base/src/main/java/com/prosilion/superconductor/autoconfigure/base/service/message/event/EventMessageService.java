@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.message.event;
 
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
@@ -20,8 +21,8 @@ public class EventMessageService implements EventMessageServiceIF {
   }
 
   @Override
-  public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
-    eventService.processIncomingEvent(eventMessage);
+  public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId, @NonNull Relay relay) {
+    eventService.processIncomingEvent(eventMessage, relay);
     processOkClientResponse(eventMessage, sessionId);
   }
 

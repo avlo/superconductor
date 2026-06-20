@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.message.req.auth;
 
-import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.AutoConfigReqMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.req.ReqMessageServiceIF;
@@ -17,7 +17,7 @@ public class AutoConfigReqMessageServiceNoAuthDecorator implements AutoConfigReq
   }
 
   @Override
-  public void processIncoming(@NonNull ReqMessage reqMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull ReqMessage reqMessage, @NonNull String sessionId, @NonNull Relay relay) {
     log.debug("processIncoming(reqMessage, sessionId):\n  sessionId:  [{}]\n  reqMesage.subscriptionId:  [{}]\n  with List<Filters>:\n  {}",
         sessionId,
         reqMessage.getSubscriptionId(),

@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.service.event.plugin.kind;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +21,9 @@ public class DeleteEventKindPlugin extends NonPublishingEventKindPlugin {
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     log.debug("processing incoming DELETE EVENT:\n  {}", event.createPrettyPrintJson());
-    GenericEventRecord genericEventRecord = super.processIncomingEvent(event);// NIP-09 req's saving of event itself
+    GenericEventRecord genericEventRecord = super.processIncomingEvent(event, relay);// NIP-09 req's saving of event itself
     cacheServiceIF.deleteEvent(event);
     return genericEventRecord;
   }

@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.message.event.auth;
 
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
@@ -14,9 +15,9 @@ public class AutoConfigEventMessageServiceNoAuthDecorator implements AutoConfigE
     this.eventMessageServiceIF = eventMessageServiceIF;
   }
 
-  public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId, @NonNull Relay relay) {
     log.debug("EVENT message type:\n{}", eventMessage.getEvent().createPrettyPrintJson());
-    eventMessageServiceIF.processIncoming(eventMessage, sessionId);
+    eventMessageServiceIF.processIncoming(eventMessage, sessionId, relay);
   }
 
   @Override

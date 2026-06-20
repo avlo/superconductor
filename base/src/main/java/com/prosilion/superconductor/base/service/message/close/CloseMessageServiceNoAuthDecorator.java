@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.base.service.message.close;
 
 import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.CloseMessage;
 import com.prosilion.superconductor.base.service.request.subscriber.AbstractSubscriberService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class CloseMessageServiceNoAuthDecorator<T extends CloseMessage> implemen
   }
 
   @Override
-  public void processIncoming(@NonNull T closeMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull T closeMessage, @NonNull String sessionId, @NonNull Relay relay) {
     closeSession(sessionId);
     removeSubscriberBySessionId(sessionId);
   }

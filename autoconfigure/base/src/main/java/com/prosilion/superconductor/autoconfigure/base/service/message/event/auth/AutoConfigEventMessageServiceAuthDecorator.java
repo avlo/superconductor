@@ -1,13 +1,14 @@
 package com.prosilion.superconductor.autoconfigure.base.service.message.event.auth;
 
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.AutoConfigEventMessageServiceIF;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
-import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import com.prosilion.superconductor.base.service.event.auth.AuthKindPersistantServiceIF;
+import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
 import java.util.NoSuchElementException;
-import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AutoConfigEventMessageServiceAuthDecorator<T, U extends AuthPersistantIF> implements AutoConfigEventMessageServiceIF {
@@ -15,13 +16,13 @@ public class AutoConfigEventMessageServiceAuthDecorator<T, U extends AuthPersist
   private final AuthKindPersistantServiceIF<T, U> authKindPersistantServiceIF;
 
   public AutoConfigEventMessageServiceAuthDecorator(
-      @NonNull EventMessageServiceIF eventMessageServiceIF,
-      @NonNull AuthKindPersistantServiceIF<T, U> authKindPersistantServiceIF) {
+     @NonNull EventMessageServiceIF eventMessageServiceIF,
+     @NonNull AuthKindPersistantServiceIF<T, U> authKindPersistantServiceIF) {
     this.eventMessageServiceIF = eventMessageServiceIF;
     this.authKindPersistantServiceIF = authKindPersistantServiceIF;
   }
 
-  public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId, @NonNull Relay relay) {
     log.debug("AUTHENTICATED EVENT message type:\n{}", eventMessage.getEvent().createPrettyPrintJson());
     try {
       authKindPersistantServiceIF.findAuthPersistantBySessionIdAndKind(sessionId, eventMessage.getEvent().getKind());
@@ -30,7 +31,7 @@ public class AutoConfigEventMessageServiceAuthDecorator<T, U extends AuthPersist
       processNotOkClientResponse(eventMessage, sessionId, String.format("EVENT sessionId [%s] has not been authenticated", sessionId));
       return;
     }
-    eventMessageServiceIF.processIncoming(eventMessage, sessionId);
+    eventMessageServiceIF.processIncoming(eventMessage, sessionId, relay);
   }
 
   @Override

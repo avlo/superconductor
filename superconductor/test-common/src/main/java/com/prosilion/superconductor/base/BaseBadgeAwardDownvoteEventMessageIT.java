@@ -89,7 +89,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
                 new PubKeyTag(
                     downvotedUserPubKey))));
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-        new NostrSingleRequestService().send(reqMessage, relayUrl));
+        new NostrSingleRequestService().send(reqMessage, relayUrl, Duration.ofMinutes(10)));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);

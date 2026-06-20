@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.base.service.message;
 
 import com.prosilion.nostr.enums.Command;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.CanonicalAuthenticationMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.GenericTag;
@@ -28,7 +29,7 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
     this.superconductorRelayUrl = superconductorRelayUrl;
   }
 
-  public void processIncoming(@NonNull CanonicalAuthenticationMessage authMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull CanonicalAuthenticationMessage authMessage, @NonNull String sessionId, @NonNull Relay relay) {
     log.debug("processing incoming AUTH message: [{}]", authMessage);
     log.debug("AUTH message sessionId: {}", sessionId);
     String challenge = getChallenge(authMessage);

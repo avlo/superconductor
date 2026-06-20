@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.message.event.noop;
 
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.superconductor.autoconfigure.base.service.message.event.EventMessageServiceIF;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
@@ -18,7 +19,7 @@ public class EventMessageNoOpService implements EventMessageServiceIF {
   }
 
   @Override
-  public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId) {
+  public void processIncoming(@NonNull EventMessage eventMessage, @NonNull String sessionId, @NonNull Relay relay) {
     log.debug("processing incoming NOOP-EVENT: [{}]", eventMessage);
     processNotOkClientResponse(eventMessage, sessionId, noOp);
     clientResponseService.processCloseClientResponse(sessionId);

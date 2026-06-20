@@ -4,6 +4,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventKindPluginIF;
 import java.util.Comparator;
 import java.util.List;
@@ -11,8 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class EventKindService implements EventKindServiceIF {
@@ -21,24 +22,24 @@ public class EventKindService implements EventKindServiceIF {
 
   public <T extends BaseEvent> EventKindService(@NonNull List<EventKindPluginIF> eventKindPlugins) {
     this.eventKindPluginsMap = eventKindPlugins.stream().collect(
-        Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
+       Collectors.toMap(EventKindPluginIF::getKind, Function.identity()));
 
     this.convenientKindMapList = eventKindPlugins.stream()
-        .sorted(Comparator.comparing(
-            eventKindPluginIF ->
-                eventKindPluginIF.getKind().getValue()))
-        .map(eventKindPluginIF ->
-            String.format("  Kind[%s]:%s -> %s",
-                eventKindPluginIF.getKind().getValue(),
-                eventKindPluginIF.getKind().getName().toUpperCase(),
-                eventKindPluginIF.getClass().getSimpleName()))
-        .collect(Collectors.joining("\n"));
+       .sorted(Comparator.comparing(
+          eventKindPluginIF ->
+             eventKindPluginIF.getKind().getValue()))
+       .map(eventKindPluginIF ->
+          String.format("  Kind[%s]:%s -> %s",
+             eventKindPluginIF.getKind().getValue(),
+             eventKindPluginIF.getKind().getName().toUpperCase(),
+             eventKindPluginIF.getClass().getSimpleName()))
+       .collect(Collectors.joining("\n"));
 
     log.debug("Ctor (List<EventKindPluginIF>) loaded values:\n{}", convenientKindMapList);
   }
 
   @Override
-  public void processIncomingEvent(EventIF event) {
+  public void processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     log.debug("processIncomingEvent() called with event:\n{}", event.createPrettyPrintJson());
     Kind kind = event.getKind();
     log.debug("processIncomingEvent() event.getKind(): [{}]", kind);
@@ -47,10 +48,10 @@ public class EventKindService implements EventKindServiceIF {
 
     if (kind.equals(Kind.DELETION)) {
       log.info("sanity check deletion plugin: {}", kindEventKindPluginIF);
-      kindEventKindPluginIF.processIncomingEvent(event); // TODO: remove conditional after done testing
+      kindEventKindPluginIF.processIncomingEvent(event, relay); // TODO: remove conditional after done testing
     } else {
       log.info("sanity check non-deletion plugin: {}", kindEventKindPluginIF);
-      kindEventKindPluginIF.processIncomingEvent(event); // everything else handled as TEXT_NOTE kind
+      kindEventKindPluginIF.processIncomingEvent(event, relay); // everything else handled as TEXT_NOTE kind
     }
   }
 
@@ -60,15 +61,15 @@ public class EventKindService implements EventKindServiceIF {
     Optional<EventKindPluginIF> mapEntry = Optional.ofNullable(value);
 
     String kindFormat = String.format("[%s]:%s",
-        event.getKind().getValue(),
-        event.getKind().getName().toUpperCase());
+       event.getKind().getValue(),
+       event.getKind().getName().toUpperCase());
 
     if (mapEntry.isEmpty()) {
       throw new NostrException(
-          String.format("\n  kind%s not present in eventKindPluginsMap:\n  %s,\n  from event:\n%s",
-              kindFormat,
-              convenientKindMapList,
-              event.createPrettyPrintJson()));
+         String.format("\n  kind%s not present in eventKindPluginsMap:\n  %s,\n  from event:\n%s",
+            kindFormat,
+            convenientKindMapList,
+            event.createPrettyPrintJson()));
     }
 
     log.debug("found map value for kind{}, using EventKindPluginIF [{}]", kindFormat, value);

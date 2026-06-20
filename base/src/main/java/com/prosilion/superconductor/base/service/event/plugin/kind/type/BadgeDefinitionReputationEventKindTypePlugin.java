@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.service.event.plugin.kind.type;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.util.Util;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingE
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     String eventRelaysTagUrl = event.requireRelayTagUrl();
 
     if (!superconductorRelayUrl.equals(eventRelaysTagUrl))
@@ -29,6 +30,6 @@ public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingE
          String.format("RelayTag URL: [%s] does not match relay host SuperConductor URL: [%s]",
             eventRelaysTagUrl, superconductorRelayUrl));
 
-    return super.processIncomingEvent(event);
+    return super.processIncomingEvent(event, relay);
   }
 }

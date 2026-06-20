@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.service.event.kind.type;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.KindTypeIF;
@@ -45,7 +46,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
   }
 
   @Override
-  public void processIncomingEvent(@NonNull EventIF event) {
+  public void processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
     log.debug("processIncomingEvent() called with event:\n{}", event.createPrettyPrintJson());
     Kind kind = event.getKind();
     log.debug("processIncomingEvent() event.getKind(): [{}]", kind);
@@ -59,7 +60,7 @@ public class EventKindTypeService implements EventKindTypeServiceIF {
         .orElseThrow(() -> new NostrException(
             String.format("eventKindTypePluginsMap does not contain matching entry for Kind [%s], KindType [%s]", event.getKind(), getKindType(event))));
 
-    eventKindTypePluginIF.processIncomingEvent(event);
+    eventKindTypePluginIF.processIncomingEvent(event, relay);
   }
 
   @Override

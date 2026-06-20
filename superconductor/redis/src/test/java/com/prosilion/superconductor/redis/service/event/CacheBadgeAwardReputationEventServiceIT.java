@@ -75,7 +75,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
                     identity,
                     upvoteIdentifierTag,
                     relay),
-                PLUS_ONE_FORMULA)));
+                PLUS_ONE_FORMULA)), relay);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
         identity,
@@ -85,7 +85,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
         new FormulaEvent(identity, formulaUnitUpvoteIdentifierTag, relay, new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay), PLUS_ONE_FORMULA));
 
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula));
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), relay);
 
     eventServiceIF.processIncomingEvent(
         new EventMessage(
@@ -93,7 +93,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
                 identity,
                 upvotedUserPublicKey,
                 relay,
-                new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay))));
+                new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay))), relay);
   }
 
   @Test
@@ -106,7 +106,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
         badgeDefinitionReputationEventPlusOneFormula,
         BigDecimal.ZERO);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardReputationEvent));
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardReputationEvent), relay);
     BadgeAwardReputationEvent dbRepAwardEvent = cacheBadgeAwardReputationEventService.materialize(badgeAwardReputationEvent.asGenericEventRecord());
     assertEquals(badgeDefinitionReputationEventPlusOneFormula, dbRepAwardEvent.getBadgeDefinitionEvent());
   }

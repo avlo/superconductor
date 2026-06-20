@@ -2,6 +2,7 @@ package com.prosilion.superconductor.base.service.event.plugin.kind;
 
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
@@ -16,7 +17,7 @@ public abstract class NonPublishingEventKindPlugin implements EventKindPluginIF 
   }
 
   @Override
-  public GenericEventRecord processIncomingEvent(@NonNull EventIF event) {
-    return eventKindPluginIF.processIncomingEvent(event);
+  public GenericEventRecord processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+    return eventKindPluginIF.processIncomingEvent(event, relay);
   }
 }

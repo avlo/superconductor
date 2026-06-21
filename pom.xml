@@ -60,7 +60,7 @@
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <mysql-connector-j.version>9.1.0</mysql-connector-j.version>
     <postgresql.version>42.7.3</postgresql.version>
-    <subdivisions.version>1.4.0</subdivisions.version>
+    <subdivisions.version>1.4.1</subdivisions.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <mapstruct.version>1.6.3</mapstruct.version>
   </properties>

@@ -5,7 +5,7 @@ plugins {
 dependencies {
     api project(':superconductor-spring-boot-starter-mysql')
 
-    def subdivisionsVersion = '1.4.0'
+    def subdivisionsVersion = '1.4.1'
     testImplementation 'com.prosilion:subdivisions:' + subdivisionsVersion
 
     def mysqlConnectorJVersion = '9.1.0'

@@ -1,37 +1,29 @@
-### multiple varying docker instances are possible using this file/template, via:
-##    1. copy this file to docker-compose-<custom_name>.yml
-##    2. in newly copied file, search/replace '-UNIQUE_NAME' with '-whatever_you_like'
-##    3. start custom docker instance via command:
-##         docker compose -f superconductor/redis/docker-compose-<custom_name>.yml up
 services:
-  superconductor-db-redis-dev-ws-UNIQUE_NAME:
-    container_name: superconductor-db-redis-dev-ws-UNIQUE_NAME
+  superconductor-db:
     image: "redis:8.0.0"
-    hostname: superconductor-db-redis-dev-ws-UNIQUE_NAME
+    hostname: superconductor-db
     ports:
-      - "6379:6379" # first port number must be unique, second number is (SPRING_DATA_REDIS_PORT) container default, changeable below
-    environment:
-      - "REDIS_ARGS=--appendonly yes"
+      - "6379:6379"
     networks:
-      - superconductor_app_net
-  superconductor-app-redis-dev-ws-UNIQUE_NAME:
-    container_name: superconductor-app-redis-dev-ws-UNIQUE_NAME
-    image: superconductor-app-redis:1.18.0
+      - superconductor_net
+    volumes:
+      - superconductor-db:/data
+  superconductor-app:
+    image: superconductor-app-redis:1.18.1
     ports:
-      - "5555:5555" # first port number must be unique, second number is container (SUPERCONDUCTOR_RELAY_URL & SERVER_PORT) default, changeable below
+      - "5555:5555"
     depends_on:
-      - superconductor-db-redis-dev-ws-UNIQUE_NAME
+      - superconductor-db
     networks:
-      - superconductor_app_net
+      - superconductor_net
     environment:
       SPRING_PROFILES_ACTIVE: dev_ws
-      SPRING_DATA_REDIS_HOST: superconductor-db-redis-dev-ws-UNIQUE_NAME
-#      SPRING_DATA_REDIS_PORT: 6379  # if container port other than 6379 is desired 
-#      SUPERCONDUCTOR_RELAY_URL: "ws://localhost:5555"  # if container relay URL other than ws://localhost:5555 is desired
-#      SERVER_PORT: 5555  # if server port other than 5555 is desired
+      SPRING_DATA_REDIS_HOST: superconductor-db
+      SUPERCONDUCTOR_RELAY_URL: "ws://superconductor-app:5555"
 volumes:
-  superconductor-db-redis-dev-ws-UNIQUE_NAME:
+  superconductor-db:
     driver: local
 networks:
-  superconductor_app_net:
-    driver: bridge
+  superconductor_net:
+    external: true
+    name: prosilion-net

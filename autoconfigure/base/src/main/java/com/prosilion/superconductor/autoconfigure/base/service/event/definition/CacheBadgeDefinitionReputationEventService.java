@@ -7,9 +7,11 @@ import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
@@ -143,7 +145,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
        badgeDefinitionEventGERs.stream().map(GenericEventRecord::createPrettyPrintJson));
 
     List<EventTag> eventTagStream = badgeDefinitionEventGERs.stream().map(ger ->
-       new EventTag(ger.getId(), ger.requireRelayTagUrl())).toList();
+       new EventTag(ger.getId(), ger.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow())).toList();
 
     List<BadgeDefinitionReputationEvent> badgeDefinitionReputationEvents =
        eventTagStream.stream()

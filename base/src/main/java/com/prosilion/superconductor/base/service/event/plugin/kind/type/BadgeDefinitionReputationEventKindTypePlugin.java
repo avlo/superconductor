@@ -4,6 +4,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.util.Util;
 import java.util.Optional;
 import lombok.NonNull;
@@ -24,7 +25,7 @@ public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingE
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
-    String eventRelaysTagUrl = event.requireRelayTagUrl();
+    String eventRelaysTagUrl = event.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow();
 
     if (!superconductorRelayUrl.equals(eventRelaysTagUrl))
       throw new NostrException(

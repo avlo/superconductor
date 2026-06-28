@@ -5,8 +5,10 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventAuxService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventAuxService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
@@ -70,12 +72,20 @@ public class EventServiceConfig {
     return new CacheFormulaEventService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService, cacheDereferenceKindAddressTagService);
   }
 
+//  @Bean
+//  @ConditionalOnMissingBean
+//  CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService(
+//     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+//     @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService) {
+//    return new CacheBadgeDefinitionGenericEventService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
+//  }
+
   @Bean
   @ConditionalOnMissingBean
-  CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService(
+  CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService(
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
      @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService) {
-    return new CacheBadgeDefinitionGenericEventService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
+    return new CacheBadgeDefinitionGenericEventAuxService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
   }
 
   @Bean
@@ -92,15 +102,27 @@ public class EventServiceConfig {
        cacheKindAddressTagService);
   }
 
+//  @Bean
+//  @ConditionalOnMissingBean
+//  CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService(
+//     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+//     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
+//     @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
+//    return new CacheBadgeAwardGenericEventService(
+//       cacheDereferenceEventTagService,
+//       cacheBadgeDefinitionGenericEventService,
+//       cacheKindAddressTagService);
+//  }
+  
   @Bean
   @ConditionalOnMissingBean
-  CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService(
+  CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService(
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
+     @NonNull CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService,
      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
-    return new CacheBadgeAwardGenericEventService(
+    return new CacheBadgeAwardGenericEventAuxService(
        cacheDereferenceEventTagService,
-       cacheBadgeDefinitionGenericEventService,
+       cacheBadgeDefinitionGenericEventAuxService,
        cacheKindAddressTagService);
   }
 
@@ -120,13 +142,13 @@ public class EventServiceConfig {
   @ConditionalOnMissingBean
   CacheFollowSetsEventService cacheFollowSetsEventService(
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-     @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
+     @NonNull @Qualifier("cacheBadgeAwardGenericEventAuxService") CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService,
      @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
      @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService,
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
     return new CacheFollowSetsEventService(
        cacheDereferenceEventTagService,
-       cacheBadgeAwardGenericEventService,
+       cacheBadgeAwardGenericEventAuxService,
        cacheBadgeAwardReputationEventService,
        cacheDereferenceKindAddressTagService,
        cacheBadgeDefinitionReputationEventService);

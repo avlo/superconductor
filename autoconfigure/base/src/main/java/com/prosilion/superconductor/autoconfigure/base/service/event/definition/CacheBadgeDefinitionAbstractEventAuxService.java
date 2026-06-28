@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.definition
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEventAux;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
@@ -15,11 +15,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDefinitionGenericEvent> {
+public abstract class CacheBadgeDefinitionAbstractEventAuxService<T extends BadgeDefinitionGenericEventAux> {
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
 
-  public CacheBadgeDefinitionAbstractEventService(
+  public CacheBadgeDefinitionAbstractEventAuxService(
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF) {
     this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
@@ -30,6 +30,8 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
 
 
   public Optional<T> getBy(@NonNull AddressTag addressTag) {
+    log.debug("... inside getBy(addressTag), value: addressTag:  [{}]\npotentially used if event doesn't include RelayTag", addressTag.toStringPrettyPrint());
+
     if (!addressTag.getKind().equals(Kind.BADGE_DEFINITION_EVENT))
       throw new NostrException(
          String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
@@ -41,8 +43,11 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     GenericEventRecord existingBadgeDefinitionReputationEventGER = badgeDefinitionAbstractEventGEROptional.get();
     log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER.createPrettyPrintJson());
 
-    String relayTagUrl = existingBadgeDefinitionReputationEventGER.getRelayTag().map(RelayTag::requireRelay).map(Relay::getUrl).orElseThrow();
+    Optional<String> optEventRelayTagUrl = existingBadgeDefinitionReputationEventGER.getRelayTag()
+       .flatMap(RelayTag::findRelay).map(Relay::getUrl);
+    log.debug("relay url sourced from [ {} ]", optEventRelayTagUrl.isPresent() ? "event" : "addressTag");
 
+    String relayTagUrl = optEventRelayTagUrl.orElse(addressTag.requireRelay().getUrl());
     log.debug("calling getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl with eventId:\n  [{}],\n  relayUrl: [{}]",
        existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
     Optional<T> event = getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);

@@ -8,8 +8,10 @@ import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventAuxService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventAuxService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -121,19 +123,23 @@ public class EventKindPluginConfig {
   @Bean("eventKindMaterializers")
   @ConditionalOnMissingBean(name = "eventKindMaterializers")
   Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers(
-     @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
-     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
+//     @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService, // TODO: intentionally here to cause compilation error, needs resolve re: below line
+     @NonNull CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService, // TODO: intentionally here to cause compilation error, needs resolve re: above line
+
+//     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService, // TODO: intentionally here to cause compilation error, needs resolve re: below line
+     @NonNull CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService, // TODO: intentionally here to cause compilation error, needs resolve re: above line
+     
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
      @NonNull CacheFormulaEventService cacheFormulaEventService) {
     Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
 
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
-       cacheBadgeAwardGenericEventService::materialize);
+       cacheBadgeAwardGenericEventAuxService::materialize);
 
     kindFxnMap.put(
        Kind.BADGE_DEFINITION_EVENT,
-       cacheBadgeDefinitionGenericEventService::materialize);
+       cacheBadgeDefinitionGenericEventAuxService::materialize);
 
     kindFxnMap.put(
        Kind.FOLLOW_SETS,

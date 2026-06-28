@@ -1,8 +1,8 @@
 package com.prosilion.superconductor.base.cache;
 
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardGenericEventAux;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEventAux;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.tag.AddressTag;
@@ -19,5 +19,5 @@ public interface CacheFollowSetsEventServiceIF extends CacheTagMappedEventServic
   Optional<FollowSetsEvent> materialize(@NonNull EventIF eventIF);
 
   Optional<BadgeAwardReputationEvent> getBadgeAwardReputationEvent(@NonNull FollowSetsEvent followSetsEvent);
-  Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getBy(@NonNull EventTag eventTag);
+  Optional<BadgeAwardGenericEventAux<BadgeDefinitionGenericEventAux>> getBy(@NonNull EventTag eventTag);
 }

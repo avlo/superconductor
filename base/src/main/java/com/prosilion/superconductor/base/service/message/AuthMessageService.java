@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.CanonicalAuthenticationMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.GenericTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.service.clientresponse.ClientResponseService;
 import com.prosilion.superconductor.base.service.event.auth.AuthPersistantIF;
@@ -36,7 +37,7 @@ public class AuthMessageService<T, U extends AuthPersistantIF> implements AuthMe
 //    TODO: check non-blank / quality password /etc
     log.debug("AUTH message challenge string: {}, matched", challenge);
 
-    String relayUriString = authMessage.getEvent().requireRelayTagUrl();
+    String relayUriString = authMessage.getEvent().getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow();
     PublicKey pubKey = authMessage.getEvent().getPublicKey();
     if (!relayUriString.equalsIgnoreCase(superconductorRelayUrl)) {
       log.debug("AUTH message failed, relay URI string: [{}]", relayUriString);

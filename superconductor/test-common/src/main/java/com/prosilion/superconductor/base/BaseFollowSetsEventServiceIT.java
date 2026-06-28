@@ -3,17 +3,21 @@ package com.prosilion.superconductor.base;
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardGenericEventAux;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEventAux;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
@@ -71,7 +75,7 @@ public abstract class BaseFollowSetsEventServiceIT {
      Identity.create("eee4585483196998204846989544737603523651520600328805626488477202");
 
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
-  private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent;
+  private final BadgeAwardGenericEventAux<BadgeDefinitionGenericEventAux> badgeAwardUpvoteEvent;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
 
   private final Relay relay;
@@ -92,10 +96,12 @@ public abstract class BaseFollowSetsEventServiceIT {
 
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
-    cacheServiceIF.save(awardUpvoteDefinitionEvent);
+
+    BadgeDefinitionGenericEventAux badgeDefinitionGenericEventAux = fakedBadgeDefinitionGenericEvent(awardUpvoteDefinitionEvent, upvoteIdentifierTag);
+    cacheServiceIF.save(badgeDefinitionGenericEventAux);
 
     FormulaEvent plusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
-    eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent), plusOneFormulaEvent.getRelay());
+    eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent), plusOneFormulaEvent.getRelay().orElseThrow());
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
        repDefnCreator,
@@ -104,30 +110,41 @@ public abstract class BaseFollowSetsEventServiceIT {
        relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
        plusOneFormulaEvent);
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), badgeDefinitionReputationEventPlusOneFormula.getRelay());
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), badgeDefinitionReputationEventPlusOneFormula.getRelay().orElseThrow());
 
-    this.badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
+    this.badgeAwardUpvoteEvent = new BadgeAwardGenericEventAux<>(
        submitter,
        recipient.getPublicKey(),
        relay,
-       badgeDefinitionReputationEventPlusOneFormula);
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent), badgeAwardUpvoteEvent.getRelay());
+       badgeDefinitionGenericEventAux);
+    
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent), badgeAwardUpvoteEvent.getRelay().orElseThrow());
   }
 
   @Test
   public void testSaveBadgeAwardReputationEventUpvote() {
+
+    BadgeDefinitionGenericEventAux badgeDefinitionUpvoteEventAux =
+       new BadgeDefinitionGenericEventAux(
+          fakedBadgeDefinitionGenericEvent(new BadgeDefinitionGenericEvent(submitter, upvoteIdentifierTag, relay), upvoteIdentifierTag), new RelayTag(relay));
+
+    BadgeAwardGenericEventAux<BadgeDefinitionGenericEventAux> badgeAwardUpvoteEvent = new BadgeAwardGenericEventAux<>(
+       submitter,
+       recipient.getPublicKey(),
+       relay,
+       badgeDefinitionUpvoteEventAux);
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
        identity,
        badgeDefinitionReputationEventPlusOneFormula,
        relay,
-       List.of(badgeAwardUpvoteEvent));
+       badgeAwardUpvoteEvent);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay());
+    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
 
     FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId(), relay.getUrl()).orElseThrow();
     assertEquals(followSetsEvent, dbFollowSetsEventByEventId);
 
-    List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
+    List<BadgeAwardGenericEventAux<BadgeDefinitionGenericEventAux>> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeAwardGenericEvents();
     assertTrue(badgeAwardAbstractEvents.contains(badgeAwardUpvoteEvent));
 
     PublicKey matchPubkey = dbFollowSetsEventByEventId.getAwardRecipientPulicKey();
@@ -154,7 +171,24 @@ public abstract class BaseFollowSetsEventServiceIT {
     assertTrue(returnedEventIFs.stream().map(EventIF::getKind).toList().contains(Kind.FOLLOW_SETS));
 
     assertTrue(badgeAwardAbstractEvents.stream()
-       .map(BadgeAwardGenericEvent::getBadgeDefinitionEvent)
+       .map(BadgeAwardGenericEventAux::getBadgeDefinitionEvent)
        .anyMatch(badgeDefinitionReputationEventPlusOneFormula::equals));
+  }
+
+  public static BadgeDefinitionGenericEventAux fakedBadgeDefinitionGenericEvent(BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent, IdentifierTag identifierTag) {
+    GenericEventRecord genericEventRecord =
+       new GenericEventRecord(
+          badgeDefinitionUpvoteEvent.getId(),
+          badgeDefinitionUpvoteEvent.getPublicKey(),
+          badgeDefinitionUpvoteEvent.getCreatedAt(),
+          badgeDefinitionUpvoteEvent.getKind(),
+          List.of(identifierTag),
+          badgeDefinitionUpvoteEvent.getContent(),
+          badgeDefinitionUpvoteEvent.getSignature());
+
+    BadgeDefinitionGenericEvent fakedGenericEvent = new BadgeDefinitionGenericEvent(genericEventRecord);
+
+    BadgeDefinitionGenericEventAux badgeDefinitionGenericEvent = new BadgeDefinitionGenericEventAux(fakedGenericEvent, new RelayTag(new Relay("ws://localhost-placeholder-for-test")));
+    return badgeDefinitionGenericEvent;
   }
 }

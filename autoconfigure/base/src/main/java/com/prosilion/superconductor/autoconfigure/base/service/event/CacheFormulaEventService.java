@@ -8,6 +8,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
@@ -89,7 +90,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     log.debug("getFormulaEvent(formulaEventOptGER):\n  {}", formulaEventOptGER.createPrettyPrintJson());
     log.debug("formulaEventOptGER eventId: [{}]", formulaEventOptGER.getId());
 
-    String formulaEventRelayUrl = formulaEventOptGER.requireRelayTagUrl();
+    String formulaEventRelayUrl = formulaEventOptGER.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow();
     log.debug("formulaEventOptGER relayUrl: [{}]", formulaEventRelayUrl);
 
     Optional<FormulaEvent> formulaEvent = getEvent(formulaEventOptGER.getId(), formulaEventRelayUrl);

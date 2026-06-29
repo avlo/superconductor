@@ -141,12 +141,15 @@ public class EventServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeSetsEventService cacheBadgeSetsEventService(
+    @NonNull CacheServiceIF cacheServiceIF,
     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
     @NonNull CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService,
     @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
     @NonNull CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService) {
-    return new CacheBadgeSetsEventService(cacheDereferenceEventTagService,
+    return new CacheBadgeSetsEventService(
+      cacheServiceIF,
+      cacheDereferenceEventTagService,
       cacheReferenceAddressTagService,
       cacheBadgeAwardGenericEventAuxService,
       cacheBadgeDefinitionReputationEventService,
@@ -156,11 +159,13 @@ public class EventServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheFollowSetsEventService cacheFollowSetsEventService(
+    @NonNull CacheServiceIF cacheServiceIF,
     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
     @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
     @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService,
     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) {
     return new CacheFollowSetsEventService(
+      cacheServiceIF,
       cacheReferenceEventTagService,
       cacheBadgeAwardReputationEventService,
       cacheDereferenceKindAddressTagService,

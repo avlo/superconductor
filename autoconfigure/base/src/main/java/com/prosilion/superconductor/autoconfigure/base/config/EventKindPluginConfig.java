@@ -125,8 +125,8 @@ public class EventKindPluginConfig {
 
   //  SetsPairedEventTagIF
   @Bean("eventAuxKindMaterializers")
-  @ConditionalOnMissingBean(name = "eventKindMaterializers")
-  Map<Kind, BiFunction<EventIF, Relay, Optional<? extends SetsPairedEventTagIF>>> eventKindMaterializers(
+  @ConditionalOnMissingBean(name = "eventAuxKindMaterializers")
+  Map<Kind, BiFunction<EventIF, Relay, Optional<? extends SetsPairedEventTagIF>>> eventAuxKindMaterializers(
      @NonNull CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService,
      @NonNull CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService) {
     Map<Kind, BiFunction<EventIF, Relay, Optional<? extends SetsPairedEventTagIF>>> kindFxnMap = new HashMap<>();

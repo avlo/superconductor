@@ -6,6 +6,8 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.SetsPairedEventTagIF;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventAuxService;
@@ -30,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -120,18 +123,13 @@ public class EventKindPluginConfig {
     return new DeleteEventKindPlugin(eventPlugin, cacheService);
   }
 
-  @Bean("eventKindMaterializers")
+  //  SetsPairedEventTagIF
+  @Bean("eventAuxKindMaterializers")
   @ConditionalOnMissingBean(name = "eventKindMaterializers")
-  Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers(
-//     @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService, // TODO: intentionally here to cause compilation error, needs resolve re: below line
-     @NonNull CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService, // TODO: intentionally here to cause compilation error, needs resolve re: above line
-
-//     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService, // TODO: intentionally here to cause compilation error, needs resolve re: below line
-     @NonNull CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService, // TODO: intentionally here to cause compilation error, needs resolve re: above line
-     
-     @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
-     @NonNull CacheFormulaEventService cacheFormulaEventService) {
-    Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
+  Map<Kind, BiFunction<EventIF, Relay, Optional<? extends SetsPairedEventTagIF>>> eventKindMaterializers(
+     @NonNull CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService,
+     @NonNull CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService) {
+    Map<Kind, BiFunction<EventIF, Relay, Optional<? extends SetsPairedEventTagIF>>> kindFxnMap = new HashMap<>();
 
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
@@ -140,6 +138,28 @@ public class EventKindPluginConfig {
     kindFxnMap.put(
        Kind.BADGE_DEFINITION_EVENT,
        cacheBadgeDefinitionGenericEventAuxService::materialize);
+
+    return kindFxnMap;
+  }
+
+
+  @Bean("eventKindMaterializers")
+  @ConditionalOnMissingBean(name = "eventKindMaterializers")
+  Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers(
+     @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
+     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
+
+     @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
+     @NonNull CacheFormulaEventService cacheFormulaEventService) {
+    Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
+
+    kindFxnMap.put(
+       Kind.BADGE_AWARD_EVENT,
+       cacheBadgeAwardGenericEventService::materialize);
+
+    kindFxnMap.put(
+       Kind.BADGE_DEFINITION_EVENT,
+       cacheBadgeDefinitionGenericEventService::materialize);
 
     kindFxnMap.put(
        Kind.FOLLOW_SETS,

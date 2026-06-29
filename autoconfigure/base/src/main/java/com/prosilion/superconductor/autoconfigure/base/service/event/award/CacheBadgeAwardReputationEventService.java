@@ -60,7 +60,7 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
     Optional<BadgeAwardReputationEvent> badgeAwardReputationEventOpt = badgeAwardReputationEventOptGER.map(genericEventRecord ->
        getEvent(
           genericEventRecord.getId(),
-          genericEventRecord.requireFirstTag(RelayTag.class).getRelay().getUrl()).orElseThrow());
+          genericEventRecord.requireFirstTag(RelayTag.class).getRelay()).orElseThrow());
 
     log.debug("... returning badgeAwardReputationEventOpt:\n{}", badgeAwardReputationEventOpt.map(EventIF::createPrettyPrintJson).orElse("EMPTY Optional"));
     return badgeAwardReputationEventOpt;

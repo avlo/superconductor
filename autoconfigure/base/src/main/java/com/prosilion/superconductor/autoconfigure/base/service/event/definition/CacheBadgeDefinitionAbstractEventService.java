@@ -41,11 +41,11 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     GenericEventRecord existingBadgeDefinitionReputationEventGER = badgeDefinitionAbstractEventGEROptional.get();
     log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER.createPrettyPrintJson());
 
-    String relayTagUrl = existingBadgeDefinitionReputationEventGER.getRelayTag().map(RelayTag::requireRelay).map(Relay::getUrl).orElseThrow();
+    Relay relay = existingBadgeDefinitionReputationEventGER.getRelayTag().map(RelayTag::getRelay).orElseThrow();
 
-    log.debug("calling getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl with eventId:\n  [{}],\n  relayUrl: [{}]",
-       existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
-    Optional<T> event = getEvent(existingBadgeDefinitionReputationEventGER.getId(), relayTagUrl);
+    log.debug("calling getEvent(existingBadgeDefinitionReputationEventGER.getId(), relay with eventId:\n  [{}],\n  relayUrl: [{}]",
+       existingBadgeDefinitionReputationEventGER.getId(), relay);
+    Optional<T> event = getEvent(existingBadgeDefinitionReputationEventGER.getId(), relay);
 
     if (event.isEmpty()) {
       log.debug("badgeDefinitionReputationEvent.getId()) [%s] not found, return Optional.empty()");
@@ -58,12 +58,11 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     return event;
   }
 
-  @Deprecated
-  public Optional<T> getEvent(@NonNull String eventId, @NonNull String url) {
-    log.debug("inside getEvent(eventId, url):\n  [{}],\n  [{}]", eventId, url);
+  public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+    log.debug("inside getEvent(eventId, relay):\n  [{}],\n  [{}]", eventId, relay);
 
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionAbstractEvent =
-       cacheReferenceEventTagServiceIF.getEvent(eventId, url);
+       cacheReferenceEventTagServiceIF.getEvent(eventId, relay);
     log.debug("return unpopulatedBadgeDefinitionAbstractEvent:\n{}",
        unpopulatedBadgeDefinitionAbstractEvent.map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
 

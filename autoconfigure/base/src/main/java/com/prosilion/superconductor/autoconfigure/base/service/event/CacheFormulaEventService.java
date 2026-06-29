@@ -39,19 +39,19 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
   //  TODO: duplicate in @CacheFollowsEventSeervice, consolidate  
   @Override
-  public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url) {
-    log.debug("inside getEvent(eventId, url)");
+  public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+    log.debug("inside getEvent(eventId, relay)");
     log.debug("  eventId:  [{}]", eventId);
-    log.debug("  relayUrl: [{}]", url);
-    Optional<GenericEventRecord> unpopulatedFormulaEventGER = cacheReferenceEventTagServiceIF.getEvent(eventId, url);
+    log.debug("  relayUrl: [{}]", relay);
+    Optional<GenericEventRecord> unpopulatedFormulaEventGER = cacheReferenceEventTagServiceIF.getEvent(eventId, relay);
     if (unpopulatedFormulaEventGER.isEmpty()) {
-      log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, url) returned EMPTY unpopulatedFormulaEventGER");
+      log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, relay) returned EMPTY unpopulatedFormulaEventGER");
       return Optional.empty();
     }
 
-    log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, url) returned unpopulatedFormulaEventGER:\n  {}", unpopulatedFormulaEventGER.get().createPrettyPrintJson());
+    log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, relay) returned unpopulatedFormulaEventGER:\n  {}", unpopulatedFormulaEventGER.get().createPrettyPrintJson());
 
-    log.debug("calling materialize(unpopulatedFormulaEvent.get()) ...", url);
+    log.debug("calling materialize(unpopulatedFormulaEvent.get()) ...", relay);
     return materialize(unpopulatedFormulaEventGER.get());
   }
 
@@ -90,7 +90,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     log.debug("getFormulaEvent(formulaEventOptGER):\n  {}", formulaEventOptGER.createPrettyPrintJson());
     log.debug("formulaEventOptGER eventId: [{}]", formulaEventOptGER.getId());
 
-    String formulaEventRelayUrl = formulaEventOptGER.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow();
+    Relay formulaEventRelayUrl = formulaEventOptGER.getRelayTag().map(RelayTag::getRelay).orElse(null);
     log.debug("formulaEventOptGER relayUrl: [{}]", formulaEventRelayUrl);
 
     Optional<FormulaEvent> formulaEvent = getEvent(formulaEventOptGER.getId(), formulaEventRelayUrl);

@@ -24,9 +24,9 @@ import com.prosilion.superconductor.util.TestUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import lombok.NonNull;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,10 +44,10 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierSameRelayMessageI
   private final String relayUrl;
 
   protected BaseBadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT(
-      @NonNull String superconductorRelayUrl,
+    @NonNull String superconductorRelayUrl,
 //      @NonNull String definitionEventRelayUrl,
 //      @NonNull String awardEventRelayUrl,
-      @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
+    @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.relayUrl = superconductorRelayUrl;
 
@@ -55,32 +55,32 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierSameRelayMessageI
     Relay awardEventRelay = new Relay(superconductorRelayUrl);
 
     BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent = new BadgeDefinitionGenericEvent(
-        superconductorInstanceIdentity,
-        IDENTIFIER_TAG,
-        definitionEventRelay);
+      superconductorInstanceIdentity,
+      IDENTIFIER_TAG,
+      definitionEventRelay);
 
     NostrEventPublisher definitionEventNostrEventPublisher = new NostrEventPublisher(relayUrl);
     EventMessage eventMessageBadgeDefinitionDownvoteEvent = new EventMessage(badgeDefinitionDownvoteEvent);
     assertTrue(
-        definitionEventNostrEventPublisher
-            .send(
-                eventMessageBadgeDefinitionDownvoteEvent)
-            .getFlag());
+      definitionEventNostrEventPublisher
+        .send(
+          eventMessageBadgeDefinitionDownvoteEvent)
+        .getFlag());
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = new BadgeAwardGenericEvent<>(
-        authorIdentity,
-        downvotedUserPubKey,
-        awardEventRelay,
-        badgeDefinitionDownvoteEvent);
+      authorIdentity,
+      downvotedUserPubKey,
+      badgeDefinitionDownvoteEvent,
+      awardEventRelay);
     eventId = badgeAwardDownvoteEvent.getId();
 
     NostrEventPublisher awardEventNostrComprehensiveClient = new NostrEventPublisher(relayUrl);
     EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
     assertTrue(
-        awardEventNostrComprehensiveClient
-            .send(
-                eventMessageBadgeAwardDownvoteEvent)
-            .getFlag());
+      awardEventNostrComprehensiveClient
+        .send(
+          eventMessageBadgeAwardDownvoteEvent)
+        .getFlag());
   }
 
   @Test
@@ -88,16 +88,16 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierSameRelayMessageI
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-        new NostrSingleRequestService().send(
-            new ReqMessage(
-                subscriberId,
-                new Filters(
-                    new KindFilter(
-                        Kind.BADGE_AWARD_EVENT),
-                    new ReferencedPublicKeyFilter(
-                        new PubKeyTag(
-                            downvotedUserPubKey)))),
-            relayUrl));
+      new NostrSingleRequestService().send(
+        new ReqMessage(
+          subscriberId,
+          new Filters(
+            new KindFilter(
+              Kind.BADGE_AWARD_EVENT),
+            new ReferencedPublicKeyFilter(
+              new PubKeyTag(
+                downvotedUserPubKey)))),
+        relayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -117,21 +117,21 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierSameRelayMessageI
     final String subscriberId = Factory.generateRandomHex64String();
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-        new NostrSingleRequestService().send(
-            new ReqMessage(
-                subscriberId,
-                new Filters(
-                    new KindFilter(
-                        Kind.BADGE_AWARD_EVENT),
-                    new ReferencedPublicKeyFilter(
-                        new PubKeyTag(
-                            downvotedUserPubKey)),
-                    new AddressTagFilter(
-                        new AddressTag(
-                            Kind.BADGE_DEFINITION_EVENT,
-                            superconductorInstanceIdentity.getPublicKey(),
-                            IDENTIFIER_TAG)))),
-            relayUrl));
+      new NostrSingleRequestService().send(
+        new ReqMessage(
+          subscriberId,
+          new Filters(
+            new KindFilter(
+              Kind.BADGE_AWARD_EVENT),
+            new ReferencedPublicKeyFilter(
+              new PubKeyTag(
+                downvotedUserPubKey)),
+            new AddressTagFilter(
+              new AddressTag(
+                Kind.BADGE_DEFINITION_EVENT,
+                superconductorInstanceIdentity.getPublicKey(),
+                IDENTIFIER_TAG)))),
+        relayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);

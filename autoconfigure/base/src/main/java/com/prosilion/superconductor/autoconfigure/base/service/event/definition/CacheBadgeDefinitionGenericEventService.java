@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.definition;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEventAux;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
@@ -23,10 +22,6 @@ public class CacheBadgeDefinitionGenericEventService extends CacheBadgeDefinitio
   public Optional<BadgeDefinitionGenericEvent> materialize(@NonNull EventIF incomingBadgeDefinitionGenericEvent) {
     log.debug("... materialize(incomingBadgeDefinitionGenericEvent)...\n{}", incomingBadgeDefinitionGenericEvent.createPrettyPrintJson());
 
-    BadgeDefinitionGenericEvent badgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(incomingBadgeDefinitionGenericEvent.asGenericEventRecord());
-
-    return Optional.of(new BadgeDefinitionGenericEventAux(
-       badgeDefinitionGenericEvent,
-       incomingBadgeDefinitionGenericEvent.getRelayTag().orElse(null)));
+    return Optional.of(new BadgeDefinitionGenericEvent(incomingBadgeDefinitionGenericEvent.asGenericEventRecord()));
   }
 }

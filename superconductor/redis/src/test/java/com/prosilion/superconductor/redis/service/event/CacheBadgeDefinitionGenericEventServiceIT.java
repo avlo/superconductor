@@ -41,10 +41,10 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
 
   @Autowired
   public CacheBadgeDefinitionGenericEventServiceIT(
-     @Value("${superconductor.relay.url}") String relayUri,
-     @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
+    @Value("${superconductor.relay.url}") String relayUri,
+    @NonNull CacheServiceIF cacheServiceIF,
+    @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
+    @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeDefinitionGenericEventService = cacheBadgeDefinitionGenericEventService;
     this.relay = new Relay(relayUri);
@@ -56,10 +56,10 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
   @Test
   public void testSaveBadgeDefinitionGenericEvent() {
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
-       authorIdentity,
-       reputationRecipientPublicKey,
-       relay,
-       awardUpvoteDefinitionEvent);
+      authorIdentity,
+      reputationRecipientPublicKey,
+      awardUpvoteDefinitionEvent,
+      relay);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardUpvoteEvent), relay);
     BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getBy(badgeAwardUpvoteEvent.getAddressTag()).orElseThrow();
@@ -73,9 +73,9 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
     BadgeDefinitionGenericEvent awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(authorIdentity, downvoteIdentifierTag, relay);
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEventMinusOne = new BadgeAwardGenericEvent<>(
-       authorIdentity,
-       reputationRecipientPublicKey,
-       relay,
-       awardDownvoteDefinitionEvent);
+      authorIdentity,
+      reputationRecipientPublicKey,
+      awardDownvoteDefinitionEvent,
+      relay);
   }
 }

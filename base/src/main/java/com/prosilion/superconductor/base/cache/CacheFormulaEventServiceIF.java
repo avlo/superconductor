@@ -13,7 +13,7 @@ import lombok.NonNull;
 
 public interface CacheFormulaEventServiceIF extends CacheTagMappedEventServiceIF<FormulaEvent, AddressTag>, EventMaterializer<FormulaEvent> {
   @Override
-  Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull String url);
+  Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull Relay relay);
   @Override
   Optional<FormulaEvent> materialize(@NonNull EventIF eventIF);
   Optional<FormulaEvent> getBy(@NonNull AddressTag addressTag);

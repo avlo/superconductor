@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
 import lombok.NonNull;
@@ -19,10 +20,10 @@ public abstract class CacheBadgeAwardAbstractEventService<S extends BadgeDefinit
     this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
   }
 
-  public Optional<T> getEvent(@NonNull String eventId, @NonNull String url) {
-    log.debug("... calling cacheReferenceEventTagServiceIF.getEvent(eventId, url): [{}], [{}]", eventId, url);
+  public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+    log.debug("... calling cacheReferenceEventTagServiceIF.getEvent(eventId, relay): [{}], [{}]", eventId, relay);
 
-    Optional<GenericEventRecord> unpopulatedEvent = cacheReferenceEventTagServiceIF.getEvent(eventId, url);
+    Optional<GenericEventRecord> unpopulatedEvent = cacheReferenceEventTagServiceIF.getEvent(eventId, relay);
     log.debug("returned pre-materialized optGER:\n{}",
        unpopulatedEvent.map(GenericEventRecord::createPrettyPrintJson).orElse(EMPTY_OPTIONAL));
 

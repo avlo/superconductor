@@ -22,9 +22,9 @@ public class DeleteEventKindPlugin extends NonPublishingEventKindPlugin {
   }
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
     log.debug("processing incoming DELETE EVENT:\n  {}", event.createPrettyPrintJson());
-    Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(event, relay);// NIP-09 req's saving of event itself
+    Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(event, fromRelay);// NIP-09 req's saving of event itself
     genericEventRecord.ifPresent(cacheServiceIF::deleteEvent);
     return genericEventRecord;
   }

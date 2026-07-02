@@ -32,7 +32,12 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
 
-  public CacheFollowSetsEventService(@NonNull CacheServiceIF cacheServiceIF, @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF, @NonNull CacheBadgeAwardReputationEventServiceIF cacheBadgeAwardReputationEventServiceIF, @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF, @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) {
+  public CacheFollowSetsEventService(
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
+     @NonNull CacheBadgeAwardReputationEventServiceIF cacheBadgeAwardReputationEventServiceIF,
+     @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
+     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
     this.cacheBadgeAwardReputationEventServiceIF = cacheBadgeAwardReputationEventServiceIF;
@@ -51,7 +56,11 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
       throw new NostrException(String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
 
     log.debug("... calling cacheBadgeSetsEventServiceIF.getEvent(...)");
-    List<BadgeSetsEvent> badgeSetsEvents = badgeSetsEventsAsEventTags.stream().map(eventTag -> cacheBadgeSetsEventServiceIF.getEvent(eventTag.getIdEvent(), new Relay(eventTag.requireRecommendedRelayUrl()))).flatMap(Optional::stream).toList();
+    List<BadgeSetsEvent> badgeSetsEvents = badgeSetsEventsAsEventTags.stream()
+       .map(eventTag -> cacheBadgeSetsEventServiceIF.getEvent(
+          eventTag.getEventId(),
+          new Relay(eventTag.requireRecommendedRelayUrl())))
+       .flatMap(Optional::stream).toList();
 
     log.debug("... returned badgeSetsEvents:\n  [{}]", badgeSetsEvents);
 
@@ -73,18 +82,31 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
       return Optional.empty();
     }
 
-    log.debug("... cacheReferenceEventTagServiceIF.getEvent() returned:\n  [{}]", unpopulatedFollowSetsEvent.map(GenericEventRecord::createPrettyPrintJson));
+    log.debug("... cacheReferenceEventTagServiceIF.getEvent() returned:\n  [{}]",
+       unpopulatedFollowSetsEvent.map(GenericEventRecord::createPrettyPrintJson));
 
     return materialize(unpopulatedFollowSetsEvent.get());
   }
 
   @Override
   public List<BadgeAwardReputationEvent> getBadgeAwardReputationEvents(@NonNull FollowSetsEvent followSetsEvent) {
-    log.debug("... calling getBadgeAwardReputationEvent(FollowSetsEventfollowSetsEvent) with followSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
+    log.debug("... calling getBadgeAwardReputationEvent(FollowSetsEventfollowSetsEvent) with followSetsEvent:\n{}",
+       followSetsEvent.createPrettyPrintJson());
 
-    List<BadgeAwardReputationEvent> badgeAwardReputationEvents = followSetsEvent.getAddressTags().stream().flatMap(addressTag -> cacheKindAddressTagServiceIF.getBy(Kind.BADGE_AWARD_EVENT, new PubKeyTag(followSetsEvent.getAwardRecipientPublicKey()), addressTag).stream().map(event -> cacheBadgeAwardReputationEventServiceIF.getEvent(event.getId(), event.getRelayTag().map(RelayTag::getRelay).orElseThrow()))).flatMap(Optional::stream).toList();
+    List<BadgeAwardReputationEvent> badgeAwardReputationEvents =
+       followSetsEvent.getAddressTags().stream().flatMap(addressTag ->
+             cacheKindAddressTagServiceIF.getBy(
+                   Kind.BADGE_AWARD_EVENT,
+                   new PubKeyTag(followSetsEvent.getAwardRecipientPublicKey()), addressTag)
+                .stream()
+                .map(event ->
+                   cacheBadgeAwardReputationEventServiceIF.getEvent(
+                      event.getId(),
+                      event.getRelayTag().map(RelayTag::getRelay).orElseThrow())))
+          .flatMap(Optional::stream).toList();
 
-    log.debug("... returning badgeAwardReputationEvents:\n  [{}]", badgeAwardReputationEvents.stream().map(Object::toString).collect(Collectors.joining(",\n  ")));
+    log.debug("... returning badgeAwardReputationEvents:\n  [{}]",
+       badgeAwardReputationEvents.stream().map(Object::toString).collect(Collectors.joining(",\n  ")));
 
     return badgeAwardReputationEvents;
   }
@@ -92,7 +114,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   @Override
   public List<FollowSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     return cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(getKind(), pubKeyTag, addressTag).stream()
-      .map(this::materialize).flatMap(Optional::stream).toList();
+       .map(this::materialize).flatMap(Optional::stream).toList();
   }
 
 //  @Override
@@ -112,7 +134,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   @Deprecated
   public Optional<FollowSetsEvent> getBy(@NonNull AddressTag addressTag) {
     return cacheKindAddressTagServiceIF.getBy(getKind(), addressTag).stream()
-      .map(this::materialize).flatMap(Optional::stream).findFirst();
+       .map(this::materialize).flatMap(Optional::stream).findFirst();
   }
 
   @Override

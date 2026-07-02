@@ -58,7 +58,7 @@ public abstract class BaseMatchingReferencedEventIT {
         .map(event -> event.getTags().stream()
             .filter(EventTag.class::isInstance)
             .map(EventTag.class::cast)
-            .map(EventTag::getIdEvent).findFirst()).anyMatch(s -> s.orElseThrow().equals(referencedEventId)));
+            .map(EventTag::getEventId).findFirst()).anyMatch(s -> s.orElseThrow().equals(referencedEventId)));
 
     assertTrue(returnedBaseMessages.stream().anyMatch(EoseMessage.class::isInstance));
   }

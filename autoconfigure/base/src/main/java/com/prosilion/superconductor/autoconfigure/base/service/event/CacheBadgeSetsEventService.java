@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
-  private final CacheReferenceEventTagService cacheDereferenceEventTagService;
+  private final CacheReferenceEventTagService cacheReferenceEventTagService;
   private final CacheReferenceAddressTagService cacheReferenceAddressTagService;
   private final CacheBadgeAwardGenericEventAuxServiceIF cacheBadgeAwardGenericEventAuxServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
@@ -43,13 +43,13 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
 
   public CacheBadgeSetsEventService(
     @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+    @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
     @NonNull CacheBadgeAwardGenericEventAuxServiceIF cacheBadgeAwardGenericEventAuxServiceIF,
     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
     @NonNull CacheBadgeDefinitionGenericEventAuxServiceIF cacheBadgeDefinitionGenericEventAuxServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
-    this.cacheDereferenceEventTagService = cacheDereferenceEventTagService;
+    this.cacheReferenceEventTagService = cacheReferenceEventTagService;
     this.cacheReferenceAddressTagService = cacheReferenceAddressTagService;
     this.cacheBadgeAwardGenericEventAuxServiceIF = cacheBadgeAwardGenericEventAuxServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
@@ -59,7 +59,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   @Override
   public Optional<BadgeSetsEvent> materialize(@NonNull EventIF incomingBadgeSetsEvent) {
     log.debug("materialize(EventIF incomingBadgeSetsEvent):\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
-    Optional<GenericEventRecord> incomingBadgeSetsEventGER = cacheDereferenceEventTagService.getEvent(
+    Optional<GenericEventRecord> incomingBadgeSetsEventGER = cacheReferenceEventTagService.getEvent(
       incomingBadgeSetsEvent.getId(), incomingBadgeSetsEvent.getRelayTag().orElseThrow().getRelay());
 
     if (incomingBadgeSetsEventGER.isEmpty()) {
@@ -74,7 +74,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
     List<BadgeAwardGenericEventAux> badgeAwardGenericEventAuxes = eventTags.stream().map(eventTag ->
       cacheBadgeAwardGenericEventAuxServiceIF
         .getEvent(
-          eventTag.getIdEvent(),
+          eventTag.getEventId(),
           new Relay(eventTag.requireRecommendedRelayUrl()))
         .stream()).flatMap(Stream::distinct).toList();
 
@@ -125,7 +125,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   public Optional<BadgeSetsEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     log.debug("inside getEvent(eventId, relay):\n  event [{}]\n  relay [{}]", eventId, relay);
     log.debug("calling cacheDereferenceEventTagService.getEvent(eventId, relay)...");
-    Optional<GenericEventRecord> event = cacheDereferenceEventTagService.getEvent(eventId, relay);
+    Optional<GenericEventRecord> event = cacheReferenceEventTagService.getEvent(eventId, relay);
     log.debug("... cacheDereferenceEventTagService.getEvent(eventId, relay) returned:\n  [{}]",
       event.map(GenericEventRecord::createPrettyPrintJson));
     return event.flatMap(this::materialize);

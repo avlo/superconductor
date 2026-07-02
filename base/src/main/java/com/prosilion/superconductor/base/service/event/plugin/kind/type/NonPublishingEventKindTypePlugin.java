@@ -18,8 +18,8 @@ public abstract class NonPublishingEventKindTypePlugin implements EventKindTypeP
   }
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
-    return eventKindTypePlugin.processIncomingEvent(event, relay);
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
+    return eventKindTypePlugin.processIncomingEvent(event, fromRelay);
   }
 
   @Override

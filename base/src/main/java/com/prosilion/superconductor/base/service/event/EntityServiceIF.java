@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.service.event;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
@@ -16,6 +17,7 @@ public interface EntityServiceIF<T, U extends EventIF> {
   List<U> getEventsByKind(Kind kind);
   List<U> getEventsByKindAndAuthorPublicKey(Kind kind, PublicKey authorPublicKey);
   List<U> getEventsByKindAndPubKeyTag(Kind kind, PubKeyTag referencePubKeyTag);
+  List<U> getEventsByKindAndEventTag(Kind kind, EventTag eventTag);
   List<U> getEventsByKindAndAddressTag(Kind kind, AddressTag addressTag);
   List<U> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PubKeyTag referencePubKeyTag, AddressTag addressTag);
   List<U> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag referencedPubkeyTag, IdentifierTag identifierTag);

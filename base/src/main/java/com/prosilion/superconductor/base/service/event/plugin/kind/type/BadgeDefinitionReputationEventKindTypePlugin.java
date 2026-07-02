@@ -24,7 +24,7 @@ public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingE
   }
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
     String eventRelaysTagUrl = event.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow();
 
     if (!superconductorRelayUrl.equals(eventRelaysTagUrl))
@@ -32,6 +32,6 @@ public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingE
          String.format("RelayTag URL: [%s] does not match relay host SuperConductor URL: [%s]",
             eventRelaysTagUrl, superconductorRelayUrl));
 
-    return super.processIncomingEvent(event, relay);
+    return super.processIncomingEvent(event, fromRelay);
   }
 }

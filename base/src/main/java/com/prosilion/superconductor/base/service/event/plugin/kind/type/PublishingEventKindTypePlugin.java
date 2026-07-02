@@ -22,8 +22,8 @@ public abstract class PublishingEventKindTypePlugin implements EventKindTypePlug
   }
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
-    Optional<GenericEventRecord> genericEventRecord = eventKindTypePlugin.processIncomingEvent(event, relay);
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
+    Optional<GenericEventRecord> genericEventRecord = eventKindTypePlugin.processIncomingEvent(event, fromRelay);
     genericEventRecord.ifPresent(ger ->
        notifierService.nostrEventHandler(new AddNostrEvent(ger)));
     return genericEventRecord;

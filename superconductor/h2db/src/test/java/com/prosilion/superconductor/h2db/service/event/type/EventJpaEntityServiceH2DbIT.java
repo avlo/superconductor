@@ -87,11 +87,11 @@ class EventJpaEntityServiceH2DbIT {
         .containsAll(
             List.of("e", "g", "p", "t", "price", "subject")));
 
-    assertEquals(E_TAG.getIdEvent(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(E_TAG.getEventId(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("e"))
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
-        .map(EventTag::getIdEvent).findFirst().orElseThrow());
+        .map(EventTag::getEventId).findFirst().orElseThrow());
 
     assertEquals(G_TAG.toString(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("g"))

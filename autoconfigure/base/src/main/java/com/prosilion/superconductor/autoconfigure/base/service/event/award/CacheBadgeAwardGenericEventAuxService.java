@@ -29,7 +29,6 @@ public class CacheBadgeAwardGenericEventAuxService implements CacheBadgeAwardGen
   public Optional<BadgeAwardGenericEventAux> materialize(@NonNull EventIF incomingBadgeAwardGenericEvent, Relay relay) {
     log.debug("... materialize incomingBadgeAwardGenericEvent:\n{}", incomingBadgeAwardGenericEvent.createPrettyPrintJson());
 
-
     Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> materialize = cacheBadgeAwardGenericEventService.materialize(incomingBadgeAwardGenericEvent);
 
     Optional<BadgeAwardGenericEventAux> badgeAwardGenericEventAux = materialize.map(event ->

@@ -12,8 +12,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.NonNull;
+import lombok.Setter;
 
 @Setter
 @Getter
@@ -26,7 +26,7 @@ public class EventTagJpaEntity extends AbstractTagJpaEntity {
   private Marker marker;
 
   public EventTagJpaEntity(@NonNull EventTag eventTag) {
-    this(eventTag.getIdEvent(), eventTag.recommendedRelayUrl(), eventTag.getMarker());
+    this(eventTag.getEventId(), eventTag.recommendedRelayUrl(), eventTag.getMarker());
   }
 
   public EventTagJpaEntity(@NonNull String eventIdString, String recommendedRelayUrl, Marker marker) {
@@ -46,9 +46,9 @@ public class EventTagJpaEntity extends AbstractTagJpaEntity {
   @Transient
   public List<String> get() {
     return Stream.of(
-            eventIdString,
-            Optional.ofNullable(recommendedRelayUrl).orElseThrow(),
-            Optional.ofNullable(marker).map(Marker::getValue).toString())
-        .toList();
+          eventIdString,
+          Optional.ofNullable(recommendedRelayUrl).orElseThrow(),
+          Optional.ofNullable(marker).map(Marker::getValue).toString())
+       .toList();
   }
 }

@@ -4,6 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
@@ -17,6 +18,7 @@ public interface CacheServiceIF {
   List<GenericEventRecord> getByKind(Kind kind);
   List<GenericEventRecord> getEventsByKindAndAuthorPublicKey(Kind kind, PublicKey authorPublicKey);
   List<GenericEventRecord> getEventsByKindAndPubKeyTag(Kind kind, PubKeyTag referencePubKeyTag);
+  List<GenericEventRecord> getEventsByKindAndEventTag(Kind kind, EventTag eventTag);
   List<GenericEventRecord> getEventsByKindAndAddressTag(Kind kind, AddressTag addressTag);
   List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PubKeyTag referencePubKeyTag, AddressTag addressTag);
   List<GenericEventRecord> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag pubKeyTag, IdentifierTag identifierTag);

@@ -24,13 +24,13 @@ public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKin
 //      BadgeDefinitionGenericEvent void processIncomingEvent(@NonNull T event)
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
     log.debug("processing incoming BadgeDefinitionGenericEvent:\n  {}", event.createPrettyPrintJson());
     event.findFirstTag(RelayTag.class)
        .orElseThrow(() ->
           new NostrException(
              String.format("BadgeDefinitionAwardEvent\n%s\nmissing required RelayTag", event.createPrettyPrintJson())));
-    return super.processIncomingEvent(event, relay);
+    return super.processIncomingEvent(event, fromRelay);
   }
 
   @Override

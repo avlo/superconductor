@@ -2,6 +2,7 @@ package com.prosilion.superconductor.lib.jpa.repository;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
@@ -9,9 +10,9 @@ import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntity;
 import com.prosilion.superconductor.lib.jpa.entity.EventJpaEntityIF;
 import java.util.List;
 import java.util.Optional;
+import lombok.NonNull;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
-import lombok.NonNull;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -20,7 +21,7 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
 
   @NonNull
   List<EventJpaEntity> findAll(@NonNull Sort sort);
-  
+
   Optional<EventJpaEntityIF> findByUid(@NonNull Long uid);
   Optional<EventJpaEntityIF> findByEventId(String eventId);
   List<EventJpaEntityIF> findByPubKey(@NonNull String pubKey, Sort sort);
@@ -53,13 +54,17 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
     return findAllByKindAndPubKey(kind.getValue(), authorPublicKey.toHexString(), DESC_SORT_CREATED_AT);
   }
-  
+
   //  TODO: below identifierTag (unused, needs fix) filter handled by callers
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndAuthorPublicKeyAndIdentifierTag(@NonNull Kind kind, @NonNull PublicKey authorPublicKey, @NonNull IdentifierTag identifierTag) {
     return getEventsByKindAndAuthorPublicKey(kind, authorPublicKey);
   }
 
   //  TODO: below PubKeyTag (unused, needs fix) filter handled by callers  
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndEventTag(@NonNull Kind kind, @NonNull EventTag eventTag) {
+    return findByKind(kind.getValue());
+  }
+
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTag(@NonNull Kind kind, @NonNull PubKeyTag referencedPubKeyTag) {
     return findByKind(kind.getValue());
   }

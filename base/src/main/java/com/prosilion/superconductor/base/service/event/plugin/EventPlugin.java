@@ -42,7 +42,7 @@ public class EventPlugin implements EventPluginIF {
   }
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
     log.debug("processIncomingEvent() called with event\n{}", event.createPrettyPrintJson());
     Optional<GenericEventRecord> eventAlreadyExists = eventAlreadyExistsFxn.apply(cacheServiceIF, event);
     if (eventAlreadyExists.isPresent()) {

@@ -32,157 +32,157 @@ import org.springframework.context.annotation.ComponentScan;
 
 @AutoConfiguration
 @ComponentScan(
-  basePackages = {
-    "com.prosilion.superconductor.autoconfigure.base.config",
-    "com.prosilion.superconductor.autoconfigure.base.service",
-    "com.prosilion.superconductor.base.service.clientresponse",
-    "com.prosilion.superconductor.base.service.request",
-    "com.prosilion.superconductor.base.util",
-  })
+   basePackages = {
+      "com.prosilion.superconductor.autoconfigure.base.config",
+      "com.prosilion.superconductor.autoconfigure.base.service",
+      "com.prosilion.superconductor.base.service.clientresponse",
+      "com.prosilion.superconductor.base.service.request",
+      "com.prosilion.superconductor.base.util",
+   })
 @Slf4j
 public class EventServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheReferenceAddressTagService cacheDereferenceAddressTagService(
-    @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull RemoteAbstractTagService remoteAbstractTagService) {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull RemoteAbstractTagService remoteAbstractTagService) {
     return new CacheReferenceAddressTagService(cacheServiceIF, remoteAbstractTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheReferenceEventTagService cacheDereferenceEventTagService(
-    @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull RemoteAbstractTagService remoteAbstractTagService) {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull RemoteAbstractTagService remoteAbstractTagService) {
     return new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheKindAddressTagService cacheKindAddressTagService(
-    @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull RemoteAbstractTagService remoteAbstractTagService) {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull RemoteAbstractTagService remoteAbstractTagService) {
     return new CacheKindAddressTagService(cacheServiceIF, remoteAbstractTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheFormulaEventService cacheFormulaEventService(
-    @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-    @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
-    @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService) {
+     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+     @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
+     @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService) {
     return new CacheFormulaEventService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService, cacheDereferenceKindAddressTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService(
-    @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-    @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService) {
+     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+     @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService) {
     return new CacheBadgeDefinitionGenericEventService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService(
-    @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
-    @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
+     @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
+     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
     return new CacheBadgeDefinitionGenericEventAuxService(cacheDereferenceAddressTagService, cacheBadgeDefinitionGenericEventService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
-    @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-    @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
-    @NonNull CacheFormulaEventService cacheFormulaEventService,
-    @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
+     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+     @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
+     @NonNull CacheFormulaEventService cacheFormulaEventService,
+     @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
     return new CacheBadgeDefinitionReputationEventService(
-      cacheDereferenceEventTagService,
-      cacheDereferenceAddressTagService,
-      cacheFormulaEventService,
-      cacheKindAddressTagService);
+       cacheDereferenceEventTagService,
+       cacheDereferenceAddressTagService,
+       cacheFormulaEventService,
+       cacheKindAddressTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService(
-    @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-    @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
-    @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
+     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
+     @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
     return new CacheBadgeAwardGenericEventService(
-      cacheDereferenceEventTagService,
-      cacheBadgeDefinitionGenericEventService,
-      cacheKindAddressTagService);
+       cacheDereferenceEventTagService,
+       cacheBadgeDefinitionGenericEventService,
+       cacheKindAddressTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService(
-    @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-    @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService) {
+     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+     @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService) {
     return new CacheBadgeAwardGenericEventAuxService(
-      cacheDereferenceEventTagService,
-      cacheBadgeAwardGenericEventService);
+       cacheDereferenceEventTagService,
+       cacheBadgeAwardGenericEventService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService(
-    @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-    @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService,
-    @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
+     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+     @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService,
+     @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
     return new CacheBadgeAwardReputationEventService(
-      cacheDereferenceEventTagService,
-      cacheDereferenceKindAddressTagService,
-      cacheBadgeDefinitionReputationEventService);
+       cacheDereferenceEventTagService,
+       cacheDereferenceKindAddressTagService,
+       cacheBadgeDefinitionReputationEventService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeSetsEventService cacheBadgeSetsEventService(
-    @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-    @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
-    @NonNull CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService,
-    @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
-    @NonNull CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService) {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
+     @NonNull CacheBadgeAwardGenericEventAuxService cacheBadgeAwardGenericEventAuxService,
+     @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
+     @NonNull CacheBadgeDefinitionGenericEventAuxService cacheBadgeDefinitionGenericEventAuxService) {
     return new CacheBadgeSetsEventService(
-      cacheServiceIF,
-      cacheDereferenceEventTagService,
-      cacheReferenceAddressTagService,
-      cacheBadgeAwardGenericEventAuxService,
-      cacheBadgeDefinitionReputationEventService,
-      cacheBadgeDefinitionGenericEventAuxService);
+       cacheServiceIF,
+       cacheDereferenceEventTagService,
+       cacheReferenceAddressTagService,
+       cacheBadgeAwardGenericEventAuxService,
+       cacheBadgeDefinitionReputationEventService,
+       cacheBadgeDefinitionGenericEventAuxService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheFollowSetsEventService cacheFollowSetsEventService(
-    @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
-    @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
-    @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService,
-    @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
+     @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
+     @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService,
+     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) {
     return new CacheFollowSetsEventService(
-      cacheServiceIF,
-      cacheReferenceEventTagService,
-      cacheBadgeAwardReputationEventService,
-      cacheDereferenceKindAddressTagService,
-      cacheBadgeSetsEventServiceIF);
+       cacheServiceIF,
+       cacheReferenceEventTagService,
+       cacheBadgeAwardReputationEventService,
+       cacheDereferenceKindAddressTagService,
+       cacheBadgeSetsEventServiceIF);
   }
 
   @Bean
   @ConditionalOnMissingBean
   EventPlugin eventPlugin(
-    @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull @Qualifier("eventKindMaterializers") Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers,
-    @NonNull @Qualifier("eventKindTypeMaterializers") Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindTypeMaterializers,
-    @NonNull @Qualifier("kindClassStringMap") Map<Kind, String> kindClassStringMap) {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull @Qualifier("eventKindMaterializers") Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers,
+     @NonNull @Qualifier("eventKindTypeMaterializers") Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindTypeMaterializers,
+     @NonNull @Qualifier("kindClassStringMap") Map<Kind, String> kindClassStringMap) {
     return new EventPlugin(
-      cacheServiceIF,
-      eventKindMaterializers,
-      eventKindTypeMaterializers,
-      kindClassStringMap);
+       cacheServiceIF,
+       eventKindMaterializers,
+       eventKindTypeMaterializers,
+       kindClassStringMap);
   }
 }

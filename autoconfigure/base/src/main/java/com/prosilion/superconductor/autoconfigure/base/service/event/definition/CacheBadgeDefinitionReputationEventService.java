@@ -150,7 +150,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     List<BadgeDefinitionReputationEvent> badgeDefinitionReputationEvents =
        eventTagStream.stream()
           .map(eventTag ->
-             getEvent(eventTag.getIdEvent(), new Relay(eventTag.requireRecommendedRelayUrl())))
+             getEvent(eventTag.getEventId(), new Relay(eventTag.requireRecommendedRelayUrl())))
           .flatMap(Optional::stream).toList();
 
     int size = badgeDefinitionReputationEvents.size();

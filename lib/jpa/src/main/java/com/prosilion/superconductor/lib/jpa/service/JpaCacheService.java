@@ -13,8 +13,8 @@ import com.prosilion.superconductor.lib.jpa.entity.join.deletion.DeletionEventJp
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import lombok.extern.slf4j.Slf4j;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class JpaCacheService implements JpaCacheServiceIF {
@@ -22,8 +22,8 @@ public class JpaCacheService implements JpaCacheServiceIF {
   private final DeletionEventJpaEntityService deletionEventJpaEntityService;
 
   public JpaCacheService(
-      @NonNull EventJpaEntityService eventJpaEntityService,
-      @NonNull DeletionEventJpaEntityService deletionEventJpaEntityService) {
+     @NonNull EventJpaEntityService eventJpaEntityService,
+     @NonNull DeletionEventJpaEntityService deletionEventJpaEntityService) {
     this.eventJpaEntityService = eventJpaEntityService;
     this.deletionEventJpaEntityService = deletionEventJpaEntityService;
   }
@@ -31,115 +31,126 @@ public class JpaCacheService implements JpaCacheServiceIF {
   @Override
   public GenericEventRecord save(@NonNull EventIF event) {
     return eventJpaEntityService.getEventByUid(
-            eventJpaEntityService.save(event))
-        .orElseThrow()
-        .asGenericEventRecord();
+          eventJpaEntityService.save(event))
+       .orElseThrow()
+       .asGenericEventRecord();
   }
 
   @Override
   public Optional<GenericEventRecord> getEventByEventId(@NonNull String eventId) {
     return eventJpaEntityService.findByEventIdString(eventId).stream()
-        .filter(filterDeletionEvents())
-        .findFirst()
-        .map(EventIF::asGenericEventRecord);
+       .filter(filterDeletionEvents())
+       .findFirst()
+       .map(EventIF::asGenericEventRecord);
   }
 
   @Override
   public Optional<GenericEventRecord> getJpaEventByUid(Long id) {
     return eventJpaEntityService.getEventByUid(id).stream()
-        .filter(filterDeletionEvents())
-        .findFirst()
-        .map(EventIF::asGenericEventRecord);
+       .filter(filterDeletionEvents())
+       .findFirst()
+       .map(EventIF::asGenericEventRecord);
   }
 
   @Override
   public Optional<GenericEventRecord> getEvent(@NonNull EventIF eventIF) {
     return eventJpaEntityService.findByEventIdString(eventIF.getId()).stream()
-        .filter(filterDeletionEvents())
-        .findFirst()
-        .map(EventIF::asGenericEventRecord);
+       .filter(filterDeletionEvents())
+       .findFirst()
+       .map(EventIF::asGenericEventRecord);
   }
 
   @Override
   public List<GenericEventRecord> getByKind(@NonNull Kind kind) {
     return eventJpaEntityService.getEventsByKind(kind).stream()
-        .filter(filterDeletionEvents())
-        .map(EventIF::asGenericEventRecord).toList();
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).toList();
   }
 
   @Override
-  public List<GenericEventRecord> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
+  public List<GenericEventRecord> getEventsByKindAndAuthorPublicKey(
+     @NonNull Kind kind,
+     @NonNull PublicKey authorPublicKey) {
     return eventJpaEntityService.getEventsByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
-        .filter(filterDeletionEvents())
-        .map(EventIF::asGenericEventRecord).toList();
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).toList();
   }
 
   @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTag(
-      @NonNull Kind kind,
-      @NonNull PubKeyTag referencePubKeyTag) {
-    return eventJpaEntityService.getEventsByKind(kind).stream()
-        .filter(filterDeletionEvents())
-        .map(EventIF::asGenericEventRecord).toList();
+     @NonNull Kind kind,
+     @NonNull PubKeyTag referencePubKeyTag) {
+    return eventJpaEntityService.getEventsByKindAndPubKeyTag(kind, referencePubKeyTag).stream()
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).toList();
+  }
+
+  @Override
+  public List<GenericEventRecord> getEventsByKindAndEventTag(
+     @NonNull Kind kind,
+     @NonNull EventTag eventTag) {
+    return eventJpaEntityService.getEventsByKindAndEventTag(kind, eventTag).stream()
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).toList();
   }
 
   @Override
   public List<GenericEventRecord> getEventsByKindAndAddressTag(Kind kind, AddressTag addressTag) {
     return eventJpaEntityService.getEventsByKindAndAddressTag(kind, addressTag).stream()
-        .filter(filterDeletionEvents())
-        .map(EventIF::asGenericEventRecord).toList();
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).toList();
   }
 
   @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PubKeyTag referencePubKeyTag, AddressTag addressTag) {
     return eventJpaEntityService.getEventsByKindAndPubKeyTagAndAddressTag(kind, referencePubKeyTag, addressTag).stream()
-        .filter(filterDeletionEvents())
-        .map(EventIF::asGenericEventRecord).toList();
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).toList();
   }
 
   @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag referencedPubkeyTag, IdentifierTag identifierTag) {
     return eventJpaEntityService.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencedPubkeyTag, identifierTag).stream()
-        .filter(filterDeletionEvents())
-        .map(EventIF::asGenericEventRecord).toList();
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).toList();
   }
 
   @Override
   public Optional<GenericEventRecord> getEventByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag) {
     return eventJpaEntityService.getEventByKindAndAuthorPublicKeyAndIdentifierTag(kind, authorPublicKey, identifierTag).stream()
-        .filter(filterDeletionEvents())
-        .map(EventIF::asGenericEventRecord).findFirst();
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).findFirst();
   }
 
   @Override
   public List<GenericEventRecord> getAll() {
     return eventJpaEntityService.getAll().stream()
-        .filter(filterDeletionEvents())
-        .map(EventIF::asGenericEventRecord).toList();
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).toList();
   }
 
   private Predicate<EventJpaEntityIF> filterDeletionEvents() {
     return eventJpaEntityIF ->
-        !getAllDeletionEventIds().contains(eventJpaEntityIF.getUid());
+       !getAllDeletionEventIds().contains(eventJpaEntityIF.getUid());
   }
 
   @Override
   public void deleteEvent(@NonNull EventIF eventIF) {
     eventIF.getTags().stream()
-        .filter(EventTag.class::isInstance)
-        .map(EventTag.class::cast)
-        .map(EventTag::getIdEvent)
-        .map(eventJpaEntityService::findByEventIdString)
-        .flatMap(Optional::stream)
-        .filter(deletionCandidate ->
-            deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
-        .forEach(deletionEventJpaEntityService::addDeletionEvent);
+       .filter(EventTag.class::isInstance)
+       .map(EventTag.class::cast)
+       .map(EventTag::getEventId)
+       .map(eventJpaEntityService::findByEventIdString)
+       .flatMap(Optional::stream)
+       .filter(deletionCandidate ->
+          deletionCandidate.getPublicKey().equals(eventIF.getPublicKey()))
+       .forEach(deletionEventJpaEntityService::addDeletionEvent);
   }
 
   @Override
   public List<Long> getAllDeletionEventIds() {
     return deletionEventJpaEntityService.getAll().stream()
-        .map(DeletionEventJpaEntityIF::getId).toList();
+       .map(DeletionEventJpaEntityIF::getId).toList();
   }
 
 }

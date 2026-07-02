@@ -4,6 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
@@ -87,6 +88,14 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     return getEventsByKind(kind).stream()
        .filter(eventNosqlEntityIF ->
           containsTypedTargetTag(referencedPublicKey, eventNosqlEntityIF)).toList();
+  }
+
+  public List<EventNosqlEntityIF> getEventsByKindAndEventTag(
+     @NonNull Kind kind,
+     @NonNull EventTag eventTag) {
+    return getEventsByKind(kind).stream()
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(eventTag, eventNosqlEntityIF)).toList();
   }
 
   //  TODO: replace with JPQL

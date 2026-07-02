@@ -93,11 +93,11 @@ class EventNosqlEntityServiceIT {
         .containsAll(
             List.of("e", "g", "p", "t", "price", "subject")));
 
-    assertEquals(e_tag.getIdEvent(), savedEventTags.stream().filter(baseTag ->
+    assertEquals(e_tag.getEventId(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("e"))
         .filter(EventTag.class::isInstance)
         .map(EventTag.class::cast)
-        .map(EventTag::getIdEvent).findFirst().orElseThrow());
+        .map(EventTag::getEventId).findFirst().orElseThrow());
 
     assertEquals(g_tag.toString(), savedEventTags.stream().filter(baseTag ->
             baseTag.getCode().equalsIgnoreCase("g"))

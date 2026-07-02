@@ -36,7 +36,7 @@ public class EventKindTypePlugin implements EventKindTypePluginIF {
   }
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay relay) {
-    return eventPlugin.processIncomingEvent(event, relay);
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
+    return eventPlugin.processIncomingEvent(event, fromRelay);
   }
 }

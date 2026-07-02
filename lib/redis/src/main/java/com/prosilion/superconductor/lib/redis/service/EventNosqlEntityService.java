@@ -42,7 +42,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
        Collectors.toMap(
           TagInterceptor::getCode,
           Function.identity()));
-    log.debug("Created EventNosqlEntityService with interceptors:\n  {}", 
+    log.debug("Created EventNosqlEntityService with interceptors:\n  {}",
        interceptors.stream().map(TagInterceptor::toString).collect(Collectors.joining(",\n  ")));
   }
 
@@ -123,6 +123,13 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     return getEventsByKindAndPubKeyTag(kind, referencedPublicKey).stream()
        .filter(eventNosqlEntityIF ->
           containsTypedTargetTag(addressTag, eventNosqlEntityIF)).toList();
+  }
+
+  @Override
+  public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndEventTag(Kind kind, PubKeyTag referencePubKeyTag, EventTag eventTag) {
+    return getEventsByKindAndPubKeyTag(kind, referencePubKeyTag).stream()
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(eventTag, eventNosqlEntityIF)).toList();
   }
 
   //  TODO: replace with JPQL  

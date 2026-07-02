@@ -81,6 +81,12 @@ public class RedisCacheService implements RedisCacheServiceIF {
   }
 
   @Override
+  public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndEventTag(Kind kind, PubKeyTag referencePubKeyTag, EventTag eventTag) {
+    return filteredGER.apply(
+       eventNosqlEntityService.getEventsByKindAndPubKeyTagAndEventTag(kind, referencePubKeyTag, eventTag));
+  }
+
+  @Override
   public List<GenericEventRecord> getEventsByKindAndIdentifierTag(
      @NonNull Kind kind,
      @NonNull IdentifierTag identifierTag) {

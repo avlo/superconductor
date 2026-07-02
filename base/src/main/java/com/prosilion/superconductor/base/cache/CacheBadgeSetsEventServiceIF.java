@@ -4,6 +4,7 @@ import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
@@ -19,5 +20,6 @@ public interface CacheBadgeSetsEventServiceIF extends CacheTagMappedEventService
   Optional<BadgeSetsEvent> materialize(@NonNull EventIF eventIF);
 
   List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag);
+  List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
   List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
 }

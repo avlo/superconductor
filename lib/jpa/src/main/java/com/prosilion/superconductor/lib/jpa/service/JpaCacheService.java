@@ -109,6 +109,13 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
+  public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndEventTag(Kind kind, PubKeyTag referencePubKeyTag, EventTag eventTag) {
+    return eventJpaEntityService.getEventsByKindAndPubKeyTagAndEventTag(kind, referencePubKeyTag, eventTag).stream()
+       .filter(filterDeletionEvents())
+       .map(EventIF::asGenericEventRecord).toList();
+  }
+
+  @Override
   public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag referencedPubkeyTag, IdentifierTag identifierTag) {
     return eventJpaEntityService.getEventsByKindAndPubKeyTagAndIdentifierTag(kind, referencedPubkeyTag, identifierTag).stream()
        .filter(filterDeletionEvents())

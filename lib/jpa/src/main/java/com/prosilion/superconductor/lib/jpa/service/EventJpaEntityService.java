@@ -142,6 +142,11 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
   }
 
   @Override
+  public List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndEventTag(Kind kind, PubKeyTag pubKeyTag, EventTag eventTag) {
+    return typedTagFxn.apply(eventTag, getEventsByKindAndPubKeyTag(kind, pubKeyTag).stream()).toList();
+  }
+
+  @Override
   public List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag pubKeyTag, IdentifierTag identifierTag) {
     return typedTagFxn.apply(identifierTag, getEventsByKindAndPubKeyTag(kind, pubKeyTag).stream()).toList();
   }

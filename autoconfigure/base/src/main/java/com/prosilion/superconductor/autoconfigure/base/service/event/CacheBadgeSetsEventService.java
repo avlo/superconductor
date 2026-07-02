@@ -42,12 +42,12 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   private final CacheBadgeDefinitionGenericEventAuxServiceIF cacheBadgeDefinitionGenericEventAuxServiceIF;
 
   public CacheBadgeSetsEventService(
-    @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
-    @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
-    @NonNull CacheBadgeAwardGenericEventAuxServiceIF cacheBadgeAwardGenericEventAuxServiceIF,
-    @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
-    @NonNull CacheBadgeDefinitionGenericEventAuxServiceIF cacheBadgeDefinitionGenericEventAuxServiceIF) {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
+     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
+     @NonNull CacheBadgeAwardGenericEventAuxServiceIF cacheBadgeAwardGenericEventAuxServiceIF,
+     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
+     @NonNull CacheBadgeDefinitionGenericEventAuxServiceIF cacheBadgeDefinitionGenericEventAuxServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheReferenceEventTagService = cacheReferenceEventTagService;
     this.cacheReferenceAddressTagService = cacheReferenceAddressTagService;
@@ -60,23 +60,23 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   public Optional<BadgeSetsEvent> materialize(@NonNull EventIF incomingBadgeSetsEvent) {
     log.debug("materialize(EventIF incomingBadgeSetsEvent):\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
     Optional<GenericEventRecord> incomingBadgeSetsEventGER = cacheReferenceEventTagService.getEvent(
-      incomingBadgeSetsEvent.getId(), incomingBadgeSetsEvent.getRelayTag().orElseThrow().getRelay());
+       incomingBadgeSetsEvent.getId(), incomingBadgeSetsEvent.getRelayTag().orElseThrow().getRelay());
 
     if (incomingBadgeSetsEventGER.isEmpty()) {
       throw new NostrException("BadgeSetsEvent [%s] Optional returned EMPTY");
     }
 
     List<EventTag> eventTags = incomingBadgeSetsEventGER.map(e ->
-      e.getTypeSpecificTags(EventTag.class)).stream().flatMap(Collection::stream).toList();
+       e.getTypeSpecificTags(EventTag.class)).stream().flatMap(Collection::stream).toList();
 
     log.debug("found event tags: [{}]", eventTags);
 
     List<BadgeAwardGenericEventAux> badgeAwardGenericEventAuxes = eventTags.stream().map(eventTag ->
-      cacheBadgeAwardGenericEventAuxServiceIF
-        .getEvent(
-          eventTag.getEventId(),
-          new Relay(eventTag.requireRecommendedRelayUrl()))
-        .stream()).flatMap(Stream::distinct).toList();
+       cacheBadgeAwardGenericEventAuxServiceIF
+          .getEvent(
+             eventTag.getEventId(),
+             new Relay(eventTag.requireRecommendedRelayUrl()))
+          .stream()).flatMap(Stream::distinct).toList();
 
     log.debug("badgeSetsEventGER found badgeAwardGenericEventAuxes: [{}]", badgeAwardGenericEventAuxes);
 
@@ -86,37 +86,37 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
     PublicKey eventAuxPubkey = badgeAwardGenericEventAuxes.stream().map(BadgeGenericEventAux::getPublicKey).findFirst().orElseThrow();
 
     List<AddressTag> addressTags = incomingBadgeSetsEventGER.map(e ->
-      e.getTypeSpecificTags(AddressTag.class)).stream().flatMap(Collection::stream).toList();
+       e.getTypeSpecificTags(AddressTag.class)).stream().flatMap(Collection::stream).toList();
 
     log.debug("badgeSetsEventGER found event tags: [{}]", eventTags);
 
     if (addressTags.size() != eventTags.size())
       throw new NostrException(
-        String.format("uneven eventTags size [%s] vs addressTags size [%s]", eventTags.size(), addressTags.size()));
+         String.format("uneven eventTags size [%s] vs addressTags size [%s]", eventTags.size(), addressTags.size()));
 
     List<SetsPairedEvents> setsPairedEvents = IntStream.range(0, eventTags.size()).mapToObj(operand ->
-      new SetsPairedEvents(
-        addressTags.get(operand), eventTags.get(operand), eventAuxPubkey)).toList();
+       new SetsPairedEvents(
+          addressTags.get(operand), eventTags.get(operand), eventAuxPubkey)).toList();
 
     Optional<BadgeDefinitionReputationEvent> badgeDefinitionReputationEventOpts = cacheBadgeDefinitionReputationEventServiceIF.getBy(
-      new AddressTag(
-        Kind.BADGE_DEFINITION_EVENT,
-        incomingBadgeSetsEvent.requireFirstTag(PubKeyTag.class).getPublicKey(),
-        incomingBadgeSetsEvent.requireFirstTag(IdentifierTag.class),
-        incomingBadgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElse(null)));
+       new AddressTag(
+          Kind.BADGE_DEFINITION_EVENT,
+          incomingBadgeSetsEvent.requireFirstTag(PubKeyTag.class).getPublicKey(),
+          incomingBadgeSetsEvent.requireFirstTag(IdentifierTag.class),
+          incomingBadgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElse(null)));
 
     log.debug("badgeSetsEventGER found badgeDefinitionReputationEventOpts: [{}]",
-      badgeDefinitionReputationEventOpts.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining(",\n  ")));
+       badgeDefinitionReputationEventOpts.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining(",\n  ")));
 
     Optional<BadgeSetsEvent> badgeSetsEvent = badgeDefinitionReputationEventOpts
-      .map(badgeDefinitionReputationEvent ->
-        new BadgeSetsEvent(
-          incomingBadgeSetsEventGER.get(),
-          setsPairedEvents,
-          badgeDefinitionReputationEvent));
+       .map(badgeDefinitionReputationEvent ->
+          new BadgeSetsEvent(
+             incomingBadgeSetsEventGER.get(),
+             setsPairedEvents,
+             badgeDefinitionReputationEvent));
 
     log.debug("returning badgeSetsEvent: [{}]",
-      badgeSetsEvent.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining(",\n  ")));
+       badgeSetsEvent.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining(",\n  ")));
 
     return badgeSetsEvent;
   }
@@ -127,7 +127,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
     log.debug("calling cacheDereferenceEventTagService.getEvent(eventId, relay)...");
     Optional<GenericEventRecord> event = cacheReferenceEventTagService.getEvent(eventId, relay);
     log.debug("... cacheDereferenceEventTagService.getEvent(eventId, relay) returned:\n  [{}]",
-      event.map(GenericEventRecord::createPrettyPrintJson));
+       event.map(GenericEventRecord::createPrettyPrintJson));
     return event.flatMap(this::materialize);
   }
 
@@ -137,20 +137,26 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
     log.debug("calling cacheReferenceAddressTagService.getBy(referencedAbstractEventTag)...");
     Optional<GenericEventRecord> event = cacheReferenceAddressTagService.getBy(referencedAbstractEventTag);
     log.debug("... calling cacheReferenceAddressTagService.getBy(referencedAbstractEventTag) returned:\n  [{}]",
-      event.map(GenericEventRecord::createPrettyPrintJson));
+       event.map(GenericEventRecord::createPrettyPrintJson));
     return event.flatMap(this::materialize);
   }
 
   @Override
   public List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag) {
     return cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), pubKeyTag).stream()
-      .map(this::materialize).flatMap(Optional::stream).toList();
+       .map(this::materialize).flatMap(Optional::stream).toList();
+  }
+
+  @Override
+  public List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
+    return cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(getKind(), pubKeyTag, eventTag).stream()
+       .map(this::materialize).flatMap(Optional::stream).toList();
   }
 
   @Override
   public List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
     return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag).stream()
-      .map(this::materialize).flatMap(Optional::stream).toList();
+       .map(this::materialize).flatMap(Optional::stream).toList();
   }
 
   @Override

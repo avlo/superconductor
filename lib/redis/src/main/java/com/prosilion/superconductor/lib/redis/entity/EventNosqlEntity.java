@@ -1,21 +1,24 @@
 package com.prosilion.superconductor.lib.redis.entity;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.nostr.user.Signature;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
-import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
@@ -43,8 +46,10 @@ public class EventNosqlEntity implements EventNosqlEntityIF {
   private String content;
 
   @Indexed
-  @Setter
   private List<BaseTag> tags = new ArrayList<>();
+
+  @Indexed
+  private Map<AddressTag, EventTag> aTagETagMap = new HashMap<>();
 
   @NonNull
   private String signature;
@@ -62,6 +67,25 @@ public class EventNosqlEntity implements EventNosqlEntityIF {
   @Override
   public Kind getKind() {
     return Kind.valueOf(kind);
+  }
+
+  @Override
+  public List<BaseTag> getTags() {
+    return getTags(tags);
+  }
+
+  public void setTags(List<BaseTag> tags) {
+    this.tags = cullATagETagMapFromBaseTags(tags);
+  }
+
+  @Override
+  public void setATagETagMap(@NonNull Map<AddressTag, EventTag> aTagETagMap) {
+    this.aTagETagMap = aTagETagMap;
+  }
+
+  @Override
+  public Map<AddressTag, EventTag> getATagETagMap() {
+    return aTagETagMap;
   }
 
   @Override

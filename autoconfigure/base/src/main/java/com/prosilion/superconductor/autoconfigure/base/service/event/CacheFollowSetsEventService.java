@@ -18,6 +18,7 @@ import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,10 +58,10 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
     log.debug("... calling cacheBadgeSetsEventServiceIF.getEvent(...)");
     List<BadgeSetsEvent> badgeSetsEvents = badgeSetsEventsAsEventTags.stream()
-       .map(eventTag -> cacheBadgeSetsEventServiceIF.getEvent(
-          eventTag.getEventId(),
-          new Relay(eventTag.requireRecommendedRelayUrl())))
-       .flatMap(Optional::stream).toList();
+       .map(eventTag -> cacheBadgeSetsEventServiceIF.getBy(
+          incomingFollowSetsEvent.requireFirstTag(PubKeyTag.class),
+          eventTag))
+       .flatMap(Collection::stream).toList();
 
     log.debug("... returned badgeSetsEvents:\n  [{}]", badgeSetsEvents);
 

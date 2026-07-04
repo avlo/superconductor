@@ -2,10 +2,11 @@ package com.prosilion.superconductor.autoconfigure.base.service.event;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEventAux;
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.BadgeGenericEventAux;
 import com.prosilion.nostr.event.BadgeSetsEvent;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
@@ -18,8 +19,8 @@ import com.prosilion.nostr.tag.SetsPairedEvents;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventAuxServiceIF;
-import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventAuxServiceIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -37,30 +38,30 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   private final CacheServiceIF cacheServiceIF;
   private final CacheReferenceEventTagService cacheReferenceEventTagService;
   private final CacheReferenceAddressTagService cacheReferenceAddressTagService;
-  private final CacheBadgeAwardGenericEventAuxServiceIF cacheBadgeAwardGenericEventAuxServiceIF;
+  private final CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
-  private final CacheBadgeDefinitionGenericEventAuxServiceIF cacheBadgeDefinitionGenericEventAuxServiceIF;
+  private final CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF;
 
   public CacheBadgeSetsEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
      @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
-     @NonNull CacheBadgeAwardGenericEventAuxServiceIF cacheBadgeAwardGenericEventAuxServiceIF,
+     @NonNull CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
-     @NonNull CacheBadgeDefinitionGenericEventAuxServiceIF cacheBadgeDefinitionGenericEventAuxServiceIF) {
+     @NonNull CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheReferenceEventTagService = cacheReferenceEventTagService;
     this.cacheReferenceAddressTagService = cacheReferenceAddressTagService;
-    this.cacheBadgeAwardGenericEventAuxServiceIF = cacheBadgeAwardGenericEventAuxServiceIF;
+    this.cacheBadgeAwardGenericEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
-    this.cacheBadgeDefinitionGenericEventAuxServiceIF = cacheBadgeDefinitionGenericEventAuxServiceIF;
+    this.cacheBadgeDefinitionGenericEventServiceIF = cacheBadgeDefinitionGenericEventServiceIF;
   }
 
   @Override
   public Optional<BadgeSetsEvent> materialize(@NonNull EventIF incomingBadgeSetsEvent) {
     log.debug("materialize(EventIF incomingBadgeSetsEvent):\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
     Optional<GenericEventRecord> incomingBadgeSetsEventGER = cacheReferenceEventTagService.getEvent(
-       incomingBadgeSetsEvent.getId(), incomingBadgeSetsEvent.getRelayTag().orElseThrow().getRelay());
+       incomingBadgeSetsEvent.getId(), incomingBadgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElse(null));
 
     if (incomingBadgeSetsEventGER.isEmpty()) {
       throw new NostrException("BadgeSetsEvent [%s] Optional returned EMPTY");
@@ -68,23 +69,20 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
 
     List<EventTag> eventTags = incomingBadgeSetsEventGER.map(e ->
        e.getTypeSpecificTags(EventTag.class)).stream().flatMap(Collection::stream).toList();
-
     log.debug("found event tags: [{}]", eventTags);
 
-    List<BadgeAwardGenericEventAux> badgeAwardGenericEventAuxes = eventTags.stream().map(eventTag ->
-       cacheBadgeAwardGenericEventAuxServiceIF
+    List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEvents = eventTags.stream().map(eventTag ->
+       cacheBadgeAwardGenericEventServiceIF
           .getEvent(
              eventTag.getEventId(),
              new Relay(eventTag.requireRecommendedRelayUrl()))
           .stream()).flatMap(Stream::distinct).toList();
+    log.debug("badgeSetsEventGER found badgeAwardGenericEvents: [{}]", badgeAwardGenericEvents);
 
-    log.debug("badgeSetsEventGER found badgeAwardGenericEventAuxes: [{}]", badgeAwardGenericEventAuxes);
-
-    if (badgeAwardGenericEventAuxes.stream().map(BadgeGenericEventAux::getPublicKey).distinct().count() > 1)
+    if (badgeAwardGenericEvents.stream().map(BaseEvent::getPublicKey).distinct().count() > 1)
       throw new NostrException("badgeSetsEventGER event auxes contained different public keys");
 
-    PublicKey eventAuxPubkey = badgeAwardGenericEventAuxes.stream().map(BadgeGenericEventAux::getPublicKey).findFirst().orElseThrow();
-
+    PublicKey eventAuxPubkey = badgeAwardGenericEvents.stream().map(BaseEvent::getPublicKey).findFirst().orElseThrow();
     List<AddressTag> addressTags = incomingBadgeSetsEventGER.map(e ->
        e.getTypeSpecificTags(AddressTag.class)).stream().flatMap(Collection::stream).toList();
 

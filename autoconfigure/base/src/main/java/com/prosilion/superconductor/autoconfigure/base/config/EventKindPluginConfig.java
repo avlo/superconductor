@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.CacheCurationSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
@@ -132,11 +133,16 @@ public class EventKindPluginConfig {
   Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers(
      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
+     @NonNull CacheCurationSetsEventService cacheCurationSetsEventService,
      @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
      @NonNull CacheFormulaEventService cacheFormulaEventService) {
     Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
 
+    kindFxnMap.put(
+       Kind.CURATION_SETS,
+       cacheCurationSetsEventService::materialize);
+    
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
        cacheBadgeAwardGenericEventService::materialize);

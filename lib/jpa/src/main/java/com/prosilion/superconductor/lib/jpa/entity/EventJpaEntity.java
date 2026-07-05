@@ -2,12 +2,9 @@ package com.prosilion.superconductor.lib.jpa.entity;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.nostr.user.Signature;
-import com.prosilion.superconductor.base.cache.AddressTagEventTagMappableIF;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,20 +13,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.apache.commons.collections4.CollectionUtils;
 
 @Entity
 @Table(name = "event")
 @NoArgsConstructor
-public class EventJpaEntity implements EventJpaEntityIF, AddressTagEventTagMappableIF {
+public class EventJpaEntity implements EventJpaEntityIF {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long uid;
@@ -45,11 +38,7 @@ public class EventJpaEntity implements EventJpaEntityIF, AddressTagEventTagMappa
   private String content;
 
   @Transient
-  private List<BaseTag> tags = new ArrayList<>();
-
-  @Transient
-  private Map<AddressTag, EventTag> aTagETagMap = new HashMap<>();
-
+  private List<BaseTag> tags;
   private String signature;
 
   public EventJpaEntity(String eventId, Integer kind, String pubKey, Long createdAt, String signature, String content) {
@@ -107,23 +96,13 @@ public class EventJpaEntity implements EventJpaEntityIF, AddressTagEventTagMappa
   }
 
   @Override
-  public void setTags(List<BaseTag> baseTags) {
-    this.tags = cullATagETagMapFromBaseTags(baseTags);
+  public void setTags(List<BaseTag> tags) {
+    this.tags = tags;
   }
-
+  
   @Override
   public List<BaseTag> getTags() {
-    return getTags(tags);
-  }
-
-  @Override
-  public void setATagETagMap(@NonNull Map<AddressTag, EventTag> aTagETagMap) {
-    this.aTagETagMap = aTagETagMap;
-  }
-
-  @Override
-  public Map<AddressTag, EventTag> getATagETagMap() {
-    return aTagETagMap;
+    return tags;
   }
 
   @Override

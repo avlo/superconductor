@@ -95,10 +95,10 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
        followSetsEvent.createPrettyPrintJson());
 
     List<BadgeAwardReputationEvent> badgeAwardReputationEvents =
-       followSetsEvent.getAddressTags().stream().flatMap(addressTag ->
+       followSetsEvent.getBadgeSetsEventList().stream().flatMap(badgeSetsEvent ->
              cacheKindAddressTagServiceIF.getBy(
                    Kind.BADGE_AWARD_EVENT,
-                   new PubKeyTag(followSetsEvent.getAwardRecipientPublicKey()), addressTag)
+                   new PubKeyTag(followSetsEvent.getAwardRecipientPublicKey()), badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag())
                 .stream()
                 .map(event ->
                    cacheBadgeAwardReputationEventServiceIF.getEvent(
@@ -133,8 +133,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
   @Override
   @Deprecated
-  public Optional<FollowSetsEvent> getBy(@NonNull AddressTag addressTag) {
-    return cacheKindAddressTagServiceIF.getBy(getKind(), addressTag).stream()
+  public Optional<FollowSetsEvent> getBy(@NonNull EventTag eventTag) {
+    return cacheReferenceEventTagServiceIF.getBy(eventTag).stream()
        .map(this::materialize).flatMap(Optional::stream).findFirst();
   }
 

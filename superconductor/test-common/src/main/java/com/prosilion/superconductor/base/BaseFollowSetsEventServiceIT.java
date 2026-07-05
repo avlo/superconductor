@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.BadgeSetsEvent;
+import com.prosilion.nostr.event.CurationSetsEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -17,7 +18,7 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.SetsPairedEvents;
+import com.prosilion.nostr.tag.SetsPairedEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
@@ -84,7 +85,7 @@ public abstract class BaseFollowSetsEventServiceIT {
 
   Duration requestTimeoutDuration;
 
-  BadgeSetsEvent upvoteBadgeSetsEvent;
+  BadgeSetsEvent badgeSetsUpvoteEvent;
 
   public BaseFollowSetsEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
@@ -111,8 +112,8 @@ public abstract class BaseFollowSetsEventServiceIT {
        relay);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       repDefnCreator,
-       submitter.getPublicKey(),
+       aImgIdentity,
+       repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
        relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
@@ -121,31 +122,33 @@ public abstract class BaseFollowSetsEventServiceIT {
 
     AddressTag badgeDefnEventAsAddressTag = badgeAwardUpvoteEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag();
 
-    AddressTag addressTag = new AddressTag(
-       badgeDefnEventAsAddressTag.getKind(),
-       badgeDefnEventAsAddressTag.getPublicKey(),
-       badgeDefnEventAsAddressTag.getIdentifierTag(),
-       relay == null ? badgeDefnEventAsAddressTag.findRelay().orElse(null) : relay);
-
-    SetsPairedEvents setsPairedEvents = new SetsPairedEvents(
-       addressTag,
+    SetsPairedEvent setsPairedEvents = new SetsPairedEvent(
+       badgeDefnEventAsAddressTag,
+       badgeAwardUpvoteEvent.getRelay().orElse(null),
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)),
        badgeAwardUpvoteEvent.getAwardRecipientPublicKey());
-    
-    this.upvoteBadgeSetsEvent = new BadgeSetsEvent(
+
+    CurationSetsEvent curationSetsUpvoteEvent = new CurationSetsEvent(
        aImgIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
        setsPairedEvents,
        relay);
+    cacheServiceIF.save(curationSetsUpvoteEvent);
 
-    cacheServiceIF.save(upvoteBadgeSetsEvent);
+    this.badgeSetsUpvoteEvent = new BadgeSetsEvent(
+       aImgIdentity,
+       badgeDefinitionReputationEventPlusOneFormula,
+       curationSetsUpvoteEvent,
+       relay);
+
+    cacheServiceIF.save(badgeSetsUpvoteEvent);
   }
 
   @Test
   public void testSaveBadgeAwardReputationEventUpvote() {
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
        aImgIdentity,
-       upvoteBadgeSetsEvent,
+       badgeSetsUpvoteEvent,
        relay);
 
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
@@ -153,18 +156,23 @@ public abstract class BaseFollowSetsEventServiceIT {
     FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId(), relay).orElseThrow();
     assertEquals(followSetsEvent, dbFollowSetsEventByEventId);
 
-    List<String> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeSetsEvents().stream()
-       .map(BadgeSetsEvent::getSetsPairedEventsList).flatMap(Collection::stream).map(SetsPairedEvents::getAwardEventId).toList();
+    List<String> badgeAwardAbstractEvents = dbFollowSetsEventByEventId.getBadgeSetsEventList().stream()
+       .map(BadgeSetsEvent::getCurationSetsEventList).flatMap(Collection::stream)
+       .map(curationSetsEvent ->
+          curationSetsEvent.getEventTag().getEventId()).toList();
 
     assertTrue(badgeAwardAbstractEvents.contains(badgeAwardUpvoteEvent.getId()));
 
     PublicKey matchPubkey = dbFollowSetsEventByEventId.getAwardRecipientPublicKey();
     assertEquals(matchPubkey, recipient.getPublicKey());
 
-    assertEquals(followSetsEvent.getAddressTags().stream().sorted().toList(), dbFollowSetsEventByEventId.getAddressTags().stream().sorted().toList());
+    assertEquals(followSetsEvent.getBadgeSetsEventList(), dbFollowSetsEventByEventId.getBadgeSetsEventList());
     assertEquals(followSetsEvent.getEventTags(), dbFollowSetsEventByEventId.getEventTags());
-    assertEquals(followSetsEvent.getBadgeSetsEvents(), dbFollowSetsEventByEventId.getBadgeSetsEvents());
-    assertEquals(followSetsEvent.getBadgeSetsEvents().stream().map(BadgeSetsEvent::getBadgeDefinitionReputationEvent).toList(), dbFollowSetsEventByEventId.getBadgeSetsEvents().stream().map(BadgeSetsEvent::getBadgeDefinitionReputationEvent).toList());
+    assertEquals(followSetsEvent.asAddressableEventAddressTag(), dbFollowSetsEventByEventId.asAddressableEventAddressTag());
+    assertEquals(followSetsEvent.getIdentifierTag(), dbFollowSetsEventByEventId.getIdentifierTag());
+    assertEquals(followSetsEvent.getAwardRecipientPublicKey(), dbFollowSetsEventByEventId.getAwardRecipientPublicKey());
+    assertEquals(followSetsEvent.getBadgeSetsEventList().size(), dbFollowSetsEventByEventId.getBadgeSetsEventList().size());
+    assertEquals(1, followSetsEvent.getBadgeSetsEventList().size());
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
        new NostrSingleRequestService()
@@ -181,7 +189,7 @@ public abstract class BaseFollowSetsEventServiceIT {
 
     assertTrue(returnedEventIFs.stream().map(EventIF::getKind).toList().contains(Kind.FOLLOW_SETS));
 
-    assertTrue(dbFollowSetsEventByEventId.getBadgeSetsEvents().stream().map(BadgeSetsEvent::getBadgeDefinitionReputationEvent)
+    assertTrue(dbFollowSetsEventByEventId.getBadgeSetsEventList().stream().map(BadgeSetsEvent::getBadgeDefinitionReputationEvent)
        .map(BadgeDefinitionReputationEvent::getFormulaEvents)
        .anyMatch(badgeDefinitionReputationEventPlusOneFormula::equals));
   }

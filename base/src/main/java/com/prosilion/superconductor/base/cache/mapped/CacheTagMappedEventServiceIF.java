@@ -12,6 +12,8 @@ import lombok.NonNull;
  */
 public interface CacheTagMappedEventServiceIF<T extends TagMappedEventIF, U extends ReferencedAbstractEventTag> {
   Optional<T> getBy(@NonNull U referencedAbstractEventTag);
-  Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay);
   Kind getKind();
+
+  @Deprecated(since = "CacheTagMappedEventServiceIF may/should not require relay for CurationSetsEvent.  move/remove as appropriate")
+  Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay);
 }

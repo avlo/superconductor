@@ -14,11 +14,12 @@ import lombok.NonNull;
 
 public interface CacheCurationSetsEventServiceIF extends CacheTagMappedEventServiceIF<CurationSetsEvent, EventTag>, EventMaterializer<CurationSetsEvent> {
   @Override
+  @Deprecated(since = "CacheTagMappedEventServiceIF may/should not require relay for CurationSetsEvent.  move/remove as appropriate")
   Optional<CurationSetsEvent> getEvent(@NonNull String eventId, @NonNull Relay relay);
   @Override
   Optional<CurationSetsEvent> materialize(@NonNull EventIF eventIF);
 
   List<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag);
-  List<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
+  Optional<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
   List<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
 }

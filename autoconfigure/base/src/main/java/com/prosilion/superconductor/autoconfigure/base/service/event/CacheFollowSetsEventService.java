@@ -18,7 +18,6 @@ import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -58,11 +57,16 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
     log.debug("... calling cacheBadgeSetsEventServiceIF.getEvent(...)");
     List<BadgeSetsEvent> badgeSetsEvents = badgeSetsEventsAsEventTags.stream()
-       .map(eventTag -> cacheBadgeSetsEventServiceIF.getBy(
-          incomingFollowSetsEvent.requireFirstTag(PubKeyTag.class),
-          eventTag))
-       .flatMap(Collection::stream).toList();
-
+       .map(eventTag -> cacheBadgeSetsEventServiceIF.getEvent(eventTag.getEventId(), eventTag.requireRelay()))
+       .flatMap(Optional::stream).toList();
+    
+    if (badgeSetsEventsAsEventTags.size() != badgeSetsEvents.size()) {
+      log.debug("badgeSetsEventsAsEventTags.size != badgeSetsEvent.size");
+      log.debug("badgeSetsEventsAsEventTags:\n  [{}]", badgeSetsEventsAsEventTags.stream().map(Record::toString).collect(Collectors.joining("], [")));
+      log.debug("badgeSetsEvents:\n  [{}]", badgeSetsEvents.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining("], [")));
+      throw new NostrException("badgeSetsEventsAsEventTags.size != badgeSetsEvent.size");
+    }
+    
     log.debug("... returned badgeSetsEvents:\n  [{}]", badgeSetsEvents);
 
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(incomingFollowSetsEvent.asGenericEventRecord(), badgeSetsEvents);

@@ -20,6 +20,7 @@ public interface CacheBadgeSetsEventServiceIF extends CacheTagMappedEventService
   Optional<BadgeSetsEvent> materialize(@NonNull EventIF eventIF);
 
   List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag);
-  List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
-  List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
+  Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
+  Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
+  Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
 }

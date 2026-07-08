@@ -2,10 +2,9 @@ package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.BaseFollowSetsEventServiceIT;
-import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
+import com.prosilion.superconductor.base.BaseCurationSetsEventServiceIT;
+import com.prosilion.superconductor.base.cache.CacheCurationSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.time.Duration;
 import lombok.NonNull;
@@ -20,16 +19,15 @@ import org.springframework.test.context.ActiveProfiles;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT {
+public class CacheCurationSetsEventServiceIT extends BaseCurationSetsEventServiceIT {
 
   @Autowired
-  public CacheFollowSetsEventServiceIT(
+  public CacheCurationSetsEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService,
+     @NonNull @Qualifier("cacheCurationSetsEventService") CacheCurationSetsEventServiceIF cacheCurationSetsEventServiceIF,
      Duration requestTimeoutDuration) throws ParseException {
-    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, eventServiceIF, cacheFollowSetsEventService, requestTimeoutDuration);
+    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, cacheCurationSetsEventServiceIF, requestTimeoutDuration);
   }
 }

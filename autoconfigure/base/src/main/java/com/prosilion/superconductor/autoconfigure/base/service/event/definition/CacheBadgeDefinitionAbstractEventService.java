@@ -7,6 +7,8 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
@@ -56,6 +58,12 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
     log.debug("... badgeDefinitionReputationEvent prettyPrintJson:\n {}", event.get().createPrettyPrintJson());
 
     return event;
+  }
+
+  public Optional<T> getBy(@NonNull AddressTag addressTag, @NonNull PubKeyTag pubKeyTag) {
+    Optional<T> byAddressTag = getBy(addressTag);
+    Optional<T> filterByIdentifierTag = byAddressTag.filter(event -> event.requireFirstTag(PubKeyTag.class).equals(pubKeyTag));
+    return filterByIdentifierTag;
   }
 
   public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {

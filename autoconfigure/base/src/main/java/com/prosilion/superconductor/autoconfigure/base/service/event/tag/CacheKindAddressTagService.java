@@ -90,7 +90,7 @@ public class CacheKindAddressTagService implements CacheKindAddressTagServiceIF 
        relayUrl,
        abstractTagFilters);
 
-    optionalGenericEventRecords.forEach(cacheServiceIF::save);
+//    optionalGenericEventRecords.forEach(cacheServiceIF::save);
     optionalGenericEventRecords.forEach(genericEventRecord ->
        log.debug("fetched remote event saved to local DB\n  {}", genericEventRecord.createPrettyPrintJson()));
 

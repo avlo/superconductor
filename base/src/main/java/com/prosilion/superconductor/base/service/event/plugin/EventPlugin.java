@@ -63,8 +63,8 @@ public class EventPlugin implements EventPluginIF {
     }
 
     log.debug("creating canonical kind event...\n  {}", event.createPrettyPrintJson());
-    Optional<? extends BaseEvent> typedEvent1 = createTypedEvent(event);
-    Optional<GenericEventRecord> genericEventRecord = typedEvent1.map(cacheServiceIF::save);
+    Optional<? extends BaseEvent> typedEvent = createTypedEvent(event);
+    Optional<GenericEventRecord> genericEventRecord = typedEvent.map(cacheServiceIF::save);
     return genericEventRecord;
   }
 

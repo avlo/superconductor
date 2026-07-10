@@ -57,7 +57,7 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
           throw new NostrException("sendConsolidatorReq() did not find an event");
         });
 
-    optionalGenericEventRecord.ifPresent(cacheServiceIF::save);
+//    optionalGenericEventRecord.ifPresent(cacheServiceIF::save);
     optionalGenericEventRecord.ifPresent(genericEventRecord ->
         log.debug("fetched remote event saved to local DB\n  {}", genericEventRecord.createPrettyPrintJson()));
 

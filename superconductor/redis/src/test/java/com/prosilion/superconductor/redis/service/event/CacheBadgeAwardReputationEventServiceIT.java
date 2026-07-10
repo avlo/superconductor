@@ -9,8 +9,6 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.user.Identity;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
@@ -29,6 +27,11 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_REPUTATION;
 import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.aImgIdentity;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.formulaCreator;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.recipient;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.repDefnCreator;
+import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.upvoteDefnCreator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
@@ -41,70 +44,65 @@ public class CacheBadgeAwardReputationEventServiceIT {
   public final IdentifierTag reputationIdentifierTag = new IdentifierTag(TEST_UNIT_REPUTATION);
   public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
 
-  public final Identity identity = Identity.generateRandomIdentity();
-  public final PublicKey upvotedUserPublicKey = Identity.generateRandomIdentity().getPublicKey();
-  public final PublicKey reputationDefinitionCreatorPublicKey = Identity.generateRandomIdentity().getPublicKey();
-
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService;
+
+  private final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent;
 
   private final EventServiceIF eventServiceIF;
   private final Relay relay;
 
   @Autowired
   public CacheBadgeAwardReputationEventServiceIT(
-    @Value("${superconductor.relay.url}") String relayUri,
-    @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-    @NonNull @Qualifier("cacheBadgeAwardReputationEventService") CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService) throws ParseException {
+     @Value("${superconductor.relay.url}") String relayUri,
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
+     @NonNull @Qualifier("cacheBadgeAwardReputationEventService") CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeAwardReputationEventService = cacheBadgeAwardReputationEventService;
     this.relay = new Relay(relayUri);
 
-    cacheServiceIF.save(
-      new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay));
+    this.badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
+    cacheServiceIF.save(badgeDefinitionUpvoteEvent);
 
     IdentifierTag formulaUnitUpvoteIdentifierTag = new IdentifierTag("FORMULA_UNIT_UPVOTE");
     eventServiceIF.processIncomingEvent(
-      new EventMessage(
-        new FormulaEvent(
-          identity,
-          formulaUnitUpvoteIdentifierTag,
-          relay,
-          new BadgeDefinitionGenericEvent(
-            identity,
-            upvoteIdentifierTag,
-            relay),
-          PLUS_ONE_FORMULA)), relay);
+       new EventMessage(
+          new FormulaEvent(
+             formulaCreator,
+             formulaUnitUpvoteIdentifierTag,
+             relay,
+             badgeDefinitionUpvoteEvent,
+             PLUS_ONE_FORMULA)), relay);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-      identity,
-      reputationDefinitionCreatorPublicKey,
-      reputationIdentifierTag,
-      relay,
-      BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-      new FormulaEvent(identity, formulaUnitUpvoteIdentifierTag, relay, new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay), PLUS_ONE_FORMULA));
+       aImgIdentity,
+       repDefnCreator.getPublicKey(),
+       reputationIdentifierTag,
+       relay,
+       BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+       new FormulaEvent(formulaCreator, formulaUnitUpvoteIdentifierTag, relay, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA));
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), relay);
 
     eventServiceIF.processIncomingEvent(
-      new EventMessage(
-        new BadgeAwardGenericEvent<>(
-          identity,
-          upvotedUserPublicKey,
-          new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay),
-          relay)), relay);
+       new EventMessage(
+          new BadgeAwardGenericEvent<>(
+             aImgIdentity,
+             recipient.getPublicKey(),
+             badgeDefinitionUpvoteEvent,
+             relay)), relay);
   }
 
   @Test
   public void testSaveBadgeAwardReputationEventUpvote() {
     BadgeAwardReputationEvent badgeAwardReputationEvent = new BadgeAwardReputationEvent(
-      identity,
-      upvotedUserPublicKey,
-      BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
-      badgeDefinitionReputationEventPlusOneFormula,
-      BigDecimal.ZERO,
-      relay);
+       aImgIdentity,
+       recipient.getPublicKey(),
+       BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
+       badgeDefinitionReputationEventPlusOneFormula,
+       BigDecimal.ZERO,
+       relay);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardReputationEvent), relay);
     BadgeAwardReputationEvent dbRepAwardEvent = cacheBadgeAwardReputationEventService.materialize(badgeAwardReputationEvent.asGenericEventRecord()).get();

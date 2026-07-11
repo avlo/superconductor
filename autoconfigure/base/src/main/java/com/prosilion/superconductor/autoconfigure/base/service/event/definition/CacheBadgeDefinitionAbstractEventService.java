@@ -7,7 +7,6 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
@@ -71,8 +70,11 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
 
     Optional<GenericEventRecord> unpopulatedBadgeDefinitionAbstractEvent =
        cacheReferenceEventTagServiceIF.getEvent(eventId, relay);
+
     log.debug("return unpopulatedBadgeDefinitionAbstractEvent:\n{}",
        unpopulatedBadgeDefinitionAbstractEvent.map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
+    if (unpopulatedBadgeDefinitionAbstractEvent.isEmpty())
+      return Optional.empty();
 
     return unpopulatedBadgeDefinitionAbstractEvent.flatMap(this::materialize);
   }

@@ -79,9 +79,10 @@ public class EventServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
      @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService) {
-    return new CacheBadgeDefinitionGenericEventService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
+    return new CacheBadgeDefinitionGenericEventService(cacheServiceIF, cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
   }
 
   @Bean

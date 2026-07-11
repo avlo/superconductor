@@ -2,7 +2,10 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.definition
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
@@ -11,11 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CacheBadgeDefinitionGenericEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionGenericEvent> implements CacheBadgeDefinitionGenericEventServiceIF {
+  private final CacheServiceIF cacheServiceIF;
 
   public CacheBadgeDefinitionGenericEventService(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF) {
     super(cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
+    this.cacheServiceIF = cacheServiceIF;
   }
 
   @Override
@@ -23,5 +29,16 @@ public class CacheBadgeDefinitionGenericEventService extends CacheBadgeDefinitio
     log.debug("... materialize(incomingBadgeDefinitionGenericEvent)...\n{}", incomingBadgeDefinitionGenericEvent.createPrettyPrintJson());
 
     return Optional.of(new BadgeDefinitionGenericEvent(incomingBadgeDefinitionGenericEvent.asGenericEventRecord()));
+  }
+
+  @Override
+  public Optional<BadgeDefinitionGenericEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+    return super
+       .getEvent(eventId, relay)
+       .or(() ->
+          cacheServiceIF.getEventsByKindAndEventTag(
+                getKind(),
+                new EventTag(eventId)).stream().findFirst()
+             .flatMap(this::materialize));
   }
 }

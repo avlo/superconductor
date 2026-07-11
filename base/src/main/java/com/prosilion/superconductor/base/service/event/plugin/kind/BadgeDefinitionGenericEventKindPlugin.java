@@ -1,11 +1,12 @@
 package com.prosilion.superconductor.base.service.event.plugin.kind;
 
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.RelayTag;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import java.util.Optional;
 import lombok.NonNull;
@@ -14,8 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 // our SportsCar extends CarDecorator
 public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKindPlugin {
-  public BadgeDefinitionGenericEventKindPlugin(@NonNull EventPluginIF eventPluginIF) {
+  private final Identity superconductorInstanceIdentity;
+
+  public BadgeDefinitionGenericEventKindPlugin(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull EventPluginIF eventPluginIF) {
     super(eventPluginIF);
+    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
   }
 
 //  TODO: create IF of this class, overriding:
@@ -25,12 +31,18 @@ public class BadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKin
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
-    log.debug("processing incoming BadgeDefinitionGenericEvent:\n  {}", event.createPrettyPrintJson());
-    event.findFirstTag(RelayTag.class)
-       .orElseThrow(() ->
-          new NostrException(
-             String.format("BadgeDefinitionAwardEvent\n%s\nmissing required RelayTag", event.createPrettyPrintJson())));
-    return super.processIncomingEvent(event, fromRelay);
+    Optional<RelayTag> eventRelayTag = event.findFirstTag(RelayTag.class);
+    Relay finalRelay = eventRelayTag.map(RelayTag::relay).orElse(fromRelay);
+    log.debug("processing incoming BadgeDefinitionGenericEvent using [{}] url [{}]",
+       eventRelayTag.isPresent() ? "event RelayTag" : "fromRelay", finalRelay.getUrl());
+    return super.processIncomingEvent(
+       eventRelayTag.isPresent() ?
+          event :
+          new BadgeDefinitionGenericEvent(
+             superconductorInstanceIdentity,
+             event.asGenericEventRecord(),
+             fromRelay),
+       finalRelay);
   }
 
   @Override

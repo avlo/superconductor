@@ -172,7 +172,7 @@ public abstract class BaseCurationSetsEventServiceIT {
   @Test
   public void testThrowsException() {
     String nonExistentEventId = Util.generateRandomHex64String();
-    assertThrows(NostrException.class, () -> cacheCurationSetsEventServiceIF.getEvent(nonExistentEventId, relay));
+    assertEquals(Optional.empty(), cacheCurationSetsEventServiceIF.getEvent(nonExistentEventId, relay));
     
     EventTag nonExistentEventTagEventId = new EventTag(nonExistentEventId);
     assertEquals(Optional.empty(), cacheCurationSetsEventServiceIF.getBy(nonExistentEventTagEventId));

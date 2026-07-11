@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheCurationSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
@@ -60,8 +61,9 @@ public class EventKindPluginConfig {
   @Bean
   @ConditionalOnMissingBean
   public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
+     @NonNull Identity superconductorInstanceIdentity,
      @NonNull EventPlugin eventPlugin) {
-    return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
+    return new BadgeDefinitionGenericEventKindPlugin(superconductorInstanceIdentity, eventPlugin);
   }
 
   @Bean("badgeAwardGenericEventKindPlugin")

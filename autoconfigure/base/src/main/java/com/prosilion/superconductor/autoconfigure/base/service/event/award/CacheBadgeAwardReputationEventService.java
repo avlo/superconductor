@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.RelayTag;
@@ -12,6 +12,7 @@ import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventSer
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,14 +32,15 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
   }
 
   @Override
-  public Optional<BadgeAwardReputationEvent> materialize(@NonNull EventIF incomingBadgeAwardReputationEvent) {
-    return cacheBadgeDefinitionReputationEventService
-       .getBy(
-          incomingBadgeAwardReputationEvent.requireFirstTag(AddressTag.class))
-       .map(event ->
-          new BadgeAwardReputationEvent(
-             incomingBadgeAwardReputationEvent.asGenericEventRecord(),
-             addressTag -> event));
+  protected Optional<BadgeDefinitionReputationEvent> getBadgeDefinition(@NonNull AddressTag addressTag) {
+    return cacheBadgeDefinitionReputationEventService.getBy(addressTag);
+  }
+
+  @Override
+  protected BadgeAwardReputationEvent createBadgeAwardEvent(
+     @NonNull GenericEventRecord eventRecord,
+     @NonNull Function<AddressTag, BadgeDefinitionReputationEvent> badgeDefinitionResolver) {
+    return new BadgeAwardReputationEvent(eventRecord, badgeDefinitionResolver);
   }
 
   @Override

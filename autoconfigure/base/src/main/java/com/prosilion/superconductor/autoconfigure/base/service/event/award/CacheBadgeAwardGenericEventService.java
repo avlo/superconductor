@@ -3,13 +3,14 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,15 +29,15 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
   }
 
   @Override
-  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> materialize(@NonNull EventIF incomingBadgeAwardGenericEvent) {
-    log.debug("... materialize incomingBadgeAwardGenericEvent:\n{}", incomingBadgeAwardGenericEvent.createPrettyPrintJson());
-    return
-       cacheBadgeDefinitionGenericEventServiceIF
-          .getBy(
-             incomingBadgeAwardGenericEvent.requireFirstTag(AddressTag.class))
-          .map(event -> new BadgeAwardGenericEvent<>(
-             incomingBadgeAwardGenericEvent.asGenericEventRecord(),
-             addressTag -> event));
+  protected Optional<BadgeDefinitionGenericEvent> getBadgeDefinition(@NonNull AddressTag addressTag) {
+    return cacheBadgeDefinitionGenericEventServiceIF.getBy(addressTag);
+  }
+
+  @Override
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createBadgeAwardEvent(
+     @NonNull GenericEventRecord eventRecord,
+     @NonNull Function<AddressTag, BadgeDefinitionGenericEvent> badgeDefinitionResolver) {
+    return new BadgeAwardGenericEvent<>(eventRecord, badgeDefinitionResolver);
   }
 
   @Override

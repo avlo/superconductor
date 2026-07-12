@@ -21,7 +21,6 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagService
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -118,11 +117,5 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   @Override
   public Kind getKind() {
     return Kind.FOLLOW_SETS;
-  }
-
-  private Stream<FollowSetsEvent> materializeList(List<GenericEventRecord> genericEventRecords) {
-    return genericEventRecords.stream()
-       .mapMulti((genericEventRecord, consumer) ->
-          materialize(genericEventRecord).ifPresent(consumer));
   }
 }

@@ -3,7 +3,6 @@ package com.prosilion.superconductor.autoconfigure.base.service.event;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.CurationSetsEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -13,7 +12,6 @@ import com.prosilion.superconductor.base.cache.CacheCurationSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,15 +65,5 @@ public class CacheCurationSetsEventService implements CacheCurationSetsEventServ
   @Override
   public Kind getKind() {
     return Kind.CURATION_SETS;
-  }
-
-  private Optional<CurationSetsEvent> materializeFirst(List<GenericEventRecord> genericEventRecords) {
-    return genericEventRecords.stream().findFirst().flatMap(this::materialize);
-  }
-
-  private Stream<CurationSetsEvent> materializeList(List<GenericEventRecord> genericEventRecords) {
-    return genericEventRecords.stream()
-       .mapMulti((genericEventRecord, consumer) ->
-          materialize(genericEventRecord).ifPresent(consumer));
   }
 }

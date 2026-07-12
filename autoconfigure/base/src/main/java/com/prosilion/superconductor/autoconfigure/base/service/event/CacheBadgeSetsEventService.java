@@ -3,7 +3,6 @@ package com.prosilion.superconductor.autoconfigure.base.service.event;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -17,7 +16,6 @@ import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,22 +60,16 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
 
   @Override
   public Optional<BadgeSetsEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    log.debug("inside getEvent(eventId, relay):\n  event [{}]\n  relay [{}]", eventId, relay);
-    log.debug("calling cacheDereferenceEventTagService.getEvent(eventId, relay)...");
     return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize);
   }
 
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull AddressTag referencedAbstractEventTag) {
-    log.debug("inside getBy(@NonNull AddressTag [{}]", referencedAbstractEventTag);
-    log.debug("calling cacheReferenceAddressTagService.getBy(referencedAbstractEventTag)...");
     return materializeFirst(cacheKindAddressTagServiceIF.getBy(getKind(), referencedAbstractEventTag));
   }
 
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag referencedAbstractEventTag) {
-    log.debug("inside getBy(@NonNull AddressTag [{}]", referencedAbstractEventTag);
-    log.debug("calling cacheReferenceAddressTagService.getBy(referencedAbstractEventTag)...");
     return materializeFirst(cacheKindAddressTagServiceIF.getBy(getKind(), pubKeyTag, referencedAbstractEventTag));
   }
 
@@ -93,22 +85,11 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
 
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
-    List<GenericEventRecord> eventsByKindAndPubKeyTagAndIdentifierTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag);
-    return materializeFirst(eventsByKindAndPubKeyTagAndIdentifierTag);
+    return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag));
   }
 
   @Override
   public Kind getKind() {
     return Kind.BADGE_SETS_EVENT;
-  }
-
-  private Optional<BadgeSetsEvent> materializeFirst(List<GenericEventRecord> genericEventRecords) {
-    return genericEventRecords.stream().findFirst().flatMap(this::materialize);
-  }
-
-  private Stream<BadgeSetsEvent> materializeList(List<GenericEventRecord> genericEventRecords) {
-    return genericEventRecords.stream()
-       .mapMulti((genericEventRecord, consumer) ->
-          materialize(genericEventRecord).ifPresent(consumer));
   }
 }

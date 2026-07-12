@@ -45,7 +45,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
   }
 
   public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    log.debug("inside getEvent(eventId, relay):\n  [{}],\n  [{}]", eventId, relay);
+//    log.debug("inside getEvent(eventId, relay):\n  [{}],\n  [{}]", eventId, relay);
     return cacheReferenceEventTagServiceIF.getEvent(eventId, relay).flatMap(this::materialize);
   }
 

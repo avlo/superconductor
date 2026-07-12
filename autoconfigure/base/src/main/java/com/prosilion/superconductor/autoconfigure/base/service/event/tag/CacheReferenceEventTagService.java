@@ -5,7 +5,6 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.EventFilter;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
@@ -23,31 +22,15 @@ public class CacheReferenceEventTagService extends CacheReferenceAbstractTagServ
 
   @Override
   public List<GenericEventRecord> getEvents(@NonNull List<EventTag> eventTags) {
-    log.debug("getEvents(List<EventTag> eventTags), calling streamed getEvent()...");
-    List<GenericEventRecord> genericEventRecords = eventTags
-       .stream()
-       .map(this::getLocalEventFxn)
-       .flatMap(Optional::stream).toList();
-    log.debug("streamed getEvent() returning:\n {}", Util.prettyPrintGenericEventRecords(genericEventRecords));
-    return genericEventRecords;
+    return
+       eventTags.stream().<GenericEventRecord>mapMulti(
+          (eventTag, genericEventRecordConsumer) ->
+             getLocalEventFxn(eventTag).ifPresent(genericEventRecordConsumer)).toList();
   }
 
   @Override
   Optional<GenericEventRecord> getLocalEventFxn(@NonNull EventTag eventTag) {
-    log.debug("getLocalEventFxn(EventTag), id: [{}], eventTag URL: [{}]",
-       eventTag.getEventId(),
-       eventTag.requireRecommendedRelayUrl());
-    Optional<GenericEventRecord> cacheServiceIFEventByEventId = cacheServiceIF.getEventByEventId(eventTag.getEventId());
-
-    boolean present = cacheServiceIFEventByEventId.isPresent();
-    if (present) {
-      log.debug("... returning local EventTag, id: [{}], eventTag URL: [{}]",
-         eventTag.getEventId(),
-         eventTag.requireRecommendedRelayUrl());
-      return cacheServiceIFEventByEventId;
-    }
-
-    return Optional.empty();
+    return cacheServiceIF.getEventByEventId(eventTag.getEventId());
   }
 
   @Override

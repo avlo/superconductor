@@ -94,12 +94,13 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
                 badgeSetsEvent.getBadgeDefinitionReputationEvent()
                    .asAddressableEventAddressTag())
              .stream())
-       .<BadgeAwardReputationEvent>mapMulti((event, downstream) ->
-          cacheBadgeAwardReputationEventServiceIF
-             .getEvent(
-                event.getId(),
-                event.requireFirstTag(RelayTag.class).getRelay())
-             .ifPresent(downstream))
+       .<BadgeAwardReputationEvent>mapMulti(
+          (event, badgeAwardReputationEventConsumer) ->
+             cacheBadgeAwardReputationEventServiceIF
+                .getEvent(
+                   event.getId(),
+                   event.requireFirstTag(RelayTag.class).getRelay())
+                .ifPresent(badgeAwardReputationEventConsumer))
        .toList();
   }
 

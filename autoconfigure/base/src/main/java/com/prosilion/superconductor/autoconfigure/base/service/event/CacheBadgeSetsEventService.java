@@ -71,39 +71,44 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   public Optional<BadgeSetsEvent> getBy(@NonNull AddressTag referencedAbstractEventTag) {
     log.debug("inside getBy(@NonNull AddressTag [{}]", referencedAbstractEventTag);
     log.debug("calling cacheReferenceAddressTagService.getBy(referencedAbstractEventTag)...");
-    return materialize(cacheKindAddressTagServiceIF.getBy(getKind(), referencedAbstractEventTag).getFirst());
+    return materializeFirst(cacheKindAddressTagServiceIF.getBy(getKind(), referencedAbstractEventTag));
   }
 
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag referencedAbstractEventTag) {
     log.debug("inside getBy(@NonNull AddressTag [{}]", referencedAbstractEventTag);
     log.debug("calling cacheReferenceAddressTagService.getBy(referencedAbstractEventTag)...");
-    return materialize(cacheKindAddressTagServiceIF.getBy(getKind(), pubKeyTag, referencedAbstractEventTag).getFirst());
+    return materializeFirst(cacheKindAddressTagServiceIF.getBy(getKind(), pubKeyTag, referencedAbstractEventTag));
   }
 
   @Override
   public List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag) {
-    return materialize(cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), pubKeyTag)).toList();
+    return materializeList(cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), pubKeyTag)).toList();
   }
 
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
-    return materialize(cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(getKind(), pubKeyTag, eventTag).getFirst());
+    return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(getKind(), pubKeyTag, eventTag));
   }
 
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
-    return materialize(cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag).getFirst());
+    List<GenericEventRecord> eventsByKindAndPubKeyTagAndIdentifierTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag);
+    return materializeFirst(eventsByKindAndPubKeyTagAndIdentifierTag);
   }
 
   @Override
   public Kind getKind() {
     return Kind.BADGE_SETS_EVENT;
   }
-  
-  private Stream<BadgeSetsEvent> materialize(List<GenericEventRecord> genericEventRecords) {
+
+  private Optional<BadgeSetsEvent> materializeFirst(List<GenericEventRecord> genericEventRecords) {
+    return genericEventRecords.stream().findFirst().flatMap(this::materialize);
+  }
+
+  private Stream<BadgeSetsEvent> materializeList(List<GenericEventRecord> genericEventRecords) {
     return genericEventRecords.stream()
-       .mapMulti((genericEventRecord, downstreamBadgeSetsEventConsumer) ->
-          materialize(genericEventRecord).ifPresent(downstreamBadgeSetsEventConsumer));
+       .mapMulti((genericEventRecord, consumer) ->
+          materialize(genericEventRecord).ifPresent(consumer));
   }
 }

@@ -8,14 +8,12 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
-import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheCurationSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,10 +24,7 @@ public class CacheCurationSetsEventService implements CacheCurationSetsEventServ
 
   public CacheCurationSetsEventService(
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
-     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
-     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
-     @NonNull CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF) {
+     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheReferenceEventTagService = cacheReferenceEventTagService;
   }
@@ -44,40 +39,43 @@ public class CacheCurationSetsEventService implements CacheCurationSetsEventServ
   public Optional<CurationSetsEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     log.debug("inside getEvent(eventId, relay):\n  event [{}]\n  relay [{}]", eventId, relay);
     log.debug("calling cacheDereferenceEventTagService.getEvent(eventId, relay)...");
-    Optional<GenericEventRecord> event = cacheReferenceEventTagService.getEvent(eventId, relay);
-    log.debug("... cacheDereferenceEventTagService.getEvent(eventId, relay) returned:\n  [{}]",
-       event.map(GenericEventRecord::createPrettyPrintJson));
-    return event.flatMap(this::materialize);
+    return cacheReferenceEventTagService.getEvent(eventId, relay).flatMap(this::materialize);
   }
 
   @Override
   public Optional<CurationSetsEvent> getBy(@NonNull EventTag eventTag) {
     log.debug("inside getBy(@NonNull AddressTag [{}]", eventTag);
     log.debug("calling cacheReferenceAddressTagService.getBy(eventTag)...");
-    return cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag).stream()
-       .map(this::materialize).flatMap(Optional::stream).findFirst();
+    return materializeFirst(cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag));
   }
 
   @Override
   public List<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag) {
-    return cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), pubKeyTag).stream()
-       .map(this::materialize).flatMap(Optional::stream).toList();
+    return materializeList(cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), pubKeyTag)).toList();
   }
 
   @Override
   public Optional<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
-    return cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(getKind(), pubKeyTag, eventTag).stream()
-       .map(this::materialize).flatMap(Optional::stream).findFirst();
+    return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(getKind(), pubKeyTag, eventTag));
   }
 
   @Override
   public List<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
-    return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag).stream()
-       .map(this::materialize).flatMap(Optional::stream).toList();
+    return materializeList(cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag)).toList();
   }
 
   @Override
   public Kind getKind() {
     return Kind.CURATION_SETS;
+  }
+
+  private Optional<CurationSetsEvent> materializeFirst(List<GenericEventRecord> genericEventRecords) {
+    return genericEventRecords.stream().findFirst().flatMap(this::materialize);
+  }
+
+  private Stream<CurationSetsEvent> materializeList(List<GenericEventRecord> genericEventRecords) {
+    return genericEventRecords.stream()
+       .mapMulti((genericEventRecord, consumer) ->
+          materialize(genericEventRecord).ifPresent(consumer));
   }
 }

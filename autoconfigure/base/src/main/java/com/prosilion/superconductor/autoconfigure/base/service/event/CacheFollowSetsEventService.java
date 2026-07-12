@@ -21,6 +21,7 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagService
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,102 +49,80 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   //  TODO: duplicate in @CacheFormulaEventService, consolidate
   @Override
   public Optional<FollowSetsEvent> materialize(@NonNull EventIF incomingFollowSetsEvent) {
-    log.debug("materialize(EventIF incomingFollowSetsEvent):\n  {}", incomingFollowSetsEvent.createPrettyPrintJson());
+    GenericEventRecord genericEventRecord = incomingFollowSetsEvent.asGenericEventRecord();
+    return Optional.of(
+       new FollowSetsEvent(
+          genericEventRecord,
+          getBadgeSetsEvents(
+             genericEventRecord)));
+  }
 
-    List<EventTag> badgeSetsEventsAsEventTags = incomingFollowSetsEvent.asGenericEventRecord().getTypeSpecificTags(EventTag.class);
-//    TODO: revisit throw -vs- return Optional
-    if (badgeSetsEventsAsEventTags.isEmpty())
-      throw new NostrException(String.format("FollowSetsEvent [%s] requires at least one EventTag", incomingFollowSetsEvent));
+  private List<BadgeSetsEvent> getBadgeSetsEvents(GenericEventRecord genericEventRecord) {
+    List<EventTag> eventTags = genericEventRecord.getTypeSpecificTags(EventTag.class);
+    if (eventTags.isEmpty())
+      throw new NostrException(String.format("FollowSetsEvent [%s] requires at least one EventTag", genericEventRecord));
 
-    log.debug("... calling cacheBadgeSetsEventServiceIF.getEvent(...)");
-    List<BadgeSetsEvent> badgeSetsEvents = badgeSetsEventsAsEventTags.stream()
-       .map(eventTag -> cacheBadgeSetsEventServiceIF.getEvent(eventTag.getEventId(), eventTag.requireRelay()))
+    List<BadgeSetsEvent> badgeSetsEvents = eventTags.stream()
+       .map(eventTag ->
+          cacheBadgeSetsEventServiceIF.getEvent(
+             eventTag.getEventId(),
+             eventTag.requireRelay()))
        .flatMap(Optional::stream).toList();
-    
-    if (badgeSetsEventsAsEventTags.size() != badgeSetsEvents.size()) {
-      log.debug("badgeSetsEventsAsEventTags.size != badgeSetsEvent.size");
-      log.debug("badgeSetsEventsAsEventTags:\n  [{}]", badgeSetsEventsAsEventTags.stream().map(Record::toString).collect(Collectors.joining("], [")));
+
+    if (eventTags.size() != badgeSetsEvents.size()) {
+      log.debug("eventTags.size != badgeSetsEvent.size");
+      log.debug("eventTags:\n  [{}]", eventTags.stream().map(Record::toString).collect(Collectors.joining("], [")));
       log.debug("badgeSetsEvents:\n  [{}]", badgeSetsEvents.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining("], [")));
-      throw new NostrException("badgeSetsEventsAsEventTags.size != badgeSetsEvent.size");
+      throw new NostrException("eventTags.size != badgeSetsEvent.size");
     }
-    
-    log.debug("... returned badgeSetsEvents:\n  [{}]", badgeSetsEvents);
-
-    FollowSetsEvent followSetsEvent = new FollowSetsEvent(incomingFollowSetsEvent.asGenericEventRecord(), badgeSetsEvents);
-
-    log.debug("...returning created materialized FollowSetsEvent:\n{}", followSetsEvent.createPrettyPrintJson());
-    return Optional.of(followSetsEvent);
+    return badgeSetsEvents;
   }
 
   @Override
   public Optional<FollowSetsEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    log.debug("inside getEvent(eventId, relay)");
-    log.debug("  eventId:  [{}]", eventId);
-    log.debug("  relayUrl: [{}]", relay);
-    log.debug("calling cacheReferenceEventTagServiceIF.getEvent(eventId, relay)...");
-    Optional<GenericEventRecord> unpopulatedFollowSetsEvent = cacheReferenceEventTagServiceIF.getEvent(eventId, relay);
-    if (unpopulatedFollowSetsEvent.isEmpty()) {
-      log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, relay) returned EMPTY unpopulatedFormulaEventGER");
-      return Optional.empty();
-    }
-
-    log.debug("... cacheReferenceEventTagServiceIF.getEvent() returned:\n  [{}]",
-       unpopulatedFollowSetsEvent.map(GenericEventRecord::createPrettyPrintJson));
-
-    return materialize(unpopulatedFollowSetsEvent.get());
+    return cacheReferenceEventTagServiceIF.getEvent(eventId, relay).flatMap(this::materialize);
   }
 
   @Override
   public List<BadgeAwardReputationEvent> getBadgeAwardReputationEvents(@NonNull FollowSetsEvent followSetsEvent) {
-    log.debug("... calling getBadgeAwardReputationEvent(FollowSetsEventfollowSetsEvent) with followSetsEvent:\n{}",
-       followSetsEvent.createPrettyPrintJson());
-
-    List<BadgeAwardReputationEvent> badgeAwardReputationEvents =
-       followSetsEvent.getBadgeSetsEventList().stream().flatMap(badgeSetsEvent ->
-             cacheKindAddressTagServiceIF.getBy(
-                   Kind.BADGE_AWARD_EVENT,
-                   new PubKeyTag(followSetsEvent.getAwardRecipientPublicKey()), badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag())
-                .stream()
-                .map(event ->
-                   cacheBadgeAwardReputationEventServiceIF.getEvent(
-                      event.getId(),
-                      event.getRelayTag().map(RelayTag::getRelay).orElseThrow())))
-          .flatMap(Optional::stream).toList();
-
-    log.debug("... returning badgeAwardReputationEvents:\n  [{}]",
-       badgeAwardReputationEvents.stream().map(Object::toString).collect(Collectors.joining(",\n  ")));
-
-    return badgeAwardReputationEvents;
+    PubKeyTag awardRecipient = new PubKeyTag(followSetsEvent.getAwardRecipientPublicKey());
+    return followSetsEvent.getBadgeSetsEventList().stream()
+       .flatMap(badgeSetsEvent ->
+          cacheKindAddressTagServiceIF
+             .getBy(
+                Kind.BADGE_AWARD_EVENT,
+                awardRecipient,
+                badgeSetsEvent.getBadgeDefinitionReputationEvent()
+                   .asAddressableEventAddressTag())
+             .stream())
+       .<BadgeAwardReputationEvent>mapMulti((event, downstream) ->
+          cacheBadgeAwardReputationEventServiceIF
+             .getEvent(
+                event.getId(),
+                event.requireFirstTag(RelayTag.class).getRelay())
+             .ifPresent(downstream))
+       .toList();
   }
 
   @Override
   public List<FollowSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    return cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(getKind(), pubKeyTag, addressTag).stream()
-       .map(this::materialize).flatMap(Optional::stream).toList();
+    return materializeList(cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(getKind(), pubKeyTag, addressTag)).toList();
   }
-
-//  @Override
-//  public Optional<BadgeAwardGenericEventAux> getBy(@NonNull EventTag eventTag) {
-//    log.debug("getEventTagEvent(@NonNull String eventId, @NonNull String url)");
-//    Optional<GenericEventRecord> unpopulatedFollowSetsEventTagEvent =
-//       cacheReferenceEventTagServiceIF.getEvent(eventTag.getIdEvent(), eventTag.requireRecommendedRelayUrl());
-//
-//    Optional<BadgeAwardGenericEventAux<BadgeDefinitionGenericEventAux>> badgeAwardGenericEvent = unpopulatedFollowSetsEventTagEvent.map(GenericEventRecord::getId).flatMap(id ->
-//       cacheBadgeAwardGenericEventAuxServiceIF.getEvent(
-//          id, unpopulatedFollowSetsEventTagEvent.get().getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow()));
-//
-//    return badgeAwardGenericEvent;
-//  }
 
   @Override
   @Deprecated
   public Optional<FollowSetsEvent> getBy(@NonNull EventTag eventTag) {
-    return cacheReferenceEventTagServiceIF.getBy(eventTag).stream()
-       .map(this::materialize).flatMap(Optional::stream).findFirst();
+    return cacheReferenceEventTagServiceIF.getBy(eventTag).flatMap(this::materialize);
   }
 
   @Override
   public Kind getKind() {
     return Kind.FOLLOW_SETS;
+  }
+
+  private Stream<FollowSetsEvent> materializeList(List<GenericEventRecord> genericEventRecords) {
+    return genericEventRecords.stream()
+       .mapMulti((genericEventRecord, consumer) ->
+          materialize(genericEventRecord).ifPresent(consumer));
   }
 }

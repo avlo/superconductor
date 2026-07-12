@@ -2,14 +2,11 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.definition
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.AddressableEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.util.Util;
@@ -43,40 +40,24 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> materialize(@NonNull EventIF incomingBadgeDefinitionReputationEvent) {
-    log.debug("... materialize(incomingBadgeDefinitionReputationEvent)...\n{}", incomingBadgeDefinitionReputationEvent.createPrettyPrintJson());
-
-    List<FormulaEvent> formulaEvents = getFormulaEvents(incomingBadgeDefinitionReputationEvent.asGenericEventRecord());
-    log.debug("... formulaEvent count: [{}]", formulaEvents.size());
-    log.debug("... materialized formulaEvents ...\n  {}", formulaEvents.stream().map(EventIF::asGenericEventRecord).map(GenericEventRecord::createPrettyPrintJson).toList());
-
-    log.debug("formulaEvents as addressTags:");
-    formulaEvents.stream().map(AddressableEvent::asAddressableEventAddressTag).map(Util::prettyPrintAddressTags).toList().forEach(log::debug);
-
-    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
-       incomingBadgeDefinitionReputationEvent.asGenericEventRecord(), addressTag ->
-       formulaEvents.stream().filter(formulaEvent ->
-//          TODO: revisit throw -vs- Optional.empty()
-          formulaEvent.asAddressableEventAddressTag().equals(addressTag)).findFirst().orElseThrow(() ->
-          new NostrException(
-             String.format(NON_EXISTENT_ADDRESS_TAG, incomingBadgeDefinitionReputationEvent))));
-
-    log.debug("returning badgeDefinitionReputationEvent:\n{}", incomingBadgeDefinitionReputationEvent.createPrettyPrintJson());
-    return Optional.of(badgeDefinitionReputationEvent);
+    GenericEventRecord eventRecord = incomingBadgeDefinitionReputationEvent.asGenericEventRecord();
+    return
+       Optional.of(
+          new BadgeDefinitionReputationEvent(
+             eventRecord, addressTag ->
+             getFormulaEvents(eventRecord).stream()
+                .filter(formulaEvent ->
+                   formulaEvent.asAddressableEventAddressTag().equals(addressTag))
+                .findFirst()
+                .orElseThrow(() ->
+                   new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG, eventRecord)))));
   }
 
-  private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord badgeDefinitionReputationEventGER) {
-    log.debug("getFormulaEvents(badgeDefinitionReputationEventGER):\n{}", badgeDefinitionReputationEventGER.createPrettyPrintJson());
-
-    List<AddressTag> addressTagsAreFormulaEvents = badgeDefinitionReputationEventGER.getTypeSpecificTags(AddressTag.class);
-    log.debug("addressTagsAreFormulaEventsOriginalList.toList() size:  [{}]", addressTagsAreFormulaEvents.size());
-    log.debug("addressTagsAreFormulaEventsOriginalList.toList():\n{}", Util.prettyPrintAddressTags(addressTagsAreFormulaEvents));
-
-    if (addressTagsAreFormulaEvents.isEmpty()) {
-      log.debug("addressTagsAreFormulaEvents was Empty. throwing exception");
+  private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord genericEventRecord) {
+    List<AddressTag> addressTagsAreFormulaEvents = genericEventRecord.getTypeSpecificTags(AddressTag.class);
+    if (addressTagsAreFormulaEvents.isEmpty())
 //          TODO: revisit throw -vs- Optional.empty()      
-      throw new NostrException(
-         String.format(NON_EXISTENT_ADDRESS_TAG, badgeDefinitionReputationEventGER));
-    }
+      throw new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG, genericEventRecord));
 
     List<FormulaEvent> formulaEvents = addressTagsAreFormulaEvents.stream()
        .map(addressTag ->
@@ -84,90 +65,28 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
              addressTag.getPublicKey(),
              addressTag.requireIdentifierTag(),
              addressTag.requireRelay())).flatMap(Optional::stream).toList();
-    log.debug("cacheFormulaEventService.getBy(publicKey, identifierTag) returned:\n  {}",
-       formulaEvents.stream().map(EventIF::asGenericEventRecord).map(GenericEventRecord::createPrettyPrintJson).toList());
-
-    log.debug("addressTagsAreFormulaEvents.size(): [{}], formulaEvents.size(): [{}]",
-       addressTagsAreFormulaEvents.size(), formulaEvents.size());
 
     if (!Objects.equals(addressTagsAreFormulaEvents.size(), formulaEvents.size()))
-//  TODO: revisit throw -vs- Optional.empty() since unfound formulas may occur- might add awareness of that to the content/other tag       
       throw new NostrException(
          String.format("Unequal count AddressTags vs FormulaEvents:%s\nFormulaEvent:\n%s",
             Util.prettyPrintAddressTags(addressTagsAreFormulaEvents),
             Util.prettyPrintGenericEventRecords(formulaEvents.stream().map(FormulaEvent::getGenericEventRecord).toList())));
 
-    log.debug("formulaEvents size matches addressTag size, return formulaEvents");
     return formulaEvents;
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull AddressTag addressTag) {
-    log.debug("... inside getBy(addressTag), value: addressTag:  [{}]", addressTag.toStringPrettyPrint());
-    Optional<BadgeDefinitionReputationEvent> foundEvent = super.getBy(addressTag);
-
-    if (foundEvent.isEmpty()) {
-      log.debug("... no match found for addressTag:\n  {}", addressTag.toStringPrettyPrint());
-      log.debug("... return Optional.empty()");
-      return Optional.empty();
-    }
-    final String addressTagPretty = foundEvent.get().createPrettyPrintJson();
-    log.debug("... matching addressTag found:\n  {}", addressTagPretty);
-
-//    TODO: test below inclusion of returnedPubKeyTagPublicKey.equals(inputPubKeyTagPublicKey)
-//    log.debug("... checking PubKeyTag match ...");
-//    PublicKey returnedPubKeyTagPublicKey = foundEvent.get().requireFirstTag(PubKeyTag.class).getPublicKey();
-//    PublicKey inputPubKeyTagPublicKey = pubKeyTag.getPublicKey();
-//    if (returnedPubKeyTagPublicKey.equals(inputPubKeyTagPublicKey)) {
-//      log.debug("... returned BadgeDefinitionReputationEvent pubKeyTag:  [{}] ...", returnedPubKeyTagPublicKey.toHexString());
-//      log.debug("... did not match target pubKeyTag:  [{}] ...", inputPubKeyTagPublicKey);
-//      log.debug("... return Optional.empty()");
-//      return Optional.empty();
-//    }
-
-    log.debug("... PubKeyTag match SKIPPED (needs review), checking for ExternalIdentityTag ...");
-    if (foundEvent.get().findFirstTag(ExternalIdentityTag.class).isEmpty()) {
-      log.debug("... missing ExternalIdentityTag.  return Optional.empty()");
-      return Optional.empty();
-    }
-
-    log.debug("... getBy(PubKeyTag, AddressTag) matches all passed, returning BadgeDefinitionReputationEvent:\n  {}", addressTagPretty);
-    return foundEvent;
-  }
-
-  @Override
   public Optional<BadgeDefinitionReputationEvent> getByDirectTag(@NonNull AddressTag addressTag) {
-    log.debug("... inside getByDirectTag(addressTag), value: addressTag:  [{}]", addressTag.toStringPrettyPrint());
-    List<GenericEventRecord> badgeDefinitionEventGERs =
-       cacheKindAddressTagService.getBy(Kind.BADGE_DEFINITION_EVENT, addressTag).stream().filter(ger ->
-          ger.findFirstTag(ExternalIdentityTag.class).isPresent()).toList();
-    log.debug("cacheKindAddressTagService.getBy(Kind.BADGE_DEFINITION_EVENT, addressTag) returned:\n {}",
-       badgeDefinitionEventGERs.stream().map(GenericEventRecord::createPrettyPrintJson));
-
-    List<EventTag> eventTagStream = badgeDefinitionEventGERs.stream().map(ger ->
-       new EventTag(ger.getId(), ger.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow())).toList();
-
-    List<BadgeDefinitionReputationEvent> badgeDefinitionReputationEvents =
-       eventTagStream.stream()
-          .map(eventTag ->
-             getEvent(eventTag.getEventId(), new Relay(eventTag.requireRecommendedRelayUrl())))
-          .flatMap(Optional::stream).toList();
-
-    int size = badgeDefinitionReputationEvents.size();
-    if (size > 1) {
-      log.debug("11111111111111111111111111111111111");
-      log.debug("11111111111111111111111111111111111");
-      log.debug("---  WARNING  /  REVISIT / TODO  ---");
-      log.debug("cacheKindAddressTagService.getBy(kind, addressTag) returned badgeDefinitionReputationEvents.size() [{}] is > 1", size);
-      log.debug("current implementation naively returns first item");
-      log.debug("---  WARNING  /  REVISIT / TODO  ---");
-      log.debug("11111111111111111111111111111111111");
-      log.debug("11111111111111111111111111111111111");
-    }
-
-    log.debug("getEvent(eventId, url) returned:\n {}",
-       badgeDefinitionReputationEvents.stream().map(EventIF::createPrettyPrintJson));
-
-    return badgeDefinitionReputationEvents.stream().findFirst();
+    return
+       cacheKindAddressTagService
+          .getBy(
+             Kind.BADGE_DEFINITION_EVENT,
+             addressTag).stream()
+          .filter(genericEventRecord ->
+             genericEventRecord.findFirstTag(ExternalIdentityTag.class).isPresent()).findFirst()
+          .flatMap(genericEventRecord ->
+             getEvent(
+                genericEventRecord.getId(),
+                genericEventRecord.requireFirstTag(RelayTag.class).getRelay()));
   }
 }

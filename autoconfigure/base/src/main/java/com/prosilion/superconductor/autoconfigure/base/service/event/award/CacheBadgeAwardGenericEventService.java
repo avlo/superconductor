@@ -42,6 +42,7 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
 
   @Override
   public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getBy(@NonNull AddressTag addressTag) {
-    return materialize(cacheKindAddressTagServiceIF.getBy(Kind.BADGE_AWARD_EVENT, addressTag).getFirst());
+    return cacheKindAddressTagServiceIF.getBy(Kind.BADGE_AWARD_EVENT, addressTag)
+       .stream().findFirst().flatMap(this::materialize);
   }
 }

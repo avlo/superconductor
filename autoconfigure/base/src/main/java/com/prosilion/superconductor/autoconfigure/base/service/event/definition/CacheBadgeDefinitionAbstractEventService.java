@@ -34,10 +34,10 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
          String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
 
     return cacheReferenceAddressTagServiceIF.getBy(addressTag)
-       .flatMap(badgeDefinitionAbstractEvent ->
+       .flatMap(genericEventRecord ->
           getEvent(
-             badgeDefinitionAbstractEvent.getId(),
-             badgeDefinitionAbstractEvent.requireFirstTag(RelayTag.class).getRelay()));
+             genericEventRecord.getId(),
+             genericEventRecord.requireFirstTag(RelayTag.class).getRelay()));
   }
 
   public Optional<T> getBy(@NonNull AddressTag addressTag, @NonNull PubKeyTag pubKeyTag) {
@@ -45,7 +45,6 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
   }
 
   public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-//    log.debug("inside getEvent(eventId, relay):\n  [{}],\n  [{}]", eventId, relay);
     return cacheReferenceEventTagServiceIF.getEvent(eventId, relay).flatMap(this::materialize);
   }
 

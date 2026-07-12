@@ -22,8 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   public static final String NON_EXISTENT_ADDRESS_TAG = "FormulaEvent [%s] is missing required AddressTag";
-  public static final String NON_EXISTENT_BADGE_DEFINITION_AWARD_EVENT_S = "FormulaEvent [%s] contains AddressTag referencing non-existent BadgeDefinitionGenericEvent";
-  public static final String FORMATTED = "formula event found with matching author public key and identifier tag (UUID) but with different formula:\n  (db) [%s]\n    -vs- (incoming formula) [%s]\n";
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
@@ -40,19 +38,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   //  TODO: duplicate in @CacheFollowsEventSeervice, consolidate  
   @Override
   public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    log.debug("inside getEvent(eventId, relay)");
-    log.debug("  eventId:  [{}]", eventId);
-    log.debug("  relayUrl: [{}]", relay);
-    Optional<GenericEventRecord> unpopulatedFormulaEventGER = cacheReferenceEventTagServiceIF.getEvent(eventId, relay);
-    if (unpopulatedFormulaEventGER.isEmpty()) {
-      log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, relay) returned EMPTY unpopulatedFormulaEventGER");
-      return Optional.empty();
-    }
-
-    log.debug("call to cacheReferenceEventTagServiceIF.getEvent(eventId, relay) returned unpopulatedFormulaEventGER:\n  {}", unpopulatedFormulaEventGER.get().createPrettyPrintJson());
-
-    log.debug("calling materialize(unpopulatedFormulaEvent.get()) ...", relay);
-    return materialize(unpopulatedFormulaEventGER.get());
+    return cacheReferenceEventTagServiceIF.getEvent(eventId, relay).flatMap(this::materialize);
   }
 
   @Override
@@ -69,34 +55,31 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
 
   @Override
   public Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
-    AddressTag addressTag = new AddressTag(Kind.ARBITRARY_CUSTOM_APP_DATA, publicKey, identifierTag, relay);
-    log.debug("calling cacheReferenceAddressTagServiceIF.getBy(addressTag) with:\n{}", addressTag.toStringPrettyPrint());
-
-    return cacheReferenceAddressTagServiceIF.getBy(addressTag).flatMap(event -> getFormulaEventById(event));
+    return cacheReferenceAddressTagServiceIF
+       .getBy(
+          new AddressTag(
+             Kind.ARBITRARY_CUSTOM_APP_DATA,
+             publicKey,
+             identifierTag,
+             relay))
+       .stream().findFirst()
+       .flatMap(this::getFormulaEventById);
   }
 
   @Override
   public Optional<FormulaEvent> getBy(@NonNull AddressTag addressTag) {
-    log.debug("getBy(AddressTag):\n{}", addressTag.toStringPrettyPrint());
-
-    Optional<GenericEventRecord> formulaEventGERs = cacheKindAddressTagServiceIF.getBy(Kind.ARBITRARY_CUSTOM_APP_DATA, addressTag).stream().findFirst();
-    log.debug("formulaEventGERs contents:\n  {}", formulaEventGERs.stream().map(GenericEventRecord::createPrettyPrintJson));
-
-    return formulaEventGERs.flatMap(event -> getFormulaEventById(event));
+    return cacheKindAddressTagServiceIF
+       .getBy(
+          Kind.ARBITRARY_CUSTOM_APP_DATA,
+          addressTag)
+       .stream().findFirst()
+       .flatMap(this::getFormulaEventById);
   }
 
-  @NonNull
-  private Optional<FormulaEvent> getFormulaEventById(GenericEventRecord formulaEventOptGER) {
-    log.debug("getFormulaEvent(formulaEventOptGER):\n  {}", formulaEventOptGER.createPrettyPrintJson());
-    log.debug("formulaEventOptGER eventId: [{}]", formulaEventOptGER.getId());
-
-    Relay formulaEventRelayUrl = formulaEventOptGER.getRelayTag().map(RelayTag::getRelay).orElse(null);
-    log.debug("formulaEventOptGER relayUrl: [{}]", formulaEventRelayUrl);
-
-    Optional<FormulaEvent> formulaEvent = getEvent(formulaEventOptGER.getId(), formulaEventRelayUrl);
-    log.debug("returning formulaEvent:\n  {}", formulaEvent.map(EventIF::createPrettyPrintJson).orElse("FORMULA EVENT: EMPTY OPTIONAL "));
-
-    return formulaEvent;
+  private Optional<FormulaEvent> getFormulaEventById(GenericEventRecord genericEventRecord) {
+    return getEvent(
+       genericEventRecord.getId(),
+       genericEventRecord.getRelayTag().map(RelayTag::getRelay).orElse(null));
   }
 
   public Kind getKind() {

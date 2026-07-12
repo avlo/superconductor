@@ -3,7 +3,6 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheCurationSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
@@ -142,18 +141,12 @@ public class EventServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeSetsEventService cacheBadgeSetsEventService(
-     @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
      @NonNull CacheCurationSetsEventServiceIF cacheCurationSetsEventServiceIF) {
     return new CacheBadgeSetsEventService(
        cacheServiceIF,
-       superconductorInstanceIdentity,
-       cacheDereferenceEventTagService,
-       cacheReferenceAddressTagService,
        cacheKindAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventService,
        cacheCurationSetsEventServiceIF);

@@ -31,15 +31,13 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
   @Override
   public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> materialize(@NonNull EventIF incomingBadgeAwardGenericEvent) {
     log.debug("... materialize incomingBadgeAwardGenericEvent:\n{}", incomingBadgeAwardGenericEvent.createPrettyPrintJson());
-    Optional<BadgeDefinitionGenericEvent> by = cacheBadgeDefinitionGenericEventServiceIF
-       .getBy(incomingBadgeAwardGenericEvent.requireFirstTag(AddressTag.class));
-    
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEvent = by
-       .map(event -> new BadgeAwardGenericEvent<>(
-          incomingBadgeAwardGenericEvent.asGenericEventRecord(),
-          addressTag -> event));
-    
-    return badgeAwardGenericEvent;
+    return
+       cacheBadgeDefinitionGenericEventServiceIF
+          .getBy(
+             incomingBadgeAwardGenericEvent.requireFirstTag(AddressTag.class))
+          .map(event -> new BadgeAwardGenericEvent<>(
+             incomingBadgeAwardGenericEvent.asGenericEventRecord(),
+             addressTag -> event));
   }
 
   @Override

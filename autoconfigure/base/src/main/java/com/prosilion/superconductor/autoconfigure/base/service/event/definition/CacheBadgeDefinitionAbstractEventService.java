@@ -4,7 +4,6 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.PubKeyTag;
@@ -29,54 +28,25 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
 
   public abstract Optional<T> materialize(@NonNull EventIF eventIF);
 
-
   public Optional<T> getBy(@NonNull AddressTag addressTag) {
     if (!addressTag.getKind().equals(Kind.BADGE_DEFINITION_EVENT))
       throw new NostrException(
          String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
 
-    Optional<GenericEventRecord> badgeDefinitionAbstractEventGEROptional = cacheReferenceAddressTagServiceIF.getBy(addressTag);
-    if (badgeDefinitionAbstractEventGEROptional.isEmpty())
-      return Optional.empty();
-
-    GenericEventRecord existingBadgeDefinitionReputationEventGER = badgeDefinitionAbstractEventGEROptional.get();
-    log.debug("existingBadgeDefinitionReputationEventGER:\n  {}", existingBadgeDefinitionReputationEventGER.createPrettyPrintJson());
-
-    Relay relay = existingBadgeDefinitionReputationEventGER.getRelayTag().map(RelayTag::getRelay).orElseThrow();
-
-    log.debug("calling getEvent(existingBadgeDefinitionReputationEventGER.getId(), relay with eventId:\n  [{}],\n  relayUrl: [{}]",
-       existingBadgeDefinitionReputationEventGER.getId(), relay);
-    Optional<T> event = getEvent(existingBadgeDefinitionReputationEventGER.getId(), relay);
-
-    if (event.isEmpty()) {
-      log.debug("badgeDefinitionReputationEvent.getId()) [%s] not found, return Optional.empty()");
-      return Optional.empty();
-    }
-
-    log.debug("... returning found badgeDefinitionReputationEvent:\n {}", event.get());
-    log.debug("... badgeDefinitionReputationEvent prettyPrintJson:\n {}", event.get().createPrettyPrintJson());
-
-    return event;
+    return cacheReferenceAddressTagServiceIF.getBy(addressTag)
+       .flatMap(badgeDefinitionAbstractEvent ->
+          getEvent(
+             badgeDefinitionAbstractEvent.getId(),
+             badgeDefinitionAbstractEvent.requireFirstTag(RelayTag.class).getRelay()));
   }
 
   public Optional<T> getBy(@NonNull AddressTag addressTag, @NonNull PubKeyTag pubKeyTag) {
-    Optional<T> byAddressTag = getBy(addressTag);
-    Optional<T> filterByIdentifierTag = byAddressTag.filter(event -> event.requireFirstTag(PubKeyTag.class).equals(pubKeyTag));
-    return filterByIdentifierTag;
+    return getBy(addressTag).filter(event -> event.requireFirstTag(PubKeyTag.class).equals(pubKeyTag));
   }
 
   public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     log.debug("inside getEvent(eventId, relay):\n  [{}],\n  [{}]", eventId, relay);
-
-    Optional<GenericEventRecord> unpopulatedBadgeDefinitionAbstractEvent =
-       cacheReferenceEventTagServiceIF.getEvent(eventId, relay);
-
-    log.debug("return unpopulatedBadgeDefinitionAbstractEvent:\n{}",
-       unpopulatedBadgeDefinitionAbstractEvent.map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
-    if (unpopulatedBadgeDefinitionAbstractEvent.isEmpty())
-      return Optional.empty();
-
-    return unpopulatedBadgeDefinitionAbstractEvent.flatMap(this::materialize);
+    return cacheReferenceEventTagServiceIF.getEvent(eventId, relay).flatMap(this::materialize);
   }
 
   public Kind getKind() {

@@ -9,6 +9,7 @@ import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
@@ -18,17 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 
 // TODO: likely replaceable by CacheBadgeAwardGenericEventService
 @Slf4j
-public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionReputationEvent, BadgeAwardReputationEvent> implements CacheBadgeAwardReputationEventServiceIF {
+public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardGenericEventService<BadgeDefinitionReputationEvent, BadgeAwardReputationEvent> implements CacheBadgeAwardReputationEventServiceIF {
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
-  private final CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService;
+  private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventService;
 
   public CacheBadgeAwardReputationEventService(
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
-     @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
-    super(cacheReferenceEventTagServiceIF);
+     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF) {
+    super(cacheReferenceEventTagServiceIF, cacheBadgeDefinitionReputationEventServiceIF, cacheKindAddressTagServiceIF);
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
-    this.cacheBadgeDefinitionReputationEventService = cacheBadgeDefinitionReputationEventService;
+    this.cacheBadgeDefinitionReputationEventService = cacheBadgeDefinitionReputationEventServiceIF;
   }
 
   @Override

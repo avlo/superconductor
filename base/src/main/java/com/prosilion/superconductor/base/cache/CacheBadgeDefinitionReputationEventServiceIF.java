@@ -11,12 +11,12 @@ import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterial
 import java.util.Optional;
 import lombok.NonNull;
 
-public interface CacheBadgeDefinitionReputationEventServiceIF extends CacheTagMappedEventServiceIF<BadgeDefinitionReputationEvent, AddressTag>, EventMaterializer<BadgeDefinitionReputationEvent> {
+public interface CacheBadgeDefinitionReputationEventServiceIF extends CacheBadgeDefinitionGenericEventServiceIF<BadgeDefinitionReputationEvent> {
   @Override
   Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull Relay relay);
   @Override
   Optional<BadgeDefinitionReputationEvent> materialize(@NonNull EventIF eventIF);
-
   Optional<BadgeDefinitionReputationEvent> getBy(@NonNull AddressTag addressTag, @NonNull PubKeyTag pubKeyTag);
   Optional<BadgeDefinitionReputationEvent> getByDirectTag(@NonNull AddressTag addressTag);
+  Optional<BadgeDefinitionReputationEvent> getBy(@NonNull AddressTag addressTag);
 }

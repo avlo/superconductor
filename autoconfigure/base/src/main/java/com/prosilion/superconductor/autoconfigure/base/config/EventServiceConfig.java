@@ -1,6 +1,8 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
@@ -77,21 +79,23 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService(
+  CacheBadgeDefinitionGenericEventService<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
      @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService) {
-    return new CacheBadgeDefinitionGenericEventService(cacheServiceIF, cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
+    return new CacheBadgeDefinitionGenericEventService<>(cacheServiceIF, cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
      @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
      @NonNull CacheFormulaEventService cacheFormulaEventService,
      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
     return new CacheBadgeDefinitionReputationEventService(
+       cacheServiceIF,
        cacheDereferenceEventTagService,
        cacheDereferenceAddressTagService,
        cacheFormulaEventService,
@@ -100,11 +104,11 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService(
+  CacheBadgeAwardGenericEventService<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventService(
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
+     @NonNull CacheBadgeDefinitionGenericEventService<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventService,
      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
-    return new CacheBadgeAwardGenericEventService(
+    return new CacheBadgeAwardGenericEventService<>(
        cacheDereferenceEventTagService,
        cacheBadgeDefinitionGenericEventService,
        cacheKindAddressTagService);

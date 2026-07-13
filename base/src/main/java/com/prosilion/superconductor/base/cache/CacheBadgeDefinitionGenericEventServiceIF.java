@@ -2,7 +2,8 @@ package com.prosilion.superconductor.base.cache;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.superconductor.base.cache.mapped.CacheAddressableEventServiceIF;
+import java.util.Optional;
+import lombok.NonNull;
 
 /**
  * This interface exists as shorthand convenience for developers via short/easily understandable:
@@ -11,6 +12,6 @@ import com.prosilion.superconductor.base.cache.mapped.CacheAddressableEventServi
  * rather than longer & more complex/error-prone variant:
  * CacheAddressableEventServiceIF<BadgeDefinitionGenericEvent> variableName;
  */
-public interface CacheBadgeDefinitionGenericEventServiceIF extends CacheAddressableEventServiceIF<BadgeDefinitionGenericEvent, AddressTag> {
-//  Optional<BadgeDefinitionGenericEvent> getBy(AddressTag addressTag);
+public interface CacheBadgeDefinitionGenericEventServiceIF<T extends BadgeDefinitionGenericEvent> extends CacheBadgeDefinitionAbstractEventServiceIF<T> {
+  Optional<T> getBy(@NonNull AddressTag addressTag);
 }

@@ -13,6 +13,7 @@ import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
@@ -24,16 +25,17 @@ import lombok.extern.slf4j.Slf4j;
 import static com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService.NON_EXISTENT_ADDRESS_TAG;
 
 @Slf4j
-public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceIF {
+public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionGenericEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceIF {
   private final CacheFormulaEventService cacheFormulaEventService;
   private final CacheKindAddressTagService cacheKindAddressTagService;
 
   public CacheBadgeDefinitionReputationEventService(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
      @NonNull CacheFormulaEventService cacheFormulaEventService,
      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
-    super(cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
+    super(cacheServiceIF, cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
     this.cacheFormulaEventService = cacheFormulaEventService;
     this.cacheKindAddressTagService = cacheKindAddressTagService;
   }

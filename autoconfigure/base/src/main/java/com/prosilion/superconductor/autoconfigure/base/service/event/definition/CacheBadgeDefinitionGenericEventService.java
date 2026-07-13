@@ -11,9 +11,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheBadgeDefinitionGenericEventService 
-   extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionGenericEvent>
-   implements CacheBadgeDefinitionGenericEventServiceIF<BadgeDefinitionGenericEvent> {
+public class CacheBadgeDefinitionGenericEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionGenericEvent> implements CacheBadgeDefinitionGenericEventServiceIF {
 
   public CacheBadgeDefinitionGenericEventService(
      @NonNull CacheServiceIF cacheServiceIF,

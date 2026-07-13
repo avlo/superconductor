@@ -127,11 +127,8 @@ public class EventServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheCurationSetsEventService cacheCurationSetsEventService(
-     @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService) {
-    return new CacheCurationSetsEventService(
-       cacheServiceIF,
-       cacheDereferenceEventTagService);
+     @NonNull CacheServiceIF cacheServiceIF) {
+    return new CacheCurationSetsEventService(cacheServiceIF);
   }
 
   @Bean

@@ -7,7 +7,6 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheCurationSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.util.List;
@@ -18,13 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CacheCurationSetsEventService implements CacheCurationSetsEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
-  private final CacheReferenceEventTagService cacheReferenceEventTagService;
 
-  public CacheCurationSetsEventService(
-     @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService) {
+  public CacheCurationSetsEventService(@NonNull CacheServiceIF cacheServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
-    this.cacheReferenceEventTagService = cacheReferenceEventTagService;
   }
 
   @Override
@@ -37,7 +32,7 @@ public class CacheCurationSetsEventService implements CacheCurationSetsEventServ
   public Optional<CurationSetsEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     log.debug("inside getEvent(eventId, relay):\n  event [{}]\n  relay [{}]", eventId, relay);
     log.debug("calling cacheDereferenceEventTagService.getEvent(eventId, relay)...");
-    return cacheReferenceEventTagService.getEvent(eventId, relay).flatMap(this::materialize);
+    return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize);
   }
 
   @Override

@@ -34,13 +34,15 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
 
   public abstract Optional<T> materialize(@NonNull EventIF eventIF);
 
-  public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return cacheReferenceEventTagServiceIF.getEvent(eventId, relay).flatMap(this::materialize)
+  public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay backupRelay) {
+    return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize)
        .or(() ->
           cacheServiceIF.getEventsByKindAndEventTag(
                 getKind(),
                 new EventTag(eventId)).stream().findFirst()
-             .flatMap(this::materialize));
+             .flatMap(this::materialize))
+       .or(() -> cacheReferenceEventTagServiceIF.getEvent(eventId, backupRelay)
+          .flatMap(this::materialize));
   }
 
   public Optional<T> getBy(@NonNull AddressTag addressTag) {

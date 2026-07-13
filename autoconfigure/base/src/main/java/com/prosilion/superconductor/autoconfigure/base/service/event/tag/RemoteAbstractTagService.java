@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
@@ -23,8 +24,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class RemoteAbstractTagService {
   private static final Duration DEFAULT_WAIT_DURATION = Duration.ofSeconds(10);
+  private final Duration waitDuration;
 
-  protected List<GenericEventRecord> sendRemoteReq(String relayUrl, Filters filters) {
+  public RemoteAbstractTagService() {
+    this.waitDuration = DEFAULT_WAIT_DURATION;
+  }
+
+  public RemoteAbstractTagService(@NonNull Duration waitDuration) {
+    this.waitDuration = waitDuration;
+  }
+
+  public List<GenericEventRecord> sendRemoteReq(String relayUrl, Filters filters) {
     ReqMessage reqMessage = new ReqMessage(Util.generateRandomHex64String(), filters);
 
     log.debug("... sendConsolidatorReq() (1 of 3) sending request message to:\nURL: [{}]\nusing subscriberId:\n  [{}]\nand filters:\n{}",
@@ -59,7 +69,7 @@ public class RemoteAbstractTagService {
     try {
       VThreadWebSocketClient vThreadWebSocketClient = new VThreadWebSocketClient(relayUrl);
       vThreadWebSocketClient.send(reqMessage);
-      RequestSubscriber.await(DEFAULT_WAIT_DURATION, () -> !vThreadWebSocketClient.getEvents().isEmpty());
+      RequestSubscriber.await(waitDuration, () -> !vThreadWebSocketClient.getEvents().isEmpty());
       return vThreadWebSocketClient.getPopulatedEvents().stream().map(msg -> {
         try {
           return BaseMessageDecoder.decode(msg);

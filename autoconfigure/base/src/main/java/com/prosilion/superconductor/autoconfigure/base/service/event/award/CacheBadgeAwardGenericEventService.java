@@ -15,14 +15,14 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheBadgeAwardGenericEventService<S extends BadgeDefinitionGenericEvent, T extends BadgeAwardGenericEvent<S>> extends CacheBadgeAwardAbstractEventService<S, T, AddressTag> implements CacheBadgeAwardGenericEventServiceIF<S, T> {
+public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> implements CacheBadgeAwardGenericEventServiceIF<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> {
 
-  private final CacheBadgeDefinitionGenericEventServiceIF<S> cacheBadgeDefinitionGenericEventServiceIF;
+  private final CacheBadgeDefinitionGenericEventServiceIF<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
 
   public CacheBadgeAwardGenericEventService(
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
-     @NonNull CacheBadgeDefinitionGenericEventServiceIF<S> cacheBadgeDefinitionGenericEventServiceIF,
+     @NonNull CacheBadgeDefinitionGenericEventServiceIF<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
     super(cacheReferenceEventTagServiceIF);
     this.cacheBadgeDefinitionGenericEventServiceIF = cacheBadgeDefinitionGenericEventServiceIF;
@@ -30,19 +30,19 @@ public class CacheBadgeAwardGenericEventService<S extends BadgeDefinitionGeneric
   }
 
   @Override
-  protected Optional<S> getBadgeDefinition(@NonNull AddressTag addressTag) {
+  protected Optional<BadgeDefinitionGenericEvent> getBadgeDefinition(@NonNull AddressTag addressTag) {
     return cacheBadgeDefinitionGenericEventServiceIF.getBy(addressTag);
   }
 
   @Override
-  protected T createBadgeAwardEvent(
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createBadgeAwardEvent(
      @NonNull GenericEventRecord eventRecord,
-     @NonNull Function<AddressTag, S> badgeDefinitionResolver) {
-    return (T) new BadgeAwardGenericEvent<S>(eventRecord, badgeDefinitionResolver);
+     @NonNull Function<AddressTag, BadgeDefinitionGenericEvent> badgeDefinitionResolver) {
+    return new BadgeAwardGenericEvent<>(eventRecord, badgeDefinitionResolver);
   }
 
   @Override
-  public Optional<T> getBy(@NonNull AddressTag addressTag) {
+  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getBy(@NonNull AddressTag addressTag) {
     return cacheKindAddressTagServiceIF.getBy(Kind.BADGE_AWARD_EVENT, addressTag)
        .stream().findFirst().flatMap(this::materialize);
   }

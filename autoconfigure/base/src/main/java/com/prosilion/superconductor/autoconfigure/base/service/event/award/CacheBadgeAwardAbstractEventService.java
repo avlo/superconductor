@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.BadgeAwardAbstractEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardAbstractEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
@@ -15,8 +15,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class CacheBadgeAwardAbstractEventService<S extends AddressableEvent, T extends BadgeAwardAbstractEvent<S>, U extends ReferencedAbstractEventTag>
-   implements CacheBadgeAwardAbstractEventServiceIF<S, T, U> {
+public abstract class CacheBadgeAwardAbstractEventService<S extends AddressableEvent, T extends BadgeAwardAbstractEvent<S>>
+   implements CacheBadgeAwardAbstractEventServiceIF<S, T, AddressTag> {
   protected final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
 
   public CacheBadgeAwardAbstractEventService(@NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF) {
@@ -28,7 +28,7 @@ public abstract class CacheBadgeAwardAbstractEventService<S extends AddressableE
   }
 
   public Optional<T> materialize(@NonNull EventIF eventIF) {
-    return getBadgeDefinition((U) eventIF.requireFirstTag(ReferencedAbstractEventTag.class))
+    return getBadgeDefinition(eventIF.requireFirstTag(AddressTag.class))
        .map(sType ->
           createBadgeAwardEvent(
              eventIF.asGenericEventRecord(),
@@ -39,9 +39,9 @@ public abstract class CacheBadgeAwardAbstractEventService<S extends AddressableE
     return Kind.BADGE_AWARD_EVENT;
   }
 
-  protected abstract Optional<S> getBadgeDefinition(@NonNull U addressTag);
+  protected abstract Optional<S> getBadgeDefinition(@NonNull AddressTag addressTag);
 
   protected abstract T createBadgeAwardEvent(
      @NonNull GenericEventRecord eventRecord,
-     @NonNull Function<U, S> badgeDefinitionResolver);
+     @NonNull Function<AddressTag, S> badgeDefinitionResolver);
 }

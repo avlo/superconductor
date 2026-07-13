@@ -1,8 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
@@ -79,11 +77,11 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheBadgeDefinitionGenericEventService<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventService(
+  CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
      @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService) {
-    return new CacheBadgeDefinitionGenericEventService<>(cacheServiceIF, cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
+    return new CacheBadgeDefinitionGenericEventService(cacheServiceIF, cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
   }
 
   @Bean
@@ -104,11 +102,11 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheBadgeAwardGenericEventService<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> cacheBadgeAwardGenericEventService(
+  CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService(
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-     @NonNull CacheBadgeDefinitionGenericEventService<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventService,
+     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
-    return new CacheBadgeAwardGenericEventService<>(
+    return new CacheBadgeAwardGenericEventService(
        cacheDereferenceEventTagService,
        cacheBadgeDefinitionGenericEventService,
        cacheKindAddressTagService);

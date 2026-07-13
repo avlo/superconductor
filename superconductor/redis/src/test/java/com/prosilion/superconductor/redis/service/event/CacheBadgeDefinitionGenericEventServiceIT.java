@@ -37,7 +37,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
   public final Identity authorIdentity = Identity.generateRandomIdentity();
   private final PublicKey reputationRecipientPublicKey = Identity.generateRandomIdentity().getPublicKey();
 
-  private final CacheBadgeDefinitionGenericEventService<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventService;
+  private final CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService;
 
   private final Relay relay;
   private final EventServiceIF eventServiceIF;
@@ -46,7 +46,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
   public CacheBadgeDefinitionGenericEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUri,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheBadgeDefinitionGenericEventService<BadgeDefinitionGenericEvent> cacheBadgeDefinitionGenericEventService) {
+     @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeDefinitionGenericEventService = cacheBadgeDefinitionGenericEventService;
     this.relay = new Relay(relayUri);

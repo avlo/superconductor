@@ -6,9 +6,11 @@ import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.RelayTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
@@ -25,7 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 import static com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService.NON_EXISTENT_ADDRESS_TAG;
 
 @Slf4j
-public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionGenericEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceIF {
+public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceIF {
+  private final CacheServiceIF cacheServiceIF;
   private final CacheFormulaEventService cacheFormulaEventService;
   private final CacheKindAddressTagService cacheKindAddressTagService;
 
@@ -35,7 +38,8 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
      @NonNull CacheFormulaEventService cacheFormulaEventService,
      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
-    super(cacheServiceIF, cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
+    super(cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
+    this.cacheServiceIF = cacheServiceIF;
     this.cacheFormulaEventService = cacheFormulaEventService;
     this.cacheKindAddressTagService = cacheKindAddressTagService;
   }
@@ -53,6 +57,17 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
                 .findFirst()
                 .orElseThrow(() ->
                    new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG, eventRecord)))));
+  }
+
+  @Override
+  public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+    return super
+       .getEvent(eventId, relay)
+       .or(() ->
+          cacheServiceIF.getEventsByKindAndEventTag(
+                getKind(),
+                new EventTag(eventId)).stream().findFirst()
+             .flatMap(this::materialize));
   }
 
   private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord genericEventRecord) {

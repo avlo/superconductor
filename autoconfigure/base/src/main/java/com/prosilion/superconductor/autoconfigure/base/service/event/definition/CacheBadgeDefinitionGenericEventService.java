@@ -13,7 +13,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheBadgeDefinitionGenericEventService<T extends BadgeDefinitionGenericEvent> extends CacheBadgeDefinitionAbstractEventService<T> implements CacheBadgeDefinitionGenericEventServiceIF<T> {
+public class CacheBadgeDefinitionGenericEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionGenericEvent> implements CacheBadgeDefinitionGenericEventServiceIF<BadgeDefinitionGenericEvent> {
   private final CacheServiceIF cacheServiceIF;
 
   public CacheBadgeDefinitionGenericEventService(
@@ -25,12 +25,12 @@ public class CacheBadgeDefinitionGenericEventService<T extends BadgeDefinitionGe
   }
 
   @Override
-  public Optional<T> materialize(@NonNull EventIF incomingBadgeDefinitionGenericEvent) {
-    return Optional.of((T) new BadgeDefinitionGenericEvent(incomingBadgeDefinitionGenericEvent.asGenericEventRecord()));
+  public Optional<BadgeDefinitionGenericEvent> materialize(@NonNull EventIF incomingBadgeDefinitionGenericEvent) {
+    return Optional.of(new BadgeDefinitionGenericEvent(incomingBadgeDefinitionGenericEvent.asGenericEventRecord()));
   }
 
   @Override
-  public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+  public Optional<BadgeDefinitionGenericEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     return super
        .getEvent(eventId, relay)
        .or(() ->

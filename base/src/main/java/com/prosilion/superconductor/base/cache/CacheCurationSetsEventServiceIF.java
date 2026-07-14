@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.base.cache;
 
 import com.prosilion.nostr.event.CurationSetsEvent;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
@@ -14,4 +15,5 @@ public interface CacheCurationSetsEventServiceIF extends CacheTagMappedEventServ
   List<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag);
   List<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
   Optional<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
+  Optional<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
 }

@@ -4,6 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.CurationSetsEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
@@ -55,6 +56,11 @@ public class CacheCurationSetsEventService implements CacheCurationSetsEventServ
   @Override
   public List<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
     return materializeList(cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag)).toList();
+  }
+
+  @Override
+  public Optional<CurationSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+    return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(getKind(), pubKeyTag, addressTag));
   }
 
   @Override

@@ -13,7 +13,7 @@ import lombok.NonNull;
 
 public interface CacheBadgeSetsEventServiceIF extends CacheTagMappedEventServiceIF<BadgeSetsEvent, AddressTag>, EventMaterializer<BadgeSetsEvent> {
   List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag);
-  Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
   Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
+  Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
   Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
 }

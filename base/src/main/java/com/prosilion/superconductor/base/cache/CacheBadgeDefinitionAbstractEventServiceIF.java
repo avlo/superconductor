@@ -9,6 +9,6 @@ import java.util.Optional;
 import lombok.NonNull;
 
 public interface CacheBadgeDefinitionAbstractEventServiceIF<T extends AddressableEvent> extends CacheAddressableEventServiceIF<T, AddressTag> {
-  Optional<T> getBy(@NonNull AddressTag addressTag, @NonNull PubKeyTag pubKeyTag);
   Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay);
+  Optional<T> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
 }

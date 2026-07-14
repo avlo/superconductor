@@ -43,9 +43,9 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
     return
        cacheBadgeDefinitionReputationEventServiceIF
           .getBy(
-             incomingBadgeSetsEvent.requireFirstTag(AddressTag.class),
              new PubKeyTag(new PublicKey(
-                incomingBadgeSetsEvent.requireFirstTag(IdentifierTag.class).getUuid())))
+                incomingBadgeSetsEvent.requireFirstTag(IdentifierTag.class).getUuid())),
+             incomingBadgeSetsEvent.requireFirstTag(AddressTag.class))
           .map(badgeDefinitionReputationEvent ->
              new BadgeSetsEvent(
                 incomingBadgeSetsEvent.asGenericEventRecord(),

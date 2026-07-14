@@ -57,7 +57,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
              genericEventRecord.requireFirstTag(RelayTag.class).getRelay()));
   }
 
-  public Optional<T> getBy(@NonNull AddressTag addressTag, @NonNull PubKeyTag pubKeyTag) {
+  public Optional<T> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     return getBy(addressTag).filter(event -> event.requireFirstTag(PubKeyTag.class).equals(pubKeyTag));
   }
 

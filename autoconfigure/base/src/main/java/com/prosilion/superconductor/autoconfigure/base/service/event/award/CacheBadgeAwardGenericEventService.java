@@ -39,7 +39,7 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
   public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getBy(@NonNull AddressTag addressTag) {
     return
        cacheKindAddressTagServiceIF
-          .getBy(
+          .getDirectBy(
              Kind.BADGE_AWARD_EVENT, addressTag)
           .stream().findFirst()
           .flatMap(this::materialize);

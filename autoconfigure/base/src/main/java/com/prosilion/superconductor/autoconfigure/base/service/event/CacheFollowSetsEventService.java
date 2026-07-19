@@ -88,7 +88,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     return followSetsEvent.getBadgeSetsEventList().stream()
        .flatMap(badgeSetsEvent ->
           cacheKindAddressTagServiceIF
-             .getBy(
+             .getDirectBy(
                 Kind.BADGE_AWARD_EVENT,
                 awardRecipient,
                 badgeSetsEvent.getBadgeDefinitionReputationEvent()

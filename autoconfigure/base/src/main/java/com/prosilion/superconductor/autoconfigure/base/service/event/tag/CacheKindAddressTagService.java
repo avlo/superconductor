@@ -30,7 +30,7 @@ public class CacheKindAddressTagService implements CacheKindAddressTagServiceIF 
   }
 
   @Override
-  public List<GenericEventRecord> getBy(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+  public List<GenericEventRecord> getDirectBy(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     List<GenericEventRecord> eventsByKindAndPubKeyTagAndAddressTag = cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(kind, pubKeyTag, addressTag);
     return eventsByKindAndPubKeyTagAndAddressTag;
   }
@@ -63,7 +63,7 @@ public class CacheKindAddressTagService implements CacheKindAddressTagServiceIF 
   }
 
   @Override
-  public List<GenericEventRecord> getBy(@NonNull Kind kind, @NonNull AddressTag addressTag) {
+  public List<GenericEventRecord> getDirectBy(@NonNull Kind kind, @NonNull AddressTag addressTag) {
     log.debug("inside getBy(kind, AddressTag) with:\n  kind: [{}]\naddressTag:\n    {}", kind, addressTag.toStringPrettyPrint());
 
     log.debug("... calling cacheServiceIF.getEventsByKindAndAddressTag(kind, addressTag) ...");

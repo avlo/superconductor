@@ -8,8 +8,6 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
@@ -86,7 +84,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   public Optional<BadgeDefinitionReputationEvent> getByDirectTag(@NonNull AddressTag addressTag) {
     return
        cacheKindAddressTagService
-          .getBy(
+          .getDirectBy(
              Kind.BADGE_DEFINITION_EVENT,
              addressTag).stream()
           .filter(genericEventRecord ->

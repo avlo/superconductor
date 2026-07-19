@@ -40,7 +40,7 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
   public Optional<BadgeAwardReputationEvent> getBy(@NonNull AddressTag addressTag) {
     return
        cacheKindAddressTagServiceIF
-          .getBy(
+          .getDirectBy(
              Kind.BADGE_AWARD_EVENT,
              addressTag).stream()
           .filter(genericEventRecord ->

@@ -69,7 +69,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   @Override
   public Optional<FormulaEvent> getBy(@NonNull AddressTag addressTag) {
     return cacheKindAddressTagServiceIF
-       .getBy(
+       .getDirectBy(
           Kind.ARBITRARY_CUSTOM_APP_DATA,
           addressTag)
        .stream().findFirst()

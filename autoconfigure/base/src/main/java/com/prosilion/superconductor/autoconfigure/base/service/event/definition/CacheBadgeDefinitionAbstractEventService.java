@@ -69,7 +69,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
        .findFirst().flatMap(this::materialize);
   }
 
-  public Optional<T> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+  public Optional<T> getByDirect(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     return getByExpanded(addressTag).filter(event -> event.requireFirstTag(PubKeyTag.class).equals(pubKeyTag));
   }
 

@@ -42,7 +42,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
     log.debug("materialize(EventIF incomingBadgeSetsEvent):\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
     return
        cacheBadgeDefinitionReputationEventServiceIF
-          .getBy(
+          .getByDirect(
              new PubKeyTag(new PublicKey(
                 incomingBadgeSetsEvent.requireFirstTag(IdentifierTag.class).getUuid())),
              incomingBadgeSetsEvent.requireFirstTag(AddressTag.class))

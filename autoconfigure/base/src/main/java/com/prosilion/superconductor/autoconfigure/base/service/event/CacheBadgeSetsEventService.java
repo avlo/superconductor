@@ -23,17 +23,17 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   private final CacheServiceIF cacheServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
-  private final CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF;
+  private final CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
 
   public CacheBadgeSetsEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
-     @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF) {
+     @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
-    this.cacheCuratedBadgeAwardEventServiceIF = cacheCuratedBadgeAwardEventServiceIF;
+    this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardGenericEventServiceIF;
   }
 
   @Override
@@ -48,7 +48,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
                 incomingBadgeSetsEvent.asGenericEventRecord(),
                 badgeDefinitionReputationEvent,
                 incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class).stream()
-                   .map(eventTag -> cacheCuratedBadgeAwardEventServiceIF
+                   .map(eventTag -> cacheCuratedBadgeAwardGenericEventServiceIF
                       .getEvent(eventTag.eventId(), eventTag.requireRelay()))
                    .flatMap(Optional::stream)
                    .distinct()

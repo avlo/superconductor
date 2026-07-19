@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.CuratedBadgeAwardEvent;
+import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
@@ -17,7 +17,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-// TODO: rxr common elements from CacheCuratedBadgeDefinitionEventService into baseClass
+// TODO: rxr common elements from CacheCuratedBadgeDefinitionGenericEventService into baseClass
 public class CacheCuratedBadgeAwardGenericEventService implements CacheCuratedBadgeAwardEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
 
@@ -26,37 +26,37 @@ public class CacheCuratedBadgeAwardGenericEventService implements CacheCuratedBa
   }
 
   @Override
-  public Optional<CuratedBadgeAwardEvent> materialize(@NonNull EventIF incomingCurationSetsEvent) {
-    return Optional.of(new CuratedBadgeAwardEvent(incomingCurationSetsEvent.asGenericEventRecord()));
+  public Optional<CuratedBadgeAwardGenericEvent> materialize(@NonNull EventIF incomingCurationSetsEvent) {
+    return Optional.of(new CuratedBadgeAwardGenericEvent(incomingCurationSetsEvent.asGenericEventRecord()));
   }
 
   @Override
-  public Optional<CuratedBadgeAwardEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+  public Optional<CuratedBadgeAwardGenericEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize);
   }
 
   @Override
-  public Optional<CuratedBadgeAwardEvent> getByDirect(@NonNull EventTag eventTag) {
+  public Optional<CuratedBadgeAwardGenericEvent> getByDirect(@NonNull EventTag eventTag) {
     return materializeFirst(cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag));
   }
 
   @Override
-  public List<CuratedBadgeAwardEvent> getBy(@NonNull PubKeyTag pubKeyTag) {
+  public List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag) {
     return materializeList(cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), pubKeyTag)).toList();
   }
 
   @Override
-  public Optional<CuratedBadgeAwardEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
+  public Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
     return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(getKind(), pubKeyTag, eventTag));
   }
 
   @Override
-  public List<CuratedBadgeAwardEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
+  public List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
     return materializeList(cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag)).toList();
   }
 
   @Override
-  public Optional<CuratedBadgeAwardEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+  public Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(getKind(), pubKeyTag, addressTag));
   }
 

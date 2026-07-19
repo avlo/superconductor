@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.definition;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.CuratedBadgeDefinitionEvent;
+import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
-// TODO: rxr common elements from CacheCuratedBadgeAwardEventService into baseClass
+// TODO: rxr common elements from CacheCuratedBadgeAwardGenericEventService into baseClass
 public class CacheCuratedBadgeDefinitionGenericEventService implements CacheCuratedBadgeDefinitionEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
   private final CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService;
@@ -30,12 +30,12 @@ public class CacheCuratedBadgeDefinitionGenericEventService implements CacheCura
   }
 
   @Override
-  public Optional<CuratedBadgeDefinitionEvent> materialize(@NonNull EventIF incomingCurationSetsEvent) {
-    return Optional.of(new CuratedBadgeDefinitionEvent(incomingCurationSetsEvent.asGenericEventRecord()));
+  public Optional<CuratedBadgeDefinitionGenericEvent> materialize(@NonNull EventIF incomingCurationSetsEvent) {
+    return Optional.of(new CuratedBadgeDefinitionGenericEvent(incomingCurationSetsEvent.asGenericEventRecord()));
   }
 
   @Override
-  public Optional<CuratedBadgeDefinitionEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+  public Optional<CuratedBadgeDefinitionGenericEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     return cacheServiceIF.getEventByEventId(eventId)
        .flatMap(this::materialize)
        .or(() -> cacheBadgeDefinitionGenericEventService.getEvent(eventId, relay)
@@ -43,7 +43,7 @@ public class CacheCuratedBadgeDefinitionGenericEventService implements CacheCura
   }
 
   @Override
-  public Optional<CuratedBadgeDefinitionEvent> getByDirect(@NonNull EventTag eventTag) {
+  public Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull EventTag eventTag) {
     return materializeFirst(
        cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag))
        .or(() ->
@@ -52,7 +52,7 @@ public class CacheCuratedBadgeDefinitionGenericEventService implements CacheCura
   }
 
   @Override
-  public Optional<CuratedBadgeDefinitionEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag) {
+  public Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag) {
     return cacheServiceIF.getEventByKindAndAuthorPublicKeyAndIdentifierTag(getKind(), publicKey, identifierTag)
        .flatMap(this::materialize)
        .or(() ->
@@ -62,7 +62,7 @@ public class CacheCuratedBadgeDefinitionGenericEventService implements CacheCura
   }
 
   @Override
-  public Optional<CuratedBadgeDefinitionEvent> getBy(@NonNull AddressTag addressTag) {
+  public Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull AddressTag addressTag) {
     return materializeFirst(
        cacheServiceIF.getEventsByKindAndAddressTag(getKind(), addressTag))
        .or(() ->

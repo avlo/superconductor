@@ -137,7 +137,7 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionEventService(
+  CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
     return new CacheCuratedBadgeDefinitionGenericEventService(

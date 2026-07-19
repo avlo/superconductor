@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.base.service.event;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.CuratedBadgeDefinitionEvent;
+import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -26,7 +26,7 @@ public class CacheCuratedFormulaEventService implements CacheFormulaEventService
     this.cacheCuratedBadgeDefinitionGenericEventService = cacheCuratedBadgeDefinitionGenericEventService;
   }
 
-  private final Function<CuratedBadgeDefinitionEvent, FormulaEvent> curatedBadgeDefnToFormulaFxn =
+  private final Function<CuratedBadgeDefinitionGenericEvent, FormulaEvent> curatedBadgeDefnToFormulaFxn =
      curatedBadgeDefinitionEvent -> new FormulaEvent(
         curatedBadgeDefinitionEvent.asGenericEventRecord(),
         addressTag -> new BadgeDefinitionGenericEvent(curatedBadgeDefinitionEvent.asGenericEventRecord()));

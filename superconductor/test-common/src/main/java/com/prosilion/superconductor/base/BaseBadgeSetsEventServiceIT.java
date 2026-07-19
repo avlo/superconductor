@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.BaseEvent;
-import com.prosilion.nostr.event.CuratedBadgeAwardEvent;
+import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
@@ -75,7 +75,7 @@ public abstract class BaseBadgeSetsEventServiceIT {
 
   Duration requestTimeoutDuration;
 
-  private final CuratedBadgeAwardEvent curationSetsUpvoteEvent;
+  private final CuratedBadgeAwardGenericEvent curationSetsUpvoteEvent;
   BadgeSetsEvent badgeSetsUpvoteEvent;
 
   public BaseBadgeSetsEventServiceIT(
@@ -117,7 +117,7 @@ public abstract class BaseBadgeSetsEventServiceIT {
        awardUpvoteDefinitionEvent.asAddressableEventAddressTag(),
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()));
 
-    this.curationSetsUpvoteEvent = new CuratedBadgeAwardEvent(
+    this.curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
        aImgIdentity,
        badgeAwardUpvoteEvent,
        relay);

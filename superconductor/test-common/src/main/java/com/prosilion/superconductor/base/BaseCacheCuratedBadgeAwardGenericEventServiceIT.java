@@ -14,7 +14,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SetsPairedEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.base.cache.CacheCuratedBadgeAwardEventServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.time.Duration;
 import java.util.List;

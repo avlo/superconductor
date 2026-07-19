@@ -3,7 +3,7 @@ package com.prosilion.superconductor.redis.service.event;
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.BaseCacheCuratedBadgeAwardGenericEventServiceIT;
-import com.prosilion.superconductor.base.cache.CacheCuratedBadgeAwardEventServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.time.Duration;

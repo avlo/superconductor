@@ -1,8 +1,6 @@
-package com.prosilion.superconductor.base.cache;
+package com.prosilion.superconductor.base.cache.curated;
 
 import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
-import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -13,10 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 
-public interface CacheCuratedBadgeAwardEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeAwardGenericEvent, EventTag>, EventMaterializer<CuratedBadgeAwardGenericEvent> {
+public interface CacheCuratedBadgeAwardEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeAwardGenericEvent, EventTag>, EventMaterializer<CuratedBadgeAwardGenericEvent>, CacheCuratedEventServiceIF {
   List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag);
   List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
   Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
   Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
-  GenericEventRecord save(EventIF event);
 }

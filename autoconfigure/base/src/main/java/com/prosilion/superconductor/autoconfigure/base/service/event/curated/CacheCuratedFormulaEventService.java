@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.autoconfigure.base.service.event;
+package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -9,21 +9,25 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheCuratedBadgeDefinitionGenericEventService;
-import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionGenericEventServiceDecorIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventServiceDecorIF;
 import java.util.Optional;
 import java.util.function.Function;
 import org.jspecify.annotations.NonNull;
 
-public class CacheCuratedFormulaEventService implements CacheFormulaEventServiceIF {
+public class CacheCuratedFormulaEventService extends CacheCuratedEventService implements CacheCuratedFormulaEventServiceDecorIF {
   private final CacheFormulaEventService cacheFormulaEventService;
-  private final CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService;
+  private final CacheCuratedBadgeDefinitionGenericEventServiceDecorIF cacheCuratedBadgeDefinitionGenericEventServiceDecorIF;
 
   public CacheCuratedFormulaEventService(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheFormulaEventService cacheFormulaEventService,
-     @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService) {
+     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceDecorIF cacheCuratedBadgeDefinitionGenericEventServiceDecorIF) {
+    super(cacheServiceIF);
     this.cacheFormulaEventService = cacheFormulaEventService;
-    this.cacheCuratedBadgeDefinitionGenericEventService = cacheCuratedBadgeDefinitionGenericEventService;
+    this.cacheCuratedBadgeDefinitionGenericEventServiceDecorIF = cacheCuratedBadgeDefinitionGenericEventServiceDecorIF;
   }
 
   private final Function<CuratedBadgeDefinitionGenericEvent, FormulaEvent> curatedBadgeDefnToFormulaFxn =
@@ -33,7 +37,7 @@ public class CacheCuratedFormulaEventService implements CacheFormulaEventService
 
   @Override
   public Optional<FormulaEvent> materialize(@NonNull EventIF incomingFormulaEvent) {
-    return cacheCuratedBadgeDefinitionGenericEventService
+    return cacheCuratedBadgeDefinitionGenericEventServiceDecorIF
        .getBy(incomingFormulaEvent.requireFirstTag(AddressTag.class))
        .map(curatedBadgeDefnToFormulaFxn)
        .or(() -> cacheFormulaEventService.materialize(incomingFormulaEvent));
@@ -41,7 +45,7 @@ public class CacheCuratedFormulaEventService implements CacheFormulaEventService
 
   @Override
   public Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
-    return cacheCuratedBadgeDefinitionGenericEventService
+    return cacheCuratedBadgeDefinitionGenericEventServiceDecorIF
        .getBy(publicKey, identifierTag)
        .map(curatedBadgeDefnToFormulaFxn)
        .or(() -> cacheFormulaEventService.getBy(publicKey, identifierTag, relay));
@@ -49,7 +53,7 @@ public class CacheCuratedFormulaEventService implements CacheFormulaEventService
 
   @Override
   public Optional<FormulaEvent> getByDirect(@NonNull AddressTag addressTag) {
-    return cacheCuratedBadgeDefinitionGenericEventService
+    return cacheCuratedBadgeDefinitionGenericEventServiceDecorIF
        .getBy(addressTag)
        .map(curatedBadgeDefnToFormulaFxn)
        .or(() -> cacheFormulaEventService.getByDirect(addressTag));
@@ -62,7 +66,7 @@ public class CacheCuratedFormulaEventService implements CacheFormulaEventService
 
   @Override
   public Optional<FormulaEvent> getEvent(@NonNull String s, @NonNull Relay relay) {
-    return cacheCuratedBadgeDefinitionGenericEventService
+    return cacheCuratedBadgeDefinitionGenericEventServiceDecorIF
        .getEvent(s, relay)
        .map(curatedBadgeDefnToFormulaFxn)
        .or(() -> cacheFormulaEventService.getEvent(s, relay));

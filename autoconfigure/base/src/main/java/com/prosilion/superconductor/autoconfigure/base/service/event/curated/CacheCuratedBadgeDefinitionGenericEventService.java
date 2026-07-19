@@ -1,31 +1,31 @@
-package com.prosilion.superconductor.autoconfigure.base.service.event.definition;
+package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.cache.CacheCuratedBadgeDefinitionEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionEventServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionGenericEventServiceDecorIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
 // TODO: rxr common elements from CacheCuratedBadgeAwardGenericEventService into baseClass
-public class CacheCuratedBadgeDefinitionGenericEventService implements CacheCuratedBadgeDefinitionEventServiceIF {
-  private final CacheServiceIF cacheServiceIF;
+public class CacheCuratedBadgeDefinitionGenericEventService extends CacheCuratedEventService implements CacheCuratedBadgeDefinitionGenericEventServiceDecorIF {
   private final CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService;
 
   public CacheCuratedBadgeDefinitionGenericEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
-    this.cacheServiceIF = cacheServiceIF;
+    super(cacheServiceIF);
     this.cacheBadgeDefinitionGenericEventService = cacheBadgeDefinitionGenericEventService;
   }
 
@@ -73,10 +73,5 @@ public class CacheCuratedBadgeDefinitionGenericEventService implements CacheCura
   @Override
   public Kind getKind() {
     return Kind.CURATION_SETS;
-  }
-
-  @Override
-  public GenericEventRecord save(EventIF event) {
-    return cacheServiceIF.save(event);
   }
 }

@@ -7,7 +7,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
-import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceDecorIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
@@ -24,8 +24,8 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
-     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF) {
-    super(cacheServiceIF, cacheReferenceEventTagServiceIF, cacheBadgeDefinitionReputationEventServiceIF);
+     @NonNull CacheBadgeDefinitionReputationEventServiceDecorIF cacheBadgeDefinitionReputationEventServiceDecorIF) {
+    super(cacheServiceIF, cacheReferenceEventTagServiceIF, cacheBadgeDefinitionReputationEventServiceDecorIF);
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
   }
 

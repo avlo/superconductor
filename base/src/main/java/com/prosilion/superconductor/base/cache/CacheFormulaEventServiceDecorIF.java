@@ -10,6 +10,6 @@ import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterial
 import java.util.Optional;
 import lombok.NonNull;
 
-public interface CacheFormulaEventServiceIF extends CacheTagMappedEventServiceIF<FormulaEvent, AddressTag>, EventMaterializer<FormulaEvent> {
+public interface CacheFormulaEventServiceDecorIF extends CacheTagMappedEventServiceIF<FormulaEvent, AddressTag>, EventMaterializer<FormulaEvent> {
   Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay);
 }

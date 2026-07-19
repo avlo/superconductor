@@ -1,16 +1,15 @@
-package com.prosilion.superconductor.autoconfigure.base.service.event.award;
+package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.superconductor.base.cache.CacheCuratedBadgeAwardEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
@@ -18,11 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // TODO: rxr common elements from CacheCuratedBadgeDefinitionGenericEventService into baseClass
-public class CacheCuratedBadgeAwardGenericEventService implements CacheCuratedBadgeAwardEventServiceIF {
-  private final CacheServiceIF cacheServiceIF;
+public class CacheCuratedBadgeAwardGenericEventService extends CacheCuratedEventService implements CacheCuratedBadgeAwardEventServiceIF {
 
   public CacheCuratedBadgeAwardGenericEventService(@NonNull CacheServiceIF cacheServiceIF) {
-    this.cacheServiceIF = cacheServiceIF;
+    super(cacheServiceIF);
   }
 
   @Override
@@ -63,10 +61,5 @@ public class CacheCuratedBadgeAwardGenericEventService implements CacheCuratedBa
   @Override
   public Kind getKind() {
     return Kind.CURATION_SETS;
-  }
-
-  @Override
-  public GenericEventRecord save(EventIF event) {
-    return cacheServiceIF.save(event);
   }
 }

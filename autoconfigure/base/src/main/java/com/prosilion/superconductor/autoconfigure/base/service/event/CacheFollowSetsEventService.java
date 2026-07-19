@@ -106,7 +106,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
   @Override
   public List<FollowSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    return materializeList(cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(getKind(), pubKeyTag, addressTag)).toList();
+    return materializeStream(
+       cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(getKind(), pubKeyTag, addressTag).stream()).toList();
   }
 
   @Override

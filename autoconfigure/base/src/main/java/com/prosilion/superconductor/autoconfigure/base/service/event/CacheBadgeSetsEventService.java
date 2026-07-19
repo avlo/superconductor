@@ -11,7 +11,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
-import com.prosilion.superconductor.base.cache.CacheCurationSetsEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheCuratedBadgeAwardEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import java.util.List;
@@ -24,17 +24,17 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   private final CacheServiceIF cacheServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
-  private final CacheCurationSetsEventServiceIF cacheCurationSetsEventServiceIF;
+  private final CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF;
 
   public CacheBadgeSetsEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
-     @NonNull CacheCurationSetsEventServiceIF cacheCurationSetsEventServiceIF) {
+     @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
-    this.cacheCurationSetsEventServiceIF = cacheCurationSetsEventServiceIF;
+    this.cacheCuratedBadgeAwardEventServiceIF = cacheCuratedBadgeAwardEventServiceIF;
   }
 
   @Override
@@ -51,7 +51,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
                 incomingBadgeSetsEvent.asGenericEventRecord(),
                 badgeDefinitionReputationEvent,
                 incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class).stream()
-                   .map(eventTag -> cacheCurationSetsEventServiceIF
+                   .map(eventTag -> cacheCuratedBadgeAwardEventServiceIF
                       .getEvent(eventTag.eventId(), eventTag.requireRelay()))
                    .flatMap(Optional::stream)
                    .distinct()

@@ -6,9 +6,9 @@ import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
@@ -19,20 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionReputationEvent, BadgeAwardReputationEvent> implements CacheBadgeAwardReputationEventServiceIF {
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
-  private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventService;
 
   public CacheBadgeAwardReputationEventService(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF) {
-    super(cacheReferenceEventTagServiceIF);
+    super(cacheServiceIF, cacheReferenceEventTagServiceIF, cacheBadgeDefinitionReputationEventServiceIF);
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
-    this.cacheBadgeDefinitionReputationEventService = cacheBadgeDefinitionReputationEventServiceIF;
-  }
-
-  @Override
-  protected Optional<BadgeDefinitionReputationEvent> getBadgeDefinition(@NonNull AddressTag addressTag) {
-    return cacheBadgeDefinitionReputationEventService.getBy(addressTag);
   }
 
   @Override
@@ -50,10 +44,8 @@ public class CacheBadgeAwardReputationEventService extends CacheBadgeAwardAbstra
              Kind.BADGE_AWARD_EVENT,
              addressTag).stream()
           .filter(genericEventRecord ->
-             genericEventRecord.findFirstTag(ExternalIdentityTag.class).isPresent()).findFirst()
-          .flatMap(genericEventRecord ->
-             getEvent(
-                genericEventRecord.getId(),
-                genericEventRecord.requireFirstTag(RelayTag.class).getRelay()));
+             genericEventRecord.findFirstTag(ExternalIdentityTag.class)
+                .isPresent()).findFirst()
+          .flatMap(this::materialize);
   }
 }

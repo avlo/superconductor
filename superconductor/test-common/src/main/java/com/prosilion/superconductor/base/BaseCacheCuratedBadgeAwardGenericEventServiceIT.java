@@ -1,11 +1,10 @@
 package com.prosilion.superconductor.base;
 
 import com.ezylang.evalex.parser.ParseException;
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.CurationSetsEvent;
+import com.prosilion.nostr.event.CuratedBadgeAwardEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
@@ -15,7 +14,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.SetsPairedEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.base.cache.CacheCurationSetsEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheCuratedBadgeAwardEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.time.Duration;
 import java.util.List;
@@ -28,11 +27,10 @@ import org.springframework.beans.factory.annotation.Value;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseCurationSetsEventServiceIT {
+public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT {
   public static final String REPUTATION = "TEST_REPUTATION";
   public static final String AWARD_UNIT_UPVOTE = "TEST_UNIT_UPVOTE";
   public static final String FORMULA_UNIT_UPVOTE = "FORMULA_UNIT_UPVOTE";
@@ -68,22 +66,22 @@ public abstract class BaseCurationSetsEventServiceIT {
 
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent;
-  private final CacheCurationSetsEventServiceIF cacheCurationSetsEventServiceIF;
+  private final CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF;
 
   private final Relay relay;
 
   Duration requestTimeoutDuration;
-  CurationSetsEvent curationSetsUpvoteEvent;
+  CuratedBadgeAwardEvent curationSetsUpvoteEvent;
 
-  public BaseCurationSetsEventServiceIT(
+  public BaseCacheCuratedBadgeAwardGenericEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("cacheCurationSetsEventService") CacheCurationSetsEventServiceIF cacheCurationSetsEventServiceIF,
+     @NonNull @Qualifier("cacheCurationSetsEventService") CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF,
      Duration requestTimeoutDuration) throws ParseException {
     this.aImgIdentity = superconductorInstanceIdentity;
     this.requestTimeoutDuration = requestTimeoutDuration;
-    this.cacheCurationSetsEventServiceIF = cacheCurationSetsEventServiceIF;
+    this.cacheCuratedBadgeAwardEventServiceIF = cacheCuratedBadgeAwardEventServiceIF;
     this.relay = new Relay(relayUrl);
 
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
@@ -109,21 +107,18 @@ public abstract class BaseCurationSetsEventServiceIT {
 
     SetsPairedEvent setsPairedEvents = new SetsPairedEvent(
        badgeDefnEventAsAddressTag,
-       badgeAwardUpvoteEvent.getRelay().orElse(null),
-       new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)),
-       badgeAwardUpvoteEvent.getAwardRecipientPublicKey());
+       new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)));
 
-    this.curationSetsUpvoteEvent = new CurationSetsEvent(
+    this.curationSetsUpvoteEvent = new CuratedBadgeAwardEvent(
        aImgIdentity,
-       badgeDefinitionReputationEventPlusOneFormula,
-       setsPairedEvents,
+       badgeAwardUpvoteEvent,
        relay);
     cacheServiceIF.save(curationSetsUpvoteEvent);
   }
 
   @Test
   public void testGetEventByPubKeyTag() {
-    List<CurationSetsEvent> byPubKeyTag = cacheCurationSetsEventServiceIF
+    List<CuratedBadgeAwardEvent> byPubKeyTag = cacheCuratedBadgeAwardEventServiceIF
        .getBy(
           new PubKeyTag(curationSetsUpvoteEvent.getAwardRecipientPublicKey()));
     assertEquals(1, byPubKeyTag.size());
@@ -132,7 +127,7 @@ public abstract class BaseCurationSetsEventServiceIT {
 
   @Test
   public void testGetEventByPubKeyTagEventTag() {
-    Optional<CurationSetsEvent> byPubKeyTagEventTag = cacheCurationSetsEventServiceIF
+    Optional<CuratedBadgeAwardEvent> byPubKeyTagEventTag = cacheCuratedBadgeAwardEventServiceIF
        .getBy(
           new PubKeyTag(curationSetsUpvoteEvent.getAwardRecipientPublicKey()),
           curationSetsUpvoteEvent.getEventTag());
@@ -141,7 +136,7 @@ public abstract class BaseCurationSetsEventServiceIT {
 
   @Test
   public void testGetEventByPubKeyTagIdentifierTag() {
-    List<CurationSetsEvent> byPubKeyTagIdentifierTag = cacheCurationSetsEventServiceIF
+    List<CuratedBadgeAwardEvent> byPubKeyTagIdentifierTag = cacheCuratedBadgeAwardEventServiceIF
        .getBy(new PubKeyTag(curationSetsUpvoteEvent.getAwardRecipientPublicKey()), curationSetsUpvoteEvent.getIdentifierTag());
     assertEquals(1, byPubKeyTagIdentifierTag.size());
     assertEquals(curationSetsUpvoteEvent, byPubKeyTagIdentifierTag.getFirst());
@@ -149,7 +144,7 @@ public abstract class BaseCurationSetsEventServiceIT {
 
   @Test
   public void testGetEventByEventTag() {
-    Optional<CurationSetsEvent> byPubKeyTagIdentifierTag = cacheCurationSetsEventServiceIF
+    Optional<CuratedBadgeAwardEvent> byPubKeyTagIdentifierTag = cacheCuratedBadgeAwardEventServiceIF
        .getBy(curationSetsUpvoteEvent.getEventTag());
     assertTrue(byPubKeyTagIdentifierTag.isPresent());
     assertEquals(curationSetsUpvoteEvent, byPubKeyTagIdentifierTag.get());
@@ -158,12 +153,12 @@ public abstract class BaseCurationSetsEventServiceIT {
   @Test
   public void testGetEventByEventIdRelay() {
     String eventId = curationSetsUpvoteEvent.getEventId();
-    Optional<CurationSetsEvent> byEventIdRelay = cacheCurationSetsEventServiceIF
+    Optional<CuratedBadgeAwardEvent> byEventIdRelay = cacheCuratedBadgeAwardEventServiceIF
        .getEvent(eventId, relay);
     assertTrue(byEventIdRelay.isPresent());
     assertEquals(curationSetsUpvoteEvent, byEventIdRelay.get());
 
-    Optional<CurationSetsEvent> byEventIdNonExistentRelay = cacheCurationSetsEventServiceIF
+    Optional<CuratedBadgeAwardEvent> byEventIdNonExistentRelay = cacheCuratedBadgeAwardEventServiceIF
        .getEvent(eventId, new Relay("ws://localhost-non-existent:5555"));
     assertTrue(byEventIdNonExistentRelay.isPresent());
     assertEquals(curationSetsUpvoteEvent, byEventIdNonExistentRelay.get());
@@ -172,10 +167,10 @@ public abstract class BaseCurationSetsEventServiceIT {
   @Test
   public void testThrowsException() {
     String nonExistentEventId = Util.generateRandomHex64String();
-    assertEquals(Optional.empty(), cacheCurationSetsEventServiceIF.getEvent(nonExistentEventId, relay));
-    
+    assertEquals(Optional.empty(), cacheCuratedBadgeAwardEventServiceIF.getEvent(nonExistentEventId, relay));
+
     EventTag nonExistentEventTagEventId = new EventTag(nonExistentEventId);
-    assertEquals(Optional.empty(), cacheCurationSetsEventServiceIF.getBy(nonExistentEventTagEventId));
+    assertEquals(Optional.empty(), cacheCuratedBadgeAwardEventServiceIF.getBy(nonExistentEventTagEventId));
   }
 
 //  @Test

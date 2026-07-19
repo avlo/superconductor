@@ -13,12 +13,20 @@ public interface EventMaterializer<T extends BaseEvent> {
   Optional<T> materialize(@NonNull EventIF eventIF);
 
   default Stream<T> materializeList(List<GenericEventRecord> genericEventRecords) {
-    return genericEventRecords.stream()
+    return materializeStream(genericEventRecords.stream());
+  }
+
+  default Stream<T> materializeStream(Stream<GenericEventRecord> genericEventRecords) {
+    return genericEventRecords
        .mapMulti((genericEventRecord, consumer) ->
           materialize(genericEventRecord).ifPresent(consumer));
   }
 
   default Optional<T> materializeFirst(List<GenericEventRecord> genericEventRecords) {
-    return genericEventRecords.stream().findFirst().flatMap(this::materialize);
+    return materializeFirst(genericEventRecords.stream());
+  }
+
+  default Optional<T> materializeFirst(Stream<GenericEventRecord> genericEventRecords) {
+    return genericEventRecords.findFirst().flatMap(this::materialize);
   }
 }

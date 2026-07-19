@@ -3,7 +3,6 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.tag;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
-import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAbstractTagServiceIF;
 import java.util.Optional;
@@ -28,13 +27,13 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
 
   @Override
   public Optional<GenericEventRecord> getBy(@NonNull T abstractTag) {
-    log.debug("inside getEvent(T abstractTag) with abstractTag:\n{}", Util.prettyPrintReferencedAbstractEventTag(abstractTag));
+//    log.debug("inside getEvent(T abstractTag) with abstractTag:\n{}", Util.prettyPrintReferencedAbstractEventTag(abstractTag));
 
     log.debug("... calling getLocalEventFxn(abstractTag) ...");
     Optional<GenericEventRecord> localGenericEventRecordOptional = getLocalEventFxn(abstractTag);
 
     if (localGenericEventRecordOptional.isPresent()) {
-      log.debug("... returning local GenericEventRecord:{}", localGenericEventRecordOptional.get().createPrettyPrintJson());
+//      log.debug("... returning local GenericEventRecord:{}", localGenericEventRecordOptional.get().createPrettyPrintJson());
       return localGenericEventRecordOptional;
     }
 
@@ -43,15 +42,15 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
   }
 
   protected Optional<GenericEventRecord> getRemoteEventGenericEventRecord(T abstractTag, String relayUrl) {
-    log.debug(STRING, Util.prettyPrintReferencedAbstractEventTag(abstractTag), relayUrl);
+//    log.debug(STRING, Util.prettyPrintReferencedAbstractEventTag(abstractTag), relayUrl);
 
     Optional<GenericEventRecord> optionalGenericEventRecord = remoteAbstractTagService.sendRemoteReq(
        relayUrl,
        getAbstractTagFilters(abstractTag)).stream().findFirst();
 
 //    optionalGenericEventRecord.ifPresent(cacheServiceIF::save);
-    optionalGenericEventRecord.ifPresent(genericEventRecord ->
-       log.debug("returning fetched remote event:\n  {}", genericEventRecord.createPrettyPrintJson()));
+//    optionalGenericEventRecord.ifPresent(genericEventRecord ->
+//       log.debug("returning fetched remote event:\n  {}", genericEventRecord.createPrettyPrintJson()));
 
     return optionalGenericEventRecord;
   }

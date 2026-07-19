@@ -8,6 +8,8 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
@@ -41,13 +43,16 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> materialize(@NonNull EventIF incomingBadgeDefinitionReputationEvent) {
-    GenericEventRecord eventRecord = incomingBadgeDefinitionReputationEvent.asGenericEventRecord();
+  public Optional<BadgeDefinitionReputationEvent> materialize(@NonNull EventIF inBadgeDefnRepEvent) {
+    
+    GenericEventRecord eventRecord = inBadgeDefnRepEvent.asGenericEventRecord();
+    List<FormulaEvent> formulaEvents = getFormulaEvents(eventRecord);
+    
     return
        Optional.of(
           new BadgeDefinitionReputationEvent(
              eventRecord, addressTag ->
-             getFormulaEvents(eventRecord).stream()
+             formulaEvents.stream()
                 .filter(formulaEvent ->
                    formulaEvent.asAddressableEventAddressTag().equals(addressTag))
                 .findFirst()

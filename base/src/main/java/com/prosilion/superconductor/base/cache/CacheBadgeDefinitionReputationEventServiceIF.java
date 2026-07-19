@@ -2,6 +2,7 @@ package com.prosilion.superconductor.base.cache;
 
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import java.util.Optional;
 import lombok.NonNull;
 
@@ -10,8 +11,9 @@ import lombok.NonNull;
  * CacheBadgeDefinitionReputationEventServiceIF
  * <p>
  * rather than longer & more complex/error-prone variant:
- * CacheBadgeDefinitionAbstractEventServiceIF<BadgeDefinitionReputationEvent> 
+ * CacheBadgeDefinitionAbstractEventServiceIF<BadgeDefinitionReputationEvent>
  */
 public interface CacheBadgeDefinitionReputationEventServiceIF extends CacheBadgeDefinitionAbstractEventServiceIF<BadgeDefinitionReputationEvent> {
   Optional<BadgeDefinitionReputationEvent> getByDirectTag(@NonNull AddressTag addressTag);
+  Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
 }

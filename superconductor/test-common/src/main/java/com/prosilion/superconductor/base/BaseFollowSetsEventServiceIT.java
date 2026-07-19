@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.BadgeSetsEvent;
-import com.prosilion.nostr.event.CurationSetsEvent;
+import com.prosilion.nostr.event.CuratedBadgeAwardEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -128,14 +128,11 @@ public abstract class BaseFollowSetsEventServiceIT {
 
     SetsPairedEvent setsPairedEvents = new SetsPairedEvent(
        badgeDefnEventAsAddressTag,
-       badgeAwardUpvoteEvent.getRelay().orElse(null),
-       new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)),
-       badgeAwardUpvoteEvent.getAwardRecipientPublicKey());
+       new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)));
 
-    CurationSetsEvent curationSetsUpvoteEvent = new CurationSetsEvent(
+    CuratedBadgeAwardEvent curationSetsUpvoteEvent = new CuratedBadgeAwardEvent(
        aImgIdentity,
-       badgeDefinitionReputationEventPlusOneFormula,
-       setsPairedEvents,
+       badgeAwardUpvoteEvent,
        relay);
     cacheServiceIF.save(curationSetsUpvoteEvent);
 

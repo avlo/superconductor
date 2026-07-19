@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
@@ -16,22 +17,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> implements CacheBadgeAwardGenericEventServiceIF {
-
-  private final CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
 
   public CacheBadgeAwardGenericEventService(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
-    super(cacheReferenceEventTagServiceIF);
-    this.cacheBadgeDefinitionGenericEventServiceIF = cacheBadgeDefinitionGenericEventServiceIF;
+    super(cacheServiceIF, cacheReferenceEventTagServiceIF, cacheBadgeDefinitionGenericEventServiceIF);
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
-  }
-
-  @Override
-  protected Optional<BadgeDefinitionGenericEvent> getBadgeDefinition(@NonNull AddressTag addressTag) {
-    return cacheBadgeDefinitionGenericEventServiceIF.getBy(addressTag);
   }
 
   @Override
@@ -43,7 +37,11 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
 
   @Override
   public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getBy(@NonNull AddressTag addressTag) {
-    return cacheKindAddressTagServiceIF.getBy(Kind.BADGE_AWARD_EVENT, addressTag)
-       .stream().findFirst().flatMap(this::materialize);
+    return
+       cacheKindAddressTagServiceIF
+          .getBy(
+             Kind.BADGE_AWARD_EVENT, addressTag)
+          .stream().findFirst()
+          .flatMap(this::materialize);
   }
 }

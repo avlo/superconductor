@@ -8,7 +8,7 @@ import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.CacheCurationSetsEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheCuratedBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
@@ -135,7 +135,7 @@ public class EventKindPluginConfig {
   Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers(
      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
-     @NonNull CacheCurationSetsEventService cacheCurationSetsEventService,
+     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCurationSetsEventService,
      @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
      @NonNull CacheFormulaEventService cacheFormulaEventService) {

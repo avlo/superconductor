@@ -2,13 +2,14 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.definition
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.AddressableEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionAbstractEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
@@ -18,7 +19,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDefinitionGenericEvent> implements CacheBadgeDefinitionAbstractEventServiceIF<T> {
+public abstract class CacheBadgeDefinitionAbstractEventService<T extends AddressableEvent> implements CacheBadgeDefinitionAbstractEventServiceIF<T> {
   private final CacheServiceIF cacheServiceIF;
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
@@ -50,11 +51,22 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends BadgeDe
       throw new NostrException(
          String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
 
-    return cacheReferenceAddressTagServiceIF.getBy(addressTag)
-       .flatMap(genericEventRecord ->
-          getEvent(
-             genericEventRecord.getId(),
-             genericEventRecord.requireFirstTag(RelayTag.class).getRelay()));
+    Optional<GenericEventRecord> by = cacheReferenceAddressTagServiceIF.getBy(addressTag);
+    return by.flatMap(this::materialize);
+//    TODO: below is critical- validate definition event exists via source relay
+//    TODO: currently commented out since excessive remote requests
+//    return by
+//       .flatMap(genericEventRecord ->
+//          getEvent(
+//             genericEventRecord.getId(),
+//             genericEventRecord.requireFirstTag(RelayTag.class).getRelay()));
+  }
+
+
+  @Override
+  public Optional<T> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
+    return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag).stream()
+       .findFirst().flatMap(this::materialize);
   }
 
   public Optional<T> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {

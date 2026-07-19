@@ -1,4 +1,4 @@
 package com.prosilion.superconductor.base.cache.curated;
 
-public interface CacheCuratedBadgeDefinitionGenericEventServiceDecorIF extends CacheCuratedBadgeDefinitionEventServiceIF, CacheCuratedEventServiceIF {
+public interface CacheCuratedBadgeDefinitionGenericEventServiceDecorIF extends CacheCuratedBadgeDefinitionEventServiceIF {
 }

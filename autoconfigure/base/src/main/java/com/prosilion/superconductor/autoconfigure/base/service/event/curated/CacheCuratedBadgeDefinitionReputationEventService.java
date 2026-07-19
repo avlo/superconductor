@@ -15,7 +15,7 @@ import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventS
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
-public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCuratedEventService implements CacheCuratedBadgeDefinitionReputationEventServiceDecorIF {
+public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCuratedEventService<BadgeDefinitionReputationEvent> implements CacheCuratedBadgeDefinitionReputationEventServiceDecorIF {
   private final Identity instanceIdentity;
   private final CacheBadgeDefinitionReputationEventServiceDecorIF cacheBadgeDefinitionReputationEventServiceDecorIF;
   private final CacheCuratedFormulaEventServiceDecorIF cacheCuratedFormulaEventServiceDecorIF;

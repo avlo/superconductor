@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // TODO: rxr common elements from CacheCuratedBadgeDefinitionGenericEventService into baseClass
-public class CacheCuratedBadgeAwardGenericEventService extends CacheCuratedEventService implements CacheCuratedBadgeAwardEventServiceIF {
+public class CacheCuratedBadgeAwardGenericEventService extends CacheCuratedEventService<CuratedBadgeAwardGenericEvent> implements CacheCuratedBadgeAwardEventServiceIF {
 
   public CacheCuratedBadgeAwardGenericEventService(@NonNull CacheServiceIF cacheServiceIF) {
     super(cacheServiceIF);

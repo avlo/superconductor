@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.base.cache.curated;
 
-import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceDecorIF;
+import com.prosilion.nostr.event.FormulaEvent;
 
-public interface CacheCuratedFormulaEventServiceDecorIF extends CacheFormulaEventServiceDecorIF {
+public interface CacheCuratedFormulaEventServiceDecorIF extends CacheFormulaEventServiceDecorIF,
+   CacheCuratedEventServiceIF<FormulaEvent> {
 }

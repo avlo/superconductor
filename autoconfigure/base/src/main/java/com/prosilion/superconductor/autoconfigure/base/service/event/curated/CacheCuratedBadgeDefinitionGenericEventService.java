@@ -19,7 +19,7 @@ import org.jspecify.annotations.NonNull;
 
 @Slf4j
 // TODO: rxr common elements from CacheCuratedBadgeAwardGenericEventService into baseClass
-public class CacheCuratedBadgeDefinitionGenericEventService extends CacheCuratedEventService implements CacheCuratedBadgeDefinitionGenericEventServiceDecorIF {
+public class CacheCuratedBadgeDefinitionGenericEventService extends CacheCuratedEventService<CuratedBadgeDefinitionGenericEvent> implements CacheCuratedBadgeDefinitionGenericEventServiceDecorIF {
   private final CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService;
 
   public CacheCuratedBadgeDefinitionGenericEventService(

@@ -8,10 +8,11 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceDecorIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
-import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF {
+public class CacheBadgeSetsEventService extends CacheCuratedEventService<BadgeSetsEvent> implements CacheBadgeSetsEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceDecorIF cacheBadgeDefinitionReputationEventServiceDecorIF;
@@ -30,6 +31,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventServiceDecorIF cacheBadgeDefinitionReputationEventServiceDecorIF,
      @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
+    super(cacheServiceIF);
     this.cacheServiceIF = cacheServiceIF;
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceDecorIF = cacheBadgeDefinitionReputationEventServiceDecorIF;

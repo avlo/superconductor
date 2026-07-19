@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import org.jspecify.annotations.NonNull;
 
-public class CacheCuratedFormulaEventService extends CacheCuratedEventService implements CacheCuratedFormulaEventServiceDecorIF {
+public class CacheCuratedFormulaEventService extends CacheCuratedEventService<FormulaEvent> implements CacheCuratedFormulaEventServiceDecorIF {
   private final CacheFormulaEventService cacheFormulaEventService;
   private final CacheCuratedBadgeDefinitionGenericEventServiceDecorIF cacheCuratedBadgeDefinitionGenericEventServiceDecorIF;
 

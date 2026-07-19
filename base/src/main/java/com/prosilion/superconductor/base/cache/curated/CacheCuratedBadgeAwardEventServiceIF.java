@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 
-public interface CacheCuratedBadgeAwardEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeAwardGenericEvent, EventTag>, EventMaterializer<CuratedBadgeAwardGenericEvent>, CacheCuratedEventServiceIF {
+public interface CacheCuratedBadgeAwardEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeAwardGenericEvent, EventTag>, EventMaterializer<CuratedBadgeAwardGenericEvent>, CacheCuratedEventServiceIF<CuratedBadgeAwardGenericEvent> {
   List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag);
   List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
   Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);

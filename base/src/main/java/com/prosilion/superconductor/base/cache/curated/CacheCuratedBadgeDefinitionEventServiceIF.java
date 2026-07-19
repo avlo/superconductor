@@ -10,7 +10,7 @@ import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterial
 import java.util.Optional;
 import lombok.NonNull;
 
-public interface CacheCuratedBadgeDefinitionEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeDefinitionGenericEvent, EventTag>, EventMaterializer<CuratedBadgeDefinitionGenericEvent>, CacheCuratedEventServiceIF {
+public interface CacheCuratedBadgeDefinitionEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeDefinitionGenericEvent, EventTag>, EventMaterializer<CuratedBadgeDefinitionGenericEvent>, CacheCuratedEventServiceIF<CuratedBadgeDefinitionGenericEvent> {
   Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag);
   Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull EventTag eventTag);
   Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull AddressTag addressTag);

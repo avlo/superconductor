@@ -88,7 +88,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
     return followSetsEvent.getBadgeSetsEventList().stream()
        .flatMap(badgeSetsEvent ->
           cacheKindAddressTagServiceIF
-             .getDirectBy(
+             .getByDirect(
                 Kind.BADGE_AWARD_EVENT,
                 awardRecipient,
                 badgeSetsEvent.getBadgeDefinitionReputationEvent()
@@ -113,7 +113,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   @Override
   @Deprecated
   public Optional<FollowSetsEvent> getBy(@NonNull EventTag eventTag) {
-    return cacheReferenceEventTagServiceIF.getBy(eventTag).flatMap(this::materialize);
+    return cacheReferenceEventTagServiceIF.getByExpanded(eventTag).flatMap(this::materialize);
   }
 
   @Override

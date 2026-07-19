@@ -23,7 +23,7 @@ public class CacheReferenceAddressTagService extends CacheReferenceAbstractTagSe
   }
 
   @Override
-  Optional<GenericEventRecord> getLocalEventFxn(@NonNull AddressTag addressTag) {
+  Optional<GenericEventRecord> tryGetLocalExpandedEvent(@NonNull AddressTag addressTag) {
     log.debug("inside getLocalEventFxn(AddressTag) with addressTag:{}", Util.prettyPrintAddressTags(addressTag));
 
     Optional<GenericEventRecord> eventsByKindAndAuthorPublicKeyAndIdentifierTag = cacheServiceIF

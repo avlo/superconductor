@@ -11,6 +11,6 @@ public interface CacheReferenceEventTagServiceIF extends CacheReferenceAbstractT
   List<GenericEventRecord> getEvents(List<EventTag> t);
 
   default Optional<GenericEventRecord> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return getBy(new EventTag(eventId, relay.getUrl()));
+    return getByExpanded(new EventTag(eventId, relay.getUrl()));
   }
 }

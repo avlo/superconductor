@@ -45,7 +45,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   public Optional<FormulaEvent> materialize(@NonNull EventIF incomingFormulaEvent) {
     log.debug("inside materialize(EventIF incomingFormulaEvent):\n  {}", incomingFormulaEvent.createPrettyPrintJson());
     return cacheReferenceAddressTagServiceIF
-       .getBy(incomingFormulaEvent.requireFirstTag(AddressTag.class))
+       .getByExpanded(incomingFormulaEvent.requireFirstTag(AddressTag.class))
        .map(BadgeDefinitionGenericEvent::new)
        .map(event ->
           new FormulaEvent(
@@ -56,7 +56,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   @Override
   public Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
     return cacheReferenceAddressTagServiceIF
-       .getBy(
+       .getByExpanded(
           new AddressTag(
              Kind.ARBITRARY_CUSTOM_APP_DATA,
              publicKey,
@@ -69,7 +69,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   @Override
   public Optional<FormulaEvent> getBy(@NonNull AddressTag addressTag) {
     return cacheKindAddressTagServiceIF
-       .getDirectBy(
+       .getByDirect(
           Kind.ARBITRARY_CUSTOM_APP_DATA,
           addressTag)
        .stream().findFirst()

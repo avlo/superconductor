@@ -51,7 +51,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
       throw new NostrException(
          String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
 
-    Optional<GenericEventRecord> by = cacheReferenceAddressTagServiceIF.getBy(addressTag);
+    Optional<GenericEventRecord> by = cacheReferenceAddressTagServiceIF.getByExpanded(addressTag);
     return by.flatMap(this::materialize);
 //    TODO: below is critical- validate definition event exists via source relay
 //    TODO: currently commented out since excessive remote requests

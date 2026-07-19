@@ -25,11 +25,11 @@ public class CacheReferenceEventTagService extends CacheReferenceAbstractTagServ
     return
        eventTags.stream().<GenericEventRecord>mapMulti(
           (eventTag, genericEventRecordConsumer) ->
-             getLocalEventFxn(eventTag).ifPresent(genericEventRecordConsumer)).toList();
+             tryGetLocalExpandedEvent(eventTag).ifPresent(genericEventRecordConsumer)).toList();
   }
 
   @Override
-  Optional<GenericEventRecord> getLocalEventFxn(@NonNull EventTag eventTag) {
+  Optional<GenericEventRecord> tryGetLocalExpandedEvent(@NonNull EventTag eventTag) {
     return cacheServiceIF.getEventByEventId(eventTag.getEventId());
   }
 

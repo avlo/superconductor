@@ -84,7 +84,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   public Optional<BadgeDefinitionReputationEvent> getByDirectTag(@NonNull AddressTag addressTag) {
     return
        cacheKindAddressTagService
-          .getDirectBy(
+          .getByDirect(
              Kind.BADGE_DEFINITION_EVENT,
              addressTag).stream()
           .filter(genericEventRecord ->

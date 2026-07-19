@@ -22,15 +22,14 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
     this.remoteAbstractTagService = remoteAbstractTagService;
   }
 
-  abstract Filters getAbstractTagFilters(@NonNull T tag);
-  abstract Optional<GenericEventRecord> getLocalEventFxn(@NonNull T tag);
-
+  abstract Optional<GenericEventRecord> tryGetLocalExpandedEvent(@NonNull T tag);
+  
   @Override
-  public Optional<GenericEventRecord> getBy(@NonNull T abstractTag) {
+  public Optional<GenericEventRecord> getByExpanded(@NonNull T abstractTag) {
 //    log.debug("inside getEvent(T abstractTag) with abstractTag:\n{}", Util.prettyPrintReferencedAbstractEventTag(abstractTag));
 
     log.debug("... calling getLocalEventFxn(abstractTag) ...");
-    Optional<GenericEventRecord> localGenericEventRecordOptional = getLocalEventFxn(abstractTag);
+    Optional<GenericEventRecord> localGenericEventRecordOptional = tryGetLocalExpandedEvent(abstractTag);
 
     if (localGenericEventRecordOptional.isPresent()) {
 //      log.debug("... returning local GenericEventRecord:{}", localGenericEventRecordOptional.get().createPrettyPrintJson());
@@ -54,4 +53,6 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
 
     return optionalGenericEventRecord;
   }
+
+  abstract Filters getAbstractTagFilters(@NonNull T tag);
 }

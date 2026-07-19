@@ -48,11 +48,11 @@ public class CacheCuratedFormulaEventService implements CacheFormulaEventService
   }
 
   @Override
-  public Optional<FormulaEvent> getBy(@NonNull AddressTag addressTag) {
+  public Optional<FormulaEvent> getByDirect(@NonNull AddressTag addressTag) {
     return cacheCuratedBadgeDefinitionGenericEventService
        .getBy(addressTag)
        .map(curatedBadgeDefnToFormulaFxn)
-       .or(() -> cacheFormulaEventService.getBy(addressTag));
+       .or(() -> cacheFormulaEventService.getByDirect(addressTag));
   }
 
   @Override

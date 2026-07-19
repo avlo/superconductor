@@ -67,7 +67,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   }
 
   @Override
-  public Optional<FormulaEvent> getBy(@NonNull AddressTag addressTag) {
+  public Optional<FormulaEvent> getByDirect(@NonNull AddressTag addressTag) {
     return cacheKindAddressTagServiceIF
        .getByDirect(
           Kind.ARBITRARY_CUSTOM_APP_DATA,

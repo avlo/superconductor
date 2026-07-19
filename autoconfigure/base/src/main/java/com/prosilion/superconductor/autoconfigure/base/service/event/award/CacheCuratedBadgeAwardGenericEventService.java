@@ -36,7 +36,7 @@ public class CacheCuratedBadgeAwardGenericEventService implements CacheCuratedBa
   }
 
   @Override
-  public Optional<CuratedBadgeAwardEvent> getBy(@NonNull EventTag eventTag) {
+  public Optional<CuratedBadgeAwardEvent> getByDirect(@NonNull EventTag eventTag) {
     return materializeFirst(cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag));
   }
 

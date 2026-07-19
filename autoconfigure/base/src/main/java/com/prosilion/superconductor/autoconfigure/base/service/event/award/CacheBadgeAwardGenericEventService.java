@@ -36,7 +36,7 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
   }
 
   @Override
-  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getBy(@NonNull AddressTag addressTag) {
+  public Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> getByDirect(@NonNull AddressTag addressTag) {
     return
        cacheKindAddressTagServiceIF
           .getByDirect(

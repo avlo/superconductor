@@ -15,7 +15,7 @@ import lombok.NonNull;
 
 public interface CacheCuratedBadgeDefinitionEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeDefinitionEvent, EventTag>, EventMaterializer<CuratedBadgeDefinitionEvent> {
   Optional<CuratedBadgeDefinitionEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag);
-  Optional<CuratedBadgeDefinitionEvent> getBy(@NonNull EventTag eventTag);
+  Optional<CuratedBadgeDefinitionEvent> getByDirect(@NonNull EventTag eventTag);
   Optional<CuratedBadgeDefinitionEvent> getBy(@NonNull AddressTag addressTag);
   GenericEventRecord save(EventIF event);
 }

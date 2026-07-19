@@ -145,7 +145,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT {
   @Test
   public void testGetEventByEventTag() {
     Optional<CuratedBadgeAwardEvent> byPubKeyTagIdentifierTag = cacheCuratedBadgeAwardEventServiceIF
-       .getBy(curationSetsUpvoteEvent.getEventTag());
+       .getByDirect(curationSetsUpvoteEvent.getEventTag());
     assertTrue(byPubKeyTagIdentifierTag.isPresent());
     assertEquals(curationSetsUpvoteEvent, byPubKeyTagIdentifierTag.get());
   }
@@ -170,7 +170,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT {
     assertEquals(Optional.empty(), cacheCuratedBadgeAwardEventServiceIF.getEvent(nonExistentEventId, relay));
 
     EventTag nonExistentEventTagEventId = new EventTag(nonExistentEventId);
-    assertEquals(Optional.empty(), cacheCuratedBadgeAwardEventServiceIF.getBy(nonExistentEventTagEventId));
+    assertEquals(Optional.empty(), cacheCuratedBadgeAwardEventServiceIF.getByDirect(nonExistentEventTagEventId));
   }
 
 //  @Test

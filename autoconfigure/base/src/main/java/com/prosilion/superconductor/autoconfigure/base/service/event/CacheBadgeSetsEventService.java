@@ -64,7 +64,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   }
 
   @Override
-  public Optional<BadgeSetsEvent> getBy(@NonNull AddressTag referencedAbstractEventTag) {
+  public Optional<BadgeSetsEvent> getByDirect(@NonNull AddressTag referencedAbstractEventTag) {
     return materializeFirst(cacheKindAddressTagServiceIF.getByDirect(getKind(), referencedAbstractEventTag));
   }
 

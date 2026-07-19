@@ -8,7 +8,6 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
@@ -105,14 +104,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
-  public List<FollowSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    return materializeStream(
-       cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(getKind(), pubKeyTag, addressTag).stream()).toList();
-  }
-
-  @Override
   @Deprecated
-  public Optional<FollowSetsEvent> getBy(@NonNull EventTag eventTag) {
+  public Optional<FollowSetsEvent> getByDirect(@NonNull EventTag eventTag) {
     return cacheReferenceEventTagServiceIF.getByExpanded(eventTag).flatMap(this::materialize);
   }
 

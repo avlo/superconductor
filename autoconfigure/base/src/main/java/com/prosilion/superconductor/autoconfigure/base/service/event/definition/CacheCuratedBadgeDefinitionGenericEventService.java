@@ -43,7 +43,7 @@ public class CacheCuratedBadgeDefinitionGenericEventService implements CacheCura
   }
 
   @Override
-  public Optional<CuratedBadgeDefinitionEvent> getBy(@NonNull EventTag eventTag) {
+  public Optional<CuratedBadgeDefinitionEvent> getByDirect(@NonNull EventTag eventTag) {
     return materializeFirst(
        cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag))
        .or(() ->

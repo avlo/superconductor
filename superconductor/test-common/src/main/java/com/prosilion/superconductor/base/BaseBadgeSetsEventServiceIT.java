@@ -161,7 +161,7 @@ public abstract class BaseBadgeSetsEventServiceIT {
 
   @Test
   public void testGetByAddressTag() {
-    Optional<BadgeSetsEvent> byAddressTag = cacheBadgeSetsEventServiceIF.getBy(
+    Optional<BadgeSetsEvent> byAddressTag = cacheBadgeSetsEventServiceIF.getByDirect(
        badgeDefinitionReputationEventPlusOneFormula.asAddressableEventAddressTag());
     assertTrue(byAddressTag.isPresent());
     assertEquals(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());

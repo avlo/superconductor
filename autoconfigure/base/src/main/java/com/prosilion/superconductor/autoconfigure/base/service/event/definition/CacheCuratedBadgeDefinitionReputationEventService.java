@@ -33,11 +33,6 @@ public class CacheCuratedBadgeDefinitionReputationEventService implements CacheB
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getByDirect(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    return Optional.empty();
-  }
-
-  @Override
   public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String s, @NonNull Relay relay) {
     return Optional.empty();
   }

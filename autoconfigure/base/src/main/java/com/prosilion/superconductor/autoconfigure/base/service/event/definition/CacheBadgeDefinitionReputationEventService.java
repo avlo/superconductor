@@ -42,10 +42,10 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> materialize(@NonNull EventIF inBadgeDefnRepEvent) {
-    
+
     GenericEventRecord eventRecord = inBadgeDefnRepEvent.asGenericEventRecord();
     List<FormulaEvent> formulaEvents = getFormulaEvents(eventRecord);
-    
+
     return
        Optional.of(
           new BadgeDefinitionReputationEvent(

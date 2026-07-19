@@ -8,7 +8,6 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheCuratedBadgeAwardEventServiceIF;
@@ -42,9 +41,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
     log.debug("materialize(EventIF incomingBadgeSetsEvent):\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
     return
        cacheBadgeDefinitionReputationEventServiceIF
-          .getByDirect(
-             new PubKeyTag(new PublicKey(
-                incomingBadgeSetsEvent.requireFirstTag(IdentifierTag.class).getUuid())),
+          .getByExpanded(
              incomingBadgeSetsEvent.requireFirstTag(AddressTag.class))
           .map(badgeDefinitionReputationEvent ->
              new BadgeSetsEvent(

@@ -104,6 +104,11 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
+  public List<FollowSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag) {
+    return materializeStream(cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), pubKeyTag).stream()).toList();
+  }
+
+  @Override
   @Deprecated
   public Optional<FollowSetsEvent> getByDirect(@NonNull EventTag eventTag) {
     return cacheReferenceEventTagServiceIF.getByExpanded(eventTag).flatMap(this::materialize);

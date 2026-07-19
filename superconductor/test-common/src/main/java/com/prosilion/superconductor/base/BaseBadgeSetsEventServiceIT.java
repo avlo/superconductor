@@ -133,11 +133,11 @@ public abstract class BaseBadgeSetsEventServiceIT {
 
   @Test
   public void testGetByEventId() {
-    Optional<BadgeSetsEvent> byPubKeyTag = cacheBadgeSetsEventServiceIF
+    Optional<BadgeSetsEvent> byEventId = cacheBadgeSetsEventServiceIF
        .getEvent(
           badgeSetsUpvoteEvent.getId(),
           badgeSetsUpvoteEvent.getRelay().orElseThrow());
-    assertTrue(byPubKeyTag.isPresent());
+    assertTrue(byEventId.isPresent());
   }
 
   @Test

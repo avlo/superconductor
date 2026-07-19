@@ -15,5 +15,4 @@ import lombok.NonNull;
  */
 public interface CacheBadgeDefinitionReputationEventServiceIF extends CacheBadgeDefinitionAbstractEventServiceIF<BadgeDefinitionReputationEvent> {
   Optional<BadgeDefinitionReputationEvent> getByDirect(@NonNull AddressTag addressTag);
-  Optional<BadgeDefinitionReputationEvent> getByDirect(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
 }

@@ -21,7 +21,7 @@ public class CacheReferenceEventTagService extends CacheReferenceAbstractTagServ
   }
 
   @Override
-  public List<GenericEventRecord> getEvents(@NonNull List<EventTag> eventTags) {
+  public List<GenericEventRecord> getExpandedEvents(@NonNull List<EventTag> eventTags) {
     return
        eventTags.stream().<GenericEventRecord>mapMulti(
           (eventTag, genericEventRecordConsumer) ->

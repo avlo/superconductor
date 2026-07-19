@@ -46,7 +46,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
           .flatMap(this::materialize));
   }
 
-  public Optional<T> getBy(@NonNull AddressTag addressTag) {
+  public Optional<T> getByExpanded(@NonNull AddressTag addressTag) {
     if (!addressTag.getKind().equals(Kind.BADGE_DEFINITION_EVENT))
       throw new NostrException(
          String.format("invalid addressTag.getKind(): [%s] for DefinitionAbstractEvent.  must be kind type [%s]", addressTag.getKind(), Kind.BADGE_DEFINITION_EVENT));
@@ -70,7 +70,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
   }
 
   public Optional<T> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    return getBy(addressTag).filter(event -> event.requireFirstTag(PubKeyTag.class).equals(pubKeyTag));
+    return getByExpanded(addressTag).filter(event -> event.requireFirstTag(PubKeyTag.class).equals(pubKeyTag));
   }
 
   public Kind getKind() {

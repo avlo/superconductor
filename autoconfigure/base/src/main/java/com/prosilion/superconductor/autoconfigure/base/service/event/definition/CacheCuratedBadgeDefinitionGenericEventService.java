@@ -66,7 +66,7 @@ public class CacheCuratedBadgeDefinitionGenericEventService implements CacheCura
     return materializeFirst(
        cacheServiceIF.getEventsByKindAndAddressTag(getKind(), addressTag))
        .or(() ->
-          cacheBadgeDefinitionGenericEventService.getBy(addressTag)
+          cacheBadgeDefinitionGenericEventService.getByExpanded(addressTag)
              .flatMap(this::materialize));
   }
 

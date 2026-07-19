@@ -47,7 +47,7 @@ public abstract class CacheBadgeAwardAbstractEventService<
 
   public Optional<T> materialize(@NonNull EventIF eventIF) {
     return cacheBadgeDefinitionAbstractEventService
-       .getBy(
+       .getByExpanded(
           eventIF.requireFirstTag(AddressTag.class))
        .map(sType ->
           createBadgeAwardEvent(eventIF.asGenericEventRecord(), addressTag -> sType));

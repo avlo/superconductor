@@ -48,7 +48,7 @@ public class CacheCuratedBadgeDefinitionReputationEventService implements CacheB
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getBy(AddressTag addressTag) {
+  public Optional<BadgeDefinitionReputationEvent> getByExpanded(AddressTag addressTag) {
     return Optional.empty();
   }
 

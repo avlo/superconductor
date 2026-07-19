@@ -11,7 +11,7 @@ import lombok.NonNull;
 
 public interface CacheAddressableEventServiceIF<T extends AddressableEvent, U extends ReferencedAbstractEventTag> {
   Optional<T> materialize(@NonNull EventIF eventIF);
-  Optional<T> getBy(U referencedAbstractEventTag);
+  Optional<T> getByExpanded(U referencedAbstractEventTag);
   Optional<T> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
   Kind getKind();
 }

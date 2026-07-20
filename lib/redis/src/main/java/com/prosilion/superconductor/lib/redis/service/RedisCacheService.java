@@ -41,9 +41,15 @@ public class RedisCacheService implements RedisCacheServiceIF {
     return eventNosqlEntityService.save(event).asGenericEventRecord();
   }
 
-  private final Function<List<EventNosqlEntityIF>, List<GenericEventRecord>> filteredGER = eventNosqlEntityIFS ->
-     asGenericEvents(
-        filterDeletionEvents(eventNosqlEntityIFS));
+  private final Function<List<EventNosqlEntityIF>, List<GenericEventRecord>> filteredGERs =
+     eventNosqlEntityIFS ->
+        asGenericEvents(
+           filterDeletionEvents(eventNosqlEntityIFS));
+
+  private final Function<Optional<EventNosqlEntityIF>, Optional<GenericEventRecord>> filteredGER =
+     eventNosqlEntityIF ->
+        filterDeletionEvent(eventNosqlEntityIF)
+           .map(EventIF::asGenericEventRecord);
 
   @Override
   public Optional<GenericEventRecord> getEventByEventId(@NonNull String eventId) {
@@ -54,13 +60,13 @@ public class RedisCacheService implements RedisCacheServiceIF {
 
   @Override
   public List<GenericEventRecord> getByKind(@NonNull Kind kind) {
-    return filteredGER.apply(
+    return filteredGERs.apply(
        eventNosqlEntityService.getEventsByKind(kind));
   }
 
   @Override
   public List<GenericEventRecord> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
-    return filteredGER.apply(
+    return filteredGERs.apply(
        eventNosqlEntityService.getEventsByKindAndAuthorPublicKey(kind, authorPublicKey));
   }
 
@@ -68,7 +74,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   public List<GenericEventRecord> getEventsByKindAndPubKeyTag(
      @NonNull Kind kind,
      @NonNull PubKeyTag publicKey) {
-    return filteredGER.apply(
+    return filteredGERs.apply(
        eventNosqlEntityService.getEventsByKindAndPubKeyTag(kind, publicKey));
   }
 
@@ -76,13 +82,24 @@ public class RedisCacheService implements RedisCacheServiceIF {
   public List<GenericEventRecord> getEventsByKindAndEventTag(
      @NonNull Kind kind,
      @NonNull EventTag eventTag) {
-    return filteredGER.apply(
+    return filteredGERs.apply(
        eventNosqlEntityService.getEventsByKindAndEventTag(kind, eventTag));
   }
 
   @Override
-  public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndEventTag(Kind kind, PubKeyTag referencePubKeyTag, EventTag eventTag) {
+  public Optional<GenericEventRecord> getFirstEventByKindAndEventTag(
+     @NonNull Kind kind,
+     @NonNull EventTag eventTag) {
     return filteredGER.apply(
+       eventNosqlEntityService.getFirstEventByKindAndEventTag(kind, eventTag));
+  }
+
+  @Override
+  public List<GenericEventRecord> getEventsByKindAndPubKeyTagAndEventTag(
+     @NonNull Kind kind,
+     @NonNull PubKeyTag referencePubKeyTag,
+     @NonNull EventTag eventTag) {
+    return filteredGERs.apply(
        eventNosqlEntityService.getEventsByKindAndPubKeyTagAndEventTag(kind, referencePubKeyTag, eventTag));
   }
 
@@ -90,7 +107,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
   public List<GenericEventRecord> getEventsByKindAndIdentifierTag(
      @NonNull Kind kind,
      @NonNull IdentifierTag identifierTag) {
-    return filteredGER.apply(
+    return filteredGERs.apply(
        eventNosqlEntityService.getEventsByKindAndIdentifierTag(kind, identifierTag));
   }
 
@@ -98,9 +115,17 @@ public class RedisCacheService implements RedisCacheServiceIF {
   public List<GenericEventRecord> getEventsByKindAndAddressTag(
      @NonNull Kind kind,
      @NonNull AddressTag addressTag) {
-    return filteredGER.apply(
+    return filteredGERs.apply(
        eventNosqlEntityService.getEventsByKindAndAddressTag(kind, addressTag)
           .stream().toList());
+  }
+
+  @Override
+  public Optional<GenericEventRecord> getFirstEventByKindAndAddressTag(
+     @NonNull Kind kind,
+     @NonNull AddressTag addressTag) {
+    return filteredGER.apply(
+       eventNosqlEntityService.getFirstEventByKindAndAddressTag(kind, addressTag));
   }
 
   @Override
@@ -108,7 +133,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
      @NonNull Kind kind,
      @NonNull PubKeyTag referencePubKeyTag,
      @NonNull AddressTag addressTag) {
-    return filteredGER.apply(
+    return filteredGERs.apply(
        eventNosqlEntityService.getEventsByKindAndPubKeyTagAndAddressTag(
           kind,
           referencePubKeyTag,
@@ -120,7 +145,7 @@ public class RedisCacheService implements RedisCacheServiceIF {
      @NonNull Kind kind,
      @NonNull PubKeyTag referencePubKeyTag,
      @NonNull IdentifierTag identifierTag) {
-    return filteredGER.apply(
+    return filteredGERs.apply(
        eventNosqlEntityService.getEventsByKindAndPubKeyTagAndIdentifierTag(
           kind,
           referencePubKeyTag,
@@ -132,19 +157,17 @@ public class RedisCacheService implements RedisCacheServiceIF {
      @NonNull Kind kind,
      @NonNull PublicKey authorPublicKey,
      @NonNull IdentifierTag identifierTag) {
-    Optional<GenericEventRecord> apply =
-       filteredGER.apply(
-             eventNosqlEntityService.getEventByKindAndAuthorPublicKeyAndIdentifierTag(
-                kind,
-                authorPublicKey,
-                identifierTag).stream().toList())
-          .stream().findFirst();
-    return apply;
+    return filteredGERs.apply(
+          eventNosqlEntityService.getEventByKindAndAuthorPublicKeyAndIdentifierTag(
+             kind,
+             authorPublicKey,
+             identifierTag).stream().toList())
+       .stream().findFirst();
   }
 
   @Override
   public List<GenericEventRecord> getAll() {
-    return filteredGER.apply(eventNosqlEntityService.getAll());
+    return filteredGERs.apply(eventNosqlEntityService.getAll());
   }
 
   @NonNull
@@ -154,6 +177,10 @@ public class RedisCacheService implements RedisCacheServiceIF {
 
   private Stream<EventNosqlEntityIF> filterDeletionEvents(List<EventNosqlEntityIF> events) {
     return events.stream().filter(filterDeletionEvents());
+  }
+
+  private Optional<EventNosqlEntityIF> filterDeletionEvent(Optional<EventNosqlEntityIF> event) {
+    return event.filter(filterDeletionEvents());
   }
 
   private Predicate<EventNosqlEntityIF> filterDeletionEvents() {

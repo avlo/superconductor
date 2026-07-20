@@ -95,10 +95,26 @@ public class JpaCacheService implements JpaCacheServiceIF {
   }
 
   @Override
+  public Optional<GenericEventRecord> getFirstEventByKindAndEventTag(@NonNull Kind kind, @NonNull EventTag eventTag) {
+     return eventJpaEntityService.getFirstEventByKindAndEventTag(kind, eventTag).stream()
+        .filter(filterDeletionEvents())
+        .findFirst()
+        .map(EventIF::asGenericEventRecord);
+  }
+
+  @Override
   public List<GenericEventRecord> getEventsByKindAndAddressTag(Kind kind, AddressTag addressTag) {
     return eventJpaEntityService.getEventsByKindAndAddressTag(kind, addressTag).stream()
        .filter(filterDeletionEvents())
        .map(EventIF::asGenericEventRecord).toList();
+  }
+
+  @Override
+  public Optional<GenericEventRecord> getFirstEventByKindAndAddressTag(@NonNull Kind kind, @NonNull AddressTag addressTag) {
+    return eventJpaEntityService.getFirstEventByKindAndAddressTag(kind, addressTag).stream()
+       .filter(filterDeletionEvents())
+       .findFirst()
+       .map(EventIF::asGenericEventRecord);
   }
 
   @Override

@@ -49,4 +49,9 @@ public interface EventNosqlEntityRepository extends ListCrudRepository<EventNosq
   default @NonNull List<EventNosqlEntityIF> findByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
     return Collections.unmodifiableList(findByKindAndPublicKey(kind.getValue(), authorPublicKey.toHexString(), DESC_SORT_CREATED_AT));
   }
+
+  default @NonNull List<EventNosqlEntityIF> findByAuthorPublicKey(@NonNull PublicKey authorPublicKey) {
+    return Collections.unmodifiableList(findByPubKey(authorPublicKey.toHexString(), DESC_SORT_CREATED_AT));
+  }
 }
+

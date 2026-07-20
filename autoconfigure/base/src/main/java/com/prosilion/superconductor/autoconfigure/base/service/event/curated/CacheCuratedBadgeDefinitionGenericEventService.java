@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.Relay;
@@ -30,42 +31,44 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends CacheCurated
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> materialize(@NonNull EventIF incomingCurationSetsEvent) {
-    return Optional.of(new CuratedBadgeDefinitionGenericEvent(incomingCurationSetsEvent.asGenericEventRecord()));
+    return Optional.of(toCuratedBadgeDefinition(incomingCurationSetsEvent));
+  }
+
+  private CuratedBadgeDefinitionGenericEvent toCuratedBadgeDefinition(@NonNull EventIF event) {
+    return new CuratedBadgeDefinitionGenericEvent(event.asGenericEventRecord());
   }
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     return super.getEvent(eventId, relay)
-       .or(() -> cacheBadgeDefinitionGenericEventService.getEvent(eventId, relay)
-          .flatMap(this::materialize));
+       .or(() -> cacheBadgeDefinitionGenericEventService.getEventAfterDirectLookup(eventId, relay)
+          .map(this::toCuratedBadgeDefinition));
   }
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull EventTag eventTag) {
-    return materializeFirst(
-       cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag))
-       .or(() ->
-          cacheBadgeDefinitionGenericEventService.getEvent(eventTag.eventId(), eventTag.requireRelay())
-             .flatMap(this::materialize));
+    return cacheServiceIF.getFirstEventByKindAndEventTag(getKind(), eventTag)
+       .or(() -> cacheBadgeDefinitionGenericEventService.getEvent(eventTag.eventId(), eventTag.requireRelay())
+          .map(BaseEvent::getGenericEventRecord))
+       .map(this::toCuratedBadgeDefinition);
   }
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag) {
     return cacheServiceIF.getEventByKindAndAuthorPublicKeyAndIdentifierTag(getKind(), publicKey, identifierTag)
-       .flatMap(this::materialize)
        .or(() ->
-          cacheBadgeDefinitionGenericEventService.getBy(
-                new PubKeyTag(publicKey), identifierTag)
-             .flatMap(this::materialize));
+          cacheBadgeDefinitionGenericEventService.getBy(new PubKeyTag(publicKey), identifierTag)
+             .map(BaseEvent::getGenericEventRecord))
+       .map(this::toCuratedBadgeDefinition);
   }
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull AddressTag addressTag) {
-    return materializeFirst(
-       cacheServiceIF.getEventsByKindAndAddressTag(getKind(), addressTag))
+    return cacheServiceIF.getFirstEventByKindAndAddressTag(getKind(), addressTag)
        .or(() ->
           cacheBadgeDefinitionGenericEventService.getByExpanded(addressTag)
-             .flatMap(this::materialize));
+             .map(BaseEvent::getGenericEventRecord))
+       .map(this::toCuratedBadgeDefinition);
   }
 
   @Override

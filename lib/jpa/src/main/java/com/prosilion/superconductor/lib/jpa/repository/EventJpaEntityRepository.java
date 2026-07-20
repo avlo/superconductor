@@ -74,6 +74,10 @@ public interface EventJpaEntityRepository extends JpaRepository<EventJpaEntity, 
     return findByKind(kind.getValue());
   }
 
+  default @NonNull List<EventJpaEntityIF> getEventsByKindAndIdentifierTag(@NonNull Kind kind, @NonNull IdentifierTag identifierTag) {
+    return findByKind(kind.getValue());
+  }
+  
   //  TODO: below PubKeyTag, AddressTag (unused, needs fix) filter handled by callers  
   default @NonNull List<EventJpaEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(@NonNull Kind kind, @NonNull PubKeyTag referencedPubKeyTag, @NonNull AddressTag addressTag) {
     return getEventsByKindAndPubKeyTag(kind, referencedPubKeyTag);

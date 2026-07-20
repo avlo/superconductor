@@ -24,6 +24,8 @@ public interface CacheServiceIF {
   List<GenericEventRecord> getEventsByKindAndPubKeyTagAndAddressTag(Kind kind, PubKeyTag referencePubKeyTag, AddressTag addressTag);
   List<GenericEventRecord> getEventsByKindAndPubKeyTagAndIdentifierTag(Kind kind, PubKeyTag pubKeyTag, IdentifierTag identifierTag);
   Optional<GenericEventRecord> getEventByKindAndAuthorPublicKeyAndIdentifierTag(Kind kind, PublicKey authorPublicKey, IdentifierTag identifierTag);
+  Optional<GenericEventRecord> getFirstEventByKindAndEventTag(Kind kind, EventTag eventTag);
+  Optional<GenericEventRecord> getFirstEventByKindAndAddressTag(Kind kind, AddressTag addressTag);
   <U extends EventIF> void deleteEvent(U eventIF);
   <T> List<T> getAllDeletionEventIds();
 }

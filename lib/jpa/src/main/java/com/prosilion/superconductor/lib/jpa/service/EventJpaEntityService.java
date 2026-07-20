@@ -88,6 +88,7 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
        .findByEventId(eventIdString).stream().toList()).findFirst();
   }
 
+  @Override
   public List<EventJpaEntityIF> getEventsByPublicKey(@NonNull PublicKey publicKey) {
     return populateFxn.apply(eventJpaEntityRepository
        .findByPubKey(publicKey.toHexString())).toList();
@@ -130,10 +131,27 @@ public class EventJpaEntityService implements EntityServiceIF<Long, EventJpaEnti
   }
 
   @Override
+  public Optional<EventJpaEntityIF> getFirstEventByKindAndEventTag(Kind kind, EventTag eventTag) {
+    return getEventsByKindAndEventTag(kind, eventTag).stream().findFirst();
+  }
+
+  @Override
   public List<EventJpaEntityIF> getEventsByKindAndAddressTag(@NonNull Kind kind, @NonNull AddressTag addressTag) {
     return typedTagFxn.apply(addressTag,
        populateFxn.apply(eventJpaEntityRepository
           .getEventsByKindAndAddressTag(kind, addressTag))).toList();
+  }
+
+  @Override
+  public List<EventJpaEntityIF> getEventsByKindAndIdentifierTag(@NonNull Kind kind, @NonNull IdentifierTag identifierTag) {
+    return typedTagFxn.apply(identifierTag,
+       populateFxn.apply(eventJpaEntityRepository
+          .getEventsByKindAndIdentifierTag(kind, identifierTag))).toList();
+  }
+
+  @Override
+  public Optional<EventJpaEntityIF> getFirstEventByKindAndAddressTag(@NonNull Kind kind, @NonNull AddressTag addressTag) {
+    return getEventsByKindAndAddressTag(kind, addressTag).stream().findFirst();
   }
 
   @Override

@@ -28,5 +28,6 @@ public interface EventMaterializer<T extends BaseEvent> {
 
   default Optional<T> materializeFirst(Stream<GenericEventRecord> genericEventRecords) {
     return genericEventRecords.findFirst().flatMap(this::materialize);
+//    TODO: optionally, return materializeStream(genericEventRecords).findFirst();
   }
 }

@@ -75,6 +75,13 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   }
 
   @Override
+  public List<EventNosqlEntityIF> getEventsByPublicKey(@NonNull PublicKey publicKey) {
+    return eventNosqlEntityRepository.findByAuthorPublicKey(publicKey).stream()
+       .map(this::revertInterceptor)
+       .toList();
+  }
+
+  @Override
   public List<EventNosqlEntityIF> getEventsByKindAndAuthorPublicKey(@NonNull Kind kind, @NonNull PublicKey authorPublicKey) {
     return eventNosqlEntityRepository.findByKindAndAuthorPublicKey(kind, authorPublicKey).stream()
        .map(this::revertInterceptor)
@@ -82,6 +89,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   }
 
   //  TODO: replace with JPQL  
+  @Override
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTag(
      @NonNull Kind kind,
      @NonNull PubKeyTag referencedPublicKey) {
@@ -90,6 +98,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
           containsTypedTargetTag(referencedPublicKey, eventNosqlEntityIF)).toList();
   }
 
+  @Override
   public List<EventNosqlEntityIF> getEventsByKindAndEventTag(
      @NonNull Kind kind,
      @NonNull EventTag eventTag) {
@@ -98,7 +107,17 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
           containsTypedTargetTag(eventTag, eventNosqlEntityIF)).toList();
   }
 
+  @Override
+  public Optional<EventNosqlEntityIF> getFirstEventByKindAndEventTag(
+     @NonNull Kind kind,
+     @NonNull EventTag eventTag) {
+    return getEventsByKind(kind).stream()
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(eventTag, eventNosqlEntityIF)).findFirst();
+  }
+
   //  TODO: replace with JPQL
+  @Override
   public List<EventNosqlEntityIF> getEventsByKindAndIdentifierTag(
      @NonNull Kind kind,
      @NonNull IdentifierTag identifierTag) {
@@ -107,6 +126,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
           containsTypedTargetTag(identifierTag, eventNosqlEntityIF)).toList();
   }
 
+  @Override
   public List<EventNosqlEntityIF> getEventsByKindAndAddressTag(
      @NonNull Kind kind,
      @NonNull AddressTag addressTag) {
@@ -115,7 +135,17 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
           containsTypedTargetTag(addressTag, eventNosqlEntityIF)).toList();
   }
 
+  @Override
+  public Optional<EventNosqlEntityIF> getFirstEventByKindAndAddressTag(
+     @NonNull Kind kind,
+     @NonNull AddressTag addressTag) {
+    return getEventsByKind(kind).stream()
+       .filter(eventNosqlEntityIF ->
+          containsTypedTargetTag(addressTag, eventNosqlEntityIF)).findFirst();
+  }
+
   //  TODO: replace with JPQL  
+  @Override
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndAddressTag(
      @NonNull Kind kind,
      @NonNull PubKeyTag referencedPublicKey,
@@ -133,6 +163,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   }
 
   //  TODO: replace with JPQL  
+  @Override
   public List<EventNosqlEntityIF> getEventsByKindAndPubKeyTagAndIdentifierTag(
      @NonNull Kind kind,
      @NonNull PubKeyTag referencedPublicKey,
@@ -143,6 +174,7 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   }
 
   //  TODO: replace with JPQL
+  @Override
   public Optional<EventNosqlEntityIF> getEventByKindAndAuthorPublicKeyAndIdentifierTag(
      @NonNull Kind kind,
      @NonNull PublicKey authorPublicKey,

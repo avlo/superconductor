@@ -11,7 +11,6 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionEventServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionGenericEventServiceDecorIF;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +35,7 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends CacheCurated
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return cacheServiceIF.getEventByEventId(eventId)
-       .flatMap(this::materialize)
+    return super.getEvent(eventId, relay)
        .or(() -> cacheBadgeDefinitionGenericEventService.getEvent(eventId, relay)
           .flatMap(this::materialize));
   }

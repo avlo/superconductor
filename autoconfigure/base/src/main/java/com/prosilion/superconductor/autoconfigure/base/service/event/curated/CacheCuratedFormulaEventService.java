@@ -44,6 +44,14 @@ public class CacheCuratedFormulaEventService extends CacheCuratedEventService<Fo
   }
 
   @Override
+  public Optional<FormulaEvent> getEvent(@NonNull String s, @NonNull Relay relay) {
+    return cacheCuratedBadgeDefinitionGenericEventServiceDecorIF
+       .getEvent(s, relay)
+       .map(curatedBadgeDefnToFormulaFxn)
+       .or(() -> cacheFormulaEventService.getEvent(s, relay));
+  }
+
+  @Override
   public Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
     return cacheCuratedBadgeDefinitionGenericEventServiceDecorIF
        .getBy(publicKey, identifierTag)
@@ -62,13 +70,5 @@ public class CacheCuratedFormulaEventService extends CacheCuratedEventService<Fo
   @Override
   public Kind getKind() {
     return cacheFormulaEventService.getKind();
-  }
-
-  @Override
-  public Optional<FormulaEvent> getEvent(@NonNull String s, @NonNull Relay relay) {
-    return cacheCuratedBadgeDefinitionGenericEventServiceDecorIF
-       .getEvent(s, relay)
-       .map(curatedBadgeDefnToFormulaFxn)
-       .or(() -> cacheFormulaEventService.getEvent(s, relay));
   }
 }

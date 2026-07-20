@@ -3,7 +3,6 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -26,11 +25,6 @@ public class CacheCuratedBadgeAwardGenericEventService extends CacheCuratedEvent
   @Override
   public Optional<CuratedBadgeAwardGenericEvent> materialize(@NonNull EventIF incomingCurationSetsEvent) {
     return Optional.of(new CuratedBadgeAwardGenericEvent(incomingCurationSetsEvent.asGenericEventRecord()));
-  }
-
-  @Override
-  public Optional<CuratedBadgeAwardGenericEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize);
   }
 
   @Override

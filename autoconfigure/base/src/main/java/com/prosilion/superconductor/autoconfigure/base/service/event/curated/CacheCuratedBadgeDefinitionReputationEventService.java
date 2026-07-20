@@ -37,8 +37,8 @@ public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCura
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String s, @NonNull Relay relay) {
-    return Optional.empty();
+  public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+    return super.getEvent(eventId, relay);
   }
 
   @Override

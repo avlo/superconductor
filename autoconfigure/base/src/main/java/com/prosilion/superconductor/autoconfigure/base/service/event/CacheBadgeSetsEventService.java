@@ -3,7 +3,6 @@ package com.prosilion.superconductor.autoconfigure.base.service.event;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -55,11 +54,6 @@ public class CacheBadgeSetsEventService extends CacheCuratedEventService<BadgeSe
                    .flatMap(Optional::stream)
                    .distinct()
                    .toList()));
-  }
-
-  @Override
-  public Optional<BadgeSetsEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize);
   }
 
   @Override

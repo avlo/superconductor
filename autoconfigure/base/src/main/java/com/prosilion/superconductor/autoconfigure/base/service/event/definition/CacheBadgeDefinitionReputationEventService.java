@@ -10,10 +10,10 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceDecorIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheFormulaEventServiceDecorIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
@@ -26,17 +26,17 @@ import static com.prosilion.superconductor.autoconfigure.base.service.event.Cach
 
 @Slf4j
 public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceDecorIF {
-  private final CacheFormulaEventService cacheFormulaEventService;
+  private final CacheFormulaEventServiceDecorIF cacheFormulaEventServiceDecorIF;
   private final CacheKindAddressTagService cacheKindAddressTagService;
 
   public CacheBadgeDefinitionReputationEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
-     @NonNull CacheFormulaEventService cacheFormulaEventService,
+     @NonNull CacheFormulaEventServiceDecorIF cacheFormulaEventServiceDecorIF,
      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
     super(cacheServiceIF, cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
-    this.cacheFormulaEventService = cacheFormulaEventService;
+    this.cacheFormulaEventServiceDecorIF = cacheFormulaEventServiceDecorIF;
     this.cacheKindAddressTagService = cacheKindAddressTagService;
   }
 
@@ -66,7 +66,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
     List<FormulaEvent> formulaEvents = addressTagsAreFormulaEvents.stream()
        .map(addressTag ->
-          cacheFormulaEventService.getBy(
+          cacheFormulaEventServiceDecorIF.getBy(
              addressTag.getPublicKey(),
              addressTag.requireIdentifierTag(),
              addressTag.requireRelay())).flatMap(Optional::stream).toList();

@@ -1,7 +1,6 @@
 package com.prosilion.superconductor;
 
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
@@ -14,7 +13,7 @@ import org.mockito.Mock;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-public abstract class CacheServiceTestFixture {
+public abstract class CacheServiceTestFixture<T extends BaseEvent> {
   public static final Relay relay = new Relay("ws://localhost:5555");
   public static final String AWARD_UNIT_UPVOTE = "TEST_UNIT_UPVOTE";
   public static final IdentifierTag upvoteIdentifierTag = new IdentifierTag(AWARD_UNIT_UPVOTE);
@@ -26,15 +25,17 @@ public abstract class CacheServiceTestFixture {
   @Mock
   RemoteAbstractTagService remoteAbstractTagService;
 
-  protected String eventId;
+  T event;
+  String eventId;
 
   @BeforeEach
   void setUp() {
-    GenericEventRecord genericEventRecord = new BadgeDefinitionGenericEvent(
-       upvoteDefnCreator, upvoteIdentifierTag, relay).asGenericEventRecord();
-    this.eventId = genericEventRecord.getId();
-
+    this.event = createEvent();
+    this.eventId = event.getId();
+    
     when(cacheServiceIF.getEventByEventId(anyString())).thenReturn(
-       Optional.of(genericEventRecord));
+       Optional.of(event.getGenericEventRecord()));
   }
+
+  abstract T createEvent();
 }

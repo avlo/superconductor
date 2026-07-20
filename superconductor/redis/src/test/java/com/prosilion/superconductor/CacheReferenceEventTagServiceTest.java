@@ -1,5 +1,6 @@
 package com.prosilion.superconductor;
 
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -15,14 +16,16 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
-public class CacheReferenceEventTagServiceTest extends CacheServiceTestFixture {
+public class CacheReferenceEventTagServiceTest extends CacheServiceTestFixture<BadgeDefinitionGenericEvent> {
   @Test
   @Order(1)
   void testGetEventByEventId() {
     CacheReferenceEventTagService cacheReferenceEventTagService =
        new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService);
+    
 //  invoke...
-    String actualEventIdViaEventTagService = cacheReferenceEventTagService.getEvent(eventId, relay).orElseThrow().getId();
+    String actualEventIdViaEventTagService = cacheReferenceEventTagService.getEvent(
+       eventId, relay).orElseThrow().getId();
     assertEquals(eventId, actualEventIdViaEventTagService);
 
 //  ... verify invocation
@@ -37,5 +40,10 @@ public class CacheReferenceEventTagServiceTest extends CacheServiceTestFixture {
 
     cacheReferenceEventTagService.getEvent(eventId, relay);
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(anyString());
+  }
+
+  @Override
+  BadgeDefinitionGenericEvent createEvent() {
+    return new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
   }
 }

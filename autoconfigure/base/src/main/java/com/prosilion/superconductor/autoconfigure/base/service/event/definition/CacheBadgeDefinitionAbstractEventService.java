@@ -37,12 +37,11 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
 
   public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay backupRelay) {
     return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize)
-       .or(() -> getEventAfterDirectLookup(eventId, backupRelay));
-  }
-
-  public Optional<T> getEventAfterDirectLookup(@NonNull String eventId, @NonNull Relay backupRelay) {
-    return cacheServiceIF.getFirstEventByKindAndEventTag(getKind(), new EventTag(eventId))
-       .flatMap(this::materialize)
+       .or(() ->
+          cacheServiceIF.getEventsByKindAndEventTag(
+                getKind(),
+                new EventTag(eventId)).stream().findFirst()
+             .flatMap(this::materialize))
        .or(() -> cacheReferenceEventTagServiceIF.getEvent(eventId, backupRelay)
           .flatMap(this::materialize));
   }

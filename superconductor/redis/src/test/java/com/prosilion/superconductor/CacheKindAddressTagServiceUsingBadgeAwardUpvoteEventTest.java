@@ -1,0 +1,156 @@
+package com.prosilion.superconductor;
+
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends CacheServiceTestFixture<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> {
+  private static final Kind KIND = Kind.BADGE_AWARD_EVENT;
+
+  @Test
+  void testGetByDirectWithAddressTag() {
+    AddressTag addressTag = event.getAddressTag();
+    mockLocalGetEventsByKindAndAddressTag(addressTag);
+
+    CacheKindAddressTagService cacheKindAddressTagService =
+       new CacheKindAddressTagService(cacheServiceIF, remoteAbstractTagService);
+
+    List<GenericEventRecord> actual = cacheKindAddressTagService.getByDirect(KIND, addressTag);
+
+    assertEquals(List.of(event.getGenericEventRecord()), actual);
+    verify(cacheServiceIF).getEventsByKindAndAddressTag(KIND, addressTag);
+  }
+
+  @Test
+  void testGetByDirectWithAddressTagReturnsRemoteObjects() {
+    AddressTag addressTag = event.getAddressTag();
+    mockLocalGetEventsByKindAndAddressTagReturnsEmptyList();
+    mockRemoteGetEventByAddressTag();
+
+    CacheKindAddressTagService cacheKindAddressTagService =
+       new CacheKindAddressTagService(cacheServiceIF, remoteAbstractTagService);
+
+    List<GenericEventRecord> actual = cacheKindAddressTagService.getByDirect(KIND, addressTag);
+
+    assertEquals(List.of(event.getGenericEventRecord()), actual);
+    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+  }
+
+  @Test
+  void testGetByDirectWithPubKeyAndAddressTag() {
+    AddressTag addressTag = event.getAddressTag();
+    PubKeyTag pubKeyTag = new PubKeyTag(recipient.getPublicKey());
+    doReturn(List.of(event.getGenericEventRecord()))
+       .when(cacheServiceIF)
+       .getEventsByKindAndPubKeyTagAndAddressTag(KIND, pubKeyTag, addressTag);
+
+    CacheKindAddressTagService cacheKindAddressTagService =
+       new CacheKindAddressTagService(cacheServiceIF, remoteAbstractTagService);
+
+    List<GenericEventRecord> actual = cacheKindAddressTagService.getByDirect(KIND, pubKeyTag, addressTag);
+
+    assertEquals(List.of(event.getGenericEventRecord()), actual);
+    verify(cacheServiceIF).getEventsByKindAndPubKeyTagAndAddressTag(KIND, pubKeyTag, addressTag);
+  }
+
+  @Test
+  void testGetByKindPubKeyAndIdentifierTag() {
+    PubKeyTag pubKeyTag = new PubKeyTag(recipient.getPublicKey());
+    doReturn(List.of(event.getGenericEventRecord()))
+       .when(cacheServiceIF)
+       .getEventsByKindAndPubKeyTagAndIdentifierTag(KIND, pubKeyTag, upvoteIdentifierTag);
+
+    CacheKindAddressTagService cacheKindAddressTagService =
+       new CacheKindAddressTagService(cacheServiceIF, remoteAbstractTagService);
+
+    Optional<GenericEventRecord> actual = cacheKindAddressTagService.getBy(
+       KIND, pubKeyTag, upvoteIdentifierTag, relay.getUrl());
+
+    assertEquals(Optional.of(event.getGenericEventRecord()), actual);
+    verify(cacheServiceIF).getEventsByKindAndPubKeyTagAndIdentifierTag(
+       KIND, pubKeyTag, upvoteIdentifierTag);
+  }
+
+  @Test
+  void testGetByKindPubKeyAndIdentifierTagReturnsEmptyOptional() {
+    mockLocalGetEventsByKindAndPubKeyAndIdentifierTagReturnsEmptyList();
+
+    CacheKindAddressTagService cacheKindAddressTagService =
+       new CacheKindAddressTagService(cacheServiceIF, remoteAbstractTagService);
+
+    Optional<GenericEventRecord> actual = cacheKindAddressTagService.getBy(
+       KIND, new PubKeyTag(recipient.getPublicKey()), upvoteIdentifierTag, relay.getUrl());
+
+    assertEquals(Optional.empty(), actual);
+    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+  }
+
+  @Test
+  void testGetByKindPubKeyAndIdentifierTagReturnsRemoteObject() {
+    PubKeyTag pubKeyTag = new PubKeyTag(recipient.getPublicKey());
+    mockLocalGetEventsByKindAndPubKeyAndIdentifierTagReturnsEmptyList();
+    doReturn(List.of(event.getGenericEventRecord()))
+       .when(remoteAbstractTagService)
+       .sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+
+    CacheKindAddressTagService cacheKindAddressTagService =
+       new CacheKindAddressTagService(cacheServiceIF, remoteAbstractTagService);
+
+    Optional<GenericEventRecord> actual = cacheKindAddressTagService.getBy(
+       KIND, pubKeyTag, upvoteIdentifierTag, relay.getUrl());
+
+    assertEquals(Optional.of(event.getGenericEventRecord()), actual);
+    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+  }
+
+  @Override
+  BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
+    return new BadgeAwardGenericEvent<>(
+       submitter,
+       recipient.getPublicKey(),
+       new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay));
+  }
+
+  private void mockLocalGetEventsByKindAndAddressTag(AddressTag addressTag) {
+    doReturn(List.of(event.getGenericEventRecord()))
+       .when(cacheServiceIF)
+       .getEventsByKindAndAddressTag(KIND, addressTag);
+  }
+
+  private void mockLocalGetEventsByKindAndAddressTagReturnsEmptyList() {
+    doReturn(List.of())
+       .when(cacheServiceIF)
+       .getEventsByKindAndAddressTag(any(), any());
+  }
+
+  private void mockLocalGetEventsByKindAndPubKeyAndIdentifierTagReturnsEmptyList() {
+    doReturn(List.of())
+       .when(cacheServiceIF)
+       .getEventsByKindAndPubKeyTagAndIdentifierTag(any(), any(), any());
+  }
+
+  private void mockRemoteGetEventByAddressTag() {
+    doReturn(List.of(event.getGenericEventRecord()))
+       .when(remoteAbstractTagService)
+       .sendRemoteReq(anyString(), any(Filters.class));
+  }
+}

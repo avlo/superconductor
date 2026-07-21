@@ -3,9 +3,11 @@ package com.prosilion.superconductor;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
@@ -20,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -91,6 +94,37 @@ public class CacheFormulaServiceTest extends CacheServiceTestFixture<FormulaEven
 
     assertEquals(Optional.empty(), actual);
     verify(cacheReferenceAddressTagServiceIF, Mockito.times(1)).getByExpanded(addressTag);
+  }
+
+  @Test
+  void testGetByNonExistentAddressTagReturnsRemoteObject() {
+    AddressTag formulaAddressTag = new AddressTag(
+       event.getKind(),
+       formulaCreator.getPublicKey(),
+       formulaUpvoteIdentifierTag,
+       relay);
+    doReturn(Optional.empty())
+       .when(cacheServiceIF)
+       .getEventByKindAndAuthorPublicKeyAndIdentifierTag(any(), any(), any());
+    doReturn(List.of(event.getGenericEventRecord()), List.of(awardDefinitionUpvoteEvent.getGenericEventRecord()))
+       .when(remoteAbstractTagService)
+       .sendRemoteReq(anyString(), any(Filters.class));
+    cacheReferenceEventTagServiceMock();
+    CacheFormulaEventService cacheFormulaEventService = new CacheFormulaEventService(
+       cacheReferenceEventTagService,
+       new CacheReferenceAddressTagService(cacheServiceIF, remoteAbstractTagService),
+       cacheKindAddressTagServiceIF);
+
+    Optional<FormulaEvent> actual = cacheFormulaEventService.getBy(
+       formulaCreator.getPublicKey(), formulaUpvoteIdentifierTag, relay);
+
+    assertEquals(eventId, actual.orElseThrow().getId());
+    verify(cacheServiceIF, Mockito.times(1)).getEventByKindAndAuthorPublicKeyAndIdentifierTag(
+       formulaAddressTag.getKind(),
+       formulaAddressTag.publicKey(),
+       formulaAddressTag.requireIdentifierTag());
+    verify(remoteAbstractTagService, Mockito.times(2)).sendRemoteReq(
+       anyString(), any(Filters.class));
   }
 
   @Test

@@ -35,7 +35,7 @@ public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends
     assertEquals(eventId, actualEventIdViaEventTagService);
 
 //  ... verify invocation
-    verify(cacheServiceIF).getEventByEventId(eventId);
+    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(anyString());
   }
 
   @Test
@@ -80,7 +80,7 @@ public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends
     String actualEventIdViaEventTagService = cacheReferenceEventTagServiceSpy.getEvent(eventId, relay).orElseThrow().getId();
 
     assertEquals(eventId, actualEventIdViaEventTagService);
-    verify(cacheReferenceEventTagServiceSpy).getByExpanded(
+    verify(cacheReferenceEventTagServiceSpy, Mockito.times(1)).getByExpanded(
        new EventTag(eventId, relay.getUrl()));
 
     Optional<GenericEventRecord> actualLocalShouldBeEmptyOptional = cacheReferenceEventTagServiceSpy.getEvent(Util.generateRandomHex64String(), relay);

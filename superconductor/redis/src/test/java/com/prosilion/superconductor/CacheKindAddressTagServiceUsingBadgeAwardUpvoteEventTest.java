@@ -37,7 +37,7 @@ public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends Ca
     List<GenericEventRecord> actual = cacheKindAddressTagService.getByDirect(KIND, addressTag);
 
     assertEquals(List.of(event.getGenericEventRecord()), actual);
-    verify(cacheServiceIF).getEventsByKindAndAddressTag(KIND, addressTag);
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndAddressTag(KIND, addressTag);
   }
 
   @Test
@@ -52,7 +52,8 @@ public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends Ca
     List<GenericEventRecord> actual = cacheKindAddressTagService.getByDirect(KIND, addressTag);
 
     assertEquals(List.of(event.getGenericEventRecord()), actual);
-    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
+       eq(relay.getUrl()), any(Filters.class));
   }
 
   @Test
@@ -69,7 +70,8 @@ public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends Ca
     List<GenericEventRecord> actual = cacheKindAddressTagService.getByDirect(KIND, pubKeyTag, addressTag);
 
     assertEquals(List.of(event.getGenericEventRecord()), actual);
-    verify(cacheServiceIF).getEventsByKindAndPubKeyTagAndAddressTag(KIND, pubKeyTag, addressTag);
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndAddressTag(
+       KIND, pubKeyTag, addressTag);
   }
 
   @Test
@@ -86,7 +88,7 @@ public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends Ca
        KIND, pubKeyTag, upvoteIdentifierTag, relay.getUrl());
 
     assertEquals(Optional.of(event.getGenericEventRecord()), actual);
-    verify(cacheServiceIF).getEventsByKindAndPubKeyTagAndIdentifierTag(
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
        KIND, pubKeyTag, upvoteIdentifierTag);
   }
 
@@ -101,7 +103,8 @@ public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends Ca
        KIND, new PubKeyTag(recipient.getPublicKey()), upvoteIdentifierTag, relay.getUrl());
 
     assertEquals(Optional.empty(), actual);
-    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
+       eq(relay.getUrl()), any(Filters.class));
   }
 
   @Test
@@ -119,7 +122,8 @@ public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends Ca
        KIND, pubKeyTag, upvoteIdentifierTag, relay.getUrl());
 
     assertEquals(Optional.of(event.getGenericEventRecord()), actual);
-    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
+       eq(relay.getUrl()), any(Filters.class));
   }
 
   @Override

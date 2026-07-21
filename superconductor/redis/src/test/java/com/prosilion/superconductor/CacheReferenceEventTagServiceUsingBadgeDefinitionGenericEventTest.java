@@ -61,8 +61,7 @@ public class CacheReferenceEventTagServiceUsingBadgeDefinitionGenericEventTest e
 
     Optional<GenericEventRecord> actual = cacheReferenceEventTagService.getEvent(Util.generateRandomHex64String(), relay);
     verify(cacheServiceIF, Mockito.times(2)).getEventByEventId(anyString());
-    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
-       anyString(), any(Filters.class));
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(anyString(), any(Filters.class));
 
     assertEquals(Optional.empty(), actual);
   }

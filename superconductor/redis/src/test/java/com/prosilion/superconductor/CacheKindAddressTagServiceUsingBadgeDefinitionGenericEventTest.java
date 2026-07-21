@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +36,7 @@ public class CacheKindAddressTagServiceUsingBadgeDefinitionGenericEventTest exte
     List<GenericEventRecord> actual = cacheKindAddressTagService.getByDirect(KIND, addressTag);
 
     assertEquals(List.of(event.getGenericEventRecord()), actual);
-    verify(cacheServiceIF).getEventsByKindAndAddressTag(KIND, addressTag);
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndAddressTag(KIND, addressTag);
   }
 
   @Test
@@ -50,7 +51,8 @@ public class CacheKindAddressTagServiceUsingBadgeDefinitionGenericEventTest exte
     List<GenericEventRecord> actual = cacheKindAddressTagService.getByDirect(KIND, addressTag);
 
     assertEquals(List.of(event.getGenericEventRecord()), actual);
-    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
+       eq(relay.getUrl()), any(Filters.class));
   }
 
   @Test
@@ -67,7 +69,8 @@ public class CacheKindAddressTagServiceUsingBadgeDefinitionGenericEventTest exte
     List<GenericEventRecord> actual = cacheKindAddressTagService.getByDirect(KIND, pubKeyTag, addressTag);
 
     assertEquals(List.of(event.getGenericEventRecord()), actual);
-    verify(cacheServiceIF).getEventsByKindAndPubKeyTagAndAddressTag(KIND, pubKeyTag, addressTag);
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndAddressTag(
+       KIND, pubKeyTag, addressTag);
   }
 
   @Test
@@ -84,7 +87,7 @@ public class CacheKindAddressTagServiceUsingBadgeDefinitionGenericEventTest exte
        KIND, pubKeyTag, upvoteIdentifierTag, relay.getUrl());
 
     assertEquals(Optional.of(event.getGenericEventRecord()), actual);
-    verify(cacheServiceIF).getEventsByKindAndPubKeyTagAndIdentifierTag(
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
        KIND, pubKeyTag, upvoteIdentifierTag);
   }
 
@@ -99,7 +102,8 @@ public class CacheKindAddressTagServiceUsingBadgeDefinitionGenericEventTest exte
        KIND, new PubKeyTag(upvoteDefnCreator.getPublicKey()), upvoteIdentifierTag, relay.getUrl());
 
     assertEquals(Optional.empty(), actual);
-    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
+       eq(relay.getUrl()), any(Filters.class));
   }
 
   @Test
@@ -117,7 +121,8 @@ public class CacheKindAddressTagServiceUsingBadgeDefinitionGenericEventTest exte
        KIND, pubKeyTag, upvoteIdentifierTag, relay.getUrl());
 
     assertEquals(Optional.of(event.getGenericEventRecord()), actual);
-    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
+       eq(relay.getUrl()), any(Filters.class));
   }
 
   @Override

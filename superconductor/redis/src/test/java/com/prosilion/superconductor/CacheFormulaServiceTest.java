@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,8 +48,9 @@ public class CacheFormulaServiceTest extends CacheServiceTestFixture<FormulaEven
     Optional<FormulaEvent> actual = cacheFormulaEventService.getEvent(eventId, relay);
 
     assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheReferenceEventTagService).getEvent(eventId, relay);
-    verify(cacheReferenceAddressTagServiceIF).getByExpanded(event.requireFirstTag(AddressTag.class));
+    verify(cacheReferenceEventTagService, Mockito.times(1)).getEvent(eventId, relay);
+    verify(cacheReferenceAddressTagServiceIF, Mockito.times(1)).getByExpanded(
+       event.requireFirstTag(AddressTag.class));
   }
 
   @Test
@@ -63,13 +65,32 @@ public class CacheFormulaServiceTest extends CacheServiceTestFixture<FormulaEven
        formulaCreator.getPublicKey(), formulaUpvoteIdentifierTag, relay);
 
     assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheReferenceAddressTagServiceIF).getByExpanded(
+    verify(cacheReferenceAddressTagServiceIF, Mockito.times(1)).getByExpanded(
        new AddressTag(
           event.getKind(),
           formulaCreator.getPublicKey(),
           formulaUpvoteIdentifierTag,
           relay));
-    verify(cacheReferenceEventTagService).getEvent(eventId, relay);
+    verify(cacheReferenceEventTagService, Mockito.times(1)).getEvent(eventId, relay);
+  }
+
+  @Test
+  void testGetByKindPubKeyAndIdentifierTagReturnsEmptyOptional() {
+    AddressTag addressTag = new AddressTag(
+       event.getKind(),
+       formulaCreator.getPublicKey(),
+       formulaUpvoteIdentifierTag,
+       relay);
+    doReturn(Optional.empty())
+       .when(cacheReferenceAddressTagServiceIF)
+       .getByExpanded(addressTag);
+    CacheFormulaEventService cacheFormulaEventService = createCacheFormulaEventService();
+
+    Optional<FormulaEvent> actual = cacheFormulaEventService.getBy(
+       formulaCreator.getPublicKey(), formulaUpvoteIdentifierTag, relay);
+
+    assertEquals(Optional.empty(), actual);
+    verify(cacheReferenceAddressTagServiceIF, Mockito.times(1)).getByExpanded(addressTag);
   }
 
   @Test
@@ -85,8 +106,8 @@ public class CacheFormulaServiceTest extends CacheServiceTestFixture<FormulaEven
     Optional<FormulaEvent> actual = cacheFormulaEventService.getByDirect(addressTag);
 
     assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheKindAddressTagServiceIF).getByDirect(event.getKind(), addressTag);
-    verify(cacheReferenceEventTagService).getEvent(eventId, relay);
+    verify(cacheKindAddressTagServiceIF, Mockito.times(1)).getByDirect(event.getKind(), addressTag);
+    verify(cacheReferenceEventTagService, Mockito.times(1)).getEvent(eventId, relay);
   }
 
   @SneakyThrows

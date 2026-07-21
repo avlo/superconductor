@@ -33,7 +33,7 @@ public class CacheReferenceAddressTagServiceUsingBadgeDefinitionGenericEventTest
        .getByExpanded(addressTag).orElseThrow().getId();
     assertEquals(eventId, actualEventIdViaAddressTagService);
 
-    verify(cacheServiceIF).getEventByKindAndAuthorPublicKeyAndIdentifierTag(
+    verify(cacheServiceIF, Mockito.times(1)).getEventByKindAndAuthorPublicKeyAndIdentifierTag(
        addressTag.getKind(), addressTag.publicKey(), addressTag.requireIdentifierTag());
   }
 
@@ -83,7 +83,8 @@ public class CacheReferenceAddressTagServiceUsingBadgeDefinitionGenericEventTest
        .getByExpanded(addressTag).orElseThrow().getId();
 
     assertEquals(eventId, actualEventIdViaAddressTagService);
-    verify(remoteAbstractTagService).sendRemoteReq(eq(relay.getUrl()), any(Filters.class));
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
+       eq(relay.getUrl()), any(Filters.class));
   }
 
   @Override

@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,7 +35,7 @@ public class CacheBadgeDefinitionGenericEventServiceTest extends CacheServiceTes
        cacheBadgeDefinitionGenericEventService.getEvent(eventId, relay);
 
     assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF).getEventByEventId(eventId);
+    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(eventId);
   }
 
   @Test
@@ -49,7 +50,8 @@ public class CacheBadgeDefinitionGenericEventServiceTest extends CacheServiceTes
        cacheBadgeDefinitionGenericEventService.getEvent(eventId, relay);
 
     assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF).getEventsByKindAndEventTag(event.getKind(), new EventTag(eventId));
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndEventTag(
+       event.getKind(), new EventTag(eventId));
   }
 
   @Test
@@ -65,7 +67,7 @@ public class CacheBadgeDefinitionGenericEventServiceTest extends CacheServiceTes
        cacheBadgeDefinitionGenericEventService.getEvent(eventId, relay);
 
     assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheReferenceEventTagServiceIF).getEvent(eventId, relay);
+    verify(cacheReferenceEventTagServiceIF, Mockito.times(1)).getEvent(eventId, relay);
   }
 
   @Test
@@ -80,7 +82,7 @@ public class CacheBadgeDefinitionGenericEventServiceTest extends CacheServiceTes
        cacheBadgeDefinitionGenericEventService.getByExpanded(addressTag);
 
     assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheReferenceAddressTagServiceIF).getByExpanded(addressTag);
+    verify(cacheReferenceAddressTagServiceIF, Mockito.times(1)).getByExpanded(addressTag);
   }
 
   @Test
@@ -96,7 +98,24 @@ public class CacheBadgeDefinitionGenericEventServiceTest extends CacheServiceTes
        cacheBadgeDefinitionGenericEventService.getBy(pubKeyTag, upvoteIdentifierTag);
 
     assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF).getEventsByKindAndPubKeyTagAndIdentifierTag(
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
+       event.getKind(), pubKeyTag, upvoteIdentifierTag);
+  }
+
+  @Test
+  void testGetByKindPubKeyAndIdentifierTagReturnsEmptyOptional() {
+    PubKeyTag pubKeyTag = new PubKeyTag(upvoteDefnCreator.getPublicKey());
+    doReturn(List.of())
+       .when(cacheServiceIF)
+       .getEventsByKindAndPubKeyTagAndIdentifierTag(
+          event.getKind(), pubKeyTag, upvoteIdentifierTag);
+    CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService = createService();
+
+    Optional<BadgeDefinitionGenericEvent> actual =
+       cacheBadgeDefinitionGenericEventService.getBy(pubKeyTag, upvoteIdentifierTag);
+
+    assertEquals(Optional.empty(), actual);
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
        event.getKind(), pubKeyTag, upvoteIdentifierTag);
   }
 

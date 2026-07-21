@@ -79,7 +79,7 @@ public abstract class CacheServiceTestFixture<T extends BaseEvent> {
        .getEventByEventId(remoteEvent.getId());
   }
   
-  protected <U extends BaseEvent> void mockRemoveGetEventByEventId(U remoteEvent) {
+  protected <U extends BaseEvent> void mockRemoteGetEventByEventId(U remoteEvent) {
     doReturn(List.of(remoteEvent.getGenericEventRecord()))
        .when(remoteAbstractTagService)
        .sendRemoteReq(anyString(), any(Filters.class));

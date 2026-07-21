@@ -53,13 +53,6 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
 
     Optional<GenericEventRecord> by = cacheReferenceAddressTagServiceIF.getByExpanded(addressTag);
     return by.flatMap(this::materialize);
-//    TODO: below is critical- validate definition event exists via source relay
-//    TODO: currently commented out since excessive remote requests
-//    return by
-//       .flatMap(genericEventRecord ->
-//          getEvent(
-//             genericEventRecord.getId(),
-//             genericEventRecord.requireFirstTag(RelayTag.class).getRelay()));
   }
 
 

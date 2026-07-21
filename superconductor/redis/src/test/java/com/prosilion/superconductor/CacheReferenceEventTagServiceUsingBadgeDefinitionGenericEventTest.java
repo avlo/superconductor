@@ -6,7 +6,6 @@ import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CacheReferenceEventTagServiceTest extends CacheServiceTestFixture<BadgeDefinitionGenericEvent> {
+public class CacheReferenceEventTagServiceUsingBadgeDefinitionGenericEventTest extends CacheServiceTestFixture<BadgeDefinitionGenericEvent> {
   @Test
   void testGetEventByEventId() {
     mockLocalGetEventByEventId();

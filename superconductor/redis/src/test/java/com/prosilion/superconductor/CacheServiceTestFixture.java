@@ -11,15 +11,37 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 
 public abstract class CacheServiceTestFixture<T extends BaseEvent> {
   public static final Relay relay = new Relay("ws://localhost:5555");
   public static final String AWARD_UNIT_UPVOTE = "TEST_UNIT_UPVOTE";
   public static final IdentifierTag upvoteIdentifierTag = new IdentifierTag(AWARD_UNIT_UPVOTE);
-  public static final Identity upvoteDefnCreator =
+
+  protected final Identity aImgIdentity =
+     Identity.create("fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac");
+
+  protected final Identity submitter =
+//     Identity.generateRandomIdentity();
+     Identity.create("aaa4585483196998204846989544737603523651520600328805626488477202");
+
+  protected final Identity upvoteDefnCreator =
 //     Identity.generateRandomIdentity();
      Identity.create("bbb4585483196998204846989544737603523651520600328805626488477202");
+
+  protected final Identity recipient =
+//     Identity.generateRandomIdentity();
+     Identity.create("ccc4585483196998204846989544737603523651520600328805626488477202");
+
+  protected final Identity formulaCreator =
+//     Identity.generateRandomIdentity();
+     Identity.create("ddd4585483196998204846989544737603523651520600328805626488477202");
+
+  protected final Identity repDefnCreator =
+//     Identity.generateRandomIdentity();
+     Identity.create("eee4585483196998204846989544737603523651520600328805626488477202");
+
   @Mock
   CacheServiceIF cacheServiceIF;
   @Mock
@@ -32,10 +54,19 @@ public abstract class CacheServiceTestFixture<T extends BaseEvent> {
   void setUp() {
     this.event = createEvent();
     this.eventId = event.getId();
-    
-    when(cacheServiceIF.getEventByEventId(anyString())).thenReturn(
-       Optional.of(event.getGenericEventRecord()));
   }
 
   abstract T createEvent();
+
+  protected void mockCommonGetEventByEventId() {
+    doReturn(Optional.of(event.getGenericEventRecord()))
+       .when(cacheServiceIF)
+       .getEventByEventId(eq(eventId));
+  }
+
+  protected void mockGetEventByAnyReturnsEmptyOptional() {
+    doReturn(Optional.empty())
+       .when(cacheServiceIF)
+       .getEventByEventId(anyString());
+  }
 }

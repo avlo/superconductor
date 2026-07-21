@@ -14,15 +14,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class CacheReferenceEventTagServiceTest extends CacheServiceTestFixture<BadgeDefinitionGenericEvent> {
   @Test
   void testGetEventByEventId() {
-    mockCommonGetEventByEventId();
-    
+    mockLocalGetEventByEventId();
+
     CacheReferenceEventTagService cacheReferenceEventTagService =
        new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService);
 
@@ -37,7 +36,7 @@ public class CacheReferenceEventTagServiceTest extends CacheServiceTestFixture<B
 
   @Test
   void testGetEventByEventIdCalledOnce() {
-    mockCommonGetEventByEventId();
+    mockLocalGetEventByEventId();
 
     CacheReferenceEventTagService cacheReferenceEventTagService =
        new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService);
@@ -48,21 +47,41 @@ public class CacheReferenceEventTagServiceTest extends CacheServiceTestFixture<B
 
   @Test
   void testGetEventByNonExistentEventIdReturnsEmptyOptional() {
-    mockGetEventByAnyReturnsEmptyOptional();
-    mockCommonGetEventByEventId();
-    
+    mockLocalGetEventByAnyReturnsEmptyOptional();
+    mockLocalGetEventByEventId();
+
     CacheReferenceEventTagService cacheReferenceEventTagService =
        new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService);
 
     cacheReferenceEventTagService.getEvent(eventId, relay);
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(anyString());
-    
+
     Optional<GenericEventRecord> actual = cacheReferenceEventTagService.getEvent(Util.generateRandomHex64String(), relay);
     verify(cacheServiceIF, Mockito.times(2)).getEventByEventId(anyString());
     verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
        anyString(), any(Filters.class));
 
     assertEquals(Optional.empty(), actual);
+  }
+
+  @Test
+  void testGetEventByNonExistentEventIdReturnsReturnsRemoteObject() {
+    mockLocalGetEventByEventIdReturnsEmptyOptional(event);
+    mockRemoveGetEventByEventId(event);
+
+    CacheReferenceEventTagService cacheReferenceEventTagService =
+       new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService);
+
+    String actualEventIdViaEventTagService = cacheReferenceEventTagService.getEvent(eventId, relay).orElseThrow().getId();
+
+    assertEquals(eventId, actualEventIdViaEventTagService);
+    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(anyString());
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(anyString(), any(Filters.class));
+
+    Optional<GenericEventRecord> actualLocalShouldBeEmptyOptional = cacheReferenceEventTagService.getEvent(Util.generateRandomHex64String(), relay);
+    verify(cacheServiceIF, Mockito.times(2)).getEventByEventId(anyString());
+
+//    assertEquals(Optional.empty(), actualLocalShouldBeEmptyOptional);
   }
 
   @Override

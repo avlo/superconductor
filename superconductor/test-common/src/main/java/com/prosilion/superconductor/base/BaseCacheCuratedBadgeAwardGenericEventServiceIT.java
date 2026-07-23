@@ -24,7 +24,6 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
@@ -80,7 +79,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT {
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("cacheCurationSetsEventService") CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF,
+     @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF,
      Duration requestTimeoutDuration) throws ParseException {
     this.aImgIdentity = superconductorInstanceIdentity;
     this.requestTimeoutDuration = requestTimeoutDuration;

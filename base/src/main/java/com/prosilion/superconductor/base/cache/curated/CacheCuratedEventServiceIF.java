@@ -9,7 +9,7 @@ import java.util.Optional;
 import lombok.NonNull;
 
 public interface CacheCuratedEventServiceIF<T extends AddressableEvent> {
-  Optional<T> materialize(@NonNull EventIF incomingBadgeSetsEvent);
+  Optional<T> materialize(@NonNull EventIF cacheCuratedEvent);
   Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay);
   GenericEventRecord save(EventIF event);
   Kind getKind();

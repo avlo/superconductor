@@ -5,11 +5,12 @@ import com.prosilion.nostr.event.AbstractSetsEvent;
 import com.prosilion.nostr.event.AddressableEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.nostr.tag.RelayTag;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import java.util.List;
@@ -51,7 +52,7 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheSer
     doReturn(Optional.of(badgeDefinitionGenericEvent))
        .when(cacheBadgeDefinitionGenericEventService)
        .getEvent(eventId, event.getRelay().orElseThrow());
-    
+
     CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService = createService();
 
     Optional<CuratedBadgeDefinitionGenericEvent> actual =
@@ -138,7 +139,7 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheSer
   @Test
   void testGetByPublicKeyAndIdentifierTagFromLocalCache() {
     IdentifierTag identifierTag = new IdentifierTag(String.valueOf(event.getAddressTag().hashCode()));
-    
+
     doReturn(Optional.of(event.getGenericEventRecord()))
        .when(cacheServiceIF)
        .getEventByKindAndAuthorPublicKeyAndIdentifierTag(
@@ -167,7 +168,7 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheSer
     doReturn(Optional.of(badgeDefinitionGenericEvent))
        .when(cacheBadgeDefinitionGenericEventService)
        .getBy(authorPubkeyTag, identifierTag);
-    
+
     CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService =
        createService();
 
@@ -180,13 +181,14 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheSer
     verify(cacheBadgeDefinitionGenericEventService, Mockito.times(1)).getBy(
        authorPubkeyTag, identifierTag);
   }
-  
+
   @Override
   CuratedBadgeDefinitionGenericEvent createEvent() {
     this.badgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
     return new CuratedBadgeDefinitionGenericEvent(
        aImgIdentity,
        this.badgeDefinitionGenericEvent,
+       new ReferenceTag(this.badgeDefinitionGenericEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        relay);
   }
 

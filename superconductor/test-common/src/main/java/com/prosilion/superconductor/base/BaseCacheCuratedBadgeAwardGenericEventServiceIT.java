@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.base;
 
 import com.ezylang.evalex.parser.ParseException;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
@@ -11,11 +12,12 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.SetsPairedEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -112,6 +115,8 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT {
     this.curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
        aImgIdentity,
        badgeAwardUpvoteEvent,
+       new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
+       new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        relay);
     cacheServiceIF.save(curationSetsUpvoteEvent);
   }
@@ -165,12 +170,16 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT {
   }
 
   @Test
-  public void testThrowsException() {
+  public void testNonExistentEventIdReturnsEmptyOptional() {
     String nonExistentEventId = Util.generateRandomHex64String();
     assertEquals(Optional.empty(), cacheCuratedBadgeAwardGenericEventServiceIF.getEvent(nonExistentEventId, relay));
+  }
 
+  @Test
+  public void testNonExistentEventTagEventIdThrowsException() {
+    String nonExistentEventId = Util.generateRandomHex64String();
     EventTag nonExistentEventTagEventId = new EventTag(nonExistentEventId);
-    assertEquals(Optional.empty(), cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(nonExistentEventTagEventId));
+    assertThrows(NostrException.class, () -> cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(nonExistentEventTagEventId));
   }
 
 //  @Test

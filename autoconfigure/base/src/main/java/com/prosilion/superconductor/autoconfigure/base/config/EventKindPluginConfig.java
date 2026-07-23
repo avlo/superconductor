@@ -135,7 +135,7 @@ public class EventKindPluginConfig {
   Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers(
      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCurationSetsEventService,
+     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
      @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
      @NonNull CacheFormulaEventService cacheFormulaEventService) {
@@ -143,7 +143,7 @@ public class EventKindPluginConfig {
 
     kindFxnMap.put(
        Kind.CURATION_SETS,
-       cacheCurationSetsEventService::materialize);
+       cacheCuratedBadgeAwardGenericEventService::materialize);
     
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,

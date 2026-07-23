@@ -9,6 +9,7 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
@@ -49,7 +50,8 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends CacheCurated
   public Optional<CuratedBadgeDefinitionGenericEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     return super.getEvent(eventId, relay)
        .or(() -> cacheBadgeDefinitionGenericEventService.getEvent(eventId, relay)
-          .map(this::createFromFetched)
+          .map(badgeDefinitionGenericEvent -> createFromFetched(
+             badgeDefinitionGenericEvent, relay))
           .flatMap(this::materialize));
   }
 
@@ -59,18 +61,24 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends CacheCurated
        cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag))
        .or(() ->
           cacheBadgeDefinitionGenericEventService.getEvent(eventTag.eventId(), eventTag.requireRelay())
-             .map(this::createFromFetched)
+             .map(badgeDefinitionGenericEvent -> createFromFetched(
+                badgeDefinitionGenericEvent, eventTag.requireRelay()))
              .flatMap(this::materialize));
   }
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag) {
-    return cacheServiceIF.getEventByKindAndAuthorPublicKeyAndIdentifierTag(getKind(), publicKey, identifierTag)
-       .flatMap(this::materialize)
-       .or(() ->
-          cacheBadgeDefinitionGenericEventService.getBy(new PubKeyTag(publicKey), identifierTag)
-             .map(this::createFromFetched)
-             .flatMap(this::materialize));
+    return
+       cacheServiceIF.getEventByKindAndAuthorPublicKeyAndIdentifierTag(
+             getKind(),
+             publicKey,
+             identifierTag)
+          .flatMap(this::materialize)
+          .or(() ->
+             cacheBadgeDefinitionGenericEventService.getBy(new PubKeyTag(publicKey), identifierTag)
+                .map(badgeDefinitionGenericEvent -> createFromFetched(
+                   badgeDefinitionGenericEvent, badgeDefinitionGenericEvent.getRelay().orElseThrow()))
+                .flatMap(this::materialize));
   }
 
   @Override
@@ -79,7 +87,8 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends CacheCurated
        cacheServiceIF.getEventsByKindAndAddressTag(getKind(), addressTag))
        .or(() ->
           cacheBadgeDefinitionGenericEventService.getByExpanded(addressTag)
-             .map(this::createFromFetched)
+             .map(badgeDefinitionGenericEvent -> createFromFetched(
+                badgeDefinitionGenericEvent, badgeDefinitionGenericEvent.getRelay().orElseThrow()))
              .flatMap(this::materialize));
   }
 
@@ -88,10 +97,14 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends CacheCurated
     return Kind.CURATION_SETS;
   }
 
-  public CuratedBadgeDefinitionGenericEvent createFromFetched(@NonNull BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
+  @Override
+  public CuratedBadgeDefinitionGenericEvent createFromFetched(
+     @NonNull BadgeDefinitionGenericEvent badgeDefinitionGenericEvent,
+     @NonNull Relay relay) {
     return new CuratedBadgeDefinitionGenericEvent(
        superconductorInstanceIdentity,
        badgeDefinitionGenericEvent,
+       new ReferenceTag(relay.getUrl()),
        new Relay(superconductorRelayUrl));
   }
 }

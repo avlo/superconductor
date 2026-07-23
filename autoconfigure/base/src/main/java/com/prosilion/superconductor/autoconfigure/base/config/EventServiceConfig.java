@@ -10,9 +10,9 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormul
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
@@ -131,9 +131,16 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheCuratedBadgeAwardGenericEventService cacheCurationSetsEventService(
-     @NonNull CacheServiceIF cacheServiceIF) {
-    return new CacheCuratedBadgeAwardGenericEventService(cacheServiceIF);
+  CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String superconductorRelayUrl,
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService) {
+    return new CacheCuratedBadgeAwardGenericEventService(
+       superconductorInstanceIdentity,
+       superconductorRelayUrl,
+       cacheServiceIF,
+       cacheBadgeAwardGenericEventService);
   }
 
   @Bean

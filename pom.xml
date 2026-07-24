@@ -33,7 +33,7 @@
     <module>superconductor/redis</module>
     <module>superconductor/sqlite</module>
     <module>superconductor/test-common</module>
-    <module>report-aggregate</module>
+<!--    <module>report-aggregate</module> use gradle instead -->
   </modules>
 
   <properties>

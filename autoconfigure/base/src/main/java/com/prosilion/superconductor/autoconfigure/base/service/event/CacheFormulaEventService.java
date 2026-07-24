@@ -11,7 +11,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.base.cache.curated.CacheFormulaEventServiceDecorIF;
+import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
@@ -20,7 +20,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheFormulaEventService implements CacheFormulaEventServiceDecorIF {
+public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   public static final String NON_EXISTENT_ADDRESS_TAG = "FormulaEvent [%s] is missing required AddressTag";
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;

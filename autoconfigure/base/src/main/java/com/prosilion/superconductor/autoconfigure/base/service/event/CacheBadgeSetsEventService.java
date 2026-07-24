@@ -8,7 +8,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedEventService;
-import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceDecorIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
@@ -22,18 +22,18 @@ import lombok.extern.slf4j.Slf4j;
 public class CacheBadgeSetsEventService extends CacheCuratedEventService<BadgeSetsEvent> implements CacheBadgeSetsEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
-  private final CacheBadgeDefinitionReputationEventServiceDecorIF cacheBadgeDefinitionReputationEventServiceDecorIF;
+  private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
   private final CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
 
   public CacheBadgeSetsEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
-     @NonNull CacheBadgeDefinitionReputationEventServiceDecorIF cacheBadgeDefinitionReputationEventServiceDecorIF,
+     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
      @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
     super(cacheServiceIF);
     this.cacheServiceIF = cacheServiceIF;
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
-    this.cacheBadgeDefinitionReputationEventServiceDecorIF = cacheBadgeDefinitionReputationEventServiceDecorIF;
+    this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
     this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardGenericEventServiceIF;
   }
 
@@ -41,7 +41,7 @@ public class CacheBadgeSetsEventService extends CacheCuratedEventService<BadgeSe
   public Optional<BadgeSetsEvent> materialize(@NonNull EventIF incomingBadgeSetsEvent) {
     log.debug("materialize(EventIF incomingBadgeSetsEvent):\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
     return
-       cacheBadgeDefinitionReputationEventServiceDecorIF
+       cacheBadgeDefinitionReputationEventServiceIF
           .getByExpanded(
              incomingBadgeSetsEvent.requireFirstTag(AddressTag.class))
           .map(badgeDefinitionReputationEvent ->

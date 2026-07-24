@@ -12,10 +12,10 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceDecorIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionReputationEventServiceDecorIF;
-import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventServiceDecorIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionReputationEventServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventServiceIF;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,20 +23,20 @@ import org.jspecify.annotations.NonNull;
 
 import static com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService.NON_EXISTENT_ADDRESS_TAG;
 
-public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCuratedEventService<BadgeDefinitionReputationEvent> implements CacheCuratedBadgeDefinitionReputationEventServiceDecorIF {
+public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCuratedEventService<BadgeDefinitionReputationEvent> implements CacheCuratedBadgeDefinitionReputationEventServiceIF {
   private final Identity instanceIdentity;
-  private final CacheBadgeDefinitionReputationEventServiceDecorIF cacheBadgeDefinitionReputationEventServiceDecorIF;
-  private final CacheCuratedFormulaEventServiceDecorIF cacheCuratedFormulaEventServiceDecorIF;
+  private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
+  private final CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
 
   public CacheCuratedBadgeDefinitionReputationEventService(
      @NonNull Identity instanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheBadgeDefinitionReputationEventServiceDecorIF cacheBadgeDefinitionReputationEventServiceDecorIF,
-     @NonNull CacheCuratedFormulaEventServiceDecorIF cacheCuratedFormulaEventServiceDecorIF) {
+     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
+     @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF) {
     super(cacheServiceIF);
     this.instanceIdentity = instanceIdentity;
-    this.cacheCuratedFormulaEventServiceDecorIF = cacheCuratedFormulaEventServiceDecorIF;
-    this.cacheBadgeDefinitionReputationEventServiceDecorIF = cacheBadgeDefinitionReputationEventServiceDecorIF;
+    this.cacheCuratedFormulaEventServiceIF = cacheCuratedFormulaEventServiceIF;
+    this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
   }
 
   @Override
@@ -64,7 +64,7 @@ public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCura
 
     List<FormulaEvent> formulaEvents = addressTagsAreFormulaEvents.stream()
        .map(addressTag ->
-          cacheCuratedFormulaEventServiceDecorIF.getBy(
+          cacheCuratedFormulaEventServiceIF.getBy(
              addressTag.getPublicKey(),
              addressTag.requireIdentifierTag(),
              addressTag.requireRelay())).flatMap(Optional::stream).toList();
@@ -81,7 +81,7 @@ public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCura
   @Override
   public Optional<BadgeDefinitionReputationEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     return super.getEvent(eventId, relay)
-       .or(() -> cacheBadgeDefinitionReputationEventServiceDecorIF.getEvent(eventId, relay)
+       .or(() -> cacheBadgeDefinitionReputationEventServiceIF.getEvent(eventId, relay)
           .flatMap(this::materialize));
   }
 
@@ -91,7 +91,7 @@ public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCura
        cacheServiceIF.getEventsByKindAndAddressTag(getKind(), addressTag)
           .stream().findFirst().flatMap(this::materialize)
           .or(() ->
-             cacheBadgeDefinitionReputationEventServiceDecorIF.getByDirect(addressTag));
+             cacheBadgeDefinitionReputationEventServiceIF.getByDirect(addressTag));
   }
 
   @Override
@@ -102,7 +102,7 @@ public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCura
           addressTag.getIdentifierTag()).stream()
        .findFirst().flatMap(this::materialize)
        .or(() ->
-          cacheBadgeDefinitionReputationEventServiceDecorIF.getByExpanded(addressTag));
+          cacheBadgeDefinitionReputationEventServiceIF.getByExpanded(addressTag));
   }
 
   @Override
@@ -110,7 +110,7 @@ public class CacheCuratedBadgeDefinitionReputationEventService extends CacheCura
     return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag).stream()
        .findFirst().flatMap(this::materialize)
        .or(() ->
-          cacheBadgeDefinitionReputationEventServiceDecorIF.getBy(pubKeyTag, identifierTag));
+          cacheBadgeDefinitionReputationEventServiceIF.getBy(pubKeyTag, identifierTag));
   }
 
   @Override

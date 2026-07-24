@@ -15,7 +15,7 @@ import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardGenericEventServiceDecorIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import org.jspecify.annotations.NonNull;
 
 @Slf4j
 // TODO: rxr common elements from CacheCuratedBadgeDefinitionGenericEventService into baseClass
-public class CacheCuratedBadgeAwardGenericEventService extends CacheCuratedEventService<CuratedBadgeAwardGenericEvent> implements CacheCuratedBadgeAwardGenericEventServiceDecorIF {
+public class CacheCuratedBadgeAwardGenericEventService extends CacheCuratedEventService<CuratedBadgeAwardGenericEvent> implements CacheCuratedBadgeAwardEventServiceIF {
   private final Identity superconductorInstanceIdentity;
   private final String superconductorRelayUrl;
   private final CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService;

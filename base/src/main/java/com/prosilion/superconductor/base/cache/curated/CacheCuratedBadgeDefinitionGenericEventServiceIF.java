@@ -12,7 +12,7 @@ import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterial
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
-public interface CacheCuratedBadgeDefinitionEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeDefinitionGenericEvent, EventTag>, EventMaterializer<CuratedBadgeDefinitionGenericEvent>, CacheCuratedEventServiceIF<CuratedBadgeDefinitionGenericEvent> {
+public interface CacheCuratedBadgeDefinitionGenericEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeDefinitionGenericEvent, EventTag>, EventMaterializer<CuratedBadgeDefinitionGenericEvent>, CacheCuratedEventServiceIF<CuratedBadgeDefinitionGenericEvent> {
   Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag);
   Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull EventTag eventTag);
   Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull AddressTag addressTag);

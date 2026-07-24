@@ -1,73 +1,90 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.ReferenceTag;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventServiceIF;
 import java.util.Optional;
-import java.util.function.Function;
 import org.jspecify.annotations.NonNull;
 
-public class CacheCuratedFormulaEventService extends CacheCuratedEventService<FormulaEvent> implements CacheCuratedFormulaEventServiceIF {
-  private final CacheFormulaEventService cacheFormulaEventService;
-  private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
+public class CacheCuratedFormulaEventService extends CacheCuratedEventService<CuratedFormulaEvent> implements CacheCuratedFormulaEventServiceIF {
+  private final Identity superconductorInstanceIdentity;
+  private final String superconductorRelayUrl;
+  private final CacheFormulaEventServiceIF cacheFormulaEventServiceIF;
 
   public CacheCuratedFormulaEventService(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String superconductorRelayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheFormulaEventService cacheFormulaEventService,
-     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF) {
+     @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF) {
     super(cacheServiceIF);
-    this.cacheFormulaEventService = cacheFormulaEventService;
-    this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
-  }
-
-  private final Function<CuratedBadgeDefinitionGenericEvent, FormulaEvent> curatedBadgeDefnToFormulaFxn =
-     curatedBadgeDefinitionEvent -> new FormulaEvent(
-        curatedBadgeDefinitionEvent.asGenericEventRecord(),
-        addressTag -> new BadgeDefinitionGenericEvent(curatedBadgeDefinitionEvent.asGenericEventRecord()));
-
-  @Override
-  public Optional<FormulaEvent> materialize(@NonNull EventIF incomingFormulaEvent) {
-    return cacheCuratedBadgeDefinitionGenericEventServiceIF
-       .getBy(incomingFormulaEvent.requireFirstTag(AddressTag.class))
-       .map(curatedBadgeDefnToFormulaFxn)
-       .or(() -> cacheFormulaEventService.materialize(incomingFormulaEvent));
+    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
+    this.superconductorRelayUrl = superconductorRelayUrl;
+    this.cacheFormulaEventServiceIF = cacheFormulaEventServiceIF;
   }
 
   @Override
-  public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+  public Optional<CuratedFormulaEvent> materialize(@NonNull EventIF incomingCuratedFormulaEvent) {
+    return Optional.of(new CuratedFormulaEvent(incomingCuratedFormulaEvent.asGenericEventRecord()));
+  }
+
+  @Override
+  public Optional<CuratedFormulaEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     return super.getEvent(eventId, relay)
        .or(() ->
-          cacheFormulaEventService.getEvent(eventId, relay));
+          cacheFormulaEventServiceIF.getEvent(eventId, relay)
+             .map(formulaEvent -> createFromFetched(
+                formulaEvent, relay))
+             .flatMap(this::materialize));
   }
 
   @Override
-  public Optional<FormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
-    return cacheCuratedBadgeDefinitionGenericEventServiceIF
-       .getBy(publicKey, identifierTag)
-       .map(curatedBadgeDefnToFormulaFxn)
-       .or(() -> cacheFormulaEventService.getBy(publicKey, identifierTag, relay));
+  public Optional<CuratedFormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
+    return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(
+          getKind(),
+          new PubKeyTag(publicKey),
+          identifierTag)
+       .stream().findFirst()
+       .flatMap(this::materialize)
+       .or(() -> cacheFormulaEventServiceIF.getBy(publicKey, identifierTag, relay)
+          .map(formulaEvent -> createFromFetched(
+             formulaEvent, relay))
+          .flatMap(this::materialize));
   }
 
   @Override
-  public Optional<FormulaEvent> getByDirect(@NonNull AddressTag addressTag) {
-    return cacheCuratedBadgeDefinitionGenericEventServiceIF
-       .getBy(addressTag)
-       .map(curatedBadgeDefnToFormulaFxn)
-       .or(() -> cacheFormulaEventService.getByDirect(addressTag));
+  public Optional<CuratedFormulaEvent> getByDirect(@NonNull AddressTag addressTag) {
+    return cacheServiceIF.getEventsByKindAndAddressTag(getKind(), addressTag)
+       .stream().findFirst().flatMap(this::materialize)
+       .or(() -> cacheFormulaEventServiceIF.getByDirect(addressTag)
+          .map(formulaEvent -> createFromFetched(
+             formulaEvent, formulaEvent.getRelay().orElseThrow()))
+          .flatMap(this::materialize));
+  }
+
+  @Override
+  public CuratedFormulaEvent createFromFetched(
+     @NonNull FormulaEvent formulaEvent,
+     @NonNull Relay relay) {
+    return new CuratedFormulaEvent(
+       superconductorInstanceIdentity,
+       formulaEvent,
+       new ReferenceTag(relay.getUrl()),
+       new Relay(superconductorRelayUrl));
   }
 
   @Override
   public Kind getKind() {
-    return cacheFormulaEventService.getKind();
+    return Kind.CURATION_SETS_FORMULA_EVENT;
   }
 }

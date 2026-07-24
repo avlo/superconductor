@@ -1,6 +1,6 @@
-package com.prosilion.superconductor.base.cache.curated;
-
-import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
-
-public interface CacheCuratedBadgeDefinitionReputationEventServiceIF extends CacheBadgeDefinitionReputationEventServiceIF, CacheCuratedEventServiceIF<BadgeDefinitionReputationEvent> {}
+//package com.prosilion.superconductor.base.cache.curated;
+//
+//import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+//import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
+//
+//public interface CacheCuratedBadgeDefinitionReputationEventServiceIF extends CacheBadgeDefinitionReputationEventServiceIF, CacheCuratedEventServiceIF<BadgeDefinitionReputationEvent> {}

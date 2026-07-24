@@ -89,11 +89,6 @@ public class CacheCuratedBadgeAwardGenericEventService extends CacheCuratedEvent
   }
 
   @Override
-  public Kind getKind() {
-    return Kind.CURATION_SETS;
-  }
-
-  @Override
   public CuratedBadgeAwardGenericEvent createFromFetched(
      @NonNull BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent,
      @NonNull Relay relay) {
@@ -103,5 +98,10 @@ public class CacheCuratedBadgeAwardGenericEventService extends CacheCuratedEvent
        new ReferenceTag(relay.getUrl()),
        new ReferenceTag(badgeAwardGenericEvent.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow()),
        new Relay(superconductorRelayUrl));
+  }
+
+  @Override
+  public Kind getKind() {
+    return Kind.CURATION_SETS_BADGE_AWARD_EVENT;
   }
 }

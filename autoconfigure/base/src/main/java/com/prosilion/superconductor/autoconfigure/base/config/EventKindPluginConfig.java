@@ -142,7 +142,7 @@ public class EventKindPluginConfig {
     Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
 
     kindFxnMap.put(
-       Kind.CURATION_SETS,
+       Kind.CURATION_SETS_BADGE_AWARD_EVENT,
        cacheCuratedBadgeAwardGenericEventService::materialize);
     
     kindFxnMap.put(

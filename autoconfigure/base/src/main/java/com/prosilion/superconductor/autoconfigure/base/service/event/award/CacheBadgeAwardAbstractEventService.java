@@ -38,7 +38,7 @@ public abstract class CacheBadgeAwardAbstractEventService<
     return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize)
 //       .or(() ->
 //          cacheServiceIF.getEventsByKindAndEventTag(
-//                Kind.REFERENCED_SET,
+//                Kind.CURATION_SETS_BADGE_DEFINITION_EVENT,
 //                new EventTag(eventId)).stream().findFirst()
 //             .flatMap(this::materialize))
        .or(() -> cacheReferenceEventTagServiceIF.getEvent(eventId, relay)

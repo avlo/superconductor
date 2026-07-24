@@ -1,13 +1,13 @@
 plugins {
-    id 'java'
+  id 'java'
 //    id 'war'
-    id 'jacoco-report-aggregation'
-    id 'java-library'
-    id 'maven-publish'
-    id 'org.springframework.boot'
-    id 'io.spring.dependency-management'
-    id 'com.adarshr.test-logger'
-    id 'org.gradle.test-retry'
+  id 'jacoco-report-aggregation'
+  id 'java-library'
+  id 'maven-publish'
+  id 'org.springframework.boot'
+  id 'io.spring.dependency-management'
+  id 'com.adarshr.test-logger'
+  id 'org.gradle.test-retry'
 }
 
 group = 'com.prosilion.superconductor'
@@ -17,24 +17,24 @@ java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
 
 repositories {
-    mavenLocal()
-    mavenCentral()
-    gradlePluginPortal()
-    maven {
-        url = uri("https://maven.pkg.github.com/avlo/nostr-java-core")
-    }
-    maven {
-        url = uri("https://maven.pkg.github.com/avlo/subdivisions")
-    }
+  mavenLocal()
+  mavenCentral()
+  gradlePluginPortal()
+  maven {
+    url = uri("https://maven.pkg.github.com/avlo/nostr-java-core")
+  }
+  maven {
+    url = uri("https://maven.pkg.github.com/avlo/subdivisions")
+  }
 }
 
 publishing {
-    publications {
-        mavenJar(MavenPublication) {
-            from components.java
-            groupId 'com.prosilion.superconductor'
-        }
+  publications {
+    mavenJar(MavenPublication) {
+      from components.java
+      groupId 'com.prosilion.superconductor'
     }
+  }
 //    publications {
 //        mavenWar(MavenPublication) {
 //            from components.web
@@ -44,85 +44,130 @@ publishing {
 }
 
 dependencies {
-    def springBootVersion = '3.5.6'
-    def nostrJavaCoreVersion = '1.2.0'
-    def subdivisionsVersion = '1.4.1'
-    
-    def apacheCommonsLang3 = '3.17.0'
-    def apacheCommonsLCollections4 = '4.5.0'
-    def jacksonModuleAfterburner = '2.18.3'
-    def googleGuava = '33.2.1-jre'
-    def lombok = '1.18.36'
-    def logger = '4.0.0'
+  def springBootVersion = '3.5.6'
+  def nostrJavaCoreVersion = '1.2.0'
+  def subdivisionsVersion = '1.4.1'
+
+  def apacheCommonsLang3 = '3.17.0'
+  def apacheCommonsLCollections4 = '4.5.0'
+  def jacksonModuleAfterburner = '2.18.3'
+  def googleGuava = '33.2.1-jre'
+  def lombok = '1.18.36'
+  def logger = '4.0.0'
 
 
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:' + springBootVersion
+  implementation 'org.springframework.boot:spring-boot-starter'
+  implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+  implementation 'org.springframework.boot:spring-boot-starter-websocket'
+  implementation 'org.springframework.boot:spring-boot-starter-webflux'
+  annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+  annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:' + springBootVersion
 
-    implementation 'com.prosilion:nostr-java-core:' + nostrJavaCoreVersion
-    implementation 'com.prosilion:subdivisions:' + subdivisionsVersion
+  implementation 'com.prosilion:nostr-java-core:' + nostrJavaCoreVersion
+  implementation 'com.prosilion:subdivisions:' + subdivisionsVersion
 
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+  implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
-    implementation 'org.apache.commons:commons-lang3:' + apacheCommonsLang3
-    implementation 'org.apache.commons:commons-collections4:' + apacheCommonsLCollections4
-    implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:' + jacksonModuleAfterburner
-    implementation 'com.google.guava:guava:' + googleGuava
-    implementation 'com.ezylang:EvalEx:3.5.0'
-    implementation 'org.projectlombok:lombok:' + lombok
-    annotationProcessor 'org.projectlombok:lombok:' + lombok
+  implementation 'org.apache.commons:commons-lang3:' + apacheCommonsLang3
+  implementation 'org.apache.commons:commons-collections4:' + apacheCommonsLCollections4
+  implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:' + jacksonModuleAfterburner
+  implementation 'com.google.guava:guava:' + googleGuava
+  implementation 'com.ezylang:EvalEx:3.5.0'
+  implementation 'org.projectlombok:lombok:' + lombok
+  annotationProcessor 'org.projectlombok:lombok:' + lombok
 
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+  developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.projectlombok:lombok:' + lombok
-    testImplementation 'com.adarshr:gradle-test-logger-plugin:' + logger
-    testAnnotationProcessor 'org.projectlombok:lombok:' + lombok
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'org.projectlombok:lombok:' + lombok
+  testImplementation 'com.adarshr:gradle-test-logger-plugin:' + logger
+  testAnnotationProcessor 'org.projectlombok:lombok:' + lombok
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
-    systemProperty("spring.profiles.active", "test")
-    useJUnitPlatform()
+  systemProperty("spring.profiles.active", "test")
+  useJUnitPlatform()
 }
 
 test {
-    filter {
-        excludeTestsMatching("*IT")
-    }
+  filter {
+    excludeTestsMatching("*IT")
+  }
 }
 
-tasks.register('integrationTest', Test) {
-    description = 'integration tests.'
-    group = 'verification'
-    systemProperty("spring.profiles.active", "test")
-    useJUnitPlatform()
-    filter {
-        excludeTestsMatching("*Test")
-        includeTestsMatching("*IT")
-//        excludeTestsMatching("*NoOp*IT")
-        excludeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT")
+testing {
+  suites {
+    integrationTest(JvmTestSuite) {
+      useJUnitJupiter()
+
+      sources {
+        java {
+          srcDirs = sourceSets.test.java.srcDirs
+        }
+        resources {
+          srcDirs = sourceSets.test.resources.srcDirs
+        }
+      }
+
+      dependencies {
+        implementation project()
+      }
+
+      targets {
+        all {
+          testTask.configure {
+            description = 'integration tests.'
+            group = 'verification'
+            systemProperty("spring.profiles.active", "test")
+            filter {
+              excludeTestsMatching("*Test")
+              includeTestsMatching("*IT")
+//                          excludeTestsMatching("*NoOp*IT")
+              excludeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT")
+            }
+          }
+        }
+      }
     }
+  }
+}
+
+configurations.named('integrationTestImplementation') {
+  extendsFrom configurations.testImplementation
+}
+configurations.named('integrationTestCompileOnly') {
+  extendsFrom configurations.testCompileOnly
+}
+configurations.named('integrationTestAnnotationProcessor') {
+  extendsFrom configurations.testAnnotationProcessor
+}
+configurations.named('integrationTestRuntimeOnly') {
+  extendsFrom configurations.testRuntimeOnly
+}
+
+reporting {
+  reports {
+    integrationTestCodeCoverageReport(JacocoCoverageReport) {
+      testSuiteName = 'integrationTest'
+    }
+  }
 }
 
 tasks.register('integrationTestDocker', Test) {
-    description = 'docker integration tests.'
-    group = 'verification'
-    systemProperty("spring.profiles.active", "test")
-    useJUnitPlatform()
-    filter {
+  description = 'docker integration tests.'
+  group = 'verification'
+  systemProperty("spring.profiles.active", "test")
+  useJUnitPlatform()
+  filter {
 //        includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT")
-        includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT")
-    }
+    includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT")
+  }
 }
 
 tasks.named('integrationTest') {
-    getServerPort()
+  getServerPort()
 //    retry {
 //        failOnPassedAfterRetry = false
 //        maxRetries = 1
@@ -130,7 +175,7 @@ tasks.named('integrationTest') {
 }
 
 tasks.named('integrationTestDocker') {
-    getServerPort()
+  getServerPort()
 //    retry {
 //        failOnPassedAfterRetry = false
 //        maxRetries = 1
@@ -160,17 +205,18 @@ tasks.named('integrationTestDocker') {
 //integrationNoOpTest.dependsOn integrationTest
 
 tasks.named('check') {
-    dependsOn tasks.named('integrationTest')
+  dependsOn tasks.named('integrationTest')
 //    dependsOn tasks.named('integrationTestDocker')
-    dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
+  dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
+  dependsOn tasks.named('integrationTestCodeCoverageReport', JacocoReport)
 }
 
 tasks.bootJar {
-    enabled = false
+  enabled = false
 }
 
 tasks.named("jar") {
-    archiveClassifier = ''
+  archiveClassifier = ''
 }
 
 //tasks.bootWar {
@@ -182,54 +228,54 @@ tasks.named("jar") {
 //}
 
 tasks.register("bootRunLocalWs") {
-    group = "application"
-    description = "Superconductor STANDARD MODE: local_ws"
-    doFirst {
-        tasks.bootRun.configure {
-            systemProperty("spring.profiles.active", "local_ws")
-        }
-        getServerPort()
+  group = "application"
+  description = "Superconductor STANDARD MODE: local_ws"
+  doFirst {
+    tasks.bootRun.configure {
+      systemProperty("spring.profiles.active", "local_ws")
     }
-    finalizedBy("bootRun")
+    getServerPort()
+  }
+  finalizedBy("bootRun")
 }
 
 void getServerPort() {
-    if (project.hasProperty("server.port")) {
-        println("using server.port [" + project.findProperty("server.port") + "]")
-        return
-    }
+  if (project.hasProperty("server.port")) {
+    println("using server.port [" + project.findProperty("server.port") + "]")
+    return
+  }
 
-    println("project default server.port not defined")
-    project.ext.setProperty("server.port", 5555)
-    println("server.port set to 5555")
+  println("project default server.port not defined")
+  project.ext.setProperty("server.port", 5555)
+  println("server.port set to 5555")
 }
 
 bootRun {
-    args += ["--server.port=${project.properties["server.port"]}"]
+  args += ["--server.port=${project.properties["server.port"]}"]
 }
 
 tasks.register("bootRunLocalWss") {
-    group = "application"
-    description = "Superconductor SECURE MODE: local_wss"
-    doFirst {
-        tasks.bootRun.configure {
-            systemProperty("spring.profiles.active", "local_wss")
-        }
-        getServerPort()
+  group = "application"
+  description = "Superconductor SECURE MODE: local_wss"
+  doFirst {
+    tasks.bootRun.configure {
+      systemProperty("spring.profiles.active", "local_wss")
     }
-    finalizedBy("bootRun")
+    getServerPort()
+  }
+  finalizedBy("bootRun")
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+  options.encoding = 'UTF-8'
 }
 
 tasks.withType(Javadoc).configureEach {
-    options.encoding = 'UTF-8'
+  options.encoding = 'UTF-8'
 }

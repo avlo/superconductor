@@ -17,7 +17,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
@@ -35,17 +34,14 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
   private final CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
   private final Relay relay;
 
-  Duration requestTimeoutDuration;
   CuratedBadgeAwardGenericEvent curationSetsUpvoteEvent;
 
   public BaseCacheCuratedBadgeAwardGenericEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF,
-     Duration requestTimeoutDuration) throws ParseException {
+     @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF) throws ParseException {
     super(superconductorInstanceIdentity);
-    this.requestTimeoutDuration = requestTimeoutDuration;
     this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardEventServiceIF;
     this.relay = new Relay(relayUrl);
 
@@ -61,7 +57,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
        relay);
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
        relay,
@@ -75,7 +71,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)));
 
     this.curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        badgeAwardUpvoteEvent,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),

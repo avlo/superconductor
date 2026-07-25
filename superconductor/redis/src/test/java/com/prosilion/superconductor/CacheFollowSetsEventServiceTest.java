@@ -1,0 +1,166 @@
+package com.prosilion.superconductor;
+
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardReputationEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.BadgeSetsEvent;
+import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.FollowSetsEvent;
+import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.ReferenceTag;
+import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
+import com.prosilion.superconductor.base.cache.CacheBadgeAwardReputationEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
+import java.util.List;
+import java.util.Optional;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.PLUS_ONE_FORMULA;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.aImgIdentity;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.formulaCreator;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.recipient;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.relay;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.repDefnCreator;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.reputationIdentifierTag;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.submitter;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteDefnCreator;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteIdentifierTag;
+import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<FollowSetsEvent> {
+  @Mock
+  CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
+  @Mock
+  CacheBadgeAwardReputationEventServiceIF cacheBadgeAwardReputationEventServiceIF;
+  @Mock
+  CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
+  @Mock
+  CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
+
+  BadgeSetsEvent badgeSetsEvent;
+
+  @Test
+  void testGetEventByEventId() {
+    mockBadgeSetsEvent();
+    doReturn(Optional.of(event.getGenericEventRecord()))
+       .when(cacheReferenceEventTagServiceIF)
+       .getEvent(eventId, relay);
+    CacheFollowSetsEventService cacheFollowSetsEventService = createService();
+
+    Optional<FollowSetsEvent> actual = cacheFollowSetsEventService.getEvent(eventId, relay);
+
+    assertEquals(eventId, actual.orElseThrow().getId());
+    verify(cacheReferenceEventTagServiceIF, Mockito.times(1)).getEvent(eventId, relay);
+    verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), relay);
+  }
+
+  @Test
+  void testGetByPubKeyTag() {
+    mockBadgeSetsEvent();
+    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
+    doReturn(List.of(event.getGenericEventRecord()))
+       .when(cacheServiceIF)
+       .getEventsByKindAndPubKeyTag(event.getKind(), pubKeyTag);
+    CacheFollowSetsEventService cacheFollowSetsEventService = createService();
+
+    List<FollowSetsEvent> actual = cacheFollowSetsEventService.getBy(pubKeyTag);
+
+    assertEquals(List.of(eventId), actual.stream().map(FollowSetsEvent::getId).toList());
+    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTag(event.getKind(), pubKeyTag);
+    verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), relay);
+  }
+
+  @Test
+  void testGetByDirectEventTag() {
+    mockBadgeSetsEvent();
+    EventTag eventTag = event.getTypeSpecificTags(EventTag.class).getFirst();
+    doReturn(Optional.of(event.getGenericEventRecord()))
+       .when(cacheReferenceEventTagServiceIF)
+       .getByExpanded(eventTag);
+    CacheFollowSetsEventService cacheFollowSetsEventService = createService();
+
+    Optional<FollowSetsEvent> actual = cacheFollowSetsEventService.getByDirect(eventTag);
+
+    assertEquals(eventId, actual.orElseThrow().getId());
+    verify(cacheReferenceEventTagServiceIF, Mockito.times(1)).getByExpanded(eventTag);
+    verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), relay);
+  }
+
+  @Test
+  void testGetBadgeAwardReputationEventsReturnsEmptyListWhenNoAwardsExist() {
+    AddressTag reputationDefinitionAddressTag =
+       badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag();
+    PubKeyTag recipientTag = new PubKeyTag(event.getAwardRecipientPublicKey());
+    doReturn(List.of())
+       .when(cacheKindAddressTagServiceIF)
+       .getByDirect(Kind.BADGE_AWARD_EVENT, recipientTag, reputationDefinitionAddressTag);
+    CacheFollowSetsEventService cacheFollowSetsEventService = createService();
+
+    List<BadgeAwardReputationEvent> actual =
+       cacheFollowSetsEventService.getBadgeAwardReputationEvents(event);
+
+    assertEquals(List.of(), actual);
+    verify(cacheKindAddressTagServiceIF, Mockito.times(1)).getByDirect(
+       Kind.BADGE_AWARD_EVENT, recipientTag, reputationDefinitionAddressTag);
+  }
+
+  @SneakyThrows
+  @Override
+  FollowSetsEvent createEvent() {
+    BadgeDefinitionGenericEvent badgeDefinitionEvent = new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator, upvoteIdentifierTag, relay);
+    FormulaEvent formulaEvent = new FormulaEvent(
+       formulaCreator, formulaUpvoteIdentifierTag, relay, badgeDefinitionEvent, PLUS_ONE_FORMULA);
+    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent =
+       new BadgeDefinitionReputationEvent(
+          aImgIdentity,
+          repDefnCreator.getPublicKey(),
+          reputationIdentifierTag,
+          relay,
+          BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+          formulaEvent);
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = new BadgeAwardGenericEvent<>(
+       submitter, recipient.getPublicKey(), badgeDefinitionEvent, relay);
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardEvent = new CuratedBadgeAwardGenericEvent(
+       aImgIdentity,
+       badgeAwardEvent,
+       new ReferenceTag(relay.getUrl()),
+       new ReferenceTag(relay.getUrl()),
+       relay);
+    this.badgeSetsEvent = new BadgeSetsEvent(
+       aImgIdentity, badgeDefinitionReputationEvent, curatedBadgeAwardEvent, relay);
+    return new FollowSetsEvent(aImgIdentity, badgeSetsEvent, relay);
+  }
+
+  private CacheFollowSetsEventService createService() {
+    return new CacheFollowSetsEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagServiceIF,
+       cacheBadgeAwardReputationEventServiceIF,
+       cacheKindAddressTagServiceIF,
+       cacheBadgeSetsEventServiceIF);
+  }
+
+  private void mockBadgeSetsEvent() {
+    doReturn(Optional.of(badgeSetsEvent))
+       .when(cacheBadgeSetsEventServiceIF)
+       .getEvent(badgeSetsEvent.getId(), relay);
+  }
+}

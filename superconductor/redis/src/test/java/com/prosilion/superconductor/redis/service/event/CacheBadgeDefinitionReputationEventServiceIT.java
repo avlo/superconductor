@@ -73,7 +73,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
   @Test
   public void testSaveBadgeDefinitionReputationEventUpvote() throws ParseException {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
        relay,
@@ -101,7 +101,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     FormulaEvent minusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUnitDownvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneMinusOne = new BadgeDefinitionReputationEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
        relay,

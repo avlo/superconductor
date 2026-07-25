@@ -64,7 +64,7 @@ public class CacheBadgeAwardReputationEventServiceIT extends BaseIntegrationTest
              PLUS_ONE_FORMULA)), relay);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
        relay,
@@ -76,7 +76,7 @@ public class CacheBadgeAwardReputationEventServiceIT extends BaseIntegrationTest
     eventServiceIF.processIncomingEvent(
        new EventMessage(
           new BadgeAwardGenericEvent<>(
-             aImgIdentity,
+             parameterAimgIdentity,
              recipient.getPublicKey(),
              badgeDefinitionUpvoteEvent,
              relay)), relay);
@@ -85,7 +85,7 @@ public class CacheBadgeAwardReputationEventServiceIT extends BaseIntegrationTest
   @Test
   public void testSaveBadgeAwardReputationEventUpvote() {
     BadgeAwardReputationEvent badgeAwardReputationEvent = new BadgeAwardReputationEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        recipient.getPublicKey(),
        BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
        badgeDefinitionReputationEventPlusOneFormula,

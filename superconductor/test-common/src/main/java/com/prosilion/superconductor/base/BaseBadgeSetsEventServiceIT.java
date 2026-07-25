@@ -54,7 +54,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
     cacheServiceIF.save(plusOneFormulaEvent);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
        relay,
@@ -73,7 +73,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()));
 
     this.curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        badgeAwardUpvoteEvent,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
@@ -81,7 +81,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
     cacheServiceIF.save(curationSetsUpvoteEvent);
 
     this.badgeSetsUpvoteEvent = new BadgeSetsEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
        curationSetsUpvoteEvent,
        relay);

@@ -20,6 +20,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.aImgIdentity;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.formulaCreator;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.relay;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteIdentifierTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;

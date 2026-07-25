@@ -20,6 +20,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.aImgIdentity;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.formulaCreator;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.relay;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteIdentifierTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,7 +32,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CacheFormulaServiceTest extends CacheServiceTestFixture<FormulaEvent> {
+public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<FormulaEvent> {
   public static final String FORMULA_UNIT_UPVOTE = "FORMULA_UNIT_UPVOTE";
   public static final IdentifierTag formulaUpvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_UPVOTE);
   public static final String PLUS_ONE_FORMULA = "+1";

@@ -49,7 +49,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
   private final Relay relay;
   private final EventServiceIF eventServiceIF;
 
-  BadgeSetsEvent badgeSetsUpvoteEvent;
+  private final BadgeSetsEvent badgeSetsUpvoteEvent;
 
   public BaseFollowSetsEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
@@ -76,7 +76,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
        relay);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
        relay,
@@ -91,7 +91,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)));
 
     CuratedBadgeAwardGenericEvent curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        badgeAwardUpvoteEvent,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
@@ -99,7 +99,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
     cacheServiceIF.save(curationSetsUpvoteEvent);
 
     this.badgeSetsUpvoteEvent = new BadgeSetsEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
        curationSetsUpvoteEvent,
        relay);
@@ -113,7 +113,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
   @Test
   public void testSaveBadgeAwardReputationEventUpvote() {
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        badgeSetsUpvoteEvent,
        relay);
 

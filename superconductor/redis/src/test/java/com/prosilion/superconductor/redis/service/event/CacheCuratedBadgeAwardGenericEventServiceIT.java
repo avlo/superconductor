@@ -6,7 +6,6 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.curated.Cac
 import com.prosilion.superconductor.base.BaseCacheCuratedBadgeAwardGenericEventServiceIT;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.time.Duration;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +24,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceIT extends BaseCacheCurate
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
-     Duration requestTimeoutDuration) throws ParseException {
-    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, cacheCuratedBadgeAwardGenericEventService, requestTimeoutDuration);
+     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService) throws ParseException {
+    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, cacheCuratedBadgeAwardGenericEventService);
   }
 }

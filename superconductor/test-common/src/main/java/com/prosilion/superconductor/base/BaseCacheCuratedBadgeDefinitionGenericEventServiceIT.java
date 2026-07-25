@@ -41,7 +41,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
        upvoteDefnCreator, upvoteIdentifierTag, relay);
 
     this.curatedBadgeDefinitionGenericEvent = new CuratedBadgeDefinitionGenericEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        awardUpvoteDefinitionEvent,
        new ReferenceTag(relayUrl),
        relay);
@@ -79,7 +79,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
   @Test
   public void testGetByDirectEventTagFromBackingServiceAfterLocalMiss() {
     CuratedBadgeDefinitionGenericEvent expected = new CuratedBadgeDefinitionGenericEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        downvoteDefinitionEvent,
        new ReferenceTag(relay.getUrl()),
        relay);
@@ -93,7 +93,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
   @Test
   public void testGetByDirectAddressTagFromBackingServiceAfterLocalMiss() {
     CuratedBadgeDefinitionGenericEvent expected = new CuratedBadgeDefinitionGenericEvent(
-       aImgIdentity,
+       parameterAimgIdentity,
        this.downvoteDefinitionEvent,
        new ReferenceTag(relay.getUrl()),
        relay);

@@ -96,7 +96,6 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
        .map(BadgeDefinitionGenericEvent::getIdentifierTag)
        .map(IdentifierTag::getUuid).toList().contains(AWARD_UNIT_UPVOTE));
 
-    String MINUS_ONE_FORMULA = "-1";
     IdentifierTag formulaUnitDownvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_DOWNVOTE);
     FormulaEvent minusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUnitDownvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
 

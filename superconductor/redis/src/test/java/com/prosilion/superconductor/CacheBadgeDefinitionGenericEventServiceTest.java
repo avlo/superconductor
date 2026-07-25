@@ -1,6 +1,7 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
@@ -19,6 +20,7 @@ import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.rela
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteDefnCreator;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteIdentifierTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -28,6 +30,54 @@ public class CacheBadgeDefinitionGenericEventServiceTest extends CacheServiceTes
   CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   @Mock
   CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
+
+  @Test
+  void testConstructorRejectsNullDependencies() {
+    assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionGenericEventService(
+       null,
+       cacheReferenceEventTagServiceIF,
+       cacheReferenceAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionGenericEventService(
+       cacheServiceIF,
+       null,
+       cacheReferenceAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionGenericEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagServiceIF,
+       null));
+  }
+
+  @Test
+  void testMaterializeRejectsNullEvent() {
+    assertThrows(NullPointerException.class, () -> createService().materialize((EventIF) null));
+  }
+
+  @Test
+  void testGetEventRejectsNullParameters() {
+    CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService = createService();
+
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionGenericEventService.getEvent(null, relay));
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionGenericEventService.getEvent(eventId, null));
+  }
+
+  @Test
+  void testGetByExpandedRejectsNullAddressTag() {
+    assertThrows(NullPointerException.class, () ->
+       createService().getByExpanded((AddressTag) null));
+  }
+
+  @Test
+  void testGetByPubKeyTagAndIdentifierTagRejectsNullParameters() {
+    CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService = createService();
+    PubKeyTag pubKeyTag = new PubKeyTag(upvoteDefnCreator.getPublicKey());
+
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionGenericEventService.getBy(null, upvoteIdentifierTag));
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionGenericEventService.getBy(pubKeyTag, null));
+  }
 
   @Test
   void testGetEventByEventIdFromLocalCache() {

@@ -52,10 +52,10 @@ public class CacheFormulaEventServiceIT {
 
   @Autowired
   public CacheFormulaEventServiceIT(
-    @Value("${superconductor.relay.url}") String relayUri,
-    @NonNull CacheServiceIF cacheServiceIF,
-    @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-    @NonNull @Qualifier("cacheFormulaEventService") CacheFormulaEventService cacheFormulaEventService) throws ParseException {
+     @Value("${superconductor.relay.url}") String relayUri,
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
+     @NonNull @Qualifier("cacheFormulaEventService") CacheFormulaEventService cacheFormulaEventService) throws ParseException {
     this.eventServiceIF = eventServiceIF;
     this.cacheFormulaEventService = cacheFormulaEventService;
     this.relay = new Relay(relayUri);
@@ -104,23 +104,8 @@ public class CacheFormulaEventServiceIT {
 
     FormulaEvent formulaEventDownvoteIdentical = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-1");
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvoteIdentical), relay);
-    dbMinusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventDownvote.getId(), relay).orElseThrow();
+    cacheFormulaEventService.getEvent(formulaEventDownvote.getId(), relay).orElseThrow();
     assertEquals(MINUS_ONE_FORMULA, formulaEventDownvoteIdentical.getContent());
     assertEquals(TEST_BADGE_DEFINITION_VOTE, formulaEventDownvoteIdentical.getBadgeDefinitionGenericEvent().getIdentifierTag().getUuid());
-
-//    FormulaEvent formulaEventUpvoteMisMatch = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, "+2");
-//    assertThrows(NostrException.class, () -> eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvoteMisMatch)));
-//    EventTag eventTag = new EventTag(formulaEventUpvoteMisMatch.getId(), null);
-//    assertEquals(
-//        String.format(INVALID_REMOTE_URL, eventTag, eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl()),
-//        assertThrows(NostrException.class, () -> cacheFormulaEventService.getEvent(eventTag.getIdEvent(), eventTag.getRecommendedRelayUrl()))
-//            .getMessage());
-//
-//    FormulaEvent formulaEventDownvoteMisMatch = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-2");
-//    assertThrows(NostrException.class, () -> eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvoteMisMatch)));
-//    EventTag eventTag2 = new EventTag(formulaEventDownvoteMisMatch.getId(), null);
-//    assertEquals(
-//        String.format(INVALID_REMOTE_URL, eventTag2, eventTag2.getIdEvent(), eventTag2.getRecommendedRelayUrl()),
-//        assertThrows(NostrException.class, () -> cacheFormulaEventService.getEvent(eventTag2.getIdEvent(), eventTag2.getRecommendedRelayUrl())).getMessage());
   }
 }

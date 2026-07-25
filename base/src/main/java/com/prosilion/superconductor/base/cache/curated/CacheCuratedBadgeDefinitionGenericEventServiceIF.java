@@ -5,16 +5,13 @@ import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterializer;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
 public interface CacheCuratedBadgeDefinitionGenericEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeDefinitionGenericEvent, EventTag>, EventMaterializer<CuratedBadgeDefinitionGenericEvent>, CacheCuratedEventServiceIF<CuratedBadgeDefinitionGenericEvent> {
-  Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag);
   Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull EventTag eventTag);
-  Optional<CuratedBadgeDefinitionGenericEvent> getBy(@NonNull AddressTag addressTag);
+  Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull AddressTag addressTag);
   CuratedBadgeDefinitionGenericEvent createFromFetched(@NonNull BadgeDefinitionGenericEvent badgeDefinitionGenericEvent, @NonNull Relay relay);
 }

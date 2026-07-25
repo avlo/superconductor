@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.redis.service.event;
+package com.prosilion.superconductor.redis.service.event.curated;
 
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.user.Identity;

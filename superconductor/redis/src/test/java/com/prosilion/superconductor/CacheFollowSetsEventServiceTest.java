@@ -186,6 +186,27 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
        Kind.BADGE_AWARD_EVENT, recipientTag, reputationDefinitionAddressTag);
   }
 
+  @Test
+  void testGetBadgeAwardReputationEventsResolvesMatchingAwards() {
+    AddressTag reputationDefinitionAddressTag =
+       badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag();
+    PubKeyTag recipientTag = new PubKeyTag(event.getAwardRecipientPublicKey());
+    BadgeAwardReputationEvent badgeAwardReputationEvent = Mockito.mock(BadgeAwardReputationEvent.class);
+    doReturn(List.of(event.getGenericEventRecord()))
+       .when(cacheKindAddressTagServiceIF)
+       .getByDirect(Kind.BADGE_AWARD_EVENT, recipientTag, reputationDefinitionAddressTag);
+    doReturn(Optional.of(badgeAwardReputationEvent))
+       .when(cacheBadgeAwardReputationEventServiceIF)
+       .getEvent(eventId, relay);
+    CacheFollowSetsEventService cacheFollowSetsEventService = createService();
+
+    List<BadgeAwardReputationEvent> actual =
+       cacheFollowSetsEventService.getBadgeAwardReputationEvents(event);
+
+    assertEquals(List.of(badgeAwardReputationEvent), actual);
+    verify(cacheBadgeAwardReputationEventServiceIF, Mockito.times(1)).getEvent(eventId, relay);
+  }
+
   @SneakyThrows
   @Override
   FollowSetsEvent createEvent() {

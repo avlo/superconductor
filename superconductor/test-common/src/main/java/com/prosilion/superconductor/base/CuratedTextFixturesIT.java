@@ -7,11 +7,13 @@ import lombok.NonNull;
 public class CuratedTextFixturesIT {
   public static final String REPUTATION = "TEST_REPUTATION";
   public static final String AWARD_UNIT_UPVOTE = "TEST_UNIT_UPVOTE";
+  public static final String AWARD_UNIT_DOWNVOTE = "AWARD_UNIT_DOWNVOTE";
   public static final String FORMULA_UNIT_UPVOTE = "FORMULA_UNIT_UPVOTE";
   public static final String FORMULA_UNIT_DOWNVOTE = "FORMULA_UNIT_DOWNVOTE";
   public static final String PLUS_ONE_FORMULA = "+1";
   protected final IdentifierTag reputationIdentifierTag = new IdentifierTag(REPUTATION);
   protected final IdentifierTag upvoteIdentifierTag = new IdentifierTag(AWARD_UNIT_UPVOTE);
+  protected final IdentifierTag downvoteIdentifierTag = new IdentifierTag(AWARD_UNIT_DOWNVOTE);
   protected final IdentifierTag formulaUpvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_UPVOTE);
   protected final Identity aImgIdentity;
   protected final Identity submitter =

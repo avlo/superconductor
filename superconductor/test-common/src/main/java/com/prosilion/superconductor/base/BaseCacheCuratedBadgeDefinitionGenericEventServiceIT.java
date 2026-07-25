@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
@@ -11,7 +10,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionGenericEventServiceIF;
-import java.time.Duration;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -27,17 +25,15 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
   private final Relay relay;
 
-  Duration requestTimeoutDuration;
-  CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent;
+  private final CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent;
+  private final BadgeDefinitionGenericEvent downvoteDefinitionEvent;
 
   public BaseCacheCuratedBadgeDefinitionGenericEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
-     Duration requestTimeoutDuration) throws ParseException {
+     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF) {
     super(superconductorInstanceIdentity);
-    this.requestTimeoutDuration = requestTimeoutDuration;
     this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
     this.relay = new Relay(relayUrl);
 
@@ -51,6 +47,10 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
        relay);
 
     cacheServiceIF.save(curatedBadgeDefinitionGenericEvent);
+
+    this.downvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator, downvoteIdentifierTag, relay);
+    cacheServiceIF.save(downvoteDefinitionEvent);
   }
 
   @Test
@@ -74,6 +74,34 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
        .getByDirect(curatedBadgeDefinitionGenericEvent.getAddressTag());
     assertTrue(byAddressTag.isPresent());
     assertEquals(curatedBadgeDefinitionGenericEvent, byAddressTag.orElseThrow());
+  }
+
+  @Test
+  public void testGetByDirectEventTagFromBackingServiceAfterLocalMiss() {
+    CuratedBadgeDefinitionGenericEvent expected = new CuratedBadgeDefinitionGenericEvent(
+       aImgIdentity,
+       downvoteDefinitionEvent,
+       new ReferenceTag(relay.getUrl()),
+       relay);
+
+    CuratedBadgeDefinitionGenericEvent actual =
+       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(expected.getEventTag()).orElseThrow();
+
+    assertEquals(expected.getEventTag(), actual.getEventTag());
+  }
+
+  @Test
+  public void testGetByDirectAddressTagFromBackingServiceAfterLocalMiss() {
+    CuratedBadgeDefinitionGenericEvent expected = new CuratedBadgeDefinitionGenericEvent(
+       aImgIdentity,
+       this.downvoteDefinitionEvent,
+       new ReferenceTag(relay.getUrl()),
+       relay);
+
+    CuratedBadgeDefinitionGenericEvent actual =
+       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(expected.getAddressTag()).orElseThrow();
+
+    assertEquals(expected.getAddressTag(), actual.getAddressTag());
   }
 
   @Test

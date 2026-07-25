@@ -46,7 +46,6 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
 
-  private final Relay relay;
   private final EventServiceIF eventServiceIF;
 
   private final BadgeSetsEvent badgeSetsUpvoteEvent;
@@ -60,7 +59,6 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
     super(superconductorInstanceIdentity);
     this.eventServiceIF = eventServiceIF;
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
-    this.relay = new Relay(relayUrl);
 
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);

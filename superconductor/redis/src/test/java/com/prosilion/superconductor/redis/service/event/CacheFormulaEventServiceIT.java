@@ -2,13 +2,18 @@ package com.prosilion.superconductor.redis.service.event;
 
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
@@ -21,6 +26,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 @Slf4j
 @EmbeddedRedisStandalone
@@ -58,6 +65,56 @@ public class CacheFormulaEventServiceIT extends BaseIntegrationTestFixtures {
 
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
     cacheServiceIF.save(awardDownvoteDefinitionEvent);
+  }
+
+  @Test
+  void testConstructorRejectsNullDependencies() {
+    CacheReferenceEventTagService cacheReferenceEventTagService =
+       mock(CacheReferenceEventTagService.class);
+    CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF =
+       mock(CacheReferenceAddressTagServiceIF.class);
+    CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF =
+       mock(CacheKindAddressTagServiceIF.class);
+
+    assertThrows(NullPointerException.class, () -> new CacheFormulaEventService(
+       null,
+       cacheReferenceAddressTagServiceIF,
+       cacheKindAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheFormulaEventService(
+       cacheReferenceEventTagService,
+       null,
+       cacheKindAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheFormulaEventService(
+       cacheReferenceEventTagService,
+       cacheReferenceAddressTagServiceIF,
+       null));
+  }
+
+  @Test
+  void testGetEventRejectsNullParameters() {
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getEvent(null, relay));
+    assertThrows(NullPointerException.class, () ->
+       cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), null));
+  }
+
+  @Test
+  void testMaterializeRejectsNullEvent() {
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.materialize((EventIF) null));
+  }
+
+  @Test
+  void testGetByPublicKeyIdentifierTagAndRelayRejectsNullParameters() {
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getBy(
+       null, upvoteIdentifierTag, relay));
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getBy(
+       formulaCreator.getPublicKey(), (IdentifierTag) null, relay));
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getBy(
+       formulaCreator.getPublicKey(), upvoteIdentifierTag, null));
+  }
+
+  @Test
+  void testGetByDirectRejectsNullAddressTag() {
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getByDirect(null));
   }
 
   @Test

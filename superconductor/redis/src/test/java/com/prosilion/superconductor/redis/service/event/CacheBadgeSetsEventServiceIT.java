@@ -5,9 +5,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.BaseBadgeSetsEventServiceIT;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.time.Duration;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +25,7 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
      @NonNull @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheBadgeSetsEventService") CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
-     Duration requestTimeoutDuration) throws ParseException {
-    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, eventServiceIF, cacheBadgeSetsEventServiceIF, requestTimeoutDuration);
+     @NonNull @Qualifier("cacheBadgeSetsEventService") CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) throws ParseException {
+    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, cacheBadgeSetsEventServiceIF);
   }
 }

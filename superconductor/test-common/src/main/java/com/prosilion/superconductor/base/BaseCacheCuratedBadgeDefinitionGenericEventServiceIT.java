@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT extends CuratedTextFixturesIT {
+public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT extends BaseIntegrationTestFixtures {
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
   private final Relay relay;
 

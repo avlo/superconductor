@@ -9,14 +9,12 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import java.util.List;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_DOWNVOTE;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_REPUTATION;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FormulaEventTest {
   public static final Relay relay = new Relay("ws://localhost:5555");
 
-  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
-  public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(TEST_UNIT_DOWNVOTE);
+  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(BaseIntegrationTestFixtures.AWARD_UNIT_UPVOTE);
+  public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(BaseIntegrationTestFixtures.AWARD_UNIT_DOWNVOTE);
 
   public final Identity identity = Identity.generateRandomIdentity();
   public final PublicKey reputationDefinitionCreatorPublicKey = Identity.generateRandomIdentity().getPublicKey();
@@ -103,7 +101,7 @@ public class FormulaEventTest {
   @Test
   void testDifferentContentDto() throws ParseException {
     BadgeDefinitionGenericEvent differentContentDto = new BadgeDefinitionGenericEvent(
-      identity, upvoteIdentifierTag, TEST_UNIT_UPVOTE, relay);
+      identity, upvoteIdentifierTag, BaseIntegrationTestFixtures.AWARD_UNIT_UPVOTE, relay);
 
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, relay, differentContentDto, "+2"));
   }
@@ -116,7 +114,7 @@ public class FormulaEventTest {
         identity,
         reputationDefinitionCreatorPublicKey,
         new IdentifierTag(
-          TEST_UNIT_REPUTATION),
+           BaseIntegrationTestFixtures.TEST_UNIT_REPUTATION),
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
         List.of(
@@ -134,7 +132,7 @@ public class FormulaEventTest {
         identity,
         reputationDefinitionCreatorPublicKey,
         new IdentifierTag(
-          TEST_UNIT_REPUTATION),
+           BaseIntegrationTestFixtures.TEST_UNIT_REPUTATION),
         relay,
         BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
         List.of(

@@ -8,8 +8,9 @@ import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
+import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -25,29 +26,15 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_REPUTATION;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.aImgIdentity;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.formulaCreator;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.recipient;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.repDefnCreator;
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.upvoteDefnCreator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class CacheBadgeAwardReputationEventServiceIT {
-  public static final String PLUS_ONE_FORMULA = "+1";
-
-  public final IdentifierTag reputationIdentifierTag = new IdentifierTag(TEST_UNIT_REPUTATION);
-  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
-
+public class CacheBadgeAwardReputationEventServiceIT extends BaseIntegrationTestFixtures {
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService;
-
-  private final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent;
 
   private final EventServiceIF eventServiceIF;
   private final Relay relay;
@@ -55,22 +42,23 @@ public class CacheBadgeAwardReputationEventServiceIT {
   @Autowired
   public CacheBadgeAwardReputationEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUri,
+     @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
      @NonNull @Qualifier("cacheBadgeAwardReputationEventService") CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService) throws ParseException {
+    super(superconductorInstanceIdentity);
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeAwardReputationEventService = cacheBadgeAwardReputationEventService;
     this.relay = new Relay(relayUri);
 
-    this.badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
+    BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
     cacheServiceIF.save(badgeDefinitionUpvoteEvent);
 
-    IdentifierTag formulaUnitUpvoteIdentifierTag = new IdentifierTag("FORMULA_UNIT_UPVOTE");
     eventServiceIF.processIncomingEvent(
        new EventMessage(
           new FormulaEvent(
              formulaCreator,
-             formulaUnitUpvoteIdentifierTag,
+             upvoteIdentifierTag,
              relay,
              badgeDefinitionUpvoteEvent,
              PLUS_ONE_FORMULA)), relay);
@@ -81,7 +69,7 @@ public class CacheBadgeAwardReputationEventServiceIT {
        reputationIdentifierTag,
        relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       new FormulaEvent(formulaCreator, formulaUnitUpvoteIdentifierTag, relay, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA));
+       new FormulaEvent(formulaCreator, upvoteIdentifierTag, relay, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA));
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), relay);
 

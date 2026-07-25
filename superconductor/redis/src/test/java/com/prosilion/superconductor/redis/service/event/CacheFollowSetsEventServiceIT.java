@@ -7,7 +7,6 @@ import com.prosilion.superconductor.base.cache.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.time.Duration;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,7 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService,
-     Duration requestTimeoutDuration) throws ParseException {
-    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, eventServiceIF, cacheFollowSetsEventService, requestTimeoutDuration);
+     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService) throws ParseException {
+    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, eventServiceIF, cacheFollowSetsEventService);
   }
 }

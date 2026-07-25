@@ -17,8 +17,6 @@ import com.prosilion.nostr.tag.SetsPairedEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.service.event.EventServiceIF;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
@@ -32,65 +30,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseBadgeSetsEventServiceIT {
-  public static final String REPUTATION = "TEST_REPUTATION";
-  public static final String AWARD_UNIT_UPVOTE = "TEST_UNIT_UPVOTE";
-  public static final String FORMULA_UNIT_UPVOTE = "FORMULA_UNIT_UPVOTE";
-  public static final String FORMULA_UNIT_DOWNVOTE = "FORMULA_UNIT_DOWNVOTE";
-
-  public static final String PLUS_ONE_FORMULA = "+1";
-
-  protected final IdentifierTag reputationIdentifierTag = new IdentifierTag(REPUTATION);
-  protected final IdentifierTag upvoteIdentifierTag = new IdentifierTag(AWARD_UNIT_UPVOTE);
-  protected final IdentifierTag formulaUpvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_UPVOTE);
-  protected final IdentifierTag formulaDownvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_DOWNVOTE);
-
-  private final Identity aImgIdentity;
-
-  protected final Identity submitter =
-//     Identity.generateRandomIdentity();
-     Identity.create("aaa4585483196998204846989544737603523651520600328805626488477202");
-
-  protected final Identity upvoteDefnCreator =
-//     Identity.generateRandomIdentity();
-     Identity.create("bbb4585483196998204846989544737603523651520600328805626488477202");
-
-  protected final Identity recipient =
-//     Identity.generateRandomIdentity();
-     Identity.create("ccc4585483196998204846989544737603523651520600328805626488477202");
-
-  protected final Identity formulaCreator =
-//     Identity.generateRandomIdentity();
-     Identity.create("ddd4585483196998204846989544737603523651520600328805626488477202");
-
-  protected final Identity repDefnCreator =
-//     Identity.generateRandomIdentity();
-     Identity.create("eee4585483196998204846989544737603523651520600328805626488477202");
-
+public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFixtures {
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
-  private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent;
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
 
-  private final Relay relay;
-  private final CacheServiceIF cacheServiceIF;
-
-  Duration requestTimeoutDuration;
-
   private final CuratedBadgeAwardGenericEvent curationSetsUpvoteEvent;
-  BadgeSetsEvent badgeSetsUpvoteEvent;
+  private final BadgeSetsEvent badgeSetsUpvoteEvent;
 
   public BaseBadgeSetsEventServiceIT(
      @NonNull @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheBadgeSetsEventService") CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
-     Duration requestTimeoutDuration) throws ParseException {
-    this.cacheServiceIF = cacheServiceIF;
-    this.aImgIdentity = superconductorInstanceIdentity;
-    this.requestTimeoutDuration = requestTimeoutDuration;
+     @NonNull @Qualifier("cacheBadgeSetsEventService") CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) throws ParseException {
+    super(superconductorInstanceIdentity);
     this.cacheBadgeSetsEventServiceIF = cacheBadgeSetsEventServiceIF;
-    this.relay = new Relay(relayUrl);
+    Relay relay = new Relay(relayUrl);
 
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
@@ -108,7 +62,7 @@ public abstract class BaseBadgeSetsEventServiceIT {
        plusOneFormulaEvent);
     cacheServiceIF.save(badgeDefinitionReputationEventPlusOneFormula);
 
-    this.badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,

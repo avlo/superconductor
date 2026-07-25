@@ -9,12 +9,12 @@ import com.prosilion.superconductor.base.cache.curated.CacheCuratedEventServiceI
 import java.util.Optional;
 import lombok.NonNull;
 
-public abstract class CacheCuratedEventService<T extends AddressableEvent> implements CacheCuratedEventServiceIF<T> {
+public abstract class AbstractCacheCuratedEventService<T extends AddressableEvent> implements CacheCuratedEventServiceIF<T> {
   
 //  TODO: should ultimately be private after rxr
   protected final CacheServiceIF cacheServiceIF;
 
-  public CacheCuratedEventService(@NonNull CacheServiceIF cacheServiceIF) {
+  public AbstractCacheCuratedEventService(@NonNull CacheServiceIF cacheServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
   }
 

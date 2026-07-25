@@ -4,11 +4,10 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
+import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.Collection;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,12 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class CacheBadgeDefinitionGenericEventServiceIT {
-  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(TEST_UNIT_UPVOTE);
-
-  public final Identity authorIdentity = Identity.generateRandomIdentity();
-  private final PublicKey reputationRecipientPublicKey = Identity.generateRandomIdentity().getPublicKey();
-
+public class CacheBadgeDefinitionGenericEventServiceIT extends BaseIntegrationTestFixtures {
   private final CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService;
 
   private final Relay relay;
@@ -45,8 +38,10 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
   @Autowired
   public CacheBadgeDefinitionGenericEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUri,
+     @NonNull Identity superconductorInstanceIdentity,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
      @NonNull @Qualifier("cacheBadgeDefinitionGenericEventService") CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
+    super(superconductorInstanceIdentity);
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeDefinitionGenericEventService = cacheBadgeDefinitionGenericEventService;
     this.relay = new Relay(relayUri);
@@ -54,7 +49,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
 
   @Test
   public void testSaveBadgeDefinitionGenericEventContainingEventRelay() {
-    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(authorIdentity, upvoteIdentifierTag, relay);
+    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
     eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent), relay);
     BadgeDefinitionGenericEvent dbDefinitionGenericEvent = cacheBadgeDefinitionGenericEventService.getEvent(awardUpvoteDefinitionEvent.getId(), relay).orElseThrow();
 
@@ -68,7 +63,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT {
 
   @Test
   public void testSaveBadgeDefinitionGenericEventMissingEventRelay() {
-    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(authorIdentity, upvoteIdentifierTag);
+    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag);
     eventServiceIF.processIncomingEvent(new EventMessage(awardUpvoteDefinitionEvent), relay);
     Optional<BadgeDefinitionGenericEvent> dbDefinitionGenericEvent =
        cacheBadgeDefinitionGenericEventService.getEvent(awardUpvoteDefinitionEvent.getId(), relay);

@@ -3,11 +3,12 @@ package com.prosilion.superconductor.autoconfigure.base.service.event;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -19,7 +20,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheBadgeSetsEventService extends CacheCuratedEventService<BadgeSetsEvent> implements CacheBadgeSetsEventServiceIF {
+public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
@@ -30,7 +31,6 @@ public class CacheBadgeSetsEventService extends CacheCuratedEventService<BadgeSe
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
      @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
-    super(cacheServiceIF);
     this.cacheServiceIF = cacheServiceIF;
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
@@ -57,6 +57,11 @@ public class CacheBadgeSetsEventService extends CacheCuratedEventService<BadgeSe
   }
 
   @Override
+  public Optional<BadgeSetsEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+    return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize);
+  }
+
+  @Override
   public Optional<BadgeSetsEvent> getByDirect(@NonNull AddressTag referencedAbstractEventTag) {
     return materializeFirst(cacheKindAddressTagServiceIF.getByDirect(getKind(), referencedAbstractEventTag));
   }
@@ -79,6 +84,11 @@ public class CacheBadgeSetsEventService extends CacheCuratedEventService<BadgeSe
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
     return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag));
+  }
+
+  @Override
+  public GenericEventRecord save(EventIF event) {
+    return cacheServiceIF.save(event);
   }
 
   @Override

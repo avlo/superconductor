@@ -17,7 +17,7 @@ import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventS
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
-public class CacheCuratedFormulaEventService extends CacheCuratedEventService<CuratedFormulaEvent> implements CacheCuratedFormulaEventServiceIF {
+public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventService<CuratedFormulaEvent> implements CacheCuratedFormulaEventServiceIF {
   private final Identity superconductorInstanceIdentity;
   private final String superconductorRelayUrl;
   private final CacheFormulaEventServiceIF cacheFormulaEventServiceIF;

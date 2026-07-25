@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends CuratedTextFixturesIT {
+public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends BaseIntegrationTestFixtures {
   private final CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
   private final Relay relay;
 

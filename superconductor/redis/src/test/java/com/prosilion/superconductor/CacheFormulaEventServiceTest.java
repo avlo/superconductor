@@ -1,11 +1,13 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
@@ -20,11 +22,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.PLUS_ONE_FORMULA;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.aImgIdentity;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.formulaCreator;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.relay;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteIdentifierTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,10 +38,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<FormulaEvent> {
-  public static final String FORMULA_UNIT_UPVOTE = "FORMULA_UNIT_UPVOTE";
-  public static final IdentifierTag formulaUpvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_UPVOTE);
-  public static final String PLUS_ONE_FORMULA = "+1";
-
   final BadgeDefinitionGenericEvent awardDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(aImgIdentity, upvoteIdentifierTag, PLUS_ONE_FORMULA, relay);
 
   @Mock
@@ -45,6 +46,53 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
   CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
   @Mock
   CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
+
+  @Test
+  void testConstructorRejectsNullDependencies() {
+    assertThrows(NullPointerException.class, () -> new CacheFormulaEventService(
+       null,
+       cacheReferenceAddressTagServiceIF,
+       cacheKindAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheFormulaEventService(
+       cacheReferenceEventTagService,
+       null,
+       cacheKindAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheFormulaEventService(
+       cacheReferenceEventTagService,
+       cacheReferenceAddressTagServiceIF,
+       null));
+  }
+
+  @Test
+  void testGetEventRejectsNullParameters() {
+    CacheFormulaEventService cacheFormulaEventService = createCacheFormulaEventService();
+
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getEvent(null, relay));
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getEvent(eventId, null));
+  }
+
+  @Test
+  void testMaterializeRejectsNullEvent() {
+    assertThrows(NullPointerException.class, () -> createCacheFormulaEventService().materialize((EventIF) null));
+  }
+
+  @Test
+  void testGetByPublicKeyIdentifierTagAndRelayRejectsNullParameters() {
+    CacheFormulaEventService cacheFormulaEventService = createCacheFormulaEventService();
+    PublicKey publicKey = formulaCreator.getPublicKey();
+
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getBy(
+       null, formulaUpvoteIdentifierTag, relay));
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getBy(
+       publicKey, (IdentifierTag) null, relay));
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getBy(
+       publicKey, formulaUpvoteIdentifierTag, null));
+  }
+
+  @Test
+  void testGetByDirectRejectsNullAddressTag() {
+    assertThrows(NullPointerException.class, () -> createCacheFormulaEventService().getByDirect(null));
+  }
 
   @Test
   void testGetEventByEventId() {

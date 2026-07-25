@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
@@ -37,6 +38,7 @@ import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvo
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteIdentifierTag;
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -51,6 +53,83 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
 
   BadgeDefinitionReputationEvent badgeDefinitionReputationEvent;
   CuratedBadgeAwardGenericEvent curatedBadgeAwardEvent;
+
+  @Test
+  void testConstructorRejectsNullDependencies() {
+    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       null,
+       cacheKindAddressTagServiceIF,
+       cacheBadgeDefinitionReputationEventServiceIF,
+       cacheCuratedBadgeAwardEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       cacheServiceIF,
+       null,
+       cacheBadgeDefinitionReputationEventServiceIF,
+       cacheCuratedBadgeAwardEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       cacheServiceIF,
+       cacheKindAddressTagServiceIF,
+       null,
+       cacheCuratedBadgeAwardEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       cacheServiceIF,
+       cacheKindAddressTagServiceIF,
+       cacheBadgeDefinitionReputationEventServiceIF,
+       null));
+  }
+
+  @Test
+  void testMaterializeRejectsNullEvent() {
+    assertThrows(NullPointerException.class, () -> createService().materialize((EventIF) null));
+  }
+
+  @Test
+  void testGetEventRejectsNullParameters() {
+    CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
+
+    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventService.getEvent(null, relay));
+    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventService.getEvent(eventId, null));
+  }
+
+  @Test
+  void testGetByDirectRejectsNullAddressTag() {
+    assertThrows(NullPointerException.class, () -> createService().getByDirect((AddressTag) null));
+  }
+
+  @Test
+  void testGetByPubKeyTagAndAddressTagRejectsNullParameters() {
+    CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
+    AddressTag addressTag = badgeDefinitionReputationEvent.asAddressableEventAddressTag();
+    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
+
+    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventService.getBy(null, addressTag));
+    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventService.getBy(pubKeyTag, (AddressTag) null));
+  }
+
+  @Test
+  void testGetByPubKeyTagRejectsNullPubKeyTag() {
+    assertThrows(NullPointerException.class, () -> createService().getBy((PubKeyTag) null));
+  }
+
+  @Test
+  void testGetByPubKeyTagAndEventTagRejectsNullParameters() {
+    CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
+    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
+    EventTag eventTag = event.getTypeSpecificTags(EventTag.class).getFirst();
+
+    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventService.getBy(null, eventTag));
+    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventService.getBy(pubKeyTag, (EventTag) null));
+  }
+
+  @Test
+  void testGetByPubKeyTagAndIdentifierTagRejectsNullParameters() {
+    CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
+    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
+    IdentifierTag identifierTag = new IdentifierTag("identifier");
+
+    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventService.getBy(null, identifierTag));
+    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventService.getBy(pubKeyTag, (IdentifierTag) null));
+  }
 
   @Test
   void testGetEventByEventId() {

@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.AddressTag;
@@ -40,6 +41,7 @@ import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvo
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteIdentifierTag;
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -55,6 +57,69 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
   CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
 
   BadgeSetsEvent badgeSetsEvent;
+
+  @Test
+  void testConstructorRejectsNullDependencies() {
+    assertThrows(NullPointerException.class, () -> new CacheFollowSetsEventService(
+       null,
+       cacheReferenceEventTagServiceIF,
+       cacheBadgeAwardReputationEventServiceIF,
+       cacheKindAddressTagServiceIF,
+       cacheBadgeSetsEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheFollowSetsEventService(
+       cacheServiceIF,
+       null,
+       cacheBadgeAwardReputationEventServiceIF,
+       cacheKindAddressTagServiceIF,
+       cacheBadgeSetsEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheFollowSetsEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagServiceIF,
+       null,
+       cacheKindAddressTagServiceIF,
+       cacheBadgeSetsEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheFollowSetsEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagServiceIF,
+       cacheBadgeAwardReputationEventServiceIF,
+       null,
+       cacheBadgeSetsEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheFollowSetsEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagServiceIF,
+       cacheBadgeAwardReputationEventServiceIF,
+       cacheKindAddressTagServiceIF,
+       null));
+  }
+
+  @Test
+  void testMaterializeRejectsNullEvent() {
+    assertThrows(NullPointerException.class, () -> createService().materialize((EventIF) null));
+  }
+
+  @Test
+  void testGetEventRejectsNullParameters() {
+    CacheFollowSetsEventService cacheFollowSetsEventService = createService();
+
+    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getEvent(null, relay));
+    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getEvent(eventId, null));
+  }
+
+  @Test
+  void testGetBadgeAwardReputationEventsRejectsNullFollowSetsEvent() {
+    assertThrows(NullPointerException.class, () ->
+       createService().getBadgeAwardReputationEvents(null));
+  }
+
+  @Test
+  void testGetByPubKeyTagRejectsNullPubKeyTag() {
+    assertThrows(NullPointerException.class, () -> createService().getBy((PubKeyTag) null));
+  }
+
+  @Test
+  void testGetByDirectRejectsNullEventTag() {
+    assertThrows(NullPointerException.class, () -> createService().getByDirect(null));
+  }
 
   @Test
   void testGetEventByEventId() {

@@ -21,6 +21,7 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.tag.RemoteA
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import java.util.Map;
 import java.util.Optional;
@@ -93,13 +94,13 @@ public class EventServiceConfig {
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
      @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
      @NonNull CacheFormulaEventService cacheFormulaEventService,
-     @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
+     @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
     return new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
        cacheDereferenceEventTagService,
        cacheDereferenceAddressTagService,
        cacheFormulaEventService,
-       cacheKindAddressTagService);
+       cacheKindAddressTagServiceIF);
   }
 
   @Bean

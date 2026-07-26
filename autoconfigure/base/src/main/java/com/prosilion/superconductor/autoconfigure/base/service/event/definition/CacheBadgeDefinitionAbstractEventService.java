@@ -16,9 +16,7 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServi
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public abstract class CacheBadgeDefinitionAbstractEventService<T extends AddressableEvent> implements CacheBadgeDefinitionAbstractEventServiceIF<T> {
   private final CacheServiceIF cacheServiceIF;
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
@@ -33,7 +31,12 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
     this.cacheReferenceAddressTagServiceIF = cacheReferenceAddressTagServiceIF;
   }
 
-  public abstract Optional<T> materialize(@NonNull EventIF eventIF);
+  @Override
+  public final Optional<T> materialize(@NonNull EventIF eventIF) {
+    return Optional.of(createBadgeDefinitionEvent(eventIF.asGenericEventRecord()));
+  }
+
+  protected abstract T createBadgeDefinitionEvent(@NonNull GenericEventRecord eventRecord);
 
   public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay backupRelay) {
     return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize)

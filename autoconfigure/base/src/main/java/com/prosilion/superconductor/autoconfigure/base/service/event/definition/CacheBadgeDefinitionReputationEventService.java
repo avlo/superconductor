@@ -3,59 +3,51 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.definition
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
 import static com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService.NON_EXISTENT_ADDRESS_TAG;
 
-@Slf4j
 public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceIF {
   private final CacheFormulaEventServiceIF cacheFormulaEventServiceIF;
-  private final CacheKindAddressTagService cacheKindAddressTagService;
+  private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
 
   public CacheBadgeDefinitionReputationEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
      @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF,
-     @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
+     @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
     super(cacheServiceIF, cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
     this.cacheFormulaEventServiceIF = cacheFormulaEventServiceIF;
-    this.cacheKindAddressTagService = cacheKindAddressTagService;
+    this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> materialize(@NonNull EventIF inBadgeDefnRepEvent) {
-
-    GenericEventRecord eventRecord = inBadgeDefnRepEvent.asGenericEventRecord();
+  protected BadgeDefinitionReputationEvent createBadgeDefinitionEvent(@NonNull GenericEventRecord eventRecord) {
     List<FormulaEvent> formulaEvents = getFormulaEvents(eventRecord);
 
-    return
-       Optional.of(
-          new BadgeDefinitionReputationEvent(
-             eventRecord, addressTag ->
-             formulaEvents.stream()
-                .filter(formulaEvent ->
-                   formulaEvent.asAddressableEventAddressTag().equals(addressTag))
-                .findFirst()
-                .orElseThrow(() ->
-                   new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG, eventRecord)))));
+    return new BadgeDefinitionReputationEvent(
+       eventRecord, addressTag ->
+       formulaEvents.stream()
+          .filter(formulaEvent ->
+             formulaEvent.asAddressableEventAddressTag().equals(addressTag))
+          .findFirst()
+          .orElseThrow(() ->
+             new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG, eventRecord))));
   }
 
   private List<FormulaEvent> getFormulaEvents(@NonNull GenericEventRecord genericEventRecord) {
@@ -82,16 +74,11 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
   @Override
   public Optional<BadgeDefinitionReputationEvent> getByDirect(@NonNull AddressTag addressTag) {
-    return
-       cacheKindAddressTagService
-          .getByDirect(
-             Kind.BADGE_DEFINITION_EVENT,
-             addressTag).stream()
-          .filter(genericEventRecord ->
-             genericEventRecord.findFirstTag(ExternalIdentityTag.class).isPresent()).findFirst()
-          .flatMap(genericEventRecord ->
-             getEvent(
-                genericEventRecord.getId(),
-                genericEventRecord.requireFirstTag(RelayTag.class).getRelay()));
+    return cacheKindAddressTagServiceIF
+       .getByDirect(getKind(), addressTag).stream()
+       .filter(genericEventRecord ->
+          genericEventRecord.findFirstTag(ExternalIdentityTag.class).isPresent())
+       .findFirst()
+       .flatMap(this::materialize);
   }
 }

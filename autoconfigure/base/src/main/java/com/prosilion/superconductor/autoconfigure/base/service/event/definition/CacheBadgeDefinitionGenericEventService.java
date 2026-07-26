@@ -1,16 +1,13 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.definition;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
-import java.util.Optional;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class CacheBadgeDefinitionGenericEventService extends 
    CacheBadgeDefinitionAbstractEventService<BadgeDefinitionGenericEvent> implements CacheBadgeDefinitionGenericEventServiceIF {
 
@@ -22,7 +19,7 @@ public class CacheBadgeDefinitionGenericEventService extends
   }
 
   @Override
-  public Optional<BadgeDefinitionGenericEvent> materialize(@NonNull EventIF incomingBadgeDefinitionGenericEvent) {
-    return Optional.of(new BadgeDefinitionGenericEvent(incomingBadgeDefinitionGenericEvent.asGenericEventRecord()));
+  protected BadgeDefinitionGenericEvent createBadgeDefinitionEvent(@NonNull GenericEventRecord eventRecord) {
+    return new BadgeDefinitionGenericEvent(eventRecord);
   }
 }

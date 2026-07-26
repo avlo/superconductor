@@ -36,6 +36,7 @@ import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvo
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -221,7 +222,6 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
     doReturn(List.of(event.getGenericEventRecord()))
        .when(cacheKindAddressTagService)
        .getByDirect(Kind.BADGE_DEFINITION_EVENT, formulaAddressTag);
-    mockLocalGetEventByEventId();
     mockFormulaEvent();
     CacheBadgeDefinitionReputationEventService service = createService();
 

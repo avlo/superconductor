@@ -14,13 +14,14 @@ import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterializer;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF {
+public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF, EventMaterializer<BadgeSetsEvent> {
   private final CacheServiceIF cacheServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
@@ -40,20 +41,21 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   @Override
   public Optional<BadgeSetsEvent> materialize(@NonNull EventIF incomingBadgeSetsEvent) {
     log.debug("materialize(EventIF incomingBadgeSetsEvent):\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
-    return
-       cacheBadgeDefinitionReputationEventServiceIF
-          .getByExpanded(
-             incomingBadgeSetsEvent.requireFirstTag(AddressTag.class))
-          .map(badgeDefinitionReputationEvent ->
-             new BadgeSetsEvent(
-                incomingBadgeSetsEvent.asGenericEventRecord(),
-                badgeDefinitionReputationEvent,
-                incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class).stream()
-                   .map(eventTag -> cacheCuratedBadgeAwardGenericEventServiceIF
-                      .getEvent(eventTag.eventId(), eventTag.requireRelay()))
-                   .flatMap(Optional::stream)
-                   .distinct()
-                   .toList()));
+    Optional<BadgeSetsEvent> badgeSetsEvent = cacheBadgeDefinitionReputationEventServiceIF
+       .getByExpanded(
+          incomingBadgeSetsEvent.requireFirstTag(AddressTag.class))
+       .map(badgeDefinitionReputationEvent ->
+          new BadgeSetsEvent(
+             incomingBadgeSetsEvent.asGenericEventRecord(),
+             badgeDefinitionReputationEvent,
+             incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class).stream()
+                .map(eventTag -> cacheCuratedBadgeAwardGenericEventServiceIF
+                   .getEvent(eventTag.eventId(), eventTag.requireRelay()))
+                .flatMap(Optional::stream)
+                .distinct()
+                .toList()));
+    badgeSetsEvent.map(cacheServiceIF::save);
+    return badgeSetsEvent;
   }
 
   @Override
@@ -84,11 +86,6 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
     return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag));
-  }
-
-  @Override
-  public GenericEventRecord save(EventIF event) {
-    return cacheServiceIF.save(event);
   }
 
   @Override

@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.MethodName.class)
-public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheServiceTestFixture<CuratedBadgeAwardGenericEvent> {
+public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedServiceTestFixture<CuratedBadgeAwardGenericEvent> {
   @Mock
   CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService;
 
@@ -50,49 +50,49 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheServiceT
     CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
-       cacheCuratedBadgeAwardGenericEventService.getEvent(eventId, relay);
+       cacheCuratedBadgeAwardGenericEventService.getEvent(curatedEventId, relay);
 
-    assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(eventId);
-    verify(cacheBadgeAwardGenericEventService, Mockito.times(0)).getEvent(eventId, relay);
+    assertEquals(curatedEventId, actual.orElseThrow().getId());
+    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
+    verify(cacheBadgeAwardGenericEventService, Mockito.times(0)).getEvent(curatedEventId, relay);
   }
 
   @Test
   void testGetEventFromBadgeAwardServiceAfterLocalMiss() {
-    doReturn(Optional.empty()).when(cacheServiceIF).getEventByEventId(eventId);
+    doReturn(Optional.empty()).when(cacheServiceIF).getEventByEventId(curatedEventId);
     doReturn(Optional.of(badgeAwardUpvoteEvent))
        .when(cacheBadgeAwardGenericEventService)
-       .getEvent(eventId, relay);
+       .getEvent(curatedEventId, relay);
     CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
-       cacheCuratedBadgeAwardGenericEventService.getEvent(eventId, relay);
+       cacheCuratedBadgeAwardGenericEventService.getEvent(curatedEventId, relay);
 
     assertTrue(actual.isPresent());
-    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(eventId);
-    verify(cacheBadgeAwardGenericEventService, Mockito.times(1)).getEvent(eventId, relay);
+    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
+    verify(cacheBadgeAwardGenericEventService, Mockito.times(1)).getEvent(curatedEventId, relay);
     verify(cacheServiceIF, Mockito.times(1)).save(actual.orElseThrow());
   }
 
   @Test
   void testGetByDirectFromLocalCache() {
-    EventTag eventTag = event.getEventTag();
-    doReturn(List.of(event.getGenericEventRecord()))
+    EventTag eventTag = curatedEvent.getEventTag();
+    doReturn(List.of(curatedEvent.getGenericEventRecord()))
        .when(cacheServiceIF)
-       .getEventsByKindAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
+       .getFirstEventByKindAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
     CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
        cacheCuratedBadgeAwardGenericEventService.getByDirect(eventTag);
 
-    assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
+    assertEquals(curatedEventId, actual.orElseThrow().getId());
+    verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
     verify(cacheBadgeAwardGenericEventService, Mockito.times(0)).getEvent(eventTag.getEventId(), eventTag.requireRelay());
   }
 
   @Test
   void testGetByDirectFromBadgeAwardServiceAfterLocalMiss() {
-    EventTag eventTag = event.getEventTag();
+    EventTag eventTag = curatedEvent.getEventTag();
     doReturn(List.of()).when(cacheServiceIF).getEventsByKindAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
     doReturn(Optional.of(badgeAwardUpvoteEvent))
        .when(cacheBadgeAwardGenericEventService)
@@ -111,23 +111,23 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheServiceT
 
   @Test
   void testGetByPubKeyTag() {
-    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
-    doReturn(List.of(event.getGenericEventRecord()))
+    PubKeyTag pubKeyTag = new PubKeyTag(curatedEvent.getPublicKey());
+    doReturn(List.of(curatedEvent.getGenericEventRecord()))
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag);
     CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
 
     List<CuratedBadgeAwardGenericEvent> actual = cacheCuratedBadgeAwardGenericEventService.getBy(pubKeyTag);
 
-    assertEquals(eventId, actual.stream().map(CuratedBadgeAwardGenericEvent::getId).findFirst().orElseThrow());
+    assertEquals(curatedEventId, actual.stream().map(CuratedBadgeAwardGenericEvent::getId).findFirst().orElseThrow());
     verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag);
   }
 
   @Test
   void testGetByPubKeyTagAndEventTag() {
-    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
-    EventTag eventTag = event.getEventTag();
-    doReturn(List.of(event.getGenericEventRecord()))
+    PubKeyTag pubKeyTag = new PubKeyTag(curatedEvent.getPublicKey());
+    EventTag eventTag = curatedEvent.getEventTag();
+    doReturn(List.of(curatedEvent.getGenericEventRecord()))
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTagAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag, eventTag);
     CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
@@ -135,15 +135,15 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheServiceT
     Optional<CuratedBadgeAwardGenericEvent> actual =
        cacheCuratedBadgeAwardGenericEventService.getBy(pubKeyTag, eventTag);
 
-    assertEquals(eventId, actual.orElseThrow().getId());
+    assertEquals(curatedEventId, actual.orElseThrow().getId());
     verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndEventTag(
        Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag, eventTag);
   }
 
   @Test
   void testGetByPubKeyTagAndIdentifierTagReturnsEmptyList() {
-    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
-    IdentifierTag identifierTag = new IdentifierTag(String.valueOf(event.getAddressTag().hashCode()));
+    PubKeyTag pubKeyTag = new PubKeyTag(curatedEvent.getPublicKey());
+    IdentifierTag identifierTag = new IdentifierTag(String.valueOf(curatedEvent.getAddressTag().hashCode()));
     doReturn(List.of())
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTagAndIdentifierTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag, identifierTag);
@@ -159,8 +159,8 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheServiceT
 
   @Test
   void testGetByPubKeyTagAndAddressTagReturnsEmptyOptional() {
-    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
-    AddressTag addressTag = event.getAddressTag();
+    PubKeyTag pubKeyTag = new PubKeyTag(curatedEvent.getPublicKey());
+    AddressTag addressTag = curatedEvent.getAddressTag();
     doReturn(List.of())
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTagAndAddressTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag, addressTag);

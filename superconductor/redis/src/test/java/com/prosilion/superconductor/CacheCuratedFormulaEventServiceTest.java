@@ -30,7 +30,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CacheCuratedFormulaEventServiceTest extends CacheServiceTestFixture<CuratedFormulaEvent> {
+public class CacheCuratedFormulaEventServiceTest extends CacheCuratedServiceTestFixture<CuratedFormulaEvent> {
   private static final String FORMULA_UNIT_UPVOTE = "FORMULA_UNIT_UPVOTE";
   private static final IdentifierTag IDENTIFIER_TAG_FORMULA_UNIT_UPVOTE = new IdentifierTag(FORMULA_UNIT_UPVOTE);
   private static final String PLUS_ONE_FORMULA = "+1";
@@ -45,31 +45,31 @@ public class CacheCuratedFormulaEventServiceTest extends CacheServiceTestFixture
     mockLocalGetEventByEventId();
     CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
 
-    Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventService.getEvent(eventId, relay);
+    Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventService.getEvent(curatedEventId, relay);
 
-    assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(eventId);
-    verify(cacheFormulaEventService, Mockito.times(0)).getEvent(eventId, relay);
+    assertEquals(curatedEventId, actual.orElseThrow().getId());
+    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
+    verify(cacheFormulaEventService, Mockito.times(0)).getEvent(curatedEventId, relay);
   }
 
   @Test
   void testGetEventFromFormulaServiceAfterLocalMiss() {
-    doReturn(Optional.empty()).when(cacheServiceIF).getEventByEventId(eventId);
-    doReturn(Optional.of(formulaEvent)).when(cacheFormulaEventService).getEvent(eventId, relay);
+    doReturn(Optional.empty()).when(cacheServiceIF).getEventByEventId(curatedEventId);
+    doReturn(Optional.of(formulaEvent)).when(cacheFormulaEventService).getEvent(curatedEventId, relay);
     CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
 
-    Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventService.getEvent(eventId, relay);
+    Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventService.getEvent(curatedEventId, relay);
 
     assertTrue(actual.isPresent());
-    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(eventId);
-    verify(cacheFormulaEventService, Mockito.times(1)).getEvent(eventId, relay);
+    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
+    verify(cacheFormulaEventService, Mockito.times(1)).getEvent(curatedEventId, relay);
   }
 
   @Test
   void testGetByPublicKeyAndIdentifierTagFromLocalCache() {
     IdentifierTag identifierTag = IDENTIFIER_TAG_FORMULA_UNIT_UPVOTE;
-    PubKeyTag publicKeyTag = new PubKeyTag(event.getPublicKey());
-    doReturn(List.of(event.getGenericEventRecord()))
+    PubKeyTag publicKeyTag = new PubKeyTag(curatedEvent.getPublicKey());
+    doReturn(List.of(curatedEvent.getGenericEventRecord()))
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTagAndIdentifierTag(
           Kind.CURATION_SETS_FORMULA_EVENT, publicKeyTag, identifierTag);
@@ -78,22 +78,22 @@ public class CacheCuratedFormulaEventServiceTest extends CacheServiceTestFixture
     Optional<CuratedFormulaEvent> actual =
        cacheCuratedFormulaEventService.getBy(publicKeyTag, identifierTag, relay);
 
-    assertEquals(eventId, actual.orElseThrow().getId());
+    assertEquals(curatedEventId, actual.orElseThrow().getId());
     verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
        Kind.CURATION_SETS_FORMULA_EVENT, publicKeyTag, identifierTag);
     verify(cacheFormulaEventService, Mockito.times(0))
-       .getBy(event.getPublicKey(), identifierTag, relay);
+       .getBy(curatedEvent.getPublicKey(), identifierTag, relay);
   }
 
   @Test
   void testGetByPublicKeyAndIdentifierTagFromFormulaServiceAfterLocalMiss() {
     IdentifierTag identifierTag = IDENTIFIER_TAG_FORMULA_UNIT_UPVOTE;
-    PubKeyTag publicKeyTag = new PubKeyTag(event.getPublicKey());
+    PubKeyTag publicKeyTag = new PubKeyTag(curatedEvent.getPublicKey());
     doReturn(List.of()).when(cacheServiceIF).getEventsByKindAndPubKeyTagAndIdentifierTag(
        Kind.CURATION_SETS_FORMULA_EVENT, publicKeyTag, identifierTag);
     doReturn(Optional.of(formulaEvent))
        .when(cacheFormulaEventService)
-       .getBy(event.getPublicKey(), identifierTag, relay);
+       .getBy(curatedEvent.getPublicKey(), identifierTag, relay);
     CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
 
     Optional<CuratedFormulaEvent> actual =
@@ -103,20 +103,20 @@ public class CacheCuratedFormulaEventServiceTest extends CacheServiceTestFixture
     verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
        Kind.CURATION_SETS_FORMULA_EVENT, publicKeyTag, identifierTag);
     verify(cacheFormulaEventService, Mockito.times(1))
-       .getBy(event.getPublicKey(), identifierTag, relay);
+       .getBy(curatedEvent.getPublicKey(), identifierTag, relay);
   }
 
   @Test
   void testGetByDirectFromLocalCache() {
-    AddressTag addressTag = event.getAddressTag();
-    doReturn(List.of(event.getGenericEventRecord()))
+    AddressTag addressTag = curatedEvent.getAddressTag();
+    doReturn(List.of(curatedEvent.getGenericEventRecord()))
        .when(cacheServiceIF)
        .getEventsByKindAndAddressTag(Kind.CURATION_SETS_FORMULA_EVENT, addressTag);
     CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
 
     Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventService.getByDirect(addressTag);
 
-    assertEquals(eventId, actual.orElseThrow().getId());
+    assertEquals(curatedEventId, actual.orElseThrow().getId());
     verify(cacheServiceIF, Mockito.times(1))
        .getEventsByKindAndAddressTag(Kind.CURATION_SETS_FORMULA_EVENT, addressTag);
     verify(cacheFormulaEventService, Mockito.times(0)).getByDirect(addressTag);
@@ -124,7 +124,7 @@ public class CacheCuratedFormulaEventServiceTest extends CacheServiceTestFixture
 
   @Test
   void testGetByDirectFromFormulaServiceAfterLocalMiss() {
-    AddressTag addressTag = event.getAddressTag();
+    AddressTag addressTag = curatedEvent.getAddressTag();
     doReturn(List.of()).when(cacheServiceIF)
        .getEventsByKindAndAddressTag(Kind.CURATION_SETS_FORMULA_EVENT, addressTag);
     doReturn(Optional.of(formulaEvent)).when(cacheFormulaEventService).getByDirect(addressTag);

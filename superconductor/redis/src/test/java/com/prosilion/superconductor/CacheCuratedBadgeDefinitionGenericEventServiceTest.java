@@ -10,7 +10,6 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +26,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheServiceTestFixture<CuratedBadgeDefinitionGenericEvent> {
+public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheCuratedServiceTestFixture<CuratedBadgeDefinitionGenericEvent> {
   @Mock
   CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService;
 
@@ -40,34 +39,17 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheSer
        createService();
 
     Optional<CuratedBadgeDefinitionGenericEvent> actual =
-       cacheCuratedBadgeDefinitionGenericEventService.getEvent(eventId, relay);
+       cacheCuratedBadgeDefinitionGenericEventService.getEvent(curatedEventId, relay);
 
-    assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(eventId);
-    verify(cacheBadgeDefinitionGenericEventService, Mockito.times(0)).getEvent(eventId, relay);
-  }
-
-  @Test
-  void testGetEventFromBadgeDefinitionServiceAfterLocalMiss() {
-    doReturn(Optional.empty()).when(cacheServiceIF).getEventByEventId(eventId);
-    doReturn(Optional.of(badgeDefinitionGenericEvent))
-       .when(cacheBadgeDefinitionGenericEventService)
-       .getEvent(eventId, event.getRelay().orElseThrow());
-
-    CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService = createService();
-
-    Optional<CuratedBadgeDefinitionGenericEvent> actual =
-       cacheCuratedBadgeDefinitionGenericEventService.getEvent(eventId, event.getRelay().orElseThrow());
-
-    assertEquals(event.getEventTag(), actual.map(AbstractSetsEvent::getEventTag).orElseThrow());
-    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(eventId);
-    verify(cacheBadgeDefinitionGenericEventService, Mockito.times(1)).getEvent(eventId, relay);
+    assertEquals(curatedEventId, actual.orElseThrow().getId());
+    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
+    verify(cacheBadgeDefinitionGenericEventService, Mockito.times(0)).getEvent(curatedEventId, relay);
   }
 
   @Test
   void testGetByDirectFromLocalCache() {
-    EventTag eventTag = event.getEventTag();
-    doReturn(Optional.of(event.asGenericEventRecord()))
+    EventTag eventTag = curatedEvent.getEventTag();
+    doReturn(Optional.of(curatedEvent.asGenericEventRecord()))
        .when(cacheServiceIF)
        .getFirstEventByKindAndEventTag(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT, eventTag);
 
@@ -76,15 +58,32 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheSer
     Optional<CuratedBadgeDefinitionGenericEvent> actual =
        cacheCuratedBadgeDefinitionGenericEventService.getByDirect(eventTag);
 
-    assertEquals(eventId, actual.orElseThrow().getId());
+    assertEquals(curatedEventId, actual.orElseThrow().getId());
     assertEquals(eventTag, actual.map(AbstractSetsEvent::getEventTag).orElseThrow());
     verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndEventTag(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT, eventTag);
-    verify(cacheBadgeDefinitionGenericEventService, Mockito.times(0)).getEvent(eventId, relay);
+    verify(cacheBadgeDefinitionGenericEventService, Mockito.times(0)).getEvent(curatedEventId, relay);
   }
 
   @Test
-  void testGetByDirectFromBadgeDefinitionServiceAfterLocalMiss() {
-    EventTag eventTag = event.getEventTag();
+  void testGetEventAfterLocalMiss() {
+    doReturn(Optional.empty()).when(cacheServiceIF).getEventByEventId(curatedEventId);
+    doReturn(Optional.of(badgeDefinitionGenericEvent))
+       .when(cacheBadgeDefinitionGenericEventService)
+       .getEvent(curatedEventId, curatedEvent.getRelay().orElseThrow());
+
+    CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService = createService();
+
+    Optional<CuratedBadgeDefinitionGenericEvent> actual =
+       cacheCuratedBadgeDefinitionGenericEventService.getEvent(curatedEventId, curatedEvent.getRelay().orElseThrow());
+
+    assertEquals(curatedEvent.getEventTag(), actual.map(AbstractSetsEvent::getEventTag).orElseThrow());
+    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
+    verify(cacheBadgeDefinitionGenericEventService, Mockito.times(1)).getEvent(curatedEventId, relay);
+  }
+
+  @Test
+  void testGetByDirectEventTagAfterLocalMiss() {
+    EventTag eventTag = curatedEvent.getEventTag();
     doReturn(Optional.empty()).when(cacheServiceIF).getFirstEventByKindAndEventTag(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT, eventTag);
     doReturn(Optional.of(badgeDefinitionGenericEvent))
        .when(cacheBadgeDefinitionGenericEventService)
@@ -101,8 +100,8 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheSer
   }
 
   @Test
-  void testGetByAddressTagFromBadgeDefinitionServiceAfterLocalMiss() {
-    AddressTag addressTag = event.getAddressTag();
+  void testGetByAddressTagAfterLocalMiss() {
+    AddressTag addressTag = curatedEvent.getAddressTag();
     doReturn(Optional.empty()).when(cacheServiceIF).getFirstEventByKindAndAddressTag(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT, addressTag);
     doReturn(Optional.of(badgeDefinitionGenericEvent))
        .when(cacheBadgeDefinitionGenericEventService)
@@ -120,12 +119,12 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheSer
 
   @Test
   void testGetByAddressTagReturnsEmptyOptionalWhenNotFoundLocallyOrRemotely() {
-    AddressTag addressTag = event.getAddressTag();
+    AddressTag addressTag = curatedEvent.getAddressTag();
     doReturn(Optional.empty()).when(cacheServiceIF).getFirstEventByKindAndAddressTag(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT, addressTag);
     doReturn(Optional.empty())
        .when(cacheBadgeDefinitionGenericEventService)
        .getByExpanded(addressTag);
-    
+
     CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService = createService();
 
     Optional<CuratedBadgeDefinitionGenericEvent> actual = cacheCuratedBadgeDefinitionGenericEventService.getByDirect(addressTag);

@@ -18,6 +18,9 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKi
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.RemoteEventQueryServiceIF;
@@ -136,12 +139,12 @@ public class EventServiceConfig {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService) {
+     @NonNull CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF) {
     return new CacheCuratedBadgeAwardGenericEventService(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
        cacheServiceIF,
-       cacheBadgeAwardGenericEventService);
+       cacheBadgeAwardGenericEventServiceIF);
   }
 
   @Bean
@@ -150,12 +153,12 @@ public class EventServiceConfig {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService) {
+     @NonNull CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF) {
     return new CacheCuratedBadgeDefinitionGenericEventService(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
        cacheServiceIF,
-       cacheBadgeDefinitionGenericEventService);
+       cacheBadgeDefinitionGenericEventServiceIF);
   }
 
   @Bean
@@ -164,12 +167,12 @@ public class EventServiceConfig {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheFormulaEventService cacheFormulaEventService) {
+     @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF) {
     return new CacheCuratedFormulaEventService(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
        cacheServiceIF,
-       cacheFormulaEventService);
+       cacheFormulaEventServiceIF);
   }
 
   @Bean

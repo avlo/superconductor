@@ -2,8 +2,8 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.CuratedFormulaEvent;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -18,82 +18,57 @@ import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
 public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventService<CuratedFormulaEvent, FormulaEvent> implements CacheCuratedFormulaEventServiceIF {
-  private final Identity superconductorInstanceIdentity;
-  private final String superconductorRelayUrl;
   private final CacheFormulaEventServiceIF cacheFormulaEventServiceIF;
 
   public CacheCuratedFormulaEventService(
-     @NonNull Identity superconductorInstanceIdentity,
-     @NonNull String superconductorRelayUrl,
+     @NonNull Identity instanceIdentity,
+     @NonNull String relayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF) {
-    super(cacheServiceIF);
-    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
-    this.superconductorRelayUrl = superconductorRelayUrl;
+    super(instanceIdentity, relayUrl, cacheServiceIF);
     this.cacheFormulaEventServiceIF = cacheFormulaEventServiceIF;
   }
 
   @Override
-  public Optional<CuratedFormulaEvent> materialize(@NonNull EventIF incomingCuratedFormulaEvent) {
-    return Optional.of(new CuratedFormulaEvent(incomingCuratedFormulaEvent.asGenericEventRecord()));
-  }
-
-  @Override
-  public Optional<CuratedFormulaEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return super.getEvent(eventId, relay)
-       .or(() ->
-          cacheFormulaEventServiceIF.getEvent(eventId, relay)
-             .map(formulaEvent -> createFromFetched(
-                formulaEvent, relay))
-             .flatMap(this::materialize));
+  protected CuratedFormulaEvent createFrom(@NonNull GenericEventRecord eventRecord) {
+    return new CuratedFormulaEvent(eventRecord);
   }
 
   @Override
   public Optional<CuratedFormulaEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
-    return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(
-          getKind(),
-          pubKeyTag,
-          identifierTag)
-       .stream().findFirst()
-       .flatMap(this::materialize)
-       .or(() -> cacheFormulaEventServiceIF.getBy(pubKeyTag.getPublicKey(), identifierTag, relay)
-          .map(formulaEvent -> createFromFetched(
-             formulaEvent, relay))
-          .flatMap(this::materialize));
+    return findOrCurate(
+       () -> findFirstByPubKeyAndIdentifier(pubKeyTag, identifierTag),
+       () -> cacheFormulaEventServiceIF.getBy(
+          pubKeyTag.getPublicKey(), identifierTag, relay),
+       ignored -> relay);
   }
 
   @Override
   public Optional<CuratedFormulaEvent> getByDirect(@NonNull EventTag eventTag) {
-    return cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag)
-       .stream().findFirst().flatMap(this::materialize)
-       .or(() -> {
-         Optional<FormulaEvent> formulaEvent1 = cacheFormulaEventServiceIF.getEvent(eventTag.getEventId(), eventTag.requireRelay());
-         return formulaEvent1
-            .map(formulaEvent -> createFromFetched(
-               formulaEvent, formulaEvent.getRelay().orElseThrow()))
-            .flatMap(this::materialize);
-       });
+    return findOrCurate(
+       () -> findFirstByEventTag(eventTag),
+       () -> cacheFormulaEventServiceIF.getEvent(
+          eventTag.getEventId(), eventTag.requireRelay()),
+       formulaEvent -> formulaEvent.getRelay().orElseThrow());
   }
 
   @Override
   public Optional<CuratedFormulaEvent> getByDirect(@NonNull AddressTag addressTag) {
-    return cacheServiceIF.getEventsByKindAndAddressTag(getKind(), addressTag)
-       .stream().findFirst().flatMap(this::materialize)
-       .or(() -> cacheFormulaEventServiceIF.getByDirect(addressTag)
-          .map(formulaEvent -> createFromFetched(
-             formulaEvent, formulaEvent.getRelay().orElseThrow()))
-          .flatMap(this::materialize));
+    return findOrCurate(
+       () -> findFirstByAddressTag(addressTag),
+       () -> cacheFormulaEventServiceIF.getByDirect(addressTag),
+       formulaEvent -> formulaEvent.getRelay().orElseThrow());
   }
 
   @Override
-  public CuratedFormulaEvent createFromFetched(
+  protected CuratedFormulaEvent createFromFetched(
      @NonNull FormulaEvent formulaEvent,
      @NonNull Relay relay) {
     return new CuratedFormulaEvent(
-       superconductorInstanceIdentity,
+       instanceIdentity,
        formulaEvent,
        new ReferenceTag(relay.getUrl()),
-       new Relay(superconductorRelayUrl));
+       relay);
   }
 
   @Override

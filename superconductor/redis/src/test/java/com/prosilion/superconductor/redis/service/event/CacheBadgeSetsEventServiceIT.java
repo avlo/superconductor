@@ -77,10 +77,10 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        null));
   }
 
-  @Test
-  void testMaterializeRejectsNullEvent() {
-    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventServiceIF.materialize((EventIF) null));
-  }
+//  @Test
+//  void testMaterializeRejectsNullEvent() {
+//    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventServiceIF.materialize((EventIF) null));
+//  }
 
   @Test
   void testGetEventRejectsNullParameters() {

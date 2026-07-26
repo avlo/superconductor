@@ -5,29 +5,107 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedEventServiceIF;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import lombok.NonNull;
 
 public abstract class AbstractCacheCuratedEventService<T extends AddressableEvent, U extends BaseEvent> implements CacheCuratedEventServiceIF<T> {
+  private final CacheServiceIF cacheServiceIF;
 
-  //  TODO: should ultimately be private after rxr
-  protected final CacheServiceIF cacheServiceIF;
+  protected final Relay relay;
+  protected final Identity instanceIdentity;
 
-  public AbstractCacheCuratedEventService(@NonNull CacheServiceIF cacheServiceIF) {
+  public AbstractCacheCuratedEventService(
+     @NonNull Identity instanceIdentity,
+     @NonNull String relay,
+     @NonNull CacheServiceIF cacheServiceIF) {
+    this.instanceIdentity = instanceIdentity;
+    this.relay = new Relay(relay);
     this.cacheServiceIF = cacheServiceIF;
   }
 
   @Override
-  public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize);
+  public final Optional<T> materialize(@NonNull EventIF event) {
+    return Optional.of(createFrom(event.asGenericEventRecord()));
   }
 
   @Override
-  final public GenericEventRecord save(EventIF event) {
-    return cacheServiceIF.save(event);
+  public final Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
+    return cacheServiceIF.getEventByEventId(eventId).flatMap(this::materialize);
   }
 
-  abstract T createFromFetched(@NonNull U baseEvent, @NonNull Relay relay);
+  protected final Optional<T> findFirstByEventTag(@NonNull EventTag eventTag) {
+    return cacheServiceIF.getFirstEventByKindAndEventTag(getKind(), eventTag)
+       .flatMap(this::materialize);
+  }
+
+  protected final Optional<T> findFirstByAddressTag(@NonNull AddressTag addressTag) {
+    return cacheServiceIF.getFirstEventByKindAndAddressTag(getKind(), addressTag)
+       .flatMap(this::materialize);
+  }
+
+  protected final Optional<T> findFirstByPubKeyAndIdentifier(
+     @NonNull PubKeyTag pubKeyTag,
+     @NonNull IdentifierTag identifierTag) {
+    return cacheServiceIF
+       .getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag)
+       .stream()
+       .findFirst()
+       .flatMap(this::materialize);
+  }
+
+  protected final List<T> findByPubKey(@NonNull PubKeyTag pubKeyTag) {
+    return materializeList(
+       cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), pubKeyTag)).toList();
+  }
+
+  protected final Optional<T> findFirstByPubKeyAndEvent(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
+    return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(getKind(), pubKeyTag, eventTag));
+  }
+
+  protected final List<T> findByPubKeyAndIdentifier(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
+    return
+       materializeList(
+          cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(
+             getKind(), pubKeyTag, identifierTag)).toList();
+  }
+
+  protected final Optional<T> findFirstByPubKeyAndAddress(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+    return
+       materializeFirst(
+          cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(
+             getKind(), pubKeyTag, addressTag));
+  }
+
+  protected final Optional<T> findOrCurate(
+     @NonNull Supplier<Optional<T>> localLookup,
+     @NonNull Supplier<Optional<U>> sourceLookup,
+     @NonNull Function<U, Relay> referenceRelayResolver) {
+    return localLookup.get()
+       .or(() -> curate(sourceLookup.get(), referenceRelayResolver));
+  }
+
+  private Optional<T> curate(
+     Optional<U> sourceEvent,
+     Function<U, Relay> referenceRelayResolver) {
+    return sourceEvent
+       .map(event -> createFromFetched(event, referenceRelayResolver.apply(event)))
+       .map(event -> {
+         cacheServiceIF.save(event);
+         return event;
+       });
+  }
+
+  protected abstract T createFrom(@NonNull GenericEventRecord eventRecord);
+
+  protected abstract T createFromFetched(@NonNull U baseEvent, @NonNull Relay relay);
 }

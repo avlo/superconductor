@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -13,78 +13,51 @@ import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventS
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 
-@Slf4j
-// TODO: rxr common elements from CacheCuratedBadgeAwardGenericEventService into baseClass
 public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCacheCuratedEventService<CuratedBadgeDefinitionGenericEvent, BadgeDefinitionGenericEvent> implements CacheCuratedBadgeDefinitionGenericEventServiceIF {
-  private final Identity superconductorInstanceIdentity;
-  private final String superconductorRelayUrl;
   private final CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF;
 
   public CacheCuratedBadgeDefinitionGenericEventService(
-     @NonNull Identity superconductorInstanceIdentity,
-     @NonNull String superconductorRelayUrl,
+     @NonNull Identity instanceIdentity,
+     @NonNull String relayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF) {
-    super(cacheServiceIF);
-    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
-    this.superconductorRelayUrl = superconductorRelayUrl;
+    super(instanceIdentity, relayUrl, cacheServiceIF);
     this.cacheBadgeDefinitionGenericEventServiceIF = cacheBadgeDefinitionGenericEventServiceIF;
   }
 
   @Override
-  public Optional<CuratedBadgeDefinitionGenericEvent> materialize(@NonNull EventIF incomingCuratedBadgeDefinitionGenericEvent) {
-    CuratedBadgeDefinitionGenericEvent event =
-       new CuratedBadgeDefinitionGenericEvent(incomingCuratedBadgeDefinitionGenericEvent.asGenericEventRecord());
-
-    super.save(event);
-    return Optional.of(event);
-  }
-
-  @Override
-  public Optional<CuratedBadgeDefinitionGenericEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return super.getEvent(eventId, relay)
-       .or(() -> cacheBadgeDefinitionGenericEventServiceIF.getEvent(eventId, relay)
-          .map(badgeDefinitionGenericEvent -> createFromFetched(
-             badgeDefinitionGenericEvent, relay))
-          .flatMap(this::materialize));
+  protected CuratedBadgeDefinitionGenericEvent createFrom(@NonNull GenericEventRecord eventRecord) {
+    return new CuratedBadgeDefinitionGenericEvent(eventRecord);
   }
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull EventTag eventTag) {
-    return
-       cacheServiceIF.getFirstEventByKindAndEventTag(getKind(), eventTag)
-          .flatMap(this::materialize)
-          .or(() ->
-             cacheBadgeDefinitionGenericEventServiceIF.getEvent(eventTag.eventId(), eventTag.requireRelay())
-                .map(badgeDefinitionGenericEvent -> createFromFetched(
-                   badgeDefinitionGenericEvent, eventTag.requireRelay()))
-                .flatMap(this::materialize));
+    return findOrCurate(
+       () -> findFirstByEventTag(eventTag),
+       () -> cacheBadgeDefinitionGenericEventServiceIF.getEvent(
+          eventTag.eventId(), eventTag.requireRelay()),
+       ignored -> eventTag.requireRelay());
   }
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull AddressTag addressTag) {
-    return
-       cacheServiceIF.getFirstEventByKindAndAddressTag(getKind(), addressTag)
-          .flatMap(this::materialize)
-          .or(() ->
-             cacheBadgeDefinitionGenericEventServiceIF.getByExpanded(addressTag)
-                .map(badgeDefinitionGenericEvent -> createFromFetched(
-                   badgeDefinitionGenericEvent, badgeDefinitionGenericEvent.getRelay().orElseThrow()))
-                .flatMap(this::materialize));
+    return findOrCurate(
+       () -> findFirstByAddressTag(addressTag),
+       () -> cacheBadgeDefinitionGenericEventServiceIF.getByExpanded(addressTag),
+       badgeDefinition -> badgeDefinition.getRelay().orElseThrow());
   }
 
   @Override
-  public CuratedBadgeDefinitionGenericEvent createFromFetched(
+  protected CuratedBadgeDefinitionGenericEvent createFromFetched(
      @NonNull BadgeDefinitionGenericEvent badgeDefinitionGenericEvent,
      @NonNull Relay relay) {
     return new CuratedBadgeDefinitionGenericEvent(
-       superconductorInstanceIdentity,
+       instanceIdentity,
        badgeDefinitionGenericEvent,
        new ReferenceTag(relay.getUrl()),
-       new Relay(superconductorRelayUrl));
+       relay);
   }
 
   @Override

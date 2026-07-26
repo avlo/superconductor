@@ -126,8 +126,8 @@ public class EventServiceConfig {
     return new CacheBadgeAwardReputationEventService(
        cacheServiceIF,
        cacheDereferenceEventTagService,
-       cacheDereferenceKindAddressTagService,
-       cacheBadgeDefinitionReputationEventService);
+       cacheBadgeDefinitionReputationEventService,
+       cacheDereferenceKindAddressTagService);
   }
 
   @Bean

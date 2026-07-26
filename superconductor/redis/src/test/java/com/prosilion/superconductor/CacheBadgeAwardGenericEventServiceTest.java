@@ -4,7 +4,9 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
@@ -156,6 +158,24 @@ public class CacheBadgeAwardGenericEventServiceTest
        service.getByDirect(addressTag);
 
     assertEquals(Optional.empty(), actual);
+  }
+
+  @Test
+  void testGetByDirectIgnoresReputationBadgeAward() {
+    AddressTag addressTag = badgeDefinitionGenericEvent.asAddressableEventAddressTag();
+    GenericEventRecord reputationAward = Mockito.mock(GenericEventRecord.class);
+    doReturn(Optional.of(Mockito.mock(ExternalIdentityTag.class)))
+       .when(reputationAward)
+       .findFirstTag(ExternalIdentityTag.class);
+    doReturn(List.of(reputationAward, event.getGenericEventRecord()))
+       .when(cacheKindAddressTagServiceIF)
+       .getByDirect(Kind.BADGE_AWARD_EVENT, addressTag);
+    mockBadgeDefinition();
+
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actual =
+       createService().getByDirect(addressTag);
+
+    assertEquals(eventId, actual.orElseThrow().getId());
   }
 
   @Test

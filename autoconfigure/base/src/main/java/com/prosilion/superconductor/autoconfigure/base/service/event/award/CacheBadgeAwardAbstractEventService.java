@@ -10,28 +10,30 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardAbstractEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionAbstractEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public abstract class CacheBadgeAwardAbstractEventService<
    S extends AddressableEvent,
-   T extends BadgeAwardAbstractEvent<S>> implements CacheBadgeAwardAbstractEventServiceIF<S, T, AddressTag> {
+   T extends BadgeAwardAbstractEvent<S>> implements CacheBadgeAwardAbstractEventServiceIF<S, T> {
 
   private final CacheServiceIF cacheServiceIF;
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   private final CacheBadgeDefinitionAbstractEventServiceIF<S> cacheBadgeDefinitionAbstractEventService;
+  private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
 
   public CacheBadgeAwardAbstractEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
-     @NonNull CacheBadgeDefinitionAbstractEventServiceIF<S> cacheBadgeDefinitionAbstractEventService) {
+     @NonNull CacheBadgeDefinitionAbstractEventServiceIF<S> cacheBadgeDefinitionAbstractEventService,
+     @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
     this.cacheBadgeDefinitionAbstractEventService = cacheBadgeDefinitionAbstractEventService;
+    this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
   }
 
   public Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay) {
@@ -56,6 +58,17 @@ public abstract class CacheBadgeAwardAbstractEventService<
   public Kind getKind() {
     return Kind.BADGE_AWARD_EVENT;
   }
+
+  @Override
+  public final Optional<T> getByDirect(@NonNull AddressTag addressTag) {
+    return cacheKindAddressTagServiceIF
+       .getByDirect(getKind(), addressTag).stream()
+       .filter(this::supports)
+       .findFirst()
+       .flatMap(this::materialize);
+  }
+
+  protected abstract boolean supports(@NonNull GenericEventRecord eventRecord);
 
   protected abstract T createBadgeAwardEvent(
      @NonNull GenericEventRecord eventRecord,

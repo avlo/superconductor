@@ -56,23 +56,23 @@ public class CacheBadgeAwardReputationEventServiceTest
     assertThrows(NullPointerException.class, () -> new CacheBadgeAwardReputationEventService(
        null,
        cacheReferenceEventTagServiceIF,
-       cacheKindAddressTagServiceIF,
-       cacheBadgeDefinitionReputationEventServiceIF));
+       cacheBadgeDefinitionReputationEventServiceIF,
+       cacheKindAddressTagServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeAwardReputationEventService(
        cacheServiceIF,
        null,
-       cacheKindAddressTagServiceIF,
-       cacheBadgeDefinitionReputationEventServiceIF));
+       cacheBadgeDefinitionReputationEventServiceIF,
+       cacheKindAddressTagServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeAwardReputationEventService(
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
-       null,
-       cacheBadgeDefinitionReputationEventServiceIF));
-    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardReputationEventService(
-       cacheServiceIF,
-       cacheReferenceEventTagServiceIF,
-       cacheKindAddressTagServiceIF,
+       cacheBadgeDefinitionReputationEventServiceIF,
        null));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardReputationEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagServiceIF,
+       null,
+       cacheKindAddressTagServiceIF));
   }
 
   @Test
@@ -237,8 +237,8 @@ public class CacheBadgeAwardReputationEventServiceTest
     return new CacheBadgeAwardReputationEventService(
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
-       cacheKindAddressTagServiceIF,
-       cacheBadgeDefinitionReputationEventServiceIF);
+       cacheBadgeDefinitionReputationEventServiceIF,
+       cacheKindAddressTagServiceIF);
   }
 
   private void mockBadgeDefinition() {

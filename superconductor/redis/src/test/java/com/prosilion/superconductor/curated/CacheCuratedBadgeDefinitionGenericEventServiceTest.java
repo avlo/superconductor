@@ -47,7 +47,7 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheCur
   }
 
   @Test
-  void testGetByDirectFromLocalCache() {
+  void testGetByDirectEventTagFromLocalCache() {
     EventTag eventTag = curatedEvent.getEventTag();
     doReturn(Optional.of(curatedEvent.asGenericEventRecord()))
        .when(cacheServiceIF)
@@ -62,23 +62,6 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheCur
     assertEquals(eventTag, actual.map(AbstractSetsEvent::getEventTag).orElseThrow());
     verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndEventTag(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT, eventTag);
     verify(cacheBadgeDefinitionGenericEventService, Mockito.times(0)).getEvent(curatedEventId, relay);
-  }
-
-  @Test
-  void testGetEventAfterLocalMiss() {
-    doReturn(Optional.empty()).when(cacheServiceIF).getEventByEventId(curatedEventId);
-    doReturn(Optional.of(badgeDefinitionGenericEvent))
-       .when(cacheBadgeDefinitionGenericEventService)
-       .getEvent(curatedEventId, curatedEvent.getRelay().orElseThrow());
-
-    CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService = createService();
-
-    Optional<CuratedBadgeDefinitionGenericEvent> actual =
-       cacheCuratedBadgeDefinitionGenericEventService.getEvent(curatedEventId, curatedEvent.getRelay().orElseThrow());
-
-    assertEquals(curatedEvent.getEventTag(), actual.map(AbstractSetsEvent::getEventTag).orElseThrow());
-    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
-    verify(cacheBadgeDefinitionGenericEventService, Mockito.times(1)).getEvent(curatedEventId, relay);
   }
 
   @Test

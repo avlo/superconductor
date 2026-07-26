@@ -44,13 +44,11 @@ public abstract class AbstractCacheCuratedEventService<T extends AddressableEven
   }
 
   protected final Optional<T> findFirstByEventTag(@NonNull EventTag eventTag) {
-    return cacheServiceIF.getFirstEventByKindAndEventTag(getKind(), eventTag)
-       .flatMap(this::materialize);
+    return cacheServiceIF.getFirstEventByKindAndEventTag(getKind(), eventTag).flatMap(this::materialize);
   }
 
   protected final Optional<T> findFirstByAddressTag(@NonNull AddressTag addressTag) {
-    return cacheServiceIF.getFirstEventByKindAndAddressTag(getKind(), addressTag)
-       .flatMap(this::materialize);
+    return cacheServiceIF.getFirstEventByKindAndAddressTag(getKind(), addressTag).flatMap(this::materialize);
   }
 
   protected final Optional<T> findFirstByPubKeyAndIdentifier(

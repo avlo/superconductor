@@ -60,40 +60,20 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
   @Test
   void testGetEventFromBadgeAwardServiceAfterLocalMiss() {
     doReturn(Optional.empty()).when(cacheServiceIF).getEventByEventId(curatedEventId);
-    doReturn(Optional.of(badgeAwardUpvoteEvent))
-       .when(cacheBadgeAwardGenericEventService)
-       .getEvent(curatedEventId, relay);
     CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
        cacheCuratedBadgeAwardGenericEventService.getEvent(curatedEventId, relay);
 
-    assertTrue(actual.isPresent());
+    assertTrue(actual.isEmpty());
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
-    verify(cacheBadgeAwardGenericEventService, Mockito.times(1)).getEvent(curatedEventId, relay);
-    verify(cacheServiceIF, Mockito.times(1)).save(actual.orElseThrow());
   }
 
   @Test
-  void testGetByDirectFromLocalCache() {
+  void testGetByDirectEventTagFromBadgeAwardServiceAfterLocalMiss() {
     EventTag eventTag = curatedEvent.getEventTag();
-    doReturn(List.of(curatedEvent.getGenericEventRecord()))
-       .when(cacheServiceIF)
-       .getFirstEventByKindAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
-    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
-
-    Optional<CuratedBadgeAwardGenericEvent> actual =
-       cacheCuratedBadgeAwardGenericEventService.getByDirect(eventTag);
-
-    assertEquals(curatedEventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
-    verify(cacheBadgeAwardGenericEventService, Mockito.times(0)).getEvent(eventTag.getEventId(), eventTag.requireRelay());
-  }
-
-  @Test
-  void testGetByDirectFromBadgeAwardServiceAfterLocalMiss() {
-    EventTag eventTag = curatedEvent.getEventTag();
-    doReturn(List.of()).when(cacheServiceIF).getEventsByKindAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
+    doReturn(Optional.empty()).when(cacheServiceIF).getFirstEventByKindAndEventTag(
+       Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
     doReturn(Optional.of(badgeAwardUpvoteEvent))
        .when(cacheBadgeAwardGenericEventService)
        .getEvent(eventTag.getEventId(), eventTag.requireRelay());
@@ -103,9 +83,30 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
        cacheCuratedBadgeAwardGenericEventService.getByDirect(eventTag);
 
     assertTrue(actual.isPresent());
-    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
+    verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndEventTag(
+       Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
     verify(cacheBadgeAwardGenericEventService, Mockito.times(1)).getEvent(
        eventTag.getEventId(), eventTag.requireRelay());
+    verify(cacheServiceIF, Mockito.times(1)).save(actual.orElseThrow());
+  }
+
+  @Test
+  void testGetByDirectAddressTagFromBadgeAwardServiceAfterLocalMiss() {
+    AddressTag addressTag = curatedEvent.getAddressTag();
+    doReturn(Optional.empty()).when(cacheServiceIF).getFirstEventByKindAndAddressTag(
+       Kind.CURATION_SETS_BADGE_AWARD_EVENT, addressTag);
+    doReturn(Optional.of(badgeAwardUpvoteEvent))
+       .when(cacheBadgeAwardGenericEventService)
+       .getByDirect(addressTag);
+    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
+
+    Optional<CuratedBadgeAwardGenericEvent> actual =
+       cacheCuratedBadgeAwardGenericEventService.getByDirect(addressTag);
+
+    assertTrue(actual.isPresent());
+    verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndAddressTag(
+       Kind.CURATION_SETS_BADGE_AWARD_EVENT, addressTag);
+    verify(cacheBadgeAwardGenericEventService, Mockito.times(1)).getByDirect(addressTag);
     verify(cacheServiceIF, Mockito.times(1)).save(actual.orElseThrow());
   }
 

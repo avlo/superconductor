@@ -15,4 +15,5 @@ public interface CacheCuratedBadgeAwardEventServiceIF extends CacheTagMappedEven
   List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
   Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
   Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
+  Optional<CuratedBadgeAwardGenericEvent> getByDirect(@NonNull AddressTag addressTag);
 }

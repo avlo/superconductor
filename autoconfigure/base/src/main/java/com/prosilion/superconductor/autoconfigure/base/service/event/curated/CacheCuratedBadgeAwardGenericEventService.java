@@ -67,6 +67,14 @@ public class CacheCuratedBadgeAwardGenericEventService extends AbstractCacheCura
   }
 
   @Override
+  public Optional<CuratedBadgeAwardGenericEvent> getByDirect(@NonNull AddressTag addressTag) {
+    return findOrCurate(
+       () -> findFirstByAddressTag(addressTag),
+       () -> cacheBadgeAwardGenericEventServiceIF.getByDirect(addressTag),
+       badgeAward -> badgeAward.getRelay().orElseThrow());
+  }
+
+  @Override
   protected CuratedBadgeAwardGenericEvent createFromFetched(
      @NonNull BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent,
      @NonNull Relay relay) {

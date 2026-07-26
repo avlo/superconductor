@@ -17,11 +17,10 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.definition.
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.tag.RemoteAbstractTagService;
 import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.RemoteEventQueryServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import java.util.Map;
 import java.util.Optional;
@@ -49,24 +48,24 @@ public class EventServiceConfig {
   @ConditionalOnMissingBean
   CacheReferenceAddressTagService cacheDereferenceAddressTagService(
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull RemoteAbstractTagService remoteAbstractTagService) {
-    return new CacheReferenceAddressTagService(cacheServiceIF, remoteAbstractTagService);
+     @NonNull RemoteEventQueryServiceIF remoteEventQueryServiceIF) {
+    return new CacheReferenceAddressTagService(cacheServiceIF, remoteEventQueryServiceIF);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheReferenceEventTagService cacheDereferenceEventTagService(
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull RemoteAbstractTagService remoteAbstractTagService) {
-    return new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService);
+     @NonNull RemoteEventQueryServiceIF remoteEventQueryServiceIF) {
+    return new CacheReferenceEventTagService(cacheServiceIF, remoteEventQueryServiceIF);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheKindAddressTagService cacheKindAddressTagService(
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull RemoteAbstractTagService remoteAbstractTagService) {
-    return new CacheKindAddressTagService(cacheServiceIF, remoteAbstractTagService);
+     @NonNull RemoteEventQueryServiceIF remoteEventQueryServiceIF) {
+    return new CacheKindAddressTagService(cacheServiceIF, remoteEventQueryServiceIF);
   }
 
   @Bean

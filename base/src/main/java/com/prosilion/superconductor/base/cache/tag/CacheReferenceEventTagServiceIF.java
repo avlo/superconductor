@@ -8,7 +8,7 @@ import java.util.Optional;
 import lombok.NonNull;
 
 public interface CacheReferenceEventTagServiceIF extends CacheReferenceAbstractTagServiceIF<EventTag> {
-  List<GenericEventRecord> getExpandedEvents(List<EventTag> t);
+  List<GenericEventRecord> getExpandedEvents(@NonNull List<EventTag> eventTags);
 
   default Optional<GenericEventRecord> getEvent(@NonNull String eventId, @NonNull Relay relay) {
     return getByExpanded(new EventTag(eventId, relay.getUrl()));

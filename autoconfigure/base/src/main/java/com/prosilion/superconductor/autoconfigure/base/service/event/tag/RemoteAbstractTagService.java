@@ -11,163 +11,79 @@ import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.subdivisions.client.RequestSubscriber;
 import com.prosilion.subdivisions.client.virtualthread.VThreadWebSocketClient;
+import com.prosilion.superconductor.base.cache.tag.RemoteEventQueryServiceIF;
+import com.prosilion.superconductor.base.util.RemoteEventQueryException;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class RemoteAbstractTagService {
+public class RemoteAbstractTagService implements RemoteEventQueryServiceIF {
   private static final Duration DEFAULT_WAIT_DURATION = Duration.ofSeconds(10);
   private final Duration waitDuration;
 
   public RemoteAbstractTagService() {
-    this.waitDuration = DEFAULT_WAIT_DURATION;
+    this(DEFAULT_WAIT_DURATION);
   }
 
   public RemoteAbstractTagService(@NonNull Duration waitDuration) {
     this.waitDuration = waitDuration;
   }
 
-  public List<GenericEventRecord> sendRemoteReq(String relayUrl, Filters filters) {
+  @Override
+  public List<GenericEventRecord> sendRemoteReq(
+     @NonNull String relayUrl,
+     @NonNull Filters filters) {
     ReqMessage reqMessage = new ReqMessage(Util.generateRandomHex64String(), filters);
-
-    log.debug("... sendConsolidatorReq() (1 of 3) sending request message to:\nURL: [{}]\nusing subscriberId:\n  [{}]\nand filters:\n{}",
+    log.debug(
+       "Querying relay [{}] with subscriber [{}] and filters:\n{}",
        relayUrl,
        reqMessage.getSubscriptionId(),
        filters.toString(4));
 
-//    TODO: finalize which awaitXXX() variant given below awaitXXX() options
-    List<BaseMessage> eventList = awaitUsingWebSocketClient(reqMessage, relayUrl);
-//    List<BaseMessage> eventList = awaitUsingCompletableFuture(reqMessage, relayUrl);
-
-    log.debug("... sendConsolidatorReq() (2 of 3) retrieved results...");
-    List<GenericEventRecord> events = getGenericEvents(eventList);
-    log.debug("... sendConsolidatorReq() (3 of 3) returning results:\n  {}",
-       events.stream().map(GenericEventRecord::createPrettyPrintJson).map(s -> Strings.concat("SUCCESS:\n  ", s)));
+    List<GenericEventRecord> events = getGenericEvents(
+       awaitUsingWebSocketClient(reqMessage, relayUrl));
+    log.debug("Relay [{}] returned [{}] events", relayUrl, events.size());
     return events;
   }
 
   private List<GenericEventRecord> getGenericEvents(List<BaseMessage> returnedBaseMessages) {
-    List<GenericEventRecord> genericEventRecords = returnedBaseMessages.stream()
+    return returnedBaseMessages.stream()
        .filter(EventMessage.class::isInstance)
        .map(EventMessage.class::cast)
        .map(EventMessage::getEvent)
-       .map(EventIF::asGenericEventRecord).toList();
-    log.debug("getGenericEvents(List<BaseMessage> returnedBaseMessages) returned:\n{}",
-       Util.prettyPrintGenericEventRecords(genericEventRecords));
-    return genericEventRecords;
+       .map(EventIF::asGenericEventRecord)
+       .toList();
   }
 
   private List<BaseMessage> awaitUsingWebSocketClient(ReqMessage reqMessage, String relayUrl) {
-//  new WebSocketClient(relayUrl);
     try {
       VThreadWebSocketClient vThreadWebSocketClient = new VThreadWebSocketClient(relayUrl);
       vThreadWebSocketClient.send(reqMessage);
       RequestSubscriber.await(waitDuration, () -> !vThreadWebSocketClient.getEvents().isEmpty());
-      return vThreadWebSocketClient.getPopulatedEvents().stream().map(msg -> {
-        try {
-          return BaseMessageDecoder.decode(msg);
-        } catch (JsonProcessingException e) {
-          throw new RuntimeException(e);
-        }
-      }).toList();
-    } catch (ExecutionException | InterruptedException | IOException e) {
-      throw new RuntimeException(e);
+      return vThreadWebSocketClient.getPopulatedEvents().stream()
+         .map(this::decodeMessage)
+         .toList();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new RemoteEventQueryException(
+         String.format("Interrupted while querying relay [%s]", relayUrl), e);
+    } catch (ExecutionException | IOException e) {
+      throw new RemoteEventQueryException(
+         String.format("Failed to query relay [%s]", relayUrl), e);
     }
   }
 
-//  private List<BaseMessage> awaitUsingNostrSingleRequestServiceExplicitSubscriber(ReqMessage reqMessage, String relayUrl) {
-//    log.debug("awaitUsingNostrSingleRequestServiceExplicitSubscriber (1of2) new NostrSingleRequestService().send(reqMessage, relayUrl, requestTimeoutDuration (5 seconds))...");
-//
-//    Hooks.onOperatorDebug();
-//
-//    RequestSubscriber<BaseMessage> remoteGenericEventRecordSubscriber = new RequestSubscriber<>(
-//        Duration.ofSeconds(10));
-//
-//    new NostrSingleRequestService().send(
-//        reqMessage,
-//        relayUrl,
-//        remoteGenericEventRecordSubscriber);
-//    log.debug("... remoteGenericEventRecordSubscriber.getAreItemsPopulated()... {}", remoteGenericEventRecordSubscriber.getAreItemsPopulated());
-//    List<BaseMessage> baseMessages = remoteGenericEventRecordSubscriber.getItems();
-//    remoteGenericEventRecordSubscriber.dispose();
-//    log.debug("... remoteGenericEventRecordSubscriber.dispose() ...");
-//
-//    log.debug("awaitUsingNostrSingleRequestService (2of2) ... complete. returned baseMessages (count {}):", baseMessages.size());
-//    baseMessages.forEach(RemoteAbstractTagService::debugPrintBaseMessage);
-//    return baseMessages;
-//  }
-
-//  private List<BaseMessage> awaitUsingNostrSingleRequestServiceImplicitSubscriber(ReqMessage reqMessage, String relayUrl) {
-//    log.debug("awaitUsingNostrSingleRequestService (1of2) new NostrSingleRequestService().send(reqMessage, relayUrl, requestTimeoutDuration)...");
-//    NostrSingleRequestService nostrSingleRequestService = new NostrSingleRequestService();
-//    List<BaseMessage> baseMessages = nostrSingleRequestService.send(reqMessage, relayUrl, Duration.of(10, ChronoUnit.SECONDS));
-//    log.debug("awaitUsingNostrSingleRequestService (2of2) ... complete. returned baseMessages (count {}):", baseMessages.size());
-//    baseMessages.forEach(RemoteAbstractTagService::debugPrintBaseMessage);
-//    return baseMessages;
-//  }
-
-//  private List<BaseMessage> awaitUsingRequestSubscriberFxns(ReqMessage reqMessage, String relayUrl) {
-//    log.debug("awaitUsingRequestSubscriberFxns (0of5) inside await()...");
-//    RequestSubscriber<BaseMessage> subscriber = new RequestSubscriber<>();
-//    NostrSingleRequestService nostrSingleRequestService = new NostrSingleRequestService();
-//    log.debug("awaitUsingRequestSubscriberFxns (1of5) ... calling nostrSingleRequestService.send(reqMessage, relayUrl, subscriber) using ReqMessage...");
-//    debugPrintBaseMessage(reqMessage);
-//    nostrSingleRequestService.send(reqMessage, relayUrl, subscriber);
-//    log.debug("awaitUsingRequestSubscriberFxns (2of5) ... done, calling subscriber.getItems() ...");
-//    List<BaseMessage> baseMessages = subscriber.getItems();
-//    log.debug("awaitUsingRequestSubscriberFxns (3of5) ... done, calling subscriber.dispose() ...");
-//    subscriber.dispose();
-//    log.debug("awaitUsingRequestSubscriberFxns (4of5) ... done, calling manager.closeAllSessions() ...");
-//    log.debug("awaitUsingRequestSubscriberFxns (5of5) ... complete. returned baseMessages (count {}):", baseMessages.size());
-//    baseMessages.forEach(RemoteAbstractTagService::debugPrintBaseMessage);
-//    return baseMessages;
-//  }
-
-//  private List<BaseMessage> awaitUsingCompletableFuture(ReqMessage reqMessage, String relayUrl) {
-//    log.debug("awaitUsingCompletableFuture (0of5) inside awaitRxR()...");
-//    RequestSubscriber<BaseMessage> subscriber = new RequestSubscriber<>();
-//
-//    CompletableFuture<Void> voidCompletableFutureNostrRequestService = CompletableFuture.runAsync(() ->
-//            new NostrSingleRequestService().send(reqMessage, relayUrl, subscriber)
-//        , Executors.newVirtualThreadPerTaskExecutor());
-//    log.debug("awaitUsingCompletableFuture (1of5) voidCompletableFutureNostrRequestService send() checkpoint");
-//
-//    RequestSubscriber.await(
-//        Duration.of(5000, ChronoUnit.MILLIS),
-//        voidCompletableFutureNostrRequestService::isDone);
-//    log.debug("awaitUsingCompletableFuture (2of5) voidCompletableFutureNostrRequestService isDone checkpoint");
-//
-//    CompletableFuture<List<BaseMessage>> getBaseMessagesCompletableFuture = CompletableFuture.supplyAsync(() ->
-//            subscriber.getItems()
-//        , Executors.newVirtualThreadPerTaskExecutor());
-//    log.debug("awaitUsingCompletableFuture (3of5) getBaseMessagesCompletableFuture eventList.set(subscriber.getItems()) checkpoint");
-//
-//    List<BaseMessage> baseMessages = null;
-//    getBaseMessagesCompletableFuture.thenApply(baseMessagesList ->
-//        baseMessages.addAll(baseMessagesList)).join();
-//    log.debug("awaitUsingCompletableFuture (4of5) getBaseMessagesCompletableFuture isDone checkpoint");
-//
-//    subscriber.dispose();
-//    log.debug("awaitUsingCompletableFuture (5of5) returning baseMessages:");
-//    baseMessages.forEach(baseMessage -> log.debug("  " + baseMessage.toString()));
-//    return baseMessages;
-//  }
-
-//  private static void debugPrintBaseMessage(BaseMessage baseMessage) {
-//    String encode;
-//    try {
-//      encode = baseMessage.encode();
-//      log.debug(encode);
-//    } catch (JsonProcessingException e) {
-//      log.debug("printDebug(BaseMessage baseMessage) shit the bed, just print baseMessage");
-//      log.debug(baseMessage.toString());
-//    }
-//  }
+  private BaseMessage decodeMessage(String message) {
+    try {
+      return BaseMessageDecoder.decode(message);
+    } catch (JsonProcessingException e) {
+      throw new RemoteEventQueryException("Failed to decode relay response", e);
+    }
+  }
 }

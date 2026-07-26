@@ -10,7 +10,11 @@ import java.util.Optional;
 import lombok.NonNull;
 
 public interface CacheKindAddressTagServiceIF {
-      List<GenericEventRecord> getByDirect(@NonNull Kind kind, @NonNull AddressTag t);
-      List<GenericEventRecord> getByDirect(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
-  Optional<GenericEventRecord> getBy(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag, String relayUrl);
+  List<GenericEventRecord> getByDirect(@NonNull Kind kind, @NonNull AddressTag addressTag);
+  List<GenericEventRecord> getByDirect(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);
+  Optional<GenericEventRecord> getBy(
+     @NonNull Kind kind,
+     @NonNull PubKeyTag pubKeyTag,
+     @NonNull IdentifierTag identifierTag,
+     @NonNull String relayUrl);
 }

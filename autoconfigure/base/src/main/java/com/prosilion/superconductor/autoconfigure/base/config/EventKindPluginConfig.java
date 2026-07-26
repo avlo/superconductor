@@ -9,6 +9,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
@@ -136,6 +137,7 @@ public class EventKindPluginConfig {
      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
      @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
+     @NonNull CacheCuratedFormulaEventService cacheCuratedFormulaEventService,
      @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
      @NonNull CacheFormulaEventService cacheFormulaEventService) {
@@ -144,6 +146,10 @@ public class EventKindPluginConfig {
     kindFxnMap.put(
        Kind.CURATION_SETS_BADGE_AWARD_EVENT,
        cacheCuratedBadgeAwardGenericEventService::materialize);
+
+    kindFxnMap.put(
+       Kind.CURATION_SETS_FORMULA_EVENT,
+       cacheCuratedFormulaEventService::materialize);
     
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,

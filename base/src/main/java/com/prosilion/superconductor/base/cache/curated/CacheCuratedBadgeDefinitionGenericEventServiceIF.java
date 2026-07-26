@@ -1,17 +1,12 @@
 package com.prosilion.superconductor.base.cache.curated;
 
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
-import com.prosilion.superconductor.base.service.event.plugin.kind.EventMaterializer;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
-public interface CacheCuratedBadgeDefinitionGenericEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeDefinitionGenericEvent, EventTag>, EventMaterializer<CuratedBadgeDefinitionGenericEvent>, CacheCuratedEventServiceIF<CuratedBadgeDefinitionGenericEvent> {
-  Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull EventTag eventTag);
+public interface CacheCuratedBadgeDefinitionGenericEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeDefinitionGenericEvent, EventTag>, CacheCuratedEventServiceIF<CuratedBadgeDefinitionGenericEvent> {
   Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull AddressTag addressTag);
-  CuratedBadgeDefinitionGenericEvent createFromFetched(@NonNull BadgeDefinitionGenericEvent badgeDefinitionGenericEvent, @NonNull Relay relay);
 }

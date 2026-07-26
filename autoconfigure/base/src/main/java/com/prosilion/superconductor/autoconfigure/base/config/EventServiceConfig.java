@@ -11,6 +11,7 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.award.Cache
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeDefinitionGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
@@ -155,6 +156,20 @@ public class EventServiceConfig {
        superconductorRelayUrl,
        cacheServiceIF,
        cacheBadgeDefinitionGenericEventService);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  CacheCuratedFormulaEventService cacheCuratedFormulaEventService(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String superconductorRelayUrl,
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull CacheFormulaEventService cacheFormulaEventService) {
+    return new CacheCuratedFormulaEventService(
+       superconductorInstanceIdentity,
+       superconductorRelayUrl,
+       cacheServiceIF,
+       cacheFormulaEventService);
   }
 
   @Bean

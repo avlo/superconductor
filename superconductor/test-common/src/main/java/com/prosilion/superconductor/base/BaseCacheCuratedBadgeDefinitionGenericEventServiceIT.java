@@ -25,7 +25,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
   private final Relay relay;
 
-  private final CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent;
+  private final CuratedBadgeDefinitionGenericEvent curatedUpvoteDefinitionEvent;
   private final BadgeDefinitionGenericEvent downvoteDefinitionEvent;
 
   public BaseCacheCuratedBadgeDefinitionGenericEventServiceIT(
@@ -37,16 +37,16 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
     this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
     this.relay = new Relay(relayUrl);
 
-    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
+    BadgeDefinitionGenericEvent upvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
 
-    this.curatedBadgeDefinitionGenericEvent = new CuratedBadgeDefinitionGenericEvent(
+    this.curatedUpvoteDefinitionEvent = new CuratedBadgeDefinitionGenericEvent(
        parameterAimgIdentity,
-       awardUpvoteDefinitionEvent,
+       upvoteDefinitionEvent,
        new ReferenceTag(relayUrl),
        relay);
 
-    cacheServiceIF.save(curatedBadgeDefinitionGenericEvent);
+    cacheServiceIF.save(curatedUpvoteDefinitionEvent);
 
     this.downvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, downvoteIdentifierTag, relay);
@@ -56,24 +56,24 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
   @Test
   public void testGetEventByEventIdRelay() {
     Optional<CuratedBadgeDefinitionGenericEvent> byEventIdRelay = cacheCuratedBadgeDefinitionGenericEventServiceIF
-       .getEvent(curatedBadgeDefinitionGenericEvent.getEventId(), curatedBadgeDefinitionGenericEvent.getRelay().orElseThrow());
+       .getEvent(curatedUpvoteDefinitionEvent.getEventId(), curatedUpvoteDefinitionEvent.getRelay().orElseThrow());
     assertTrue(byEventIdRelay.isPresent());
   }
 
   @Test
   public void testGetEventByDirectEventTag() {
     Optional<CuratedBadgeDefinitionGenericEvent> byEventTag = cacheCuratedBadgeDefinitionGenericEventServiceIF
-       .getByDirect(curatedBadgeDefinitionGenericEvent.getEventTag());
+       .getByDirect(curatedUpvoteDefinitionEvent.getEventTag());
     assertTrue(byEventTag.isPresent());
-    assertEquals(curatedBadgeDefinitionGenericEvent, byEventTag.orElseThrow());
+    assertEquals(curatedUpvoteDefinitionEvent, byEventTag.orElseThrow());
   }
 
   @Test
   public void testGetEventByAddressTag() {
     Optional<CuratedBadgeDefinitionGenericEvent> byAddressTag = cacheCuratedBadgeDefinitionGenericEventServiceIF
-       .getByDirect(curatedBadgeDefinitionGenericEvent.getAddressTag());
+       .getByDirect(curatedUpvoteDefinitionEvent.getAddressTag());
     assertTrue(byAddressTag.isPresent());
-    assertEquals(curatedBadgeDefinitionGenericEvent, byAddressTag.orElseThrow());
+    assertEquals(curatedUpvoteDefinitionEvent, byAddressTag.orElseThrow());
   }
 
   @Test

@@ -76,7 +76,7 @@ public class CacheCuratedFormulaEventServiceTest extends CacheServiceTestFixture
     CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
 
     Optional<CuratedFormulaEvent> actual =
-       cacheCuratedFormulaEventService.getBy(event.getPublicKey(), identifierTag, relay);
+       cacheCuratedFormulaEventService.getBy(publicKeyTag, identifierTag, relay);
 
     assertEquals(eventId, actual.orElseThrow().getId());
     verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
@@ -97,7 +97,7 @@ public class CacheCuratedFormulaEventServiceTest extends CacheServiceTestFixture
     CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
 
     Optional<CuratedFormulaEvent> actual =
-       cacheCuratedFormulaEventService.getBy(event.getPublicKey(), identifierTag, relay);
+       cacheCuratedFormulaEventService.getBy(publicKeyTag, identifierTag, relay);
 
     assertTrue(actual.isPresent());
     verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(

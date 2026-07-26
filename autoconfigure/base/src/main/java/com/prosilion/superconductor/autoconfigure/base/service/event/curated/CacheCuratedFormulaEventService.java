@@ -6,18 +6,18 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventServiceIF;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
-public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventService<CuratedFormulaEvent> implements CacheCuratedFormulaEventServiceIF {
+public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventService<CuratedFormulaEvent, FormulaEvent> implements CacheCuratedFormulaEventServiceIF {
   private final Identity superconductorInstanceIdentity;
   private final String superconductorRelayUrl;
   private final CacheFormulaEventServiceIF cacheFormulaEventServiceIF;
@@ -49,17 +49,30 @@ public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventSe
   }
 
   @Override
-  public Optional<CuratedFormulaEvent> getBy(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
+  public Optional<CuratedFormulaEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
     return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(
           getKind(),
-          new PubKeyTag(publicKey),
+          pubKeyTag,
           identifierTag)
        .stream().findFirst()
        .flatMap(this::materialize)
-       .or(() -> cacheFormulaEventServiceIF.getBy(publicKey, identifierTag, relay)
+       .or(() -> cacheFormulaEventServiceIF.getBy(pubKeyTag.getPublicKey(), identifierTag, relay)
           .map(formulaEvent -> createFromFetched(
              formulaEvent, relay))
           .flatMap(this::materialize));
+  }
+
+  @Override
+  public Optional<CuratedFormulaEvent> getByDirect(@NonNull EventTag eventTag) {
+    return cacheServiceIF.getEventsByKindAndEventTag(getKind(), eventTag)
+       .stream().findFirst().flatMap(this::materialize)
+       .or(() -> {
+         Optional<FormulaEvent> formulaEvent1 = cacheFormulaEventServiceIF.getEvent(eventTag.getEventId(), eventTag.requireRelay());
+         return formulaEvent1
+            .map(formulaEvent -> createFromFetched(
+               formulaEvent, formulaEvent.getRelay().orElseThrow()))
+            .flatMap(this::materialize);
+       });
   }
 
   @Override

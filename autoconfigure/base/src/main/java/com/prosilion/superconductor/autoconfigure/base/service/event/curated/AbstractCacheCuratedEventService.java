@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 
 import com.prosilion.nostr.event.AddressableEvent;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
@@ -9,9 +10,9 @@ import com.prosilion.superconductor.base.cache.curated.CacheCuratedEventServiceI
 import java.util.Optional;
 import lombok.NonNull;
 
-public abstract class AbstractCacheCuratedEventService<T extends AddressableEvent> implements CacheCuratedEventServiceIF<T> {
-  
-//  TODO: should ultimately be private after rxr
+public abstract class AbstractCacheCuratedEventService<T extends AddressableEvent, U extends BaseEvent> implements CacheCuratedEventServiceIF<T> {
+
+  //  TODO: should ultimately be private after rxr
   protected final CacheServiceIF cacheServiceIF;
 
   public AbstractCacheCuratedEventService(@NonNull CacheServiceIF cacheServiceIF) {
@@ -27,4 +28,6 @@ public abstract class AbstractCacheCuratedEventService<T extends AddressableEven
   final public GenericEventRecord save(EventIF event) {
     return cacheServiceIF.save(event);
   }
+
+  abstract T createFromFetched(@NonNull U baseEvent, @NonNull Relay relay);
 }

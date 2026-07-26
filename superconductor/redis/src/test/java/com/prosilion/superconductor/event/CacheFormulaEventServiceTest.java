@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.event;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -8,6 +8,7 @@ import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
+import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
@@ -198,7 +199,7 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
 
   @SneakyThrows
   @Override
-  FormulaEvent createEvent() {
+  protected FormulaEvent createEvent() {
     return new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, relay, awardDefinitionUpvoteEvent, PLUS_ONE_FORMULA);
   }
 

@@ -1,10 +1,11 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.event;
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
@@ -183,7 +184,7 @@ public class CacheBadgeDefinitionGenericEventServiceTest extends CacheServiceTes
   }
 
   @Override
-  BadgeDefinitionGenericEvent createEvent() {
+  protected BadgeDefinitionGenericEvent createEvent() {
     return new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
   }
 

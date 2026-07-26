@@ -16,20 +16,20 @@ import static org.mockito.Mockito.doReturn;
 
 public abstract class CacheServiceTestFixture<T extends BaseEvent> {
   @Mock
-  CacheServiceIF cacheServiceIF;
+  protected CacheServiceIF cacheServiceIF;
   @Mock
-  RemoteAbstractTagService remoteAbstractTagService;
+  protected RemoteAbstractTagService remoteAbstractTagService;
 
-  T event;
-  String eventId;
+  protected T event;
+  protected String eventId;
 
   @BeforeEach
-  void setUp() {
+  public void setUp() {
     this.event = createEvent();
     this.eventId = event.getId();
   }
 
-  abstract T createEvent();
+  protected abstract T createEvent();
 
   protected void mockLocalGetEventByEventId() {
     doReturn(Optional.of(event.getGenericEventRecord()))

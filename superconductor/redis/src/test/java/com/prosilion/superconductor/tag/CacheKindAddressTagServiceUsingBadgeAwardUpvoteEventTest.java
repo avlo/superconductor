@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.tag;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import java.util.List;
 import java.util.Optional;
@@ -132,7 +133,7 @@ public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends Ca
   }
 
   @Override
-  BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
     return new BadgeAwardGenericEvent<>(
        submitter,
        recipient.getPublicKey(),

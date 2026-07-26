@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.curated;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -140,7 +140,7 @@ public class CacheCuratedFormulaEventServiceTest extends CacheCuratedServiceTest
 
   @SneakyThrows
   @Override
-  CuratedFormulaEvent createEvent() {
+  protected CuratedFormulaEvent createEvent() {
     BadgeDefinitionGenericEvent badgeDefinitionEvent =
        new BadgeDefinitionGenericEvent(aImgIdentity, upvoteIdentifierTag, PLUS_ONE_FORMULA, relay);
     this.formulaEvent = new FormulaEvent(

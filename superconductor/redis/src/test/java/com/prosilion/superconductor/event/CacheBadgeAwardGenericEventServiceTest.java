@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.event;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
+import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
@@ -205,7 +206,7 @@ public class CacheBadgeAwardGenericEventServiceTest
   }
 
   @Override
-  BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
     this.badgeDefinitionGenericEvent =
        new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
     return new BadgeAwardGenericEvent<>(

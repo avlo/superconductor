@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.curated;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.AbstractSetsEvent;
@@ -135,7 +135,7 @@ public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheCur
   }
 
   @Override
-  CuratedBadgeDefinitionGenericEvent createEvent() {
+  protected CuratedBadgeDefinitionGenericEvent createEvent() {
     this.badgeDefinitionGenericEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
     return new CuratedBadgeDefinitionGenericEvent(
        aImgIdentity,

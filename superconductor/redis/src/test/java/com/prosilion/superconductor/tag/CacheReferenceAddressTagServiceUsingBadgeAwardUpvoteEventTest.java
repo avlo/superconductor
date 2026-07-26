@@ -1,9 +1,11 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.tag;
 
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.recipient;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.relay;
+import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.submitter;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteDefnCreator;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteIdentifierTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,10 +27,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CacheReferenceAddressTagServiceUsingBadgeDefinitionGenericEventTest extends CacheServiceTestFixture<BadgeDefinitionGenericEvent> {
+public class CacheReferenceAddressTagServiceUsingBadgeAwardUpvoteEventTest extends CacheServiceTestFixture<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> {
   @Test
   void testGetEventByAddressTag() {
-    AddressTag addressTag = event.asAddressableEventAddressTag();
+    AddressTag addressTag = event.getAddressTag();
     mockLocalGetEventByAddressTag(addressTag);
 
     CacheReferenceAddressTagService cacheReferenceAddressTagService =
@@ -42,7 +46,7 @@ public class CacheReferenceAddressTagServiceUsingBadgeDefinitionGenericEventTest
 
   @Test
   void testGetEventByAddressTagCalledOnce() {
-    AddressTag addressTag = event.asAddressableEventAddressTag();
+    AddressTag addressTag = event.getAddressTag();
     mockLocalGetEventByAddressTag(addressTag);
 
     CacheReferenceAddressTagService cacheReferenceAddressTagService =
@@ -55,7 +59,7 @@ public class CacheReferenceAddressTagServiceUsingBadgeDefinitionGenericEventTest
 
   @Test
   void testGetEventByNonExistentAddressTagReturnsEmptyOptional() {
-    AddressTag addressTag = event.asAddressableEventAddressTag();
+    AddressTag addressTag = event.getAddressTag();
     mockLocalGetEventByAnyAddressTagReturnsEmptyOptional();
 
     CacheReferenceAddressTagService cacheReferenceAddressTagService =
@@ -73,7 +77,7 @@ public class CacheReferenceAddressTagServiceUsingBadgeDefinitionGenericEventTest
 
   @Test
   void testGetEventByNonExistentAddressTagReturnsRemoteObject() {
-    AddressTag addressTag = event.asAddressableEventAddressTag();
+    AddressTag addressTag = event.getAddressTag();
     mockLocalGetEventByAnyAddressTagReturnsEmptyOptional();
     doReturn(List.of(event.getGenericEventRecord()))
        .when(remoteAbstractTagService)
@@ -91,8 +95,14 @@ public class CacheReferenceAddressTagServiceUsingBadgeDefinitionGenericEventTest
   }
 
   @Override
-  BadgeDefinitionGenericEvent createEvent() {
-    return new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
+    return new BadgeAwardGenericEvent<>(
+       submitter,
+       recipient.getPublicKey(),
+       new BadgeDefinitionGenericEvent(
+          upvoteDefnCreator,
+          upvoteIdentifierTag,
+          relay));
   }
 
   private void mockLocalGetEventByAddressTag(AddressTag addressTag) {

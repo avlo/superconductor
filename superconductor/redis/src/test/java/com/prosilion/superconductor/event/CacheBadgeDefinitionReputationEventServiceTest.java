@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.event;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
@@ -8,8 +8,8 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
@@ -271,7 +271,7 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
 
   @SneakyThrows
   @Override
-  BadgeDefinitionReputationEvent createEvent() {
+  protected BadgeDefinitionReputationEvent createEvent() {
     BadgeDefinitionGenericEvent badgeDefinitionGenericEvent =
        new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
     this.formulaEvent = new FormulaEvent(

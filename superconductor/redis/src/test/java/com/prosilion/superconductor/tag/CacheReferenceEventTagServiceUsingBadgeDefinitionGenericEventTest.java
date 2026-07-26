@@ -1,11 +1,11 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.tag;
 
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.util.Util;
+import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -13,9 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.recipient;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.relay;
-import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.submitter;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteDefnCreator;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvoteIdentifierTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +24,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends CacheServiceTestFixture<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> {
+public class CacheReferenceEventTagServiceUsingBadgeDefinitionGenericEventTest extends CacheServiceTestFixture<BadgeDefinitionGenericEvent> {
   @Test
   void testGetEventByEventId() {
     mockLocalGetEventByEventId();
@@ -40,7 +38,7 @@ public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends
     assertEquals(eventId, actualEventIdViaEventTagService);
 
 //  ... verify invocation
-    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(anyString());
+    verify(cacheServiceIF).getEventByEventId(eventId);
   }
 
   @Test
@@ -67,8 +65,7 @@ public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends
 
     Optional<GenericEventRecord> actual = cacheReferenceEventTagService.getEvent(Util.generateRandomHex64String(), relay);
     verify(cacheServiceIF, Mockito.times(2)).getEventByEventId(anyString());
-    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(
-       anyString(), any(Filters.class));
+    verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(anyString(), any(Filters.class));
 
     assertEquals(Optional.empty(), actual);
   }
@@ -77,17 +74,17 @@ public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends
   void testGetEventByNonExistentEventIdReturnsReturnsRemoteObject() {
     CacheReferenceEventTagService cacheReferenceEventTagServiceSpy =
        spy(new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService));
-
+    
     doReturn(Optional.of(event.getGenericEventRecord()))
        .when(cacheReferenceEventTagServiceSpy)
        .getByExpanded(new EventTag(event.getId(), relay.getUrl()));
-
+    
     String actualEventIdViaEventTagService = cacheReferenceEventTagServiceSpy.getEvent(eventId, relay).orElseThrow().getId();
 
     assertEquals(eventId, actualEventIdViaEventTagService);
-    verify(cacheReferenceEventTagServiceSpy, Mockito.times(1)).getByExpanded(
+    verify(cacheReferenceEventTagServiceSpy).getByExpanded(
        new EventTag(eventId, relay.getUrl()));
-
+    
     Optional<GenericEventRecord> actualLocalShouldBeEmptyOptional = cacheReferenceEventTagServiceSpy.getEvent(Util.generateRandomHex64String(), relay);
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(anyString());
     verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(anyString(), any(Filters.class));
@@ -96,13 +93,7 @@ public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends
   }
 
   @Override
-  BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
-    return new BadgeAwardGenericEvent<>(
-       submitter,
-       recipient.getPublicKey(),
-       new BadgeDefinitionGenericEvent(
-          upvoteDefnCreator,
-          upvoteIdentifierTag,
-          relay));
+  protected BadgeDefinitionGenericEvent createEvent() {
+    return new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
   }
 }

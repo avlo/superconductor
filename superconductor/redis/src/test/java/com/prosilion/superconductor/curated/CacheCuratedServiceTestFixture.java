@@ -1,6 +1,7 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.curated;
 
 import com.prosilion.nostr.event.AbstractSetsEvent;
+import com.prosilion.superconductor.CacheServiceTestFixture;
 import org.junit.jupiter.api.BeforeEach;
 
 public abstract class CacheCuratedServiceTestFixture<T extends AbstractSetsEvent> extends CacheServiceTestFixture<T> {
@@ -8,7 +9,7 @@ public abstract class CacheCuratedServiceTestFixture<T extends AbstractSetsEvent
   String curatedEventId;
 
   @BeforeEach
-  void setUp() {
+  public void setUp() {
     super.setUp();
     this.curatedEvent = super.event;
     this.curatedEventId = super.eventId;

@@ -1,4 +1,4 @@
-package com.prosilion.superconductor;
+package com.prosilion.superconductor.event;
 
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -12,6 +12,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
+import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeAwardEventServiceIF;
@@ -223,7 +224,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
 
   @SneakyThrows
   @Override
-  BadgeSetsEvent createEvent() {
+  protected BadgeSetsEvent createEvent() {
     BadgeDefinitionGenericEvent badgeDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
     FormulaEvent formulaEvent = new FormulaEvent(

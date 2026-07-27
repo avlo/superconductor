@@ -7,6 +7,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,25 +72,42 @@ public class CacheReferenceEventTagServiceUsingBadgeDefinitionGenericEventTest e
   }
 
   @Test
-  void testGetEventByNonExistentEventIdReturnsReturnsRemoteObject() {
+  void testGetEventByExpandedReturnsReturnsRemoteObject() {
     CacheReferenceEventTagService cacheReferenceEventTagServiceSpy =
        spy(new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService));
-    
+
     doReturn(Optional.of(event.getGenericEventRecord()))
        .when(cacheReferenceEventTagServiceSpy)
        .getByExpanded(new EventTag(event.getId(), relay.getUrl()));
-    
+
     String actualEventIdViaEventTagService = cacheReferenceEventTagServiceSpy.getEvent(eventId, relay).orElseThrow().getId();
 
     assertEquals(eventId, actualEventIdViaEventTagService);
     verify(cacheReferenceEventTagServiceSpy).getByExpanded(
        new EventTag(eventId, relay.getUrl()));
-    
+
     Optional<GenericEventRecord> actualLocalShouldBeEmptyOptional = cacheReferenceEventTagServiceSpy.getEvent(Util.generateRandomHex64String(), relay);
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(anyString());
     verify(remoteAbstractTagService, Mockito.times(1)).sendRemoteReq(anyString(), any(Filters.class));
 
     assertEquals(Optional.empty(), actualLocalShouldBeEmptyOptional);
+  }
+
+  @Test
+  void testGetEventByExpandedListReturnsReturnsRemoteObject() {
+    CacheReferenceEventTagService cacheReferenceEventTagServiceSpy =
+       spy(new CacheReferenceEventTagService(cacheServiceIF, remoteAbstractTagService));
+    EventTag eventTag = new EventTag(event.getId(), relay.getUrl());
+    List<EventTag> eventTags = List.of(eventTag);
+
+    doReturn(Optional.of(event.getGenericEventRecord()))
+       .when(cacheServiceIF)
+       .getEventByEventId(eventTag.getEventId());
+
+    List<GenericEventRecord> actual = cacheReferenceEventTagServiceSpy.getExpandedEvents(eventTags);
+
+    assertEquals(List.of(event.getGenericEventRecord()), actual);
+    verify(cacheReferenceEventTagServiceSpy, Mockito.times(1)).getExpandedEvents(eventTags);
   }
 
   @Override

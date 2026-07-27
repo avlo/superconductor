@@ -8,15 +8,18 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionAbstractEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.Optional;
+import java.util.function.Predicate;
 import lombok.NonNull;
 
 public abstract class CacheBadgeDefinitionAbstractEventService<T extends AddressableEvent> implements CacheBadgeDefinitionAbstractEventServiceIF<T> {
-  protected final CacheServiceIF cacheServiceIF;
+  private final CacheServiceIF cacheServiceIF;
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
 
@@ -54,6 +57,18 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
 
     Optional<GenericEventRecord> by = cacheReferenceAddressTagServiceIF.getByExpanded(addressTag);
     return by.flatMap(this::materialize);
+  }
+
+  protected final Optional<GenericEventRecord> findFirstByPubKeyAndIdentifier(
+     @NonNull PubKeyTag pubKeyTag,
+     @NonNull IdentifierTag identifierTag,
+     @NonNull Predicate<GenericEventRecord> predicate) {
+    return cacheServiceIF
+       .getEventsByKindAndPubKeyTagAndIdentifierTag(
+          getKind(), pubKeyTag, identifierTag)
+       .stream()
+       .filter(predicate)
+       .findFirst();
   }
 
   public Kind getKind() {

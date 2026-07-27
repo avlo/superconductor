@@ -200,6 +200,26 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
   }
 
   @Test
+  void testGetByPublicKeyAndIdentifierTagIgnoresGenericBadgeDefinition() {
+    PubKeyTag pubKeyTag = new PubKeyTag(repDefnCreator.getPublicKey());
+    BadgeDefinitionGenericEvent genericDefinition = new BadgeDefinitionGenericEvent(
+       repDefnCreator, reputationIdentifierTag, relay);
+    doReturn(List.of(
+       genericDefinition.getGenericEventRecord(),
+       event.getGenericEventRecord()))
+       .when(cacheServiceIF)
+       .getEventsByKindAndPubKeyTagAndIdentifierTag(
+          event.getKind(), pubKeyTag, reputationIdentifierTag);
+    mockFormulaEvent();
+    CacheBadgeDefinitionReputationEventService service = createService();
+
+    Optional<BadgeDefinitionReputationEvent> actual =
+       service.getBy(pubKeyTag, reputationIdentifierTag);
+
+    assertEquals(eventId, actual.orElseThrow().getId());
+  }
+
+  @Test
   void testGetByKindPubKeyAndIdentifierTagReturnsEmptyOptional() {
     PubKeyTag pubKeyTag = new PubKeyTag(repDefnCreator.getPublicKey());
     doReturn(List.of())

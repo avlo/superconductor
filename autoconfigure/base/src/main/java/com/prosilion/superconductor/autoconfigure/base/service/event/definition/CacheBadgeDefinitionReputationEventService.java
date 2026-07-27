@@ -38,6 +38,10 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
   }
 
+  private boolean supports(@NonNull GenericEventRecord eventRecord) {
+    return eventRecord.findFirstTag(ExternalIdentityTag.class).isPresent();
+  }
+
   @Override
   protected BadgeDefinitionReputationEvent createBadgeDefinitionEvent(@NonNull GenericEventRecord eventRecord) {
     List<FormulaEvent> formulaEvents = getFormulaEvents(eventRecord);
@@ -78,15 +82,16 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   public Optional<BadgeDefinitionReputationEvent> getByDirect(@NonNull AddressTag addressTag) {
     return cacheKindAddressTagServiceIF
        .getByDirect(getKind(), addressTag).stream()
-       .filter(genericEventRecord ->
-          genericEventRecord.findFirstTag(ExternalIdentityTag.class).isPresent())
+       .filter(this::supports)
        .findFirst()
        .flatMap(this::materialize);
   }
 
   @Override
-  public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
-    return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag).stream()
-       .findFirst().flatMap(this::materialize);
+  public Optional<BadgeDefinitionReputationEvent> getBy(
+     @NonNull PubKeyTag pubKeyTag,
+     @NonNull IdentifierTag identifierTag) {
+    return findFirstByPubKeyAndIdentifier(pubKeyTag, identifierTag, this::supports)
+       .flatMap(this::materialize);
   }
 }

@@ -158,14 +158,14 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
     mockBadgeSetsEvent();
     EventTag eventTag = event.getTypeSpecificTags(EventTag.class).getFirst();
     doReturn(Optional.of(event.getGenericEventRecord()))
-       .when(cacheReferenceEventTagServiceIF)
-       .getByExpanded(eventTag);
+       .when(cacheServiceIF)
+       .getFirstEventByKindAndEventTag(event.getKind(), eventTag);
     CacheFollowSetsEventService cacheFollowSetsEventService = createService();
 
     Optional<FollowSetsEvent> actual = cacheFollowSetsEventService.getByDirect(eventTag);
 
     assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheReferenceEventTagServiceIF, Mockito.times(1)).getByExpanded(eventTag);
+    verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndEventTag(event.getKind(), eventTag);
     verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), relay);
   }
 

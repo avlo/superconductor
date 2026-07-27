@@ -3,6 +3,8 @@ package com.prosilion.superconductor.redis.service.event;
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
@@ -15,6 +17,8 @@ import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
+import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -24,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -33,6 +38,7 @@ import static org.mockito.Mockito.mock;
 @ActiveProfiles("test")
 public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT {
   private final CacheFollowSetsEventService cacheFollowSetsEventService;
+  private final EventServiceIF eventServiceIF;
 
   @Autowired
   public CacheFollowSetsEventServiceIT(
@@ -43,6 +49,7 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
      @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventService cacheFollowSetsEventService) throws ParseException {
     super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, eventServiceIF, cacheFollowSetsEventService);
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
+    this.eventServiceIF = eventServiceIF;
   }
 
   @Test
@@ -114,5 +121,30 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
   @Test
   void testGetByDirectRejectsNullEventTag() {
     assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getByDirect(null));
+  }
+
+  @Test
+  void testGetByPubKeyTag() {
+    FollowSetsEvent followSetsEvent = new FollowSetsEvent(
+       parameterAimgIdentity,
+       badgeSetsUpvoteEvent,
+       relay);
+    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
+    
+    List<FollowSetsEvent> actual = cacheFollowSetsEventService.getBy(new PubKeyTag(recipient.getPublicKey()));
+    assertFalse(actual.isEmpty());
+  }
+
+  @Test
+  void testGetByDirectEventTag() {
+    FollowSetsEvent followSetsEvent = new FollowSetsEvent(
+       parameterAimgIdentity,
+       badgeSetsUpvoteEvent,
+       relay);
+    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
+    
+    EventTag eventTag = new EventTag(getBadgeSetsUpvoteEvent().getId(), relay.getUrl());
+    Optional<FollowSetsEvent> actual = cacheFollowSetsEventService.getByDirect(eventTag);
+    assertFalse(actual.isEmpty());
   }
 }

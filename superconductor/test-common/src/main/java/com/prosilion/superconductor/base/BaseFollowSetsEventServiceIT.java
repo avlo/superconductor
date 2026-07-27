@@ -48,7 +48,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
 
   private final EventServiceIF eventServiceIF;
 
-  private final BadgeSetsEvent badgeSetsUpvoteEvent;
+  protected final BadgeSetsEvent badgeSetsUpvoteEvent;
 
   public BaseFollowSetsEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
@@ -106,6 +106,10 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
     Util.debug(log, "test setup db events:\n{}",
        cacheServiceIF.getAll().stream().map(GenericEventRecord::createPrettyPrintJson).collect(Collectors.joining(",\n")),
        true, '1');
+  }
+
+  protected final BadgeSetsEvent getBadgeSetsUpvoteEvent() {
+    return badgeSetsUpvoteEvent;
   }
 
   @Test

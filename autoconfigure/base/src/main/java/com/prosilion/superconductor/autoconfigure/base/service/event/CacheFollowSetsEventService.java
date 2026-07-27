@@ -109,9 +109,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
-  @Deprecated
   public Optional<FollowSetsEvent> getByDirect(@NonNull EventTag eventTag) {
-    return cacheReferenceEventTagServiceIF.getByExpanded(eventTag).flatMap(this::materialize);
+    return cacheServiceIF.getFirstEventByKindAndEventTag(getKind(), eventTag).flatMap(this::materialize);
   }
 
   @Override

@@ -87,4 +87,21 @@ public class CacheBadgeAwardGenericEventServiceIT extends BaseIntegrationTestFix
 
     assertTrue(actualAwardUpvoteDefinitionEvent.isPresent());
   }
+
+  @Test
+  public void testGetByDirectAddressTag() {
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
+       new BadgeAwardGenericEvent<>(
+          parameterAimgIdentity,
+          recipient.getPublicKey(),
+          badgeDefinitionUpvoteEvent,
+          relay);
+
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericEvent), relay);
+
+    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actualAwardUpvoteDefinitionEvent =
+       cacheBadgeAwardGenericEventService.getByDirect(badgeDefinitionUpvoteEvent.asAddressableEventAddressTag());
+
+    assertTrue(actualAwardUpvoteDefinitionEvent.isPresent());
+  }
 }

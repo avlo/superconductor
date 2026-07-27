@@ -126,6 +126,9 @@ testing {
               includeTestsMatching("*IT")
 //                          excludeTestsMatching("*NoOp*IT")
               excludeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT")
+              excludeTestsMatching("CacheCuratedBadgeDefinitionEventWithRelayTagRemoteSupplierMessageIT")
+              excludeTestsMatching("CacheCuratedBadgeDefinitionEventWithoutRelayTagRemoteSupplierMessageIT")
+              excludeTestsMatching("CacheCuratedBadgeAwardEventRemoteSupplierMessageIT")
             }
           }
         }
@@ -161,8 +164,11 @@ tasks.register('integrationTestDocker', Test) {
   systemProperty("spring.profiles.active", "test")
   useJUnitPlatform()
   filter {
-//        includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT")
-    includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT")
+//    includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT")
+      includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT")
+//    includeTestsMatching("CacheCuratedBadgeDefinitionEventWithRelayTagRemoteSupplierMessageIT")
+//    includeTestsMatching("CacheCuratedBadgeDefinitionEventWithoutRelayTagRemoteSupplierMessageIT")
+//    includeTestsMatching("CacheCuratedBadgeAwardEventRemoteSupplierMessageIT")
   }
 }
 

@@ -17,6 +17,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
 import java.io.IOException;
@@ -30,19 +31,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseBadgeAwardUpvoteEventRemoteSupplierMessageIT extends BaseIntegrationTestFixtures {
+public abstract class BaseCacheCuratedBadgeAwardEventRemoteSupplierMessageIT extends BaseIntegrationTestFixtures {
   private final Identity superconductorInstanceIdentity;
+  private final CacheServiceIF cacheServiceIF;
 
   private final String eventId;
   private final String definitionEventRelayUrl;
   private final String awardEventRelayUrl;
 
-  protected BaseBadgeAwardUpvoteEventRemoteSupplierMessageIT(
+  protected BaseCacheCuratedBadgeAwardEventRemoteSupplierMessageIT(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull String superconductorRelayUrl,
      @NonNull String definitionEventRelayUrl,
-     @NonNull String awardEventRelayUrl,
-     @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
+     @NonNull String awardEventRelayUrl) throws IOException, NostrException {
     super(superconductorInstanceIdentity);
+    
+    this.cacheServiceIF = cacheServiceIF;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.definitionEventRelayUrl = definitionEventRelayUrl;
     this.awardEventRelayUrl = awardEventRelayUrl;
@@ -138,5 +143,22 @@ public abstract class BaseBadgeAwardUpvoteEventRemoteSupplierMessageIT extends B
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
     assertEquals(upvoteIdentifierTag, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
+  }
+
+  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAndSaveBackingBadgeAward() {
+    BadgeDefinitionGenericEvent badgeDefinitionGenericEvent =
+       new BadgeDefinitionGenericEvent(
+          Identity.generateRandomIdentity(),
+          upvoteIdentifierTag,
+          relay);
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
+       new BadgeAwardGenericEvent<>(
+          Identity.generateRandomIdentity(),
+          recipient.getPublicKey(),
+          badgeDefinitionGenericEvent,
+          relay);
+    cacheServiceIF.save(badgeDefinitionGenericEvent);
+    cacheServiceIF.save(badgeAwardGenericEvent);
+    return badgeAwardGenericEvent;
   }
 }

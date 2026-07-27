@@ -21,6 +21,7 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagService
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -232,5 +233,27 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
 
     BadgeDefinitionReputationEvent reconstructed = cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord()).orElseThrow();
     assertEquals(dbRepDefnEventPlusMinus, reconstructed);
+  }
+
+
+  @Test
+  public void testGetByPubKeyTagIdentifierTag() {
+    BadgeDefinitionReputationEvent expected = new BadgeDefinitionReputationEvent(
+       parameterAimgIdentity,
+       repDefnCreator.getPublicKey(),
+       reputationIdentifierTag,
+       relay,
+       BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+       plusOneFormulaEvent);
+
+    eventServiceIF.processIncomingEvent(new EventMessage(expected), relay);
+
+    Optional<BadgeDefinitionReputationEvent> actual =
+       cacheBadgeDefinitionReputationEventService.getBy(
+          new PubKeyTag(repDefnCreator.getPublicKey()), reputationIdentifierTag);
+
+    assertTrue(actual.isPresent());
+    assertEquals(expected.getId(), actual.map(BadgeDefinitionGenericEvent::getId).orElseThrow());
+    assertEquals(expected, actual.orElseThrow());
   }
 }

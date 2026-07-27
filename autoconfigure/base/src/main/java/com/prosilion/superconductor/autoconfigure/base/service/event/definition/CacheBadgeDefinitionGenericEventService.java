@@ -8,7 +8,7 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServi
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import lombok.NonNull;
 
-public class CacheBadgeDefinitionGenericEventService extends 
+public class CacheBadgeDefinitionGenericEventService extends
    CacheBadgeDefinitionAbstractEventService<BadgeDefinitionGenericEvent> implements CacheBadgeDefinitionGenericEventServiceIF {
 
   public CacheBadgeDefinitionGenericEventService(

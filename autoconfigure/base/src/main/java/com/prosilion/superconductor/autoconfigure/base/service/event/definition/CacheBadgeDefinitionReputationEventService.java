@@ -7,6 +7,8 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -80,5 +82,11 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
           genericEventRecord.findFirstTag(ExternalIdentityTag.class).isPresent())
        .findFirst()
        .flatMap(this::materialize);
+  }
+
+  @Override
+  public Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
+    return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag).stream()
+       .findFirst().flatMap(this::materialize);
   }
 }

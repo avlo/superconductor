@@ -3,7 +3,6 @@ package com.prosilion.superconductor.base.cache;
 import com.prosilion.nostr.event.AddressableEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheAddressableEventServiceIF;
 import java.util.Optional;
 import lombok.NonNull;

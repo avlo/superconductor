@@ -8,8 +8,6 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionAbstractEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
@@ -18,7 +16,7 @@ import java.util.Optional;
 import lombok.NonNull;
 
 public abstract class CacheBadgeDefinitionAbstractEventService<T extends AddressableEvent> implements CacheBadgeDefinitionAbstractEventServiceIF<T> {
-  private final CacheServiceIF cacheServiceIF;
+  protected final CacheServiceIF cacheServiceIF;
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
 
@@ -56,13 +54,6 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
 
     Optional<GenericEventRecord> by = cacheReferenceAddressTagServiceIF.getByExpanded(addressTag);
     return by.flatMap(this::materialize);
-  }
-
-
-  @Override
-  public Optional<T> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
-    return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag).stream()
-       .findFirst().flatMap(this::materialize);
   }
 
   public Kind getKind() {

@@ -4,7 +4,6 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
@@ -70,17 +69,6 @@ public class CacheBadgeDefinitionGenericEventServiceTest extends CacheServiceTes
   }
 
   @Test
-  void testGetByPubKeyTagAndIdentifierTagRejectsNullParameters() {
-    CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService = createService();
-    PubKeyTag pubKeyTag = new PubKeyTag(upvoteDefnCreator.getPublicKey());
-
-    assertThrows(NullPointerException.class, () ->
-       cacheBadgeDefinitionGenericEventService.getBy(null, upvoteIdentifierTag));
-    assertThrows(NullPointerException.class, () ->
-       cacheBadgeDefinitionGenericEventService.getBy(pubKeyTag, null));
-  }
-
-  @Test
   void testGetEventByEventIdFromLocalCache() {
     mockLocalGetEventByEventId();
     CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService = createService();
@@ -137,40 +125,6 @@ public class CacheBadgeDefinitionGenericEventServiceTest extends CacheServiceTes
 
     assertEquals(eventId, actual.orElseThrow().getId());
     verify(cacheReferenceAddressTagServiceIF, Mockito.times(1)).getByExpanded(addressTag);
-  }
-
-  @Test
-  void testGetByPublicKeyAndIdentifierTag() {
-    PubKeyTag pubKeyTag = new PubKeyTag(upvoteDefnCreator.getPublicKey());
-    doReturn(List.of(event.getGenericEventRecord()))
-       .when(cacheServiceIF)
-       .getEventsByKindAndPubKeyTagAndIdentifierTag(
-          event.getKind(), pubKeyTag, upvoteIdentifierTag);
-    CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService = createService();
-
-    Optional<BadgeDefinitionGenericEvent> actual =
-       cacheBadgeDefinitionGenericEventService.getBy(pubKeyTag, upvoteIdentifierTag);
-
-    assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
-       event.getKind(), pubKeyTag, upvoteIdentifierTag);
-  }
-
-  @Test
-  void testGetByKindPubKeyAndIdentifierTagReturnsEmptyOptional() {
-    PubKeyTag pubKeyTag = new PubKeyTag(upvoteDefnCreator.getPublicKey());
-    doReturn(List.of())
-       .when(cacheServiceIF)
-       .getEventsByKindAndPubKeyTagAndIdentifierTag(
-          event.getKind(), pubKeyTag, upvoteIdentifierTag);
-    CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService = createService();
-
-    Optional<BadgeDefinitionGenericEvent> actual =
-       cacheBadgeDefinitionGenericEventService.getBy(pubKeyTag, upvoteIdentifierTag);
-
-    assertEquals(Optional.empty(), actual);
-    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
-       event.getKind(), pubKeyTag, upvoteIdentifierTag);
   }
 
   @Test

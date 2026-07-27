@@ -2,6 +2,8 @@ package com.prosilion.superconductor.base.cache;
 
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import java.util.Optional;
 import lombok.NonNull;
 
@@ -14,4 +16,5 @@ import lombok.NonNull;
  */
 public interface CacheBadgeDefinitionReputationEventServiceIF extends CacheBadgeDefinitionAbstractEventServiceIF<BadgeDefinitionReputationEvent> {
   Optional<BadgeDefinitionReputationEvent> getByDirect(@NonNull AddressTag addressTag);
+  Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
 }

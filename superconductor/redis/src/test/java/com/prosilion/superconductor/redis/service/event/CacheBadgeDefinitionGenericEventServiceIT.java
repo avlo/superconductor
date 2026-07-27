@@ -65,7 +65,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT extends BaseIntegrationTe
   public void testGetByExpandedAddressTag() {
     BadgeDefinitionGenericEvent expectedAwardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
     eventServiceIF.processIncomingEvent(new EventMessage(expectedAwardUpvoteDefinitionEvent), relay);
-    
+
     Optional<BadgeDefinitionGenericEvent> actualAwardUpvoteDefinitionEvent =
        cacheBadgeDefinitionGenericEventService.getByExpanded(expectedAwardUpvoteDefinitionEvent.asAddressableEventAddressTag());
 
@@ -85,7 +85,7 @@ public class CacheBadgeDefinitionGenericEventServiceIT extends BaseIntegrationTe
     assertNotEquals(dbDefinitionGenericEvent.map(BadgeDefinitionGenericEvent::getId).orElseThrow(), awardUpvoteDefinitionEvent.getId());
     assertTrue(dbDefinitionGenericEvent.map(BadgeDefinitionGenericEvent::getEventTags).stream().flatMap(Collection::stream).map(EventTag::eventId).anyMatch(awardUpvoteDefinitionEvent.getId()::equals));
   }
-  
+
 //  @Test
 //  public void testSaveBadgeDefinitionGenericEventNullRelay() {
 //    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(

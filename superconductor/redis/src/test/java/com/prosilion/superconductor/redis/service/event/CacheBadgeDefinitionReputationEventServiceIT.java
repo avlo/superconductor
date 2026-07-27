@@ -4,14 +4,20 @@ import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.tag.IdentifierTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
@@ -28,6 +34,7 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 @Slf4j
 @EmbeddedRedisStandalone
@@ -68,6 +75,104 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
        PLUS_ONE_FORMULA);
 
     eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent), relay);
+  }
+
+  @Test
+  void testConstructorRejectsNullDependencies() {
+    CacheServiceIF cacheServiceIF = mock(CacheServiceIF.class);
+    CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF =
+       mock(CacheReferenceEventTagServiceIF.class);
+    CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF =
+       mock(CacheReferenceAddressTagServiceIF.class);
+    CacheFormulaEventServiceIF cacheFormulaEventServiceIF =
+       mock(CacheFormulaEventServiceIF.class);
+    CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF =
+       mock(CacheKindAddressTagServiceIF.class);
+
+    assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
+       null,
+       cacheReferenceEventTagServiceIF,
+       cacheReferenceAddressTagServiceIF,
+       cacheFormulaEventServiceIF,
+       cacheKindAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
+       cacheServiceIF,
+       null,
+       cacheReferenceAddressTagServiceIF,
+       cacheFormulaEventServiceIF,
+       cacheKindAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagServiceIF,
+       null,
+       cacheFormulaEventServiceIF,
+       cacheKindAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagServiceIF,
+       cacheReferenceAddressTagServiceIF,
+       null,
+       cacheKindAddressTagServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagServiceIF,
+       cacheReferenceAddressTagServiceIF,
+       cacheFormulaEventServiceIF,
+       null));
+  }
+
+  @Test
+  void testMaterializeRejectsNullEvent() {
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionReputationEventService.materialize((EventIF) null));
+  }
+
+  @Test
+  void testGetEventRejectsNullParameters() {
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionReputationEventService.getEvent(null, relay));
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionReputationEventService.getEvent(plusOneFormulaEvent.getId(), null));
+  }
+
+  @Test
+  void testGetByExpandedRejectsNullAddressTag() {
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionReputationEventService.getByExpanded(null));
+  }
+
+  @Test
+  void testGetByPubKeyTagAndIdentifierTagRejectsNullParameters() {
+    PubKeyTag pubKeyTag = new PubKeyTag(repDefnCreator.getPublicKey());
+
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionReputationEventService.getBy(null, reputationIdentifierTag));
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionReputationEventService.getBy(pubKeyTag, null));
+  }
+
+  @Test
+  void testGetByDirectRejectsNullAddressTag() {
+    assertThrows(NullPointerException.class, () ->
+       cacheBadgeDefinitionReputationEventService.getByDirect(null));
+  }
+
+  @Test
+  void testGetByDirectAddressTag() throws ParseException {
+    BadgeDefinitionReputationEvent expected = new BadgeDefinitionReputationEvent(
+       parameterAimgIdentity,
+       repDefnCreator.getPublicKey(),
+       reputationIdentifierTag,
+       relay,
+       BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+       plusOneFormulaEvent);
+    eventServiceIF.processIncomingEvent(new EventMessage(expected), relay);
+
+    BadgeDefinitionReputationEvent actual = cacheBadgeDefinitionReputationEventService
+       .getByDirect(plusOneFormulaEvent.asAddressableEventAddressTag())
+       .orElseThrow();
+
+    assertEquals(expected, actual);
   }
 
   @Test

@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
@@ -110,7 +111,25 @@ public class CacheCuratedFormulaEventServiceTest extends CacheCuratedServiceTest
   }
 
   @Test
-  void testGetByDirectFromFormulaServiceAfterLocalMiss() {
+  void testGetByDirectEventTagFromFormulaServiceAfterLocalMiss() {
+    EventTag eventTag = curatedEvent.getEventTag();
+    doReturn(Optional.empty()).when(cacheServiceIF)
+       .getFirstEventByKindAndEventTag(Kind.CURATION_SETS_FORMULA_EVENT, eventTag);
+    doReturn(Optional.of(formulaEvent)).when(cacheFormulaEventService)
+       .getEvent(eventTag.getEventId(), eventTag.requireRelay());
+    CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
+
+    Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventService.getByDirect(eventTag);
+
+    assertTrue(actual.isPresent());
+    verify(cacheServiceIF, Mockito.times(1))
+       .getFirstEventByKindAndEventTag(Kind.CURATION_SETS_FORMULA_EVENT, eventTag);
+    verify(cacheFormulaEventService, Mockito.times(1))
+       .getEvent(eventTag.getEventId(), eventTag.requireRelay());
+  }
+
+  @Test
+  void testGetByDirectAddressTagFromFormulaServiceAfterLocalMiss() {
     AddressTag addressTag = curatedEvent.getAddressTag();
     doReturn(Optional.empty()).when(cacheServiceIF)
        .getFirstEventByKindAndAddressTag(Kind.CURATION_SETS_FORMULA_EVENT, addressTag);

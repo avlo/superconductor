@@ -8,8 +8,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierIsLocalRelayIT extends AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT {
-  protected AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierIsLocalRelayIT(
+public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLocalIT extends AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT {
+  protected AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLocalIT(
      @NonNull String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity) throws NostrException {
     super(superconductorRelayUrl, superconductorInstanceIdentity);

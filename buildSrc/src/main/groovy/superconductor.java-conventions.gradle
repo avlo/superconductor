@@ -125,9 +125,9 @@ testing {
               excludeTestsMatching("*Test")
               includeTestsMatching("*IT")
 //                          excludeTestsMatching("*NoOp*IT")
-              excludeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT")
-              excludeTestsMatching("CacheCuratedBadgeDefinitionGenericEventRemoteSupplierIT")
-              excludeTestsMatching("CacheCuratedBadgeAwardGenericEventRemoteSupplierIT")
+              excludeTestsMatching("BadgeAwardDownvoteEventSupplierRemoteIT")
+              excludeTestsMatching("CacheCuratedBadgeDefinitionGenericEventMessageSupplierRemoteIT")
+              excludeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT")
             }
           }
         }

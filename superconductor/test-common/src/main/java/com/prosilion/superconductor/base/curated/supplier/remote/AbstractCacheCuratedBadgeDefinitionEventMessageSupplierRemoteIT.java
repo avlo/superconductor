@@ -9,8 +9,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierIsRemoteRelayIT extends AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT {
-  protected AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierIsRemoteRelayIT(
+public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRemoteIT extends AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT {
+  protected AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRemoteIT(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String definitionEventRelayUrl) throws NostrException {
     super(definitionEventRelayUrl, superconductorInstanceIdentity);

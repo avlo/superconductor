@@ -25,8 +25,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class
-AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT extends BaseIntegrationTestFixtures {
+public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT extends BaseIntegrationTestFixtures {
   protected final String definitionEventRelayUrl;
   protected final Relay definitionEventRelay;
 

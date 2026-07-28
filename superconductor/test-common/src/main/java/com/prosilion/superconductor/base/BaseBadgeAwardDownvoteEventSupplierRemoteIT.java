@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
+public abstract class BaseBadgeAwardDownvoteEventSupplierRemoteIT {
 	public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
 	public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
 
@@ -44,7 +44,7 @@ public abstract class BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT {
 	private final String definitionEventRelayUrl;
 	private final String awardEventRelayUrl;
 
-	protected BaseBadgeAwardDownvoteEventRemoteSupplierMessageIT(
+	protected BaseBadgeAwardDownvoteEventSupplierRemoteIT(
 		@NonNull String superconductorRelayUrl,
 		@NonNull String definitionEventRelayUrl,
 		@NonNull String awardEventRelayUrl,

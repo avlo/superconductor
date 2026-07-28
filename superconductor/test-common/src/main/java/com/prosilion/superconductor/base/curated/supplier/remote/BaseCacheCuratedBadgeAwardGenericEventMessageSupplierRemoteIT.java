@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseCacheCuratedBadgeAwardEventRemoteSupplierMessageIT extends BaseIntegrationTestFixtures {
+public abstract class BaseCacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT extends BaseIntegrationTestFixtures {
   private final Identity superconductorInstanceIdentity;
   private final CacheServiceIF cacheServiceIF;
 
@@ -40,7 +40,7 @@ public abstract class BaseCacheCuratedBadgeAwardEventRemoteSupplierMessageIT ext
   private final String definitionEventRelayUrl;
   private final String awardEventRelayUrl;
 
-  protected BaseCacheCuratedBadgeAwardEventRemoteSupplierMessageIT(
+  protected BaseCacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull String superconductorRelayUrl,

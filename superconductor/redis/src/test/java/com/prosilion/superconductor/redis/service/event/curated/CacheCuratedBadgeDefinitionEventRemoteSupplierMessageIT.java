@@ -2,8 +2,7 @@ package com.prosilion.superconductor.redis.service.event.curated;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.curated.BaseCacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT;
+import com.prosilion.superconductor.base.curated.AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierRelayIT;
 import com.prosilion.superconductor.redis.config.SingleContainerTestConfig;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
@@ -20,14 +19,11 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @Import(SingleContainerTestConfig.class)
-public class CacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT extends BaseCacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT {
+public class CacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT extends AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierRelayIT {
   @Autowired
   CacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT(
-     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull Identity superconductorInstanceIdentity,
-     @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
-     @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo,
-     @NonNull @Value("${superconductor.relay.url.three}") String superconductorRelayUrlThree) throws NostrException {
-    super(superconductorInstanceIdentity, cacheServiceIF, superconductorRelayUrl, superconductorRelayUrlTwo);
+     @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo) throws NostrException {
+    super(superconductorInstanceIdentity, superconductorRelayUrlTwo);
   }
 }

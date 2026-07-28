@@ -4,7 +4,6 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
@@ -15,12 +14,10 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
-import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
 import java.time.Duration;
 import java.util.List;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -28,36 +25,27 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseCacheCuratedBadgeDefinitionEventRemoteSupplierIsSameRelayMessageIT extends BaseIntegrationTestFixtures {
-  private final CacheServiceIF cacheServiceIF; // TODO: here/remove for/after convenience testing
-
+public abstract class BaseCacheCuratedBadgeDefinitionEventMessageIT extends BaseIntegrationTestFixtures {
   private final String definitionEventRelayUrl;
 
   private final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEventWithRelayTag;
   private final BadgeDefinitionGenericEvent badgeDefinitionDownvoteEventWithoutRelayTag;
 
-  protected BaseCacheCuratedBadgeDefinitionEventRemoteSupplierIsSameRelayMessageIT(
+  protected BaseCacheCuratedBadgeDefinitionEventMessageIT(
      @NonNull String superconductorRelayUrl,
-     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull Identity superconductorInstanceIdentity) throws NostrException {
     super(superconductorInstanceIdentity);
-    this.cacheServiceIF = cacheServiceIF;
     this.definitionEventRelayUrl = superconductorRelayUrl;
 
-    Relay definitionEventRelay = new Relay(definitionEventRelayUrl);
-
-    this.badgeDefinitionUpvoteEventWithRelayTag = new BadgeDefinitionGenericEvent(
-       upvoteDefnCreator,
-       upvoteIdentifierTag,
-       definitionEventRelay);
-
-    this.badgeDefinitionDownvoteEventWithoutRelayTag = new BadgeDefinitionGenericEvent(
-       upvoteDefnCreator,
-       downvoteIdentifierTag);
+    this.badgeDefinitionUpvoteEventWithRelayTag = createDefinitionEventContainingRelayTag();
+    this.badgeDefinitionDownvoteEventWithoutRelayTag = createDefinitionEventWithoutRelayTag();
 
     setupBadgeDefinitionEvent(badgeDefinitionUpvoteEventWithRelayTag);
     setupBadgeDefinitionEvent(badgeDefinitionDownvoteEventWithoutRelayTag);
   }
+
+  abstract BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag();
+  abstract BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag();
 
   @Test
   void testValidExistingEventThenAfterImageReputationRequestGeneral() throws NostrException {
@@ -75,7 +63,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionEventRemoteSupplierIsSameRe
     List<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
-    
+
     assertTrue(eventIds.contains(badgeDefinitionUpvoteEventWithRelayTag.getId()));
     assertTrue(eventIds.contains(badgeDefinitionDownvoteEventWithoutRelayTag.getId()));
   }

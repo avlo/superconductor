@@ -126,11 +126,10 @@ testing {
               includeTestsMatching("*IT")
 //                          excludeTestsMatching("*NoOp*IT")
               excludeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT")
-//              excludeTestsMatching("CacheCuratedDefinitionEventRemoteSupplierIsSameRelayIT") // should be included in test
-              excludeTestsMatching("CacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT") // should be excluded from test
+              excludeTestsMatching("CacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT")
               excludeTestsMatching("CacheCuratedBadgeDefinitionEventWithRelayTagRemoteSupplierMessageIT")
               excludeTestsMatching("CacheCuratedBadgeDefinitionEventWithoutRelayTagRemoteSupplierMessageIT")
-              excludeTestsMatching("CacheCuratedBadgeAwardEventRemoteSupplierMessageIT") // should be excluded
+              excludeTestsMatching("CacheCuratedBadgeAwardEventRemoteSupplierMessageIT")
             }
           }
         }
@@ -168,7 +167,7 @@ tasks.register('integrationTestDocker', Test) {
   filter {
 //    includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT")
 //    includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT") <---- eventually substituted w/ below
-//    includeTestsMatching("CacheCuratedBadgeDefinitionEventWithRelayTagRemoteSupplierMessageIT")
+    includeTestsMatching("CacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT")
 //    includeTestsMatching("CacheCuratedBadgeDefinitionEventWithoutRelayTagRemoteSupplierMessageIT")
 //    includeTestsMatching("CacheCuratedBadgeAwardEventRemoteSupplierMessageIT")
   }

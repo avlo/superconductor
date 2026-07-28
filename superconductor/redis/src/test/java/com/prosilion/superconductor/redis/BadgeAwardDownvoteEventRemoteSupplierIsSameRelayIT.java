@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.BaseBadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT;
+import com.prosilion.superconductor.base.BaseBadgeAwardDownvoteEventRemoteSupplierIsSameRelayMessageIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +18,9 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 //@Import(SingleContainerSameRelayTestConfig.class)
-public class BadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT extends BaseBadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT {
+public class BadgeAwardDownvoteEventRemoteSupplierIsSameRelayIT extends BaseBadgeAwardDownvoteEventRemoteSupplierIsSameRelayMessageIT {
   @Autowired
-  BadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT(
+  BadgeAwardDownvoteEventRemoteSupplierIsSameRelayIT(
       @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
 //      @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo,
 //      @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlThree,

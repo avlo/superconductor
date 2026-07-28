@@ -8,12 +8,13 @@ import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeAwardGenericEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeDefinitionGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -25,6 +26,7 @@ import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKi
 import com.prosilion.superconductor.base.service.event.plugin.kind.FollowSetsEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.StandardEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.curated.CuratedBadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeAwardReputationEventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeDefinitionReputationEventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePlugin;
@@ -39,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_AWARD_REPUTATION_KIND_TYPE;
@@ -61,10 +64,19 @@ public class EventKindPluginConfig {
 
   @Bean
   @ConditionalOnMissingBean
+  @ConditionalOnProperty(name = "superconductor.curated.badgedefinition.event", havingValue = "false", matchIfMissing = false) // explicit "false" for dev awareness 
   public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
+     @NonNull EventPlugin eventPlugin) {
+    return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  @ConditionalOnProperty(name = "superconductor.curated.badgedefinition.event", havingValue = "true", matchIfMissing = true)
+  public CuratedBadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull EventPlugin eventPlugin) {
-    return new BadgeDefinitionGenericEventKindPlugin(superconductorInstanceIdentity, eventPlugin);
+    return new CuratedBadgeDefinitionGenericEventKindPlugin(superconductorInstanceIdentity, eventPlugin);
   }
 
   @Bean("badgeAwardGenericEventKindPlugin")
@@ -137,6 +149,7 @@ public class EventKindPluginConfig {
      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
      @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
+     @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
      @NonNull CacheCuratedFormulaEventService cacheCuratedFormulaEventService,
      @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
@@ -148,9 +161,13 @@ public class EventKindPluginConfig {
        cacheCuratedBadgeAwardGenericEventService::materialize);
 
     kindFxnMap.put(
+       Kind.CURATION_SETS_BADGE_DEFINITION_EVENT,
+       cacheCuratedBadgeDefinitionGenericEventService::materialize);
+
+    kindFxnMap.put(
        Kind.CURATION_SETS_FORMULA_EVENT,
        cacheCuratedFormulaEventService::materialize);
-    
+
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
        cacheBadgeAwardGenericEventService::materialize);

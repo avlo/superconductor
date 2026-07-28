@@ -2,7 +2,7 @@ package com.prosilion.superconductor.redis.service.event.curated;
 
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeDefinitionGenericEventService;
-import com.prosilion.superconductor.base.BaseCacheCuratedBadgeDefinitionGenericEventServiceIT;
+import com.prosilion.superconductor.base.curated.BaseCacheCuratedBadgeDefinitionGenericEventServiceIT;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;

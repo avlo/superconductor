@@ -3,7 +3,7 @@ package com.prosilion.superconductor.redis.service.event.curated;
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeAwardGenericEventService;
-import com.prosilion.superconductor.base.BaseCacheCuratedBadgeAwardGenericEventServiceIT;
+import com.prosilion.superconductor.base.curated.BaseCacheCuratedBadgeAwardGenericEventServiceIT;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;

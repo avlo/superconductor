@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.base;
+package com.prosilion.superconductor.base.curated;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -8,6 +8,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
+import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import java.util.Optional;

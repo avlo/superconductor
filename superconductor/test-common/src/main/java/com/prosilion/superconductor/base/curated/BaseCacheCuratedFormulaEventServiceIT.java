@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.base;
+package com.prosilion.superconductor.base.curated;
 
 import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventServiceIF;
 import java.util.Optional;

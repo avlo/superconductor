@@ -35,107 +35,107 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseBadgeAwardDownvoteEventMessageIT {
-	public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
-	public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
+  public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
+  public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
 
-	private final Identity authorIdentity = Identity.generateRandomIdentity();
-	private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
-	private final Identity superconductorInstanceIdentity;
+  private final Identity authorIdentity = Identity.generateRandomIdentity();
+  private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
+  private final Identity superconductorInstanceIdentity;
 
-	private final String eventId;
-	private final String relayUrl;
+  private final String eventId;
+  private final String relayUrl;
 
-	protected BaseBadgeAwardDownvoteEventMessageIT(
-		@NonNull String relayUrl,
-		@NonNull CacheServiceIF cacheServiceIF,
-		@NonNull Identity superconductorInstanceIdentity,
-		Duration requestTimeoutDuration) throws IOException, NostrException {
-		this.relayUrl = relayUrl;
-		NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
-		this.superconductorInstanceIdentity = superconductorInstanceIdentity;
-		Relay relay = new Relay(relayUrl);
+  protected BaseBadgeAwardDownvoteEventMessageIT(
+     @NonNull String relayUrl,
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull Identity superconductorInstanceIdentity,
+     Duration requestTimeoutDuration) throws IOException, NostrException {
+    this.relayUrl = relayUrl;
+    NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
+    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
+    Relay relay = new Relay(relayUrl);
 
-		BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent = new BadgeDefinitionGenericEvent(
-			superconductorInstanceIdentity,
-			IDENTIFIER_TAG, relay);
+    BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent = new BadgeDefinitionGenericEvent(
+       superconductorInstanceIdentity,
+       IDENTIFIER_TAG, relay);
 
-		cacheServiceIF.save(badgeDefinitionDownvoteEvent);
+    cacheServiceIF.save(badgeDefinitionDownvoteEvent);
 
-		BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = new BadgeAwardGenericEvent<>(
-			authorIdentity,
-			downvotedUserPubKey,
-			badgeDefinitionDownvoteEvent,
-			relay);
-		eventId = badgeAwardDownvoteEvent.getId();
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = new BadgeAwardGenericEvent<>(
+       authorIdentity,
+       downvotedUserPubKey,
+       badgeDefinitionDownvoteEvent,
+       relay);
+    eventId = badgeAwardDownvoteEvent.getId();
 
-		EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
-		Boolean flag = nostrEventPublisher
-			.send(
-				eventMessageBadgeAwardDownvoteEvent, Duration.ofMinutes(10))
-			.getFlag();
-		assertTrue(
-			flag);
-	}
+    EventMessage eventMessageBadgeAwardDownvoteEvent = new EventMessage(badgeAwardDownvoteEvent);
+    Boolean flag = nostrEventPublisher
+       .send(
+          eventMessageBadgeAwardDownvoteEvent)
+       .getFlag();
+    assertTrue(
+       flag);
+  }
 
-	@Test
-	void testValidExistingEventThenAfterImageReputationRequestGenral() throws NostrException {
-		final String subscriberId = Factory.generateRandomHex64String();
+  @Test
+  void testValidExistingEventThenAfterImageReputationRequestGenral() throws NostrException {
+    final String subscriberId = Factory.generateRandomHex64String();
 
-		ReqMessage reqMessage = new ReqMessage(
-			subscriberId,
-			new Filters(
-				new KindFilter(
-					Kind.BADGE_AWARD_EVENT),
-				new ReferencedPublicKeyFilter(
-					new PubKeyTag(
-						downvotedUserPubKey))));
-		List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-			new NostrSingleRequestService().send(reqMessage, relayUrl, Duration.ofMinutes(10)));
+    ReqMessage reqMessage = new ReqMessage(
+       subscriberId,
+       new Filters(
+          new KindFilter(
+             Kind.BADGE_AWARD_EVENT),
+          new ReferencedPublicKeyFilter(
+             new PubKeyTag(
+                downvotedUserPubKey))));
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(reqMessage, relayUrl));
 
-		log.debug("returned events:");
-		log.debug("  {}", returnedEventIFs);
+    log.debug("returned events:");
+    log.debug("  {}", returnedEventIFs);
 
-		assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
-		assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
 
-		AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
+    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
 
-		assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-		assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
-		assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
-	}
+    assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
+    assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
+    assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
+  }
 
-	@Test
-	void testValidExistingEventThenAfterImageReputationRequestSpecific() throws NostrException {
-		final String subscriberId = Factory.generateRandomHex64String();
+  @Test
+  void testValidExistingEventThenAfterImageReputationRequestSpecific() throws NostrException {
+    final String subscriberId = Factory.generateRandomHex64String();
 
-		List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-			new NostrSingleRequestService().send(
-				new ReqMessage(
-					subscriberId,
-					new Filters(
-						new KindFilter(
-							Kind.BADGE_AWARD_EVENT),
-						new ReferencedPublicKeyFilter(
-							new PubKeyTag(
-								downvotedUserPubKey)),
-						new AddressTagFilter(
-							new AddressTag(
-								Kind.BADGE_DEFINITION_EVENT,
-								superconductorInstanceIdentity.getPublicKey(),
-								IDENTIFIER_TAG)))),
-				relayUrl));
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             subscriberId,
+             new Filters(
+                new KindFilter(
+                   Kind.BADGE_AWARD_EVENT),
+                new ReferencedPublicKeyFilter(
+                   new PubKeyTag(
+                      downvotedUserPubKey)),
+                new AddressTagFilter(
+                   new AddressTag(
+                      Kind.BADGE_DEFINITION_EVENT,
+                      superconductorInstanceIdentity.getPublicKey(),
+                      IDENTIFIER_TAG)))),
+          relayUrl));
 
-		log.debug("returned events:");
-		log.debug("  {}", returnedEventIFs);
+    log.debug("returned events:");
+    log.debug("  {}", returnedEventIFs);
 
-		assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
-		assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
 
-		AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
+    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
 
-		assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-		assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
-		assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
-	}
+    assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
+    assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
+    assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
+  }
 }

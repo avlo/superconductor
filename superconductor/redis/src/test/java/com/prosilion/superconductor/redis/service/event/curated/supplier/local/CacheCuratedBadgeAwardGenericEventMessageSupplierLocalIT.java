@@ -2,6 +2,7 @@ package com.prosilion.superconductor.redis.service.event.curated.supplier.local;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.curated.supplier.local.AbstractCacheCuratedBadgeAwardEventMessageSupplierLocalIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;

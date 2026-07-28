@@ -24,6 +24,7 @@ import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeSetsEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedBadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedBadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FollowSetsEventKindPlugin;
@@ -85,12 +86,25 @@ public class EventKindPluginConfig {
 
   @Bean("badgeAwardGenericEventKindPlugin")
   @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPlugin")
+  @Conditional(BadgeDefinitionNoCurateEventCondition.class)
   BadgeAwardGenericEventKindPlugin<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventKindPlugin(
      @NonNull NotifierService notifierService,
      @NonNull EventPlugin eventPlugin) {
     return new BadgeAwardGenericEventKindPlugin<>(
        notifierService,
        eventPlugin);
+  }
+
+  @Bean("badgeAwardGenericEventKindPlugin")
+  @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPlugin")
+  @Conditional(BadgeDefinitionCurateEventCondition.class)
+  public CuratedBadgeAwardGenericEventKindPlugin curatedBadgeAwardGenericEventKindPlugin(
+     @NonNull String superconductorRelayUrl,
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull NotifierService notifierService,
+     @NonNull EventPlugin eventPlugin) {
+    return new CuratedBadgeAwardGenericEventKindPlugin(
+       superconductorInstanceIdentity, superconductorRelayUrl, notifierService, eventPlugin);
   }
 
   @Bean("formulaEventKindPlugin")

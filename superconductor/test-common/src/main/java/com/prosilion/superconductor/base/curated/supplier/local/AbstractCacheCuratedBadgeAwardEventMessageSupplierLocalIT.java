@@ -18,11 +18,18 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierLocalIT 
   }
 
   @Override
-  protected BadgeDefinitionGenericEvent createBadgeDefinitionGenericEvent() {
+  protected BadgeDefinitionGenericEvent createBadgeDefinitionUpvoteEvent() {
     return new BadgeDefinitionGenericEvent(
-       superconductorInstanceIdentity,
+       upvoteDefnCreator,
        upvoteIdentifierTag,
        new Relay(definitionEventRelayUrl));
+  }
+
+  @Override
+  protected BadgeDefinitionGenericEvent createBadgeDefinitionDownvoteEvent() {
+    return new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator,
+       downvoteIdentifierTag);
   }
 
   @Override
@@ -39,6 +46,6 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierLocalIT 
     return new BadgeAwardGenericEvent<>(
        submitter,
        recipient.getPublicKey(),
-       badgeDefinitionUpvoteEvent);
+       badgeDefinitionDownvoteEvent);
   }
 }

@@ -16,7 +16,6 @@ import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
-import java.time.Duration;
 import java.util.List;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +75,7 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT exte
     assertTrue(
        definitionEventNostrEventPublisher
           .send(
-             eventMessageBadgeDefinitionUpvoteEventWithRelayTag, Duration.ofMinutes(30))
+             eventMessageBadgeDefinitionUpvoteEventWithRelayTag)
           .getFlag());
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(

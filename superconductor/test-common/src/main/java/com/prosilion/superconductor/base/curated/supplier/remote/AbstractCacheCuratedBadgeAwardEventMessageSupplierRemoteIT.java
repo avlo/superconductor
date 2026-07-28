@@ -19,11 +19,18 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierRemoteIT
   }
 
   @Override
-  protected BadgeDefinitionGenericEvent createBadgeDefinitionGenericEvent() {
+  protected BadgeDefinitionGenericEvent createBadgeDefinitionUpvoteEvent() {
     return new BadgeDefinitionGenericEvent(
        superconductorInstanceIdentity,
        upvoteIdentifierTag,
        new Relay("ws://superconductor-app-two:5555"));
+  }
+
+  @Override
+  protected BadgeDefinitionGenericEvent createBadgeDefinitionDownvoteEvent() {
+    return new BadgeDefinitionGenericEvent(
+       superconductorInstanceIdentity,
+       downvoteIdentifierTag);
   }
 
   @Override
@@ -40,6 +47,6 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierRemoteIT
     return new BadgeAwardGenericEvent<>(
        submitter,
        recipient.getPublicKey(),
-       badgeDefinitionUpvoteEvent);
+       badgeDefinitionDownvoteEvent);
   }
 }

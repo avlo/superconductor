@@ -50,6 +50,7 @@ public abstract class CacheBadgeDefinitionAbstractEventService<T extends Address
           .flatMap(this::materialize));
   }
 
+  @Override
   public Optional<T> getByExpanded(@NonNull AddressTag addressTag) {
     if (!addressTag.getKind().equals(Kind.BADGE_DEFINITION_EVENT))
       throw new NostrException(

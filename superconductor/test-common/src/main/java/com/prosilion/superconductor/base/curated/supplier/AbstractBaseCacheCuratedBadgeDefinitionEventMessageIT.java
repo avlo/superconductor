@@ -50,7 +50,7 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT exte
   abstract protected BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag();
 
   @Test
-  void testValidExistingEventThenAfterImageReputationRequestGeneral() throws NostrException {
+  void testExpectedEvent() throws NostrException {
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
        new NostrSingleRequestService().send(
           new ReqMessage(

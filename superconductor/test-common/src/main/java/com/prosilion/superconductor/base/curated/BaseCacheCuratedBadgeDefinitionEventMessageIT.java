@@ -26,7 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseCacheCuratedBadgeDefinitionEventMessageIT extends BaseIntegrationTestFixtures {
-  private final String definitionEventRelayUrl;
+  protected final String definitionEventRelayUrl;
+  protected final Relay definitionEventRelay;
 
   private final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEventWithRelayTag;
   private final BadgeDefinitionGenericEvent badgeDefinitionDownvoteEventWithoutRelayTag;
@@ -36,6 +37,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionEventMessageIT extends Base
      @NonNull Identity superconductorInstanceIdentity) throws NostrException {
     super(superconductorInstanceIdentity);
     this.definitionEventRelayUrl = superconductorRelayUrl;
+    this.definitionEventRelay = new Relay(superconductorRelayUrl);
 
     this.badgeDefinitionUpvoteEventWithRelayTag = createDefinitionEventContainingRelayTag();
     this.badgeDefinitionDownvoteEventWithoutRelayTag = createDefinitionEventWithoutRelayTag();

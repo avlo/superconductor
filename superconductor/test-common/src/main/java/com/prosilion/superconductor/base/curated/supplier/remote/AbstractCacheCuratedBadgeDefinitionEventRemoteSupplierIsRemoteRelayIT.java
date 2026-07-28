@@ -1,22 +1,23 @@
-package com.prosilion.superconductor.base.curated;
+package com.prosilion.superconductor.base.curated.supplier.remote;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.curated.supplier.AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierRelayIT extends BaseCacheCuratedBadgeDefinitionEventMessageIT {
-  protected AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierRelayIT(
+public abstract class AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierIsRemoteRelayIT extends AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT {
+  protected AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierIsRemoteRelayIT(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String definitionEventRelayUrl) throws NostrException {
     super(definitionEventRelayUrl, superconductorInstanceIdentity);
   }
 
   @Override
-  BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag() {
+  protected BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag() {
     return new BadgeDefinitionGenericEvent(
        upvoteDefnCreator,
        upvoteIdentifierTag,
@@ -24,7 +25,7 @@ public abstract class AbstractCacheCuratedBadgeDefinitionEventRemoteSupplierRela
   }
 
   @Override
-  BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag() {
+  protected BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag() {
     return new BadgeDefinitionGenericEvent(
        upvoteDefnCreator,
        downvoteIdentifierTag);

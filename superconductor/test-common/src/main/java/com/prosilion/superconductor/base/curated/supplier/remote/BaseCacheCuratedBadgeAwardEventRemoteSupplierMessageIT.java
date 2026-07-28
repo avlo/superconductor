@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.base.curated;
+package com.prosilion.superconductor.base.curated.supplier.remote;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;

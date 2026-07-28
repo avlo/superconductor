@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.base.curated;
+package com.prosilion.superconductor.base.curated.supplier;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
@@ -25,14 +25,15 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseCacheCuratedBadgeDefinitionEventMessageIT extends BaseIntegrationTestFixtures {
+public abstract class
+AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT extends BaseIntegrationTestFixtures {
   protected final String definitionEventRelayUrl;
   protected final Relay definitionEventRelay;
 
   private final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEventWithRelayTag;
   private final BadgeDefinitionGenericEvent badgeDefinitionDownvoteEventWithoutRelayTag;
 
-  protected BaseCacheCuratedBadgeDefinitionEventMessageIT(
+  protected AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT(
      @NonNull String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity) throws NostrException {
     super(superconductorInstanceIdentity);
@@ -46,8 +47,8 @@ public abstract class BaseCacheCuratedBadgeDefinitionEventMessageIT extends Base
     setupBadgeDefinitionEvent(badgeDefinitionDownvoteEventWithoutRelayTag);
   }
 
-  abstract BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag();
-  abstract BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag();
+  abstract protected BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag();
+  abstract protected BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag();
 
   @Test
   void testValidExistingEventThenAfterImageReputationRequestGeneral() throws NostrException {

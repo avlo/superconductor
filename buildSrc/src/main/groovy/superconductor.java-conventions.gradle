@@ -126,10 +126,8 @@ testing {
               includeTestsMatching("*IT")
 //                          excludeTestsMatching("*NoOp*IT")
               excludeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT")
-              excludeTestsMatching("CacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT")
-              excludeTestsMatching("CacheCuratedBadgeDefinitionEventWithRelayTagRemoteSupplierMessageIT")
-              excludeTestsMatching("CacheCuratedBadgeDefinitionEventWithoutRelayTagRemoteSupplierMessageIT")
-              excludeTestsMatching("CacheCuratedBadgeAwardEventRemoteSupplierMessageIT")
+              excludeTestsMatching("CacheCuratedBadgeDefinitionGenericEventRemoteSupplierIT")
+              excludeTestsMatching("CacheCuratedBadgeAwardGenericEventRemoteSupplierIT")
             }
           }
         }

@@ -3,7 +3,6 @@ package com.prosilion.superconductor.redis.service.event;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
@@ -22,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -82,8 +80,9 @@ public class CacheBadgeDefinitionGenericEventServiceIT extends BaseIntegrationTe
        cacheBadgeDefinitionGenericEventService.getEvent(awardUpvoteDefinitionEvent.getId(), relay);
 
     assertTrue(dbDefinitionGenericEvent.isPresent());
-    assertNotEquals(dbDefinitionGenericEvent.map(BadgeDefinitionGenericEvent::getId).orElseThrow(), awardUpvoteDefinitionEvent.getId());
-    assertTrue(dbDefinitionGenericEvent.map(BadgeDefinitionGenericEvent::getEventTags).stream().flatMap(Collection::stream).map(EventTag::eventId).anyMatch(awardUpvoteDefinitionEvent.getId()::equals));
+    assertEquals(dbDefinitionGenericEvent.map(BadgeDefinitionGenericEvent::getId).orElseThrow(), awardUpvoteDefinitionEvent.getId());
+    assertTrue(dbDefinitionGenericEvent.map(BadgeDefinitionGenericEvent::getEventTags).stream().flatMap(Collection::stream).toList().isEmpty());
+    assertTrue(dbDefinitionGenericEvent.map(BadgeDefinitionGenericEvent::getRelay).stream().flatMap(Optional::stream).toList().isEmpty());
   }
 
 //  @Test

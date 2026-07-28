@@ -7,6 +7,8 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.autoconfigure.base.BadgeDefinitionCurateEventCondition;
+import com.prosilion.superconductor.autoconfigure.base.BadgeDefinitionNoCurateEventCondition;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
@@ -22,11 +24,11 @@ import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeSetsEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedBadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FollowSetsEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.StandardEventKindPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.curated.CuratedBadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeAwardReputationEventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeDefinitionReputationEventKindTypePlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePlugin;
@@ -41,8 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_AWARD_REPUTATION_KIND_TYPE;
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_KIND_TYPE;
@@ -62,21 +64,23 @@ public class EventKindPluginConfig {
        new StandardEventKindPlugin(kind, notifierService, eventPlugin)).toList();
   }
 
-  @Bean
   @ConditionalOnMissingBean
-  @ConditionalOnProperty(name = "superconductor.curated.badgedefinition.event", havingValue = "false", matchIfMissing = false) // explicit "false" for dev awareness 
+  @Bean("badgeDefinitionGenericEventKindPlugin")
+  @Conditional(BadgeDefinitionNoCurateEventCondition.class)
   public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
      @NonNull EventPlugin eventPlugin) {
     return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
   }
 
-  @Bean
   @ConditionalOnMissingBean
-  @ConditionalOnProperty(name = "superconductor.curated.badgedefinition.event", havingValue = "true", matchIfMissing = true)
-  public CuratedBadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
+  @Bean("badgeDefinitionGenericEventKindPlugin")
+  @Conditional(BadgeDefinitionCurateEventCondition.class)
+  public CuratedBadgeDefinitionGenericEventKindPlugin curatedBadgeDefinitionGenericEventKindPlugin(
+     @NonNull String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull EventPlugin eventPlugin) {
-    return new CuratedBadgeDefinitionGenericEventKindPlugin(superconductorInstanceIdentity, eventPlugin);
+    return new CuratedBadgeDefinitionGenericEventKindPlugin(
+       superconductorInstanceIdentity, superconductorRelayUrl, eventPlugin);
   }
 
   @Bean("badgeAwardGenericEventKindPlugin")

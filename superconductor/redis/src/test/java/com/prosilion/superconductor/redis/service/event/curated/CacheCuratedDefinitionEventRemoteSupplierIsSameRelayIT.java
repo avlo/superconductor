@@ -5,7 +5,6 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.curated.BaseCacheCuratedBadgeDefinitionEventRemoteSupplierIsSameRelayMessageIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.io.IOException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class CacheCuratedDefinitionEventRemoteSupplierIsSameRelayIT extends Base
   CacheCuratedDefinitionEventRemoteSupplierIsSameRelayIT(
      @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull Identity superconductorInstanceIdentity) throws IOException, NostrException {
+     @NonNull Identity superconductorInstanceIdentity) throws NostrException {
     super(superconductorRelayUrl, cacheServiceIF, superconductorInstanceIdentity);
   }
 }

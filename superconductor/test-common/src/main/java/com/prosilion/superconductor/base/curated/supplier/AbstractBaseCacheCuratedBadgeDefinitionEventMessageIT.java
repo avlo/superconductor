@@ -9,6 +9,7 @@ import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
@@ -50,7 +51,7 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT exte
 
   @Test
   void testExpectedEvent() throws NostrException {
-    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+    List<EventIF> returnedCuratedBadgeDefinitionEvents = TestUtils.getEventIFs(
        new NostrSingleRequestService().send(
           new ReqMessage(
              Factory.generateRandomHex64String(),
@@ -59,14 +60,22 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT exte
           definitionEventRelayUrl));
 
     log.debug("returned events:");
-    log.debug("  {}", returnedEventIFs);
+    log.debug("  {}", returnedCuratedBadgeDefinitionEvents);
 
-    List<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+    List<String> eventIds = returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
 
     assertTrue(eventIds.contains(badgeDefinitionUpvoteEventWithRelayTag.getId()));
     assertTrue(eventIds.contains(badgeDefinitionDownvoteEventWithoutRelayTag.getId()));
+
+    assertTrue(returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(AddressTag.class))
+       .anyMatch(badgeDefinitionUpvoteEventWithRelayTag.asAddressableEventAddressTag()::equals));
+
+    assertTrue(returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(AddressTag.class))
+       .anyMatch(badgeDefinitionDownvoteEventWithoutRelayTag.asAddressableEventAddressTag()::equals));
   }
 
   private void setupBadgeDefinitionEvent(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {

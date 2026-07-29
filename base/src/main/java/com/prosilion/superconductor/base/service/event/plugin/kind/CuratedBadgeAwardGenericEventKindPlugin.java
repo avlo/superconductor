@@ -36,7 +36,7 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
     log.debug("processing incoming BadgeAwardGenericEvent using eventRelayTag url [{}]",
        eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
 
-//    super.processIncomingEvent(event, fromRelay);
+    super.processIncomingEvent(event, fromRelay);
 
     String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
     CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(

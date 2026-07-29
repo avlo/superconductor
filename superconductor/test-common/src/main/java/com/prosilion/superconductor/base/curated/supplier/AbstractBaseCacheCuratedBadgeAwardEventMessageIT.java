@@ -10,6 +10,7 @@ import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
@@ -104,7 +105,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
 
   @Test
   void testExpectedEventViaGeneralRequest() throws NostrException {
-    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+    List<EventIF> returnedCuratedBadgeAwardEvents = TestUtils.getEventIFs(
        new NostrSingleRequestService().send(
           new ReqMessage(
              Factory.generateRandomHex64String(),
@@ -113,26 +114,14 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
           awardEventRelayUrl));
 
     log.debug("returned events:");
-    log.debug("  {}", returnedEventIFs);
+    log.debug("  {}", returnedCuratedBadgeAwardEvents);
 
-    List<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
-       .map(event -> event.requireFirstTag(EventTag.class))
-       .map(EventTag::getEventId).toList();
-
-    assertTrue(eventIds.contains(badgeAwardEventWithRelayTag.getId()));
-    assertTrue(eventIds.contains(badgeAwardEventWithoutRelayTag.getId()));
-//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(badgeAwardEventWithoutRelayTag.getId())));
-//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(submitter.getPublicKey())));
-//
-//    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
-//
-//    assertEquals(Kind.BADGE_AWARD_EVENT, addressTag.getKind());
-//    assertEquals(upvoteIdentifierTag, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
+    validateResults(returnedCuratedBadgeAwardEvents);
   }
 
   @Test
   void testExpectedEventViaSpecificRequest() throws NostrException {
-    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+    List<EventIF> returnedCuratedBadgeAwardEvents = TestUtils.getEventIFs(
        new NostrSingleRequestService().send(
           new ReqMessage(
              Factory.generateRandomHex64String(),
@@ -145,20 +134,29 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
           awardEventRelayUrl));
 
     log.debug("returned events:");
-    log.debug("  {}", returnedEventIFs);
+    log.debug("  {}", returnedCuratedBadgeAwardEvents);
 
-    List<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+    validateResults(returnedCuratedBadgeAwardEvents);
+  }
+
+  private void validateResults(List<EventIF> returnedCuratedBadgeAwardEvents) {
+    List<String> eventIds = returnedCuratedBadgeAwardEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
 
     assertTrue(eventIds.contains(badgeAwardEventWithRelayTag.getId()));
     assertTrue(eventIds.contains(badgeAwardEventWithoutRelayTag.getId()));
 
-//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(submitter.getPublicKey())));
-//
-//    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
-//
-//    assertEquals(Kind.BADGE_AWARD_EVENT, addressTag.getKind());
-//    assertEquals(upvoteIdentifierTag, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
+    assertTrue(returnedCuratedBadgeAwardEvents.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(PubKeyTag.class))
+       .map(PubKeyTag::getPublicKey).allMatch(recipient.getPublicKey()::equals));
+
+    assertTrue(returnedCuratedBadgeAwardEvents.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(AddressTag.class))
+       .anyMatch(badgeDefinitionUpvoteEvent.asAddressableEventAddressTag()::equals));
+
+    assertTrue(returnedCuratedBadgeAwardEvents.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(AddressTag.class))
+       .anyMatch(badgeDefinitionDownvoteEvent.asAddressableEventAddressTag()::equals));
   }
 }

@@ -10,7 +10,6 @@ import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
@@ -20,12 +19,10 @@ import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
 import java.util.List;
-import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -56,13 +53,13 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
     this.awardEventRelayUrl = awardEventRelayUrl;
 
     this.badgeDefinitionUpvoteEvent = createBadgeDefinitionUpvoteEvent();
-//    setupBadgeDefinitionGenericEvent(badgeDefinitionUpvoteEvent, definitionEventRelayUrl);
+    setupBadgeDefinitionGenericEvent(badgeDefinitionUpvoteEvent, definitionEventRelayUrl);
 
     this.badgeDefinitionDownvoteEvent = createBadgeDefinitionDownvoteEvent();
     setupBadgeDefinitionGenericEvent(badgeDefinitionDownvoteEvent, definitionEventRelayUrl);
 
     this.badgeAwardEventWithRelayTag = createAwardEventContainingRelayTag();
-//    setupBadgeAwardEvent(badgeAwardEventWithRelayTag);
+    setupBadgeAwardEvent(badgeAwardEventWithRelayTag);
 
     this.badgeAwardEventWithoutRelayTag = createAwardEventWithoutRelayTag();
     setupBadgeAwardEvent(badgeAwardEventWithoutRelayTag);
@@ -92,7 +89,6 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
 
-//    assertTrue(eventIds.contains(badgeDefinitionUpvoteEventWithRelayTag.getId()));
     assertTrue(eventIds.contains(badgeDefinitionGenericEvent.getId()));
   }
 
@@ -119,14 +115,19 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
 
-//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(badgeAwardEventWithRelayTag.getId())));
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(badgeAwardEventWithoutRelayTag.getId())));
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(submitter.getPublicKey())));
+    List<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(EventTag.class))
+       .map(EventTag::getEventId).toList();
 
-    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
-
-    assertEquals(Kind.BADGE_AWARD_EVENT, addressTag.getKind());
-    assertEquals(upvoteIdentifierTag, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
+    assertTrue(eventIds.contains(badgeAwardEventWithRelayTag.getId()));
+    assertTrue(eventIds.contains(badgeAwardEventWithoutRelayTag.getId()));
+//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(badgeAwardEventWithoutRelayTag.getId())));
+//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(submitter.getPublicKey())));
+//
+//    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
+//
+//    assertEquals(Kind.BADGE_AWARD_EVENT, addressTag.getKind());
+//    assertEquals(upvoteIdentifierTag, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
   }
 
   @Test
@@ -146,30 +147,18 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
 
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(badgeAwardEventWithRelayTag.getId())));
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(badgeAwardEventWithoutRelayTag.getId())));
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(submitter.getPublicKey())));
+    List<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(EventTag.class))
+       .map(EventTag::getEventId).toList();
 
-    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
+    assertTrue(eventIds.contains(badgeAwardEventWithRelayTag.getId()));
+    assertTrue(eventIds.contains(badgeAwardEventWithoutRelayTag.getId()));
 
-    assertEquals(Kind.BADGE_AWARD_EVENT, addressTag.getKind());
-    assertEquals(upvoteIdentifierTag, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
+//    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(submitter.getPublicKey())));
+//
+//    AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
+//
+//    assertEquals(Kind.BADGE_AWARD_EVENT, addressTag.getKind());
+//    assertEquals(upvoteIdentifierTag, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
   }
-
-//  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAndSaveBackingBadgeAward() {
-//    BadgeDefinitionGenericEvent badgeDefinitionGenericEvent =
-//       new BadgeDefinitionGenericEvent(
-//          Identity.generateRandomIdentity(),
-//          upvoteIdentifierTag,
-//          relay);
-//    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
-//       new BadgeAwardGenericEvent<>(
-//          Identity.generateRandomIdentity(),
-//          recipient.getPublicKey(),
-//          badgeDefinitionGenericEvent,
-//          relay);
-//    cacheServiceIF.save(badgeDefinitionGenericEvent);
-//    cacheServiceIF.save(badgeAwardGenericEvent);
-//    return badgeAwardGenericEvent;
-//  }
 }

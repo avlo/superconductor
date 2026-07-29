@@ -32,9 +32,9 @@ public class CuratedBadgeDefinitionGenericEventKindPlugin extends NonPublishingE
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
     Optional<RelayTag> eventRelayTag = event.findFirstTag(RelayTag.class);
-
     log.debug("processing incoming BadgeDefinitionGenericEvent using eventRelayTag url [{}]",
        eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
+    
     super.processIncomingEvent(event, fromRelay);
 
     String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());

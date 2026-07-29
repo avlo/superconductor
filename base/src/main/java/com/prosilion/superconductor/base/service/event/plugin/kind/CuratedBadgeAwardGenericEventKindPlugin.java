@@ -33,19 +33,19 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
     Optional<RelayTag> eventRelayTag = event.findFirstTag(RelayTag.class);
-    String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
-
     log.debug("processing incoming BadgeAwardGenericEvent using eventRelayTag url [{}]",
        eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
 
+//    super.processIncomingEvent(event, fromRelay);
+
+    String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
     CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(
        superconductorInstanceIdentity,
        event.asGenericEventRecord(),
-       new ReferenceTag(fromRelay.getUrl()),
-       fromRelay);
+       new ReferenceTag(guaranteedSourceRelayUrl),
+       superconductorRelay);
 
-
-    log.debug("creating CuratedBadgeDefinitionGenericEvent referencing eventRelayTag url [{}]", guaranteedSourceRelayUrl);
+    log.debug("creating CuratedBadgeAwardGenericEvent referencing eventRelayTag url [{}]", guaranteedSourceRelayUrl);
     return super.processIncomingEvent(curatedBadgeAwardGenericEvent, superconductorRelay);
   }
 

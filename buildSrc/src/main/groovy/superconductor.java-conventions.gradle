@@ -163,11 +163,8 @@ tasks.register('integrationTestDocker', Test) {
   systemProperty("spring.profiles.active", "test")
   useJUnitPlatform()
   filter {
-//    includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierSameRelayMessageIT")
-//    includeTestsMatching("BadgeAwardDownvoteEventRemoteSupplierMessageIT") <---- eventually substituted w/ below
-    includeTestsMatching("CacheCuratedBadgeDefinitionEventRemoteSupplierMessageIT")
-//    includeTestsMatching("CacheCuratedBadgeDefinitionEventWithoutRelayTagRemoteSupplierMessageIT")
-//    includeTestsMatching("CacheCuratedBadgeAwardEventRemoteSupplierMessageIT")
+    includeTestsMatching("CacheCuratedBadgeDefinitionGenericEventMessageSupplierRemoteIT")
+    includeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT")
   }
 }
 

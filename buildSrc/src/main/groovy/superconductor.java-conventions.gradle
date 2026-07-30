@@ -128,6 +128,7 @@ testing {
               excludeTestsMatching("BadgeAwardDownvoteEventSupplierRemoteIT")
               excludeTestsMatching("CacheCuratedBadgeDefinitionGenericEventMessageSupplierRemoteIT")
               excludeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT")
+              excludeTestsMatching("CacheCuratedFormulaEventMessageSupplierRemoteIT")
             }
           }
         }
@@ -165,6 +166,7 @@ tasks.register('integrationTestDocker', Test) {
   filter {
     includeTestsMatching("CacheCuratedBadgeDefinitionGenericEventMessageSupplierRemoteIT")
     includeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT")
+    includeTestsMatching("CacheCuratedFormulaEventMessageSupplierRemoteIT")
   }
 }
 

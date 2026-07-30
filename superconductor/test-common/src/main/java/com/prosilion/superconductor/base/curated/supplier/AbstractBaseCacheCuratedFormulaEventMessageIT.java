@@ -44,22 +44,19 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
     this.formulaEventRelayUrl = superconductorRelayUrl;
     this.formulaEventRelay = new Relay(superconductorRelayUrl);
 
-    this.badgeDefinitionUpvoteEventWithRelayTag = new BadgeDefinitionGenericEvent(
-       upvoteDefnCreator,
-       upvoteIdentifierTag,
-       formulaEventRelay);
+    this.badgeDefinitionUpvoteEventWithRelayTag = createDefinitionEventContainingRelayTag();
+    this.badgeDefinitionDownvoteEventWithoutRelayTag = createDefinitionEventWithoutRelayTag();
     setupBadgeDefinitionEvent(badgeDefinitionUpvoteEventWithRelayTag);
-    this.badgeDefinitionDownvoteEventWithoutRelayTag = new BadgeDefinitionGenericEvent(
-       upvoteDefnCreator,
-       downvoteIdentifierTag);
     setupBadgeDefinitionEvent(badgeDefinitionDownvoteEventWithoutRelayTag);
 
     this.formulaUpvoteEventWithRelayTag = createFormulaEventContainingRelayTag();
     this.formulaDownvoteEventWithoutRelayTag = createFormulaEventWithoutRelayTag();
-
     setupFormulaEvent(formulaUpvoteEventWithRelayTag);
     setupFormulaEvent(formulaDownvoteEventWithoutRelayTag);
   }
+
+  abstract protected BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag();
+  abstract protected BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag();
 
   abstract protected FormulaEvent createFormulaEventContainingRelayTag();
   abstract protected FormulaEvent createFormulaEventWithoutRelayTag();

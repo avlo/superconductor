@@ -1,19 +1,20 @@
-package com.prosilion.superconductor.base.curated.supplier.local;
+package com.prosilion.superconductor.base.curated.supplier.remote;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.curated.supplier.AbstractBaseCacheCuratedFormulaEventMessageIT;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractCacheCuratedFormulaEventMessageSupplierLocalIT extends AbstractBaseCacheCuratedFormulaEventMessageIT {
-  protected AbstractCacheCuratedFormulaEventMessageSupplierLocalIT(
-     @NonNull String superconductorRelayUrl,
-     @NonNull Identity superconductorInstanceIdentity) throws NostrException {
-    super(superconductorRelayUrl, superconductorInstanceIdentity);
+public abstract class AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT extends AbstractBaseCacheCuratedFormulaEventMessageIT {
+  protected AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String definitionEventRelayUrl) throws NostrException {
+    super(definitionEventRelayUrl, superconductorInstanceIdentity);
   }
 
   @Override
@@ -21,7 +22,7 @@ public abstract class AbstractCacheCuratedFormulaEventMessageSupplierLocalIT ext
     return new BadgeDefinitionGenericEvent(
        upvoteDefnCreator,
        upvoteIdentifierTag,
-       formulaEventRelay);
+       new Relay("ws://superconductor-app-two:5555"));
   }
 
   @Override
@@ -38,7 +39,7 @@ public abstract class AbstractCacheCuratedFormulaEventMessageSupplierLocalIT ext
        formulaUpvoteIdentifierTag,
        badgeDefinitionUpvoteEventWithRelayTag,
        PLUS_ONE_FORMULA,
-       formulaEventRelay);
+       new Relay("ws://superconductor-app-two:5555"));
   }
 
   @Override

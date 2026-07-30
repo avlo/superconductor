@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT extends BaseIntegrationTestFixtures {
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
-  private final Relay relay;
+  protected final Relay relay;
 
   private final CuratedBadgeDefinitionGenericEvent curatedUpvoteDefinitionEvent;
   private final BadgeDefinitionGenericEvent downvoteDefinitionEvent;

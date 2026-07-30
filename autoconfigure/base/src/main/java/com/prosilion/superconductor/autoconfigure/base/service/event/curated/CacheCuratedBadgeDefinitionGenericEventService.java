@@ -13,7 +13,7 @@ import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventS
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import java.util.Optional;
-import org.jspecify.annotations.NonNull;
+import lombok.NonNull;
 
 public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCacheCuratedEventService<CuratedBadgeDefinitionGenericEvent, BadgeDefinitionGenericEvent> implements CacheCuratedBadgeDefinitionGenericEventServiceIF {
   private final CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF;

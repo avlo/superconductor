@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -55,7 +54,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService) throws ParseException {
+     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService) {
     super(superconductorInstanceIdentity);
     this.eventServiceIF = eventServiceIF;
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;

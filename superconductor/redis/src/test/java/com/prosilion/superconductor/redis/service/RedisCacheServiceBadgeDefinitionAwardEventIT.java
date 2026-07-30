@@ -1,6 +1,5 @@
 //package com.prosilion.superconductor.redis.service;
 //
-//import com.ezylang.evalex.parser.ParseException;
 //import com.prosilion.nostr.NostrException;
 //import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 //import com.prosilion.nostr.event.BaseEvent;
@@ -149,7 +148,7 @@
 //  }
 //
 //  @Test
-//  void testDeletedEvent() throws ParseException {
+//  void testDeletedEvent() {
 //    log.info("saved id: {}", eventNosqlEntityIFBadgeDefinitionGenericEvent);
 //
 //    List<FormulaEvent> all = cacheFormulaEventService.getAll();
@@ -193,7 +192,7 @@
 //
 //  private void deleteSecondEvent(
 //      int allEventsSizeAfterFirstDeletion,
-//      String firstDeletedEventId) throws ParseException {
+//      String firstDeletedEventId) {
 //
 //    List<FormulaEvent> all = cacheFormulaEventService.getAll();
 //    int sizeBeforeSecondDeleteMeEvent = all.size();

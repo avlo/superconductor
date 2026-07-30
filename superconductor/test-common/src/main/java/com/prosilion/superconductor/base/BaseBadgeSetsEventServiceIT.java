@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
@@ -41,7 +40,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
      @NonNull @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("cacheBadgeSetsEventService") CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) throws ParseException {
+     @NonNull @Qualifier("cacheBadgeSetsEventService") CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) {
     super(superconductorInstanceIdentity);
     this.cacheBadgeSetsEventServiceIF = cacheBadgeSetsEventServiceIF;
     Relay relay = new Relay(relayUrl);

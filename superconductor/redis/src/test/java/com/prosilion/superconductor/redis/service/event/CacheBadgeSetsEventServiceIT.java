@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.service.event;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.tag.AddressTag;
@@ -41,7 +40,7 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
      @NonNull @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("cacheBadgeSetsEventService") CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) throws ParseException {
+     @NonNull @Qualifier("cacheBadgeSetsEventService") CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) {
     super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, cacheBadgeSetsEventServiceIF);
     this.cacheBadgeSetsEventServiceIF = cacheBadgeSetsEventServiceIF;
   }

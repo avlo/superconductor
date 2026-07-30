@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.service.event;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
@@ -56,7 +55,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheBadgeDefinitionReputationEventService") CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) throws ParseException {
+     @NonNull @Qualifier("cacheBadgeDefinitionReputationEventService") CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
     super(superconductorInstanceIdentity);
     this.eventServiceIF = eventServiceIF;
     this.cacheBadgeDefinitionReputationEventService = cacheBadgeDefinitionReputationEventService;
@@ -159,7 +158,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
   }
 
   @Test
-  void testGetByDirectAddressTag() throws ParseException {
+  void testGetByDirectAddressTag() {
     BadgeDefinitionReputationEvent expected = new BadgeDefinitionReputationEvent(
        parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
@@ -177,7 +176,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
   }
 
   @Test
-  public void testSaveBadgeDefinitionReputationEventUpvote() throws ParseException {
+  public void testSaveBadgeDefinitionReputationEventUpvote() {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
        parameterAimgIdentity,
        repDefnCreator.getPublicKey(),

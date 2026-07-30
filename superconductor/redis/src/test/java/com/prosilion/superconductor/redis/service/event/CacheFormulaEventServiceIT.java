@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.service.event;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -51,7 +50,7 @@ public class CacheFormulaEventServiceIT extends BaseIntegrationTestFixtures {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheFormulaEventService") CacheFormulaEventService cacheFormulaEventService) throws ParseException {
+     @NonNull @Qualifier("cacheFormulaEventService") CacheFormulaEventService cacheFormulaEventService) {
     super(superconductorInstanceIdentity);
     this.eventServiceIF = eventServiceIF;
     this.cacheFormulaEventService = cacheFormulaEventService;
@@ -118,7 +117,7 @@ public class CacheFormulaEventServiceIT extends BaseIntegrationTestFixtures {
   }
 
   @Test
-  public void testSaveFormulae() throws ParseException {
+  public void testSaveFormulae() {
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvote), relay);
     FormulaEvent dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), relay).orElseThrow();
     assertEquals(formulaEventUpvote, dbPlusOneFormulaEvent);

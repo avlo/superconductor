@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.service.event.curated;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeAwardGenericEventService;
 import com.prosilion.superconductor.base.curated.BaseCacheCuratedBadgeAwardGenericEventServiceIT;
@@ -24,7 +23,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceIT extends BaseCacheCurate
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService) throws ParseException {
+     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService) {
     super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, cacheCuratedBadgeAwardGenericEventService);
   }
 }

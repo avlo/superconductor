@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.entity;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
@@ -39,13 +38,13 @@ public class FormulaEventTest {
   final FormulaEvent formulaEventUpvote;
   final FormulaEvent formulaEventDownvote;
 
-  public FormulaEventTest() throws ParseException {
+  public FormulaEventTest() {
     this.formulaEventUpvote = new FormulaEvent(identity, upvoteIdentifierTag, awardUpvoteEvent, PLUS_ONE_FORMULA, relay);
     this.formulaEventDownvote = new FormulaEvent(identity, downvoteIdentifierTag, awardDownvoteEvent, MINUS_ONE_FORMULA, relay);
   }
 
   @Test
-  void equalityTest() throws ParseException {
+  void equalityTest() {
     assertNotEquals(awardUpvoteEvent, new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, PLUS_ONE_FORMULA, relay));
     assertNotEquals(awardDownvoteEvent, new BadgeDefinitionGenericEvent(identity, downvoteIdentifierTag, MINUS_ONE_FORMULA, relay));
     assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, awardUpvoteEvent, PLUS_ONE_FORMULA, relay));
@@ -64,7 +63,7 @@ public class FormulaEventTest {
   }
 
   @Test
-  void testGenericEventRecordFormulaEventCreation() throws ParseException {
+  void testGenericEventRecordFormulaEventCreation() {
     FormulaEvent expected = new FormulaEvent(
        identity,
        upvoteIdentifierTag,
@@ -100,7 +99,7 @@ public class FormulaEventTest {
   }
 
   @Test
-  void testDifferentContentDto() throws ParseException {
+  void testDifferentContentDto() {
     BadgeDefinitionGenericEvent differentContentDto = new BadgeDefinitionGenericEvent(
        identity, upvoteIdentifierTag, BaseIntegrationTestFixtures.AWARD_UNIT_UPVOTE, relay);
 
@@ -108,7 +107,7 @@ public class FormulaEventTest {
   }
 
   @Test
-  void formulaContentTest() throws ParseException {
+  void formulaContentTest() {
     assertEquals(
        "BadgeDefinitionReputationEvent FormulaEvent(s) operator(s) default content: BADGE_DEFN_UNIT_REP == (previous)BADGE_DEFN_UNIT_REP +1(BDG_DEF_UNIT_UP) -1(BDG_DEF_UNIT_DOWN)",
        new BadgeDefinitionReputationEvent(

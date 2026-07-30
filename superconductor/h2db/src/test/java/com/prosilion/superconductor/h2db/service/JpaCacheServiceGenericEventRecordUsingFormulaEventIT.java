@@ -1,6 +1,5 @@
 //package com.prosilion.superconductor.h2db.service;
 //
-//import com.ezylang.evalex.parser.ParseException;
 //import com.prosilion.superconductor.base.service.CacheEventTagBaseEventServiceIF;
 //import com.prosilion.superconductor.base.service.event.type.EventPluginIF;
 //import com.prosilion.superconductor.service.TempIT;
@@ -21,7 +20,7 @@
 //  public JpaCacheServiceGenericEventRecordUsingFormulaEventIT(
 //      @NonNull @Qualifier("eventPlugin") EventPluginIF eventPluginIF,
 //      @NonNull CacheEventTagBaseEventServiceIF cacheFormulaEventService,
-//      @NonNull CacheEventTagBaseEventServiceIF cacheBadgeDefinitionReputationEventService) throws ParseException {
+//      @NonNull CacheEventTagBaseEventServiceIF cacheBadgeDefinitionReputationEventService) {
 //    super(eventPluginIF, cacheFormulaEventService, cacheBadgeDefinitionReputationEventService);
 //  }
 //}

@@ -1,6 +1,5 @@
 //package com.prosilion.superconductor.redis.service;
 //
-//import com.ezylang.evalex.parser.ParseException;
 //import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 //import com.prosilion.nostr.event.BaseEvent;
 //import com.prosilion.nostr.event.DeletionEvent;
@@ -43,7 +42,7 @@
 //  private final String AWARD_EVENT_CONTENT = "anything";
 //
 //  @Autowired
-//  public RedisCacheServiceEventNosqlEntityIFIT(RedisCacheServiceIF redisCacheServiceIF) throws ParseException {
+//  public RedisCacheServiceEventNosqlEntityIFIT(RedisCacheServiceIF redisCacheServiceIF) {
 //    this.redisCacheService = redisCacheServiceIF;
 //
 //    this.formulaEvent =
@@ -135,7 +134,7 @@
 //  }
 //
 //  @Test
-//  void testDeletedEvent() throws ParseException {
+//  void testDeletedEvent() {
 //    log.info("saved id: {}", eventNosqlEntityIFFormulaEvent);
 //
 //    List<? extends BaseEvent> all = redisCacheService.getAll();
@@ -193,7 +192,7 @@
 //  private void deleteSecondEvent(
 //      int allEventsSizeAfterFirstDeletion,
 //      int allDeletedEventsSizeAfterFirstDeletion,
-//      String firstDeletedEventId) throws ParseException {
+//      String firstDeletedEventId) {
 //
 //    List<? extends BaseEvent> all = redisCacheService.getAll();
 //    int sizeBeforeSecondDeleteMeEvent = all.size();

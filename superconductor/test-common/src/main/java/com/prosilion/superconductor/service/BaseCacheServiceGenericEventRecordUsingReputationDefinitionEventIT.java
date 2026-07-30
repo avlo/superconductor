@@ -1,6 +1,5 @@
 //package com.prosilion.superconductor.service;
 //
-//import com.ezylang.evalex.parser.ParseException;
 //import com.prosilion.nostr.NostrException;
 //import com.prosilion.nostr.enums.Kind;
 //import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
@@ -49,7 +48,7 @@
 //  private final BadgeDefinitionReputationEvent badgeDefinitionReputationEvent;
 //
 //
-//  public BaseCacheServiceGenericEventRecordUsingReputationDefinitionEventIT(EventPluginIF eventPluginIF) throws ParseException {
+//  public BaseCacheServiceGenericEventRecordUsingReputationDefinitionEventIT(EventPluginIF eventPluginIF) {
 //    this.eventPluginIF = eventPluginIF;
 //
 //    this.formulaEvent =
@@ -82,7 +81,7 @@
 //
 //  @Test
 //  @Order(1)
-//  void testExistentEventTag() throws ParseException {
+//  void testExistentEventTag() {
 //    eventPluginIF.processIncomingEvent(this.badgeDefinitionAwardUpvoteEvent);
 //    eventPluginIF.processIncomingEvent(this.formulaEvent);
 //    FormulaEvent savedFormulaEvent = cacheFormulaEventService.getFormulaEvent(formulaEvent.getId()).orElseThrow();
@@ -180,7 +179,7 @@
 //  private void deleteSecondEvent(
 //      int allEventsSizeAfterFirstDeletion,
 //      int allDeletedEventsSizeAfterFirstDeletion,
-//      String firstDeletedEventId) throws ParseException {
+//      String firstDeletedEventId) {
 //
 //    List<FormulaEvent> all = cacheFormulaEventService.getFormulaEvents(Kind.ARBITRARY_CUSTOM_APP_DATA);
 //    int sizeBeforeSecondDeleteMeEvent = all.size();

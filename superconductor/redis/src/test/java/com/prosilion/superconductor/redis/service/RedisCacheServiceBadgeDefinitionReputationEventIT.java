@@ -1,6 +1,5 @@
 //package com.prosilion.superconductor.redis.service;
 //
-//import com.ezylang.evalex.parser.ParseException;
 //import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 //import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 //import com.prosilion.nostr.event.FormulaEvent;
@@ -47,7 +46,7 @@
 //  }
 //
 //  @Test
-//  void testUnmarshallUpvoteFormula() throws ParseException {
+//  void testUnmarshallUpvoteFormula() {
 //    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
 //        identity,
 //        reputationIdTag,
@@ -63,12 +62,12 @@
 //  }
 //
 //  @Test
-//  void testMissingFormulaEvent() throws ParseException {
+//  void testMissingFormulaEvent() {
 //
 //  }
 //
 //  @Test
-//  void testUnmarshallUpvoteDownvoteFormula() throws ParseException {
+//  void testUnmarshallUpvoteDownvoteFormula() {
 //    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
 //        identity,
 //        reputationIdTag,

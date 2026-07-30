@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.redis.service.event;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.message.EventMessage;
@@ -46,7 +45,7 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventService cacheFollowSetsEventService) throws ParseException {
+     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventService cacheFollowSetsEventService) {
     super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, eventServiceIF, cacheFollowSetsEventService);
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
     this.eventServiceIF = eventServiceIF;

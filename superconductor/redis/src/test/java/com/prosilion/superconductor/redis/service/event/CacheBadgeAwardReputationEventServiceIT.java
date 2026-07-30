@@ -59,9 +59,10 @@ public class CacheBadgeAwardReputationEventServiceIT extends BaseIntegrationTest
           new FormulaEvent(
              formulaCreator,
              upvoteIdentifierTag,
-             relay,
              badgeDefinitionUpvoteEvent,
-             PLUS_ONE_FORMULA)), relay);
+             PLUS_ONE_FORMULA,
+             relay)),
+       relay);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
        parameterAimgIdentity,
@@ -69,7 +70,7 @@ public class CacheBadgeAwardReputationEventServiceIT extends BaseIntegrationTest
        reputationIdentifierTag,
        relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       new FormulaEvent(formulaCreator, upvoteIdentifierTag, relay, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA));
+       new FormulaEvent(formulaCreator, upvoteIdentifierTag, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA, relay));
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), relay);
 

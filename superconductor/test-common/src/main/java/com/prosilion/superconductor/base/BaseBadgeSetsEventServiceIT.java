@@ -50,7 +50,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
        upvoteDefnCreator, upvoteIdentifierTag, relay);
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
-    FormulaEvent plusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
+    FormulaEvent plusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA, relay);
     cacheServiceIF.save(plusOneFormulaEvent);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(

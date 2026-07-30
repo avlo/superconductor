@@ -215,9 +215,9 @@ public class CacheBadgeAwardReputationEventServiceTest
     FormulaEvent formulaEvent = new FormulaEvent(
        formulaCreator,
        formulaUpvoteIdentifierTag,
-       relay,
        badgeDefinitionGenericEvent,
-       PLUS_ONE_FORMULA);
+       PLUS_ONE_FORMULA,
+       relay);
     this.badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
        aImgIdentity,
        repDefnCreator.getPublicKey(),

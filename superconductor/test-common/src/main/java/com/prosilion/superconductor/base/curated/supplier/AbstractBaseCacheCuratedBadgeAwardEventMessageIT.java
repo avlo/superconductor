@@ -19,6 +19,7 @@ import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
+import java.time.Duration;
 import java.util.List;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +73,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
     assertTrue(
        definitionEventNostrEventPublisher
           .send(
-             eventMessageBadgeDefinitionUpvoteEvent)
+             eventMessageBadgeDefinitionUpvoteEvent, Duration.ofSeconds(10))
           .getFlag());
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
@@ -81,7 +82,8 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
              Factory.generateRandomHex64String(),
              new Filters(
                 new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
-          definitionEventRelayUrl));
+          definitionEventRelayUrl,
+          Duration.ofSeconds(10)));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
@@ -99,7 +101,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
     assertTrue(
        awardEventNostrComprehensiveClient
           .send(
-             eventMessageBadgeAwardUpvoteEvent)
+             eventMessageBadgeAwardUpvoteEvent, Duration.ofSeconds(10))
           .getFlag());
   }
 
@@ -111,7 +113,8 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
              Factory.generateRandomHex64String(),
              new Filters(
                 new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT))),
-          awardEventRelayUrl));
+          awardEventRelayUrl,
+          Duration.ofSeconds(10)));
 
     log.debug("returned events:");
     log.debug("  {}", returnedCuratedBadgeAwardEvents);
@@ -131,7 +134,8 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
                 new ReferencedPublicKeyFilter(
                    new PubKeyTag(
                       recipient.getPublicKey())))),
-          awardEventRelayUrl));
+          awardEventRelayUrl,
+          Duration.ofSeconds(10)));
 
     log.debug("returned events:");
     log.debug("  {}", returnedCuratedBadgeAwardEvents);

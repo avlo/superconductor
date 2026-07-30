@@ -71,9 +71,9 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     plusOneFormulaEvent = new FormulaEvent(
        formulaCreator,
        formulaUpvoteIdentifierTag,
-       relay,
        awardUpvoteDefinitionEvent,
-       PLUS_ONE_FORMULA);
+       PLUS_ONE_FORMULA,
+       relay);
 
     eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent), relay);
   }
@@ -203,7 +203,12 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
        .map(IdentifierTag::getUuid).toList().contains(AWARD_UNIT_UPVOTE));
 
     IdentifierTag formulaUnitDownvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_DOWNVOTE);
-    FormulaEvent minusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUnitDownvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
+    FormulaEvent minusOneFormulaEvent = new FormulaEvent(
+       formulaCreator,
+       formulaUnitDownvoteIdentifierTag,
+       awardDownvoteDefinitionEvent,
+       MINUS_ONE_FORMULA,
+       relay);
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneMinusOne = new BadgeDefinitionReputationEvent(
        parameterAimgIdentity,

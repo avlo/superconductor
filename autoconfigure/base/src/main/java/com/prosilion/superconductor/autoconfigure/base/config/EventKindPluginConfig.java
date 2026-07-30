@@ -26,6 +26,7 @@ import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefiniti
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeSetsEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedBadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedBadgeDefinitionGenericEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedFormulaEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FollowSetsEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
@@ -109,9 +110,20 @@ public class EventKindPluginConfig {
 
   @Bean("formulaEventKindPlugin")
   @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
+  @Conditional(BadgeDefinitionNoCurateEventCondition.class)
   FormulaEventKindPlugin formulaEventKindPlugin(
      @NonNull EventPlugin eventPlugin) {
     return new FormulaEventKindPlugin(eventPlugin);
+  }
+
+  @Bean("formulaEventKindPlugin")
+  @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
+  @Conditional(BadgeDefinitionCurateEventCondition.class)
+  CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin(
+     @NonNull String superconductorRelayUrl,
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull EventPlugin eventPlugin) {
+    return new CuratedFormulaEventKindPlugin(superconductorInstanceIdentity, superconductorRelayUrl, eventPlugin);
   }
 
   @Bean("badgeAwardReputationEventKindTypePlugin")

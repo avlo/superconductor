@@ -1,10 +1,9 @@
 package com.prosilion.superconductor.redis.service.event.curated;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedFormulaEventService;
-import com.prosilion.superconductor.base.curated.BaseCacheCuratedFormulaEventServiceIT;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.curated.BaseCacheCuratedFormulaEventServiceIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +22,7 @@ public class CacheCuratedFormulaEventServiceIT extends BaseCacheCuratedFormulaEv
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedFormulaEventService cacheCuratedFormulaEventService)
-     throws ParseException {
+     @NonNull CacheCuratedFormulaEventService cacheCuratedFormulaEventService) {
     super(
        relayUrl,
        superconductorInstanceIdentity,

@@ -200,7 +200,7 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
   @SneakyThrows
   @Override
   protected FormulaEvent createEvent() {
-    return new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, relay, awardDefinitionUpvoteEvent, PLUS_ONE_FORMULA);
+    return new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardDefinitionUpvoteEvent, PLUS_ONE_FORMULA, relay);
   }
 
   private CacheFormulaEventService createCacheFormulaEventService() {

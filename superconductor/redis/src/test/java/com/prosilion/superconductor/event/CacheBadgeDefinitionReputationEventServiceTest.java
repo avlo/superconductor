@@ -297,9 +297,9 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
     this.formulaEvent = new FormulaEvent(
        formulaCreator,
        formulaUpvoteIdentifierTag,
-       relay,
        badgeDefinitionGenericEvent,
-       PLUS_ONE_FORMULA);
+       PLUS_ONE_FORMULA,
+       relay);
     return new BadgeDefinitionReputationEvent(
        aImgIdentity,
        repDefnCreator.getPublicKey(),

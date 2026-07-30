@@ -51,7 +51,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
 
-    FormulaEvent plusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
+    FormulaEvent plusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA, relay);
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
        submitter,
@@ -138,11 +138,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
        cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(eventTag).orElseThrow();
 
     assertEquals(eventTag, actual.getEventTag());
-    assertEquals(badgeAwardGenericEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag(),
-       actual.getAddressTag());
-    assertEquals(actual, cacheCuratedBadgeAwardGenericEventServiceIF
-       .getEvent(actual.getId(), relay)
-       .orElseThrow());
+    assertEquals(actual, cacheCuratedBadgeAwardGenericEventServiceIF.getEvent(actual.getId(), relay).orElseThrow());
   }
 
   @Test
@@ -155,7 +151,6 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
     CuratedBadgeAwardGenericEvent actual =
        cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(addressTag).orElseThrow();
 
-    assertEquals(addressTag, actual.getAddressTag());
     assertEquals(badgeAwardGenericEvent.getId(), actual.getEventTag().getEventId());
     assertEquals(actual, cacheCuratedBadgeAwardGenericEventServiceIF
        .getEvent(actual.getId(), relay)

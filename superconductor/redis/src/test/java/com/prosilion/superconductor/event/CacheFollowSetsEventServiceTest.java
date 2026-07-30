@@ -214,7 +214,7 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
     BadgeDefinitionGenericEvent badgeDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
     FormulaEvent formulaEvent = new FormulaEvent(
-       formulaCreator, formulaUpvoteIdentifierTag, relay, badgeDefinitionEvent, PLUS_ONE_FORMULA);
+       formulaCreator, formulaUpvoteIdentifierTag, badgeDefinitionEvent, PLUS_ONE_FORMULA, relay);
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent =
        new BadgeDefinitionReputationEvent(
           aImgIdentity,

@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.base.curated;
 
-import com.ezylang.evalex.parser.ParseException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -31,7 +30,7 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF) throws ParseException {
+     @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF) {
     super(superconductorInstanceIdentity);
     this.cacheCuratedFormulaEventServiceIF = cacheCuratedFormulaEventServiceIF;
     this.relay = new Relay(relayUrl);
@@ -43,9 +42,9 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
     FormulaEvent upvoteFormulaEvent = new FormulaEvent(
        formulaCreator,
        formulaUpvoteIdentifierTag,
-       relay,
        upvoteDefinitionEvent,
-       PLUS_ONE_FORMULA);
+       PLUS_ONE_FORMULA,
+       relay);
 //    cacheServiceIF.save(upvoteFormulaEvent);
 
     this.upvoteCuratedFormulaEvent = new CuratedFormulaEvent(
@@ -62,9 +61,9 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
     this.downvoteFormulaEvent = new FormulaEvent(
        formulaCreator,
        formulaDownvoteIdentifierTag,
-       relay,
        downvoteDefinitionEvent,
-       MINUS_ONE_FORMULA);
+       MINUS_ONE_FORMULA,
+       relay);
     cacheServiceIF.save(downvoteFormulaEvent);
   }
 
@@ -83,7 +82,7 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
        formulaUpvoteIdentifierTag,
        relay);
 
-      assertEquals(upvoteCuratedFormulaEvent, actual.orElseThrow());
+    assertEquals(upvoteCuratedFormulaEvent, actual.orElseThrow());
   }
 
   @Test

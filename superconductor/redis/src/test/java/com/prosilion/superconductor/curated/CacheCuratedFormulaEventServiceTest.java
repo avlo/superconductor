@@ -152,9 +152,9 @@ public class CacheCuratedFormulaEventServiceTest extends CacheCuratedServiceTest
     this.formulaEvent = new FormulaEvent(
        formulaCreator,
        IDENTIFIER_TAG_FORMULA_UNIT_UPVOTE,
-       relay,
        badgeDefinitionEvent,
-       PLUS_ONE_FORMULA);
+       PLUS_ONE_FORMULA,
+       relay);
     return new CuratedFormulaEvent(
        aImgIdentity,
        formulaEvent,

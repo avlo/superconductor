@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.redis.entity;
 
 import com.ezylang.evalex.parser.ParseException;
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -39,25 +40,25 @@ public class FormulaEventTest {
   final FormulaEvent formulaEventDownvote;
 
   public FormulaEventTest() throws ParseException {
-    this.formulaEventUpvote = new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteEvent, PLUS_ONE_FORMULA);
-    this.formulaEventDownvote = new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteEvent, MINUS_ONE_FORMULA);
+    this.formulaEventUpvote = new FormulaEvent(identity, upvoteIdentifierTag, awardUpvoteEvent, PLUS_ONE_FORMULA, relay);
+    this.formulaEventDownvote = new FormulaEvent(identity, downvoteIdentifierTag, awardDownvoteEvent, MINUS_ONE_FORMULA, relay);
   }
 
   @Test
   void equalityTest() throws ParseException {
     assertNotEquals(awardUpvoteEvent, new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, PLUS_ONE_FORMULA, relay));
     assertNotEquals(awardDownvoteEvent, new BadgeDefinitionGenericEvent(identity, downvoteIdentifierTag, MINUS_ONE_FORMULA, relay));
-    assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteEvent, PLUS_ONE_FORMULA));
-    assertNotEquals(formulaEventDownvote, new FormulaEvent(identity, downvoteIdentifierTag, relay, awardDownvoteEvent, MINUS_ONE_FORMULA));
+    assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, awardUpvoteEvent, PLUS_ONE_FORMULA, relay));
+    assertNotEquals(formulaEventDownvote, new FormulaEvent(identity, downvoteIdentifierTag, awardDownvoteEvent, MINUS_ONE_FORMULA, relay));
 
     assertNotEquals(awardUpvoteEvent, awardDownvoteEvent);
-    assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, relay, awardUpvoteEvent, MINUS_ONE_FORMULA));
+    assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, awardUpvoteEvent, MINUS_ONE_FORMULA, relay));
 
     BadgeDefinitionGenericEvent awardUpvoteEventDifferentIdentity = new BadgeDefinitionGenericEvent(Identity.generateRandomIdentity(), upvoteIdentifierTag, PLUS_ONE_FORMULA, relay);
     assertNotEquals(awardUpvoteEvent, awardUpvoteEventDifferentIdentity);
     assertNotEquals(awardUpvoteEventDifferentIdentity, awardUpvoteEvent);
 
-    FormulaEvent formulaEventUpvoteDtoDifferentIdentity = new FormulaEvent(Identity.generateRandomIdentity(), upvoteIdentifierTag, relay, awardUpvoteEvent, PLUS_ONE_FORMULA);
+    FormulaEvent formulaEventUpvoteDtoDifferentIdentity = new FormulaEvent(Identity.generateRandomIdentity(), upvoteIdentifierTag, awardUpvoteEvent, PLUS_ONE_FORMULA, relay);
     assertNotEquals(formulaEventUpvote, formulaEventUpvoteDtoDifferentIdentity);
     assertNotEquals(formulaEventUpvoteDtoDifferentIdentity, formulaEventUpvote);
   }
@@ -65,20 +66,20 @@ public class FormulaEventTest {
   @Test
   void testGenericEventRecordFormulaEventCreation() throws ParseException {
     FormulaEvent expected = new FormulaEvent(
-      identity,
-      upvoteIdentifierTag,
-      relay,
-      awardUpvoteEvent,
-      "+1");
+       identity,
+       upvoteIdentifierTag,
+       awardUpvoteEvent,
+       "+1",
+       relay);
 
     Function<AddressTag, BadgeDefinitionGenericEvent> fxn = addressTag ->
-      awardUpvoteEvent;
+       awardUpvoteEvent;
 
     assertEquals(
-      expected.getBadgeDefinitionGenericEvent(),
-      new FormulaEvent(
-        expected.getGenericEventRecord(),
-        fxn).getBadgeDefinitionGenericEvent());
+       expected.getBadgeDefinitionGenericEvent(),
+       new FormulaEvent(
+          expected.getGenericEventRecord(),
+          fxn).getBadgeDefinitionGenericEvent());
   }
 
   @Test
@@ -86,10 +87,10 @@ public class FormulaEventTest {
     BadgeDefinitionGenericEvent blankFormulaAwardEvent = new BadgeDefinitionGenericEvent(identity, upvoteIdentifierTag, relay);
 
     assertTrue(
-      assertThrows(
-        ParseException.class, () ->
-          new FormulaEvent(identity, upvoteIdentifierTag, relay, blankFormulaAwardEvent, ""))
-        .getMessage().contains("supplied formula is blank"));
+       assertThrows(
+          NostrException.class, () ->
+             new FormulaEvent(identity, upvoteIdentifierTag, blankFormulaAwardEvent, "", relay))
+          .getMessage().contains("supplied formula is blank"));
   }
 
   @Test
@@ -101,25 +102,25 @@ public class FormulaEventTest {
   @Test
   void testDifferentContentDto() throws ParseException {
     BadgeDefinitionGenericEvent differentContentDto = new BadgeDefinitionGenericEvent(
-      identity, upvoteIdentifierTag, BaseIntegrationTestFixtures.AWARD_UNIT_UPVOTE, relay);
+       identity, upvoteIdentifierTag, BaseIntegrationTestFixtures.AWARD_UNIT_UPVOTE, relay);
 
-    assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, relay, differentContentDto, "+2"));
+    assertNotEquals(formulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, differentContentDto, "+2", relay));
   }
 
   @Test
   void formulaContentTest() throws ParseException {
     assertEquals(
-      "BadgeDefinitionReputationEvent FormulaEvent(s) operator(s) default content: BADGE_DEFN_UNIT_REP == (previous)BADGE_DEFN_UNIT_REP +1(BDG_DEF_UNIT_UP) -1(BDG_DEF_UNIT_DOWN)",
-      new BadgeDefinitionReputationEvent(
-        identity,
-        reputationDefinitionCreatorPublicKey,
-        new IdentifierTag(
-           BaseIntegrationTestFixtures.TEST_UNIT_REPUTATION),
-        relay,
-        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-        List.of(
-          formulaEventUpvote,
-          formulaEventDownvote)).getContent());
+       "BadgeDefinitionReputationEvent FormulaEvent(s) operator(s) default content: BADGE_DEFN_UNIT_REP == (previous)BADGE_DEFN_UNIT_REP +1(BDG_DEF_UNIT_UP) -1(BDG_DEF_UNIT_DOWN)",
+       new BadgeDefinitionReputationEvent(
+          identity,
+          reputationDefinitionCreatorPublicKey,
+          new IdentifierTag(
+             BaseIntegrationTestFixtures.TEST_UNIT_REPUTATION),
+          relay,
+          BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+          List.of(
+             formulaEventUpvote,
+             formulaEventDownvote)).getContent());
 
     String UNIT_UPVOTE_UNIQUE = "UNIT_UPVOTE_UNIQUE";
     String UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA = "+1";
@@ -127,17 +128,17 @@ public class FormulaEventTest {
     BadgeDefinitionGenericEvent awardUniqueUpvoteEvent = new BadgeDefinitionGenericEvent(identity, upvoteUniqueIdentifierTag, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA, relay);
 
     assertEquals(
-      "BadgeDefinitionReputationEvent FormulaEvent(s) operator(s) default content: BADGE_DEFN_UNIT_REP == (previous)BADGE_DEFN_UNIT_REP +1(BDG_DEF_UNIT_UP) +1(UNIT_UPVOTE_UNIQUE)",
-      new BadgeDefinitionReputationEvent(
-        identity,
-        reputationDefinitionCreatorPublicKey,
-        new IdentifierTag(
-           BaseIntegrationTestFixtures.TEST_UNIT_REPUTATION),
-        relay,
-        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-        List.of(
-          formulaEventUpvote,
-          new FormulaEvent(
-            identity, upvoteIdentifierTag, relay, awardUniqueUpvoteEvent, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA))).getContent());
+       "BadgeDefinitionReputationEvent FormulaEvent(s) operator(s) default content: BADGE_DEFN_UNIT_REP == (previous)BADGE_DEFN_UNIT_REP +1(BDG_DEF_UNIT_UP) +1(UNIT_UPVOTE_UNIQUE)",
+       new BadgeDefinitionReputationEvent(
+          identity,
+          reputationDefinitionCreatorPublicKey,
+          new IdentifierTag(
+             BaseIntegrationTestFixtures.TEST_UNIT_REPUTATION),
+          relay,
+          BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+          List.of(
+             formulaEventUpvote,
+             new FormulaEvent(
+                identity, upvoteIdentifierTag, awardUniqueUpvoteEvent, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA, relay))).getContent());
   }
 }

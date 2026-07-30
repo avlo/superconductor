@@ -58,10 +58,10 @@ public class CacheFormulaEventServiceIT extends BaseIntegrationTestFixtures {
     this.relay = new Relay(relayUri);
 
     this.awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(repDefnCreator, upvoteIdentifierTag, PLUS_ONE_FORMULA, relay);
-    this.formulaEventUpvote = new FormulaEvent(formulaCreator, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA);
+    this.formulaEventUpvote = new FormulaEvent(formulaCreator, upvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA, relay);
 
     this.awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(repDefnCreator, downvoteIdentifierTag, MINUS_ONE_FORMULA, relay);
-    this.formulaEventDownvote = new FormulaEvent(formulaCreator, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA);
+    this.formulaEventDownvote = new FormulaEvent(formulaCreator, downvoteIdentifierTag, awardDownvoteDefinitionEvent, MINUS_ONE_FORMULA, relay);
 
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
     cacheServiceIF.save(awardDownvoteDefinitionEvent);
@@ -143,13 +143,13 @@ public class CacheFormulaEventServiceIT extends BaseIntegrationTestFixtures {
     assertEquals(MINUS_ONE_FORMULA, dbMinusOneFormulaEvent.getContent());
     assertEquals(downvoteIdentifierTag, dbMinusOneFormulaEvent.getBadgeDefinitionGenericEvent().getIdentifierTag());
 
-    FormulaEvent formulaEventUpvoteIdentical = new FormulaEvent(formulaCreator, upvoteIdentifierTag, relay, awardUpvoteDefinitionEvent, "+1");
+    FormulaEvent formulaEventUpvoteIdentical = new FormulaEvent(formulaCreator, upvoteIdentifierTag, awardUpvoteDefinitionEvent, "+1", relay);
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventUpvoteIdentical), relay);
     dbPlusOneFormulaEvent = cacheFormulaEventService.getEvent(formulaEventUpvote.getId(), relay).orElseThrow();
     assertEquals(PLUS_ONE_FORMULA, formulaEventUpvoteIdentical.getContent());
     assertEquals(upvoteIdentifierTag, formulaEventUpvoteIdentical.getBadgeDefinitionGenericEvent().getIdentifierTag());
 
-    FormulaEvent formulaEventDownvoteIdentical = new FormulaEvent(formulaCreator, downvoteIdentifierTag, relay, awardDownvoteDefinitionEvent, "-1");
+    FormulaEvent formulaEventDownvoteIdentical = new FormulaEvent(formulaCreator, downvoteIdentifierTag, awardDownvoteDefinitionEvent, "-1", relay);
     eventServiceIF.processIncomingEvent(new EventMessage(formulaEventDownvoteIdentical), relay);
     cacheFormulaEventService.getEvent(formulaEventDownvote.getId(), relay).orElseThrow();
     assertEquals(MINUS_ONE_FORMULA, formulaEventDownvoteIdentical.getContent());

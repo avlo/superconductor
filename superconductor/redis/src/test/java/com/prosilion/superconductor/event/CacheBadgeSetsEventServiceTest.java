@@ -228,7 +228,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
     BadgeDefinitionGenericEvent badgeDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
     FormulaEvent formulaEvent = new FormulaEvent(
-       formulaCreator, formulaUpvoteIdentifierTag, relay, badgeDefinitionEvent, "+1");
+       formulaCreator, formulaUpvoteIdentifierTag, badgeDefinitionEvent, "+1", relay);
     this.badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
        aImgIdentity,
        repDefnCreator.getPublicKey(),

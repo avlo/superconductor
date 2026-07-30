@@ -9,10 +9,10 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.util.Factory;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import lombok.NonNull;
 
 @Slf4j
 public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
@@ -30,9 +30,9 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
   public final String PLUS_ONE_FORMULA = "+1";
 
   public BaseCacheServiceGenericEventRecordUsingFormulaEventIT(
-      @NonNull CacheServiceIF cacheServiceIF,
-      @NonNull EventPluginIF eventPluginIF,
-      @NonNull Identity superconductorInstanceIdentity) throws ParseException {
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull EventPluginIF eventPluginIF,
+     @NonNull Identity superconductorInstanceIdentity) {
     this.eventPluginIF = eventPluginIF;
     BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, IDENTIFIER_TAG, relay);
 
@@ -42,7 +42,7 @@ public abstract class BaseCacheServiceGenericEventRecordUsingFormulaEventIT {
 //        upvotedUserPubKey,
 //        badgeDefinitionUpvoteEvent);
 
-    this.formulaEvent = new FormulaEvent(superconductorInstanceIdentity, upvoteIdentifierTag, relay, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA);
+    this.formulaEvent = new FormulaEvent(superconductorInstanceIdentity, upvoteIdentifierTag, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA, relay);
   }
 
   @Test

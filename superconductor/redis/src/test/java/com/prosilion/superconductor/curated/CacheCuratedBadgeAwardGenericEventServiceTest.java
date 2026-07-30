@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.curated;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.AbstractSetsEvent;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
@@ -144,7 +145,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
   @Test
   void testGetByPubKeyTagAndIdentifierTagReturnsEmptyList() {
     PubKeyTag pubKeyTag = new PubKeyTag(curatedEvent.getPublicKey());
-    IdentifierTag identifierTag = new IdentifierTag(String.valueOf(curatedEvent.getAddressTag().hashCode()));
+    IdentifierTag identifierTag = AbstractSetsEvent.hashedAddressTag(curatedEvent.getAddressTag());
     doReturn(List.of())
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTagAndIdentifierTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag, identifierTag);

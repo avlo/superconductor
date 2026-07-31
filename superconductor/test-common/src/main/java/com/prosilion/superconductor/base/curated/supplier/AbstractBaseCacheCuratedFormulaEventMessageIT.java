@@ -11,8 +11,8 @@ import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
@@ -86,11 +86,11 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
        .allMatch(formulaCreator.getPublicKey()::equals));
 
     assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
-       .map(event -> event.requireFirstTag(IdentifierTag.class))
-       .anyMatch(formulaUpvoteIdentifierTag::equals));
+       .map(event -> event.requireFirstTag(AddressTag.class))
+       .anyMatch(formulaUpvoteEventWithRelayTag.getAddressTag()::equals));
     assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
-       .map(event -> event.requireFirstTag(IdentifierTag.class))
-       .anyMatch(formulaDownvoteIdentifierTag::equals));
+       .map(event -> event.requireFirstTag(AddressTag.class))
+       .anyMatch(formulaDownvoteEventWithoutRelayTag.getAddressTag()::equals));
 
     assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(EventTag.class)).map(EventTag::eventId)

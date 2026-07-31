@@ -17,9 +17,9 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.definition.
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
@@ -95,13 +95,13 @@ public class EventServiceConfig {
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
      @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
-     @NonNull CacheFormulaEventService cacheFormulaEventService,
+     @NonNull CacheCuratedFormulaEventService cacheCuratedFormulaEventService,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
     return new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
        cacheDereferenceEventTagService,
        cacheDereferenceAddressTagService,
-       cacheFormulaEventService,
+       cacheCuratedFormulaEventService,
        cacheKindAddressTagServiceIF);
   }
 

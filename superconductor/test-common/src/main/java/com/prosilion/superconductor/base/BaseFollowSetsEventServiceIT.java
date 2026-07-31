@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -63,8 +64,11 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
        upvoteDefnCreator, upvoteIdentifierTag, relay);
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
-    FormulaEvent plusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA, relay);
-    cacheServiceIF.save(plusOneFormulaEvent);
+    CuratedFormulaEvent plusOneCuratedFormulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA, relay),
+       new ReferenceTag(relayUrl),
+       relay);
+    cacheServiceIF.save(plusOneCuratedFormulaEvent);
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
        submitter,
@@ -76,9 +80,9 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
        parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
-       relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       plusOneFormulaEvent);
+       relay,
+       plusOneCuratedFormulaEvent);
     cacheServiceIF.save(badgeDefinitionReputationEventPlusOneFormula);
 
     AddressTag badgeDefnEventAsAddressTag = badgeAwardUpvoteEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag();

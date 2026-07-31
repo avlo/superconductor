@@ -3,17 +3,20 @@ package com.prosilion.superconductor.redis.service.event;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
-import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
@@ -41,7 +44,7 @@ import static org.mockito.Mockito.mock;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegrationTestFixtures {
-  private final FormulaEvent plusOneFormulaEvent;
+  private final CuratedFormulaEvent plusOneCuratedFormulaEvent;
   private final CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService;
 
   private final Relay relay;
@@ -67,14 +70,19 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     this.awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, downvoteIdentifierTag, relay);
     cacheServiceIF.save(this.awardDownvoteDefinitionEvent);
 
-    plusOneFormulaEvent = new FormulaEvent(
-       formulaCreator,
-       formulaUpvoteIdentifierTag,
-       awardUpvoteDefinitionEvent,
-       PLUS_ONE_FORMULA,
-       relay);
+    plusOneCuratedFormulaEvent =
+       new CuratedFormulaEvent(
+          aImgIdentity,
+          new FormulaEvent(
+             formulaCreator,
+             formulaUpvoteIdentifierTag,
+             awardUpvoteDefinitionEvent,
+             PLUS_ONE_FORMULA,
+             relay),
+          new ReferenceTag(relayUri),
+          relay);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(plusOneFormulaEvent), relay);
+    eventServiceIF.processIncomingEvent(new EventMessage(plusOneCuratedFormulaEvent), relay);
   }
 
   @Test
@@ -84,8 +92,8 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
        mock(CacheReferenceEventTagServiceIF.class);
     CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF =
        mock(CacheReferenceAddressTagServiceIF.class);
-    CacheFormulaEventServiceIF cacheFormulaEventServiceIF =
-       mock(CacheFormulaEventServiceIF.class);
+    CacheCuratedFormulaEventServiceIF cacheFormulaEventServiceIF =
+       mock(CacheCuratedFormulaEventServiceIF.class);
     CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF =
        mock(CacheKindAddressTagServiceIF.class);
 
@@ -132,7 +140,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     assertThrows(NullPointerException.class, () ->
        cacheBadgeDefinitionReputationEventService.getEvent(null, relay));
     assertThrows(NullPointerException.class, () ->
-       cacheBadgeDefinitionReputationEventService.getEvent(plusOneFormulaEvent.getId(), null));
+       cacheBadgeDefinitionReputationEventService.getEvent(plusOneCuratedFormulaEvent.getId(), null));
   }
 
   @Test
@@ -160,16 +168,16 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
   @Test
   void testGetByDirectAddressTag() {
     BadgeDefinitionReputationEvent expected = new BadgeDefinitionReputationEvent(
-       parameterAimgIdentity,
+       aImgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
-       relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       plusOneFormulaEvent);
+       relay,
+       plusOneCuratedFormulaEvent);
     eventServiceIF.processIncomingEvent(new EventMessage(expected), relay);
 
     BadgeDefinitionReputationEvent actual = cacheBadgeDefinitionReputationEventService
-       .getByDirect(plusOneFormulaEvent.asAddressableEventAddressTag())
+       .getByDirect(plusOneCuratedFormulaEvent.asAddressableEventAddressTag())
        .orElseThrow();
 
     assertEquals(expected, actual);
@@ -178,44 +186,48 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
   @Test
   public void testSaveBadgeDefinitionReputationEventUpvote() {
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       parameterAimgIdentity,
+       aImgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
-       relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       plusOneFormulaEvent);
+       relay,
+       plusOneCuratedFormulaEvent);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), relay);
     BadgeDefinitionReputationEvent dbRepDefnEvent = cacheBadgeDefinitionReputationEventService.getEvent(badgeDefinitionReputationEventPlusOneFormula.getId(), relay).orElseThrow();
-    assertTrue(dbRepDefnEvent.getFormulaEvents().contains(plusOneFormulaEvent));
+    assertTrue(dbRepDefnEvent.getCuratedFormulaEvents().contains(plusOneCuratedFormulaEvent));
     assertEquals(reputationIdentifierTag, dbRepDefnEvent.getIdentifierTag());
     assertEquals(BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG, dbRepDefnEvent.getExternalIdentityTag());
     assertEquals(badgeDefinitionReputationEventPlusOneFormula, dbRepDefnEvent);
 
-    assertTrue(dbRepDefnEvent.getFormulaEvents().stream()
-       .map(FormulaEvent::getFormula)
+    assertTrue(dbRepDefnEvent.getCuratedFormulaEvents().stream()
+       .map(CuratedFormulaEvent::getFormula)
        .toList().contains(PLUS_ONE_FORMULA));
 
-    assertTrue(dbRepDefnEvent.getFormulaEvents().stream()
-       .map(FormulaEvent::getBadgeDefinitionGenericEvent)
-       .map(BadgeDefinitionGenericEvent::getIdentifierTag)
+    assertTrue(dbRepDefnEvent.getCuratedFormulaEvents().stream()
+       .map(CuratedFormulaEvent::getAddressTag)
+       .map(AddressTag::getIdentifierTag)
        .map(IdentifierTag::getUuid).toList().contains(AWARD_UNIT_UPVOTE));
 
     IdentifierTag formulaUnitDownvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_DOWNVOTE);
-    FormulaEvent minusOneFormulaEvent = new FormulaEvent(
-       formulaCreator,
-       formulaUnitDownvoteIdentifierTag,
-       awardDownvoteDefinitionEvent,
-       MINUS_ONE_FORMULA,
+    CuratedFormulaEvent minusOneFormulaEvent = new CuratedFormulaEvent(
+       aImgIdentity,
+       new FormulaEvent(
+          formulaCreator,
+          formulaUnitDownvoteIdentifierTag,
+          awardDownvoteDefinitionEvent,
+          MINUS_ONE_FORMULA,
+          relay),
+       new ReferenceTag(relay.getUrl()),
        relay);
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneMinusOne = new BadgeDefinitionReputationEvent(
-       parameterAimgIdentity,
+       aImgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
-       relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       List.of(plusOneFormulaEvent, minusOneFormulaEvent));
+       relay,
+       List.of(plusOneCuratedFormulaEvent, minusOneFormulaEvent));
 
     assertThrows(NostrException.class, () -> cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord()));
 
@@ -223,17 +235,18 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneMinusOne), relay);
 
     BadgeDefinitionReputationEvent dbRepDefnEventPlusMinus = cacheBadgeDefinitionReputationEventService.getEvent(badgeDefinitionReputationEventPlusOneMinusOne.getId(), relay).orElseThrow();
-    assertTrue(dbRepDefnEventPlusMinus.getFormulaEvents().contains(plusOneFormulaEvent));
-    assertTrue(dbRepDefnEventPlusMinus.getFormulaEvents().contains(minusOneFormulaEvent));
+    assertTrue(dbRepDefnEventPlusMinus.getCuratedFormulaEvents().contains(plusOneCuratedFormulaEvent));
+    assertTrue(dbRepDefnEventPlusMinus.getCuratedFormulaEvents().contains(minusOneFormulaEvent));
     assertEquals(reputationIdentifierTag, dbRepDefnEventPlusMinus.getIdentifierTag());
     assertEquals(BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG, dbRepDefnEventPlusMinus.getExternalIdentityTag());
     assertEquals(badgeDefinitionReputationEventPlusOneMinusOne, dbRepDefnEventPlusMinus);
-    assertTrue(dbRepDefnEventPlusMinus.getFormulaEvents().stream()
-       .map(FormulaEvent::getFormula)
+    assertTrue(dbRepDefnEventPlusMinus.getCuratedFormulaEvents().stream()
+       .map(CuratedFormulaEvent::getFormula)
        .toList().contains(MINUS_ONE_FORMULA));
-    assertTrue(dbRepDefnEventPlusMinus.getFormulaEvents().stream()
-       .map(FormulaEvent::getBadgeDefinitionGenericEvent)
-       .map(BadgeDefinitionGenericEvent::getIdentifierTag).toList().contains(downvoteIdentifierTag));
+    assertTrue(dbRepDefnEventPlusMinus.getCuratedFormulaEvents().stream()
+       .map(CuratedFormulaEvent::getAddressTag)
+       .map(AddressTag::getIdentifierTag)
+       .toList().contains(downvoteIdentifierTag));
 
     BadgeDefinitionReputationEvent reconstructed = cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord()).orElseThrow();
     assertEquals(dbRepDefnEventPlusMinus, reconstructed);
@@ -243,12 +256,12 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
   @Test
   public void testGetByPubKeyTagIdentifierTag() {
     BadgeDefinitionReputationEvent expected = new BadgeDefinitionReputationEvent(
-       parameterAimgIdentity,
+       aImgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
-       relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       plusOneFormulaEvent);
+       relay,
+       plusOneCuratedFormulaEvent);
 
     eventServiceIF.processIncomingEvent(new EventMessage(expected), relay);
 

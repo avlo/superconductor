@@ -39,22 +39,22 @@ public class CacheCuratedBadgeAwardGenericEventService extends AbstractCacheCura
 
   @Override
   public List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag) {
-    return findByPubKey(pubKeyTag);
+    return findByPubKeyTag(pubKeyTag);
   }
 
   @Override
   public Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
-    return findFirstByPubKeyAndEvent(pubKeyTag, eventTag);
+    return findFirstByPubKeyTagAndEventTag(pubKeyTag, eventTag);
   }
 
   @Override
   public List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
-    return findByPubKeyAndIdentifier(pubKeyTag, identifierTag);
+    return findByPubKeyTagAndIdentifierTag(pubKeyTag, identifierTag);
   }
 
   @Override
   public Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
-    return findFirstByPubKeyAndAddress(pubKeyTag, addressTag);
+    return findFirstByPubKeyTagAndAddressTag(pubKeyTag, addressTag);
   }
 
   @Override

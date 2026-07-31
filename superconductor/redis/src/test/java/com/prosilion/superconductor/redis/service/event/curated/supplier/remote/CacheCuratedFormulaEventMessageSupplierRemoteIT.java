@@ -2,7 +2,6 @@ package com.prosilion.superconductor.redis.service.event.curated.supplier.remote
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.curated.supplier.remote.AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRemoteIT;
 import com.prosilion.superconductor.base.curated.supplier.remote.AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT;
 import com.prosilion.superconductor.redis.config.SingleContainerTestConfig;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;

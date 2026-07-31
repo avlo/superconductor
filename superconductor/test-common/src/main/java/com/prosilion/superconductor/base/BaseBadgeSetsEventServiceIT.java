@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
@@ -49,16 +50,20 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
        upvoteDefnCreator, upvoteIdentifierTag, relay);
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
-    FormulaEvent plusOneFormulaEvent = new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA, relay);
-    cacheServiceIF.save(plusOneFormulaEvent);
+    CuratedFormulaEvent plusOneCuratedFormulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA, relay),
+       new ReferenceTag(relayUrl),
+       relay);
+
+    cacheServiceIF.save(plusOneCuratedFormulaEvent);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
        parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
-       relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       plusOneFormulaEvent);
+       relay,
+       plusOneCuratedFormulaEvent);
     cacheServiceIF.save(badgeDefinitionReputationEventPlusOneFormula);
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(

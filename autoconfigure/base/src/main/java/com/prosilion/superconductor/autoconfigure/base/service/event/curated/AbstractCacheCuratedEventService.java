@@ -10,6 +10,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedEventServiceIF;
 import java.util.List;
@@ -51,33 +52,32 @@ public abstract class AbstractCacheCuratedEventService<T extends AddressableEven
     return cacheServiceIF.getFirstEventByKindAndAddressTag(getKind(), addressTag).flatMap(this::materialize);
   }
 
-  protected final Optional<T> findFirstByPubKeyAndIdentifier(
-     @NonNull PubKeyTag pubKeyTag,
-     @NonNull IdentifierTag identifierTag) {
-    return cacheServiceIF
-       .getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag)
-       .stream()
-       .findFirst()
-       .flatMap(this::materialize);
+  protected final Optional<T> findFirstByPubKeyTagAndIdentifierTag(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
+    return cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag)
+       .stream().findFirst().flatMap(this::materialize);
   }
 
-  protected final List<T> findByPubKey(@NonNull PubKeyTag pubKeyTag) {
+  protected final Optional<T> findByAuthorAndIdentifierTag(@NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag) {
+    return cacheServiceIF.getEventByKindAndAuthorPublicKeyAndIdentifierTag(getKind(), publicKey, identifierTag).flatMap(this::materialize);
+  }
+
+  protected final List<T> findByPubKeyTag(@NonNull PubKeyTag pubKeyTag) {
     return materializeList(
        cacheServiceIF.getEventsByKindAndPubKeyTag(getKind(), pubKeyTag)).toList();
   }
 
-  protected final Optional<T> findFirstByPubKeyAndEvent(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
+  protected final Optional<T> findFirstByPubKeyTagAndEventTag(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
     return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(getKind(), pubKeyTag, eventTag));
   }
 
-  protected final List<T> findByPubKeyAndIdentifier(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
+  protected final List<T> findByPubKeyTagAndIdentifierTag(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
     return
        materializeList(
           cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(
              getKind(), pubKeyTag, identifierTag)).toList();
   }
 
-  protected final Optional<T> findFirstByPubKeyAndAddress(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+  protected final Optional<T> findFirstByPubKeyTagAndAddressTag(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     return
        materializeFirst(
           cacheServiceIF.getEventsByKindAndPubKeyTagAndAddressTag(

@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.base.curated;
 
+import com.prosilion.nostr.event.AbstractSetsEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -48,7 +49,7 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
 //    cacheServiceIF.save(upvoteFormulaEvent);
 
     this.upvoteCuratedFormulaEvent = new CuratedFormulaEvent(
-       parameterAimgIdentity,
+       aImgIdentity,
        upvoteFormulaEvent,
        new ReferenceTag(relayUrl),
        relay);
@@ -77,10 +78,9 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
 
   @Test
   public void testGetByPublicKeyIdentifierTagAndRelay() {
-    Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventServiceIF.getBy(
-       upvoteCuratedFormulaEvent.getPubKeyTag(),
-       formulaUpvoteIdentifierTag,
-       relay);
+    Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventServiceIF.getByAuthorAndIdentifierTag(
+       aImgIdentity.getPublicKey(),
+       AbstractSetsEvent.hashedAddressTag(upvoteCuratedFormulaEvent.getAddressTag()));
 
     assertEquals(upvoteCuratedFormulaEvent, actual.orElseThrow());
   }
@@ -96,7 +96,7 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
   @Test
   public void testGetByDirectEventTagAfterLocalMiss() {
     CuratedFormulaEvent expected = new CuratedFormulaEvent(
-       parameterAimgIdentity,
+       aImgIdentity,
        downvoteFormulaEvent,
        new ReferenceTag(relay.getUrl()),
        relay);
@@ -109,14 +109,12 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
   }
 
   @Test
-  public void testGetByAuthorPublicKeyIdentifierTagAfterLocalMiss() {
-    CuratedFormulaEvent actual = cacheCuratedFormulaEventServiceIF.getBy(
-       upvoteCuratedFormulaEvent.getPubKeyTag(),
-       formulaDownvoteIdentifierTag,
-       relay).orElseThrow();
-
-    assertEquals(MINUS_ONE_FORMULA, actual.getFormula());
-    assertEquals(downvoteFormulaEvent.getAddressTag(), actual.getAddressTag());
+  public void testGetByAuthorPublicKeyIdentifierTagAfterLocalMissIsEmpty() {
+    assertEquals(
+       Optional.empty(),
+       cacheCuratedFormulaEventServiceIF.getByAuthorAndIdentifierTag(
+          aImgIdentity.getPublicKey(),
+          AbstractSetsEvent.hashedAddressTag(downvoteFormulaEvent.getAddressTag())));
   }
 
   @Test

@@ -5,9 +5,11 @@ import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionReputationEventServiceIF;
@@ -212,19 +214,19 @@ public class CacheBadgeAwardReputationEventServiceTest
   protected BadgeAwardReputationEvent createEvent() {
     BadgeDefinitionGenericEvent badgeDefinitionGenericEvent =
        new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
-    FormulaEvent formulaEvent = new FormulaEvent(
-       formulaCreator,
-       formulaUpvoteIdentifierTag,
-       badgeDefinitionGenericEvent,
-       PLUS_ONE_FORMULA,
+
+    CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, badgeDefinitionGenericEvent, PLUS_ONE_FORMULA, relay),
+       new ReferenceTag(relay.getUrl()),
        relay);
+
     this.badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
        aImgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
-       relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       formulaEvent);
+       relay,
+       curatedFormulaEvent);
     return new BadgeAwardReputationEvent(
        aImgIdentity,
        recipient.getPublicKey(),

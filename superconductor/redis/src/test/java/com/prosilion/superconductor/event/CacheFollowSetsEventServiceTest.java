@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.BadgeSetsEvent;
 import com.prosilion.nostr.event.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -213,15 +214,19 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
   protected FollowSetsEvent createEvent() {
     BadgeDefinitionGenericEvent badgeDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
-    FormulaEvent formulaEvent = new FormulaEvent(
-       formulaCreator, formulaUpvoteIdentifierTag, badgeDefinitionEvent, PLUS_ONE_FORMULA, relay);
+
+    CuratedFormulaEvent formulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, badgeDefinitionEvent, PLUS_ONE_FORMULA, relay),
+       new ReferenceTag(relay.getUrl()),
+       relay);
+
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent =
        new BadgeDefinitionReputationEvent(
           aImgIdentity,
           repDefnCreator.getPublicKey(),
           reputationIdentifierTag,
-          relay,
           BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
+          relay,
           formulaEvent);
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = new BadgeAwardGenericEvent<>(
        submitter, recipient.getPublicKey(), badgeDefinitionEvent, relay);

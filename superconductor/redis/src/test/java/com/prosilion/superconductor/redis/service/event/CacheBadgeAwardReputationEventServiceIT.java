@@ -4,9 +4,11 @@ import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
@@ -53,23 +55,22 @@ public class CacheBadgeAwardReputationEventServiceIT extends BaseIntegrationTest
     BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
     cacheServiceIF.save(badgeDefinitionUpvoteEvent);
 
+    CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA, relay),
+       new ReferenceTag(relayUri),
+       relay);
     eventServiceIF.processIncomingEvent(
        new EventMessage(
-          new FormulaEvent(
-             formulaCreator,
-             upvoteIdentifierTag,
-             badgeDefinitionUpvoteEvent,
-             PLUS_ONE_FORMULA,
-             relay)),
+          curatedFormulaEvent),
        relay);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
        parameterAimgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
-       relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       new FormulaEvent(formulaCreator, upvoteIdentifierTag, badgeDefinitionUpvoteEvent, PLUS_ONE_FORMULA, relay));
+       relay,
+       curatedFormulaEvent);
 
     eventServiceIF.processIncomingEvent(new EventMessage(badgeDefinitionReputationEventPlusOneFormula), relay);
 

@@ -1,18 +1,19 @@
 package com.prosilion.superconductor.event;
 
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.CuratedFormulaEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
-import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
+import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
@@ -36,7 +37,6 @@ import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.upvo
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -47,11 +47,11 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
   @Mock
   CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
   @Mock
-  CacheFormulaEventServiceIF cacheFormulaEventServiceIF;
+  CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
   @Mock
   CacheKindAddressTagService cacheKindAddressTagService;
 
-  FormulaEvent formulaEvent;
+  CuratedFormulaEvent curatedFormulaEvent;
 
   @Test
   void testConstructorRejectsNullDependencies() {
@@ -59,19 +59,19 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
        null,
        cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
-       cacheFormulaEventServiceIF,
+       cacheCuratedFormulaEventServiceIF,
        cacheKindAddressTagService));
     assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
        null,
        cacheReferenceAddressTagServiceIF,
-       cacheFormulaEventServiceIF,
+       cacheCuratedFormulaEventServiceIF,
        cacheKindAddressTagService));
     assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
        null,
-       cacheFormulaEventServiceIF,
+       cacheCuratedFormulaEventServiceIF,
        cacheKindAddressTagService));
     assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
@@ -83,7 +83,7 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
-       cacheFormulaEventServiceIF,
+       cacheCuratedFormulaEventServiceIF,
        null));
   }
 
@@ -110,15 +110,11 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
     assertThrows(NullPointerException.class, () -> createService().getByDirect(null));
   }
 
-  @Test
-  void testGetByPubKeyTagAndIdentifierTagRejectsNullParameters() {
-    CacheBadgeDefinitionReputationEventService service = createService();
-    PubKeyTag pubKeyTag = new PubKeyTag(repDefnCreator.getPublicKey());
-
-    assertThrows(NullPointerException.class, () ->
-       service.getBy(null, reputationIdentifierTag));
-    assertThrows(NullPointerException.class, () ->
-       service.getBy(pubKeyTag, null));
+  private void mockFormulaEvent() {
+    doReturn(Optional.of(curatedFormulaEvent)).when(cacheCuratedFormulaEventServiceIF)
+       .getByAuthorAndIdentifierTag(
+          curatedFormulaEvent.asAddressableEventAddressTag().getPublicKey(),
+          curatedFormulaEvent.asAddressableEventAddressTag().getIdentifierTag());
   }
 
   @Test
@@ -238,7 +234,7 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
 
   @Test
   void testGetByDirectReturnsReputationDefinition() {
-    AddressTag formulaAddressTag = formulaEvent.asAddressableEventAddressTag();
+    AddressTag formulaAddressTag = curatedFormulaEvent.asAddressableEventAddressTag();
     doReturn(List.of(event.getGenericEventRecord()))
        .when(cacheKindAddressTagService)
        .getByDirect(Kind.BADGE_DEFINITION_EVENT, formulaAddressTag);
@@ -254,7 +250,7 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
 
   @Test
   void testGetByDirectIgnoresGenericBadgeDefinition() {
-    AddressTag formulaAddressTag = formulaEvent.asAddressableEventAddressTag();
+    AddressTag formulaAddressTag = curatedFormulaEvent.asAddressableEventAddressTag();
     BadgeDefinitionGenericEvent genericDefinition = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
     doReturn(List.of(genericDefinition.getGenericEventRecord()))
@@ -267,46 +263,24 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
     assertEquals(Optional.empty(), actual);
   }
 
-  @Test
-  void testMaterialize() {
-    mockFormulaEvent();
-    CacheBadgeDefinitionReputationEventService service = createService();
-
-    Optional<BadgeDefinitionReputationEvent> actual =
-       service.materialize(event.getGenericEventRecord());
-
-    assertEquals(event, actual.orElseThrow());
-    verify(cacheFormulaEventServiceIF, Mockito.times(1)).getBy(
-       formulaCreator.getPublicKey(), formulaUpvoteIdentifierTag, relay);
-  }
-
-  @Test
-  void testMaterializeRejectsMissingFormulaEvent() {
-    doReturn(Optional.empty()).when(cacheFormulaEventServiceIF).getBy(
-       formulaCreator.getPublicKey(), formulaUpvoteIdentifierTag, relay);
-
-    assertThrows(NostrException.class, () ->
-       createService().materialize(event.getGenericEventRecord()));
-  }
-
   @SneakyThrows
   @Override
   protected BadgeDefinitionReputationEvent createEvent() {
     BadgeDefinitionGenericEvent badgeDefinitionGenericEvent =
        new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
-    this.formulaEvent = new FormulaEvent(
-       formulaCreator,
-       formulaUpvoteIdentifierTag,
-       badgeDefinitionGenericEvent,
-       PLUS_ONE_FORMULA,
+
+    this.curatedFormulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, badgeDefinitionGenericEvent, PLUS_ONE_FORMULA, relay),
+       new ReferenceTag(relay.getUrl()),
        relay);
+
     return new BadgeDefinitionReputationEvent(
        aImgIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
-       relay,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-       formulaEvent);
+       relay,
+       curatedFormulaEvent);
   }
 
   private CacheBadgeDefinitionReputationEventService createService() {
@@ -314,12 +288,7 @@ public class CacheBadgeDefinitionReputationEventServiceTest extends CacheService
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
-       cacheFormulaEventServiceIF,
+       cacheCuratedFormulaEventServiceIF,
        cacheKindAddressTagService);
-  }
-
-  private void mockFormulaEvent() {
-    doReturn(Optional.of(formulaEvent)).when(cacheFormulaEventServiceIF).getBy(
-       formulaCreator.getPublicKey(), formulaUpvoteIdentifierTag, relay);
   }
 }

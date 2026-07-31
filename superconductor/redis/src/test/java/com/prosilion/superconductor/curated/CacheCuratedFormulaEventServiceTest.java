@@ -8,11 +8,9 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedFormulaEventService;
-import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -51,47 +49,6 @@ public class CacheCuratedFormulaEventServiceTest extends CacheCuratedServiceTest
     assertEquals(curatedEventId, actual.orElseThrow().getId());
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
     verify(cacheFormulaEventService, Mockito.times(0)).getEvent(curatedEventId, relay);
-  }
-
-  @Test
-  void testGetByPublicKeyAndIdentifierTagFromLocalCache() {
-    IdentifierTag identifierTag = IDENTIFIER_TAG_FORMULA_UNIT_UPVOTE;
-    PubKeyTag publicKeyTag = new PubKeyTag(curatedEvent.getPublicKey());
-    doReturn(List.of(curatedEvent.getGenericEventRecord()))
-       .when(cacheServiceIF)
-       .getEventsByKindAndPubKeyTagAndIdentifierTag(
-          Kind.CURATION_SETS_FORMULA_EVENT, publicKeyTag, identifierTag);
-    CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
-
-    Optional<CuratedFormulaEvent> actual =
-       cacheCuratedFormulaEventService.getBy(publicKeyTag, identifierTag, relay);
-
-    assertEquals(curatedEventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
-       Kind.CURATION_SETS_FORMULA_EVENT, publicKeyTag, identifierTag);
-    verify(cacheFormulaEventService, Mockito.times(0))
-       .getBy(curatedEvent.getPublicKey(), identifierTag, relay);
-  }
-
-  @Test
-  void testGetByPublicKeyAndIdentifierTagFromFormulaServiceAfterLocalMiss() {
-    IdentifierTag identifierTag = IDENTIFIER_TAG_FORMULA_UNIT_UPVOTE;
-    PubKeyTag publicKeyTag = new PubKeyTag(curatedEvent.getPublicKey());
-    doReturn(List.of()).when(cacheServiceIF).getEventsByKindAndPubKeyTagAndIdentifierTag(
-       Kind.CURATION_SETS_FORMULA_EVENT, publicKeyTag, identifierTag);
-    doReturn(Optional.of(formulaEvent))
-       .when(cacheFormulaEventService)
-       .getBy(curatedEvent.getPublicKey(), identifierTag, relay);
-    CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
-
-    Optional<CuratedFormulaEvent> actual =
-       cacheCuratedFormulaEventService.getBy(publicKeyTag, identifierTag, relay);
-
-    assertTrue(actual.isPresent());
-    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndIdentifierTag(
-       Kind.CURATION_SETS_FORMULA_EVENT, publicKeyTag, identifierTag);
-    verify(cacheFormulaEventService, Mockito.times(1))
-       .getBy(curatedEvent.getPublicKey(), identifierTag, relay);
   }
 
   @Test

@@ -8,9 +8,9 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
-import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.curated.CacheCuratedFormulaEventServiceIF;
@@ -35,12 +35,9 @@ public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventSe
   }
 
   @Override
-  public Optional<CuratedFormulaEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
-    return findOrCurate(
-       () -> findFirstByPubKeyAndIdentifier(pubKeyTag, identifierTag),
-       () -> cacheFormulaEventServiceIF.getBy(
-          pubKeyTag.getPublicKey(), identifierTag, relay),
-       ignored -> relay);
+  public Optional<CuratedFormulaEvent> getByAuthorAndIdentifierTag(@NonNull PublicKey author, @NonNull IdentifierTag identifierTag) {
+    return findByAuthorAndIdentifierTag(author, identifierTag);
+
   }
 
   @Override

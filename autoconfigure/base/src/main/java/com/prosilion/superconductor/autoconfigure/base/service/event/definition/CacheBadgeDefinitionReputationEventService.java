@@ -68,7 +68,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
 
     if (!Objects.equals(addressTagsAreCuratedFormulaEvents.size(), curatedFormulaEvents.size()))
       throw new NostrException(
-         String.format("Unequal count AddressTags vs FormulaEvents:%s\nFormulaEvent:\n%s",
+         String.format("Unequal count AddressTags: [%d] -vs- FormulaEvents: [%d]",
             addressTagsAreCuratedFormulaEvents.size(),
             curatedFormulaEvents.size()));
 

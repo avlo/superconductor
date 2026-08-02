@@ -26,9 +26,14 @@ import com.prosilion.superconductor.base.cache.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeSetsEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedBadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedBadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedFormulaEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.FollowSetsEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeAwardReputationEventKindTypePlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.type.BadgeDefinitionReputationEventKindTypePlugin;
+import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,10 +46,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 
+import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_AWARD_REPUTATION_KIND_TYPE;
+import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_KIND_TYPE;
+
 @Slf4j
 @AutoConfiguration
 @Conditional(EventCurationActiveCondition.class)
-public class EventCurationConfig {
+public class EventCurationActiveConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
@@ -133,6 +141,21 @@ public class EventCurationConfig {
        cacheBadgeAwardGenericEventServiceIF);
   }
 
+  @Bean
+  @ConditionalOnMissingBean
+  @Conditional(EventCurationActiveCondition.class)
+  CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService(
+     @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+     @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService,
+     @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
+    return new CacheBadgeAwardReputationEventService(
+       cacheServiceIF,
+       cacheDereferenceEventTagService,
+       cacheBadgeDefinitionReputationEventService,
+       cacheDereferenceKindAddressTagService);
+  }
+
   @ConditionalOnMissingBean
   @Bean("badgeDefinitionGenericEventKindPlugin")
   public CuratedBadgeDefinitionGenericEventKindPlugin curatedBadgeDefinitionGenericEventKindPlugin(
@@ -156,12 +179,50 @@ public class EventCurationConfig {
 
   @Bean("formulaEventKindPlugin")
   @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
-  @Conditional(EventCurationActiveCondition.class)
   CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin(
      @NonNull String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull EventPlugin eventPlugin) {
     return new CuratedFormulaEventKindPlugin(superconductorInstanceIdentity, superconductorRelayUrl, eventPlugin);
+  }
+
+  @Bean("badgeDefinitionReputationEventKindTypePlugin")
+  @ConditionalOnMissingBean(name = "badgeDefinitionReputationEventKindTypePlugin")
+  BadgeDefinitionReputationEventKindTypePlugin badgeDefinitionReputationEventKindTypePlugin(
+     @NonNull String superconductorRelayUrl,
+     @NonNull EventPlugin eventPlugin) {
+    return new BadgeDefinitionReputationEventKindTypePlugin(
+       superconductorRelayUrl,
+       new EventKindTypePlugin(
+          BADGE_DEFINITION_REPUTATION_KIND_TYPE,
+          eventPlugin));
+  }
+
+  @Bean("badgeSetsEventKindPlugin")
+  @ConditionalOnMissingBean(name = "badgeSetsEventKindPlugin")
+  BadgeSetsEventKindPlugin badgeSetsEventKindPlugin(
+     @NonNull EventPlugin eventPlugin) {
+    return new BadgeSetsEventKindPlugin(eventPlugin);
+  }
+
+  @Bean("followSetsEventKindPlugin")
+  @ConditionalOnMissingBean(name = "followSetsEventKindPlugin")
+  FollowSetsEventKindPlugin followSetsEventKindPlugin(
+     @NonNull EventPlugin eventPlugin,
+     @NonNull NotifierService notifierService) {
+    return new FollowSetsEventKindPlugin(notifierService, eventPlugin);
+  }
+
+  @Bean("badgeAwardReputationEventKindTypePlugin")
+  @ConditionalOnMissingBean(name = "badgeAwardReputationEventKindTypePlugin")
+  BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin(
+     @NonNull NotifierService notifierService,
+     @NonNull EventPlugin eventPlugin) {
+    return new BadgeAwardReputationEventKindTypePlugin(
+       notifierService,
+       new EventKindTypePlugin(
+          BADGE_AWARD_REPUTATION_KIND_TYPE,
+          eventPlugin));
   }
 
   @Bean("eventKindMaterializers")
@@ -213,6 +274,24 @@ public class EventCurationConfig {
        Kind.DELETION,
        eventIF -> Optional.of(new DeletionEvent(
           eventIF.asGenericEventRecord())));
+
+    return kindFxnMap;
+  }
+
+  @Bean("eventKindTypeMaterializers")
+  @ConditionalOnMissingBean(name = "eventKindTypeMaterializers")
+  Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindTypeMaterializers(
+     @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
+     @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
+    Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
+
+    kindFxnMap.put(
+       Kind.BADGE_AWARD_EVENT,
+       cacheBadgeAwardReputationEventService::materialize);
+
+    kindFxnMap.put(
+       Kind.BADGE_DEFINITION_EVENT,
+       cacheBadgeDefinitionReputationEventService::materialize);
 
     return kindFxnMap;
   }

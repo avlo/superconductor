@@ -223,44 +223,28 @@ public abstract class BaseSinceUntilIT {
   }
 
   private String createReqSinceDateLessThanCreatedDateJson(String subscriberId, @NonNull String since) {
-    return "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"" + publicKey + "\"],\"since\": " + since + "}]";
+    String s = "[\"REQ\",\"" + subscriberId + "\",{\"authors\":[\"" + publicKey + "\"],\"since\": " + since + "}]";
+    return s;
   }
 
   private String getEvent() {
-    return "[\n" +
-        "  \"EVENT\",\n" +
-        "  {\n" +
-        "    \"content\": \"created at test\",\n" +
-        "    \"id\":\"" + eventId + "\",\n" +
-        "    \"kind\": 1,\n" +
-        "    \"created_at\": 1111111111111,\n" +
-        "    \"pubkey\": \"" + publicKey + "\",\n" +
-        "    \"tags\": [\n" +
-        "      [\n" +
-        "        \"a\",\n" +
-        "        \"30023:aaabbbd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd\",\n" +
-        "        \"wss://nostr.example.com\"\n" +
-        "      ],\n" +
-        "      [\n" +
-        "        \"custom-tag\",\n" +
-        "        \"created at date custom-tag random value\"\n" +
-        "      ],\n" +
-        "      [\n" +
-        "        \"p\",\n" +
-        "        \"bbbcccf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"\n" +
-        "      ],\n" +
-        "      [\n" +
-        "        \"e\",\n" +
-        "        \"aaabbbac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\",\n" +
-        "        \"wss://nostr.example.com\"\n" +
-        "      ],\n" +
-        "      [\n" +
-        "        \"g\",\n" +
-        "        \"created at date textnote geo-tag-1\"\n" +
-        "      ]\n" +
-        "    ],\n" +
-        "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"\n" +
-        "  }\n" +
-        "]\n";
+    return "[" +
+        "  \"EVENT\"," +
+        "  {" +
+        "    \"content\": \"created at test\"," +
+        "    \"id\":\"" + eventId + "\"," +
+        "    \"kind\": 1," +
+        "    \"created_at\": 1111111111111," +
+        "    \"pubkey\": \"" + publicKey + "\"," +
+        "    \"tags\": [" +
+        "      [\"a\",\"30023:aaabbbd4c1394dda46d09f35bd384dd30cc552ad5541990f98844fb06676e9ca:abcd\", \"wss://nostr.example.com\"]," +
+        "      [\"custom-tag\", \"created at date custom-tag random value\"]," +
+        "      [\"p\", \"bbbcccf81439ff794cf5ac5f7bff9121e257f399829e472c7a14d3e86fe76984\"]," +
+        "      [\"e\", \"aaabbbac0c8af2a10f60f23538e5b35d3cdacb8e1cc956fe7a16dfa5cbfc4346\", \"wss://nostr.example.com\"]," +
+        "      [\"g\", \"created at date textnote geo-tag-1\"]" +
+        "    ]," +
+        "    \"sig\": \"86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546\"" +
+        "  }" +
+        "]";
   }
 }

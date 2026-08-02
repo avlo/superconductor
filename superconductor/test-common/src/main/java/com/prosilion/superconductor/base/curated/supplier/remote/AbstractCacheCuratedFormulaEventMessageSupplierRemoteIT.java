@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.curated.supplier.AbstractBaseCacheCuratedFormulaEventMessageIT;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT extends AbstractBaseCacheCuratedFormulaEventMessageIT {
   protected AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String definitionEventRelayUrl) throws NostrException {
-    super(definitionEventRelayUrl, superconductorInstanceIdentity);
+    super(cacheServiceIF, definitionEventRelayUrl, superconductorInstanceIdentity);
   }
 
   @Override

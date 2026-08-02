@@ -18,6 +18,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
 import java.util.List;
@@ -37,10 +38,14 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
   private final FormulaEvent formulaUpvoteEventWithRelayTag;
   private final FormulaEvent formulaDownvoteEventWithoutRelayTag;
 
+  protected final CacheServiceIF cacheServiceIF;
+
   public AbstractBaseCacheCuratedFormulaEventMessageIT(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity) throws NostrException {
     super(superconductorInstanceIdentity);
+    this.cacheServiceIF = cacheServiceIF;
     this.formulaEventRelayUrl = superconductorRelayUrl;
     this.formulaEventRelay = new Relay(superconductorRelayUrl);
 

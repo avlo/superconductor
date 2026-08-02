@@ -6,17 +6,10 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.base.BadgeDefinitionCurateEventCondition;
-import com.prosilion.superconductor.autoconfigure.base.BadgeDefinitionNoCurateEventCondition;
-import com.prosilion.superconductor.autoconfigure.base.service.event.CacheBadgeSetsEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFollowSetsEventService;
+import com.prosilion.superconductor.autoconfigure.base.EventCurationInactiveCondition;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeAwardGenericEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedBadgeDefinitionGenericEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.curated.CacheCuratedFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -24,9 +17,6 @@ import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeSetsEventKindPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedBadgeAwardGenericEventKindPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedBadgeDefinitionGenericEventKindPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.CuratedFormulaEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FollowSetsEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
@@ -68,26 +58,15 @@ public class EventKindPluginConfig {
 
   @ConditionalOnMissingBean
   @Bean("badgeDefinitionGenericEventKindPlugin")
-  @Conditional(BadgeDefinitionNoCurateEventCondition.class)
+  @Conditional(EventCurationInactiveCondition.class)
   public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
      @NonNull EventPlugin eventPlugin) {
     return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
   }
 
-  @ConditionalOnMissingBean
-  @Bean("badgeDefinitionGenericEventKindPlugin")
-  @Conditional(BadgeDefinitionCurateEventCondition.class)
-  public CuratedBadgeDefinitionGenericEventKindPlugin curatedBadgeDefinitionGenericEventKindPlugin(
-     @NonNull String superconductorRelayUrl,
-     @NonNull Identity superconductorInstanceIdentity,
-     @NonNull EventPlugin eventPlugin) {
-    return new CuratedBadgeDefinitionGenericEventKindPlugin(
-       superconductorInstanceIdentity, superconductorRelayUrl, eventPlugin);
-  }
-
   @Bean("badgeAwardGenericEventKindPlugin")
   @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPlugin")
-  @Conditional(BadgeDefinitionNoCurateEventCondition.class)
+  @Conditional(EventCurationInactiveCondition.class)
   BadgeAwardGenericEventKindPlugin<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventKindPlugin(
      @NonNull NotifierService notifierService,
      @NonNull EventPlugin eventPlugin) {
@@ -96,34 +75,12 @@ public class EventKindPluginConfig {
        eventPlugin);
   }
 
-  @Bean("badgeAwardGenericEventKindPlugin")
-  @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPlugin")
-  @Conditional(BadgeDefinitionCurateEventCondition.class)
-  public CuratedBadgeAwardGenericEventKindPlugin curatedBadgeAwardGenericEventKindPlugin(
-     @NonNull String superconductorRelayUrl,
-     @NonNull Identity superconductorInstanceIdentity,
-     @NonNull NotifierService notifierService,
-     @NonNull EventPlugin eventPlugin) {
-    return new CuratedBadgeAwardGenericEventKindPlugin(
-       superconductorInstanceIdentity, superconductorRelayUrl, notifierService, eventPlugin);
-  }
-
   @Bean("formulaEventKindPlugin")
   @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
-  @Conditional(BadgeDefinitionNoCurateEventCondition.class)
+  @Conditional(EventCurationInactiveCondition.class)
   FormulaEventKindPlugin formulaEventKindPlugin(
      @NonNull EventPlugin eventPlugin) {
     return new FormulaEventKindPlugin(eventPlugin);
-  }
-
-  @Bean("formulaEventKindPlugin")
-  @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
-  @Conditional(BadgeDefinitionCurateEventCondition.class)
-  CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin(
-     @NonNull String superconductorRelayUrl,
-     @NonNull Identity superconductorInstanceIdentity,
-     @NonNull EventPlugin eventPlugin) {
-    return new CuratedFormulaEventKindPlugin(superconductorInstanceIdentity, superconductorRelayUrl, eventPlugin);
   }
 
   @Bean("badgeAwardReputationEventKindTypePlugin")
@@ -175,29 +132,12 @@ public class EventKindPluginConfig {
 
   @Bean("eventKindMaterializers")
   @ConditionalOnMissingBean(name = "eventKindMaterializers")
+  @Conditional(EventCurationInactiveCondition.class)
   Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers(
      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
-     @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
-     @NonNull CacheCuratedFormulaEventService cacheCuratedFormulaEventService,
-     @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
-     @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
      @NonNull CacheFormulaEventService cacheFormulaEventService) {
     Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
-
-    kindFxnMap.put(
-       Kind.CURATION_SETS_BADGE_AWARD_EVENT,
-       cacheCuratedBadgeAwardGenericEventService::materialize);
-
-    kindFxnMap.put(
-       Kind.CURATION_SETS_BADGE_DEFINITION_EVENT,
-       cacheCuratedBadgeDefinitionGenericEventService::materialize);
-
-    kindFxnMap.put(
-       Kind.CURATION_SETS_FORMULA_EVENT,
-       cacheCuratedFormulaEventService::materialize);
-
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
        cacheBadgeAwardGenericEventService::materialize);
@@ -205,14 +145,6 @@ public class EventKindPluginConfig {
     kindFxnMap.put(
        Kind.BADGE_DEFINITION_EVENT,
        cacheBadgeDefinitionGenericEventService::materialize);
-
-    kindFxnMap.put(
-       Kind.FOLLOW_SETS,
-       cacheFollowSetsEventService::materialize);
-
-    kindFxnMap.put(
-       Kind.BADGE_SETS_EVENT,
-       cacheBadgeSetsEventService::materialize);
 
     kindFxnMap.put(
        Kind.ARBITRARY_CUSTOM_APP_DATA,

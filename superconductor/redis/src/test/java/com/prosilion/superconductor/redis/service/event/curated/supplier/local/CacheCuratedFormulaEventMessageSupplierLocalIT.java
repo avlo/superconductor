@@ -2,6 +2,7 @@ package com.prosilion.superconductor.redis.service.event.curated.supplier.local;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.curated.supplier.local.AbstractCacheCuratedFormulaEventMessageSupplierLocalIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
@@ -19,8 +20,9 @@ import org.springframework.test.context.ActiveProfiles;
 public class CacheCuratedFormulaEventMessageSupplierLocalIT extends AbstractCacheCuratedFormulaEventMessageSupplierLocalIT {
   @Autowired
   CacheCuratedFormulaEventMessageSupplierLocalIT(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity) throws NostrException {
-    super(superconductorRelayUrl, superconductorInstanceIdentity);
+    super(cacheServiceIF, superconductorRelayUrl, superconductorInstanceIdentity);
   }
 }

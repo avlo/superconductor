@@ -168,6 +168,7 @@ tasks.register('integrationTestDocker', Test) {
     includeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT")
     includeTestsMatching("CacheCuratedFormulaEventMessageSupplierRemoteIT")
   }
+  systemProperty "junit.jupiter.testclass.order.default", "org.junit.jupiter.api.ClassOrderer$ReverseClassOrderer"
 }
 
 tasks.named('integrationTest') {

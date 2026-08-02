@@ -37,7 +37,6 @@ public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventSe
   @Override
   public Optional<CuratedFormulaEvent> getByAuthorAndIdentifierTag(@NonNull PublicKey author, @NonNull IdentifierTag identifierTag) {
     return findByAuthorAndIdentifierTag(author, identifierTag);
-
   }
 
   @Override

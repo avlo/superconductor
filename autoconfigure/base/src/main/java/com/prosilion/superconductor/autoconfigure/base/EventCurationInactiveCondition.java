@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class BadgeDefinitionNoCurateEventCondition implements Condition {
+public class EventCurationInactiveCondition implements Condition {
   @Override
   public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
     return !context
        .getEnvironment()
-       .getProperty("superconductor.curated.badgedefinition.event", Boolean.class, true);
+       .getProperty("superconductor.event.curation.active", Boolean.class, true);
   }
 }

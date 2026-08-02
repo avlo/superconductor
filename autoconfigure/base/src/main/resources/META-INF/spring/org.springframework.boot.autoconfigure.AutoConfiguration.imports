@@ -7,3 +7,4 @@ com.prosilion.superconductor.autoconfigure.base.config.ReqMessageAuthConfig
 com.prosilion.superconductor.autoconfigure.base.config.ReqMessageServiceConfig
 com.prosilion.superconductor.autoconfigure.base.config.ReqServiceConfig
 com.prosilion.superconductor.autoconfigure.base.config.KindClassMapConfig
+com.prosilion.superconductor.autoconfigure.base.config.EventCurationConfig

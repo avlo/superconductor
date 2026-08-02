@@ -2,6 +2,7 @@ package com.prosilion.superconductor.redis.service.event.curated.supplier.remote
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.curated.supplier.remote.AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT;
 import com.prosilion.superconductor.redis.config.SingleContainerTestConfig;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -22,8 +23,9 @@ import org.springframework.test.context.ActiveProfiles;
 public class CacheCuratedFormulaEventMessageSupplierRemoteIT extends AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT {
   @Autowired
   CacheCuratedFormulaEventMessageSupplierRemoteIT(
+     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo) throws NostrException {
-    super(superconductorInstanceIdentity, superconductorRelayUrlTwo);
+    super(cacheServiceIF, superconductorInstanceIdentity, superconductorRelayUrlTwo);
   }
 }

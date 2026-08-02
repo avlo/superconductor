@@ -18,12 +18,13 @@ public class SingleContainerTestConfig {
   @ServiceConnection
   public ComposeContainer composeSingleContainerSuperconductorDocker() {
     return new ComposeContainer(
-       new File("src/test/resources/superconductor-docker-compose-single-local-dev/superconductor-docker-compose-dev-test-ws.yml"))
+       new File("src/test/resources/superconductor-docker-compose-single-remote-dev/superconductor-docker-compose-dev-test-ws.yml"))
        .waitingFor("superconductor-db-two", Wait.forHealthcheck())
-       .waitingFor(SUPERCONDUCTOR_APP_TWO, Wait.defaultWaitStrategy())
+       .waitingFor(SUPERCONDUCTOR_APP_TWO, Wait.forLogMessage(".*Started SuperConductorRedisCuratedApplication.*\\n", 1))
        .withExposedService(SUPERCONDUCTOR_APP_TWO, 5555)
+       
        .waitingFor("superconductor-db-three", Wait.forHealthcheck())
-       .waitingFor(SUPERCONDUCTOR_APP_THREE, Wait.defaultWaitStrategy())
+       .waitingFor(SUPERCONDUCTOR_APP_THREE, Wait.forLogMessage(".*Started SuperConductorRedisCuratedApplication.*\\n", 1))
        .withExposedService(SUPERCONDUCTOR_APP_THREE, 5555)
        .withRemoveVolumes(true);
   }

@@ -1,0 +1,29 @@
+services:
+  superconductor-db:
+    image: "redis:8.0.0"
+    hostname: superconductor-db
+    ports:
+      - "6379:6379"
+    networks:
+      - superconductor_net
+    volumes:
+      - superconductor-db:/data
+  superconductor-app:
+    image: superconductor-app-redis-curated:1.18.1
+    ports:
+      - "5555:5555"
+    depends_on:
+      - superconductor-db
+    networks:
+      - superconductor_net
+    environment:
+      SPRING_PROFILES_ACTIVE: dev_ws
+      SPRING_DATA_REDIS_HOST: superconductor-db
+      SUPERCONDUCTOR_RELAY_URL: "ws://superconductor-app:5555"
+volumes:
+  superconductor-db:
+    driver: local
+networks:
+  superconductor_net:
+    external: true
+    name: prosilion-net

@@ -47,6 +47,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
 
   private final EventServiceIF eventServiceIF;
+  protected final Relay relay;
 
   protected final BadgeSetsEvent badgeSetsUpvoteEvent;
 
@@ -57,6 +58,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
      @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService) {
     super(superconductorInstanceIdentity);
+    this.relay = new Relay(relayUrl);
     this.eventServiceIF = eventServiceIF;
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
 

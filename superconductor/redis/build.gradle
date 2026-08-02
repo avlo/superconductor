@@ -34,5 +34,5 @@ dependencies {
 }
 
 tasks.named('integrationTest') {
-    mustRunAfter project(':superconductor-app-redis-curated').tasks.named('integrationTest')
+    mustRunAfter tasks.named('test')
 }

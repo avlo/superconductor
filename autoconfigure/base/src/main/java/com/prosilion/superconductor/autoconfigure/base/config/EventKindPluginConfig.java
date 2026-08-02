@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.superconductor.autoconfigure.base.EventCurationActiveCondition;
 import com.prosilion.superconductor.autoconfigure.base.EventCurationInactiveCondition;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
@@ -85,6 +86,7 @@ public class EventKindPluginConfig {
 
   @Bean("badgeAwardReputationEventKindTypePlugin")
   @ConditionalOnMissingBean(name = "badgeAwardReputationEventKindTypePlugin")
+  @Conditional(EventCurationActiveCondition.class)
   BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin(
      @NonNull NotifierService notifierService,
      @NonNull EventPlugin eventPlugin) {
@@ -97,6 +99,7 @@ public class EventKindPluginConfig {
 
   @Bean("badgeDefinitionReputationEventKindTypePlugin")
   @ConditionalOnMissingBean(name = "badgeDefinitionReputationEventKindTypePlugin")
+  @Conditional(EventCurationActiveCondition.class)
   BadgeDefinitionReputationEventKindTypePlugin badgeDefinitionReputationEventKindTypePlugin(
      @NonNull String superconductorRelayUrl,
      @NonNull EventPlugin eventPlugin) {
@@ -109,6 +112,7 @@ public class EventKindPluginConfig {
 
   @Bean("badgeSetsEventKindPlugin")
   @ConditionalOnMissingBean(name = "badgeSetsEventKindPlugin")
+  @Conditional(EventCurationActiveCondition.class)
   BadgeSetsEventKindPlugin badgeSetsEventKindPlugin(
      @NonNull EventPlugin eventPlugin) {
     return new BadgeSetsEventKindPlugin(eventPlugin);
@@ -116,6 +120,7 @@ public class EventKindPluginConfig {
 
   @Bean("followSetsEventKindPlugin")
   @ConditionalOnMissingBean(name = "followSetsEventKindPlugin")
+  @Conditional(EventCurationActiveCondition.class)
   FollowSetsEventKindPlugin followSetsEventKindPlugin(
      @NonNull EventPlugin eventPlugin,
      @NonNull NotifierService notifierService) {
@@ -160,6 +165,7 @@ public class EventKindPluginConfig {
 
   @Bean("eventKindTypeMaterializers")
   @ConditionalOnMissingBean(name = "eventKindTypeMaterializers")
+  @Conditional(EventCurationActiveCondition.class)
   Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindTypeMaterializers(
      @NonNull CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService,
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
@@ -174,5 +180,12 @@ public class EventKindPluginConfig {
        cacheBadgeDefinitionReputationEventService::materialize);
 
     return kindFxnMap;
+  }
+
+  @Bean("eventKindTypeMaterializers")
+  @ConditionalOnMissingBean(name = "eventKindTypeMaterializers")
+  @Conditional(EventCurationInactiveCondition.class)
+  Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> emptyEventKindTypeMaterializers() {
+    return Map.of();
   }
 }

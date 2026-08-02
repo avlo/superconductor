@@ -27,10 +27,12 @@
     <module>starter/jpa</module>
     <module>starter/mysql</module>
     <module>starter/redis</module>
+    <module>starter/redis-curated</module>
     <module>starter/sqlite</module>
     <module>superconductor/h2db</module>
     <module>superconductor/mysql</module>
     <module>superconductor/redis</module>
+    <module>superconductor/redis-curated</module>
     <module>superconductor/sqlite</module>
     <module>superconductor/test-common</module>
 <!--    <module>report-aggregate</module> use gradle instead -->
@@ -204,4 +206,3 @@
   </build>
 
 </project>
-

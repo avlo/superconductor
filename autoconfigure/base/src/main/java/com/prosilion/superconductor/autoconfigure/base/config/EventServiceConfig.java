@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.superconductor.autoconfigure.base.EventCurationActiveCondition;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardReputationEventService;
@@ -24,6 +25,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Conditional;
 
 @AutoConfiguration
 @ComponentScan(
@@ -94,6 +96,7 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
+  @Conditional(EventCurationActiveCondition.class)
   CacheBadgeAwardReputationEventService cacheBadgeAwardReputationEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,

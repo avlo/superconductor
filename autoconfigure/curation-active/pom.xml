@@ -10,18 +10,13 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>superconductor-spring-boot-starter-redis-curated</artifactId>
-  <name>superconductor-spring-boot-starter-redis-curated</name>
+  <artifactId>superconductor-autoconfigure-curation-active</artifactId>
+  <name>superconductor-autoconfigure-curation-active</name>
 
   <dependencies>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-autoconfigure-redis</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-autoconfigure-curation-active</artifactId>
+      <artifactId>superconductor-autoconfigure-base</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
   </dependencies>

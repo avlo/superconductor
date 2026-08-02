@@ -12,6 +12,8 @@
 
   <modules>
     <module>autoconfigure/base</module>
+    <module>autoconfigure/curation-active</module>
+    <module>autoconfigure/curation-inactive</module>
     <module>autoconfigure/h2db</module>
     <module>autoconfigure/jpa</module>
     <module>autoconfigure/mysql</module>

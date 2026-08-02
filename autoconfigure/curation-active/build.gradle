@@ -1,0 +1,9 @@
+plugins {
+    id 'superconductor.java-conventions'
+}
+
+dependencies {
+    api project(':superconductor-autoconfigure-base')
+
+    annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure'
+}

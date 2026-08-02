@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.autoconfigure.base.config;
+package com.prosilion.superconductor.autoconfigure.curation.active.config;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;

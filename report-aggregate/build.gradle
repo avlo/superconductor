@@ -12,8 +12,11 @@ dependencies {
     jacocoAggregation project(':superconductor-app-h2db')
     jacocoAggregation project(':superconductor-app-mysql')
     jacocoAggregation project(':superconductor-app-redis')
+    jacocoAggregation project(':superconductor-app-redis-curated')
     jacocoAggregation project(':superconductor-app-sqlite')
     jacocoAggregation project(':superconductor-autoconfigure-base')
+    jacocoAggregation project(':superconductor-autoconfigure-curation-active')
+    jacocoAggregation project(':superconductor-autoconfigure-curation-inactive')
     jacocoAggregation project(':superconductor-autoconfigure-h2db')
     jacocoAggregation project(':superconductor-autoconfigure-jpa')
     jacocoAggregation project(':superconductor-autoconfigure-mysql')
@@ -29,6 +32,7 @@ dependencies {
     jacocoAggregation project(':superconductor-spring-boot-starter-jpa')
     jacocoAggregation project(':superconductor-spring-boot-starter-mysql')
     jacocoAggregation project(':superconductor-spring-boot-starter-redis')
+    jacocoAggregation project(':superconductor-spring-boot-starter-redis-curated')
     jacocoAggregation project(':superconductor-spring-boot-starter-sqlite')
 }
 

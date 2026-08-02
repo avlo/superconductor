@@ -11,6 +11,10 @@ rootProject.name = 'superconductor'
 
 include ':superconductor-autoconfigure-base'
 project(':superconductor-autoconfigure-base').setProjectDir(file("autoconfigure/base"))
+include ':superconductor-autoconfigure-curation-active'
+project(':superconductor-autoconfigure-curation-active').setProjectDir(file("autoconfigure/curation-active"))
+include ':superconductor-autoconfigure-curation-inactive'
+project(':superconductor-autoconfigure-curation-inactive').setProjectDir(file("autoconfigure/curation-inactive"))
 include ':superconductor-autoconfigure-h2db'
 project(':superconductor-autoconfigure-h2db').setProjectDir(file("autoconfigure/h2db"))
 include ':superconductor-autoconfigure-jpa'

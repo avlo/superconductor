@@ -3,5 +3,7 @@ plugins {
 }
 
 dependencies {
-    api project(':superconductor-spring-boot-starter-redis')
+    api project(':superconductor-autoconfigure-redis')
+    api project(':superconductor-autoconfigure-curation-active')
+    implementation project(':superconductor-lib-redis')
 }

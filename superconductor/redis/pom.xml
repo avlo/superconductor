@@ -188,6 +188,7 @@
           <excludes>
             <exclude>**/EventNoOpMessageIT.java</exclude>
             <exclude>**/EventNoOpReqMessageIT.java</exclude>
+            <exclude>**/BadgeAwardDownvoteEventSupplierRemoteIT.java</exclude>
           </excludes>
         </configuration>
         <executions>

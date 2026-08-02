@@ -27,3 +27,7 @@ dependencies {
 
     testImplementation project(':test-common')
 }
+
+tasks.named('integrationTest') {
+    mustRunAfter project(':superconductor-app-redis').tasks.named('test')
+}

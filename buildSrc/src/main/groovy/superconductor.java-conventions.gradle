@@ -87,7 +87,14 @@ dependencies {
 }
 
 tasks.named('test') {
+  maxParallelForks = Math.max(
+     1,
+     Runtime.runtime.availableProcessors().intdiv(8)
+  )
   systemProperty("spring.profiles.active", "test")
+  systemProperty("junit.jupiter.execution.parallel.enabled", "true")
+  systemProperty("junit.jupiter.execution.parallel.mode.default", "same_thread")
+  systemProperty("junit.jupiter.execution.parallel.mode.classes.default", "concurrent")
   useJUnitPlatform()
 }
 

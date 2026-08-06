@@ -1,0 +1,64 @@
+package com.prosilion.superconductor.base.curated.supplier.local;
+
+import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.curated.supplier.AbstractBaseCacheCuratedBadgeAwardEventListMessageIT;
+import java.util.List;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public abstract class AbstractCacheCuratedBadgeAwardEventListMessageSupplierLocalIT extends AbstractBaseCacheCuratedBadgeAwardEventListMessageIT {
+  protected AbstractCacheCuratedBadgeAwardEventListMessageSupplierLocalIT(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String relayUrl) throws NostrException {
+    super(superconductorInstanceIdentity, relayUrl, relayUrl);
+  }
+
+  @Override
+  protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionEvents() {
+    return List.of(
+       createBadgeDefinitionUpvoteEvent(),
+       createBadgeDefinitionDownvoteEvent()
+    );
+  }
+
+  @Override
+  protected List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> createBadgeAwardEvents() {
+    return List.of(
+       createAwardEventContainingRelayTag(),
+       createAwardEventWithoutRelayTag()
+    );
+  }
+
+  protected BadgeDefinitionGenericEvent createBadgeDefinitionUpvoteEvent() {
+    return new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator,
+       upvoteIdentifierTag,
+       new Relay(definitionEventRelayUrl));
+  }
+
+  protected BadgeDefinitionGenericEvent createBadgeDefinitionDownvoteEvent() {
+    return new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator,
+       downvoteIdentifierTag);
+  }
+
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAwardEventContainingRelayTag() {
+    return new BadgeAwardGenericEvent<>(
+       submitter,
+       recipient.getPublicKey(),
+       createBadgeDefinitionUpvoteEvent(),
+       new Relay(awardEventRelayUrl));
+  }
+
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAwardEventWithoutRelayTag() {
+    return new BadgeAwardGenericEvent<>(
+       submitter,
+       recipient.getPublicKey(),
+       createBadgeDefinitionDownvoteEvent());
+  }
+}

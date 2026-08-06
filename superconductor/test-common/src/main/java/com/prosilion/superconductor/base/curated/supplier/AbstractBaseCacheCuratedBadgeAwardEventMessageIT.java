@@ -2,6 +2,7 @@ package com.prosilion.superconductor.base.curated.supplier;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.AbstractSetsEvent;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -69,11 +70,11 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
 
   private void setupBadgeDefinitionGenericEvent(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent, String definitionEventRelayUrl) {
     NostrEventPublisher definitionEventNostrEventPublisher = new NostrEventPublisher(definitionEventRelayUrl);
-    EventMessage eventMessageBadgeDefinitionUpvoteEvent = new EventMessage(badgeDefinitionGenericEvent);
+    EventMessage eventMessageBadgeDefinitionGenericEvent = new EventMessage(badgeDefinitionGenericEvent);
     assertTrue(
        definitionEventNostrEventPublisher
           .send(
-             eventMessageBadgeDefinitionUpvoteEvent, Duration.ofSeconds(10))
+             eventMessageBadgeDefinitionGenericEvent, Duration.ofSeconds(10))
           .getFlag());
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
@@ -156,11 +157,13 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
        .map(PubKeyTag::getPublicKey).allMatch(recipient.getPublicKey()::equals));
 
     assertTrue(returnedCuratedBadgeAwardEvents.stream().map(EventIF::asGenericEventRecord)
-       .map(event -> event.requireFirstTag(AddressTag.class))
-       .anyMatch(badgeDefinitionUpvoteEvent.asAddressableEventAddressTag()::equals));
+       .map(event -> event.requireFirstTag(AddressTag.class).getIdentifierTag())
+       .anyMatch(
+          AbstractSetsEvent.hashedAddressTag(badgeDefinitionUpvoteEvent.asAddressableEventAddressTag())::equals));
 
     assertTrue(returnedCuratedBadgeAwardEvents.stream().map(EventIF::asGenericEventRecord)
-       .map(event -> event.requireFirstTag(AddressTag.class))
-       .anyMatch(badgeDefinitionDownvoteEvent.asAddressableEventAddressTag()::equals));
+       .map(event -> event.requireFirstTag(AddressTag.class).getIdentifierTag())
+       .anyMatch(
+          AbstractSetsEvent.hashedAddressTag(badgeDefinitionDownvoteEvent.asAddressableEventAddressTag())::equals));
   }
 }

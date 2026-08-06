@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.base.cache;
 
-import com.prosilion.nostr.event.BadgeSetsEvent;
+import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;

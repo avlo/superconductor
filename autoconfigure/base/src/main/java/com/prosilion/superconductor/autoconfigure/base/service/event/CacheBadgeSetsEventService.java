@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeSetsEvent;
+import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;

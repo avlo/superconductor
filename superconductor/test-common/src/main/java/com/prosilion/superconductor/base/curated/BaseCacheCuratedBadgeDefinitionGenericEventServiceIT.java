@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base.curated;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ReferenceTag;

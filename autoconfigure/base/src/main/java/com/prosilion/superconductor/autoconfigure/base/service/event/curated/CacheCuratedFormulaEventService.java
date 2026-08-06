@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.CuratedFormulaEvent;
+import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;

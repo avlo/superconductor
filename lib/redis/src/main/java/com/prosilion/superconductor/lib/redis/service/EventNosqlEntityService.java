@@ -242,6 +242,6 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
     return eventIF.getTags().stream()
        .filter(targetTagType.getClass()::isInstance)
        .map(targetTagType.getClass()::cast)
-       .collect(Collectors.toSet()).contains(targetTagType);
+       .anyMatch(targetTagType::equals);
   }
 }

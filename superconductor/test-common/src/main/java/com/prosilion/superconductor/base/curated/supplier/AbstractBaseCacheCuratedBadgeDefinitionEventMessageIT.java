@@ -92,8 +92,7 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT exte
           new ReqMessage(
              Factory.generateRandomHex64String(),
              new Filters(
-                new KindFilter(
-                   Kind.BADGE_DEFINITION_EVENT))),
+                new KindFilter(Kind.BADGE_DEFINITION_EVENT))),
           definitionEventRelayUrl));
 
     log.debug("returned events:");

@@ -1,4 +1,4 @@
-package com.prosilion.superconductor.curated;
+package com.prosilion.superconductor.redis.service.event.curated;
 
 import com.prosilion.nostr.event.AbstractSetsEvent;
 import com.prosilion.superconductor.CacheServiceTestFixture;

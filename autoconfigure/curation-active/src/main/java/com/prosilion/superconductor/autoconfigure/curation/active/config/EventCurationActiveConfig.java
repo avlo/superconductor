@@ -171,10 +171,11 @@ public class EventCurationActiveConfig {
   public CuratedBadgeAwardGenericEventKindPlugin curatedBadgeAwardGenericEventKindPlugin(
      @NonNull String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity,
+     @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
      @NonNull NotifierService notifierService,
      @NonNull EventPlugin eventPlugin) {
-    return new CuratedBadgeAwardGenericEventKindPlugin(
-       superconductorInstanceIdentity, superconductorRelayUrl, notifierService, eventPlugin);
+    return new CuratedBadgeAwardGenericEventKindPlugin(superconductorInstanceIdentity, superconductorRelayUrl,
+       cacheCuratedBadgeDefinitionGenericEventService, notifierService, eventPlugin);
   }
 
   @Bean("formulaEventKindPlugin")
@@ -240,11 +241,13 @@ public class EventCurationActiveConfig {
 
     kindFxnMap.put(
        Kind.CURATION_SETS_BADGE_AWARD_EVENT,
-       cacheCuratedBadgeAwardGenericEventService::materialize);
+       eventIF ->
+          cacheCuratedBadgeAwardGenericEventService.materialize(eventIF));
 
     kindFxnMap.put(
        Kind.CURATION_SETS_BADGE_DEFINITION_EVENT,
-       cacheCuratedBadgeDefinitionGenericEventService::materialize);
+       eventIF ->
+          cacheCuratedBadgeDefinitionGenericEventService.materialize(eventIF));
 
     kindFxnMap.put(
        Kind.CURATION_SETS_FORMULA_EVENT,
@@ -252,11 +255,13 @@ public class EventCurationActiveConfig {
 
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
-       cacheBadgeAwardGenericEventService::materialize);
+       eventIF ->
+          cacheBadgeAwardGenericEventService.materialize(eventIF));
 
     kindFxnMap.put(
        Kind.BADGE_DEFINITION_EVENT,
-       cacheBadgeDefinitionGenericEventService::materialize);
+       eventIF ->
+          cacheBadgeDefinitionGenericEventService.materialize(eventIF));
 
     kindFxnMap.put(
        Kind.FOLLOW_SETS,

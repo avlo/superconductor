@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.base.cache.curated;
 
-import com.prosilion.nostr.event.CuratedBadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;

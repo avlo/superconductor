@@ -2,10 +2,9 @@ package com.prosilion.superconductor.base.service.event.plugin.kind.type;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardReputationEvent;
-import com.prosilion.nostr.event.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.curated.BadgeAwardReputationEvent;
+import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.superconductor.base.service.event.plugin.kind.type.KindTypeIF;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
 import lombok.Getter;
@@ -18,14 +17,14 @@ public enum SuperconductorKindType implements KindTypeIF {
 
   public static final String PLATFORM = "superconductor";
   public static final ExternalIdentityTag BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG = new ExternalIdentityTag(
-      PLATFORM,
-      "badge_award_reputation",
-      String.valueOf(BadgeAwardReputationEvent.class.hashCode()));
+     PLATFORM,
+     "badge_award_reputation",
+     String.valueOf(BadgeAwardReputationEvent.class.hashCode()));
 
   public static final ExternalIdentityTag BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG = new ExternalIdentityTag(
-      PLATFORM,
-      "badge_definition_reputation",
-      String.valueOf(BadgeDefinitionReputationEvent.class.hashCode()));
+     PLATFORM,
+     "badge_definition_reputation",
+     String.valueOf(BadgeDefinitionReputationEvent.class.hashCode()));
 
   private final Kind kind;
   private final Kind kindDefinition;

@@ -14,11 +14,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
 
-//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-////    implementation 'io.micrometer:micrometer-registry-prometheus'
-//    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
-//    implementation 'io.opentelemetry:opentelemetry-exporter-zipkin'
-
     def springBootEmbeddedRedis = '1.0.1'
     testImplementation('io.github.tobi-laa:spring-boot-embedded-redis:' + springBootEmbeddedRedis)
     testImplementation('io.projectreactor:reactor-test:3.8.4')

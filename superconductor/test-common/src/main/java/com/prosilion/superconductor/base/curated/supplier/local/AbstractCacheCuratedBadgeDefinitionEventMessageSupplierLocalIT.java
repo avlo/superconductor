@@ -2,6 +2,7 @@ package com.prosilion.superconductor.base.curated.supplier.local;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.curated.supplier.AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT;
 import lombok.NonNull;
@@ -20,7 +21,7 @@ public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLoc
     return new BadgeDefinitionGenericEvent(
        upvoteDefnCreator,
        upvoteIdentifierTag,
-       definitionEventRelay);
+       new Relay(definitionEventRelayUrl));
   }
 
   @Override

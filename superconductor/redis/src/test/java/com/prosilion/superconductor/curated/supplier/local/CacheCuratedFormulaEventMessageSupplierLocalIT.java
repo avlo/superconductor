@@ -12,11 +12,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 @Slf4j
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
+@TestPropertySource(properties = {
+   "superconductor.event.curation.active=true"
+})
 public class CacheCuratedFormulaEventMessageSupplierLocalIT extends AbstractCacheCuratedFormulaEventMessageSupplierLocalIT {
   @Autowired
   CacheCuratedFormulaEventMessageSupplierLocalIT(

@@ -17,6 +17,7 @@ import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
+import java.time.Duration;
 import java.util.List;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,31 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT exte
   abstract protected BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag();
   abstract protected BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag();
 
+  private void setupBadgeDefinitionEvent(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
+    assertTrue(
+       new NostrEventPublisher(definitionEventRelayUrl)
+          .send(
+             new EventMessage(badgeDefinitionGenericEvent), Duration.ofSeconds(15))
+          .getFlag());
+
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Factory.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
+          definitionEventRelayUrl));
+
+    log.debug("returned events:");
+    log.debug("  {}", returnedEventIFs);
+
+    assertTrue(
+       returnedEventIFs.stream()
+          .map(event -> event.requireFirstTag(EventTag.class))
+          .map(EventTag::getEventId)
+          .anyMatch(badgeDefinitionGenericEvent.getId()::equals));
+  }
+
   @Test
   void testExpectedEvent() throws NostrException {
     List<EventIF> returnedCuratedBadgeDefinitionEvents = TestUtils.getEventIFs(
@@ -76,32 +102,5 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT exte
     assertTrue(returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(AddressTag.class))
        .anyMatch(badgeDefinitionDownvoteEventWithoutRelayTag.asAddressableEventAddressTag()::equals));
-  }
-
-  private void setupBadgeDefinitionEvent(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
-    NostrEventPublisher definitionEventNostrEventPublisher = new NostrEventPublisher(definitionEventRelayUrl);
-    EventMessage eventMessageBadgeDefinitionUpvoteEventWithRelayTag = new EventMessage(badgeDefinitionGenericEvent);
-    assertTrue(
-       definitionEventNostrEventPublisher
-          .send(
-             eventMessageBadgeDefinitionUpvoteEventWithRelayTag)
-          .getFlag());
-
-    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-       new NostrSingleRequestService().send(
-          new ReqMessage(
-             Factory.generateRandomHex64String(),
-             new Filters(
-                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
-          definitionEventRelayUrl));
-
-    log.debug("returned events:");
-    log.debug("  {}", returnedEventIFs);
-
-    assertTrue(
-       returnedEventIFs.stream()
-          .map(event -> event.requireFirstTag(EventTag.class))
-          .map(EventTag::getEventId)
-          .anyMatch(badgeDefinitionGenericEvent.getId()::equals));
   }
 }

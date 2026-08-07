@@ -48,10 +48,10 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
     this.awardEventRelayUrl = awardEventRelayUrl;
 
     this.badgeDefinitionUpvoteEvent = createDefinitionEventContainingRelayTag();
-    setupBadgeDefinitionGenericEvent(badgeDefinitionUpvoteEvent, definitionEventRelayUrl);
+    setupBadgeDefinitionEvent(badgeDefinitionUpvoteEvent, definitionEventRelayUrl);
 
     this.badgeDefinitionDownvoteEvent = createDefinitionEventWithoutRelayTag();
-    setupBadgeDefinitionGenericEvent(badgeDefinitionDownvoteEvent, definitionEventRelayUrl);
+    setupBadgeDefinitionEvent(badgeDefinitionDownvoteEvent, definitionEventRelayUrl);
 
     this.badgeAwardEventWithRelayTag = createAwardEventContainingRelayTag();
     setupBadgeAwardEvent(badgeAwardEventWithRelayTag, awardEventRelayUrl);
@@ -65,13 +65,11 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
   abstract protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAwardEventContainingRelayTag();
   abstract protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAwardEventWithoutRelayTag();
 
-  private void setupBadgeDefinitionGenericEvent(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent, String definitionEventRelayUrl) {
-    NostrEventPublisher publisher = new NostrEventPublisher(definitionEventRelayUrl);
-    EventMessage eventMessageBadgeDefinitionGenericEvent = new EventMessage(badgeDefinitionGenericEvent);
+  private void setupBadgeDefinitionEvent(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent, String definitionEventRelayUrl) {
     assertTrue(
-       publisher
+       new NostrEventPublisher(definitionEventRelayUrl)
           .send(
-             eventMessageBadgeDefinitionGenericEvent, Duration.ofSeconds(10))
+             new EventMessage(badgeDefinitionGenericEvent), Duration.ofSeconds(10))
           .getFlag());
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
@@ -79,29 +77,25 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageIT extends B
           new ReqMessage(
              Factory.generateRandomHex64String(),
              new Filters(
-                new KindFilter(Kind.BADGE_DEFINITION_EVENT))),
+                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
           definitionEventRelayUrl,
           Duration.ofSeconds(10)));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
 
-//    List<String> eventTagEventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
-//       .map(event -> event.requireFirstTag(EventTag.class))
-//       .map(EventTag::getEventId).toList();
-//    assertTrue(eventTagEventIds.contains(badgeDefinitionGenericEvent.getId()));
-
-    List<String> eventIds = returnedEventIFs.stream().map(EventIF::getId).toList();
-    assertTrue(eventIds.contains(badgeDefinitionGenericEvent.getId()));
+    assertTrue(
+       returnedEventIFs.stream()
+          .map(event -> event.requireFirstTag(EventTag.class))
+          .map(EventTag::getEventId)
+          .anyMatch(badgeDefinitionGenericEvent.getId()::equals));
   }
 
   private void setupBadgeAwardEvent(BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent, String awardEventRelayUrl) {
-    NostrEventPublisher publisher = new NostrEventPublisher(awardEventRelayUrl);
-    EventMessage eventMessageBadgeAwardUpvoteEvent = new EventMessage(badgeAwardUpvoteEvent);
     assertTrue(
-       publisher
+       new NostrEventPublisher(awardEventRelayUrl)
           .send(
-             eventMessageBadgeAwardUpvoteEvent, Duration.ofSeconds(10))
+             new EventMessage(badgeAwardUpvoteEvent), Duration.ofSeconds(10))
           .getFlag());
   }
 

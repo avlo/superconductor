@@ -11,10 +11,8 @@ rootProject.name = 'superconductor'
 
 include ':superconductor-autoconfigure-base'
 project(':superconductor-autoconfigure-base').setProjectDir(file("autoconfigure/base"))
-include ':superconductor-autoconfigure-curation-active'
-project(':superconductor-autoconfigure-curation-active').setProjectDir(file("autoconfigure/curation-active"))
-include ':superconductor-autoconfigure-curation-inactive'
-project(':superconductor-autoconfigure-curation-inactive').setProjectDir(file("autoconfigure/curation-inactive"))
+include ':superconductor-autoconfigure-curation'
+project(':superconductor-autoconfigure-curation').setProjectDir(file("autoconfigure/curation"))
 include ':superconductor-autoconfigure-h2db'
 project(':superconductor-autoconfigure-h2db').setProjectDir(file("autoconfigure/h2db"))
 include ':superconductor-autoconfigure-jpa'
@@ -59,8 +57,6 @@ include ':superconductor-app-mysql'
 project(':superconductor-app-mysql').setProjectDir(file("superconductor/mysql"))
 include ':superconductor-app-redis'
 project(':superconductor-app-redis').setProjectDir(file("superconductor/redis"))
-include ':superconductor-app-redis-curated'
-project(':superconductor-app-redis-curated').setProjectDir(file("superconductor/redis-curated"))
 include ':superconductor-app-sqlite'
 project(':superconductor-app-sqlite').setProjectDir(file("superconductor/sqlite"))
 

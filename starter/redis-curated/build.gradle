@@ -4,6 +4,6 @@ plugins {
 
 dependencies {
     api project(':superconductor-autoconfigure-redis')
-    api project(':superconductor-autoconfigure-curation-active')
+    api project(':superconductor-autoconfigure-curation')
     implementation project(':superconductor-lib-redis')
 }

@@ -92,12 +92,16 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageIT exte
           new ReqMessage(
              Factory.generateRandomHex64String(),
              new Filters(
-                new KindFilter(Kind.BADGE_DEFINITION_EVENT))),
+                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
           definitionEventRelayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
 
-    assertTrue(returnedEventIFs.stream().map(EventIF::getId).anyMatch(badgeDefinitionGenericEvent.getId()::equals));
+    assertTrue(
+       returnedEventIFs.stream()
+          .map(event -> event.requireFirstTag(EventTag.class))
+          .map(EventTag::getEventId)
+          .anyMatch(badgeDefinitionGenericEvent.getId()::equals));
   }
 }

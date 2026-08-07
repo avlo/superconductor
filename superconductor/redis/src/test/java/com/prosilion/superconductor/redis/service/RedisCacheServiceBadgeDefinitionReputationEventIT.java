@@ -17,9 +17,9 @@
 //import org.springframework.test.context.ActiveProfiles;
 //
 //import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
-//import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_DOWNVOTE;
-//import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_REPUTATION;
-//import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
+//import static com.prosilion.superconductor.config.DataLoaderRedisTestIF.TEST_UNIT_DOWNVOTE;
+//import static com.prosilion.superconductor.config.DataLoaderRedisTestIF.TEST_UNIT_REPUTATION;
+//import static com.prosilion.superconductor.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
 //
 //@Slf4j
 //@EmbeddedRedisStandalone

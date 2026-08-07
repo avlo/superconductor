@@ -1,9 +1,9 @@
-package com.prosilion.superconductor.redis;
+package com.prosilion.superconductor.curated.supplier.remote;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.BaseBadgeAwardDownvoteEventSupplierRemoteIT;
-import com.prosilion.superconductor.config.SingleContainerNonCuratedTestConfig;
+import com.prosilion.superconductor.base.curated.supplier.remote.AbstractCacheCuratedBadgeAwardEventMessageSupplierRemoteListIT;
+import com.prosilion.superconductor.config.SingleContainerCuratedTestConfig;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +18,13 @@ import org.springframework.test.context.ActiveProfiles;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-@Import(SingleContainerNonCuratedTestConfig.class)
-public class BadgeAwardDownvoteEventSupplierRemoteIT extends BaseBadgeAwardDownvoteEventSupplierRemoteIT {
+@Import(SingleContainerCuratedTestConfig.class)
+public class CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteListIT extends AbstractCacheCuratedBadgeAwardEventMessageSupplierRemoteListIT {
   @Autowired
-  BadgeAwardDownvoteEventSupplierRemoteIT(
-     @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
+  CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteListIT(
+     @NonNull Identity superconductorInstanceIdentity,
      @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo,
-     @NonNull @Value("${superconductor.relay.url.three}") String superconductorRelayUrlThree,
-     @NonNull Identity superconductorInstanceIdentity) throws NostrException {
-    super(superconductorRelayUrl, superconductorRelayUrlTwo, superconductorRelayUrlThree, superconductorInstanceIdentity);
+     @NonNull @Value("${superconductor.relay.url.three}") String superconductorRelayUrlThree) throws NostrException {
+    super(superconductorInstanceIdentity, superconductorRelayUrlTwo, superconductorRelayUrlThree);
   }
 }

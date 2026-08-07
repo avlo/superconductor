@@ -12,8 +12,7 @@
 
   <modules>
     <module>autoconfigure/base</module>
-    <module>autoconfigure/curation-active</module>
-    <module>autoconfigure/curation-inactive</module>
+    <module>autoconfigure/curation</module>
     <module>autoconfigure/h2db</module>
     <module>autoconfigure/jpa</module>
     <module>autoconfigure/mysql</module>
@@ -34,7 +33,6 @@
     <module>superconductor/h2db</module>
     <module>superconductor/mysql</module>
     <module>superconductor/redis</module>
-    <module>superconductor/redis-curated</module>
     <module>superconductor/sqlite</module>
     <module>superconductor/test-common</module>
 <!--    <module>report-aggregate</module> use gradle instead -->

@@ -34,10 +34,5 @@
       <artifactId>superconductor-autoconfigure-redis</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-autoconfigure-curation-inactive</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
   </dependencies>
 </project>

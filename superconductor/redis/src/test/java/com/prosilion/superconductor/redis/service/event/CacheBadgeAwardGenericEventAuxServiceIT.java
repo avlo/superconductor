@@ -26,7 +26,7 @@
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.test.context.ActiveProfiles;
 //
-//import static com.prosilion.superconductor.redis.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
+//import static com.prosilion.superconductor.config.DataLoaderRedisTestIF.TEST_UNIT_UPVOTE;
 //import static org.junit.jupiter.api.Assertions.assertEquals;
 //
 //@Slf4j

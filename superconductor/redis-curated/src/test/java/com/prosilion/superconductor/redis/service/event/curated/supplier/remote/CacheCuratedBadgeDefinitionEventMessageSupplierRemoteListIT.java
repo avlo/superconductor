@@ -1,8 +1,8 @@
-package com.prosilion.superconductor.redis;
+package com.prosilion.superconductor.redis.service.event.curated.supplier.remote;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.BaseBadgeAwardDownvoteEventSupplierRemoteIT;
+import com.prosilion.superconductor.base.curated.supplier.remote.AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT;
 import com.prosilion.superconductor.redis.config.SingleContainerTestConfig;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
@@ -19,13 +19,11 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @Import(SingleContainerTestConfig.class)
-public class BadgeAwardDownvoteEventSupplierRemoteIT extends BaseBadgeAwardDownvoteEventSupplierRemoteIT {
+public class CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT extends AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT {
   @Autowired
-  BadgeAwardDownvoteEventSupplierRemoteIT(
-     @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
-     @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo,
-     @NonNull @Value("${superconductor.relay.url.three}") String superconductorRelayUrlThree,
-     @NonNull Identity superconductorInstanceIdentity) throws NostrException {
-    super(superconductorRelayUrl, superconductorRelayUrlTwo, superconductorRelayUrlThree, superconductorInstanceIdentity);
+  CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo) throws NostrException {
+    super(superconductorInstanceIdentity, superconductorRelayUrlTwo);
   }
 }

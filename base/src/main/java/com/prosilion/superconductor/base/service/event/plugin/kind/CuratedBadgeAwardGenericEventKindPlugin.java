@@ -40,26 +40,39 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
+    Optional<RelayTag> eventRelayTag = event.findFirstTag(RelayTag.class);
+    log.debug("processing incoming BadgeAwardGenericEvent using event RelayTag url [{}]",
+       eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
+
 //  super.processIncomingEvent(event, fromRelay);  save incoming BadgeAwardGenericEvent
 
     Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent =
        cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(event.requireFirstTag(AddressTag.class));
 
-    if (curatedBadgeDefinitionGenericEvent.isEmpty())
+    if (curatedBadgeDefinitionGenericEvent.isEmpty()) {
+      log.debug("non-existent curatedBadgeDefinitionGenericEvent (and therefore, badgeDefinitionGenericEvent).  return Optional.empty()");
       return Optional.empty();
+    }
 
+    log.debug("found existing curatedBadgeDefinitionGenericEvent (and therefore, badgeDefinitionGenericEvent):\n{}\nre-composing BadgeAwardGenericEvent...",
+       curatedBadgeDefinitionGenericEvent.get().createPrettyPrintJson());
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
        new BadgeAwardGenericEvent<>(
           event.asGenericEventRecord(),
           addressTag -> curatedBadgeDefinitionGenericEvent.get().getBadgeDefinitionGenericEvent());
+    log.debug("...done:\n{}", badgeAwardGenericEvent.createPrettyPrintJson());
 
+    log.debug("composing new CuratedBadgeAwardGenericEvent...");
+    String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
     CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(
        superconductorInstanceIdentity,
        badgeAwardGenericEvent,
        curatedBadgeDefinitionGenericEvent.get(),
-       new ReferenceTag(event.findFirstTag(RelayTag.class).map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl())),
+       new ReferenceTag(guaranteedSourceRelayUrl),
        superconductorRelay);
+    log.debug("...done:\n{}", curatedBadgeAwardGenericEvent.createPrettyPrintJson());
 
+    log.debug("saving CuratedBadgeAwardGenericEvent with guaranteedSourceRelayUrl as ReferenceTag URL: [{}]", guaranteedSourceRelayUrl);
     return super.processIncomingEvent(curatedBadgeAwardGenericEvent, superconductorRelay);
   }
 

@@ -19,17 +19,17 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierRemoteIT
   }
 
   @Override
-  protected BadgeDefinitionGenericEvent createBadgeDefinitionUpvoteEvent() {
+  protected BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag() {
     return new BadgeDefinitionGenericEvent(
-       superconductorInstanceIdentity,
+       upvoteDefnCreator,
        upvoteIdentifierTag,
        new Relay("ws://superconductor-app-two:5555"));
   }
 
   @Override
-  protected BadgeDefinitionGenericEvent createBadgeDefinitionDownvoteEvent() {
+  protected BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag() {
     return new BadgeDefinitionGenericEvent(
-       superconductorInstanceIdentity,
+       upvoteDefnCreator,
        downvoteIdentifierTag);
   }
 

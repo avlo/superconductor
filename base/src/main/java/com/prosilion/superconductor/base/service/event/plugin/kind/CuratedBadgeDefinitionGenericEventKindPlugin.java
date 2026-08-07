@@ -32,10 +32,10 @@ public class CuratedBadgeDefinitionGenericEventKindPlugin extends NonPublishingE
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
     Optional<RelayTag> eventRelayTag = event.findFirstTag(RelayTag.class);
-    log.debug("processing incoming BadgeDefinitionGenericEvent using eventRelayTag url [{}]",
+    log.debug("processing incoming BadgeDefinitionGenericEvent using event RelayTag url [{}]",
        eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
     
-    super.processIncomingEvent(event, fromRelay);
+//    super.processIncomingEvent(event, fromRelay);  // save incoming BadgeDefinitionGenericEvent
 
     String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
     CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent = new CuratedBadgeDefinitionGenericEvent(
@@ -44,7 +44,7 @@ public class CuratedBadgeDefinitionGenericEventKindPlugin extends NonPublishingE
        new ReferenceTag(guaranteedSourceRelayUrl),
        superconductorRelay);
 
-    log.debug("creating CuratedBadgeDefinitionGenericEvent referencing eventRelayTag url [{}]", guaranteedSourceRelayUrl);
+    log.debug("saving CuratedBadgeDefinitionGenericEvent with guaranteedSourceRelayUrl as ReferenceTag URL: [{}]", guaranteedSourceRelayUrl);
     return super.processIncomingEvent(curatedBadgeDefinitionGenericEvent, superconductorRelay);
   }
 

@@ -103,12 +103,12 @@ public class EventCurationActiveConfig {
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCurationSetsEventService) {
+     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService) {
     return new CacheBadgeSetsEventService(
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventService,
-       cacheCurationSetsEventService);
+       cacheCuratedBadgeAwardGenericEventService);
   }
 
   @Bean

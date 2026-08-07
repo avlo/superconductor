@@ -133,8 +133,10 @@ testing {
               includeTestsMatching("*IT")
 //                          excludeTestsMatching("*NoOp*IT")
               excludeTestsMatching("BadgeAwardDownvoteEventSupplierRemoteIT")
-              excludeTestsMatching("CacheCuratedBadgeDefinitionGenericEventMessageSupplierRemoteIT")
+              excludeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteIT")
+              excludeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT")
               excludeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT")
+              excludeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteListIT")
               excludeTestsMatching("CacheCuratedFormulaEventMessageSupplierRemoteIT")
             }
           }
@@ -171,8 +173,11 @@ tasks.register('integrationTestDocker', Test) {
   systemProperty("spring.profiles.active", "test")
   useJUnitPlatform()
   filter {
-    includeTestsMatching("CacheCuratedBadgeDefinitionGenericEventMessageSupplierRemoteIT")
+    includeTestsMatching("BadgeAwardDownvoteEventSupplierRemoteIT")
+    includeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteIT")
+    includeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT")
     includeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT")
+    includeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteListIT")
     includeTestsMatching("CacheCuratedFormulaEventMessageSupplierRemoteIT")
   }
 //  systemProperty "junit.jupiter.testclass.order.default", "org.junit.jupiter.api.ClassOrderer$ReverseClassOrderer"

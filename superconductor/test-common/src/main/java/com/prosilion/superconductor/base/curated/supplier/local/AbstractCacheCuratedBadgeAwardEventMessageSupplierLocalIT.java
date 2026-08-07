@@ -18,7 +18,7 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierLocalIT 
   }
 
   @Override
-  protected BadgeDefinitionGenericEvent createBadgeDefinitionUpvoteEvent() {
+  protected BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag() {
     return new BadgeDefinitionGenericEvent(
        upvoteDefnCreator,
        upvoteIdentifierTag,
@@ -26,7 +26,7 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierLocalIT 
   }
 
   @Override
-  protected BadgeDefinitionGenericEvent createBadgeDefinitionDownvoteEvent() {
+  protected BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag() {
     return new BadgeDefinitionGenericEvent(
        upvoteDefnCreator,
        downvoteIdentifierTag);

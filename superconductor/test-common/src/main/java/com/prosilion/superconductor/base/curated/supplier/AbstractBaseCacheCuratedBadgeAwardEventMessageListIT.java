@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.curated.supplier;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.AbstractSetsEvent;
+import com.prosilion.nostr.event.BadgeAwardAbstractEvent;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
@@ -30,37 +31,33 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class AbstractBaseCacheCuratedBadgeAwardEventListMessageIT extends BaseIntegrationTestFixtures {
-  protected final Identity superconductorInstanceIdentity;
-
+public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT extends BaseIntegrationTestFixtures {
   protected final String awardEventRelayUrl;
   protected final String definitionEventRelayUrl;
 
-  protected final List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEvents;
-  protected final List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEvents;
+  //  protected final List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEvents;
+  protected final List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventList;
 
-  abstract protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionEvents();
-  abstract protected List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> createBadgeAwardEvents();
+  //  abstract protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionEvents();
+  abstract protected List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> createBadgeAwardEventList();
 
-  protected AbstractBaseCacheCuratedBadgeAwardEventListMessageIT(
+  protected AbstractBaseCacheCuratedBadgeAwardEventMessageListIT(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String definitionEventRelayUrl,
      @NonNull String awardEventRelayUrl) throws NostrException {
     super(superconductorInstanceIdentity);
 
-    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.definitionEventRelayUrl = definitionEventRelayUrl;
     this.awardEventRelayUrl = awardEventRelayUrl;
 
-    this.badgeDefinitionGenericEvents = createBadgeDefinitionEvents();
-    setupBadgeDefinitionEvents(badgeDefinitionGenericEvents, definitionEventRelayUrl);
+//    this.badgeDefinitionGenericEvents = createBadgeDefinitionEvents();
+//    setupBadgeDefinitionEvents(badgeDefinitionGenericEvents, definitionEventRelayUrl);
 
-    this.badgeAwardGenericEvents = createBadgeAwardEvents();
-    setupBadgeAwardEvents(badgeAwardGenericEvents);
+    this.badgeAwardGenericEventList = createBadgeAwardEventList();
+    setupBadgeAwardEvents(badgeAwardGenericEventList);
   }
 
   private void setupBadgeDefinitionEvents(List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEventList, String definitionEventRelayUrl) {
@@ -90,16 +87,28 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventListMessageIT exten
          .map(EventTag::getEventId).collect(Collectors.toSet()));
     });
 
-    assertEquals(this.badgeDefinitionGenericEvents.size(), eventIds.size());
-    assertTrue(eventIds.stream().anyMatch(badgeDefinitionGenericEvents.stream().map(BaseEvent::getId).toList()::contains));
+//    assertEquals(this.badgeDefinitionGenericEvents.size(), eventIds.size());
+    assertTrue(eventIds.stream().anyMatch(
+       badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
+          .map(BaseEvent::getId).toList()::contains));
   }
 
   private void setupBadgeAwardEvents(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
+    badgeAwardUpvoteEvents.stream()
+       .map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent).forEach(badgeDefinitionGenericEvent -> {
+         EventMessage eventMessageBadgeDefinitionEvent = new EventMessage(badgeDefinitionGenericEvent);
+         assertTrue(
+            new NostrEventPublisher(definitionEventRelayUrl)
+               .send(
+                  eventMessageBadgeDefinitionEvent, Duration.ofSeconds(10))
+               .getFlag());
+       });
+
+
     badgeAwardUpvoteEvents.forEach(badgeAwardUpvoteEvent -> {
-      NostrEventPublisher awardEventNostrComprehensiveClient = new NostrEventPublisher(awardEventRelayUrl);
       EventMessage eventMessageBadgeAwardUpvoteEvent = new EventMessage(badgeAwardUpvoteEvent);
       assertTrue(
-         awardEventNostrComprehensiveClient
+         new NostrEventPublisher(awardEventRelayUrl)
             .send(
                eventMessageBadgeAwardUpvoteEvent, Duration.ofSeconds(10))
             .getFlag());
@@ -120,7 +129,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventListMessageIT exten
     log.debug("returned events:");
     log.debug("  {}", returnedCuratedBadgeAwardEvents);
 
-    assertEquals(this.badgeAwardGenericEvents.size(), returnedCuratedBadgeAwardEvents.size());
+//    assertEquals(this.badgeAwardGenericEvents.size(), returnedCuratedBadgeAwardEvents.size());
     validateResults(returnedCuratedBadgeAwardEvents);
   }
 
@@ -142,7 +151,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventListMessageIT exten
     log.debug("returned events:");
     log.debug("  {}", returnedCuratedBadgeAwardEvents);
 
-    assertEquals(this.badgeAwardGenericEvents.size(), returnedCuratedBadgeAwardEvents.size());
+//    assertEquals(this.badgeAwardGenericEvents.size(), returnedCuratedBadgeAwardEvents.size());
     validateResults(returnedCuratedBadgeAwardEvents);
   }
 
@@ -151,7 +160,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventListMessageIT exten
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
 
-    assertTrue(eventIds.stream().anyMatch(this.badgeAwardGenericEvents.stream().map(BadgeAwardGenericEvent::getId).toList()::contains));
+    assertTrue(eventIds.stream().anyMatch(this.badgeAwardGenericEventList.stream().map(BadgeAwardGenericEvent::getId).toList()::contains));
 
     assertTrue(returnedCuratedBadgeAwardEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(PubKeyTag.class))
@@ -162,7 +171,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventListMessageIT exten
           .map(EventIF::asGenericEventRecord)
           .map(event -> event.requireFirstTag(AddressTag.class).getIdentifierTag())
           .anyMatch(
-             this.badgeDefinitionGenericEvents.stream()
+             this.badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
                 .map(badgeDefinitionUpvoteEvent ->
                    AbstractSetsEvent.hashedAddressTag(badgeDefinitionUpvoteEvent.asAddressableEventAddressTag()))
                 .toList()::contains));

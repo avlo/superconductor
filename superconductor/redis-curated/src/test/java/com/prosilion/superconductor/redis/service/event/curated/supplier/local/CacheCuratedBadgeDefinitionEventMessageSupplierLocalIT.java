@@ -16,9 +16,9 @@ import org.springframework.test.context.ActiveProfiles;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class CacheCuratedBadgeDefinitionGenericEventMessageSupplierLocalIT extends AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLocalIT {
+public class CacheCuratedBadgeDefinitionEventMessageSupplierLocalIT extends AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLocalIT {
   @Autowired
-  CacheCuratedBadgeDefinitionGenericEventMessageSupplierLocalIT(
+  CacheCuratedBadgeDefinitionEventMessageSupplierLocalIT(
      @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity) throws NostrException {
     super(superconductorRelayUrl, superconductorInstanceIdentity);

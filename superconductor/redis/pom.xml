@@ -21,7 +21,7 @@
   <dependencies>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
-      <artifactId>superconductor-spring-boot-starter-redis</artifactId>
+      <artifactId>superconductor-spring-boot-starter-redis-curated</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>

@@ -18,6 +18,7 @@ services:
       - superconductor_net
     environment:
       SPRING_PROFILES_ACTIVE: dev_ws
+      SUPERCONDUCTOR_EVENT_CURATION_ACTIVE: true
       SPRING_DATA_REDIS_HOST: superconductor-db
       SUPERCONDUCTOR_RELAY_URL: "ws://superconductor-app:5555"
 volumes:

@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api project(':superconductor-spring-boot-starter-redis')
+    api project(':superconductor-spring-boot-starter-redis-curated')
 
     def subdivisionsVersion = '1.4.1'
     testImplementation 'com.prosilion:subdivisions:' + subdivisionsVersion

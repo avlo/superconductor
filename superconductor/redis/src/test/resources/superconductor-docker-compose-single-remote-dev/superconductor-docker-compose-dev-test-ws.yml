@@ -5,6 +5,8 @@ services:
     hostname: superconductor-db-two
     ports:
       - "6378:6379"
+    networks:
+      - superconductor_net
     healthcheck:
       test: [ "CMD", "redis-cli" ,"ping", "superconductor-db-two" ]
       retries: 3
@@ -18,15 +20,17 @@ services:
     depends_on:
       superconductor-db-two:
         condition: service_healthy
+    networks:
+      - superconductor_net
     environment:
-      SPRING_PROFILES_ACTIVE: test
+      SPRING_PROFILES_ACTIVE: dev_ws
       SUPERCONDUCTOR_EVENT_CURATION_ACTIVE: true
       SUPERCONDUCTOR_RELAY_URL: ws://superconductor-app-two:5555
       SUPERCONDUCTOR_KEY_PRIVATE: fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac
       SUPERCONDUCTOR_KEY_PUBLIC: e04e1c1c30df6058433f61681644fd24914f2e02e420496086c61f53eb504c04
       SERVER_PORT: 5555
-      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_CONTROLLER: debug
-      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_SERVICE_EVENT: info
+#      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_CONTROLLER: debug
+      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_SERVICE_EVENT: debug
       SPRING_DATA_REDIS_HOST: superconductor-db-two
       SUPERCONDUCTOR_TIMEOUT_DURATION_MILLIS: 3000
 #
@@ -37,6 +41,8 @@ services:
     hostname: superconductor-db-three
     ports:
       - "6377:6379"
+    networks:
+      - superconductor_net
     healthcheck:
       test: [ "CMD", "redis-cli" ,"ping", "superconductor-db-three" ]
       retries: 3
@@ -50,15 +56,17 @@ services:
     depends_on:
       superconductor-db-three:
         condition: service_healthy
+    networks:
+      - superconductor_net
     environment:
-      SPRING_PROFILES_ACTIVE: test
+      SPRING_PROFILES_ACTIVE: dev_ws
       SUPERCONDUCTOR_EVENT_CURATION_ACTIVE: true
       SUPERCONDUCTOR_RELAY_URL: ws://superconductor-app-three:5555
       SUPERCONDUCTOR_KEY_PRIVATE: fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac
       SUPERCONDUCTOR_KEY_PUBLIC: e04e1c1c30df6058433f61681644fd24914f2e02e420496086c61f53eb504c04
       SERVER_PORT: 5555
-      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_CONTROLLER: debug
-      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_SERVICE_EVENT: info
+#      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_CONTROLLER: debug
+      LOGGING_LEVEL_COM_PROSILION_SUPERCONDUCTOR_BASE_SERVICE_EVENT: debug
       SPRING_DATA_REDIS_HOST: superconductor-db-three
       SUPERCONDUCTOR_TIMEOUT_DURATION_MILLIS: 3000
 #
@@ -70,7 +78,13 @@ volumes:
   superconductor-db-three:
     driver: local
 networks:
-  default:
-    driver: bridge
+#  default:
+#    driver: bridge
+#    driver_opts:
+#      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+  superconductor_net:
+    external: true
+    name: prosilion-net
+#    driver: bridge
     driver_opts:
-      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"  

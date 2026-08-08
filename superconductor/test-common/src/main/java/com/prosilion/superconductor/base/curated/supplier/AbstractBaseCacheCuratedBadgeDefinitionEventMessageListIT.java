@@ -33,9 +33,9 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT 
   protected final String definitionEventRelayUrl;
   protected final Relay definitionEventRelay;
 
-  private final List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEvents;
+  private final List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEventList;
 
-  abstract protected List<BadgeDefinitionGenericEvent> createDefinitionEvents();
+  abstract protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionGenericEventList();
 
   protected AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT(
      @NonNull String superconductorRelayUrl,
@@ -44,8 +44,8 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT 
     this.definitionEventRelayUrl = superconductorRelayUrl;
     this.definitionEventRelay = new Relay(superconductorRelayUrl);
 
-    this.badgeDefinitionGenericEvents = createDefinitionEvents();
-    setupBadgeDefinitionEvents(badgeDefinitionGenericEvents);
+    this.badgeDefinitionGenericEventList = createBadgeDefinitionGenericEventList();
+    setupBadgeDefinitionEvents(badgeDefinitionGenericEventList);
   }
 
   private void setupBadgeDefinitionEvents(List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEventList) {
@@ -64,17 +64,19 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT 
             new ReqMessage(
                Factory.generateRandomHex64String(),
                new Filters(
-                  new KindFilter(Kind.BADGE_DEFINITION_EVENT))),
+                  new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
             definitionEventRelayUrl));
 
       log.debug("returned events:");
       log.debug("  {}", returnedEventIFs);
 
-      eventIds.addAll(returnedEventIFs.stream().map(EventIF::getId).collect(Collectors.toSet()));
+      eventIds.addAll(returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+         .map(event -> event.requireFirstTag(EventTag.class))
+         .map(EventTag::getEventId).collect(Collectors.toSet()));
     });
 
 //    assertEquals(this.badgeDefinitionGenericEvents.size(), eventIds.size());
-    assertTrue(eventIds.stream().anyMatch(badgeDefinitionGenericEvents.stream().map(BaseEvent::getId).toList()::contains));
+    assertTrue(eventIds.stream().anyMatch(this.badgeDefinitionGenericEventList.stream().map(BaseEvent::getId).toList()::contains));
   }
 
   @Test
@@ -94,10 +96,10 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT 
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
 
-    assertTrue(eventIds.stream().anyMatch(badgeDefinitionGenericEvents.stream().map(BadgeDefinitionGenericEvent::getId).toList()::contains));
+    assertTrue(eventIds.stream().anyMatch(badgeDefinitionGenericEventList.stream().map(BadgeDefinitionGenericEvent::getId).toList()::contains));
 
     assertTrue(returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(AddressTag.class))
-       .anyMatch(badgeDefinitionGenericEvents.stream().map(BadgeDefinitionGenericEvent::asAddressableEventAddressTag).toList()::contains));
+       .anyMatch(badgeDefinitionGenericEventList.stream().map(BadgeDefinitionGenericEvent::asAddressableEventAddressTag).toList()::contains));
   }
 }

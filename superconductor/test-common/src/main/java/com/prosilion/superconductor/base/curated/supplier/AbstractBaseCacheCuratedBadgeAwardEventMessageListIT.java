@@ -49,7 +49,6 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
      @NonNull String definitionEventRelayUrl,
      @NonNull String awardEventRelayUrl) throws NostrException {
     super(superconductorInstanceIdentity);
-
     this.definitionEventRelayUrl = definitionEventRelayUrl;
     this.awardEventRelayUrl = awardEventRelayUrl;
 

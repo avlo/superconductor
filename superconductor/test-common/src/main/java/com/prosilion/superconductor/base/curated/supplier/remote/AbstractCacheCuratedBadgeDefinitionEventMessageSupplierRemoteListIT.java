@@ -18,15 +18,15 @@ public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRem
   }
 
   @Override
-  protected List<BadgeDefinitionGenericEvent> createDefinitionEvents() {
+  protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionGenericEventList() {
     return List.of(
        new BadgeDefinitionGenericEvent(
           upvoteDefnCreator,
           upvoteIdentifierTag,
-          new Relay("ws://superconductor-app-two:5555")),
-       new BadgeDefinitionGenericEvent(
-          upvoteDefnCreator,
-          downvoteIdentifierTag)
+          new Relay("ws://superconductor-app-two:5555"))
+//       ,new BadgeDefinitionGenericEvent(
+//          upvoteDefnCreator,
+//          downvoteIdentifierTag)
     );
   }
 }

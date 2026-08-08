@@ -18,7 +18,7 @@ public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLoc
   }
 
   @Override
-  protected List<BadgeDefinitionGenericEvent> createDefinitionEvents() {
+  protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionGenericEventList() {
     return List.of(
        new BadgeDefinitionGenericEvent(
           upvoteDefnCreator,

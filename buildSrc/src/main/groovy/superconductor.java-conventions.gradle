@@ -133,9 +133,7 @@ testing {
               includeTestsMatching("*IT")
 //                          excludeTestsMatching("*NoOp*IT")
               excludeTestsMatching("BadgeAwardDownvoteEventSupplierRemoteIT")
-              excludeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteIT")
               excludeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT")
-              excludeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT")
               excludeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteListIT")
               excludeTestsMatching("CacheCuratedFormulaEventMessageSupplierRemoteIT")
             }
@@ -174,9 +172,7 @@ tasks.register('integrationTestDocker', Test) {
   useJUnitPlatform()
   filter {
     includeTestsMatching("BadgeAwardDownvoteEventSupplierRemoteIT")
-    includeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteIT")
     includeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT")
-    includeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteIT")
     includeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteListIT")
     includeTestsMatching("CacheCuratedFormulaEventMessageSupplierRemoteIT")
   }

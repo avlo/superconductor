@@ -27,7 +27,7 @@ public class CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT extends
   @Autowired
   CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT(
      @NonNull Identity superconductorInstanceIdentity,
-     @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo) throws NostrException {
-    super(superconductorInstanceIdentity, superconductorRelayUrlTwo);
+     @NonNull @Value("${superconductor.relay.url.three}") String superconductorRelayUrlThree) throws NostrException {
+    super(superconductorInstanceIdentity, superconductorRelayUrlThree);
   }
 }

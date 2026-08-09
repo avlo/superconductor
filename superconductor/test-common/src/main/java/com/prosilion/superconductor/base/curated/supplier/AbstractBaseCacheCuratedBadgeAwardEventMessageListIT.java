@@ -23,7 +23,6 @@ import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,10 +37,8 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
   protected final String awardEventRelayUrl;
   protected final String definitionEventRelayUrl;
 
-  //  protected final List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEvents;
   protected final List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventList;
 
-  //  abstract protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionEvents();
   abstract protected List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> createBadgeAwardEventList();
 
   protected AbstractBaseCacheCuratedBadgeAwardEventMessageListIT(
@@ -52,44 +49,8 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
     this.definitionEventRelayUrl = definitionEventRelayUrl;
     this.awardEventRelayUrl = awardEventRelayUrl;
 
-//    this.badgeDefinitionGenericEvents = createBadgeDefinitionEvents();
-//    setupBadgeDefinitionEvents(badgeDefinitionGenericEvents, definitionEventRelayUrl);
-
     this.badgeAwardGenericEventList = createBadgeAwardEventList();
     setupBadgeAwardEvents(badgeAwardGenericEventList);
-  }
-
-  private void setupBadgeDefinitionEvents(List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEventList, String definitionEventRelayUrl) {
-    Set<String> eventIds = new HashSet<>();
-    badgeDefinitionGenericEventList.forEach(badgeDefinitionGenericEvent -> {
-      NostrEventPublisher definitionEventNostrEventPublisher = new NostrEventPublisher(definitionEventRelayUrl);
-      EventMessage eventMessageBadgeDefinitionUpvoteEventWithRelayTag = new EventMessage(badgeDefinitionGenericEvent);
-      assertTrue(
-         definitionEventNostrEventPublisher
-            .send(
-               eventMessageBadgeDefinitionUpvoteEventWithRelayTag)
-            .getFlag());
-
-      List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-         new NostrSingleRequestService().send(
-            new ReqMessage(
-               Factory.generateRandomHex64String(),
-               new Filters(
-                  new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
-            definitionEventRelayUrl));
-
-      log.debug("returned events:");
-      log.debug("  {}", returnedEventIFs);
-
-      eventIds.addAll(returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
-         .map(event -> event.requireFirstTag(EventTag.class))
-         .map(EventTag::getEventId).collect(Collectors.toSet()));
-    });
-
-//    assertEquals(this.badgeDefinitionGenericEvents.size(), eventIds.size());
-    assertTrue(eventIds.stream().anyMatch(
-       badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
-          .map(BaseEvent::getId).toList()::contains));
   }
 
   private void setupBadgeAwardEvents(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
@@ -103,6 +64,56 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
                .getFlag());
        });
 
+    overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(badgeAwardUpvoteEvents);
+  }
+
+  protected void validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
+    List<EventIF> sanityCheckReturnedBadgeDefinitionEvents = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Factory.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
+          definitionEventRelayUrl));
+
+    log.debug("returned BadgeDefinitionEvents:");
+    log.debug("  {}", sanityCheckReturnedBadgeDefinitionEvents);
+
+    Set<String> sanityCheckCurationSetsBadgeDefinitionEventIds = sanityCheckReturnedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(EventTag.class))
+       .map(EventTag::getEventId).collect(Collectors.toSet());
+
+    assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(
+       badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
+          .map(BaseEvent::getId).toList()::contains));
+
+    badgeAwardUpvoteEvents.forEach(badgeAwardUpvoteEvent -> {
+      EventMessage eventMessageBadgeAwardUpvoteEvent = new EventMessage(badgeAwardUpvoteEvent);
+      assertTrue(
+         new NostrEventPublisher(awardEventRelayUrl)
+            .send(
+               eventMessageBadgeAwardUpvoteEvent, Duration.ofSeconds(10))
+            .getFlag());
+    });
+  }
+
+  public void overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
+    List<EventIF> sanityCheckReturnedBadgeDefinitionEvents = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Factory.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.BADGE_DEFINITION_EVENT))),
+          definitionEventRelayUrl));
+
+    log.debug("returned BadgeDefinitionEvents:");
+    log.debug("  {}", sanityCheckReturnedBadgeDefinitionEvents);
+
+    Set<String> sanityCheckBadgeDefinitionEventIds = sanityCheckReturnedBadgeDefinitionEvents.stream().map(EventIF::getId).collect(Collectors.toSet());
+
+    assertTrue(sanityCheckBadgeDefinitionEventIds.stream().anyMatch(
+       badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
+          .map(BaseEvent::getId).toList()::contains));
 
     badgeAwardUpvoteEvents.forEach(badgeAwardUpvoteEvent -> {
       EventMessage eventMessageBadgeAwardUpvoteEvent = new EventMessage(badgeAwardUpvoteEvent);

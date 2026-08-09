@@ -18,14 +18,6 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierLocalLis
     super(superconductorInstanceIdentity, relayUrl, relayUrl);
   }
 
-//  @Override
-//  protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionEvents() {
-//    return List.of(
-//       createBadgeDefinitionUpvoteEvent(),
-//       createBadgeDefinitionDownvoteEvent()
-//    );
-//  }
-
   @Override
   protected List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> createBadgeAwardEventList() {
     return List.of(
@@ -33,19 +25,6 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierLocalLis
        createAwardEventWithoutRelayTag()
     );
   }
-
-//  protected BadgeDefinitionGenericEvent createBadgeDefinitionUpvoteEvent() {
-//    return new BadgeDefinitionGenericEvent(
-//       upvoteDefnCreator,
-//       upvoteIdentifierTag,
-//       new Relay(definitionEventRelayUrl));
-//  }
-
-//  protected BadgeDefinitionGenericEvent createBadgeDefinitionDownvoteEvent() {
-//    return new BadgeDefinitionGenericEvent(
-//       upvoteDefnCreator,
-//       downvoteIdentifierTag);
-//  }
 
   protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAwardEventContainingRelayTag() {
     return new BadgeAwardGenericEvent<>(
@@ -65,5 +44,10 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierLocalLis
        new BadgeDefinitionGenericEvent(
           upvoteDefnCreator,
           downvoteIdentifierTag));
+  }
+
+  @Override
+  public void overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
+    validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(badgeAwardUpvoteEvents);
   }
 }

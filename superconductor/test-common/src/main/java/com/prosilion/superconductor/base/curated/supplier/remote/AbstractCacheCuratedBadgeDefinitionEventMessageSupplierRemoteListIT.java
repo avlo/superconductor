@@ -23,7 +23,7 @@ public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRem
        new BadgeDefinitionGenericEvent(
           upvoteDefnCreator,
           upvoteIdentifierTag,
-          new Relay("ws://superconductor-app-two:5555"))
+          new Relay("ws://superconductor-app-three:5555"))
 //       ,new BadgeDefinitionGenericEvent(
 //          upvoteDefnCreator,
 //          downvoteIdentifierTag)

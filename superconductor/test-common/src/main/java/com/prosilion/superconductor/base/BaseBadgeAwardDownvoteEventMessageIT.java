@@ -13,17 +13,13 @@ import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
-import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
@@ -34,36 +30,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseBadgeAwardDownvoteEventMessageIT {
-  public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
-  public static final IdentifierTag IDENTIFIER_TAG = new IdentifierTag(IDENTIFIER_TAG_UUID);
-
-  private final Identity authorIdentity = Identity.generateRandomIdentity();
-  private final PublicKey downvotedUserPubKey = Identity.generateRandomIdentity().getPublicKey();
-  private final Identity superconductorInstanceIdentity;
-
+public abstract class BaseBadgeAwardDownvoteEventMessageIT extends BaseIntegrationTestFixtures {
   private final String eventId;
   private final String relayUrl;
 
   protected BaseBadgeAwardDownvoteEventMessageIT(
      @NonNull String relayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull Identity superconductorInstanceIdentity,
-     Duration requestTimeoutDuration) throws IOException, NostrException {
+     @NonNull Identity superconductorInstanceIdentity) throws NostrException {
+    super(superconductorInstanceIdentity);
     this.relayUrl = relayUrl;
     NostrEventPublisher nostrEventPublisher = new NostrEventPublisher(relayUrl);
-    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     Relay relay = new Relay(relayUrl);
 
     BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent = new BadgeDefinitionGenericEvent(
-       superconductorInstanceIdentity,
-       IDENTIFIER_TAG, relay);
+       upvoteDefnCreator,
+       upvoteIdentifierTag, relay);
 
     cacheServiceIF.save(badgeDefinitionDownvoteEvent);
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = new BadgeAwardGenericEvent<>(
-       authorIdentity,
-       downvotedUserPubKey,
+       submitter,
+       recipient.getPublicKey(),
        badgeDefinitionDownvoteEvent,
        relay);
     eventId = badgeAwardDownvoteEvent.getId();
@@ -88,7 +76,7 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
              Kind.BADGE_AWARD_EVENT),
           new ReferencedPublicKeyFilter(
              new PubKeyTag(
-                downvotedUserPubKey))));
+                recipient.getPublicKey()))));
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
        new NostrSingleRequestService().send(reqMessage, relayUrl));
 
@@ -96,13 +84,12 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
     log.debug("  {}", returnedEventIFs);
 
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(submitter.getPublicKey())));
 
     AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
-    assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
+    assertEquals(upvoteIdentifierTag, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
   }
 
   @Test
@@ -118,24 +105,23 @@ public abstract class BaseBadgeAwardDownvoteEventMessageIT {
                    Kind.BADGE_AWARD_EVENT),
                 new ReferencedPublicKeyFilter(
                    new PubKeyTag(
-                      downvotedUserPubKey)),
+                      recipient.getPublicKey())),
                 new AddressTagFilter(
                    new AddressTag(
                       Kind.BADGE_DEFINITION_EVENT,
-                      superconductorInstanceIdentity.getPublicKey(),
-                      IDENTIFIER_TAG)))),
+                      upvoteDefnCreator.getPublicKey(),
+                      upvoteIdentifierTag)))),
           relayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
 
     assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getId().equals(eventId)));
-    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(authorIdentity.getPublicKey())));
+    assertTrue(returnedEventIFs.stream().anyMatch(event -> event.getPublicKey().equals(submitter.getPublicKey())));
 
     AddressTag addressTag = returnedEventIFs.getFirst().asGenericEventRecord().getTypeSpecificTags(AddressTag.class).getFirst();
 
     assertEquals(Kind.BADGE_DEFINITION_EVENT, addressTag.getKind());
-    assertEquals(IDENTIFIER_TAG, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
-    assertEquals(IDENTIFIER_TAG_UUID, Optional.of(addressTag.getIdentifierTag()).orElseThrow().getUuid());
+    assertEquals(upvoteIdentifierTag, Optional.ofNullable(addressTag.getIdentifierTag()).orElseThrow());
   }
 }

@@ -13,12 +13,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 @Slf4j
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @Import(SingleContainerNonCuratedTestConfig.class)
+@TestPropertySource(properties = {
+   "superconductor.event.curation.active=true"
+})
 public class BadgeAwardDownvoteEventSupplierRemoteIT extends BaseBadgeAwardDownvoteEventSupplierRemoteIT {
   @Autowired
   BadgeAwardDownvoteEventSupplierRemoteIT(

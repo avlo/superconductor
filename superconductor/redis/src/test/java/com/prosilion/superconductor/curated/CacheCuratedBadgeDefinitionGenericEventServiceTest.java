@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.TestPropertySource;
 
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.aImgIdentity;
 import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.relay;
@@ -26,6 +27,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
+@TestPropertySource(properties = {
+   "superconductor.event.curation.active=true"
+})
 public class CacheCuratedBadgeDefinitionGenericEventServiceTest extends CacheCuratedServiceTestFixture<CuratedBadgeDefinitionGenericEvent> {
   @Mock
   CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService;

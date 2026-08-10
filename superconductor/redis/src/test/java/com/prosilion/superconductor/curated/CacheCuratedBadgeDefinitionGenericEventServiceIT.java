@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -23,6 +24,9 @@ import static org.mockito.Mockito.mock;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
+@TestPropertySource(properties = {
+   "superconductor.event.curation.active=true"
+})
 public class CacheCuratedBadgeDefinitionGenericEventServiceIT extends BaseCacheCuratedBadgeDefinitionGenericEventServiceIT {
   private final CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService;
 

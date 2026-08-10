@@ -22,6 +22,8 @@ import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -127,8 +129,7 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
           new ReqMessage(
              Factory.generateRandomHex64String(),
              new Filters(
-                new KindFilter(
-                   Kind.CURATION_SETS_FORMULA_EVENT))),
+                new KindFilter(Kind.CURATION_SETS_FORMULA_EVENT))),
           formulaEventRelayUrl));
 
     log.debug("returned events:");
@@ -139,12 +140,10 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
   }
 
   private void setupBadgeDefinitionEvent(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
-    NostrEventPublisher definitionEventNostrEventPublisher = new NostrEventPublisher(formulaEventRelayUrl);
-    EventMessage eventMessageBadgeDefinitionUpvoteEventWithRelayTag = new EventMessage(badgeDefinitionGenericEvent);
     assertTrue(
-       definitionEventNostrEventPublisher
+       new NostrEventPublisher(formulaEventRelayUrl)
           .send(
-             eventMessageBadgeDefinitionUpvoteEventWithRelayTag)
+             new EventMessage(badgeDefinitionGenericEvent))
           .getFlag());
 
     List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
@@ -152,13 +151,16 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
           new ReqMessage(
              Factory.generateRandomHex64String(),
              new Filters(
-                new KindFilter(
-                   Kind.BADGE_DEFINITION_EVENT))),
+                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
           formulaEventRelayUrl));
 
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
 
-    assertTrue(returnedEventIFs.stream().map(EventIF::getId).anyMatch(badgeDefinitionGenericEvent.getId()::equals));
+    Set<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(EventTag.class))
+       .map(EventTag::getEventId).collect(Collectors.toSet());
+
+    assertTrue(eventIds.stream().anyMatch(badgeDefinitionGenericEvent.getId()::equals));
   }
 }

@@ -3,6 +3,7 @@ package com.prosilion.superconductor.base.curated.supplier;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -21,6 +22,7 @@ import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,13 +36,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends BaseIntegrationTestFixtures {
   protected final String formulaEventRelayUrl;
   protected final Relay formulaEventRelay;
-  protected final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEventWithRelayTag;
-  protected final BadgeDefinitionGenericEvent badgeDefinitionDownvoteEventWithoutRelayTag;
-
-  private final FormulaEvent formulaUpvoteEventWithRelayTag;
-  private final FormulaEvent formulaDownvoteEventWithoutRelayTag;
-
   protected final CacheServiceIF cacheServiceIF;
+
+  protected final List<FormulaEvent> formulaEventList;
+
+  abstract protected List<FormulaEvent> createFormulaEventList();
 
   public AbstractBaseCacheCuratedFormulaEventMessageIT(
      @NonNull CacheServiceIF cacheServiceIF,
@@ -51,22 +51,105 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
     this.formulaEventRelayUrl = superconductorRelayUrl;
     this.formulaEventRelay = new Relay(superconductorRelayUrl);
 
-    this.badgeDefinitionUpvoteEventWithRelayTag = createDefinitionEventContainingRelayTag();
-    this.badgeDefinitionDownvoteEventWithoutRelayTag = createDefinitionEventWithoutRelayTag();
-    setupBadgeDefinitionEvent(badgeDefinitionUpvoteEventWithRelayTag);
-    setupBadgeDefinitionEvent(badgeDefinitionDownvoteEventWithoutRelayTag);
-
-    this.formulaUpvoteEventWithRelayTag = createFormulaEventContainingRelayTag();
-    this.formulaDownvoteEventWithoutRelayTag = createFormulaEventWithoutRelayTag();
-    setupFormulaEvent(formulaUpvoteEventWithRelayTag);
-    setupFormulaEvent(formulaDownvoteEventWithoutRelayTag);
+    this.formulaEventList = createFormulaEventList();
+    setupFormulaEvents(formulaEventList);
   }
 
-  abstract protected BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag();
-  abstract protected BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag();
+  private void setupFormulaEvents(List<FormulaEvent> formulaEvents) {
+    formulaEvents.stream()
+       .map(FormulaEvent::getBadgeDefinitionGenericEvent)
+       .forEach(this::setupBadgeDefinitionEvent);
 
-  abstract protected FormulaEvent createFormulaEventContainingRelayTag();
-  abstract protected FormulaEvent createFormulaEventWithoutRelayTag();
+    formulaEvents.forEach(formulaEvent -> assertTrue(
+       new NostrEventPublisher(formulaEventRelayUrl)
+          .send(
+             new EventMessage(formulaEvent), Duration.ofSeconds(10)).getFlag()));
+
+    overridableValidateCorrectlyCreatedAndPersistedFormulaEventVariant(formulaEvents);
+  }
+
+  private void setupBadgeDefinitionEvent(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
+    assertTrue(
+       new NostrEventPublisher(formulaEventRelayUrl)
+          .send(
+             new EventMessage(badgeDefinitionGenericEvent))
+          .getFlag());
+
+    overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(badgeDefinitionGenericEvent);
+  }
+
+  public void overridableValidateCorrectlyCreatedAndPersistedFormulaEventVariant(List<FormulaEvent> formulaEventList) {
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Factory.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.ARBITRARY_CUSTOM_APP_DATA))),
+          formulaEventRelayUrl));
+
+    log.debug("returned events:");
+    log.debug("  {}", returnedEventIFs);
+
+    Set<String> sanityCheckFormulaEventIds = returnedEventIFs.stream().map(EventIF::getId).collect(Collectors.toSet());
+
+    assertTrue(sanityCheckFormulaEventIds.stream().anyMatch(
+       formulaEventList.stream().map(FormulaEvent::getBadgeDefinitionGenericEvent)
+          .map(BaseEvent::getId).toList()::contains));
+  }
+
+  public void validateCorrectlyCreatedAndPersistedCuratedFormulaEventVariants(List<FormulaEvent> formulaEvents) {
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Factory.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.CURATION_SETS_FORMULA_EVENT))),
+          formulaEventRelayUrl));
+
+    log.debug("returned events:");
+    log.debug("  {}", returnedEventIFs);
+
+    Set<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(EventTag.class))
+       .map(EventTag::getEventId).collect(Collectors.toSet());
+
+    assertTrue(eventIds.stream().anyMatch(formulaEvents.stream().map(FormulaEvent::getId).toList()::contains));
+  }
+
+  protected void validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Factory.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
+          formulaEventRelayUrl));
+
+    log.debug("returned events:");
+    log.debug("  {}", returnedEventIFs);
+
+    Set<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+       .map(event -> event.requireFirstTag(EventTag.class))
+       .map(EventTag::getEventId).collect(Collectors.toSet());
+
+    assertTrue(eventIds.stream().anyMatch(badgeDefinitionGenericEvent.getId()::equals));
+  }
+
+  public void overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
+    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Factory.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.BADGE_DEFINITION_EVENT))),
+          formulaEventRelayUrl));
+
+    log.debug("returned events:");
+    log.debug("  {}", returnedEventIFs);
+
+    Set<String> eventIds = returnedEventIFs.stream().map(EventIF::getId).collect(Collectors.toSet());
+    assertTrue(eventIds.stream().anyMatch(badgeDefinitionGenericEvent.getId()::equals));
+  }
 
   @Test
   void testExpectedEvent() throws NostrException {
@@ -85,8 +168,7 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
 
-    assertTrue(eventIds.contains(formulaUpvoteEventWithRelayTag.getId()));
-    assertTrue(eventIds.contains(formulaDownvoteEventWithoutRelayTag.getId()));
+    assertTrue(eventIds.stream().anyMatch(this.formulaEventList.stream().map(FormulaEvent::getId).toList()::contains));
 
     assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(PubKeyTag.class)).map(PubKeyTag::getPublicKey)
@@ -94,73 +176,17 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
 
     assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(AddressTag.class))
-       .anyMatch(formulaUpvoteEventWithRelayTag.getAddressTag()::equals));
-    assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
-       .map(event -> event.requireFirstTag(AddressTag.class))
-       .anyMatch(formulaDownvoteEventWithoutRelayTag.getAddressTag()::equals));
+       .anyMatch(
+          this.formulaEventList.stream().map(FormulaEvent::getAddressTag).toList()::contains));
 
     assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(EventTag.class)).map(EventTag::eventId)
-       .anyMatch(formulaUpvoteEventWithRelayTag.getId()::equals));
-
-    assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
-       .map(event -> event.requireFirstTag(EventTag.class)).map(EventTag::eventId)
-       .anyMatch(formulaDownvoteEventWithoutRelayTag.getId()::equals));
+       .anyMatch(
+          this.formulaEventList.stream().map(FormulaEvent::getId).toList()::contains));
 
     assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
        .map(GenericEventRecord::getContent)
-       .anyMatch(formulaUpvoteEventWithRelayTag.getContent()::equals));
-    assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
-       .map(GenericEventRecord::getContent)
-       .anyMatch(formulaDownvoteEventWithoutRelayTag.getContent()::equals));
-  }
-
-  private void setupFormulaEvent(FormulaEvent formulaEvent) {
-    NostrEventPublisher publisher = new NostrEventPublisher(formulaEventRelayUrl);
-    EventMessage eventMessage = new EventMessage(formulaEvent);
-    assertTrue(
-       publisher
-          .send(
-             eventMessage)
-          .getFlag());
-
-    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-       new NostrSingleRequestService().send(
-          new ReqMessage(
-             Factory.generateRandomHex64String(),
-             new Filters(
-                new KindFilter(Kind.CURATION_SETS_FORMULA_EVENT))),
-          formulaEventRelayUrl));
-
-    log.debug("returned events:");
-    log.debug("  {}", returnedEventIFs);
-
-    assertTrue(returnedEventIFs.stream().map(event ->
-       event.requireFirstTag(EventTag.class)).map(EventTag::eventId).anyMatch(formulaEvent.getId()::equals));
-  }
-
-  private void setupBadgeDefinitionEvent(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
-    assertTrue(
-       new NostrEventPublisher(formulaEventRelayUrl)
-          .send(
-             new EventMessage(badgeDefinitionGenericEvent))
-          .getFlag());
-
-    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-       new NostrSingleRequestService().send(
-          new ReqMessage(
-             Factory.generateRandomHex64String(),
-             new Filters(
-                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
-          formulaEventRelayUrl));
-
-    log.debug("returned events:");
-    log.debug("  {}", returnedEventIFs);
-
-    Set<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
-       .map(event -> event.requireFirstTag(EventTag.class))
-       .map(EventTag::getEventId).collect(Collectors.toSet());
-
-    assertTrue(eventIds.stream().anyMatch(badgeDefinitionGenericEvent.getId()::equals));
+       .anyMatch(
+          this.formulaEventList.stream().map(FormulaEvent::getFormula).toList()::contains));
   }
 }

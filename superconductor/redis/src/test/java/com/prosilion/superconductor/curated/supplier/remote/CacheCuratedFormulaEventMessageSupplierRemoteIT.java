@@ -25,7 +25,7 @@ public class CacheCuratedFormulaEventMessageSupplierRemoteIT extends AbstractCac
   CacheCuratedFormulaEventMessageSupplierRemoteIT(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull Identity superconductorInstanceIdentity,
-     @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo) throws NostrException {
-    super(cacheServiceIF, superconductorInstanceIdentity, superconductorRelayUrlTwo);
+     @NonNull @Value("${superconductor.relay.url.three}") String superconductorRelayUrlThree) throws NostrException {
+    super(cacheServiceIF, superconductorInstanceIdentity, superconductorRelayUrlThree);
   }
 }

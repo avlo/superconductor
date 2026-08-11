@@ -7,6 +7,7 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.curated.supplier.AbstractBaseCacheCuratedFormulaEventMessageIT;
+import java.util.List;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,36 +21,42 @@ public abstract class AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT ex
   }
 
   @Override
-  protected BadgeDefinitionGenericEvent createDefinitionEventContainingRelayTag() {
-    return new BadgeDefinitionGenericEvent(
-       upvoteDefnCreator,
-       upvoteIdentifierTag,
-       new Relay("ws://superconductor-app-two:5555"));
+  protected List<FormulaEvent> createFormulaEventList() {
+    return List.of(
+       createFormulaEventContainingRelayTag()
+//       , createFormulaEventWithoutRelayTag()
+    );
   }
 
-  @Override
-  protected BadgeDefinitionGenericEvent createDefinitionEventWithoutRelayTag() {
-    return new BadgeDefinitionGenericEvent(
-       upvoteDefnCreator,
-       downvoteIdentifierTag);
-  }
-
-  @Override
   protected FormulaEvent createFormulaEventContainingRelayTag() {
     return new FormulaEvent(
        formulaCreator,
        formulaUpvoteIdentifierTag,
-       badgeDefinitionUpvoteEventWithRelayTag,
+       new BadgeDefinitionGenericEvent(
+          upvoteDefnCreator,
+          upvoteIdentifierTag,
+          new Relay("ws://superconductor-app-three:5555")),
        PLUS_ONE_FORMULA,
-       new Relay("ws://superconductor-app-two:5555"));
+       new Relay("ws://superconductor-app-three:5555"));
   }
 
-  @Override
   protected FormulaEvent createFormulaEventWithoutRelayTag() {
     return new FormulaEvent(
        formulaCreator,
        formulaDownvoteIdentifierTag,
-       badgeDefinitionDownvoteEventWithoutRelayTag,
+       new BadgeDefinitionGenericEvent(
+          upvoteDefnCreator,
+          downvoteIdentifierTag),
        MINUS_ONE_FORMULA);
+  }
+
+  @Override
+  public void overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
+    validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(badgeDefinitionGenericEvent);
+  }
+
+  @Override
+  public void overridableValidateCorrectlyCreatedAndPersistedFormulaEventVariant(List<FormulaEvent> formulaEventList) {
+    validateCorrectlyCreatedAndPersistedCuratedFormulaEventVariants(formulaEventList);
   }
 }

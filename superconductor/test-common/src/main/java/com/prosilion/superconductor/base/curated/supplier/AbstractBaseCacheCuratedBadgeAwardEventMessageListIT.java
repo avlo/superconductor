@@ -54,15 +54,12 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
   }
 
   private void setupBadgeAwardEvents(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
-    badgeAwardUpvoteEvents.stream()
-       .map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent).forEach(badgeDefinitionGenericEvent -> {
-         EventMessage eventMessageBadgeDefinitionEvent = new EventMessage(badgeDefinitionGenericEvent);
-         assertTrue(
-            new NostrEventPublisher(definitionEventRelayUrl)
-               .send(
-                  eventMessageBadgeDefinitionEvent, Duration.ofSeconds(10))
-               .getFlag());
-       });
+    badgeAwardUpvoteEvents.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
+       .forEach(badgeDefinitionGenericEvent ->
+          assertTrue(
+             new NostrEventPublisher(definitionEventRelayUrl)
+                .send(
+                   new EventMessage(badgeDefinitionGenericEvent), Duration.ofSeconds(10)).getFlag()));
 
     overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(badgeAwardUpvoteEvents);
   }

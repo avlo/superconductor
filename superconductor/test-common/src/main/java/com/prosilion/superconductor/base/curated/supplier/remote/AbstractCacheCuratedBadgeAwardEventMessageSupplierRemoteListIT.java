@@ -70,30 +70,14 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierRemoteLi
   @Override
   protected List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> createBadgeAwardEventList() {
     return List.of(
-
-//  issues, general outlook:
-//    anytime containing either 2 or 4, breaks
-//      2 is: DefinitionEventWithoutRelayTag
-//      4 is: DefinitionEventWithoutRelayTag       
-
-//        TODO: works : 1, 1+2, 1+3, 1+2+3,
-//        TODO: still broken: 1+4,       1+2+4, 1+3+4, 1+2+3+4
        create_AwardEventWithRelayTag_DefinitionEventWithRelayTag()
-
-//        TODO: works : 2, 2+3
-//        TODO: still broken: 2+4, 2+3+4       
        ,
        create_AwardEventWithRelayTag_DefinitionEventWithoutRelayTag()
-
-//        TODO: works: 3 
-//        TODO: still broken:  3+4
        ,
        create_AwardEventWithoutRelayTag_DefinitionEventWithRelayTag()
 
-//        TODO: works: 
-//        TODO: broken: 4         
-//       ,
-//       create_AwardEventWithoutRelayTag_DefinitionEventWithoutRelayTag()
+// below test commented out due to "fromRelay" parameter binding to localhost:5553, which is neither accessible nor services requests during IT
+//     create_AwardEventWithoutRelayTag_DefinitionEventWithoutRelayTag()
     );
   }
 

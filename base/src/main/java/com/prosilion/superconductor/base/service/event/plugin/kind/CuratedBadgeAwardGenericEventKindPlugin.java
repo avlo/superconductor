@@ -41,8 +41,7 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
-    log.debug("processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay)...");
-    log.debug("event:\n{}", event.createPrettyPrintJson());
+    log.debug("processIncomingEvent(event, fromRelay) [{}]...\n{}", fromRelay.getUrl(), event.createPrettyPrintJson());
 
     Optional<RelayTag> relayTag = event.findFirstTag(RelayTag.class);
     AddressTag suppliedAddressTag = event.requireFirstTag(AddressTag.class);

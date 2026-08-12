@@ -24,11 +24,13 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
 
   @Override
   public Optional<GenericEventRecord> getByExpanded(@NonNull T abstractTag) {
-    return abstractTag.findRelay().flatMap(relay ->
-       cacheAsideEventLookup.findFirst(
-          () -> tryGetLocalExpandedEvent(abstractTag),
-          relay.getUrl(),
-          createFilters(abstractTag)));
+    Optional<GenericEventRecord> genericEventRecord = tryGetLocalExpandedEvent(abstractTag);
+    return genericEventRecord.or(() ->
+       abstractTag.findRelay().flatMap(relay ->
+          cacheAsideEventLookup.findFirst(
+             () -> genericEventRecord,
+             relay.getUrl(),
+             createFilters(abstractTag))));
   }
 
   protected abstract Filters createFilters(@NonNull T tag);

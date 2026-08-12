@@ -17,13 +17,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import lombok.Getter;
 import lombok.NonNull;
 
 public abstract class AbstractCacheCuratedEventService<T extends AddressableEvent, U extends BaseEvent> implements CacheCuratedEventServiceIF<T> {
   private final CacheServiceIF cacheServiceIF;
 
-  protected final Relay relay;
-  protected final Identity instanceIdentity;
+  @Getter
+  private final Relay relay;
+  @Getter
+  private final Identity instanceIdentity;
 
   public AbstractCacheCuratedEventService(
      @NonNull Identity instanceIdentity,

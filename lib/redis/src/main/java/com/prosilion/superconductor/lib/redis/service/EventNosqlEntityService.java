@@ -130,18 +130,26 @@ public class EventNosqlEntityService implements EntityServiceIF<EventNosqlEntity
   public List<EventNosqlEntityIF> getEventsByKindAndAddressTag(
      @NonNull Kind kind,
      @NonNull AddressTag addressTag) {
-    return getEventsByKind(kind).stream()
-       .filter(eventNosqlEntityIF ->
-          containsTypedTargetTag(addressTag, eventNosqlEntityIF)).toList();
+    return getEventNosqlEntityStream(kind, addressTag).toList();
   }
 
   @Override
   public Optional<EventNosqlEntityIF> getFirstEventByKindAndAddressTag(
      @NonNull Kind kind,
      @NonNull AddressTag addressTag) {
+    List<EventNosqlEntityIF> eventsByKindAndAddressTag = getEventNosqlEntityStream(kind, addressTag).toList();
+    return eventsByKindAndAddressTag.stream()
+       .filter(event -> event.requireFirstTag(AddressTag.class)
+          .findRelay()
+          .isPresent())
+       .findFirst()
+       .or(() -> eventsByKindAndAddressTag.stream().findFirst());
+  }
+
+  private Stream<EventNosqlEntityIF> getEventNosqlEntityStream(Kind kind, AddressTag addressTag) {
     return getEventsByKind(kind).stream()
        .filter(eventNosqlEntityIF ->
-          containsTypedTargetTag(addressTag, eventNosqlEntityIF)).findFirst();
+          containsTypedTargetTag(addressTag, eventNosqlEntityIF));
   }
 
   //  TODO: replace with JPQL  

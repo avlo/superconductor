@@ -6,7 +6,6 @@ import com.prosilion.nostr.event.AbstractSetsEvent;
 import com.prosilion.nostr.event.BadgeAwardAbstractEvent;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
@@ -15,6 +14,7 @@ import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
@@ -24,12 +24,12 @@ import com.prosilion.superconductor.util.Factory;
 import com.prosilion.superconductor.util.TestUtils;
 import java.time.Duration;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -40,6 +40,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
   protected final List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventList;
 
   abstract protected List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> createBadgeAwardEventList();
+  abstract protected void validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents);
 
   protected AbstractBaseCacheCuratedBadgeAwardEventMessageListIT(
      @NonNull Identity superconductorInstanceIdentity,
@@ -59,85 +60,9 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
           assertTrue(
              new NostrEventPublisher(definitionEventRelayUrl)
                 .send(
-                   new EventMessage(badgeDefinitionGenericEvent), Duration.ofSeconds(10)).getFlag()));
+                   new EventMessage(badgeDefinitionGenericEvent), Duration.ofSeconds(5)).getFlag()));
 
-    overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(badgeAwardUpvoteEvents);
-  }
-
-  protected void validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
-    List<EventIF> sanityCheckReturnedBadgeDefinitionEvents = TestUtils.getEventIFs(
-       new NostrSingleRequestService().send(
-          new ReqMessage(
-             Factory.generateRandomHex64String(),
-             new Filters(
-                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
-          definitionEventRelayUrl));
-
-    log.debug("returned BadgeDefinitionEvents:");
-    log.debug("  {}", sanityCheckReturnedBadgeDefinitionEvents);
-
-    Set<String> sanityCheckCurationSetsBadgeDefinitionEventIds = sanityCheckReturnedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
-       .map(event -> event.requireFirstTag(EventTag.class))
-       .map(EventTag::getEventId).collect(Collectors.toSet());
-
-    assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(
-       badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
-          .map(BaseEvent::getId).toList()::contains));
-
-    badgeAwardUpvoteEvents.forEach(badgeAwardUpvoteEvent -> {
-      EventMessage eventMessageBadgeAwardUpvoteEvent = new EventMessage(badgeAwardUpvoteEvent);
-      assertTrue(
-         new NostrEventPublisher(awardEventRelayUrl)
-            .send(
-               eventMessageBadgeAwardUpvoteEvent, Duration.ofSeconds(10))
-            .getFlag());
-    });
-  }
-
-  public void overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
-    List<EventIF> sanityCheckReturnedBadgeDefinitionEvents = TestUtils.getEventIFs(
-       new NostrSingleRequestService().send(
-          new ReqMessage(
-             Factory.generateRandomHex64String(),
-             new Filters(
-                new KindFilter(Kind.BADGE_DEFINITION_EVENT))),
-          definitionEventRelayUrl));
-
-    log.debug("returned BadgeDefinitionEvents:");
-    log.debug("  {}", sanityCheckReturnedBadgeDefinitionEvents);
-
-    Set<String> sanityCheckBadgeDefinitionEventIds = sanityCheckReturnedBadgeDefinitionEvents.stream().map(EventIF::getId).collect(Collectors.toSet());
-
-    assertTrue(sanityCheckBadgeDefinitionEventIds.stream().anyMatch(
-       badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
-          .map(BaseEvent::getId).toList()::contains));
-
-    badgeAwardUpvoteEvents.forEach(badgeAwardUpvoteEvent -> {
-      EventMessage eventMessageBadgeAwardUpvoteEvent = new EventMessage(badgeAwardUpvoteEvent);
-      assertTrue(
-         new NostrEventPublisher(awardEventRelayUrl)
-            .send(
-               eventMessageBadgeAwardUpvoteEvent, Duration.ofSeconds(10))
-            .getFlag());
-    });
-  }
-
-  @Test
-  void testExpectedEventViaGeneralRequest() throws NostrException {
-    List<EventIF> returnedCuratedBadgeAwardEvents = TestUtils.getEventIFs(
-       new NostrSingleRequestService().send(
-          new ReqMessage(
-             Factory.generateRandomHex64String(),
-             new Filters(
-                new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT))),
-          awardEventRelayUrl,
-          Duration.ofSeconds(10)));
-
-    log.debug("returned events:");
-    log.debug("  {}", returnedCuratedBadgeAwardEvents);
-
-//    assertEquals(this.badgeAwardGenericEvents.size(), returnedCuratedBadgeAwardEvents.size());
-    validateResults(returnedCuratedBadgeAwardEvents);
+    validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(badgeAwardUpvoteEvents);
   }
 
   @Test
@@ -153,16 +78,17 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
                    new PubKeyTag(
                       recipient.getPublicKey())))),
           awardEventRelayUrl,
-          Duration.ofSeconds(10)));
+          Duration.ofSeconds(5)));
 
     log.debug("returned events:");
-    log.debug("  {}", returnedCuratedBadgeAwardEvents);
+    log.debug("  {}", returnedCuratedBadgeAwardEvents.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining(",\n")));
 
-//    assertEquals(this.badgeAwardGenericEvents.size(), returnedCuratedBadgeAwardEvents.size());
     validateResults(returnedCuratedBadgeAwardEvents);
   }
 
   private void validateResults(List<EventIF> returnedCuratedBadgeAwardEvents) {
+    assertEquals(badgeAwardGenericEventList.size(), returnedCuratedBadgeAwardEvents.size());
+
     List<String> eventIds = returnedCuratedBadgeAwardEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
@@ -182,5 +108,20 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
                 .map(badgeDefinitionUpvoteEvent ->
                    AbstractSetsEvent.hashedAddressTag(badgeDefinitionUpvoteEvent.asAddressableEventAddressTag()))
                 .toList()::contains));
+
+    List<EventIF> returnedCuratedBadgeDefinitionEvents = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Factory.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(
+                   Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
+          awardEventRelayUrl,
+          Duration.ofSeconds(5)));
+
+    assertTrue(returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::getId)
+       .allMatch(returnedCuratedBadgeAwardEvents.stream()
+          .map(event -> event.requireFirstTag(IdentifierTag.class).getUuid())
+          .toList()::contains));
   }
 }

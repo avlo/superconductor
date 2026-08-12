@@ -79,11 +79,11 @@ public class CacheCuratedBadgeAwardGenericEventService extends AbstractCacheCura
      @NonNull BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent,
      @NonNull Relay relay) {
     return new CuratedBadgeAwardGenericEvent(
-       instanceIdentity,
+       super.getInstanceIdentity(),
        badgeAwardGenericEvent,
        new ReferenceTag(relay.getUrl()),
        new ReferenceTag(badgeAwardGenericEvent.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow()),
-       relay);
+       super.getRelay());
   }
 
   @Override

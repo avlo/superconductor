@@ -1,17 +1,39 @@
 package com.prosilion.superconductor.base.curated.supplier.remote;
 
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeAwardAbstractEvent;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.event.KindFilter;
+import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.curated.supplier.AbstractBaseCacheCuratedBadgeAwardEventMessageListIT;
+import com.prosilion.superconductor.util.Factory;
+import com.prosilion.superconductor.util.TestUtils;
+import java.time.Duration;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @Slf4j
 public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierRemoteListIT extends AbstractBaseCacheCuratedBadgeAwardEventMessageListIT {
+
+  private static final Relay badgeAwardEventRelay = new Relay("ws://superconductor-app-three:5555");
+  private static final Relay badgeDefinitionEventRelay = new Relay("ws://superconductor-app-two:5555");
+
   protected AbstractCacheCuratedBadgeAwardEventMessageSupplierRemoteListIT(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String definitionEventRelayUrl,
@@ -19,47 +41,108 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierRemoteLi
     super(superconductorInstanceIdentity, definitionEventRelayUrl, awardEventRelayUrl);
   }
 
-//  protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionEvents() {
-//    return List.of(
-//       createBadgeDefinitionUpvoteEvent()
+  @Override
+  protected void validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
+    List<EventIF> sanityCheckReturnedBadgeDefinitionEvents = TestUtils.getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Factory.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.BADGE_DEFINITION_EVENT))),
+          definitionEventRelayUrl));
 
-  /// /       ,
-  /// /       createBadgeDefinitionDownvoteEvent()
-//    );
-//  }
+    log.debug("returned BadgeDefinitionEvents:");
+    log.debug("  {}", sanityCheckReturnedBadgeDefinitionEvents.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining(",\n")));
+
+    Set<String> sanityCheckBadgeDefinitionEventIds = sanityCheckReturnedBadgeDefinitionEvents.stream().map(EventIF::getId).collect(Collectors.toSet());
+
+    assertTrue(sanityCheckBadgeDefinitionEventIds.stream().anyMatch(
+       badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
+          .map(BaseEvent::getId).toList()::contains));
+
+    badgeAwardUpvoteEvents.forEach(badgeAwardUpvoteEvent -> {
+      EventMessage eventMessageBadgeAwardUpvoteEvent = new EventMessage(badgeAwardUpvoteEvent);
+      Boolean flag = new NostrEventPublisher(awardEventRelayUrl).send(eventMessageBadgeAwardUpvoteEvent, Duration.ofSeconds(10)).getFlag();
+      assertTrue(flag);
+    });
+  }
+
   @Override
   protected List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> createBadgeAwardEventList() {
     return List.of(
-       createAwardEventContainingRelayTag()
+
+//  issues, general outlook:
+//    anytime containing either 2 or 4, breaks
+//      2 is: DefinitionEventWithoutRelayTag
+//      4 is: DefinitionEventWithoutRelayTag       
+
+//        TODO: works : 1, 1+2, 1+3, 1+2+3,
+//        TODO: still broken: 1+4,       1+2+4, 1+3+4, 1+2+3+4
+       create_AwardEventWithRelayTag_DefinitionEventWithRelayTag()
+
+//        TODO: works : 2, 2+3
+//        TODO: still broken: 2+4, 2+3+4       
+       ,
+       create_AwardEventWithRelayTag_DefinitionEventWithoutRelayTag()
+
+//        TODO: works: 3 
+//        TODO: still broken:  3+4
+       ,
+       create_AwardEventWithoutRelayTag_DefinitionEventWithRelayTag()
+
+//        TODO: works: 
+//        TODO: broken: 4         
 //       ,
-//       createAwardEventWithoutRelayTag()
+//       create_AwardEventWithoutRelayTag_DefinitionEventWithoutRelayTag()
     );
   }
 
-//  protected BadgeDefinitionGenericEvent createBadgeDefinitionUpvoteEvent() {
-//    return new BadgeDefinitionGenericEvent(
-//       upvoteDefnCreator,
-//       upvoteIdentifierTag,
-//       new Relay("ws://superconductor-app-two:5555"));
-//  }
-
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAwardEventContainingRelayTag() {
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> create_AwardEventWithRelayTag_DefinitionEventWithRelayTag() {
+//    IdentifierTag identifierTag = upvoteIdentifierTag;
+    IdentifierTag identifierTag = new IdentifierTag("BDG_DEF_UNIT_UP_1");
     return new BadgeAwardGenericEvent<>(
        submitter,
        recipient.getPublicKey(),
        new BadgeDefinitionGenericEvent(
           upvoteDefnCreator,
-          upvoteIdentifierTag,
-          new Relay("ws://superconductor-app-two:5555")),
-       new Relay("ws://superconductor-app-three:5555"));
+          identifierTag,
+          badgeDefinitionEventRelay),
+       badgeAwardEventRelay);
   }
 
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAwardEventWithoutRelayTag() {
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> create_AwardEventWithRelayTag_DefinitionEventWithoutRelayTag() {
+//    IdentifierTag identifierTag = upvoteIdentifierTag;
+    IdentifierTag identifierTag = new IdentifierTag("BDG_DEF_UNIT_UP_2");
     return new BadgeAwardGenericEvent<>(
        submitter,
        recipient.getPublicKey(),
        new BadgeDefinitionGenericEvent(
           upvoteDefnCreator,
-          downvoteIdentifierTag));
+          identifierTag),
+       badgeDefinitionEventRelay); // <---- if present (for BadgeAwardEvent), SC should implicitly use it iff BadgeDefinitionGenericEvent hasn't specified a relay   
+  }
+
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> create_AwardEventWithoutRelayTag_DefinitionEventWithRelayTag() {
+//    IdentifierTag identifierTag = upvoteIdentifierTag;
+    IdentifierTag identifierTag = new IdentifierTag("BDG_DEF_UNIT_UP_3");
+    return new BadgeAwardGenericEvent<>(
+       submitter,
+       recipient.getPublicKey(),
+       new BadgeDefinitionGenericEvent(
+          upvoteDefnCreator,
+          identifierTag,
+          badgeDefinitionEventRelay));
+  }
+
+
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> create_AwardEventWithoutRelayTag_DefinitionEventWithoutRelayTag() {
+//    IdentifierTag identifierTag = upvoteIdentifierTag;
+    IdentifierTag identifierTag = new IdentifierTag("BDG_DEF_UNIT_UP_4");
+    return new BadgeAwardGenericEvent<>(
+       submitter,
+       recipient.getPublicKey(),
+       new BadgeDefinitionGenericEvent(
+          upvoteDefnCreator,
+          identifierTag));
   }
 }

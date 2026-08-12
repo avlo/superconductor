@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.curated;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -61,10 +61,10 @@ public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventSe
      @NonNull FormulaEvent formulaEvent,
      @NonNull Relay relay) {
     return new CuratedFormulaEvent(
-       instanceIdentity,
+       super.getInstanceIdentity(),
        formulaEvent,
        new ReferenceTag(relay.getUrl()),
-       relay);
+       super.getRelay());
   }
 
   @Override

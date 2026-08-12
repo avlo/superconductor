@@ -20,13 +20,20 @@ public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRem
   @Override
   protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionGenericEventList() {
     return List.of(
-       new BadgeDefinitionGenericEvent(
-          upvoteDefnCreator,
-          upvoteIdentifierTag,
-          new Relay("ws://superconductor-app-three:5555"))
-//       ,new BadgeDefinitionGenericEvent(
-//          upvoteDefnCreator,
-//          downvoteIdentifierTag)
-    );
+       createBadgeDefinitionEventWithRelayTag(),
+       createBadgeDefinitionEventWithoutRelayTag());
+  }
+
+  private @NonNull BadgeDefinitionGenericEvent createBadgeDefinitionEventWithRelayTag() {
+    return new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator,
+       upvoteIdentifierTag,
+       new Relay("ws://superconductor-app-three:5555"));
+  }
+
+  private @NonNull BadgeDefinitionGenericEvent createBadgeDefinitionEventWithoutRelayTag() {
+    return new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator,
+       downvoteIdentifierTag);
   }
 }

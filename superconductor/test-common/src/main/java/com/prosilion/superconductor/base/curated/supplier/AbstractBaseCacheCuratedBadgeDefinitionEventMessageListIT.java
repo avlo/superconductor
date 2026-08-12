@@ -26,6 +26,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -75,7 +76,6 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT 
          .map(EventTag::getEventId).collect(Collectors.toSet()));
     });
 
-//    assertEquals(this.badgeDefinitionGenericEvents.size(), eventIds.size());
     assertTrue(eventIds.stream().anyMatch(this.badgeDefinitionGenericEventList.stream().map(BaseEvent::getId).toList()::contains));
   }
 
@@ -88,18 +88,19 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT 
              new Filters(
                 new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
           definitionEventRelayUrl));
-
     log.debug("returned events:");
     log.debug("  {}", returnedCuratedBadgeDefinitionEvents);
+
+    assertEquals(badgeDefinitionGenericEventList.size(), returnedCuratedBadgeDefinitionEvents.size());
 
     List<String> eventIds = returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
 
-    assertTrue(eventIds.stream().anyMatch(badgeDefinitionGenericEventList.stream().map(BadgeDefinitionGenericEvent::getId).toList()::contains));
+    assertTrue(badgeDefinitionGenericEventList.stream().map(BadgeDefinitionGenericEvent::getId).toList().containsAll(eventIds));
 
     assertTrue(returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(AddressTag.class))
-       .anyMatch(badgeDefinitionGenericEventList.stream().map(BadgeDefinitionGenericEvent::asAddressableEventAddressTag).toList()::contains));
+       .allMatch(badgeDefinitionGenericEventList.stream().map(BadgeDefinitionGenericEvent::asAddressableEventAddressTag).toList()::contains));
   }
 }

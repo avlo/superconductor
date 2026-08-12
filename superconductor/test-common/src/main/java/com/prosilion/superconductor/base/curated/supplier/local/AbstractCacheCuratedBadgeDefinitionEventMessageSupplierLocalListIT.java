@@ -20,13 +20,20 @@ public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLoc
   @Override
   protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionGenericEventList() {
     return List.of(
-       new BadgeDefinitionGenericEvent(
-          upvoteDefnCreator,
-          upvoteIdentifierTag,
-          definitionEventRelay),
-       new BadgeDefinitionGenericEvent(
-          upvoteDefnCreator,
-          downvoteIdentifierTag)
-    );
+       createBadgeDefinitionEventWithRelayTag(),
+       createBadgeDefinitionEventWithoutRelayTag());
+  }
+
+  private @NonNull BadgeDefinitionGenericEvent createBadgeDefinitionEventWithRelayTag() {
+    return new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator,
+       upvoteIdentifierTag,
+       definitionEventRelay);
+  }
+
+  private @NonNull BadgeDefinitionGenericEvent createBadgeDefinitionEventWithoutRelayTag() {
+    return new BadgeDefinitionGenericEvent(
+       upvoteDefnCreator,
+       downvoteIdentifierTag);
   }
 }

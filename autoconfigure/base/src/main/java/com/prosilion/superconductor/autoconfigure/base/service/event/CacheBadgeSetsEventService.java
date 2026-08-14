@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.service.event;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -25,17 +25,17 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF,
   private final CacheServiceIF cacheServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
-  private final CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
+  private final CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF;
 
   public CacheBadgeSetsEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
-     @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
+     @NonNull CacheCuratedBadgeAwardEventServiceIF cacheCuratedBadgeAwardEventServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
-    this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardGenericEventServiceIF;
+    this.cacheCuratedBadgeAwardEventServiceIF = cacheCuratedBadgeAwardEventServiceIF;
   }
 
   @Override
@@ -48,14 +48,22 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF,
           new BadgeSetsEvent(
              incomingBadgeSetsEvent.asGenericEventRecord(),
              badgeDefinitionReputationEvent,
-             incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class).stream()
-                .map(eventTag -> cacheCuratedBadgeAwardGenericEventServiceIF
-                   .getEvent(eventTag.eventId(), eventTag.requireRelay()))
-                .flatMap(Optional::stream)
-                .distinct()
-                .toList()));
+             getCuratedBadgeAwardGenericEventList(incomingBadgeSetsEvent)));
     badgeSetsEvent.map(cacheServiceIF::save);
     return badgeSetsEvent;
+  }
+
+  private @NonNull List<CuratedBadgeAwardGenericEvent> getCuratedBadgeAwardGenericEventList(@NonNull EventIF incomingBadgeSetsEvent) {
+    List<EventTag> eventTagList = incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class);
+    
+    List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEvents = eventTagList.stream()
+       .map(eventTag -> cacheCuratedBadgeAwardEventServiceIF
+          .getEvent(eventTag.eventId(), eventTag.requireRelay()))
+       .flatMap(Optional::stream)
+       .distinct()
+       .toList();
+
+    return curatedBadgeAwardGenericEvents;
   }
 
   @Override

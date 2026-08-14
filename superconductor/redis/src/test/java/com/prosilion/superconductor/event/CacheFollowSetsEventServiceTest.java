@@ -1,16 +1,17 @@
 package com.prosilion.superconductor.event;
 
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.curated.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.FollowSetsEvent;
+import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.event.curated.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
-import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.FollowSetsEvent;
-import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
@@ -139,6 +140,19 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
   }
 
   @Test
+  void testEmptyBadgeSetsThrowsException() {
+    mockEmptyBadgeSetsEvent();
+    doReturn(Optional.of(event.getGenericEventRecord()))
+       .when(cacheReferenceEventTagServiceIF)
+       .getEvent(eventId, relay);
+    CacheFollowSetsEventService cacheFollowSetsEventService = createService();
+
+    assertEquals("eventTags.size [1] != badgeSetsEvent.size [0]",
+       assertThrows(NostrException.class, () ->
+          cacheFollowSetsEventService.getEvent(eventId, relay)).getMessage());
+  }
+
+  @Test
   void testGetByPubKeyTag() {
     mockBadgeSetsEvent();
     PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
@@ -252,6 +266,12 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
 
   private void mockBadgeSetsEvent() {
     doReturn(Optional.of(badgeSetsEvent))
+       .when(cacheBadgeSetsEventServiceIF)
+       .getEvent(badgeSetsEvent.getId(), relay);
+  }
+
+  private void mockEmptyBadgeSetsEvent() {
+    doReturn(Optional.empty())
        .when(cacheBadgeSetsEventServiceIF)
        .getEvent(badgeSetsEvent.getId(), relay);
   }

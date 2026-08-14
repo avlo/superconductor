@@ -67,11 +67,12 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
              eventTag.requireRelay()))
        .flatMap(Optional::stream).toList();
 
-    if (eventTags.size() != badgeSetsEvents.size()) {
+    if (badgeSetsEvents.isEmpty() || eventTags.size() != badgeSetsEvents.size()) {
       log.debug("eventTags.size != badgeSetsEvent.size");
       log.debug("eventTags:\n  [{}]", eventTags.stream().map(Record::toString).collect(Collectors.joining("], [")));
       log.debug("badgeSetsEvents:\n  [{}]", badgeSetsEvents.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining("], [")));
-      throw new NostrException("eventTags.size != badgeSetsEvent.size");
+      throw new NostrException(
+         String.format("eventTags.size [%d] != badgeSetsEvent.size [%d]", eventTags.size(), badgeSetsEvents.size()));
     }
     return badgeSetsEvents;
   }

@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.event;
 
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.message.EventMessage;
@@ -149,5 +150,7 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
     EventTag eventTag = new EventTag(getBadgeSetsUpvoteEvent().getId(), relay.getUrl());
     Optional<FollowSetsEvent> actual = cacheFollowSetsEventService.getByDirect(eventTag);
     assertFalse(actual.isEmpty());
+
+    assertThrows(NostrException.class, () -> new FollowSetsEvent(followSetsEvent.asGenericEventRecord(), List.of()));
   }
 }

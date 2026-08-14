@@ -5,6 +5,8 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
@@ -23,8 +25,10 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
   private final CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
   private final Relay relay;
 
+  private final BadgeDefinitionGenericEvent upvoteDefinitionEvent;
   private final BadgeDefinitionGenericEvent downvoteDefinitionEvent;
   private final CuratedFormulaEvent upvoteCuratedFormulaEvent;
+  private final FormulaEvent upvoteFormulaEvent;
   private final FormulaEvent downvoteFormulaEvent;
 
   public BaseCacheCuratedFormulaEventServiceIT(
@@ -36,11 +40,11 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
     this.cacheCuratedFormulaEventServiceIF = cacheCuratedFormulaEventServiceIF;
     this.relay = new Relay(relayUrl);
 
-    BadgeDefinitionGenericEvent upvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
+    this.upvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
 //    cacheServiceIF.save(upvoteDefinitionEvent);
 
-    FormulaEvent upvoteFormulaEvent = new FormulaEvent(
+    this.upvoteFormulaEvent = new FormulaEvent(
        formulaCreator,
        formulaUpvoteIdentifierTag,
        upvoteDefinitionEvent,
@@ -78,9 +82,15 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
 
   @Test
   public void testGetByPublicKeyIdentifierTagAndRelay() {
+    IdentifierTag expectedIdentifierTag = new IdentifierTag("1367861445");
+
+    assertEquals(expectedIdentifierTag, AbstractSetsEvent.hashedAddressTag(upvoteDefinitionEvent.asAddressableEventAddressTag()));
+    assertEquals(expectedIdentifierTag, AbstractSetsEvent.hashedAddressTag(upvoteFormulaEvent.getAddressTag()));
+    assertEquals(expectedIdentifierTag, upvoteCuratedFormulaEvent.getIdentifierTag());
+    
     Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventServiceIF.getByAuthorAndIdentifierTag(
        aImgIdentity.getPublicKey(),
-       AbstractSetsEvent.hashedAddressTag(upvoteCuratedFormulaEvent.getAddressTag()));
+       upvoteCuratedFormulaEvent.getIdentifierTag());
 
     assertEquals(upvoteCuratedFormulaEvent, actual.orElseThrow());
   }

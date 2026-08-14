@@ -211,14 +211,13 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     assertTrue(dbRepDefnEvent.getCuratedFormulaEvents().stream()
        .map(CuratedFormulaEvent::getAddressTag)
        .map(AddressTag::getIdentifierTag)
-       .map(IdentifierTag::getUuid).toList().contains(AWARD_UNIT_UPVOTE));
+       .map(IdentifierTag::getUuid).toList().contains(FORMULA_UNIT_UPVOTE));
 
-    IdentifierTag formulaUnitDownvoteIdentifierTag = new IdentifierTag(FORMULA_UNIT_DOWNVOTE);
     CuratedFormulaEvent minusOneFormulaEvent = new CuratedFormulaEvent(
        aImgIdentity,
        new FormulaEvent(
           formulaCreator,
-          formulaUnitDownvoteIdentifierTag,
+          formulaDownvoteIdentifierTag,
           awardDownvoteDefinitionEvent,
           MINUS_ONE_FORMULA,
           relay),
@@ -250,7 +249,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     assertTrue(dbRepDefnEventPlusMinus.getCuratedFormulaEvents().stream()
        .map(CuratedFormulaEvent::getAddressTag)
        .map(AddressTag::getIdentifierTag)
-       .toList().contains(downvoteIdentifierTag));
+       .toList().contains(formulaDownvoteIdentifierTag));
 
     BadgeDefinitionReputationEvent reconstructed = cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord()).orElseThrow();
     assertEquals(dbRepDefnEventPlusMinus, reconstructed);

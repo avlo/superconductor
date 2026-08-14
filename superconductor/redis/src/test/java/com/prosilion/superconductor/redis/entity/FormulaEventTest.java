@@ -137,7 +137,7 @@ public class FormulaEventTest {
     BadgeDefinitionGenericEvent awardUniqueUpvoteEvent = new BadgeDefinitionGenericEvent(identity, upvoteUniqueIdentifierTag, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA, relay);
 
     CuratedFormulaEvent uniqueFormulaEvent = new CuratedFormulaEvent(aImgIdentity,
-       new FormulaEvent(identity, upvoteIdentifierTag, awardUniqueUpvoteEvent, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA, relay),
+       new FormulaEvent(identity, upvoteUniqueIdentifierTag, awardUniqueUpvoteEvent, UNIT_UPVOTE_UNIQUE_PLUS_ONE_FORMULA, relay),
        new ReferenceTag(relay.getUrl()),
        relay);
 

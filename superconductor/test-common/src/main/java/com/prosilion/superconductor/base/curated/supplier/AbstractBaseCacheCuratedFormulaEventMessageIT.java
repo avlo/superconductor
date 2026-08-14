@@ -177,7 +177,7 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
     assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(AddressTag.class))
        .anyMatch(
-          this.formulaEventList.stream().map(FormulaEvent::getAddressTag).toList()::contains));
+          this.formulaEventList.stream().map(FormulaEvent::asAddressableEventAddressTag).toList()::contains));
 
     assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(EventTag.class)).map(EventTag::eventId)

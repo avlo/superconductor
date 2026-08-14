@@ -115,7 +115,7 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
 
     assertEquals(MINUS_ONE_FORMULA, actual.getFormula());
     assertEquals(expected.getAddressTag(), actual.getAddressTag());
-    assertEquals(downvoteFormulaEvent.getAddressTag(), actual.getAddressTag());
+    assertEquals(downvoteFormulaEvent.asAddressableEventAddressTag(), actual.getAddressTag());
   }
 
   @Test
@@ -133,6 +133,6 @@ public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrat
        downvoteFormulaEvent.getAddressTag()).orElseThrow();
 
     assertEquals(MINUS_ONE_FORMULA, actual.getFormula());
-    assertEquals(downvoteFormulaEvent.getAddressTag(), actual.getAddressTag());
+    assertEquals(downvoteFormulaEvent.asAddressableEventAddressTag(), actual.getAddressTag());
   }
 }

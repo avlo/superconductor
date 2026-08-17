@@ -1,8 +1,8 @@
 plugins {
-    id 'superconductor.java-conventions'
+  id 'superconductor.java-conventions'
 }
 
 dependencies {
-    api project(':superconductor-base')
-    annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure'
+  api project(':superconductor-base')
+  annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure'
 }

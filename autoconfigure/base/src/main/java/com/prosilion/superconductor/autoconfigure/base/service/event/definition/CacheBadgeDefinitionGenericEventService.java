@@ -2,7 +2,7 @@ package com.prosilion.superconductor.autoconfigure.base.service.event.definition
 
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.superconductor.base.cache.CacheBadgeDefinitionGenericEventServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;

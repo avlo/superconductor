@@ -8,4 +8,3 @@ com.prosilion.superconductor.autoconfigure.base.config.ReqMessageServiceConfig
 com.prosilion.superconductor.autoconfigure.base.config.ReqServiceConfig
 com.prosilion.superconductor.autoconfigure.base.config.KindClassMapConfig
 com.prosilion.superconductor.autoconfigure.base.config.EventCurationInactiveConfig
-com.prosilion.superconductor.autoconfigure.base.config.EventCurationActiveConfig

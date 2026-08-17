@@ -8,7 +8,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.event.EntityServiceIF;
+import com.prosilion.superconductor.base.cache.EntityServiceIF;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntity;
 import com.prosilion.superconductor.lib.redis.entity.EventNosqlEntityIF;
 import com.prosilion.superconductor.lib.redis.interceptor.RedisBaseTagIF;

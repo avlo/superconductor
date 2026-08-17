@@ -45,6 +45,16 @@ public class RedisCacheService implements RedisCacheServiceIF {
      eventNosqlEntityIFS ->
         asGenericEvents(
            filterDeletionEvents(eventNosqlEntityIFS));
+  
+  /*
+  private final Function<List<EventNosqlEntityIF>, List<GenericEventRecord>> filteredGERs =
+     events ->
+        events.stream()
+           .map(Optional::ofNullable)
+           .map(filteredGER)
+           .flatMap(Optional::stream)
+           .toList();
+   */
 
   private final Function<Optional<EventNosqlEntityIF>, Optional<GenericEventRecord>> filteredGER =
      eventNosqlEntityIF ->

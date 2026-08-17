@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.DeleteEventKindPlugin;
+import com.prosilion.superconductor.base.cache.event.plugin.kind.type.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.StandardEventKindPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.List;

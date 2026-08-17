@@ -9,7 +9,7 @@ import com.prosilion.nostr.tag.GenericTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.service.event.EntityServiceIF;
+import com.prosilion.superconductor.base.cache.EntityServiceIF;
 import com.prosilion.superconductor.lib.jpa.dto.generic.ElementAttributeDto;
 import com.prosilion.superconductor.lib.jpa.dto.generic.GenericTagDto;
 import com.prosilion.superconductor.lib.jpa.entity.AbstractTagJpaEntity;

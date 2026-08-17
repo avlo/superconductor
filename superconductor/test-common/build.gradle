@@ -1,16 +1,16 @@
 plugins {
-    id 'superconductor.java-conventions'
+  id 'superconductor.java-conventions'
 }
 
 dependencies {
-    api project(':superconductor-base')
-    api project(':superconductor-autoconfigure-base')
+  api project(':superconductor-base')
+  api project(':superconductor-autoconfigure-base')
 
 //    def subdivisionsVersion = '1.4.1'
 //    implementation 'com.prosilion:subdivisions:' + subdivisionsVersion
 
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+  implementation 'org.springframework.boot:spring-boot-starter'
+  implementation 'org.springframework.boot:spring-boot-configuration-processor'
 
-    implementation 'org.springframework.boot:spring-boot-starter-test'
+  implementation 'org.springframework.boot:spring-boot-starter-test'
 }

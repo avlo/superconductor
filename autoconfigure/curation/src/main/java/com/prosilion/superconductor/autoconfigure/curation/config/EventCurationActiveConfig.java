@@ -12,7 +12,7 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.definition.
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.autoconfigure.curation.calculator.DynamicReputationCalculator;
+import com.prosilion.superconductor.autoconfigure.curation.calculator.ReputationCalculator;
 import com.prosilion.superconductor.autoconfigure.curation.calculator.ReputationCalculatorIF;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.BadgeSetsEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedBadgeAwardGenericEventKindPlugin;
@@ -61,14 +61,16 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 @AutoConfiguration
 @Conditional(EventCurationActiveCondition.class)
 public class EventCurationActiveConfig {
+  
+//  TODO: replace below w/ ReputationCalculatorConfig bean
   @Bean
   @ConditionalOnMissingBean
   ReputationCalculatorIF reputationCalculator(
      @NonNull String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity) {
-    return new DynamicReputationCalculator(
-       superconductorRelayUrl,
-       superconductorInstanceIdentity);
+    return new ReputationCalculator(
+       superconductorInstanceIdentity,
+       superconductorRelayUrl);
   }
 
   @Bean

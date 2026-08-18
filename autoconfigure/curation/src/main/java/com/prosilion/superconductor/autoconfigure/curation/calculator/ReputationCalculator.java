@@ -19,15 +19,15 @@ import lombok.NonNull;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG;
 
-public class DynamicReputationCalculator implements ReputationCalculatorIF {
-  private final Identity aImgIdentity;
-  private final String afterimageRelayUrl;
+public class ReputationCalculator implements ReputationCalculatorIF {
+  private final Identity instanceIdentity;
+  private final String relayUrl;
 
-  public DynamicReputationCalculator(
-     @NonNull String afterimageRelayUrl,
-     @NonNull Identity aImgIdentity) {
-    this.aImgIdentity = aImgIdentity;
-    this.afterimageRelayUrl = afterimageRelayUrl;
+  public ReputationCalculator(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String superconductorRelayUrl) {
+    this.instanceIdentity = superconductorInstanceIdentity;
+    this.relayUrl = superconductorRelayUrl;
   }
 
   public BadgeAwardReputationEvent calculateUpdatedReputationEvent(
@@ -64,12 +64,12 @@ public class DynamicReputationCalculator implements ReputationCalculatorIF {
      @NonNull String score,
      @NonNull BadgeDefinitionReputationEvent badgeDefinitionReputationEvent) throws NostrException {
     return new BadgeAwardReputationEvent(
-       aImgIdentity,
+       instanceIdentity,
        badgeReceiverPubkey,
        BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
        badgeDefinitionReputationEvent,
        new BigDecimal(score),
-       new Relay(afterimageRelayUrl));
+       new Relay(relayUrl));
   }
 
   @Override

@@ -12,10 +12,10 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.BadgeAwardReputationEventKindTypePlugin;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
-import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.event.plugin.kind.type.DeleteEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.PublishingEventKindPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.Collection;
@@ -29,30 +29,30 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // kind 30_000
-  private final Identity aImgIdentity;
-  private final String afterimageRelayUrl;
+  private final Identity superconductorInstanceIdentity;
+  private final String superconductorRelayUrl;
   private final DeleteEventKindPlugin deleteEventKindPlugin;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF;
   private final CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
   private final BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin;
 
   public FollowSetsEventKindPlugin(
-     @NonNull String afterimageRelayUrl,
+     @NonNull String superconductorRelayUrl,
      @NonNull NotifierService notifierService,
      @NonNull EventPlugin eventPlugin,
      @NonNull DeleteEventKindPlugin deleteEventKindPlugin,
      @NonNull CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF,
      @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF,
-     @NonNull Identity aImgIdentity,
+     @NonNull Identity superconductorInstanceIdentity,
      @NonNull BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin) {
     super(notifierService, eventPlugin);
-    this.aImgIdentity = aImgIdentity;
-    this.afterimageRelayUrl = afterimageRelayUrl;
+    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
+    this.superconductorRelayUrl = superconductorRelayUrl;
     this.deleteEventKindPlugin = deleteEventKindPlugin;
     this.cacheFollowSetsEventServiceIF = cacheFollowSetsEventServiceIF;
     this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardGenericEventServiceIF;
     this.badgeAwardReputationEventKindTypePlugin = badgeAwardReputationEventKindTypePlugin;
-    log.debug("using afterimageRelayUrl: [{}]", afterimageRelayUrl);
+    log.debug("using superconductorRelayUrl: [{}]", superconductorRelayUrl);
   }
 
   @Override
@@ -133,16 +133,16 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
           .map(eventTag -> cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(eventTag).orElseThrow())
           .flatMap(badgeAwardEvent -> existingFollowSetsEvents.stream()
              .map(existingFollowSetsEvent -> existingFollowSetsEvent.createNewFromExisting(
-                aImgIdentity,
+                superconductorInstanceIdentity,
                 existingFollowSetsEvent.getBadgeSetsEventList().stream()
                    .map(existingBadgeSetsEvent -> existingBadgeSetsEvent.createNewFromExisting(
-                      aImgIdentity, badgeAwardEvent))
+                      superconductorInstanceIdentity, badgeAwardEvent))
                    .toList())))
           .collect(Collectors.toSet());
   }
 
   private void deletePreviousFollowSetsEvent(FollowSetsEvent previousFollowSetsEvent) {
-    deleteEventKindPlugin.processIncomingEvent(previousFollowSetsEvent, new Relay(afterimageRelayUrl));
+    deleteEventKindPlugin.processIncomingEvent(previousFollowSetsEvent, new Relay(superconductorRelayUrl));
   }
 
   @Override

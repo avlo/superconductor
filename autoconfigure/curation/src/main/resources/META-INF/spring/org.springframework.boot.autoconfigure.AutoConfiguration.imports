@@ -1,1 +1,2 @@
 com.prosilion.superconductor.autoconfigure.curation.config.EventCurationActiveConfig
+com.prosilion.superconductor.autoconfigure.curation.config.ReputationCalculatorConfig

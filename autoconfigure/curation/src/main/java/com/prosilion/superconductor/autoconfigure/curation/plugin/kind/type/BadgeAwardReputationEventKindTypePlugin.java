@@ -14,8 +14,8 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
-import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.ReputationCalculationServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.PublishingEventKindTypePlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
@@ -33,27 +33,27 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 @Slf4j
 // our SportsCar extends CarDecorator
 public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKindTypePlugin {
-  private final String afterimageRelayUrl;
-  private final Identity aImgIdentity;
+  private final String superconductorRelayUrl;
+  private final Identity superconductorInstanceIdentity;
   private final CacheServiceIF cacheServiceIF;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF;
   private final ReputationCalculationServiceIF reputationCalculationServiceIF;
 
   public BadgeAwardReputationEventKindTypePlugin(
-     @NonNull String afterimageRelayUrl,
-     @NonNull Identity aImgIdentity,
+     @NonNull String superconductorRelayUrl,
+     @NonNull Identity superconductorInstanceIdentity,
      @NonNull NotifierService notifierService,
      @NonNull EventKindTypePluginIF eventKindTypePlugin,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull ReputationCalculationServiceIF reputationCalculationServiceIF,
      @NonNull CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF) {
     super(notifierService, eventKindTypePlugin);
-    this.afterimageRelayUrl = afterimageRelayUrl;
-    this.aImgIdentity = aImgIdentity;
+    this.superconductorRelayUrl = superconductorRelayUrl;
+    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.cacheServiceIF = cacheServiceIF;
     this.reputationCalculationServiceIF = reputationCalculationServiceIF;
     this.cacheFollowSetsEventServiceIF = cacheFollowSetsEventServiceIF;
-    log.debug("using afterimageRelayUrl: [{}]", afterimageRelayUrl);
+    log.debug("using superconductorRelayUrl: [{}]", superconductorRelayUrl);
   }
 
   @Override
@@ -116,18 +116,18 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
      BadgeDefinitionReputationEvent badgeDefinitionReputationEvent,
      BigDecimal score) {
     return new BadgeAwardReputationEvent(
-       aImgIdentity,
+       superconductorInstanceIdentity,
        badgeReceiverPubkey,
        BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
        badgeDefinitionReputationEvent,
        score,
-       new Relay(afterimageRelayUrl));
+       new Relay(superconductorRelayUrl));
   }
 
   private void deletePreviousBadgeAwardReputationEvent(EventIF previousReputationEvent) {
     cacheServiceIF.deleteEvent(
        new DeletionEvent(
-          aImgIdentity,
-          List.of(new EventTag(previousReputationEvent.getId(), afterimageRelayUrl)), "aImg delete previous REPUTATION event"));
+          superconductorInstanceIdentity,
+          List.of(new EventTag(previousReputationEvent.getId(), superconductorRelayUrl)), "SuperConductor delete previous REPUTATION event"));
   }
 }

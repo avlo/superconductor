@@ -6,25 +6,14 @@ import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.condition.EventCurationActiveCondition;
+import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheBadgeAwardReputationEventService;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheBadgeDefinitionReputationEventService;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDefinitionReputationEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheBadgeSetsEventService;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheCuratedBadgeDefinitionGenericEventService;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.formula.CacheCuratedFormulaEventService;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheFollowSetsEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
-import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.ReputationCalculationServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.calculator.DynamicReputationCalculator;
+import com.prosilion.superconductor.autoconfigure.curation.calculator.ReputationCalculatorIF;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.BadgeSetsEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedBadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedBadgeDefinitionGenericEventKindPlugin;
@@ -32,11 +21,25 @@ import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedFo
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.FollowSetsEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.BadgeAwardReputationEventKindTypePlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.BadgeDefinitionReputationEventKindTypePlugin;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDefinitionReputationEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.ReputationCalculationServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheBadgeAwardReputationEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheBadgeDefinitionReputationEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheCuratedBadgeDefinitionGenericEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.formula.CacheCuratedFormulaEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheBadgeSetsEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheFollowSetsEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.reputation.ReputationCalculationLocalService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.event.plugin.kind.type.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
@@ -58,6 +61,23 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 @AutoConfiguration
 @Conditional(EventCurationActiveCondition.class)
 public class EventCurationActiveConfig {
+  @Bean
+  @ConditionalOnMissingBean
+  ReputationCalculatorIF reputationCalculator(
+     @NonNull String superconductorRelayUrl,
+     @NonNull Identity superconductorInstanceIdentity) {
+    return new DynamicReputationCalculator(
+       superconductorRelayUrl,
+       superconductorInstanceIdentity);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  ReputationCalculationServiceIF reputationCalculationService(
+     @NonNull ReputationCalculatorIF reputationCalculator) {
+    return new ReputationCalculationLocalService(reputationCalculator);
+  }
+
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService(
@@ -295,7 +315,8 @@ public class EventCurationActiveConfig {
 
     kindFxnMap.put(
        Kind.CURATION_SETS_FORMULA_EVENT,
-       cacheCuratedFormulaEventService::materialize);
+       eventIF ->
+          cacheCuratedFormulaEventService.materialize(eventIF));
 
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
@@ -309,15 +330,18 @@ public class EventCurationActiveConfig {
 
     kindFxnMap.put(
        Kind.FOLLOW_SETS,
-       cacheFollowSetsEventService::materialize);
+       eventIF ->
+          cacheFollowSetsEventService.materialize(eventIF));
 
     kindFxnMap.put(
        Kind.BADGE_SETS_EVENT,
-       cacheBadgeSetsEventService::materialize);
+       eventIF ->
+          cacheBadgeSetsEventService.materialize(eventIF));
 
     kindFxnMap.put(
        Kind.ARBITRARY_CUSTOM_APP_DATA,
-       cacheFormulaEventService::materialize);
+       eventIF ->
+          cacheFormulaEventService.materialize(eventIF));
 
     kindFxnMap.put(
        Kind.DELETION,
@@ -336,11 +360,13 @@ public class EventCurationActiveConfig {
 
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
-       cacheBadgeAwardReputationEventService::materialize);
+       eventIF ->
+          cacheBadgeAwardReputationEventService.materialize(eventIF));
 
     kindFxnMap.put(
        Kind.BADGE_DEFINITION_EVENT,
-       cacheBadgeDefinitionReputationEventService::materialize);
+       eventIF ->
+          cacheBadgeDefinitionReputationEventService.materialize(eventIF));
 
     return kindFxnMap;
   }

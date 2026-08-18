@@ -58,7 +58,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   private List<BadgeSetsEvent> getBadgeSetsEvents(GenericEventRecord genericEventRecord) {
     List<EventTag> eventTags = genericEventRecord.getTypeSpecificTags(EventTag.class);
     if (eventTags.isEmpty())
-      throw new NostrException(String.format("FollowSetsEvent [%s] requires at least one EventTag", genericEventRecord));
+      throw new NostrException(String.format("FollowSetsEvent requires at least one EventTag:%n%s", genericEventRecord.createPrettyPrintJson()));
 
     List<BadgeSetsEvent> badgeSetsEvents = eventTags.stream()
        .map(eventTag ->

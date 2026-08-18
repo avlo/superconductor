@@ -13,11 +13,22 @@
   <artifactId>superconductor-autoconfigure-curation</artifactId>
   <name>superconductor-autoconfigure-curation</name>
 
+  <properties>
+    <spring-boot-embedded-redis.version>1.0.1</spring-boot-embedded-redis.version>
+    <testcontainers.version>1.21.3</testcontainers.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.prosilion.superconductor</groupId>
       <artifactId>superconductor-autoconfigure-base</artifactId>
       <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion.superconductor</groupId>
+      <artifactId>superconductor-autoconfigure-redis</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -30,14 +41,16 @@
       <version>${spring-boot.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
-      <version>${spring-boot.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.prosilion.superconductor</groupId>
       <artifactId>superconductor-test-common</artifactId>
       <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.prosilion</groupId>
+      <artifactId>subdivisions</artifactId>
+      <version>${subdivisions.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.projectreactor</groupId>
@@ -63,8 +76,6 @@
       <version>${spring-boot.version}</version>
       <scope>test</scope>
     </dependency>
-
-
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-testcontainers</artifactId>
@@ -84,6 +95,5 @@
       <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 </project>

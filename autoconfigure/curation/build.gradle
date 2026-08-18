@@ -3,11 +3,12 @@ plugins {
 }
 
 dependencies {
-  api project(':superconductor-lib-redis')
+//  testImplementation project(':superconductor-lib-redis')
+  testImplementation project(':superconductor-autoconfigure-redis')
   api project(':superconductor-autoconfigure-base')
 
   annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure'
-
+  
   def subdivisionsVersion = '1.4.1'
   testImplementation 'com.prosilion:subdivisions:' + subdivisionsVersion
 
@@ -33,5 +34,9 @@ dependencies {
 }
 
 tasks.named('integrationTest') {
+  mustRunAfter tasks.named('test')
+}
+
+tasks.named('integrationTestDocker') {
   mustRunAfter tasks.named('test')
 }

@@ -1,9 +1,8 @@
-package com.prosilion.superconductor.supplier.remote;
+package com.prosilion.superconductor.supplier.local.abstracts;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.supplier.AbstractBaseCacheCuratedFormulaEventMessageIT;
@@ -12,19 +11,19 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT extends AbstractBaseCacheCuratedFormulaEventMessageIT {
-  protected AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT(
+public abstract class AbstractCacheCuratedFormulaEventMessageSupplierLocalIT extends AbstractBaseCacheCuratedFormulaEventMessageIT {
+  protected AbstractCacheCuratedFormulaEventMessageSupplierLocalIT(
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull Identity superconductorInstanceIdentity,
-     @NonNull String definitionEventRelayUrl) throws NostrException {
-    super(cacheServiceIF, definitionEventRelayUrl, superconductorInstanceIdentity);
+     @NonNull String superconductorRelayUrl,
+     @NonNull Identity superconductorInstanceIdentity) throws NostrException {
+    super(cacheServiceIF, superconductorRelayUrl, superconductorInstanceIdentity);
   }
 
   @Override
   protected List<FormulaEvent> createFormulaEventList() {
     return List.of(
        createFormulaEventContainingRelayTag()
-//       , createFormulaEventWithoutRelayTag()
+       , createFormulaEventWithoutRelayTag()
     );
   }
 
@@ -35,9 +34,9 @@ public abstract class AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT ex
        new BadgeDefinitionGenericEvent(
           upvoteDefnCreator,
           upvoteIdentifierTag,
-          new Relay("ws://superconductor-app-three:5555")),
+          formulaEventRelay),
        PLUS_ONE_FORMULA,
-       new Relay("ws://superconductor-app-three:5555"));
+       formulaEventRelay);
   }
 
   protected FormulaEvent createFormulaEventWithoutRelayTag() {
@@ -51,12 +50,12 @@ public abstract class AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT ex
   }
 
   @Override
-  public void overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
-    validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(badgeDefinitionGenericEvent);
+  public void overridableValidateCorrectlyCreatedAndPersistedFormulaEventVariant(List<FormulaEvent> formulaEvents) {
+    validateCorrectlyCreatedAndPersistedCuratedFormulaEventVariants(formulaEvents);
   }
 
   @Override
-  public void overridableValidateCorrectlyCreatedAndPersistedFormulaEventVariant(List<FormulaEvent> formulaEventList) {
-    validateCorrectlyCreatedAndPersistedCuratedFormulaEventVariants(formulaEventList);
+  public void overridableValidateCorrectlyCreatedAndPersistedBadgeDefinitionEventVariants(BadgeDefinitionGenericEvent badgeDefinitionGenericEvent) {
+    validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(badgeDefinitionGenericEvent);
   }
 }

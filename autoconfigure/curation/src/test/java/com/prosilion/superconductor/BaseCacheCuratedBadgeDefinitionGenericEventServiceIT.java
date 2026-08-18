@@ -42,7 +42,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
        BaseIntegrationTestFixtures.upvoteDefnCreator, BaseIntegrationTestFixtures.upvoteIdentifierTag, relay);
 
     this.curatedUpvoteDefinitionEvent = new CuratedBadgeDefinitionGenericEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        upvoteDefinitionEvent,
        new ReferenceTag(relayUrl),
        relay);
@@ -80,7 +80,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
   @Test
   public void testGetByDirectEventTagFromBackingServiceAfterLocalMiss() {
     CuratedBadgeDefinitionGenericEvent expected = new CuratedBadgeDefinitionGenericEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        downvoteDefinitionEvent,
        new ReferenceTag(relay.getUrl()),
        relay);
@@ -94,7 +94,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
   @Test
   public void testGetByDirectAddressTagFromBackingServiceAfterLocalMiss() {
     CuratedBadgeDefinitionGenericEvent expected = new CuratedBadgeDefinitionGenericEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        this.downvoteDefinitionEvent,
        new ReferenceTag(relay.getUrl()),
        relay);

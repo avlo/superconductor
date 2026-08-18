@@ -57,7 +57,7 @@ public class CacheBadgeAwardGenericEventServiceIT extends BaseIntegrationTestFix
   public void testSaveBadgeAwardGenericEventUpvote() {
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
        new BadgeAwardGenericEvent<>(
-          parameterAimgIdentity,
+          superconductorInstanceIdentity,
           recipient.getPublicKey(),
           badgeDefinitionUpvoteEvent,
           relay);
@@ -75,7 +75,7 @@ public class CacheBadgeAwardGenericEventServiceIT extends BaseIntegrationTestFix
   public void testGetByEventId() {
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
        new BadgeAwardGenericEvent<>(
-          parameterAimgIdentity,
+          superconductorInstanceIdentity,
           recipient.getPublicKey(),
           badgeDefinitionUpvoteEvent,
           relay);
@@ -92,7 +92,7 @@ public class CacheBadgeAwardGenericEventServiceIT extends BaseIntegrationTestFix
   public void testGetByDirectAddressTag() {
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
        new BadgeAwardGenericEvent<>(
-          parameterAimgIdentity,
+          superconductorInstanceIdentity,
           recipient.getPublicKey(),
           badgeDefinitionUpvoteEvent,
           relay);

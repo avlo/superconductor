@@ -3,6 +3,7 @@ package com.prosilion.superconductor.supplier.remote;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.supplier.remote.abstracts.AbstractCacheCuratedFormulaEventMessageSupplierRemoteIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import com.prosilion.superconductor.config.SingleContainerCuratedTestConfig;
 import lombok.NonNull;

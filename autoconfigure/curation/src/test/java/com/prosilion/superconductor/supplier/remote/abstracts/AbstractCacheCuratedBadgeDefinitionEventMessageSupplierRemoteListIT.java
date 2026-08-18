@@ -1,20 +1,20 @@
-package com.prosilion.superconductor.supplier.local;
+package com.prosilion.superconductor.supplier.remote.abstracts;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.supplier.AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT;
 import java.util.List;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
-public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLocalListIT extends AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT {
-  protected AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLocalListIT(
-     @NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl,
-     @NonNull Identity superconductorInstanceIdentity) throws NostrException {
-    super(superconductorRelayUrl, superconductorInstanceIdentity);
+public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT extends AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT {
+  protected AbstractCacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String definitionEventRelayUrl) throws NostrException {
+    super(definitionEventRelayUrl, superconductorInstanceIdentity);
   }
 
   @Override
@@ -28,7 +28,7 @@ public abstract class AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLoc
     return new BadgeDefinitionGenericEvent(
        upvoteDefnCreator,
        upvoteIdentifierTag,
-       definitionEventRelay);
+       new Relay("ws://superconductor-app-three:5555"));
   }
 
   private @NonNull BadgeDefinitionGenericEvent createBadgeDefinitionEventWithoutRelayTag() {

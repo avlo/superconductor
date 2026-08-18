@@ -80,7 +80,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestFixtures {
     cacheServiceIF.save(plusOneCuratedFormulaEvent);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        repDefnCreator.getPublicKey(),
        reputationIdentifierTag,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
@@ -106,7 +106,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestFixtures {
        relay);
 
     CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent_1 = new CuratedBadgeAwardGenericEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeAwardUpvoteEvent_1,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        new ReferenceTag(badgeAwardUpvoteEvent_1.getRelay().map(Relay::getUrl).orElseThrow()),
@@ -114,14 +114,14 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestFixtures {
     cacheServiceIF.save(curatedBadgeAwardUpvoteEvent_1);
 
     BadgeSetsEvent badgeSetsUpvoteEvent_1 = new BadgeSetsEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
        curatedBadgeAwardUpvoteEvent_1,
        relay);
     cacheServiceIF.save(badgeSetsUpvoteEvent_1);
 
     FollowSetsEvent followSetsEvent_1 = new FollowSetsEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeSetsUpvoteEvent_1,
        relay);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_1), followSetsEvent_1.getRelay().orElseThrow());
@@ -138,7 +138,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestFixtures {
        relay);
 
     CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent_2 = new CuratedBadgeAwardGenericEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeAwardUpvoteEvent_2,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        new ReferenceTag(badgeAwardUpvoteEvent_2.getRelay().map(Relay::getUrl).orElseThrow()),
@@ -147,7 +147,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestFixtures {
 //    eventServiceIF.processIncomingEvent(new EventMessage(curationSetsUpvoteEvent_2), curationSetsUpvoteEvent_2.getRelay().orElseThrow());
 
     BadgeSetsEvent badgeSetsUpvoteEvent_2 = new BadgeSetsEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
        List.of(curatedBadgeAwardUpvoteEvent_1, curatedBadgeAwardUpvoteEvent_2),
        relay);
@@ -163,7 +163,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestFixtures {
     cacheServiceIF.save(badgeSetsUpvoteEvent_2);
 
     FollowSetsEvent followSetsEvent_2 = new FollowSetsEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeSetsUpvoteEvent_2,
        relay);
 

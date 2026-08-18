@@ -2,6 +2,7 @@ package com.prosilion.superconductor.supplier.local;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.supplier.local.abstracts.AbstractCacheCuratedBadgeDefinitionEventMessageSupplierLocalListIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

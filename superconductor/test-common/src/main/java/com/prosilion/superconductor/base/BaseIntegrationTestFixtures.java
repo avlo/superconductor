@@ -40,9 +40,9 @@ public abstract class BaseIntegrationTestFixtures {
   public static final Identity aImgIdentity =
      Identity.create("fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac");
   
-  public final Identity parameterAimgIdentity;
+  public final Identity superconductorInstanceIdentity;
 
   public BaseIntegrationTestFixtures(@NonNull Identity superconductorInstanceIdentity) {
-    this.parameterAimgIdentity = superconductorInstanceIdentity;
+    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
   }
 }

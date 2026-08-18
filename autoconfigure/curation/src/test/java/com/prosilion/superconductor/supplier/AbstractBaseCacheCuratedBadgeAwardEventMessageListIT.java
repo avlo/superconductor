@@ -51,10 +51,10 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
     this.awardEventRelayUrl = awardEventRelayUrl;
 
     this.badgeAwardGenericEventList = createBadgeAwardEventList();
-    setupBadgeAwardEvents(badgeAwardGenericEventList);
+    setupBadgeAwardEventBadgeDefinitionEvents(badgeAwardGenericEventList);
   }
 
-  private void setupBadgeAwardEvents(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
+  private void setupBadgeAwardEventBadgeDefinitionEvents(List<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardUpvoteEvents) {
     badgeAwardUpvoteEvents.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
        .forEach(badgeDefinitionGenericEvent ->
           assertTrue(

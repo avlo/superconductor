@@ -129,7 +129,7 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
   @Test
   void testGetByPubKeyTag() {
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeSetsUpvoteEvent,
        relay);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
@@ -141,7 +141,7 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
   @Test
   void testGetByDirectEventTag() {
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeSetsUpvoteEvent,
        relay);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());

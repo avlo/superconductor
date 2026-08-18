@@ -2,12 +2,12 @@ package com.prosilion.superconductor;
 
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
-import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -59,7 +59,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
     cacheServiceIF.save(plusOneCuratedFormulaEvent);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        BaseIntegrationTestFixtures.repDefnCreator.getPublicKey(),
        BaseIntegrationTestFixtures.reputationIdentifierTag,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
@@ -78,7 +78,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()));
 
     this.curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeAwardUpvoteEvent,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
@@ -86,7 +86,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
     cacheServiceIF.save(curationSetsUpvoteEvent);
 
     this.badgeSetsUpvoteEvent = new BadgeSetsEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
        curationSetsUpvoteEvent,
        relay);

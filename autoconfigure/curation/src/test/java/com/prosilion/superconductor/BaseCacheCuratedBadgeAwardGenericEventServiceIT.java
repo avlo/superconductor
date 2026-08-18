@@ -63,7 +63,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
        relay);
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        BaseIntegrationTestFixtures.repDefnCreator.getPublicKey(),
        BaseIntegrationTestFixtures.reputationIdentifierTag,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
@@ -77,7 +77,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)));
 
     this.curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeAwardUpvoteEvent,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),

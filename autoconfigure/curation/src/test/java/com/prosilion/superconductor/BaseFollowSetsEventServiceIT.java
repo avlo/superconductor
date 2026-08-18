@@ -80,7 +80,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
        relay);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        BaseIntegrationTestFixtures.repDefnCreator.getPublicKey(),
        BaseIntegrationTestFixtures.reputationIdentifierTag,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
@@ -95,7 +95,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)));
 
     CuratedBadgeAwardGenericEvent curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeAwardUpvoteEvent,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
@@ -103,7 +103,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
     cacheServiceIF.save(curationSetsUpvoteEvent);
 
     this.badgeSetsUpvoteEvent = new BadgeSetsEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
        curationSetsUpvoteEvent,
        relay);
@@ -121,7 +121,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
   @Test
   public void testSaveBadgeAwardReputationEventUpvote() {
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
-       parameterAimgIdentity,
+       superconductorInstanceIdentity,
        badgeSetsUpvoteEvent,
        relay);
 

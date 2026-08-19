@@ -9,6 +9,7 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
 import java.util.Optional;
@@ -20,14 +21,17 @@ import lombok.extern.slf4j.Slf4j;
 public class CuratedBadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKindPlugin {
   private final Identity superconductorInstanceIdentity;
   private final Relay superconductorRelay;
+  private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
 
   public CuratedBadgeDefinitionGenericEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
+     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull EventPluginIF eventPluginIF) {
     super(eventPluginIF);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.superconductorRelay = new Relay(superconductorRelayUrl);
+    this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
   }
 
   @Override
@@ -51,8 +55,9 @@ public class CuratedBadgeDefinitionGenericEventKindPlugin extends NonPublishingE
     return super.processIncomingEvent(curatedBadgeDefinitionGenericEvent, superconductorRelay);
   }
 
+
   @Override
   public Kind getKind() {
-    return Kind.BADGE_DEFINITION_EVENT;
+    return Kind.CURATION_SETS_BADGE_DEFINITION_EVENT;
   }
 }

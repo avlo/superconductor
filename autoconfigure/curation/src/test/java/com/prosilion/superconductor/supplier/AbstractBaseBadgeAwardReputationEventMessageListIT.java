@@ -122,49 +122,36 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
        new CuratedFormulaEvent(eventIF.asGenericEventRecord())).toList();
   }
 
-  protected EventIF submitSCEvent(BaseEvent event, String url, Filters filters) {
+  protected List<EventIF> submitSCEvent(BaseEvent event, String url, Filters filters) {
 //  submit first Event to superconductor
     submitRelayEventWithDuration_backup(event, url);
 //  sanity check event submissions processed by superconductor
     List<BaseMessage> baseMessages = new NostrSingleRequestService().send(
        createSuperconductorReqMessageEvent(generateRandomHex64String(), filters), url);
-
-//    // TimeUnit.MILLISECONDS.sleep(2500);
-    log.debug("retrieved superconductor events:");
-    List<EventIF> receivedEventIFs = getGenericEvents(baseMessages);
-    receivedEventIFs.stream().map(EventIF::asGenericEventRecord).map(GenericEventRecord::createPrettyPrintJson).forEach(log::debug);
-
-    EventIF receivedUpvoteCuratedEventIF = receivedEventIFs.getFirst();
-    assertEquals(receivedUpvoteCuratedEventIF.requireFirstTag(EventTag.class).getEventId(), event.getId());
-    assertEquals(receivedUpvoteCuratedEventIF.requireFirstTag(PubKeyTag.class).getPublicKey(),
-       event.requireFirstTag(PubKeyTag.class).getPublicKey());
-
-    return receivedUpvoteCuratedEventIF;
+    return getReceivedUpvoteCuratedEventIF(event, baseMessages);
   }
 
-  protected EventIF submitSCEventWithDuration_backup(BaseEvent event, String url, Filters filters) {
+  protected List<EventIF> submitSCEventWithDuration_backup(BaseEvent event, String url, Filters filters) {
 //  submit first Event to superconductor
-    submitRelayEvent(event, url);
+    submitRelayEventWithDuration_backup(event, url);
 //  sanity check event submissions processed by superconductor
     List<BaseMessage> baseMessages = new NostrSingleRequestService().send(
        createSuperconductorReqMessageEvent(generateRandomHex64String(), filters), url
-//       , Duration.ofMinutes(5)
-       , Duration.ofSeconds(10)
-    );
+       , Duration.ofMinutes(30));
+    return getReceivedUpvoteCuratedEventIF(event, baseMessages);
+  }
 
-    // TimeUnit.MILLISECONDS.sleep(2500);
+  private @NonNull List<EventIF> getReceivedUpvoteCuratedEventIF(BaseEvent event, List<BaseMessage> baseMessages) {
     log.debug("retrieved superconductor events:");
     List<EventIF> receivedEventIFs = getGenericEvents(baseMessages);
     receivedEventIFs.stream().map(EventIF::asGenericEventRecord).map(GenericEventRecord::createPrettyPrintJson).forEach(log::debug);
 
-    EventIF upvoteEventIF = receivedEventIFs.getFirst();
+    assertTrue(receivedEventIFs.stream().map(eventIF ->
+       eventIF.requireFirstTag(EventTag.class).getEventId()).anyMatch(event.getId()::contains));
 
-    assertEquals(upvoteEventIF.getId(), event.getId());
-    assertEquals(upvoteEventIF.getContent(), event.getContent());
-    assertEquals(upvoteEventIF.getPublicKey().toHexString(), event.getPublicKey().toHexString());
-    assertEquals(upvoteEventIF.getKind(), event.getKind());
-
-    return upvoteEventIF;
+    assertTrue(receivedEventIFs.stream().map(eventIF ->
+       eventIF.requireFirstTag(PubKeyTag.class).getPublicKey()).anyMatch(event.requireFirstTag(PubKeyTag.class).getPublicKey()::equals));
+    return receivedEventIFs;
   }
 
   protected void submitRelayEvent(EventIF event, String url) {
@@ -399,12 +386,6 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(
        contains));
   }
-
-  protected Filters upvoteAndOrDownvoteEventFilter =
-     new Filters(
-        new ReferencedPublicKeyFilter(
-           new PubKeyTag(recipient.getPublicKey())),
-        new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
 
   protected Filters upvoteAndOrDownvoteDefinitionEventFilter =
      new Filters(

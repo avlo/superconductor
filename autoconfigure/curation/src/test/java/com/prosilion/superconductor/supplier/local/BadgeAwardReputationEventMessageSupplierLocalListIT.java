@@ -1,12 +1,16 @@
 package com.prosilion.superconductor.supplier.local;
 
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.event.KindFilter;
+import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.supplier.local.abstracts.AbstractBadgeAwardReputationEventMessageSupplierLocalListIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -30,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 })
 public class BadgeAwardReputationEventMessageSupplierLocalListIT extends AbstractBadgeAwardReputationEventMessageSupplierLocalListIT {
   private final CacheServiceIF cacheServiceIF;
-  
+
   @Autowired
   public BadgeAwardReputationEventMessageSupplierLocalListIT(
      CacheServiceIF cacheServiceIF,
@@ -42,54 +46,56 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
 
   @Test
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> upvoteEvent_1 = createUpvoteEvent(new Relay(definitionEventRelayUrl));
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> upvoteEvent_1 = createUpvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
 
-    EventIF simulateIncomingUpvoteEvent_1 = submitSCEvent(
+    submitSCEventWithDuration_backup(
        upvoteEvent_1,
        definitionEventRelayUrl,
-       upvoteAndOrDownvoteEventFilter);
+       new Filters(
+          new ReferencedPublicKeyFilter(
+             new PubKeyTag(recipient.getPublicKey())),
+          new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT)));
 
     assertEquals(
        "1",
        submitAfterImageReq(new PubKeyTag(recipient.getPublicKey()), awardEventRelayUrl).getFirst().getContent());
 
 //    below is different recipient, works fine
-//    PublicKey newRecipient = Identity.generateRandomIdentity().getPublicKey();
-//    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> upvoteEvent2 = createUpvoteEvent(superconductorRelay, newRecipient);
-//
-//    EventIF simulateIncomingUpvoteEvent_2 = submitSCEvent(
-//       upvoteEvent2,
-//       superconductorRelayUrl,
-//       upvoteAndOrDownvoteEventFilter);
-//
-//    submitRelayEventWithDuration_backup(simulateIncomingUpvoteEvent_2, afterimageRelayUrl);
-//
-//    assertEquals(
-//       "1",
-//       submitAfterImageReq(new PubKeyTag(newRecipient), afterimageRelayUrl).getFirst().getContent());
-//
+    PublicKey newRecipient = Identity.generateRandomIdentity().getPublicKey();
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> upvoteEvent2 = createUpvoteEvent(new Relay(definitionEventRelayUrl), newRecipient);
+
+    submitSCEventWithDuration_backup(
+       upvoteEvent2,
+       definitionEventRelayUrl,
+       new Filters(
+          new ReferencedPublicKeyFilter(
+             new PubKeyTag(newRecipient)),
+          new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT)));
+
+    assertEquals(
+       "1",
+       submitAfterImageReq(new PubKeyTag(newRecipient), awardEventRelayUrl).getFirst().getContent());
+
 //    below is same 1st recipient, fails    
-//    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> upvoteEvent_3 = createUpvoteEvent(definitionEventRelay);
-//
-//    EventIF simulateIncomingUpvoteEvent_3 = submitSCEvent(
-//       upvoteEvent_3,
-//       definitionEventRelayUrl,
-//       upvoteAndOrDownvoteEventFilter);
-//
-//    submitRelayEventWithDuration_backup(simulateIncomingUpvoteEvent_3, awardEventRelayUrl);
-//
-//    List<EventIF> eventIFS = submitAfterImageReq(new PubKeyTag(recipient.getPublicKey()), awardEventRelayUrl);
-//    System.out.println(eventIFS.stream().map(EventIF::createPrettyPrintJson));
-//
-//    assertEquals(
-//       "2",
-//       submitAfterImageReq(new PubKeyTag(recipient.getPublicKey()), awardEventRelayUrl).getFirst().getContent());
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> upvoteEvent_3 = createUpvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
+
+    submitSCEventWithDuration_backup(
+       upvoteEvent_3,
+       definitionEventRelayUrl,
+       new Filters(
+          new ReferencedPublicKeyFilter(
+             new PubKeyTag(recipient.getPublicKey())),
+          new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT)));
+
+    assertEquals(
+       "2",
+       submitAfterImageReq(new PubKeyTag(recipient.getPublicKey()), awardEventRelayUrl).getFirst().getContent());
   }
 
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createUpvoteEvent(Relay relay) {
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createUpvoteEvent(Relay relay, PublicKey recipientPublicKey) {
     return new BadgeAwardGenericEvent<>(
        submitter,
-       recipient.getPublicKey(),
+       recipientPublicKey,
        badgeDefinitionGenericEventList.getFirst(),
        relay);
   }

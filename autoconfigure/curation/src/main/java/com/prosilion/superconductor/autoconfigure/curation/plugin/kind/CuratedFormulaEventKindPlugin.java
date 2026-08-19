@@ -49,6 +49,6 @@ public class CuratedFormulaEventKindPlugin extends NonPublishingEventKindPlugin 
 
   @Override
   public Kind getKind() {
-    return Kind.ARBITRARY_CUSTOM_APP_DATA;
+    return Kind.CURATION_SETS_FORMULA_EVENT;
   }
 }

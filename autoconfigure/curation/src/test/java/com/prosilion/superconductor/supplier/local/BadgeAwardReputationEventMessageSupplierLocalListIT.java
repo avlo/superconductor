@@ -48,17 +48,27 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
 
   @Test
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
-    Supplier<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> upvoteEventRecipientEventSupplier = () -> createUpvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
-    Supplier<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> upvoteEventDifferentRecipientEventSupplier = () -> createUpvoteEvent(new Relay(definitionEventRelayUrl), recipientDifferent.getPublicKey());
-    createAndSubmitUpvoteEvent("1", upvoteEventRecipientEventSupplier.get());
-    createAndSubmitUpvoteEvent("1", upvoteEventDifferentRecipientEventSupplier.get());
-    createAndSubmitUpvoteEvent("2", upvoteEventRecipientEventSupplier.get());
-    createAndSubmitUpvoteEvent("3", upvoteEventRecipientEventSupplier.get());
-    createAndSubmitUpvoteEvent("2", upvoteEventDifferentRecipientEventSupplier.get());
+    createAndSubmitUpvoteEvent("1", getIdenticalUpvoteRecipientEvent());
+    createAndSubmitUpvoteEvent("1", getIdenticalUpvoteDifferentRecipientEvent());
+    createAndSubmitUpvoteEvent("2", getIdenticalUpvoteRecipientEvent());
+    createAndSubmitUpvoteEvent("3", getIdenticalUpvoteRecipientEvent());
+    createAndSubmitUpvoteEvent("2", getIdenticalUpvoteDifferentRecipientEvent());
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteEvent = createUpvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
-    createAndSubmitUpvoteEvent("4", identicalUpvoteEvent);
-    createAndSubmitUpvoteEvent("4", identicalUpvoteEvent);
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteRecipientEvent = getIdenticalUpvoteRecipientEvent();
+    createAndSubmitUpvoteEvent("4", identicalUpvoteRecipientEvent);
+    createAndSubmitUpvoteEvent("4", identicalUpvoteRecipientEvent);
+
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteDifferentRecipientEvent = getIdenticalUpvoteDifferentRecipientEvent();
+    createAndSubmitUpvoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+    createAndSubmitUpvoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+  }
+
+  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalUpvoteRecipientEvent() {
+    return createUpvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
+  }
+
+  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalUpvoteDifferentRecipientEvent() {
+    return createUpvoteEvent(new Relay(definitionEventRelayUrl), recipientDifferent.getPublicKey());
   }
 
   private void createAndSubmitUpvoteEvent(String expectedScore, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event) {

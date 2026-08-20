@@ -22,14 +22,15 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
 
   @Override
   protected List<EventAttributesMap<FormulaEvent>> createFormulaEventList() {
-    return EventAttributesMap.asEventAttributesMap(
+    List<EventAttributesMap<FormulaEvent>> eventAttributesMap = EventAttributesMap.asEventAttributesMap(
        List.of(
           createPlusOneFormulaEvent()
-          //       ,
-          //       createMinusOneFormulaEvent()
+          ,
+          createMinusOneFormulaEvent()
 //       ,
 //       createMinusOneFormulaEvent()
        ));
+    return eventAttributesMap;
   }
 
   @Override
@@ -37,8 +38,8 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
     return
        EventAttributesMap.asEventAttributesMap(List.of(
           createBadgeAwardUpvoteDefinitionEvent()
-//       ,
-//       createBadgeAwardDownvoteDefinitionEvent()
+          ,
+          createBadgeAwardDownvoteDefinitionEvent()
        ));
   }
 
@@ -50,19 +51,19 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
        new Relay(definitionEventRelayUrl));
   }
 
-  protected BadgeDefinitionGenericEvent createBadgeAwardUpvoteDefinitionDifferentEvent() {
-    return new BadgeDefinitionGenericEvent(
-       upvoteDefnCreatorDifferent,
-       upvoteIdentifierTagDifferent,
-       String.format("awardUpvoteDefinitionEventDifferent, definition creator PublicKey: [%s]", upvoteDefnCreator.getPublicKey()),
-       new Relay(definitionEventRelayUrl));
-  }
-
   protected BadgeDefinitionGenericEvent createBadgeAwardDownvoteDefinitionEvent() {
     return new BadgeDefinitionGenericEvent(
        upvoteDefnCreator,
        downvoteIdentifierTag,
        String.format("awardDownvoteDefinitionEvent, definition creator PublicKey: [%s]", upvoteDefnCreator.getPublicKey()),
+       new Relay(definitionEventRelayUrl));
+  }
+
+  protected BadgeDefinitionGenericEvent createBadgeAwardUpvoteDefinitionDifferentEvent() {
+    return new BadgeDefinitionGenericEvent(
+       upvoteDefnCreatorDifferent,
+       upvoteIdentifierTagDifferent,
+       String.format("awardUpvoteDefinitionEventDifferent, definition creator PublicKey: [%s]", upvoteDefnCreator.getPublicKey()),
        new Relay(definitionEventRelayUrl));
   }
 
@@ -76,16 +77,6 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
        new Relay(definitionEventRelayUrl));
   }
 
-  protected FormulaEvent createPlusTenFormulaEvent() {
-    return new FormulaEvent(
-       formulaCreatorDifferent,
-       formulaUpvoteIdentifierTagDifferent,
-       EventAttributesMap.getFirstByIdentifierTag(
-          this.badgeDefinitionGenericEventList, upvoteIdentifierTagDifferent),
-       PLUS_TEN_FORMULA,
-       new Relay(definitionEventRelayUrl));
-  }
-
   protected FormulaEvent createMinusOneFormulaEvent() {
     return new FormulaEvent(
        formulaCreator,
@@ -93,6 +84,16 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
        EventAttributesMap.getFirstByIdentifierTag(
           this.badgeDefinitionGenericEventList, downvoteIdentifierTag),
        MINUS_ONE_FORMULA,
+       new Relay(definitionEventRelayUrl));
+  }
+
+  protected FormulaEvent createPlusTenFormulaEvent() {
+    return new FormulaEvent(
+       formulaCreatorDifferent,
+       formulaUpvoteIdentifierTagDifferent,
+       EventAttributesMap.getFirstByIdentifierTag(
+          this.badgeDefinitionGenericEventList, upvoteIdentifierTagDifferent),
+       PLUS_TEN_FORMULA,
        new Relay(definitionEventRelayUrl));
   }
 }

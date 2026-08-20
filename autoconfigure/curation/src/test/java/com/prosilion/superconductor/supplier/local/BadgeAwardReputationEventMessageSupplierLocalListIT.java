@@ -15,7 +15,6 @@ import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.supplier.local.abstracts.AbstractBadgeAwardReputationEventMessageSupplierLocalListIT;
 import com.prosilion.superconductor.util.EventAttributesMap;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
-import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -61,17 +60,42 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteDifferentRecipientEvent = getIdenticalUpvoteDifferentRecipientEvent();
     createAndSubmitUpvoteEvent("3", identicalUpvoteDifferentRecipientEvent);
     createAndSubmitUpvoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+
+    createAndSubmitDownvoteEvent("5", getIdenticalUpvoteRecipientEvent());
+    createAndSubmitDownvoteEvent("4", getIdenticalDownvoteRecipientEvent());
   }
 
   private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalUpvoteRecipientEvent() {
     return createUpvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
   }
 
+  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalDownvoteRecipientEvent() {
+    return createDownvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
+  }
+
   private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalUpvoteDifferentRecipientEvent() {
     return createUpvoteEvent(new Relay(definitionEventRelayUrl), recipientDifferent.getPublicKey());
   }
 
+  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalDownvoteDifferentRecipientEvent() {
+    return createDownvoteEvent(new Relay(definitionEventRelayUrl), recipientDifferent.getPublicKey());
+  }
+
   private void createAndSubmitUpvoteEvent(String expectedScore, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event) {
+    submitSCEventWithDuration_backup(
+       event,
+       definitionEventRelayUrl,
+       new Filters(
+          new ReferencedPublicKeyFilter(
+             new PubKeyTag(event.getAwardRecipientPublicKey())),
+          new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT)));
+
+    assertEquals(
+       expectedScore,
+       submitAfterImageReq(new PubKeyTag(event.getAwardRecipientPublicKey()), awardEventRelayUrl).getFirst().getContent());
+  }
+
+  private void createAndSubmitDownvoteEvent(String expectedScore, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event) {
     submitSCEventWithDuration_backup(
        event,
        definitionEventRelayUrl,
@@ -94,10 +118,10 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
        relay);
   }
 
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createDownvoteEvent(Relay relay) {
+  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createDownvoteEvent(Relay relay, PublicKey recipientPublicKey) {
     return new BadgeAwardGenericEvent<>(
        submitter,
-       recipient.getPublicKey(),
+       recipientPublicKey,
        EventAttributesMap.getFirstByIdentifierTag(
           this.badgeDefinitionGenericEventList, downvoteIdentifierTag),
        relay);

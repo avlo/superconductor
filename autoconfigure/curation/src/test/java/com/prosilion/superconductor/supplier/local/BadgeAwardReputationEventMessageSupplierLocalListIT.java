@@ -14,6 +14,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.supplier.local.abstracts.AbstractBadgeAwardReputationEventMessageSupplierLocalListIT;
+import com.prosilion.superconductor.util.EventAttributesMap;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
 import lombok.NonNull;
@@ -98,7 +99,8 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
     return new BadgeAwardGenericEvent<>(
        submitter,
        recipientPublicKey,
-       badgeDefinitionGenericEventList.getFirst(),
+       EventAttributesMap.getFirstByIdentifierTag(
+          this.badgeDefinitionGenericEventList, upvoteIdentifierTag),
        relay);
   }
 
@@ -106,7 +108,8 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
     return new BadgeAwardGenericEvent<>(
        submitter,
        recipient.getPublicKey(),
-       badgeDefinitionGenericEventList.get(1),
+       EventAttributesMap.getFirstByIdentifierTag(
+          this.badgeDefinitionGenericEventList, downvoteIdentifierTag),
        relay);
   }
 }

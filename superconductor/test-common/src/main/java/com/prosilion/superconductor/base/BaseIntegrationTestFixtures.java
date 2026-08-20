@@ -39,7 +39,36 @@ public abstract class BaseIntegrationTestFixtures {
      Identity.create("eee4585483196998204846989544737603523651520600328805626488477202");
   public static final Identity aImgIdentity =
      Identity.create("fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac");
+
+// *********************
+// variants of above
+
+
+  public static final String TEST_UNIT_REPUTATION_DIFFERENT = "BADGE_DIFFERENT_DEFN_UNIT_REP";
+  public static final String AWARD_UNIT_UPVOTE_DIFFERENT = "BDG_DIFFERENT_DEF_UNIT_UP";
+  public static final String FORMULA_UNIT_UPVOTE_DIFFERENT = "FORMULA_DIFFERENT_UNIT_UPVOTE";
+  public static final String PLUS_TEN_FORMULA = "+10";
+
+  public static final IdentifierTag reputationIdentifierTagDifferent = new IdentifierTag(TEST_UNIT_REPUTATION_DIFFERENT);
+  public static final IdentifierTag upvoteIdentifierTagDifferent = new IdentifierTag(AWARD_UNIT_UPVOTE_DIFFERENT);
+  public static final IdentifierTag formulaUpvoteIdentifierTagDifferent = new IdentifierTag(FORMULA_UNIT_UPVOTE_DIFFERENT);
   
+  public static final Identity submitterDifferent =
+//     Identity.generateRandomIdentity();
+     Identity.create("aaa4585483196998204846989544737603523651520600328805626488477202");  
+  public static final Identity upvoteDefnCreatorDifferent =
+//     Identity.generateRandomIdentity();
+     Identity.create("bbb4585483196998204846989544737603523651520600328805626488477203");
+  public static final Identity recipientDifferent =
+//     Identity.generateRandomIdentity();
+     Identity.create("ccc4585483196998204846989544737603523651520600328805626488477203");
+  public static final Identity formulaCreatorDifferent =
+//     Identity.generateRandomIdentity();
+     Identity.create("ddd4585483196998204846989544737603523651520600328805626488477203");
+  public static final Identity repDefnCreatorDifferent =
+//     Identity.generateRandomIdentity();
+     Identity.create("eee4585483196998204846989544737603523651520600328805626488477203");  
+
   public final Identity superconductorInstanceIdentity;
 
   public BaseIntegrationTestFixtures(@NonNull Identity superconductorInstanceIdentity) {

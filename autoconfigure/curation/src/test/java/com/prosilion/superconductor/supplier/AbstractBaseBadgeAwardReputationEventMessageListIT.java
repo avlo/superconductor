@@ -30,6 +30,7 @@ import com.prosilion.subdivisions.client.RequestSubscriber;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.util.EventAttributesMap;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -57,12 +58,12 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
   protected final String formulaEventRelayUrl;
   protected final Relay formulaEventRelay;
 
-  protected final List<FormulaEvent> formulaEventList;
-  protected final List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEventList;
-  protected final List<CuratedFormulaEvent> dbCuratedFormulaEventList;
+  protected final List<EventAttributesMap<FormulaEvent>> formulaEventList;
+  protected final List<EventAttributesMap<BadgeDefinitionGenericEvent>> badgeDefinitionGenericEventList;
+  protected final List<EventAttributesMap<CuratedFormulaEvent>> dbCuratedFormulaEventList;
 
-  abstract protected List<FormulaEvent> createFormulaEventList();
-  abstract protected List<BadgeDefinitionGenericEvent> createBadgeDefinitionGenericEventList();
+  abstract protected List<EventAttributesMap<FormulaEvent>> createFormulaEventList();
+  abstract protected List<EventAttributesMap<BadgeDefinitionGenericEvent>> createBadgeDefinitionGenericEventList();
 
   protected AbstractBaseBadgeAwardReputationEventMessageListIT(
      @NonNull Identity superconductorInstanceIdentity,
@@ -92,7 +93,7 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
        reputationIdentifierTag,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
        new Relay(awardEventRelayUrl),
-       this.dbCuratedFormulaEventList);
+       EventAttributesMap.asEventList(this.dbCuratedFormulaEventList));
     return badgeDefinitionReputationEvent;
   }
 
@@ -115,7 +116,7 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
        .collect(Collectors.toSet());
 
     assertTrue(sanityCheckFormulaEventIds.stream().anyMatch(
-       formulaEventList.stream().map(FormulaEvent::getId)
+       EventAttributesMap.asEventList(formulaEventList).stream().map(FormulaEvent::getId)
           .toList()::contains));
 
     return returnedCuratedFormulaEventIFs.stream().map(eventIF ->
@@ -338,29 +339,35 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
           .collect(Collectors.toSet());
 
     assertTrue(sanityCheckFormulaEventIds.stream().anyMatch(
-       this.formulaEventList.stream()
+       EventAttributesMap.asEventList(this.formulaEventList).stream()
           .map(BaseEvent::getId)
           .toList()::contains));
   }
 
-  private List<CuratedFormulaEvent> setupFormulaEvents(List<FormulaEvent> formulaEvents) {
+  private List<EventAttributesMap<CuratedFormulaEvent>> setupFormulaEvents(List<EventAttributesMap<FormulaEvent>> formulaEvents) {
     formulaEvents.forEach(formulaEvent -> assertTrue(
        new NostrEventPublisher(formulaEventRelayUrl)
           .send(
-             new EventMessage(formulaEvent)).getFlag()));
+             new EventMessage(formulaEvent.getEvent())).getFlag()));
 
-    return getDbCuratedFormulaEventList();
+    return getDbCuratedFormulaEventList().stream()
+       .map(curatedFormulaEvent ->
+          new EventAttributesMap<>(
+             curatedFormulaEvent,
+             curatedFormulaEvent.getFormulaEventCreatorPublicKey(),
+             curatedFormulaEvent.getIdentifierTag())).toList();
   }
 
-  private void setupBadgeDefinitionEvents(List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEventList) {
-    badgeDefinitionGenericEventList
+  private void setupBadgeDefinitionEvents(List<EventAttributesMap<BadgeDefinitionGenericEvent>> badgeDefinitionGenericEventList) {
+    List<BadgeDefinitionGenericEvent> eventList = EventAttributesMap.asEventList(badgeDefinitionGenericEventList);
+    eventList
        .forEach(badgeDefinitionGenericEvent ->
           assertTrue(
              new NostrEventPublisher(definitionEventRelayUrl)
                 .send(
                    new EventMessage(badgeDefinitionGenericEvent)).getFlag()));
 
-    validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(badgeDefinitionGenericEventList);
+    validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(eventList);
   }
 
   protected void validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(List<BadgeDefinitionGenericEvent> badgeDefinitionGenericEventList) {
@@ -381,7 +388,7 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
           .map(EventTag::getEventId)
           .collect(Collectors.toSet());
 
-    Predicate<String> contains = this.badgeDefinitionGenericEventList.stream().map(EventIF::getId).toList()::contains;
+    Predicate<String> contains = EventAttributesMap.asEventList(this.badgeDefinitionGenericEventList).stream().map(EventIF::getId).toList()::contains;
 
     assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(
        contains));

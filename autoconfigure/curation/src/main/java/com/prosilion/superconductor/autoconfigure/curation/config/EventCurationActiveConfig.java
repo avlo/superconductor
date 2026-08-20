@@ -14,6 +14,7 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheRe
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.autoconfigure.curation.calculator.ReputationCalculator;
 import com.prosilion.superconductor.autoconfigure.curation.calculator.ReputationCalculatorIF;
+import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.BadgeSetsEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedBadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedBadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedFormulaEventKindPlugin;
@@ -211,28 +212,28 @@ public class EventCurationActiveConfig {
   @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPlugin")
   UniversalVoteEventKindPlugin badgeAwardGenericEventKindPlugin(
      @NonNull String afterimageRelayUrl,
-     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
      @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
-     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
-     @NonNull FollowSetsEventKindPlugin followSetsEventKindPlugin,
      @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF,
-     @NonNull DeleteEventServiceIF deleteEventServiceIF,
+     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
+     @NonNull BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin,
+     @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
      @NonNull EventPlugin eventPlugin,
-     @NonNull Identity afterimageInstanceIdentity) {
+     @NonNull Identity afterimageInstanceIdentity,
+     @NonNull CacheServiceIF cacheServiceIF) {
     return new UniversalVoteEventKindPlugin(
-       cacheServiceIF,
        afterimageRelayUrl,
        cacheCuratedBadgeAwardGenericEventService,
        cacheCuratedBadgeDefinitionGenericEventService,
        cacheBadgeDefinitionReputationEventService,
-       cacheBadgeSetsEventServiceIF,
-       followSetsEventKindPlugin,
        cacheCuratedFormulaEventServiceIF,
-       deleteEventServiceIF,
+       cacheBadgeSetsEventServiceIF,
+       badgeAwardReputationEventKindTypePlugin,
+       badgeSetsEventKindPlugin,
        eventPlugin,
-       afterimageInstanceIdentity);
+       afterimageInstanceIdentity,
+       cacheServiceIF);
   }
 
   @Bean("curatedBadgeAwardGenericEventKindPlugin")
@@ -279,6 +280,26 @@ public class EventCurationActiveConfig {
           eventPlugin));
   }
 
+  @Bean("badgeSetsEventKindPlugin")
+  @ConditionalOnMissingBean(name = "badgeSetsEventKindPlugin")
+  BadgeSetsEventKindPlugin badgeSetsEventKindPlugin(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String superconductorRelayUrl,
+     @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
+     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
+     @NonNull DeleteEventServiceIF deleteEventServiceIF,
+     @NonNull EventPlugin eventPlugin,
+     @NonNull CacheServiceIF cacheServiceIF) {
+    return new BadgeSetsEventKindPlugin(
+       superconductorInstanceIdentity,
+       superconductorRelayUrl,
+       cacheBadgeSetsEventService,
+       cacheCuratedBadgeAwardGenericEventService,
+       deleteEventServiceIF,
+       eventPlugin,
+       cacheServiceIF);
+  }
+
   @Bean("followSetsEventKindPlugin")
   @ConditionalOnMissingBean(name = "followSetsEventKindPlugin")
   FollowSetsEventKindPlugin followSetsEventKindPlugin(
@@ -289,6 +310,7 @@ public class EventCurationActiveConfig {
      @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
      @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
+     @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
      @NonNull BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin) {
     return new FollowSetsEventKindPlugin(
        superconductorRelayUrl,
@@ -298,6 +320,7 @@ public class EventCurationActiveConfig {
        cacheFollowSetsEventService,
        cacheBadgeSetsEventServiceIF,
        superconductorInstanceIdentity,
+       badgeSetsEventKindPlugin,
        badgeAwardReputationEventKindTypePlugin);
   }
 

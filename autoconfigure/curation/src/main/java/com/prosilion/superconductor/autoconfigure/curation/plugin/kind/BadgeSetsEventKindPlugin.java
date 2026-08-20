@@ -14,8 +14,9 @@ import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import com.prosilion.superconductor.base.cache.event.plugin.kind.type.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,21 +31,24 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
   private final String superconductorRelayUrl;
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
   private final CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
-  private final DeleteEventKindPlugin deleteEventKindPlugin;
+  private final DeleteEventServiceIF deleteEventServiceIF;
+  private final CacheServiceIF cacheServiceIF;
 
   public BadgeSetsEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
      @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF,
-     @NonNull DeleteEventKindPlugin deleteEventKindPlugin,
-     @NonNull EventPlugin eventPlugin) {
+     @NonNull DeleteEventServiceIF deleteEventServiceIF,
+     @NonNull EventPlugin eventPlugin,
+     @NonNull CacheServiceIF cacheServiceIF) {
     super(eventPlugin);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.superconductorRelayUrl = superconductorRelayUrl;
     this.cacheBadgeSetsEventServiceIF = cacheBadgeSetsEventServiceIF;
     this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardGenericEventServiceIF;
-    this.deleteEventKindPlugin = deleteEventKindPlugin;
+    this.deleteEventServiceIF = deleteEventServiceIF;
+    this.cacheServiceIF = cacheServiceIF;
   }
 
   @Override
@@ -55,12 +59,12 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
     PubKeyTag recipientPubKeyTag = event.requireFirstTag(PubKeyTag.class);
     AddressTag badgeDefinitionReputationEventAsAddressTag = event.requireFirstTag(AddressTag.class);
 
-    Optional<BadgeSetsEvent> existingBadgeSetsEvent = cacheBadgeSetsEventServiceIF.getBy(recipientPubKeyTag, badgeDefinitionReputationEventAsAddressTag);
+    Optional<BadgeSetsEvent> existingBadgeSetsEventOpt = cacheBadgeSetsEventServiceIF.getBy(recipientPubKeyTag, badgeDefinitionReputationEventAsAddressTag);
 
     BadgeSetsEvent materializedBadgeSetsEvent = cacheBadgeSetsEventServiceIF.materialize(event).orElseThrow();
 
     List<CuratedBadgeAwardGenericEvent> existingCuratedBadgeAwardGenericEvents =
-       existingBadgeSetsEvent.stream()
+       existingBadgeSetsEventOpt.stream()
           .map(BadgeSetsEvent::getCuratedBadgeAwardGenericEventList).flatMap(Collection::stream).toList();
 
     List<String> incomingBadgeSetsEventCuratedUpvoteEventIds = event.getTypeSpecificTags(EventTag.class).stream().map(EventTag::eventId).toList();
@@ -79,15 +83,18 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
     updatedCuratedBadgeAwardGenericEventList.addAll(existingCuratedBadgeAwardGenericEvents);
     updatedCuratedBadgeAwardGenericEventList.addAll(newCuratedBadgeAwardGenericEventList);
 
-    BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
+    BadgeSetsEvent newBadgeSetsEvent = materializedBadgeSetsEvent.createNewFromExisting(
        superconductorInstanceIdentity,
-       materializedBadgeSetsEvent.getBadgeDefinitionReputationEvent(),
-       updatedCuratedBadgeAwardGenericEventList,
-       new Relay(superconductorRelayUrl));
+       updatedCuratedBadgeAwardGenericEventList);
 
-    Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(badgeSetsEvent, fromRelay);
-    existingBadgeSetsEvent.map(existing -> deleteEventKindPlugin.processIncomingEvent(existing, fromRelay));
+    Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(newBadgeSetsEvent, fromRelay);
+    existingBadgeSetsEventOpt.ifPresent(previousBadgeSetsEvent ->
+       checkDelete(fromRelay, previousBadgeSetsEvent));
     return genericEventRecord;
+  }
+
+  private void checkDelete(@NonNull Relay fromRelay, BadgeSetsEvent previousBadgeSetsEvent) {
+    deleteEventServiceIF.processIncomingEvent(previousBadgeSetsEvent, fromRelay);
   }
 
   @Override

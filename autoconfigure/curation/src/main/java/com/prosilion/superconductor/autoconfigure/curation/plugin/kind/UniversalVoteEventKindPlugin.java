@@ -19,6 +19,8 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.BadgeAwardReputationEventKindTypePlugin;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheBadgeDefinitionReputationEventService;
@@ -36,35 +38,38 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
   private final CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService;
   private final CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService;
   private final CacheBadgeDefinitionReputationEventService badgeDefinitionReputationEventService;
-  private final FollowSetsEventKindPlugin followSetsEventKindPlugin;
   private final CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
+  private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
+  private final BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin;
   private final BadgeSetsEventKindPlugin badgeSetsEventKindPlugin;
-  private final Identity aImgIdentity;
-  private final Relay relay;
+  private final Identity superconductorInstanceIdentity;
+  private final Relay superconductorRelay;
   private final CacheServiceIF cacheServiceIF;
 
   public UniversalVoteEventKindPlugin(
-     @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull String afterimageRelayUrl,
+     @NonNull String superconductorRelayUrl,
      @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
      @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
-     @NonNull FollowSetsEventKindPlugin followSetsEventKindPlugin,
      @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF,
+     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
+     @NonNull BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin,
      @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
      @NonNull EventPluginIF eventPluginIF,
-     @NonNull Identity aImgIdentity) {
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull CacheServiceIF cacheServiceIF) {
     super(eventPluginIF);
-    this.cacheServiceIF = cacheServiceIF;
-    this.aImgIdentity = aImgIdentity;
+    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.cacheCuratedBadgeAwardGenericEventService = cacheCuratedBadgeAwardGenericEventService;
     this.cacheCuratedBadgeDefinitionGenericEventService = cacheCuratedBadgeDefinitionGenericEventService;
     this.badgeDefinitionReputationEventService = cacheBadgeDefinitionReputationEventService;
-    this.followSetsEventKindPlugin = followSetsEventKindPlugin;
     this.cacheCuratedFormulaEventServiceIF = cacheCuratedFormulaEventServiceIF;
+    this.cacheBadgeSetsEventServiceIF = cacheBadgeSetsEventServiceIF;
+    this.badgeAwardReputationEventKindTypePlugin = badgeAwardReputationEventKindTypePlugin;
     this.badgeSetsEventKindPlugin = badgeSetsEventKindPlugin;
-    this.relay = new Relay(afterimageRelayUrl);
-    log.debug("using afterimageRelayUrl: [{}]", afterimageRelayUrl);
+    this.superconductorRelay = new Relay(superconductorRelayUrl);
+    this.cacheServiceIF = cacheServiceIF;
+    log.debug("using superconductorRelayUrl: [{}]", superconductorRelayUrl);
   }
 
   @Override
@@ -83,7 +88,6 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
     Optional<RelayTag> relayTag = voteEvent.findFirstTag(RelayTag.class);
     AddressTag suppliedAddressTag = voteEvent.requireFirstTag(AddressTag.class);
 
-//    TODO: below in SC- pending investigation move below (and dependent functions) to CacheCuratedBadgeDefinitionGenericEventService    
     Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent =
        cacheCuratedBadgeDefinitionGenericEventService.getByDirect(suppliedAddressTag, relayTag, fromRelay);
 
@@ -95,10 +99,6 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
     log.debug("found existing curatedBadgeDefinitionGenericEvent (and therefore, badgeDefinitionGenericEvent):\n{}\nre-composing BadgeAwardGenericEvent...",
        curatedBadgeDefinitionGenericEvent.get().createPrettyPrintJson());
 
-//    log.debug("(2of13V) saving incoming vote's CuratedBadgeDefinitionGenericEvent:\n  {}", curatedBadgeDefinitionEvent.createPrettyPrintJson());
-//    TODO: below superfluous?  lines 85-86 does get() for the same event
-//    super.processIncomingEvent(curatedBadgeDefinitionEvent, awardEventConsolidatedRelay);
-
     CuratedFormulaEvent formulaEvent =
        cacheCuratedFormulaEventServiceIF.getByAuthorAndIdentifierTag(
              curatedBadgeDefinitionGenericEvent.get().getPublicKey(),
@@ -107,8 +107,6 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
              String.format("no formulaEvent matches badgeDefinitionGenericEvent.asAddressableEventAddressTag():\n  %s",
                 curatedBadgeDefinitionGenericEvent.get().getAddressTag().toStringPrettyPrint())));
     log.debug("(3of13V) Optional<FormulaEvent> formulaEvent:\n  {}", formulaEvent.createPrettyPrintJson());
-//    TODO: below superfluous?  line 93 does a get() for the same event
-//    super.processIncomingEvent(formulaEvent, relay);
 
     AddressTag formulaEventAddressableEventAddressTag = formulaEvent.asAddressableEventAddressTag();
     log.debug("(4of13V) calling cacheBadgeDefinitionReputationEventService.getByDirectTag(addressTag):\n  {}", formulaEvent.createPrettyPrintJson());
@@ -122,31 +120,33 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
           voteEvent.asGenericEventRecord(), addressTag -> existingDefnReputation);
 
     CuratedBadgeAwardGenericEvent curatedBadgeAwardEvent = new CuratedBadgeAwardGenericEvent(
-       aImgIdentity,
+       superconductorInstanceIdentity,
        badgeAwardGenericEvent,
        curatedBadgeDefinitionGenericEvent.get(),
        new ReferenceTag(
           badgeAwardGenericEvent.getRelayTag()
              .map(RelayTag::getRelay).map(Relay::getUrl)
              .orElse(fromRelay.getUrl())),
-       relay);
+       superconductorRelay);
 
-    super.processIncomingEvent(curatedBadgeAwardEvent, relay);
+    super.processIncomingEvent(curatedBadgeAwardEvent, superconductorRelay);
+//    *********************************************
+//    EVERYTHING ABOVE APPEARS GOOD
+//    *********************************************    
 
-    BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(aImgIdentity, existingDefnReputation, curatedBadgeAwardEvent, relay);
-    GenericEventRecord badgeSetsEventAsGenericEventRecord = badgeSetsEventKindPlugin.processIncomingEvent(badgeSetsEvent, relay).orElseThrow();
+    BadgeSetsEvent newBadgeSetsEvent = new BadgeSetsEvent(
+       superconductorInstanceIdentity,
+       existingDefnReputation,
+       curatedBadgeAwardEvent,
+       superconductorRelay);
 
-    BadgeSetsEvent dbSynchedBadgeSetsEvent = new BadgeSetsEvent(
-       badgeSetsEventAsGenericEventRecord,
-       badgeSetsEvent.getBadgeDefinitionReputationEvent(),
-       badgeSetsEvent.getCuratedBadgeAwardGenericEventList());
+    GenericEventRecord dbSynchedBadgeSetsEventGER =
+       badgeSetsEventKindPlugin.processIncomingEvent(newBadgeSetsEvent, superconductorRelay).orElseThrow();
 
-    FollowSetsEvent followSetsEvent = new FollowSetsEvent(aImgIdentity, dbSynchedBadgeSetsEvent, relay);
-    followSetsEventKindPlugin.processIncomingEvent(followSetsEvent, awardEventConsolidatedRelay);
+    BadgeSetsEvent dbSynchedBadgeSetsEvent = cacheBadgeSetsEventServiceIF.getEvent(dbSynchedBadgeSetsEventGER.getId(), dbSynchedBadgeSetsEventGER.getRelayTag().orElseThrow().getRelay()).orElseThrow();
 
-    log.debug("(13of13V) ... done.  returning upvoteEventReconstructed.asGenericEventRecord():\n  {}",
-       Optional.of(curatedBadgeAwardEvent.asGenericEventRecord()).map(GenericEventRecord::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
-    return Optional.of(curatedBadgeAwardEvent.asGenericEventRecord());
+    FollowSetsEvent followSetsEvent = new FollowSetsEvent(superconductorInstanceIdentity, dbSynchedBadgeSetsEvent, superconductorRelay);
+    return badgeAwardReputationEventKindTypePlugin.processIncomingEvent(followSetsEvent, awardEventConsolidatedRelay);
   }
 
   @Override

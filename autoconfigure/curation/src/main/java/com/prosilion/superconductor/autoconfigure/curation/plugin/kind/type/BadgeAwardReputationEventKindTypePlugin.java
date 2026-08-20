@@ -49,9 +49,9 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
      @NonNull CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF,
      @NonNull DeleteEventServiceIF deleteEventServiceIF) {
     super(notifierService, eventKindTypePlugin);
+    this.cacheServiceIF = cacheServiceIF;
     this.superconductorRelayUrl = superconductorRelayUrl;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
-    this.cacheServiceIF = cacheServiceIF;
     this.reputationCalculationServiceIF = reputationCalculationServiceIF;
     this.cacheFollowSetsEventServiceIF = cacheFollowSetsEventServiceIF;
     this.deleteEventServiceIF = deleteEventServiceIF;

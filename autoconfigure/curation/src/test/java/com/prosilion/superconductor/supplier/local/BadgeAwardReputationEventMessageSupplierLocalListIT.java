@@ -15,6 +15,7 @@ import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.supplier.local.abstracts.AbstractBadgeAwardReputationEventMessageSupplierLocalListIT;
 import com.prosilion.superconductor.util.EventAttributesMap;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
+import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -47,25 +48,31 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
 
   @Test
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
-    createAndSubmitUpvoteEvent(recipient.getPublicKey(), "1");
-    createAndSubmitUpvoteEvent(recipientDifferent.getPublicKey(), "1");
-    createAndSubmitUpvoteEvent(recipient.getPublicKey(), "2");
-    createAndSubmitUpvoteEvent(recipient.getPublicKey(), "3");
-    createAndSubmitUpvoteEvent(recipientDifferent.getPublicKey(), "2");
+    Supplier<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> upvoteEventRecipientEventSupplier = () -> createUpvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
+    Supplier<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> upvoteEventDifferentRecipientEventSupplier = () -> createUpvoteEvent(new Relay(definitionEventRelayUrl), recipientDifferent.getPublicKey());
+    createAndSubmitUpvoteEvent("1", upvoteEventRecipientEventSupplier.get());
+    createAndSubmitUpvoteEvent("1", upvoteEventDifferentRecipientEventSupplier.get());
+    createAndSubmitUpvoteEvent("2", upvoteEventRecipientEventSupplier.get());
+    createAndSubmitUpvoteEvent("3", upvoteEventRecipientEventSupplier.get());
+    createAndSubmitUpvoteEvent("2", upvoteEventDifferentRecipientEventSupplier.get());
+
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteEvent = createUpvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
+    createAndSubmitUpvoteEvent("4", identicalUpvoteEvent);
+    createAndSubmitUpvoteEvent("4", identicalUpvoteEvent);
   }
 
-  private void createAndSubmitUpvoteEvent(PublicKey recipientPublicKey, String expectedScore) {
+  private void createAndSubmitUpvoteEvent(String expectedScore, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event) {
     submitSCEventWithDuration_backup(
-       createUpvoteEvent(new Relay(definitionEventRelayUrl), recipientPublicKey),
+       event,
        definitionEventRelayUrl,
        new Filters(
           new ReferencedPublicKeyFilter(
-             new PubKeyTag(recipientPublicKey)),
+             new PubKeyTag(event.getAwardRecipientPublicKey())),
           new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT)));
 
     assertEquals(
        expectedScore,
-       submitAfterImageReq(new PubKeyTag(recipientPublicKey), awardEventRelayUrl).getFirst().getContent());
+       submitAfterImageReq(new PubKeyTag(event.getAwardRecipientPublicKey()), awardEventRelayUrl).getFirst().getContent());
   }
 
   protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createUpvoteEvent(Relay relay, PublicKey recipientPublicKey) {

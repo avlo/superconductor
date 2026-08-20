@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.event.TextNoteEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.EventFilter;
 import com.prosilion.nostr.message.BaseMessage;
@@ -19,9 +20,9 @@ import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.util.Factory;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import lombok.NonNull;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,24 +43,24 @@ public abstract class BaseDeleteEventIT {
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        textNoteEventPublisher
-            .send(
-                eventMessage)
-            .getFlag());
+       textNoteEventPublisher
+          .send(
+             eventMessage)
+          .getFlag());
 
     List<EventTag> eventDeletionTags = new ArrayList<>();
     eventDeletionTags.add(new EventTag(eventIdToDeleteId, relayUrl));
 
-    BaseEvent deletionEvent = new DeletionEvent(identity, eventDeletionTags, Factory.lorumIpsum());
+    BaseEvent deletionEvent = new DeletionEvent(identity, eventDeletionTags, Factory.lorumIpsum(), new Relay(relayUrl));
     this.deletionEventId = deletionEvent.getId();
 
     NostrEventPublisher deletionEventPublisher = new NostrEventPublisher(relayUrl);
     EventMessage deletionEventMessage = new EventMessage(deletionEvent);
     assertTrue(
-        deletionEventPublisher
-            .send(
-                deletionEventMessage)
-            .getFlag());
+       deletionEventPublisher
+          .send(
+             deletionEventMessage)
+          .getFlag());
     log.debug("end");
 //    nostrRelayService.disconnect();
   }
@@ -77,8 +78,8 @@ public abstract class BaseDeleteEventIT {
     log.debug("  " + returnedDeletionMessagesShouldContainEose);
     assertEquals(1, returnedDeletionMessagesShouldContainEose.size());
     assertEquals(1, returnedDeletionMessagesShouldContainEose.stream()
-        .filter(EoseMessage.class::isInstance)
-        .count());
+       .filter(EoseMessage.class::isInstance)
+       .count());
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(deletionEventId));
 
@@ -103,10 +104,10 @@ public abstract class BaseDeleteEventIT {
 
     EventMessage eventMessage = new EventMessage(event);
     assertTrue(
-        nostrEventPublisher
-            .send(
-                eventMessage)
-            .getFlag());
+       nostrEventPublisher
+          .send(
+             eventMessage)
+          .getFlag());
 
     EventFilter eventFilter = new EventFilter(new GenericEventId(secondEventShouldNotGetDeleted));
 
@@ -123,9 +124,9 @@ public abstract class BaseDeleteEventIT {
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {
     return returnedBaseMessages.stream()
-        .filter(EventMessage.class::isInstance)
-        .map(EventMessage.class::cast)
-        .map(EventMessage::getEvent)
-        .toList();
+       .filter(EventMessage.class::isInstance)
+       .map(EventMessage.class::cast)
+       .map(EventMessage::getEvent)
+       .toList();
   }
 }

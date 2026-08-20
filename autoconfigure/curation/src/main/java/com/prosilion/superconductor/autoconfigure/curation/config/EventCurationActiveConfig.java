@@ -14,7 +14,6 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheRe
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.autoconfigure.curation.calculator.ReputationCalculator;
 import com.prosilion.superconductor.autoconfigure.curation.calculator.ReputationCalculatorIF;
-import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.BadgeSetsEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedBadgeAwardGenericEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedBadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedFormulaEventKindPlugin;
@@ -37,11 +36,11 @@ import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.Ca
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheFollowSetsEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.reputation.ReputationCalculationLocalService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.event.plugin.kind.type.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
+import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
@@ -216,9 +215,10 @@ public class EventCurationActiveConfig {
      @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
      @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
+     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
      @NonNull FollowSetsEventKindPlugin followSetsEventKindPlugin,
      @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF,
-     @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
+     @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull EventPlugin eventPlugin,
      @NonNull Identity afterimageInstanceIdentity) {
     return new UniversalVoteEventKindPlugin(
@@ -227,9 +227,10 @@ public class EventCurationActiveConfig {
        cacheCuratedBadgeAwardGenericEventService,
        cacheCuratedBadgeDefinitionGenericEventService,
        cacheBadgeDefinitionReputationEventService,
+       cacheBadgeSetsEventServiceIF,
        followSetsEventKindPlugin,
        cacheCuratedFormulaEventServiceIF,
-       badgeSetsEventKindPlugin,
+       deleteEventServiceIF,
        eventPlugin,
        afterimageInstanceIdentity);
   }
@@ -278,24 +279,6 @@ public class EventCurationActiveConfig {
           eventPlugin));
   }
 
-  @Bean("badgeSetsEventKindPlugin")
-  @ConditionalOnMissingBean(name = "badgeSetsEventKindPlugin")
-  BadgeSetsEventKindPlugin badgeSetsEventKindPlugin(
-     @NonNull Identity superconductorInstanceIdentity,
-     @NonNull String superconductorRelayUrl,
-     @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
-     @NonNull DeleteEventKindPlugin deleteEventKindPlugin,
-     @NonNull EventPlugin eventPlugin) {
-    return new BadgeSetsEventKindPlugin(
-       superconductorInstanceIdentity,
-       superconductorRelayUrl,
-       cacheBadgeSetsEventService,
-       cacheCuratedBadgeAwardGenericEventService,
-       deleteEventKindPlugin,
-       eventPlugin);
-  }
-
   @Bean("followSetsEventKindPlugin")
   @ConditionalOnMissingBean(name = "followSetsEventKindPlugin")
   FollowSetsEventKindPlugin followSetsEventKindPlugin(
@@ -303,17 +286,17 @@ public class EventCurationActiveConfig {
      @NonNull String superconductorRelayUrl,
      @NonNull EventPlugin eventPlugin,
      @NonNull NotifierService notifierService,
-     @NonNull DeleteEventKindPlugin deleteEventKindPlugin,
+     @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
+     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
      @NonNull BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin) {
     return new FollowSetsEventKindPlugin(
        superconductorRelayUrl,
        notifierService,
        eventPlugin,
-       deleteEventKindPlugin,
+       deleteEventServiceIF,
        cacheFollowSetsEventService,
-       cacheCuratedBadgeAwardGenericEventService,
+       cacheBadgeSetsEventServiceIF,
        superconductorInstanceIdentity,
        badgeAwardReputationEventKindTypePlugin);
   }
@@ -327,7 +310,8 @@ public class EventCurationActiveConfig {
      @NonNull NotifierService notifierService,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull ReputationCalculationServiceIF reputationCalculationServiceIF,
-     @NonNull CacheFollowSetsEventService cacheFollowSetsEventService) {
+     @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
+     @NonNull DeleteEventServiceIF deleteEventServiceIF) {
     return new BadgeAwardReputationEventKindTypePlugin(
        superconductorRelayUrl,
        superconductorInstanceIdentity,
@@ -337,7 +321,8 @@ public class EventCurationActiveConfig {
           eventPlugin),
        cacheServiceIF,
        reputationCalculationServiceIF,
-       cacheFollowSetsEventService);
+       cacheFollowSetsEventService,
+       deleteEventServiceIF);
   }
 
   @Bean("eventKindMaterializers")

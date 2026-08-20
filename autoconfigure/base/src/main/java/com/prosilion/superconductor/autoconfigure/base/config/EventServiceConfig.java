@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.base.config;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
@@ -11,12 +12,13 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheRe
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.RemoteEventQueryServiceIF;
+import com.prosilion.superconductor.base.service.event.DeleteEventService;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,6 +36,15 @@ import org.springframework.context.annotation.ComponentScan;
    })
 @Slf4j
 public class EventServiceConfig {
+  @Bean
+  @ConditionalOnMissingBean
+  DeleteEventService deleteEventService(
+     @NonNull String superconductorRelayUrl,
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull CacheServiceIF cacheServiceIF) {
+    return new DeleteEventService(superconductorRelayUrl, superconductorInstanceIdentity, cacheServiceIF);
+  }
+
   @Bean
   @ConditionalOnMissingBean
   CacheReferenceAddressTagService cacheDereferenceAddressTagService(

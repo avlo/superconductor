@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.TextNoteEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.BaseTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -37,6 +38,7 @@ public abstract class BaseCacheServiceIT {
   private static final PriceTag PRICE_TAG = Factory.createPriceTag();
 
   private static final String CONTENT = Factory.lorumIpsum(BaseCacheServiceIT.class);
+  private static final String RECOMMENDED_RELAY_URL = "ws://localhost:5555";
 
   private final CacheServiceIF cacheServiceIF;
   private final TextNoteEvent textNoteEvent;
@@ -67,8 +69,8 @@ public abstract class BaseCacheServiceIT {
     List<GenericEventRecord> all = cacheServiceIF.getAll();
 
     assertTrue(all.stream()
-        .map(EventIF::getId)
-        .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
+       .map(EventIF::getId)
+       .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
 
     EventIF firstRetrievedEventEntityIF = cacheServiceIF.getEventByEventId(savedGenericEventRecord.getId()).orElseThrow();
     Assertions.assertEquals(savedGenericEventRecord.getId(), firstRetrievedEventEntityIF.getId());
@@ -95,8 +97,8 @@ public abstract class BaseCacheServiceIT {
     log.info("saved id: {}", savedGenericEventRecord);
 
     assertTrue(cacheServiceIF.getAll().stream()
-        .map(EventIF::getId)
-        .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
+       .map(EventIF::getId)
+       .anyMatch(e -> e.equals(savedGenericEventRecord.getId())));
 
     log.info("********************");
     log.info("********************");
@@ -156,14 +158,15 @@ public abstract class BaseCacheServiceIT {
     Assertions.assertEquals(sizeBeforeDeleteMeEvent + 1, sizeAfterDeleteMeEvent);
 
     assertTrue(allAfterDeleteMeEvent.stream()
-        .map(EventIF::getId)
-        .anyMatch(e -> e.equals(eventToDelete.getId())));
+       .map(EventIF::getId)
+       .anyMatch(e -> e.equals(eventToDelete.getId())));
 
     List<String> allDeletionJpaEventEntitiesBeforeDeletion = cacheServiceIF.getAllDeletionEventIds();
 
-    EventTag eventTag = new EventTag(eventToDelete.getId(), "ws://localhost:5555");
+    EventTag eventTag = new EventTag(eventToDelete.getId(), RECOMMENDED_RELAY_URL);
 
-    DeletionEvent deletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
+    DeletionEvent deletionEvent = new DeletionEvent(
+       IDENTITY, List.of(eventTag), Factory.lorumIpsum(), new Relay(RECOMMENDED_RELAY_URL));
     assertTrue(deletionEvent.getTags().contains(eventTag));
 
     cacheServiceIF.deleteEvent(deletionEvent);
@@ -184,9 +187,9 @@ public abstract class BaseCacheServiceIT {
   }
 
   private void deleteSecondEvent(
-      int allEventsSizeAfterFirstDeletion,
-      int allDeletedEventsSizeAfterFirstDeletion,
-      String firstDeletedEventId) {
+     int allEventsSizeAfterFirstDeletion,
+     int allDeletedEventsSizeAfterFirstDeletion,
+     String firstDeletedEventId) {
     String newContent = Factory.lorumIpsum(BaseCacheServiceIT.class);
 
     List<GenericEventRecord> all = cacheServiceIF.getAll();
@@ -203,12 +206,13 @@ public abstract class BaseCacheServiceIT {
     Assertions.assertEquals(sizeBeforeSecondDeleteMeEvent + 1, sizeAfterSecondDeleteMeEvent);
 
     assertTrue(cacheServiceIF.getAll().stream()
-        .map(EventIF::getId)
-        .anyMatch(secondEventToDelete.getId()::equals));
+       .map(EventIF::getId)
+       .anyMatch(secondEventToDelete.getId()::equals));
 
-    EventTag eventTag = new EventTag(secondEventToDelete.getId(), "ws://localhost:5555");
+    EventTag eventTag = new EventTag(secondEventToDelete.getId(), RECOMMENDED_RELAY_URL);
 
-    DeletionEvent secondDeletionEvent = new DeletionEvent(IDENTITY, List.of(eventTag), Factory.lorumIpsum());
+    DeletionEvent secondDeletionEvent = new DeletionEvent(
+       IDENTITY, List.of(eventTag), Factory.lorumIpsum(), new Relay(RECOMMENDED_RELAY_URL));
     assertTrue(secondDeletionEvent.getTags().contains(eventTag));
 
     cacheServiceIF.deleteEvent(secondDeletionEvent);

@@ -1,9 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import com.prosilion.superconductor.base.cache.event.plugin.kind.type.DeleteEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.StandardEventKindPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.util.List;
@@ -28,13 +26,5 @@ public class EventKindPluginConfig {
      @NonNull @Qualifier("kindClassStringMap") Map<Kind, String> kindClassStringMap) {
     return kindClassStringMap.keySet().stream().map(kind ->
        new StandardEventKindPlugin(kind, notifierService, eventPlugin)).toList();
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  public DeleteEventKindPlugin deleteEventKindPlugin(
-     @NonNull CacheServiceIF cacheService,
-     @NonNull EventPlugin eventPlugin) {
-    return new DeleteEventKindPlugin(eventPlugin, cacheService);
   }
 }

@@ -48,11 +48,14 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   @Override
   public Optional<FollowSetsEvent> materialize(@NonNull EventIF incomingFollowSetsEvent) {
     GenericEventRecord genericEventRecord = incomingFollowSetsEvent.asGenericEventRecord();
-    return Optional.of(
-       new FollowSetsEvent(
-          genericEventRecord,
-          getBadgeSetsEvents(
-             genericEventRecord)));
+
+    List<BadgeSetsEvent> badgeSetsEvents = getBadgeSetsEvents(genericEventRecord);
+
+    FollowSetsEvent value = new FollowSetsEvent(
+       genericEventRecord,
+       badgeSetsEvents);
+
+    return Optional.of(value);
   }
 
   private List<BadgeSetsEvent> getBadgeSetsEvents(GenericEventRecord genericEventRecord) {
@@ -62,9 +65,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
     List<BadgeSetsEvent> badgeSetsEvents = eventTags.stream()
        .map(eventTag ->
-          cacheBadgeSetsEventServiceIF.getEvent(
-             eventTag.getEventId(),
-             eventTag.requireRelay()))
+          getEvent(eventTag))
        .flatMap(Optional::stream).toList();
 
     if (badgeSetsEvents.isEmpty() || eventTags.size() != badgeSetsEvents.size()) {
@@ -75,6 +76,13 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
          String.format("eventTags.size [%d] != badgeSetsEvent.size [%d]", eventTags.size(), badgeSetsEvents.size()));
     }
     return badgeSetsEvents;
+  }
+
+  private Optional<BadgeSetsEvent> getEvent(EventTag eventTag) {
+    Optional<BadgeSetsEvent> event = cacheBadgeSetsEventServiceIF.getEvent(
+       eventTag.getEventId(),
+       eventTag.requireRelay());
+    return event;
   }
 
   @Override
@@ -101,6 +109,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
                    event.getId(),
                    event.requireFirstTag(RelayTag.class).getRelay())
                 .ifPresent(badgeAwardReputationEventConsumer))
+       .distinct()
        .toList();
   }
 

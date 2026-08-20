@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type;
 
-import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -10,12 +9,12 @@ import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.ReputationCalculationServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.PublishingEventKindTypePlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
@@ -38,6 +37,7 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
   private final CacheServiceIF cacheServiceIF;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF;
   private final ReputationCalculationServiceIF reputationCalculationServiceIF;
+  private final DeleteEventServiceIF deleteEventServiceIF;
 
   public BadgeAwardReputationEventKindTypePlugin(
      @NonNull String superconductorRelayUrl,
@@ -46,13 +46,15 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
      @NonNull EventKindTypePluginIF eventKindTypePlugin,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull ReputationCalculationServiceIF reputationCalculationServiceIF,
-     @NonNull CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF) {
+     @NonNull CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF,
+     @NonNull DeleteEventServiceIF deleteEventServiceIF) {
     super(notifierService, eventKindTypePlugin);
     this.superconductorRelayUrl = superconductorRelayUrl;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.cacheServiceIF = cacheServiceIF;
     this.reputationCalculationServiceIF = reputationCalculationServiceIF;
     this.cacheFollowSetsEventServiceIF = cacheFollowSetsEventServiceIF;
+    this.deleteEventServiceIF = deleteEventServiceIF;
     log.debug("using superconductorRelayUrl: [{}]", superconductorRelayUrl);
   }
 
@@ -125,9 +127,8 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
   }
 
   private void deletePreviousBadgeAwardReputationEvent(EventIF previousReputationEvent) {
-    cacheServiceIF.deleteEvent(
-       new DeletionEvent(
-          superconductorInstanceIdentity,
-          List.of(new EventTag(previousReputationEvent.getId(), superconductorRelayUrl)), "SuperConductor delete previous REPUTATION event"));
+    deleteEventServiceIF.processIncomingEvent(
+       previousReputationEvent,
+       previousReputationEvent.getRelayTag().orElseThrow().getRelay());
   }
 }

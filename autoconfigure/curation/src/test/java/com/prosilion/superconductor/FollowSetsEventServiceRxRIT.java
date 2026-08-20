@@ -222,6 +222,6 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestFixtures {
   }
 
   private DeletionEvent deleteFxn(EventIF eventIF) {
-    return new DeletionEvent(aImgIdentity, List.of(new EventTag(eventIF.getId())), "delete me");
+    return new DeletionEvent(aImgIdentity, List.of(new EventTag(eventIF.getId())), "delete me", relay);
   }
 }

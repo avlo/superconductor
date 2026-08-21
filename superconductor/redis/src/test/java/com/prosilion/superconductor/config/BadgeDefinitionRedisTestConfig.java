@@ -4,11 +4,14 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import lombok.NonNull;
+
+import static com.prosilion.superconductor.base.BaseTestFixtures.AWARD_UNIT_DOWNVOTE;
+import static com.prosilion.superconductor.base.BaseTestFixtures.AWARD_UNIT_UPVOTE;
 
 @Configuration
 //@PropertySource("classpath:kind-class-map.properties")
@@ -19,14 +22,14 @@ public class BadgeDefinitionRedisTestConfig {
   BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, new IdentifierTag(BaseIntegrationTestFixtures.AWARD_UNIT_UPVOTE), new Relay(superconductorRelayUrl));
+    return new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, new IdentifierTag(AWARD_UNIT_UPVOTE), new Relay(superconductorRelayUrl));
   }
 
   @Bean(name = "badgeDefinitionDownvoteEvent")
   BadgeDefinitionGenericEvent badgeDefinitionDownvoteEvent(
       @NonNull Identity superconductorInstanceIdentity,
       @NonNull String superconductorRelayUrl) {
-    return new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, new IdentifierTag(BaseIntegrationTestFixtures.AWARD_UNIT_DOWNVOTE), new Relay(superconductorRelayUrl));
+    return new BadgeDefinitionGenericEvent(superconductorInstanceIdentity, new IdentifierTag(AWARD_UNIT_DOWNVOTE), new Relay(superconductorRelayUrl));
   }
 
 //  @Bean

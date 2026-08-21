@@ -14,7 +14,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheBadgeDefinitionReputationEventService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.mock;
 @TestPropertySource(properties = {
    "superconductor.event.curation.active=true"
 })
-public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegrationTestFixtures {
+public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final CuratedFormulaEvent plusOneCuratedFormulaEvent;
   private final CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService;
 

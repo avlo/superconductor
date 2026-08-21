@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseBadgeAwardDownvoteEventMessageIT extends BaseIntegrationTestFixtures {
+public abstract class BaseBadgeAwardDownvoteEventMessageIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final String eventId;
   private final String relayUrl;
 

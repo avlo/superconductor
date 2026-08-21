@@ -19,7 +19,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT extends BaseIntegrationTestFixtures {
+public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT extends BaseIntegrationTestDirtiesContextFixtures {
   protected final String awardEventRelayUrl;
   protected final String definitionEventRelayUrl;
 
@@ -76,7 +76,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
                    Kind.CURATION_SETS_BADGE_AWARD_EVENT),
                 new ReferencedPublicKeyFilter(
                    new PubKeyTag(
-                      BaseIntegrationTestFixtures.recipient.getPublicKey())))),
+                      recipient.getPublicKey())))),
           awardEventRelayUrl,
           Duration.ofSeconds(5)));
 
@@ -97,7 +97,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
 
     assertTrue(returnedCuratedBadgeAwardEvents.stream().map(EventIF::asGenericEventRecord)
        .map(event -> event.requireFirstTag(PubKeyTag.class))
-       .map(PubKeyTag::getPublicKey).allMatch(BaseIntegrationTestFixtures.recipient.getPublicKey()::equals));
+       .map(PubKeyTag::getPublicKey).allMatch(recipient.getPublicKey()::equals));
 
     assertTrue(
        returnedCuratedBadgeAwardEvents.stream()

@@ -9,7 +9,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.util.Optional;
 import lombok.NonNull;
@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
-public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrationTestFixtures {
+public abstract class BaseCacheCuratedFormulaEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
   private final Relay relay;
 

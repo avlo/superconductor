@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class CacheBadgeAwardGenericEventServiceIT extends BaseIntegrationTestFixtures {
+public class CacheBadgeAwardGenericEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent;
   private final CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService;
 

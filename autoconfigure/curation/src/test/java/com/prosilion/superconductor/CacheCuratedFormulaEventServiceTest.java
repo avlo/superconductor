@@ -11,7 +11,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.formula.CacheCuratedFormulaEventService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import java.util.Optional;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -41,11 +41,11 @@ public class CacheCuratedFormulaEventServiceTest extends CacheCuratedServiceTest
     mockLocalGetEventByEventId();
     CacheCuratedFormulaEventService cacheCuratedFormulaEventService = createService();
 
-    Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventService.getEvent(curatedEventId, BaseIntegrationTestFixtures.relay);
+    Optional<CuratedFormulaEvent> actual = cacheCuratedFormulaEventService.getEvent(curatedEventId, relay);
 
     assertEquals(curatedEventId, actual.orElseThrow().getId());
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
-    verify(cacheFormulaEventService, Mockito.times(0)).getEvent(curatedEventId, BaseIntegrationTestFixtures.relay);
+    verify(cacheFormulaEventService, Mockito.times(0)).getEvent(curatedEventId, relay);
   }
 
   @Test
@@ -102,24 +102,24 @@ public class CacheCuratedFormulaEventServiceTest extends CacheCuratedServiceTest
   @Override
   protected CuratedFormulaEvent createEvent() {
     BadgeDefinitionGenericEvent badgeDefinitionEvent =
-       new BadgeDefinitionGenericEvent(BaseIntegrationTestFixtures.aImgIdentity, BaseIntegrationTestFixtures.upvoteIdentifierTag, PLUS_ONE_FORMULA, BaseIntegrationTestFixtures.relay);
+       new BadgeDefinitionGenericEvent(aImgIdentity, upvoteIdentifierTag, PLUS_ONE_FORMULA, relay);
     this.formulaEvent = new FormulaEvent(
-       BaseIntegrationTestFixtures.formulaCreator,
+       formulaCreator,
        IDENTIFIER_TAG_FORMULA_UNIT_UPVOTE,
        badgeDefinitionEvent,
        PLUS_ONE_FORMULA,
-       BaseIntegrationTestFixtures.relay);
+       relay);
     return new CuratedFormulaEvent(
-       BaseIntegrationTestFixtures.aImgIdentity,
+       aImgIdentity,
        formulaEvent,
        new ReferenceTag(formulaEvent.getRelay().map(Relay::getUrl).orElseThrow()),
-       BaseIntegrationTestFixtures.relay);
+       relay);
   }
 
   private CacheCuratedFormulaEventService createService() {
     return new CacheCuratedFormulaEventService(
-       BaseIntegrationTestFixtures.aImgIdentity,
-       BaseIntegrationTestFixtures.relay.getUrl(),
+       aImgIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        cacheFormulaEventService);
   }

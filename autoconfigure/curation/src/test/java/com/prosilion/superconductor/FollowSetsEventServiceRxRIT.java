@@ -20,7 +20,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheFollowSetsEventService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestPropertySource(properties = {
    "superconductor.event.curation.active=true"
 })
-public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestFixtures {
+public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
   private final CacheServiceIF cacheServiceIF;

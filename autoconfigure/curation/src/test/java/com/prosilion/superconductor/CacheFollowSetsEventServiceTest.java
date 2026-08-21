@@ -16,10 +16,9 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
-import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheFollowSetsEventService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeAwardReputationEventServiceIF;
@@ -95,7 +94,7 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
   void testGetEventRejectsNullParameters() {
     CacheFollowSetsEventService cacheFollowSetsEventService = createService();
 
-    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getEvent(null, BaseIntegrationTestFixtures.relay));
+    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getEvent(null, relay));
     assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getEvent(eventId, null));
   }
 
@@ -120,14 +119,14 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
     mockBadgeSetsEvent();
     doReturn(Optional.of(event.getGenericEventRecord()))
        .when(cacheReferenceEventTagServiceIF)
-       .getEvent(eventId, BaseIntegrationTestFixtures.relay);
+       .getEvent(eventId, relay);
     CacheFollowSetsEventService cacheFollowSetsEventService = createService();
 
-    Optional<FollowSetsEvent> actual = cacheFollowSetsEventService.getEvent(eventId, BaseIntegrationTestFixtures.relay);
+    Optional<FollowSetsEvent> actual = cacheFollowSetsEventService.getEvent(eventId, relay);
 
     Assertions.assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheReferenceEventTagServiceIF, Mockito.times(1)).getEvent(eventId, BaseIntegrationTestFixtures.relay);
-    verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), BaseIntegrationTestFixtures.relay);
+    verify(cacheReferenceEventTagServiceIF, Mockito.times(1)).getEvent(eventId, relay);
+    verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), relay);
   }
 
   @Test
@@ -135,12 +134,12 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
     mockEmptyBadgeSetsEvent();
     doReturn(Optional.of(event.getGenericEventRecord()))
        .when(cacheReferenceEventTagServiceIF)
-       .getEvent(eventId, BaseIntegrationTestFixtures.relay);
+       .getEvent(eventId, relay);
     CacheFollowSetsEventService cacheFollowSetsEventService = createService();
 
     assertEquals("eventTags.size [1] != badgeSetsEvent.size [0]",
        assertThrows(NostrException.class, () ->
-          cacheFollowSetsEventService.getEvent(eventId, BaseIntegrationTestFixtures.relay)).getMessage());
+          cacheFollowSetsEventService.getEvent(eventId, relay)).getMessage());
   }
 
   @Test
@@ -156,7 +155,7 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
 
     assertEquals(List.of(eventId), actual.stream().map(FollowSetsEvent::getId).toList());
     verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTag(event.getKind(), pubKeyTag);
-    verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), BaseIntegrationTestFixtures.relay);
+    verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), relay);
   }
 
   @Test
@@ -172,7 +171,7 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
 
     Assertions.assertEquals(eventId, actual.orElseThrow().getId());
     verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndEventTag(event.getKind(), eventTag);
-    verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), BaseIntegrationTestFixtures.relay);
+    verify(cacheBadgeSetsEventServiceIF, Mockito.times(1)).getEvent(badgeSetsEvent.getId(), relay);
   }
 
   @Test
@@ -204,46 +203,46 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
        .getByDirect(Kind.BADGE_AWARD_EVENT, recipientTag, reputationDefinitionAddressTag);
     doReturn(Optional.of(badgeAwardReputationEvent))
        .when(cacheBadgeAwardReputationEventServiceIF)
-       .getEvent(eventId, BaseIntegrationTestFixtures.relay);
+       .getEvent(eventId, relay);
     CacheFollowSetsEventService cacheFollowSetsEventService = createService();
 
     List<BadgeAwardReputationEvent> actual =
        cacheFollowSetsEventService.getBadgeAwardReputationEvents(event);
 
     assertEquals(List.of(badgeAwardReputationEvent), actual);
-    verify(cacheBadgeAwardReputationEventServiceIF, Mockito.times(1)).getEvent(eventId, BaseIntegrationTestFixtures.relay);
+    verify(cacheBadgeAwardReputationEventServiceIF, Mockito.times(1)).getEvent(eventId, relay);
   }
 
   @SneakyThrows
   @Override
   protected FollowSetsEvent createEvent() {
     BadgeDefinitionGenericEvent badgeDefinitionEvent = new BadgeDefinitionGenericEvent(
-       BaseIntegrationTestFixtures.upvoteDefnCreator, BaseIntegrationTestFixtures.upvoteIdentifierTag, BaseIntegrationTestFixtures.relay);
+       upvoteDefnCreator, upvoteIdentifierTag, relay);
 
-    CuratedFormulaEvent formulaEvent = new CuratedFormulaEvent(BaseIntegrationTestFixtures.aImgIdentity,
-       new FormulaEvent(BaseIntegrationTestFixtures.formulaCreator, BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, badgeDefinitionEvent, BaseIntegrationTestFixtures.PLUS_ONE_FORMULA, BaseIntegrationTestFixtures.relay),
-       new ReferenceTag(BaseIntegrationTestFixtures.relay.getUrl()),
-       BaseIntegrationTestFixtures.relay);
+    CuratedFormulaEvent formulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, badgeDefinitionEvent, PLUS_ONE_FORMULA, relay),
+       new ReferenceTag(relay.getUrl()),
+       relay);
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent =
        new BadgeDefinitionReputationEvent(
-          BaseIntegrationTestFixtures.aImgIdentity,
-          BaseIntegrationTestFixtures.repDefnCreator.getPublicKey(),
-          BaseIntegrationTestFixtures.reputationIdentifierTag,
+          aImgIdentity,
+          repDefnCreator.getPublicKey(),
+          reputationIdentifierTag,
           BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
-          BaseIntegrationTestFixtures.relay,
+          relay,
           formulaEvent);
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = new BadgeAwardGenericEvent<>(
-       BaseIntegrationTestFixtures.submitter, BaseIntegrationTestFixtures.recipient.getPublicKey(), badgeDefinitionEvent, BaseIntegrationTestFixtures.relay);
+       submitter, recipient.getPublicKey(), badgeDefinitionEvent, relay);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardEvent = new CuratedBadgeAwardGenericEvent(
-       BaseIntegrationTestFixtures.aImgIdentity,
+       aImgIdentity,
        badgeAwardEvent,
-       new ReferenceTag(BaseIntegrationTestFixtures.relay.getUrl()),
-       new ReferenceTag(BaseIntegrationTestFixtures.relay.getUrl()),
-       BaseIntegrationTestFixtures.relay);
+       new ReferenceTag(relay.getUrl()),
+       new ReferenceTag(relay.getUrl()),
+       relay);
     this.badgeSetsEvent = new BadgeSetsEvent(
-       BaseIntegrationTestFixtures.aImgIdentity, badgeDefinitionReputationEvent, curatedBadgeAwardEvent, BaseIntegrationTestFixtures.relay);
-    return new FollowSetsEvent(BaseIntegrationTestFixtures.aImgIdentity, badgeSetsEvent, BaseIntegrationTestFixtures.relay);
+       aImgIdentity, badgeDefinitionReputationEvent, curatedBadgeAwardEvent, relay);
+    return new FollowSetsEvent(aImgIdentity, badgeSetsEvent, relay);
   }
 
   private CacheFollowSetsEventService createService() {
@@ -258,12 +257,12 @@ public class CacheFollowSetsEventServiceTest extends CacheServiceTestFixture<Fol
   private void mockBadgeSetsEvent() {
     doReturn(Optional.of(badgeSetsEvent))
        .when(cacheBadgeSetsEventServiceIF)
-       .getEvent(badgeSetsEvent.getId(), BaseIntegrationTestFixtures.relay);
+       .getEvent(badgeSetsEvent.getId(), relay);
   }
 
   private void mockEmptyBadgeSetsEvent() {
     doReturn(Optional.empty())
        .when(cacheBadgeSetsEventServiceIF)
-       .getEvent(badgeSetsEvent.getId(), BaseIntegrationTestFixtures.relay);
+       .getEvent(badgeSetsEvent.getId(), relay);
   }
 }

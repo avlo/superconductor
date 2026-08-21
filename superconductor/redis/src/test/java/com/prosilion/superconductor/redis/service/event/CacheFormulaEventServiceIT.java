@@ -9,7 +9,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class CacheFormulaEventServiceIT extends BaseIntegrationTestFixtures {
+public class CacheFormulaEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent;
   private final BadgeDefinitionGenericEvent awardDownvoteDefinitionEvent;
 

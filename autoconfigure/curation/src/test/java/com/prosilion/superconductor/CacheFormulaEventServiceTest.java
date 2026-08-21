@@ -8,11 +8,10 @@ import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import java.util.List;
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<FormulaEvent> {
-  final BadgeDefinitionGenericEvent awardDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(BaseIntegrationTestFixtures.aImgIdentity, BaseIntegrationTestFixtures.upvoteIdentifierTag, BaseIntegrationTestFixtures.PLUS_ONE_FORMULA, BaseIntegrationTestFixtures.relay);
+  final BadgeDefinitionGenericEvent awardDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(aImgIdentity, upvoteIdentifierTag, PLUS_ONE_FORMULA, relay);
 
   @Mock
   CacheReferenceEventTagService cacheReferenceEventTagService;
@@ -64,7 +63,7 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
   void testGetEventRejectsNullParameters() {
     CacheFormulaEventService cacheFormulaEventService = createCacheFormulaEventService();
 
-    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getEvent(null, BaseIntegrationTestFixtures.relay));
+    assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getEvent(null, relay));
     assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getEvent(eventId, null));
   }
 
@@ -76,14 +75,14 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
   @Test
   void testGetByPublicKeyIdentifierTagAndRelayRejectsNullParameters() {
     CacheFormulaEventService cacheFormulaEventService = createCacheFormulaEventService();
-    PublicKey publicKey = BaseIntegrationTestFixtures.formulaCreator.getPublicKey();
+    PublicKey publicKey = formulaCreator.getPublicKey();
 
     assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getBy(
-       null, BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, BaseIntegrationTestFixtures.relay));
+       null, formulaUpvoteIdentifierTag, relay));
     assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getBy(
-       publicKey, (IdentifierTag) null, BaseIntegrationTestFixtures.relay));
+       publicKey, (IdentifierTag) null, relay));
     assertThrows(NullPointerException.class, () -> cacheFormulaEventService.getBy(
-       publicKey, BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, null));
+       publicKey, formulaUpvoteIdentifierTag, null));
   }
 
   @Test
@@ -97,10 +96,10 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
     cacheReferenceAddressTagServiceMock();
     CacheFormulaEventService cacheFormulaEventService = createCacheFormulaEventService();
 
-    Optional<FormulaEvent> actual = cacheFormulaEventService.getEvent(eventId, BaseIntegrationTestFixtures.relay);
+    Optional<FormulaEvent> actual = cacheFormulaEventService.getEvent(eventId, relay);
 
     Assertions.assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheReferenceEventTagService, Mockito.times(1)).getEvent(eventId, BaseIntegrationTestFixtures.relay);
+    verify(cacheReferenceEventTagService, Mockito.times(1)).getEvent(eventId, relay);
     verify(cacheReferenceAddressTagServiceIF, Mockito.times(1)).getByExpanded(
        event.requireFirstTag(AddressTag.class));
   }
@@ -114,32 +113,32 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
     CacheFormulaEventService cacheFormulaEventService = createCacheFormulaEventService();
 
     Optional<FormulaEvent> actual = cacheFormulaEventService.getBy(
-       BaseIntegrationTestFixtures.formulaCreator.getPublicKey(), BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, BaseIntegrationTestFixtures.relay);
+       formulaCreator.getPublicKey(), formulaUpvoteIdentifierTag, relay);
 
     Assertions.assertEquals(eventId, actual.orElseThrow().getId());
     verify(cacheReferenceAddressTagServiceIF, Mockito.times(1)).getByExpanded(
        new AddressTag(
           event.getKind(),
-          BaseIntegrationTestFixtures.formulaCreator.getPublicKey(),
-          BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag,
-          BaseIntegrationTestFixtures.relay));
-    verify(cacheReferenceEventTagService, Mockito.times(1)).getEvent(eventId, BaseIntegrationTestFixtures.relay);
+          formulaCreator.getPublicKey(),
+          formulaUpvoteIdentifierTag,
+          relay));
+    verify(cacheReferenceEventTagService, Mockito.times(1)).getEvent(eventId, relay);
   }
 
   @Test
   void testGetByKindPubKeyAndIdentifierTagReturnsEmptyOptional() {
     AddressTag addressTag = new AddressTag(
        event.getKind(),
-       BaseIntegrationTestFixtures.formulaCreator.getPublicKey(),
-       BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag,
-       BaseIntegrationTestFixtures.relay);
+       formulaCreator.getPublicKey(),
+       formulaUpvoteIdentifierTag,
+       relay);
     doReturn(Optional.empty())
        .when(cacheReferenceAddressTagServiceIF)
        .getByExpanded(addressTag);
     CacheFormulaEventService cacheFormulaEventService = createCacheFormulaEventService();
 
     Optional<FormulaEvent> actual = cacheFormulaEventService.getBy(
-       BaseIntegrationTestFixtures.formulaCreator.getPublicKey(), BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, BaseIntegrationTestFixtures.relay);
+       formulaCreator.getPublicKey(), formulaUpvoteIdentifierTag, relay);
 
     assertEquals(Optional.empty(), actual);
     verify(cacheReferenceAddressTagServiceIF, Mockito.times(1)).getByExpanded(addressTag);
@@ -149,9 +148,9 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
   void testGetByNonExistentAddressTagReturnsRemoteObject() {
     AddressTag formulaAddressTag = new AddressTag(
        event.getKind(),
-       BaseIntegrationTestFixtures.formulaCreator.getPublicKey(),
-       BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag,
-       BaseIntegrationTestFixtures.relay);
+       formulaCreator.getPublicKey(),
+       formulaUpvoteIdentifierTag,
+       relay);
     doReturn(Optional.empty())
        .when(cacheServiceIF)
        .getEventByKindAndAuthorPublicKeyAndIdentifierTag(any(), any(), any());
@@ -165,7 +164,7 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
        cacheKindAddressTagServiceIF);
 
     Optional<FormulaEvent> actual = cacheFormulaEventService.getBy(
-       BaseIntegrationTestFixtures.formulaCreator.getPublicKey(), BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, BaseIntegrationTestFixtures.relay);
+       formulaCreator.getPublicKey(), formulaUpvoteIdentifierTag, relay);
 
     Assertions.assertEquals(eventId, actual.orElseThrow().getId());
     verify(cacheServiceIF, Mockito.times(1)).getEventByKindAndAuthorPublicKeyAndIdentifierTag(
@@ -190,13 +189,13 @@ public class CacheFormulaEventServiceTest extends CacheServiceTestFixture<Formul
 
     Assertions.assertEquals(eventId, actual.orElseThrow().getId());
     verify(cacheKindAddressTagServiceIF, Mockito.times(1)).getByDirect(event.getKind(), addressTag);
-    verify(cacheReferenceEventTagService, Mockito.times(1)).getEvent(eventId, BaseIntegrationTestFixtures.relay);
+    verify(cacheReferenceEventTagService, Mockito.times(1)).getEvent(eventId, relay);
   }
 
   @SneakyThrows
   @Override
   protected FormulaEvent createEvent() {
-    return new FormulaEvent(BaseIntegrationTestFixtures.formulaCreator, BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, awardDefinitionUpvoteEvent, BaseIntegrationTestFixtures.PLUS_ONE_FORMULA, BaseIntegrationTestFixtures.relay);
+    return new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardDefinitionUpvoteEvent, PLUS_ONE_FORMULA, relay);
   }
 
   private CacheFormulaEventService createCacheFormulaEventService() {

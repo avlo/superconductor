@@ -16,7 +16,7 @@ import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.SetsPairedEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFixtures {
+public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
 
@@ -48,11 +48,11 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
     Relay relay = new Relay(relayUrl);
 
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
-       BaseIntegrationTestFixtures.upvoteDefnCreator, BaseIntegrationTestFixtures.upvoteIdentifierTag, relay);
+       upvoteDefnCreator, upvoteIdentifierTag, relay);
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
-    CuratedFormulaEvent plusOneCuratedFormulaEvent = new CuratedFormulaEvent(BaseIntegrationTestFixtures.aImgIdentity,
-       new FormulaEvent(BaseIntegrationTestFixtures.formulaCreator, BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, BaseIntegrationTestFixtures.PLUS_ONE_FORMULA, relay),
+    CuratedFormulaEvent plusOneCuratedFormulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA, relay),
        new ReferenceTag(relayUrl),
        relay);
 
@@ -60,16 +60,16 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
        superconductorInstanceIdentity,
-       BaseIntegrationTestFixtures.repDefnCreator.getPublicKey(),
-       BaseIntegrationTestFixtures.reputationIdentifierTag,
+       repDefnCreator.getPublicKey(),
+       reputationIdentifierTag,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
        relay,
        plusOneCuratedFormulaEvent);
     cacheServiceIF.save(badgeDefinitionReputationEventPlusOneFormula);
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
-       BaseIntegrationTestFixtures.submitter,
-       BaseIntegrationTestFixtures.recipient.getPublicKey(),
+       submitter,
+       recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,
        relay);
 
@@ -105,7 +105,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
   @Test
   public void testGetByPubKeyTagEventTag() {
     Optional<BadgeSetsEvent> byAddressTag = cacheBadgeSetsEventServiceIF.getBy(
-       new PubKeyTag(BaseIntegrationTestFixtures.recipient.getPublicKey()),
+       new PubKeyTag(recipient.getPublicKey()),
        new EventTag(curationSetsUpvoteEvent.getEventId(), curationSetsUpvoteEvent.getRelay().orElseThrow().getUrl()));
     assertTrue(byAddressTag.isPresent());
     assertEquals(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());
@@ -114,7 +114,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
 
   @Test
   public void testGetByPubKeyTag() {
-    List<BadgeSetsEvent> byPubKeyTag = cacheBadgeSetsEventServiceIF.getBy(new PubKeyTag(BaseIntegrationTestFixtures.recipient.getPublicKey()));
+    List<BadgeSetsEvent> byPubKeyTag = cacheBadgeSetsEventServiceIF.getBy(new PubKeyTag(recipient.getPublicKey()));
     assertEquals(1, byPubKeyTag.size());
     BadgeSetsEvent first = byPubKeyTag.getFirst();
     assertEquals(badgeSetsUpvoteEvent, first);
@@ -133,7 +133,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
   @Test
   public void testGetByPubKeyTagAddressTag() {
     Optional<BadgeSetsEvent> byAddressTag = cacheBadgeSetsEventServiceIF.getBy(
-       new PubKeyTag(BaseIntegrationTestFixtures.recipient.getPublicKey()),
+       new PubKeyTag(recipient.getPublicKey()),
        badgeDefinitionReputationEventPlusOneFormula.asAddressableEventAddressTag());
     assertTrue(byAddressTag.isPresent());
     assertEquals(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());
@@ -143,7 +143,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestFix
   @Test
   public void testGetByPubKeyTagIdentifierTag() {
     Optional<BadgeSetsEvent> byAddressTag = cacheBadgeSetsEventServiceIF.getBy(
-       new PubKeyTag(BaseIntegrationTestFixtures.recipient.getPublicKey()),
+       new PubKeyTag(recipient.getPublicKey()),
        new IdentifierTag(
           badgeDefinitionReputationEventPlusOneFormula.getReputationDefinitionCreatorPublicKey().toHexString()));
     assertTrue(byAddressTag.isPresent());

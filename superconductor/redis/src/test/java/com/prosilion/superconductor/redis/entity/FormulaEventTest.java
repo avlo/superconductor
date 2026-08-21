@@ -2,32 +2,31 @@ package com.prosilion.superconductor.redis.entity;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
-import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseTestFixtures;
 import java.util.List;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
-import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.aImgIdentity;
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FormulaEventTest {
+public class FormulaEventTest extends BaseTestFixtures {
   public static final Relay relay = new Relay("ws://localhost:5555");
 
-  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(BaseIntegrationTestFixtures.AWARD_UNIT_UPVOTE);
-  public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(BaseIntegrationTestFixtures.AWARD_UNIT_DOWNVOTE);
+  public final IdentifierTag upvoteIdentifierTag = new IdentifierTag(AWARD_UNIT_UPVOTE);
+  public final IdentifierTag downvoteIdentifierTag = new IdentifierTag(AWARD_UNIT_DOWNVOTE);
 
   public final Identity identity = Identity.generateRandomIdentity();
   public final PublicKey reputationDefinitionCreatorPublicKey = Identity.generateRandomIdentity().getPublicKey();
@@ -42,6 +41,7 @@ public class FormulaEventTest {
   final CuratedFormulaEvent curatedFormulaEventDownvote;
 
   public FormulaEventTest() {
+    super(Identity.create("fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac"));
     this.curatedFormulaEventUpvote = new CuratedFormulaEvent(aImgIdentity,
        new FormulaEvent(identity, upvoteIdentifierTag, awardUpvoteEvent, PLUS_ONE_FORMULA, relay),
        new ReferenceTag(relay.getUrl()),
@@ -111,7 +111,7 @@ public class FormulaEventTest {
   @Test
   void testDifferentContentDto() {
     BadgeDefinitionGenericEvent differentContentDto = new BadgeDefinitionGenericEvent(
-       identity, upvoteIdentifierTag, BaseIntegrationTestFixtures.AWARD_UNIT_UPVOTE, relay);
+       identity, upvoteIdentifierTag, AWARD_UNIT_UPVOTE, relay);
 
     assertNotEquals(curatedFormulaEventUpvote, new FormulaEvent(identity, upvoteIdentifierTag, differentContentDto, "+2", relay));
   }
@@ -124,7 +124,7 @@ public class FormulaEventTest {
           identity,
           reputationDefinitionCreatorPublicKey,
           new IdentifierTag(
-             BaseIntegrationTestFixtures.TEST_UNIT_REPUTATION),
+             TEST_UNIT_REPUTATION),
           BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
           relay,
           List.of(
@@ -147,7 +147,7 @@ public class FormulaEventTest {
           identity,
           reputationDefinitionCreatorPublicKey,
           new IdentifierTag(
-             BaseIntegrationTestFixtures.TEST_UNIT_REPUTATION),
+             TEST_UNIT_REPUTATION),
           BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
           relay,
           List.of(

@@ -15,7 +15,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT extends BaseIntegrationTestFixtures {
+public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT extends BaseIntegrationTestDirtiesContextFixtures {
   protected final String definitionEventRelayUrl;
   protected final Relay definitionEventRelay;
 

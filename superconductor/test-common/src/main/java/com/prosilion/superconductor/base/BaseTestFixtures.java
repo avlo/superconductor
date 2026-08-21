@@ -6,8 +6,7 @@ import com.prosilion.nostr.user.Identity;
 import lombok.NonNull;
 import org.springframework.test.annotation.DirtiesContext;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public abstract class BaseIntegrationTestFixtures {
+public abstract class BaseTestFixtures {
   public static final Relay relay = new Relay("ws://localhost:5555");
 
   public static final String TEST_UNIT_REPUTATION = "BADGE_DEFN_UNIT_REP";
@@ -71,7 +70,7 @@ public abstract class BaseIntegrationTestFixtures {
 
   public final Identity superconductorInstanceIdentity;
 
-  public BaseIntegrationTestFixtures(@NonNull Identity superconductorInstanceIdentity) {
-    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
+  public BaseTestFixtures(@NonNull Identity superconductorInstanceIdentity) {
+    this.superconductorInstanceIdentity = Identity.create("fa11661b5f43c8f18f11861b4d553c47337dac9e351083b27320e311b7b324ac");
   }
 }

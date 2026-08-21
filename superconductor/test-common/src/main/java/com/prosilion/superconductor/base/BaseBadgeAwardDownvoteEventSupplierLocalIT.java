@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseBadgeAwardDownvoteEventSupplierLocalIT extends BaseIntegrationTestFixtures {
+public abstract class BaseBadgeAwardDownvoteEventSupplierLocalIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final String eventId;
   private final String relayUrl;
 

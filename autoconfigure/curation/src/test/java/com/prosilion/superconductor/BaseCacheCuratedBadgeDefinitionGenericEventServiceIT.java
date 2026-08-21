@@ -9,7 +9,7 @@ import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.util.Optional;
 import lombok.NonNull;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT extends BaseIntegrationTestFixtures {
+public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
   protected final Relay relay;
 
@@ -39,7 +39,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
     this.relay = new Relay(relayUrl);
 
     BadgeDefinitionGenericEvent upvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
-       BaseIntegrationTestFixtures.upvoteDefnCreator, BaseIntegrationTestFixtures.upvoteIdentifierTag, relay);
+       upvoteDefnCreator, upvoteIdentifierTag, relay);
 
     this.curatedUpvoteDefinitionEvent = new CuratedBadgeDefinitionGenericEvent(
        superconductorInstanceIdentity,
@@ -50,7 +50,7 @@ public abstract class BaseCacheCuratedBadgeDefinitionGenericEventServiceIT exten
     cacheServiceIF.save(curatedUpvoteDefinitionEvent);
 
     this.downvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
-       BaseIntegrationTestFixtures.upvoteDefnCreator, BaseIntegrationTestFixtures.downvoteIdentifierTag, relay);
+       upvoteDefnCreator, downvoteIdentifierTag, relay);
     cacheServiceIF.save(downvoteDefinitionEvent);
   }
 

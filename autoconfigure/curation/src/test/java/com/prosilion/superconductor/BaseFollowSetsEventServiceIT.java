@@ -25,7 +25,7 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import java.util.List;
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFixtures {
+public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
 
@@ -64,25 +64,25 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
 
     BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
-       BaseIntegrationTestFixtures.upvoteDefnCreator, BaseIntegrationTestFixtures.upvoteIdentifierTag, relay);
+       upvoteDefnCreator, upvoteIdentifierTag, relay);
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
-    CuratedFormulaEvent plusOneCuratedFormulaEvent = new CuratedFormulaEvent(BaseIntegrationTestFixtures.aImgIdentity,
-       new FormulaEvent(BaseIntegrationTestFixtures.formulaCreator, BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, BaseIntegrationTestFixtures.PLUS_ONE_FORMULA, relay),
+    CuratedFormulaEvent plusOneCuratedFormulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, awardUpvoteDefinitionEvent, PLUS_ONE_FORMULA, relay),
        new ReferenceTag(relayUrl),
        relay);
     cacheServiceIF.save(plusOneCuratedFormulaEvent);
 
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
-       BaseIntegrationTestFixtures.submitter,
-       BaseIntegrationTestFixtures.recipient.getPublicKey(),
+       submitter,
+       recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,
        relay);
 
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
        superconductorInstanceIdentity,
-       BaseIntegrationTestFixtures.repDefnCreator.getPublicKey(),
-       BaseIntegrationTestFixtures.reputationIdentifierTag,
+       repDefnCreator.getPublicKey(),
+       reputationIdentifierTag,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
        relay,
        plusOneCuratedFormulaEvent);
@@ -130,7 +130,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestFi
     FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId(), relay).orElseThrow();
     assertEquals(followSetsEvent, dbFollowSetsEventByEventId);
 
-    assertEquals(dbFollowSetsEventByEventId.getAwardRecipientPublicKey(), BaseIntegrationTestFixtures.recipient.getPublicKey());
+    assertEquals(dbFollowSetsEventByEventId.getAwardRecipientPublicKey(), recipient.getPublicKey());
     assertTrue(
        dbFollowSetsEventByEventId.getBadgeSetsEventList().stream()
           .map(BadgeSetsEvent::getBadgeDefinitionReputationEvent).anyMatch(badgeDefinitionReputationEventPlusOneFormula::equals));

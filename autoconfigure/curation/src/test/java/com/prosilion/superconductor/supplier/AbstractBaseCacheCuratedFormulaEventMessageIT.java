@@ -18,7 +18,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.time.Duration;
 import java.util.List;
@@ -33,7 +33,7 @@ import static com.prosilion.superconductor.BaseFollowSetsEventServiceIT.getEvent
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends BaseIntegrationTestFixtures {
+public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends BaseIntegrationTestDirtiesContextFixtures {
   protected final String formulaEventRelayUrl;
   protected final Relay formulaEventRelay;
   protected final CacheServiceIF cacheServiceIF;

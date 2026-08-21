@@ -13,7 +13,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -50,11 +50,11 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
     CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
-       cacheCuratedBadgeAwardGenericEventService.getEvent(curatedEventId, BaseIntegrationTestFixtures.relay);
+       cacheCuratedBadgeAwardGenericEventService.getEvent(curatedEventId, relay);
 
     assertEquals(curatedEventId, actual.orElseThrow().getId());
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
-    verify(cacheBadgeAwardGenericEventService, Mockito.times(0)).getEvent(curatedEventId, BaseIntegrationTestFixtures.relay);
+    verify(cacheBadgeAwardGenericEventService, Mockito.times(0)).getEvent(curatedEventId, relay);
   }
 
   @Test
@@ -63,7 +63,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
     CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
-       cacheCuratedBadgeAwardGenericEventService.getEvent(curatedEventId, BaseIntegrationTestFixtures.relay);
+       cacheCuratedBadgeAwardGenericEventService.getEvent(curatedEventId, relay);
 
     assertTrue(actual.isEmpty());
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
@@ -178,49 +178,49 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
   @Test
   void zTestGetEventFromLocalCacheNullRelay() {
     this.awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
-       BaseIntegrationTestFixtures.upvoteDefnCreator,
-       BaseIntegrationTestFixtures.upvoteIdentifierTag,
-       BaseIntegrationTestFixtures.relay);
+       upvoteDefnCreator,
+       upvoteIdentifierTag,
+       relay);
 
     this.badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(  // <------------------------- no relay
-       BaseIntegrationTestFixtures.submitter,
-       BaseIntegrationTestFixtures.recipient.getPublicKey(),
+       submitter,
+       recipient.getPublicKey(),
        awardUpvoteDefinitionEvent);
 
     assertThrows(NoSuchElementException.class, () ->
        new CuratedBadgeAwardGenericEvent(
-          BaseIntegrationTestFixtures.aImgIdentity,
+          aImgIdentity,
           this.badgeAwardUpvoteEvent,
           new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
           new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
-          BaseIntegrationTestFixtures.relay));
+          relay));
   }
 
   @Override
   protected CuratedBadgeAwardGenericEvent createEvent() {
     this.awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
-       BaseIntegrationTestFixtures.upvoteDefnCreator,
-       BaseIntegrationTestFixtures.upvoteIdentifierTag,
-       BaseIntegrationTestFixtures.relay);
+       upvoteDefnCreator,
+       upvoteIdentifierTag,
+       relay);
     this.badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
-       BaseIntegrationTestFixtures.submitter,
-       BaseIntegrationTestFixtures.recipient.getPublicKey(),
+       submitter,
+       recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,
-       BaseIntegrationTestFixtures.relay);                                                  // <------------------------- has relay
+       relay);                                                  // <------------------------- has relay
 
     CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(
-       BaseIntegrationTestFixtures.aImgIdentity,
+       aImgIdentity,
        this.badgeAwardUpvoteEvent,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
-       BaseIntegrationTestFixtures.relay);
+       relay);
     return curatedBadgeAwardGenericEvent;
   }
 
   private CacheCuratedBadgeAwardGenericEventService createService() {
     return new CacheCuratedBadgeAwardGenericEventService(
-       BaseIntegrationTestFixtures.aImgIdentity,
-       BaseIntegrationTestFixtures.relay.getUrl(),
+       aImgIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        cacheBadgeAwardGenericEventService);
   }

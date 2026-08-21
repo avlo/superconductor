@@ -46,6 +46,12 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
   }
 
   @Test
+  void bSuperconductorEventThenAfterimageReq() throws NostrException {
+    createAndSubmitDownvoteEvent("-1", getIdenticalDownvoteRecipientEvent());
+    createAndSubmitUpvoteEvent("0", getIdenticalUpvoteRecipientEvent());
+  }
+  
+//  @Test
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
     createAndSubmitUpvoteEvent("1", getIdenticalUpvoteRecipientEvent());
     createAndSubmitUpvoteEvent("1", getIdenticalUpvoteDifferentRecipientEvent());

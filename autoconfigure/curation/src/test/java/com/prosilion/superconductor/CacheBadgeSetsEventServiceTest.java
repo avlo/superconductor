@@ -13,11 +13,9 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
-import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheBadgeSetsEventService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.prosilion.superconductor.base.BaseIntegrationTestFixtures.relay;
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -220,30 +217,30 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
   @Override
   protected BadgeSetsEvent createEvent() {
     BadgeDefinitionGenericEvent badgeDefinitionEvent = new BadgeDefinitionGenericEvent(
-       BaseIntegrationTestFixtures.upvoteDefnCreator, BaseIntegrationTestFixtures.upvoteIdentifierTag, relay);
+       upvoteDefnCreator, upvoteIdentifierTag, relay);
 
-    CuratedFormulaEvent formulaEvent = new CuratedFormulaEvent(BaseIntegrationTestFixtures.aImgIdentity,
-       new FormulaEvent(BaseIntegrationTestFixtures.formulaCreator, BaseIntegrationTestFixtures.formulaUpvoteIdentifierTag, badgeDefinitionEvent, "+1", relay),
+    CuratedFormulaEvent formulaEvent = new CuratedFormulaEvent(aImgIdentity,
+       new FormulaEvent(formulaCreator, formulaUpvoteIdentifierTag, badgeDefinitionEvent, "+1", relay),
        new ReferenceTag(relay.getUrl()),
        relay);
 
     this.badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
-       BaseIntegrationTestFixtures.aImgIdentity,
-       BaseIntegrationTestFixtures.repDefnCreator.getPublicKey(),
-       BaseIntegrationTestFixtures.reputationIdentifierTag,
+       aImgIdentity,
+       repDefnCreator.getPublicKey(),
+       reputationIdentifierTag,
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
        relay,
        formulaEvent);
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = new BadgeAwardGenericEvent<>(
-       BaseIntegrationTestFixtures.submitter, BaseIntegrationTestFixtures.recipient.getPublicKey(), badgeDefinitionEvent, relay);
+       submitter, recipient.getPublicKey(), badgeDefinitionEvent, relay);
     this.curatedBadgeAwardEvent = new CuratedBadgeAwardGenericEvent(
-       BaseIntegrationTestFixtures.aImgIdentity,
+       aImgIdentity,
        badgeAwardEvent,
        new ReferenceTag(relay.getUrl()),
        new ReferenceTag(relay.getUrl()),
        relay);
     return new BadgeSetsEvent(
-       BaseIntegrationTestFixtures.aImgIdentity, badgeDefinitionReputationEvent, curatedBadgeAwardEvent, relay);
+       aImgIdentity, badgeDefinitionReputationEvent, curatedBadgeAwardEvent, relay);
   }
 
   private CacheBadgeSetsEventService createService() {

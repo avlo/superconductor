@@ -29,7 +29,7 @@ import com.prosilion.nostr.util.Util;
 import com.prosilion.subdivisions.client.RequestSubscriber;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
-import com.prosilion.superconductor.base.BaseIntegrationTestFixtures;
+import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.util.EventAttributesMap;
 import java.time.Duration;
 import java.util.Collection;
@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends BaseIntegrationTestFixtures {
+public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends BaseIntegrationTestDirtiesContextFixtures {
   protected final String definitionEventRelayUrl;
   protected final String awardEventRelayUrl;
   protected final String formulaEventRelayUrl;

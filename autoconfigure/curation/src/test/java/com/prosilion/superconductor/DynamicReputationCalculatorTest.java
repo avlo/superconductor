@@ -202,7 +202,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
   }
 
   @Test
-  void testCalculatorOneMinusOne() {
+  void testCalculatorZeroMinusOne() {
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curationSetsEvent = new CuratedBadgeAwardGenericEvent(
        superconductorInstanceIdentity,
@@ -226,6 +226,88 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
           badgeSetsEvent, relay));
 
     assertEquals("-1", badgeAwardReputationEvent.getContent());
+  }
+
+  @Test
+  void testCalculatorZeroPlusOneMinusOne() {
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent = new CuratedBadgeAwardGenericEvent(
+       superconductorInstanceIdentity,
+       badgeAwardUpvoteEvent,
+       new ReferenceTag(awardDownvoteDefinitionEvent.getRelay().orElseThrow().getUrl()),
+       new ReferenceTag(badgeAwardUpvoteEvent.getRelay().orElseThrow().getUrl()),
+       relay);
+
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardDownvoteEvent = new CuratedBadgeAwardGenericEvent(
+       superconductorInstanceIdentity,
+       badgeAwardDownvoteEvent,
+       new ReferenceTag(awardDownvoteDefinitionEvent.getRelay().orElseThrow().getUrl()),
+       new ReferenceTag(badgeAwardDownvoteEvent.getRelay().orElseThrow().getUrl()),
+       relay);
+
+    BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
+       superconductorInstanceIdentity,
+       badgeDefinitionReputationContainingPlusOneFormulaEventAndMinusOneFormulaEvent,
+       List.of(
+          curatedBadgeAwardUpvoteEvent,
+          curatedBadgeAwardDownvoteEvent),
+       relay);
+
+    BadgeAwardReputationEvent badgeAwardReputationEvent = reputationCalculator.calculateUpdatedReputationEvent(
+       recipient.getPublicKey(),
+       emptyNoReputationYetBadgeAwardEvent,
+       List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
+       new FollowSetsEvent(
+          superconductorInstanceIdentity,
+          badgeSetsEvent, relay));
+
+    assertEquals("0", badgeAwardReputationEvent.getContent());
+  }
+
+  @Test
+  void testCalculatorPreExistingReputationPlusOneMinusOne() {
+    BadgeAwardReputationEvent existingBadgeAwardReputationEvent = new BadgeAwardReputationEvent(
+       superconductorInstanceIdentity,
+       recipient.getPublicKey(),
+       BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
+       badgeDefinitionReputationContainingPlusOneFormulaEventAndMinusOneFormulaEvent,
+       new BigDecimal("1"),
+       relay);
+
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent = new CuratedBadgeAwardGenericEvent(
+       superconductorInstanceIdentity,
+       badgeAwardUpvoteEvent,
+       new ReferenceTag(awardDownvoteDefinitionEvent.getRelay().orElseThrow().getUrl()),
+       new ReferenceTag(badgeAwardUpvoteEvent.getRelay().orElseThrow().getUrl()),
+       relay);
+
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardDownvoteEvent = new CuratedBadgeAwardGenericEvent(
+       superconductorInstanceIdentity,
+       badgeAwardDownvoteEvent,
+       new ReferenceTag(awardDownvoteDefinitionEvent.getRelay().orElseThrow().getUrl()),
+       new ReferenceTag(badgeAwardDownvoteEvent.getRelay().orElseThrow().getUrl()),
+       relay);
+
+    BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
+       superconductorInstanceIdentity,
+       badgeDefinitionReputationContainingPlusOneFormulaEventAndMinusOneFormulaEvent,
+       List.of(
+          curatedBadgeAwardUpvoteEvent,
+          curatedBadgeAwardDownvoteEvent),
+       relay);
+
+    BadgeAwardReputationEvent badgeAwardReputationEvent = reputationCalculator.calculateUpdatedReputationEvent(
+       recipient.getPublicKey(),
+       existingBadgeAwardReputationEvent,
+       List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
+       new FollowSetsEvent(
+          superconductorInstanceIdentity,
+          badgeSetsEvent, relay));
+
+    assertEquals("1", badgeAwardReputationEvent.getContent());
   }
 
   @Test

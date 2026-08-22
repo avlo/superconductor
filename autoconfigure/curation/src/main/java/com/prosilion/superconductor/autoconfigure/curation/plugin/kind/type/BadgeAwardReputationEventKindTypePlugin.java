@@ -60,7 +60,7 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingFollowSetsEventAsReputationEvent, @NonNull Relay relay) {
-    log.debug("processing incoming Kind[{}]:{}\n{}",
+    log.debug("processing incoming incomingFollowSetsEventAsReputationEvent, Kind[{}]:{}\n{}",
        incomingFollowSetsEventAsReputationEvent.getKind().getValue(),
        incomingFollowSetsEventAsReputationEvent.getKind().getName().toUpperCase(),
        incomingFollowSetsEventAsReputationEvent.createPrettyPrintJson());

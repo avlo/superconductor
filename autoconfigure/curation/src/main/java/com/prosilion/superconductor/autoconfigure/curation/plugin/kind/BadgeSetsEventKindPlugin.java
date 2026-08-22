@@ -52,22 +52,23 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
   }
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
-    Optional<BadgeSetsEvent> exists = cacheBadgeSetsEventServiceIF.getEvent(event.getId(), event.getRelayTag().map(RelayTag::getRelay).orElseThrow());
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF badgeSetsEvent, @NonNull Relay fromRelay) {
+    log.debug("processing incoming badgeSetsEvent\n{}", badgeSetsEvent.createPrettyPrintJson());
+    Optional<BadgeSetsEvent> exists = cacheBadgeSetsEventServiceIF.getEvent(badgeSetsEvent.getId(), badgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElseThrow());
     if (exists.isPresent()) return exists.map(BadgeSetsEvent::getGenericEventRecord);
 
-    PubKeyTag recipientPubKeyTag = event.requireFirstTag(PubKeyTag.class);
-    AddressTag badgeDefinitionReputationEventAsAddressTag = event.requireFirstTag(AddressTag.class);
+    PubKeyTag recipientPubKeyTag = badgeSetsEvent.requireFirstTag(PubKeyTag.class);
+    AddressTag badgeDefinitionReputationEventAsAddressTag = badgeSetsEvent.requireFirstTag(AddressTag.class);
 
     Optional<BadgeSetsEvent> existingBadgeSetsEventOpt = cacheBadgeSetsEventServiceIF.getBy(recipientPubKeyTag, badgeDefinitionReputationEventAsAddressTag);
 
-    BadgeSetsEvent materializedBadgeSetsEvent = cacheBadgeSetsEventServiceIF.materialize(event).orElseThrow();
+    BadgeSetsEvent materializedBadgeSetsEvent = cacheBadgeSetsEventServiceIF.materialize(badgeSetsEvent).orElseThrow();
 
     List<CuratedBadgeAwardGenericEvent> existingCuratedBadgeAwardGenericEvents =
        existingBadgeSetsEventOpt.stream()
           .map(BadgeSetsEvent::getCuratedBadgeAwardGenericEventList).flatMap(Collection::stream).toList();
 
-    List<String> incomingBadgeSetsEventCuratedUpvoteEventIds = event.getTypeSpecificTags(EventTag.class).stream().map(EventTag::eventId).toList();
+    List<String> incomingBadgeSetsEventCuratedUpvoteEventIds = badgeSetsEvent.getTypeSpecificTags(EventTag.class).stream().map(EventTag::eventId).toList();
 
     List<String> newUniqueCuratedBadgeAwardGenericEventIds = incomingBadgeSetsEventCuratedUpvoteEventIds.stream().filter(eventId ->
        !existingCuratedBadgeAwardGenericEvents.stream().map(BaseEvent::getId).toList().contains(eventId)).toList();
@@ -77,7 +78,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
           .map(newUniqueCuratedBadgeAwardGenericEventId ->
              cacheCuratedBadgeAwardGenericEventServiceIF.getEvent(
                 newUniqueCuratedBadgeAwardGenericEventId,
-                event.requireFirstTag(RelayTag.class).getRelay())).flatMap(Optional::stream).toList();
+                badgeSetsEvent.requireFirstTag(RelayTag.class).getRelay())).flatMap(Optional::stream).toList();
 
     ArrayList<CuratedBadgeAwardGenericEvent> updatedCuratedBadgeAwardGenericEventList = new ArrayList<>();
     updatedCuratedBadgeAwardGenericEventList.addAll(existingCuratedBadgeAwardGenericEvents);
@@ -88,13 +89,13 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
        updatedCuratedBadgeAwardGenericEventList);
 
     Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(newBadgeSetsEvent, fromRelay);
-    existingBadgeSetsEventOpt.ifPresent(previousBadgeSetsEvent ->
-       checkDelete(fromRelay, previousBadgeSetsEvent));
+    existingBadgeSetsEventOpt.ifPresent(this::checkDelete);
+    
     return genericEventRecord;
   }
 
-  private void checkDelete(@NonNull Relay fromRelay, BadgeSetsEvent previousBadgeSetsEvent) {
-    deleteEventServiceIF.processIncomingEvent(previousBadgeSetsEvent, fromRelay);
+  private void checkDelete(BadgeSetsEvent previousBadgeSetsEvent) {
+    deleteEventServiceIF.processIncomingEvent(previousBadgeSetsEvent, new Relay(superconductorRelayUrl));
   }
 
   @Override

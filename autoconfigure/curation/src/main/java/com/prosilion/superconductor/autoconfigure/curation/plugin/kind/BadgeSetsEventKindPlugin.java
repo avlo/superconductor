@@ -53,25 +53,25 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
 
   //  TODO: examine re-arch of EventPluginIF such that processIncomingEvent(...) returns BadgeSetsEvent instead of GenericEventRecord  
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF badgeSetsEvent, @NonNull Relay fromRelay) {
-    log.debug("processing incoming badgeSetsEvent\n{}", badgeSetsEvent.createPrettyPrintJson());
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingBadgeSetsEvent, @NonNull Relay fromRelay) {
+    log.debug("processing incoming badgeSetsEvent\n{}", incomingBadgeSetsEvent.createPrettyPrintJson());
     Optional<BadgeSetsEvent> existingBadgeSetsEvent = cacheBadgeSetsEventServiceIF.getEvent(
-       badgeSetsEvent.getId(),
-       badgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElseThrow());
+       incomingBadgeSetsEvent.getId(),
+       incomingBadgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElseThrow());
 //    if (existingBadgeSetsEvent.isPresent()) return existingBadgeSetsEvent.map(BaseEvent::getGenericEventRecord);
 
-    PubKeyTag recipientPubKeyTag = badgeSetsEvent.requireFirstTag(PubKeyTag.class);
-    AddressTag badgeDefinitionReputationEventAsAddressTag = badgeSetsEvent.requireFirstTag(AddressTag.class);
+    PubKeyTag recipientPubKeyTag = incomingBadgeSetsEvent.requireFirstTag(PubKeyTag.class);
+    AddressTag badgeDefinitionReputationEventAsAddressTag = incomingBadgeSetsEvent.requireFirstTag(AddressTag.class);
 
     Optional<BadgeSetsEvent> existingBadgeSetsEventOpt = cacheBadgeSetsEventServiceIF.getBy(recipientPubKeyTag, badgeDefinitionReputationEventAsAddressTag);
 
-    BadgeSetsEvent materializedBadgeSetsEvent = cacheBadgeSetsEventServiceIF.materialize(badgeSetsEvent).orElseThrow();
+    BadgeSetsEvent materializedIncomingBadgeSetsEvent = cacheBadgeSetsEventServiceIF.materialize(incomingBadgeSetsEvent).orElseThrow();
 
     List<CuratedBadgeAwardGenericEvent> existingCuratedBadgeAwardGenericEvents =
        existingBadgeSetsEventOpt.stream()
           .map(BadgeSetsEvent::getCuratedBadgeAwardGenericEventList).flatMap(Collection::stream).toList();
 
-    List<String> incomingBadgeSetsEventCuratedUpvoteEventIds = badgeSetsEvent.getTypeSpecificTags(EventTag.class).stream().map(EventTag::eventId).toList();
+    List<String> incomingBadgeSetsEventCuratedUpvoteEventIds = incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class).stream().map(EventTag::eventId).toList();
 
     List<String> newUniqueCuratedBadgeAwardGenericEventIds = incomingBadgeSetsEventCuratedUpvoteEventIds.stream().filter(eventId ->
        !existingCuratedBadgeAwardGenericEvents.stream().map(BaseEvent::getId).toList().contains(eventId)).toList();
@@ -81,18 +81,19 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
           .map(newUniqueCuratedBadgeAwardGenericEventId ->
              cacheCuratedBadgeAwardGenericEventServiceIF.getEvent(
                 newUniqueCuratedBadgeAwardGenericEventId,
-                badgeSetsEvent.requireFirstTag(RelayTag.class).getRelay())).flatMap(Optional::stream).toList();
+                incomingBadgeSetsEvent.requireFirstTag(RelayTag.class).getRelay())).flatMap(Optional::stream).toList();
 
     ArrayList<CuratedBadgeAwardGenericEvent> updatedCuratedBadgeAwardGenericEventList = new ArrayList<>();
     updatedCuratedBadgeAwardGenericEventList.addAll(existingCuratedBadgeAwardGenericEvents);
     updatedCuratedBadgeAwardGenericEventList.addAll(newCuratedBadgeAwardGenericEventList);
 
-    BadgeSetsEvent newBadgeSetsEvent = materializedBadgeSetsEvent.createNewFromExisting(
+    BadgeSetsEvent newBadgeSetsEvent = materializedIncomingBadgeSetsEvent.createNewFromExisting(
        superconductorInstanceIdentity,
        updatedCuratedBadgeAwardGenericEventList);
 
-    Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(newBadgeSetsEvent, fromRelay);
+//    below saves and then deletes same badgesetsevent
     existingBadgeSetsEventOpt.ifPresent(this::checkDelete);
+    Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(newBadgeSetsEvent, fromRelay);
 
     return genericEventRecord;
   }

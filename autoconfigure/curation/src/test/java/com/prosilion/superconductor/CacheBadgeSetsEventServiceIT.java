@@ -13,6 +13,7 @@ import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedB
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheBadgeSetsEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,7 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
   void testConstructorRejectsNullDependencies() {
     CacheServiceIF cacheServiceIF = mock(CacheServiceIF.class);
     CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF = mock(CacheKindAddressTagServiceIF.class);
+    CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF = mock(CacheReferenceEventTagServiceIF.class);
     CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF =
        mock(CacheBadgeDefinitionReputationEventServiceIF.class);
     CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF =
@@ -59,21 +61,31 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        null,
        cacheKindAddressTagServiceIF,
+       cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        cacheServiceIF,
        null,
+       cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        null,
+       cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
+       cacheReferenceEventTagServiceIF,
+       null,
+       cacheCuratedBadgeAwardGenericEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       cacheServiceIF,
+       cacheKindAddressTagServiceIF,
+       cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        null));
   }

@@ -45,13 +45,20 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
     this.cacheServiceIF = cacheServiceIF;
   }
 
-//  @Test
+  @Test
   void bSuperconductorEventThenAfterimageReq() throws NostrException {
     createAndSubmitDownvoteEvent("-1", getIdenticalDownvoteRecipientEvent());
     createAndSubmitUpvoteEvent("0", getIdenticalUpvoteRecipientEvent());
   }
-  
+
   @Test
+  void cSuperconductorEventThenAfterimageReq() throws NostrException {
+    createAndSubmitUpvoteEvent("1", getIdenticalUpvoteRecipientEvent());
+    createAndSubmitUpvoteEvent("2", getIdenticalUpvoteRecipientEvent());
+    createAndSubmitDownvoteEvent("1", getIdenticalUpvoteRecipientEvent());
+  }
+  
+    @Test
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
     createAndSubmitUpvoteEvent("1", getIdenticalUpvoteRecipientEvent());
     createAndSubmitUpvoteEvent("1", getIdenticalUpvoteDifferentRecipientEvent());
@@ -68,7 +75,7 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
     createAndSubmitUpvoteEvent("3", identicalUpvoteDifferentRecipientEvent);
 
     createAndSubmitDownvoteEvent("5", getIdenticalUpvoteRecipientEvent());
-//    createAndSubmitDownvoteEvent("4", getIdenticalDownvoteRecipientEvent());
+    createAndSubmitDownvoteEvent("4", getIdenticalDownvoteRecipientEvent());
   }
 
   private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalUpvoteRecipientEvent() {

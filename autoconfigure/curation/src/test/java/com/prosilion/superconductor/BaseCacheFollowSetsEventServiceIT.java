@@ -17,16 +17,15 @@ import com.prosilion.nostr.filter.event.KindFilter;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ReferenceTag;
-import com.prosilion.nostr.tag.SetsPairedEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
+import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.BadgeSetsEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import java.util.List;
 import java.util.Optional;
@@ -43,27 +42,38 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
-  private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
+public abstract class BaseCacheFollowSetsEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
+  private final BadgeSetsEventKindPlugin badgeSetsEventKindPlugin;
 
-  private final EventServiceIF eventServiceIF;
+  protected final EventServiceIF eventServiceIF;
   protected final Relay relay;
 
-  protected final BadgeSetsEvent badgeSetsUpvoteEvent;
+  protected final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
+  protected final BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent;
+  protected final CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent_1;
+  protected final BadgeSetsEvent dbSynchedBadgeSetsEvent_1;
 
-  public BaseFollowSetsEventServiceIT(
+  protected final CacheServiceIF cacheServiceIF;
+  protected final DeleteEventServiceIF deleteEventServiceIF;
+
+  public BaseCacheFollowSetsEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
+     @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
      @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventService) {
     super(superconductorInstanceIdentity);
+    this.badgeSetsEventKindPlugin = badgeSetsEventKindPlugin;
+    this.cacheServiceIF = cacheServiceIF;
+    this.deleteEventServiceIF = deleteEventServiceIF;
     this.relay = new Relay(relayUrl);
     this.eventServiceIF = eventServiceIF;
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
 
-    BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
+    this.awardUpvoteDefinitionEvent = new BadgeDefinitionGenericEvent(
        upvoteDefnCreator, upvoteIdentifierTag, relay);
     cacheServiceIF.save(awardUpvoteDefinitionEvent);
 
@@ -73,7 +83,7 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestDi
        relay);
     cacheServiceIF.save(plusOneCuratedFormulaEvent);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent_1 = new BadgeAwardGenericEvent<>(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,
@@ -88,45 +98,86 @@ public abstract class BaseFollowSetsEventServiceIT extends BaseIntegrationTestDi
        plusOneCuratedFormulaEvent);
     cacheServiceIF.save(badgeDefinitionReputationEventPlusOneFormula);
 
-    AddressTag badgeDefnEventAsAddressTag = badgeAwardUpvoteEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag();
-
-    SetsPairedEvent setsPairedEvents = new SetsPairedEvent(
-       badgeDefnEventAsAddressTag,
-       new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)));
-
-    CuratedBadgeAwardGenericEvent curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
+    this.curatedBadgeAwardGenericEvent_1 = new CuratedBadgeAwardGenericEvent(
        superconductorInstanceIdentity,
-       badgeAwardUpvoteEvent,
+       badgeAwardUpvoteEvent_1,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
-       new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
+       new ReferenceTag(badgeAwardUpvoteEvent_1.getRelay().map(Relay::getUrl).orElseThrow()),
        relay);
-    cacheServiceIF.save(curationSetsUpvoteEvent);
+    cacheServiceIF.save(curatedBadgeAwardGenericEvent_1);
 
-    this.badgeSetsUpvoteEvent = new BadgeSetsEvent(
+    BadgeSetsEvent setupTempGerCtorBadgeSetsEvent = new BadgeSetsEvent(
        superconductorInstanceIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
-       curationSetsUpvoteEvent,
+       curatedBadgeAwardGenericEvent_1,
        relay);
 
-    cacheServiceIF.save(badgeSetsUpvoteEvent);
+    GenericEventRecord dbSynchedBadgeSetsEventGER = badgeSetsEventKindPlugin.processIncomingEvent(setupTempGerCtorBadgeSetsEvent, relay).orElseThrow();
+
+    this.dbSynchedBadgeSetsEvent_1 = new BadgeSetsEvent(
+       dbSynchedBadgeSetsEventGER,
+       badgeDefinitionReputationEventPlusOneFormula,
+       List.of(curatedBadgeAwardGenericEvent_1));
+
     Util.debug(log, "test setup db events:\n{}",
        cacheServiceIF.getAll().stream().map(GenericEventRecord::createPrettyPrintJson).collect(Collectors.joining(",\n")),
        true, '1');
   }
 
   protected final BadgeSetsEvent getBadgeSetsUpvoteEvent() {
-    return badgeSetsUpvoteEvent;
+    return dbSynchedBadgeSetsEvent_1;
   }
 
   @Test
-  public void testSaveBadgeAwardReputationEventUpvote() {
-    FollowSetsEvent followSetsEvent = new FollowSetsEvent(
+  public void testSimulateIncomingBadgeAwardUpvoteEvent() {
+    FollowSetsEvent followSetsEvent_1 = new FollowSetsEvent(
        superconductorInstanceIdentity,
-       badgeSetsUpvoteEvent,
+       dbSynchedBadgeSetsEvent_1,
        relay);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
+    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_1), followSetsEvent_1.getRelay().orElseThrow());
+    validateDbUpdatedFollowSetsEvent(followSetsEvent_1);
 
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent_2 = new BadgeAwardGenericEvent<>(
+       submitter,
+       recipient.getPublicKey(),
+       awardUpvoteDefinitionEvent,
+       relay);
+
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent_2 = new CuratedBadgeAwardGenericEvent(
+       superconductorInstanceIdentity,
+       badgeAwardUpvoteEvent_2,
+       new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
+       new ReferenceTag(badgeAwardUpvoteEvent_2.getRelay().map(Relay::getUrl).orElseThrow()),
+       relay);
+    cacheServiceIF.save(curatedBadgeAwardGenericEvent_2);
+
+    BadgeSetsEvent setupTempGerCtorBadgeSetsEvent = new BadgeSetsEvent(
+       superconductorInstanceIdentity,
+       badgeDefinitionReputationEventPlusOneFormula,
+       curatedBadgeAwardGenericEvent_2,
+       relay);
+
+//    cacheServiceIF.save(badgeSetsUpvoteEvent_2);
+//    GenericEventRecord dbSynchedBadgeSetsEventGER = badgeSetsEventKindPlugin.processIncomingEvent(setupTempGerCtorBadgeSetsEvent, relay).orElseThrow();
+
+    BadgeSetsEvent dbSynchedBadgeSetsEvent_2 = new BadgeSetsEvent(
+       setupTempGerCtorBadgeSetsEvent.asGenericEventRecord(),
+       badgeDefinitionReputationEventPlusOneFormula,
+       List.of(
+          curatedBadgeAwardGenericEvent_1,
+          curatedBadgeAwardGenericEvent_2));
+
+    FollowSetsEvent followSetsEvent_2 = new FollowSetsEvent(
+       superconductorInstanceIdentity,
+       dbSynchedBadgeSetsEvent_2,
+       relay);
+
+    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_2), followSetsEvent_2.getRelay().orElseThrow());
+    validateDbUpdatedFollowSetsEvent(followSetsEvent_2);
+  }
+
+  private void validateDbUpdatedFollowSetsEvent(FollowSetsEvent followSetsEvent) {
     FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId(), relay).orElseThrow();
     assertEquals(followSetsEvent, dbFollowSetsEventByEventId);
 

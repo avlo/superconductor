@@ -25,7 +25,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.prosilion.nostr.util.Util.generateRandomHex64String;
-import static com.prosilion.superconductor.BaseFollowSetsEventServiceIT.getEventIFs;
+import static com.prosilion.superconductor.BaseCacheFollowSetsEventServiceIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j

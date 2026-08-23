@@ -77,27 +77,32 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
        existingBadgeAwardReputationEvents.stream()
           .collect(Collectors.toMap(
              UniqueAddressTagEvent::getAddressTag,
-             Function.identity(),
-             (first, second) ->
-                first.getCreatedAt() >= second.getCreatedAt() ? first : second));
+             Function.identity()));
 
     List<BadgeAwardReputationEvent> newReputationEvents =
        materializedIncomingFollowSetsEvent.getBadgeSetsEventList().stream()
           .map(BadgeSetsEvent::getBadgeDefinitionReputationEvent).distinct()
           .map(badgeDefinitionReputationEvent -> {
-            BadgeAwardReputationEvent previousReputationEvent =
-               Optional.ofNullable(existingBadgeAwardReputationEventsByDefinition.get(
-                     badgeDefinitionReputationEvent.asAddressableEventAddressTag()))
-                  .orElseGet(() -> createBadgeAwardReputationEvent(
-                     materializedIncomingFollowSetsEvent.getAwardRecipientPublicKey(),
-                     badgeDefinitionReputationEvent,
-                     BigDecimal.ZERO));
+            BadgeAwardReputationEvent badgeAwardReputationEventOpt =
+               existingBadgeAwardReputationEventsByDefinition.get(
+                  badgeDefinitionReputationEvent.asAddressableEventAddressTag());
 
-            return reputationCalculationServiceIF.calculateReputationEvent(
+            BadgeAwardReputationEvent previousReputationEvent =
+               getBadgeAwardReputationEventOpt(badgeAwardReputationEventOpt)
+                  .orElseGet(() -> {
+                    BadgeAwardReputationEvent createdBadgeAwardReputationEvent = createBadgeAwardReputationEvent(
+                       materializedIncomingFollowSetsEvent.getAwardRecipientPublicKey(),
+                       badgeDefinitionReputationEvent,
+                       BigDecimal.ZERO);
+                    return createdBadgeAwardReputationEvent;
+                  });
+
+            BadgeAwardReputationEvent calculatedBadgeAwardReputationEvent = reputationCalculationServiceIF.calculateReputationEvent(
                materializedIncomingFollowSetsEvent.getAwardRecipientPublicKey(),
                previousReputationEvent,
                badgeDefinitionReputationEvent.getCuratedFormulaEvents(),
                materializedIncomingFollowSetsEvent);
+            return calculatedBadgeAwardReputationEvent;
           })
           .toList();
 
@@ -113,17 +118,23 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
     return genericEventRecords.stream().findFirst();
   }
 
+  private @NonNull Optional<BadgeAwardReputationEvent> getBadgeAwardReputationEventOpt(BadgeAwardReputationEvent badgeAwardReputationEventOpt) {
+    Optional<BadgeAwardReputationEvent> badgeAwardReputationEventOpt1 = Optional.ofNullable(badgeAwardReputationEventOpt);
+    return badgeAwardReputationEventOpt1;
+  }
+
   private BadgeAwardReputationEvent createBadgeAwardReputationEvent(
      PublicKey badgeReceiverPubkey,
      BadgeDefinitionReputationEvent badgeDefinitionReputationEvent,
      BigDecimal score) {
-    return new BadgeAwardReputationEvent(
+    BadgeAwardReputationEvent badgeAwardReputationEvent = new BadgeAwardReputationEvent(
        superconductorInstanceIdentity,
        badgeReceiverPubkey,
        BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
        badgeDefinitionReputationEvent,
        score,
        new Relay(superconductorRelayUrl));
+    return badgeAwardReputationEvent;
   }
 
   private void deletePreviousBadgeAwardReputationEvent(EventIF previousReputationEvent) {

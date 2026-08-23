@@ -51,11 +51,14 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
     this.cacheServiceIF = cacheServiceIF;
   }
 
+  //  TODO: examine re-arch of EventPluginIF such that processIncomingEvent(...) returns BadgeSetsEvent instead of GenericEventRecord  
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF badgeSetsEvent, @NonNull Relay fromRelay) {
     log.debug("processing incoming badgeSetsEvent\n{}", badgeSetsEvent.createPrettyPrintJson());
-    Optional<BadgeSetsEvent> exists = cacheBadgeSetsEventServiceIF.getEvent(badgeSetsEvent.getId(), badgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElseThrow());
-    if (exists.isPresent()) return exists.map(BadgeSetsEvent::getGenericEventRecord);
+    Optional<BadgeSetsEvent> existingBadgeSetsEvent = cacheBadgeSetsEventServiceIF.getEvent(
+       badgeSetsEvent.getId(),
+       badgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElseThrow());
+//    if (existingBadgeSetsEvent.isPresent()) return existingBadgeSetsEvent.map(BaseEvent::getGenericEventRecord);
 
     PubKeyTag recipientPubKeyTag = badgeSetsEvent.requireFirstTag(PubKeyTag.class);
     AddressTag badgeDefinitionReputationEventAsAddressTag = badgeSetsEvent.requireFirstTag(AddressTag.class);
@@ -90,7 +93,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
 
     Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(newBadgeSetsEvent, fromRelay);
     existingBadgeSetsEventOpt.ifPresent(this::checkDelete);
-    
+
     return genericEventRecord;
   }
 

@@ -8,6 +8,7 @@ import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
+import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -17,6 +18,7 @@ import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDef
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheBadgeSetsEventService;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
@@ -30,6 +32,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -37,6 +42,8 @@ import static org.mockito.Mockito.verify;
 public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<BadgeSetsEvent> {
   @Mock
   CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
+  @Mock
+  CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   @Mock
   CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
   @Mock
@@ -50,21 +57,31 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        null,
        cacheKindAddressTagServiceIF,
+       cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        cacheServiceIF,
        null,
+       cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        null,
+       cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
+       cacheReferenceEventTagServiceIF,
+       null,
+       cacheCuratedBadgeAwardGenericEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       cacheServiceIF,
+       cacheKindAddressTagServiceIF,
+       cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        null));
   }
@@ -124,14 +141,10 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
 
   @Test
   void testGetEventByEventId() {
-    mockMaterializationDependencies();
-    mockLocalGetEventByEventId();
+    mockLocalGetEventByEventIdReturnsEmptyOptional();
     CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
-
     Optional<BadgeSetsEvent> actual = cacheBadgeSetsEventService.getEvent(eventId, relay);
-
-    Assertions.assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(eventId);
+    assertTrue(actual.isEmpty());
   }
 
   @Test
@@ -182,19 +195,13 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
 
   @Test
   void testGetByPubKeyTagAndEventTag() {
-    mockMaterializationDependencies();
+    mockLocalgetByPubkeyTagEventTagReturnsEmptyOptional();
     PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
     EventTag eventTag = event.getTypeSpecificTags(EventTag.class).getFirst();
-    doReturn(List.of(event.getGenericEventRecord()))
-       .when(cacheServiceIF)
-       .getEventsByKindAndPubKeyTagAndEventTag(event.getKind(), pubKeyTag, eventTag);
     CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
 
     Optional<BadgeSetsEvent> actual = cacheBadgeSetsEventService.getBy(pubKeyTag, eventTag);
-
-    Assertions.assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTagAndEventTag(
-       event.getKind(), pubKeyTag, eventTag);
+    assertTrue(actual.isEmpty());
   }
 
   @Test
@@ -247,6 +254,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
     return new CacheBadgeSetsEventService(
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
+       cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF);
   }
@@ -258,5 +266,17 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
     doReturn(Optional.of(curatedBadgeAwardEvent))
        .when(cacheCuratedBadgeAwardGenericEventServiceIF)
        .getEvent(curatedBadgeAwardEvent.getId(), relay);
+  }
+
+  protected void mockLocalGetEventByEventIdReturnsEmptyOptional() {
+    doReturn(Optional.empty())
+       .when(cacheReferenceEventTagServiceIF)
+       .getEvent(eq(eventId), any(Relay.class));
+  }
+
+  protected void mockLocalgetByPubkeyTagEventTagReturnsEmptyOptional() {
+    doReturn(Optional.empty())
+       .when(cacheReferenceEventTagServiceIF)
+       .getByExpanded(any(EventTag.class));
   }
 }

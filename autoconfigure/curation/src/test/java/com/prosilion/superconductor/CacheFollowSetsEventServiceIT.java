@@ -8,12 +8,14 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
+import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.BadgeSetsEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheFollowSetsEventService;
 import com.prosilion.superconductor.base.service.event.CacheBadgeAwardReputationEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import java.util.List;
@@ -39,7 +41,7 @@ import static org.mockito.Mockito.mock;
 @TestPropertySource(properties = {
    "superconductor.event.curation.active=true"
 })
-public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT {
+public class CacheFollowSetsEventServiceIT extends BaseCacheFollowSetsEventServiceIT {
   private final CacheFollowSetsEventService cacheFollowSetsEventService;
   private final EventServiceIF eventServiceIF;
 
@@ -48,9 +50,11 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
+     @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
+     @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
      @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventService cacheFollowSetsEventService) {
-    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, eventServiceIF, cacheFollowSetsEventService);
+    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, badgeSetsEventKindPlugin, deleteEventServiceIF, eventServiceIF, cacheFollowSetsEventService);
     this.cacheFollowSetsEventService = cacheFollowSetsEventService;
     this.eventServiceIF = eventServiceIF;
   }
@@ -130,7 +134,7 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
   void testGetByPubKeyTag() {
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
        superconductorInstanceIdentity,
-       badgeSetsUpvoteEvent,
+       dbSynchedBadgeSetsEvent_1,
        relay);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
     
@@ -142,7 +146,7 @@ public class CacheFollowSetsEventServiceIT extends BaseFollowSetsEventServiceIT 
   void testGetByDirectEventTag() {
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
        superconductorInstanceIdentity,
-       badgeSetsUpvoteEvent,
+       dbSynchedBadgeSetsEvent_1,
        relay);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
     

@@ -67,7 +67,6 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
 
     FollowSetsEvent materializedIncomingFollowSetsEvent =
        cacheFollowSetsEventServiceIF.materialize(incomingFollowSetsEventAsReputationEvent).orElseThrow();
-
     log.debug("(0ofY) ... materializedIncomingFollowSetsEvent:\n{}", materializedIncomingFollowSetsEvent.createPrettyPrintJson());
 
     List<BadgeAwardReputationEvent> existingBadgeAwardReputationEvents =

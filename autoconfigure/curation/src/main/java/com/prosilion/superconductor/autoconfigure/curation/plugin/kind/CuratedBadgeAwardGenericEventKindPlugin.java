@@ -46,10 +46,7 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
     Optional<RelayTag> relayTag = event.findFirstTag(RelayTag.class);
     AddressTag suppliedAddressTag = event.requireFirstTag(AddressTag.class);
 
-    //  super.processIncomingEvent(event, fromRelay);  save incoming BadgeAwardGenericEvent
-
     Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent =
-//       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag, relayTag, fromRelay);
        cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag);
 
     if (curatedBadgeDefinitionGenericEvent.isEmpty()) {
@@ -62,7 +59,6 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
     BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
        new BadgeAwardGenericEvent<>(
           event.asGenericEventRecord(),
-//          curatedBadgeDefinitionGenericEvent.get().asGenericEventRecord(),
           aTag -> curatedBadgeDefinitionGenericEvent.get().getBadgeDefinitionGenericEvent());
     log.debug("...done:\n{}", badgeAwardGenericEvent.createPrettyPrintJson());
 

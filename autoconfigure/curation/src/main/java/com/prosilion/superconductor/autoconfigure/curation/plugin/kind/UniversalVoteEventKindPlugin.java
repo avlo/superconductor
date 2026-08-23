@@ -142,7 +142,7 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
 
     super.processIncomingEvent(curatedBadgeAwardEvent, superconductorRelay);
 
-    BadgeSetsEvent badgeSetsEvent =
+    BadgeSetsEvent transientBadgeSetsEvent =
        cacheBadgeSetsEventServiceIF.getBy(
              new PubKeyTag(curatedBadgeAwardEvent.getAwardRecipientPublicKey()),
              existingDefnReputation.asAddressableEventAddressTag())
@@ -155,9 +155,14 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
                 existingDefnReputation,
                 curatedBadgeAwardEvent,
                 superconductorRelay));
-    
-//    cacheServiceIF.save(badgeSetsEvent);
-//    badgeSetsEventKindPlugin.processIncomingEvent(badgeSetsEvent, superconductorRelay);
+
+//    below saves but never deletes
+    cacheServiceIF.save(transientBadgeSetsEvent);
+
+    BadgeSetsEvent badgeSetsEvent = transientBadgeSetsEvent;
+//       cacheBadgeSetsEventServiceIF.materialize(
+//          badgeSetsEventKindPlugin.processIncomingEvent(transientBadgeSetsEvent, superconductorRelay)
+//             .orElseThrow()).orElseThrow();
 
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(superconductorInstanceIdentity, badgeSetsEvent, superconductorRelay);
     return followSetsEventKindPlugin.processIncomingEvent(followSetsEvent, awardEventConsolidatedRelay);

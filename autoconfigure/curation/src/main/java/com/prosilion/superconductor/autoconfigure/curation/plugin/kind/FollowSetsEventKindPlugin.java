@@ -2,21 +2,23 @@ package com.prosilion.superconductor.autoconfigure.curation.plugin.kind;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.AddressableEvent;
 import com.prosilion.nostr.event.BaseEvent;
+import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.BadgeAwardReputationEventKindTypePlugin;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
@@ -38,8 +40,6 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
   private final String superconductorRelayUrl;
   private final DeleteEventServiceIF deleteEventServiceIF;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF;
-  private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
-  private final CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
   private final BadgeSetsEventKindPlugin badgeSetsEventKindPlugin;
   private final BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin;
@@ -50,8 +50,6 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
      @NonNull String superconductorRelayUrl,
      @NonNull NotifierService notifierService,
      @NonNull EventPlugin eventPlugin,
-     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF,
      @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF,
      @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
@@ -63,13 +61,80 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
     this.superconductorRelayUrl = superconductorRelayUrl;
     this.deleteEventServiceIF = deleteEventServiceIF;
     this.cacheFollowSetsEventServiceIF = cacheFollowSetsEventServiceIF;
-    this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
-    this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardGenericEventServiceIF;
     this.cacheBadgeSetsEventServiceIF = cacheBadgeSetsEventServiceIF;
     this.badgeSetsEventKindPlugin = badgeSetsEventKindPlugin;
     this.badgeAwardReputationEventKindTypePlugin = badgeAwardReputationEventKindTypePlugin;
     this.cacheServiceIF = cacheServiceIF;
     log.debug("using superconductorRelayUrl: [{}]", superconductorRelayUrl);
+  }
+
+  public Optional<GenericEventRecord> processIncomingEventUnvalidated(@NonNull FollowSetsEvent incomingFollowSetsEvent, @NonNull Relay fromRelay) {
+    PubKeyTag recipientPubKeyTag = incomingFollowSetsEvent.requireFirstTag(PubKeyTag.class);
+    AddressTag badgeDefinitionReputationEventAsAddressTag = incomingFollowSetsEvent.getBadgeSetsEventList().stream().map(BadgeSetsEvent::getBadgeDefinitionReputationEvent).findFirst().map(AddressableEvent::asAddressableEventAddressTag).orElseThrow();
+    EventTag unvalidatedFollowSetsEventBadgeSetsEventAsEventTag = incomingFollowSetsEvent.requireFirstTag(EventTag.class);
+
+    Optional<EventTag> badgeSetsEventAsEventTag =
+       cacheBadgeSetsEventServiceIF.getBy(recipientPubKeyTag, badgeDefinitionReputationEventAsAddressTag).stream()
+          .map(badgeSetsEvent ->
+             new EventTag(badgeSetsEvent.getId(), badgeSetsEvent.getRelay().orElseThrow().getUrl())).findFirst();
+
+    Optional<FollowSetsEvent> followSetsEventMatchingBadgeDefnRepEventOpt =
+       badgeSetsEventAsEventTag.map(cacheFollowSetsEventServiceIF::getByDirect).stream().flatMap(Optional::stream).findFirst();
+
+    if (followSetsEventMatchingBadgeDefnRepEventOpt.isEmpty()) {
+      BadgeSetsEvent first = incomingFollowSetsEvent.getBadgeSetsEventList().getFirst();
+      cacheServiceIF.save(first);
+      Optional<GenericEventRecord> genericEventRecord = processIncomingEvent(incomingFollowSetsEvent, fromRelay);
+      return genericEventRecord;
+    }
+
+    FollowSetsEvent dbFollowSetsEvent = followSetsEventMatchingBadgeDefnRepEventOpt.get();
+
+    CuratedBadgeAwardGenericEvent incomingFollowSetsEventCuratedBadgeAwardEvent = incomingFollowSetsEvent.getBadgeSetsEventList().getFirst().getCuratedBadgeAwardGenericEventList().getFirst();
+
+    List<BadgeSetsEvent> followSetsEventMatchingBadgeDefnRepList = dbFollowSetsEvent.getBadgeSetsEventList();
+
+    Optional<BadgeSetsEvent> foundMatchingBadgeSetsEventAlreadyContainingCuratedBadgeAwardEventOpt = followSetsEventMatchingBadgeDefnRepList.stream()
+       .filter(badgeSetsEvent ->
+          badgeSetsEvent.getCuratedBadgeAwardGenericEventList()
+             .contains(incomingFollowSetsEventCuratedBadgeAwardEvent))
+       .findFirst();
+
+    if (foundMatchingBadgeSetsEventAlreadyContainingCuratedBadgeAwardEventOpt.isPresent()) {
+      return Optional.of(dbFollowSetsEvent.asGenericEventRecord());
+    }
+
+    BadgeSetsEvent foundMatchingBadgeSetsEventThatDoesntYetContainCuratedBadgeAwardEvent =
+       followSetsEventMatchingBadgeDefnRepList.stream().filter(badgeSetsEvent ->
+          badgeSetsEvent.getBadgeDefinitionReputationEvent().equals(
+             incomingFollowSetsEvent.getBadgeSetsEventList().getFirst().getBadgeDefinitionReputationEvent())).findFirst().orElseThrow();
+
+    List<CuratedBadgeAwardGenericEvent> newCuratedAwardList =
+       Stream.concat(
+          foundMatchingBadgeSetsEventThatDoesntYetContainCuratedBadgeAwardEvent.getCuratedBadgeAwardGenericEventList().stream(),
+          Stream.of(incomingFollowSetsEventCuratedBadgeAwardEvent)).toList();
+
+    BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
+       superconductorInstanceIdentity,
+       foundMatchingBadgeSetsEventThatDoesntYetContainCuratedBadgeAwardEvent.getBadgeDefinitionReputationEvent(),
+       newCuratedAwardList,
+       new Relay(superconductorRelayUrl));
+
+    GenericEventRecord savedBadgeSetsEvent = badgeSetsEventKindPlugin.processIncomingEvent(badgeSetsEvent, fromRelay).orElseThrow();
+
+    BadgeSetsEvent event =
+       cacheBadgeSetsEventServiceIF.getEvent(savedBadgeSetsEvent.getId(), savedBadgeSetsEvent.getRelayTag().orElseThrow().getRelay())
+          .orElseThrow();
+
+    FollowSetsEvent followSetsEvent = new FollowSetsEvent(
+       superconductorInstanceIdentity,
+       event,
+       new Relay(superconductorRelayUrl));
+//    deletePrevious(foundMatchingBadgeSetsEventThatDoesntYetContainCuratedBadgeAwardEvent);
+//    cacheServiceIF.save(badgeSetsEvent);
+    Optional<GenericEventRecord> genericEventRecord = processIncomingEvent(followSetsEvent, fromRelay);
+
+    return genericEventRecord;
   }
 
   //  TODO: examine re-arch of EventPluginIF such that processIncomingEvent(...) returns FollowSetsEvent instead of GenericEventRecord  
@@ -108,13 +173,18 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
        new Relay(superconductorRelayUrl));
     log.debug("(5of9) materialized new FollowSetsEvent:\n{}", materializedFollowSetsEvent.createPrettyPrintJson());
 
-    findAwardRecipientExistingFollowSets(materializedFollowSetsEvent).ifPresent(followSetsEvent -> {
-      log.debug("(6of9) ... deleting previous existingDbFollowSets ...");
-      deletePrevious(followSetsEvent);
-    });
-
     log.debug("(7of9) ... calling super.processIncomingEvent(materializedFollowSetsEvent) ...");
     super.processIncomingEvent(materializedFollowSetsEvent, new Relay(superconductorRelayUrl));
+
+    findAwardRecipientExistingFollowSets(materializedFollowSetsEvent).ifPresent(followSetsEvent -> {
+      log.debug("(6of9) ... deleting previous existingDbFollowSets ...");
+      cacheServiceIF.deleteEvent(
+         new DeletionEvent(
+            superconductorInstanceIdentity,
+            new EventTag(followSetsEvent.getId(), followSetsEvent.getRelayTag().orElseThrow().getRelay().getUrl()),
+            "Delete from FollowSetsEventKindPlugin",
+            fromRelay));
+    });
 
     log.debug("(8of9) ... calling badgeAwardReputationEventKindTypePlugin.processIncomingEvent(...) ...");
     badgeAwardReputationEventKindTypePlugin.processIncomingEvent(materializedFollowSetsEvent, fromRelay);
@@ -129,10 +199,12 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
     return genericEventRecord.stream();
   }
 
-  private Optional<FollowSetsEvent> findAwardRecipientExistingFollowSets(FollowSetsEvent followSetsEvent) {
+  private Optional<GenericEventRecord> findAwardRecipientExistingFollowSets(FollowSetsEvent followSetsEvent) {
     PublicKey awardRecipientPublicKey = followSetsEvent.getAwardRecipientPublicKey();
     PubKeyTag pubKeyTag = new PubKeyTag(awardRecipientPublicKey);
-    List<FollowSetsEvent> by = cacheFollowSetsEventServiceIF.getBy(pubKeyTag);
+    List<GenericEventRecord> by = cacheServiceIF.getEventsByKindAndPubKeyTag(
+       getKind(),
+       pubKeyTag);
     if (by.size() > 1)
       throw new NostrException("found more than one follow sets for a given recipient");
     return by.stream().findFirst();

@@ -21,11 +21,9 @@ import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDefinitionReputationEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
@@ -40,10 +38,7 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
   private final CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
-  private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
-  private final CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF;
   private final FollowSetsEventKindPlugin followSetsEventKindPlugin;
-  private final BadgeSetsEventKindPlugin badgeSetsEventKindPlugin;
   private final Identity superconductorInstanceIdentity;
   private final Relay superconductorRelay;
   private final CacheServiceIF cacheServiceIF;
@@ -54,10 +49,7 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
      @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventService,
      @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF,
-     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
-     @NonNull CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF,
      @NonNull FollowSetsEventKindPlugin followSetsEventKindPlugin,
-     @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
      @NonNull EventPluginIF eventPluginIF,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF) {
@@ -67,10 +59,7 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
     this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventService;
     this.cacheCuratedFormulaEventServiceIF = cacheCuratedFormulaEventServiceIF;
-    this.cacheBadgeSetsEventServiceIF = cacheBadgeSetsEventServiceIF;
-    this.cacheFollowSetsEventServiceIF = cacheFollowSetsEventServiceIF;
     this.followSetsEventKindPlugin = followSetsEventKindPlugin;
-    this.badgeSetsEventKindPlugin = badgeSetsEventKindPlugin;
     this.superconductorRelay = new Relay(superconductorRelayUrl);
     this.cacheServiceIF = cacheServiceIF;
     log.debug("using superconductorRelayUrl: [{}]", superconductorRelayUrl);
@@ -143,29 +132,14 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
     super.processIncomingEvent(curatedBadgeAwardEvent, superconductorRelay);
 
     BadgeSetsEvent transientBadgeSetsEvent =
-       cacheBadgeSetsEventServiceIF.getBy(
-             new PubKeyTag(curatedBadgeAwardEvent.getAwardRecipientPublicKey()),
-             existingDefnReputation.asAddressableEventAddressTag())
-          .map(badgeSetsEvent1 ->
-             badgeSetsEvent1.createNewFromExisting(
-                superconductorInstanceIdentity, curatedBadgeAwardEvent))
-          .orElse(
-             new BadgeSetsEvent(
-                superconductorInstanceIdentity,
-                existingDefnReputation,
-                curatedBadgeAwardEvent,
-                superconductorRelay));
+       new BadgeSetsEvent(
+          superconductorInstanceIdentity,
+          existingDefnReputation,
+          curatedBadgeAwardEvent,
+          superconductorRelay);
 
-//    below saves but never deletes
-    cacheServiceIF.save(transientBadgeSetsEvent);
-
-    BadgeSetsEvent badgeSetsEvent = transientBadgeSetsEvent;
-//       cacheBadgeSetsEventServiceIF.materialize(
-//          badgeSetsEventKindPlugin.processIncomingEvent(transientBadgeSetsEvent, superconductorRelay)
-//             .orElseThrow()).orElseThrow();
-
-    FollowSetsEvent followSetsEvent = new FollowSetsEvent(superconductorInstanceIdentity, badgeSetsEvent, superconductorRelay);
-    return followSetsEventKindPlugin.processIncomingEvent(followSetsEvent, awardEventConsolidatedRelay);
+    FollowSetsEvent followSetsEvent = new FollowSetsEvent(superconductorInstanceIdentity, transientBadgeSetsEvent, superconductorRelay);
+    return followSetsEventKindPlugin.processIncomingEventUnvalidated(followSetsEvent, awardEventConsolidatedRelay);
   }
 
   @Override

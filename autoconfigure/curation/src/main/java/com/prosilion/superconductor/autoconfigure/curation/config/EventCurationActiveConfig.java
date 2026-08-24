@@ -27,7 +27,6 @@ import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSet
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.ReputationCalculationServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheBadgeAwardReputationEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
@@ -220,10 +219,7 @@ public class EventCurationActiveConfig {
      @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
      @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF,
-     @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
-     @NonNull CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF,
      @NonNull FollowSetsEventKindPlugin followSetsEventKindPlugin,
-     @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
      @NonNull EventPlugin eventPlugin,
      @NonNull Identity afterimageInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF) {
@@ -233,10 +229,7 @@ public class EventCurationActiveConfig {
        cacheCuratedBadgeDefinitionGenericEventService,
        cacheBadgeDefinitionReputationEventService,
        cacheCuratedFormulaEventServiceIF,
-       cacheBadgeSetsEventServiceIF,
-       cacheFollowSetsEventServiceIF,
        followSetsEventKindPlugin,
-       badgeSetsEventKindPlugin,
        eventPlugin,
        afterimageInstanceIdentity,
        cacheServiceIF);
@@ -315,8 +308,6 @@ public class EventCurationActiveConfig {
      @NonNull NotifierService notifierService,
      @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
-     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF,
      @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
      @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
      @NonNull BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin,
@@ -326,8 +317,6 @@ public class EventCurationActiveConfig {
        superconductorRelayUrl,
        notifierService,
        eventPlugin,
-       cacheBadgeDefinitionReputationEventServiceIF,
-       cacheCuratedBadgeAwardGenericEventServiceIF,
        deleteEventServiceIF,
        cacheFollowSetsEventService,
        cacheBadgeSetsEventServiceIF,
@@ -375,43 +364,35 @@ public class EventCurationActiveConfig {
 
     kindFxnMap.put(
        Kind.CURATION_SETS_BADGE_AWARD_EVENT,
-       eventIF ->
-          cacheCuratedBadgeAwardGenericEventService.materialize(eventIF));
+       cacheCuratedBadgeAwardGenericEventService::materialize);
 
     kindFxnMap.put(
        Kind.CURATION_SETS_BADGE_DEFINITION_EVENT,
-       eventIF ->
-          cacheCuratedBadgeDefinitionGenericEventService.materialize(eventIF));
+       cacheCuratedBadgeDefinitionGenericEventService::materialize);
 
     kindFxnMap.put(
        Kind.CURATION_SETS_FORMULA_EVENT,
-       eventIF ->
-          cacheCuratedFormulaEventService.materialize(eventIF));
+       cacheCuratedFormulaEventService::materialize);
 
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
-       eventIF ->
-          cacheBadgeAwardGenericEventService.materialize(eventIF));
+       cacheBadgeAwardGenericEventService::materialize);
 
     kindFxnMap.put(
        Kind.BADGE_DEFINITION_EVENT,
-       eventIF ->
-          cacheBadgeDefinitionGenericEventService.materialize(eventIF));
+       cacheBadgeDefinitionGenericEventService::materialize);
 
     kindFxnMap.put(
        Kind.FOLLOW_SETS,
-       eventIF ->
-          cacheFollowSetsEventService.materialize(eventIF));
+       cacheFollowSetsEventService::materialize);
 
     kindFxnMap.put(
        Kind.BADGE_SETS_EVENT,
-       eventIF ->
-          cacheBadgeSetsEventService.materialize(eventIF));
+       cacheBadgeSetsEventService::materialize);
 
     kindFxnMap.put(
        Kind.ARBITRARY_CUSTOM_APP_DATA,
-       eventIF ->
-          cacheFormulaEventService.materialize(eventIF));
+       cacheFormulaEventService::materialize);
 
     kindFxnMap.put(
        Kind.DELETION,
@@ -430,13 +411,11 @@ public class EventCurationActiveConfig {
 
     kindFxnMap.put(
        Kind.BADGE_AWARD_EVENT,
-       eventIF ->
-          cacheBadgeAwardReputationEventService.materialize(eventIF));
+       cacheBadgeAwardReputationEventService::materialize);
 
     kindFxnMap.put(
        Kind.BADGE_DEFINITION_EVENT,
-       eventIF ->
-          cacheBadgeDefinitionReputationEventService.materialize(eventIF));
+       cacheBadgeDefinitionReputationEventService::materialize);
 
     return kindFxnMap;
   }

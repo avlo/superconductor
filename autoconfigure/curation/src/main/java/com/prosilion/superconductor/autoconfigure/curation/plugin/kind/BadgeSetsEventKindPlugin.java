@@ -58,7 +58,6 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
     Optional<BadgeSetsEvent> existingBadgeSetsEvent = cacheBadgeSetsEventServiceIF.getEvent(
        incomingBadgeSetsEvent.getId(),
        incomingBadgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElseThrow());
-//    if (existingBadgeSetsEvent.isPresent()) return existingBadgeSetsEvent.map(BaseEvent::getGenericEventRecord);
 
     PubKeyTag recipientPubKeyTag = incomingBadgeSetsEvent.requireFirstTag(PubKeyTag.class);
     AddressTag badgeDefinitionReputationEventAsAddressTag = incomingBadgeSetsEvent.requireFirstTag(AddressTag.class);

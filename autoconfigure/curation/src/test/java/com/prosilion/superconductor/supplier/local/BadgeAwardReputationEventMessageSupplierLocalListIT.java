@@ -47,68 +47,54 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
 
   @Test
   void bSuperconductorEventThenAfterimageReq() throws NostrException {
-    createAndSubmitDownvoteEvent("-1", getIdenticalDownvoteRecipientEvent());
-    createAndSubmitUpvoteEvent("0", getIdenticalUpvoteRecipientEvent());
+    createAndSubmitSuppliedParameterEvent("-1", createDownvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterEvent("0", createUpvoteEventForCanonicalRecipient());
   }
 
   @Test
   void cSuperconductorEventThenAfterimageReq() throws NostrException {
-    createAndSubmitUpvoteEvent("1", getIdenticalUpvoteRecipientEvent());
-    createAndSubmitUpvoteEvent("2", getIdenticalUpvoteRecipientEvent());
-    createAndSubmitDownvoteEvent("1", getIdenticalUpvoteRecipientEvent());
+    createAndSubmitSuppliedParameterEvent("1", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterEvent("2", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterEvent("1", createDownvoteEventForCanonicalRecipient());
   }
-  
-    @Test
+
+  @Test
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
-    createAndSubmitUpvoteEvent("1", getIdenticalUpvoteRecipientEvent());
-    createAndSubmitUpvoteEvent("1", getIdenticalUpvoteDifferentRecipientEvent());
-    createAndSubmitUpvoteEvent("2", getIdenticalUpvoteRecipientEvent());
-    createAndSubmitUpvoteEvent("3", getIdenticalUpvoteRecipientEvent());
-    createAndSubmitUpvoteEvent("2", getIdenticalUpvoteDifferentRecipientEvent());
+    createAndSubmitSuppliedParameterEvent("1", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterEvent("1", createUpvoteEventForDifferentRecipient());
+    createAndSubmitSuppliedParameterEvent("2", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterEvent("3", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterEvent("2", createUpvoteEventForDifferentRecipient());
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteRecipientEvent = getIdenticalUpvoteRecipientEvent();
-    createAndSubmitUpvoteEvent("4", identicalUpvoteRecipientEvent);
-    createAndSubmitUpvoteEvent("4", identicalUpvoteRecipientEvent);
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteRecipientEvent = createUpvoteEventForCanonicalRecipient();
+    createAndSubmitSuppliedParameterEvent("4", identicalUpvoteRecipientEvent);
+    createAndSubmitSuppliedParameterEvent("4", identicalUpvoteRecipientEvent);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteDifferentRecipientEvent = getIdenticalUpvoteDifferentRecipientEvent();
-    createAndSubmitUpvoteEvent("3", identicalUpvoteDifferentRecipientEvent);
-    createAndSubmitUpvoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteDifferentRecipientEvent = createUpvoteEventForDifferentRecipient();
+    createAndSubmitSuppliedParameterEvent("3", identicalUpvoteDifferentRecipientEvent);
+    createAndSubmitSuppliedParameterEvent("3", identicalUpvoteDifferentRecipientEvent);
 
-    createAndSubmitDownvoteEvent("5", getIdenticalUpvoteRecipientEvent());
-    createAndSubmitDownvoteEvent("4", getIdenticalDownvoteRecipientEvent());
+    createAndSubmitSuppliedParameterEvent("5", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterEvent("4", createDownvoteEventForCanonicalRecipient());
   }
 
-  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalUpvoteRecipientEvent() {
+  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createUpvoteEventForCanonicalRecipient() {
     return createUpvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
   }
 
-  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalDownvoteRecipientEvent() {
+  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createDownvoteEventForCanonicalRecipient() {
     return createDownvoteEvent(new Relay(definitionEventRelayUrl), recipient.getPublicKey());
   }
 
-  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalUpvoteDifferentRecipientEvent() {
+  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createUpvoteEventForDifferentRecipient() {
     return createUpvoteEvent(new Relay(definitionEventRelayUrl), recipientDifferent.getPublicKey());
   }
 
-  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> getIdenticalDownvoteDifferentRecipientEvent() {
+  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createDownvoteEventForDifferentRecipient() {
     return createDownvoteEvent(new Relay(definitionEventRelayUrl), recipientDifferent.getPublicKey());
   }
 
-  private void createAndSubmitUpvoteEvent(String expectedScore, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event) {
-    submitSCEventWithDuration_backup(
-       event,
-       definitionEventRelayUrl,
-       new Filters(
-          new ReferencedPublicKeyFilter(
-             new PubKeyTag(event.getAwardRecipientPublicKey())),
-          new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT)));
-
-    assertEquals(
-       expectedScore,
-       submitAfterImageReq(new PubKeyTag(event.getAwardRecipientPublicKey()), awardEventRelayUrl).getFirst().getContent());
-  }
-
-  private void createAndSubmitDownvoteEvent(String expectedScore, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event) {
+  private void createAndSubmitSuppliedParameterEvent(String expectedScore, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event) {
     submitSCEventWithDuration_backup(
        event,
        definitionEventRelayUrl,

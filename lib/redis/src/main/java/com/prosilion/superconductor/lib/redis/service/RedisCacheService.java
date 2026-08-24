@@ -180,6 +180,11 @@ public class RedisCacheService implements RedisCacheServiceIF {
     return filteredGERs.apply(eventNosqlEntityService.getAll());
   }
 
+  @Override
+  public List<GenericEventRecord> getAllIncludingDeleted() {
+    return asGenericEvents(eventNosqlEntityService.getAll().stream());
+  }
+
   @NonNull
   private List<GenericEventRecord> asGenericEvents(Stream<EventNosqlEntityIF> events) {
     return events.map(EventIF::asGenericEventRecord).toList();

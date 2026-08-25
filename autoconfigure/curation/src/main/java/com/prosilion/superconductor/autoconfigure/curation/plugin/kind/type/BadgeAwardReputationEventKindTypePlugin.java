@@ -105,7 +105,7 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
                 previousReputationEventsByDefinition
                    .get(badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag()))
              .orElseGet(() ->
-                createFreshBadgeAwardReputationEvent(followSetsEvent, badgeSetsEvent)))
+                createNewBadgeAwardReputationEvent(followSetsEvent, badgeSetsEvent)))
        .map(previousReputationEvent ->
           calculateBadgeAwardReputationEvent(
              previousReputationEvent.getBadgeDefinitionEvent(),
@@ -114,7 +114,7 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
        .toList();
   }
 
-  BiFunction<Stream<BadgeSetsEvent>, AddressTag, List<CuratedBadgeAwardGenericEvent>> fxnDo =
+  private final BiFunction<Stream<BadgeSetsEvent>, AddressTag, List<CuratedBadgeAwardGenericEvent>> fxnDo =
      (badgeSetsEventStream, addressTag) ->
         badgeSetsEventStream.filter(badgeaa ->
               badgeaa.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag().equals(addressTag)).findFirst()
@@ -145,7 +145,7 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
     return filteredOutNewIncomingFollowSet.stream().findFirst();
   }
 
-  private BadgeAwardReputationEvent createFreshBadgeAwardReputationEvent(FollowSetsEvent followSetsEvent, BadgeSetsEvent badgeSetsEvent) {
+  private BadgeAwardReputationEvent createNewBadgeAwardReputationEvent(FollowSetsEvent followSetsEvent, BadgeSetsEvent badgeSetsEvent) {
     return createBadgeAwardReputationEvent(
        followSetsEvent.getAwardRecipientPublicKey(),
        badgeSetsEvent.getBadgeDefinitionReputationEvent(),

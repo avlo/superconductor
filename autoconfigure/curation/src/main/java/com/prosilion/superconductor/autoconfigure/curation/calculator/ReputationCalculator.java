@@ -7,7 +7,6 @@ import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import java.math.BigDecimal;
@@ -35,33 +34,24 @@ public class ReputationCalculator implements ReputationCalculatorIF {
      @NonNull List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventList) throws NostrException {
     if (curatedFormulaEventList.isEmpty())
       throw new NostrException("calculateUpdatedReputationEvent received empty List<CuratedFormulaEvent>");
-
     return createReputationEvent(
        voteReceiverPubkey,
        calculateReputationEventScore(
           curatedFormulaEventList.stream()
              .filter(curatedFormulaEvent ->
-                containsRxR(curatedBadgeAwardGenericEventList, curatedFormulaEvent)),
+                contains(curatedBadgeAwardGenericEventList, curatedFormulaEvent)),
           previousReputationEvent),
        previousReputationEvent.getBadgeDefinitionEvent());
   }
 
-  private boolean containsRxR(@NonNull List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventList, CuratedFormulaEvent curatedFormulaEvent) {
-    IdentifierTag formulaEventIdentifierTag = curatedFormulaEvent.getIdentifierTag();
-
-    List<IdentifierTag> identifierTags = curatedBadgeAwardGenericEventList.stream()
+  private boolean contains(@NonNull List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventList, CuratedFormulaEvent curatedFormulaEvent) {
+    return curatedBadgeAwardGenericEventList.stream()
        .map(CuratedBadgeAwardGenericEvent::getAddressTag)
-       .map(AddressTag::getIdentifierTag).toList();
-
-    boolean contains = identifierTags.contains(formulaEventIdentifierTag);
-    return contains;
+       .map(AddressTag::getIdentifierTag).toList().contains(curatedFormulaEvent.getIdentifierTag());
   }
 
   private String calculateReputationEventScore(Stream<CuratedFormulaEvent> formulaEvents, BadgeAwardReputationEvent previousReputationEvent) {
-    String score = previousReputationEvent.getScore();
-    List<String> stringStream = formulaEvents.map(CuratedFormulaEvent::getFormula).toList();
-    String reducedScore = stringStream.stream().reduce(score, ExpressionCalculator::calculate);
-    return reducedScore;
+    return formulaEvents.map(CuratedFormulaEvent::getFormula).reduce(previousReputationEvent.getScore(), ExpressionCalculator::calculate);
   }
 
   private BadgeAwardReputationEvent createReputationEvent(

@@ -59,23 +59,19 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
   @Test
   void bSuperconductorEventThenAfterimageReq() throws NostrException {
     createAndSubmitSuppliedParameterEvent("-1", createDownvoteEventForCanonicalRecipient());
-    createAndSubmitSuppliedParameterEvent("-1", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterEvent("0", createUpvoteEventForCanonicalRecipient());
     List<GenericEventRecord> apply = getall.apply(cacheServiceIF);
-    
-    // pass
+
     assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
     assertEquals(2, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
+    assertEquals(1, kindCountFxn.apply(apply, Kind.FOLLOW_SETS)); // size is (incorectly) 0
+    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
+
     assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));
     assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
-    
-    // below shows both FOLLOWS_SET getting deleted when should just be the first
     assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.FOLLOW_SETS));
+    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
 
-    // fail, provides clues as to all FOLLOW_SETS being deleted
-    assertEquals(1, kindCountFxn.apply(apply, Kind.FOLLOW_SETS)); // size is (incorectly) 0
-    assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
-    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
-    
   }
 
   @Test

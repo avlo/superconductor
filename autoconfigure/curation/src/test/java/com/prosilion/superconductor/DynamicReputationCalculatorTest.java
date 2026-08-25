@@ -3,7 +3,6 @@ package com.prosilion.superconductor;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
@@ -108,27 +107,21 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        recipient.getPublicKey(),
        emptyNoReputationYetBadgeAwardEvent,
        List.of(plusOneCuratedFormulaEvent),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          badgeSetsEvent, relay));
+       badgeSetsEvent.getCuratedBadgeAwardGenericEventList());
     assertEquals("1", badgeAwardReputationEventWithSingleFormulaEvent.getContent());
 
     BadgeAwardReputationEvent badgeAwardReputationEventWithMultipleFormulaEvents = reputationCalculator.calculateUpdatedReputationEvent(
        recipient.getPublicKey(),
        emptyNoReputationYetBadgeAwardEvent,
        List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          badgeSetsEvent, relay));
+       badgeSetsEvent.getCuratedBadgeAwardGenericEventList());
     assertEquals("1", badgeAwardReputationEventWithMultipleFormulaEvents.getContent());
 
     assertThrows(NostrException.class, () -> reputationCalculator.calculateUpdatedReputationEvent(
        recipient.getPublicKey(),
        emptyNoReputationYetBadgeAwardEvent,
        List.of(),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          badgeSetsEvent, relay)));
+       badgeSetsEvent.getCuratedBadgeAwardGenericEventList()));
   }
 
   @Test
@@ -173,9 +166,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        recipient.getPublicKey(),
        previousReputationEvent,
        List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          badgeSetsEvent, relay));
+       badgeSetsEvent.getCuratedBadgeAwardGenericEventList());
 
     assertEquals("2", badgeAwardReputationEvent.getContent());
   }
@@ -195,11 +186,58 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        recipient.getPublicKey(),
        emptyNoReputationYetBadgeAwardEvent,
        List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          badgeSetsEvent, relay));
+       badgeSetsEvent.getCuratedBadgeAwardGenericEventList());
 
     assertEquals("-1", badgeAwardReputationEvent.getContent());
+  }
+
+  @Test
+  void testCalculatorStartsWithMinusOneThenPlusOne() {
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent = getCuratedBadgeAwardEvent(badgeAwardUpvoteEvent);
+
+    BadgeAwardReputationEvent reputationFirstEventIsMinusOneBadgeAwardEvent = new BadgeAwardReputationEvent(
+       superconductorInstanceIdentity,
+       recipient.getPublicKey(),
+       BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
+       badgeDefinitionReputationContainingPlusOneFormulaEventAndMinusOneFormulaEvent,
+       new BigDecimal("-1"),
+       relay);
+
+    BadgeAwardReputationEvent badgeAwardReputationEvent = reputationCalculator.calculateUpdatedReputationEvent(
+       recipient.getPublicKey(),
+       reputationFirstEventIsMinusOneBadgeAwardEvent,
+       List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
+       List.of(curatedBadgeAwardUpvoteEvent));
+
+    assertEquals("0", badgeAwardReputationEvent.getContent());
+  }
+
+  @Test
+  void testCalculatorZeroMinusOnePlusOne() {
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent = getCuratedBadgeAwardEvent(badgeAwardUpvoteEvent);
+
+    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardDownvoteEvent = getCuratedBadgeAwardEvent(badgeAwardDownvoteEvent);
+
+    BadgeAwardReputationEvent reputationFirstEventIsMinusOneBadgeAwardEvent = new BadgeAwardReputationEvent(
+       superconductorInstanceIdentity,
+       recipient.getPublicKey(),
+       BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG,
+       badgeDefinitionReputationContainingPlusOneFormulaEventAndMinusOneFormulaEvent,
+       new BigDecimal("0"),
+       relay);
+
+    BadgeAwardReputationEvent badgeAwardReputationEvent = reputationCalculator.calculateUpdatedReputationEvent(
+       recipient.getPublicKey(),
+       reputationFirstEventIsMinusOneBadgeAwardEvent,
+       List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
+       List.of(
+          curatedBadgeAwardDownvoteEvent,
+          curatedBadgeAwardUpvoteEvent));
+
+    assertEquals("0", badgeAwardReputationEvent.getContent());
   }
 
   @Test
@@ -222,9 +260,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        recipient.getPublicKey(),
        emptyNoReputationYetBadgeAwardEvent,
        List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          badgeSetsEvent, relay));
+       badgeSetsEvent.getCuratedBadgeAwardGenericEventList());
 
     assertEquals("0", badgeAwardReputationEvent.getContent());
   }
@@ -257,9 +293,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        recipient.getPublicKey(),
        existingBadgeAwardReputationEvent,
        List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          badgeSetsEvent_1, relay));
+       badgeSetsEvent_1.getCuratedBadgeAwardGenericEventList());
 
     assertEquals("1", firstRecalculatedBadgeAwardReputationEvent.getContent());
 
@@ -267,9 +301,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        recipient.getPublicKey(),
        firstRecalculatedBadgeAwardReputationEvent,
        List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          badgeSetsEvent_1, relay));
+       badgeSetsEvent_1.getCuratedBadgeAwardGenericEventList());
 
 //  below tests same badgeSetsEvent does not change reputation calculation/score
     assertEquals("1", secondRecalculatedBadgeAwardReputationEvent.getContent());
@@ -294,9 +326,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        recipient.getPublicKey(),
        secondRecalculatedBadgeAwardReputationEvent,
        List.of(plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          thirdBadgeSetsEvent, relay));
+       thirdBadgeSetsEvent.getCuratedBadgeAwardGenericEventList());
 
     assertEquals("1", thirdRecalculatedBadgeAwardReputationEvent.getContent());
   }
@@ -349,10 +379,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        List.of(
           plusOneCuratedFormulaEvent,
           secondFormulaShouldNotInterfereWithFirstFormula),
-       new FollowSetsEvent(
-          superconductorInstanceIdentity,
-          List.of(badgeSetsEvent_1, badgeSetsEvent_1),
-          relay));
+       badgeSetsEvent_1.getCuratedBadgeAwardGenericEventList());
 
     assertEquals("1", badgeAwardReputationEvent_1.getContent());
   }

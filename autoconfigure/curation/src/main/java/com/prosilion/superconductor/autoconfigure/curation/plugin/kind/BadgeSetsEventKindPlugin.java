@@ -55,10 +55,6 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingBadgeSetsEvent, @NonNull Relay fromRelay) {
     log.debug("processing incoming badgeSetsEvent\n{}", incomingBadgeSetsEvent.createPrettyPrintJson());
-    Optional<BadgeSetsEvent> existingBadgeSetsEvent = cacheBadgeSetsEventServiceIF.getEvent(
-       incomingBadgeSetsEvent.getId(),
-       incomingBadgeSetsEvent.getRelayTag().map(RelayTag::getRelay).orElseThrow());
-
     PubKeyTag recipientPubKeyTag = incomingBadgeSetsEvent.requireFirstTag(PubKeyTag.class);
     AddressTag badgeDefinitionReputationEventAsAddressTag = incomingBadgeSetsEvent.requireFirstTag(AddressTag.class);
 
@@ -91,13 +87,12 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
        updatedCuratedBadgeAwardGenericEventList);
 
 //    below saves and then deletes same badgesetsevent
-    existingBadgeSetsEventOpt.ifPresent(this::checkDelete);
+//    existingBadgeSetsEventOpt.ifPresent(this::checkDelete);
     Optional<GenericEventRecord> genericEventRecord = super.processIncomingEvent(newBadgeSetsEvent, fromRelay);
-
     return genericEventRecord;
   }
 
-  private void checkDelete(BadgeSetsEvent previousBadgeSetsEvent) {
+  public void checkDelete(BadgeSetsEvent previousBadgeSetsEvent) {
     deleteEventServiceIF.processIncomingEvent(previousBadgeSetsEvent, new Relay(superconductorRelayUrl));
   }
 

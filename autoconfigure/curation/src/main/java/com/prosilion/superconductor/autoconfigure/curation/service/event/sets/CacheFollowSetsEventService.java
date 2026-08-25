@@ -47,6 +47,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   //  TODO: duplicate in @CacheFormulaEventService, consolidate
   @Override
   public Optional<FollowSetsEvent> materialize(@NonNull EventIF incomingFollowSetsEvent) {
+    log.debug("materialize incomingFollowSetsEvent:\n  {}", incomingFollowSetsEvent.createPrettyPrintJson());
     GenericEventRecord genericEventRecord = incomingFollowSetsEvent.asGenericEventRecord();
 
     List<BadgeSetsEvent> badgeSetsEvents = getBadgeSetsEvents(genericEventRecord);
@@ -59,6 +60,7 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   private List<BadgeSetsEvent> getBadgeSetsEvents(GenericEventRecord genericEventRecord) {
+    log.debug("... getBadgeSetsEvents for genericEventRecord ...");
     List<EventTag> eventTags = genericEventRecord.getTypeSpecificTags(EventTag.class);
     if (eventTags.isEmpty())
       throw new NostrException(String.format("FollowSetsEvent requires at least one EventTag:%n%s", genericEventRecord.createPrettyPrintJson()));
@@ -79,9 +81,12 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   private Optional<BadgeSetsEvent> getEvent(EventTag eventTag) {
+    log.debug("calling cacheBadgeSetsEventServiceIF.getEvent(eventTag) id: [{}] ...", eventTag.getEventId());
     Optional<BadgeSetsEvent> event = cacheBadgeSetsEventServiceIF.getEvent(
        eventTag.getEventId(),
        eventTag.requireRelay());
+    log.debug("returning BadgeSetsEvent:\n{}",
+       event.map(BadgeSetsEvent::createPrettyPrintJson).orElse("Optional.empty()"));
     return event;
   }
 

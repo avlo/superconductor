@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -83,8 +84,16 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
 
     if (followSetsEventMatchingBadgeDefnRepEventOpt.isEmpty()) {
       BadgeSetsEvent first = incomingFollowSetsEvent.getBadgeSetsEventList().getFirst();
-      cacheServiceIF.save(first);
-      Optional<GenericEventRecord> genericEventRecord = processIncomingEvent(incomingFollowSetsEvent, fromRelay);
+//      cacheServiceIF.save(first);
+      GenericEventRecord badgeSetsEventGER = badgeSetsEventKindPlugin.processIncomingEvent(first, fromRelay).orElseThrow();
+      BadgeSetsEvent materializedBadgeSetsEvent = cacheBadgeSetsEventServiceIF.materialize(badgeSetsEventGER).orElseThrow();
+
+      FollowSetsEvent newFromExisting = new FollowSetsEvent(
+         superconductorInstanceIdentity,
+         materializedBadgeSetsEvent,
+         new Relay(superconductorRelayUrl));
+
+      Optional<GenericEventRecord> genericEventRecord = processIncomingEvent(newFromExisting, fromRelay);
       return genericEventRecord;
     }
 
@@ -178,12 +187,7 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
 
     findAwardRecipientExistingFollowSets(materializedFollowSetsEvent).ifPresent(followSetsEvent -> {
       log.debug("(6of9) ... deleting previous existingDbFollowSets ...");
-      cacheServiceIF.deleteEvent(
-         new DeletionEvent(
-            superconductorInstanceIdentity,
-            new EventTag(followSetsEvent.getId(), followSetsEvent.getRelayTag().orElseThrow().getRelay().getUrl()),
-            "Delete from FollowSetsEventKindPlugin",
-            fromRelay));
+      deletePrevious(followSetsEvent);
     });
 
     log.debug("(8of9) ... calling badgeAwardReputationEventKindTypePlugin.processIncomingEvent(...) ...");
@@ -202,16 +206,26 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
   private Optional<GenericEventRecord> findAwardRecipientExistingFollowSets(FollowSetsEvent followSetsEvent) {
     PublicKey awardRecipientPublicKey = followSetsEvent.getAwardRecipientPublicKey();
     PubKeyTag pubKeyTag = new PubKeyTag(awardRecipientPublicKey);
-    List<GenericEventRecord> by = cacheServiceIF.getEventsByKindAndPubKeyTag(
-       getKind(),
-       pubKeyTag);
-    if (by.size() > 1)
+    List<FollowSetsEvent> existingFollowSetsEventOpt = cacheFollowSetsEventServiceIF.getBy(pubKeyTag).stream().toList();
+    List<FollowSetsEvent> filteredOutNewIncomingFollowSet = existingFollowSetsEventOpt.stream().filter(Predicate.not(followSetsEvent::equals)).toList();
+
+    if (filteredOutNewIncomingFollowSet.size() > 1)
       throw new NostrException("found more than one follow sets for a given recipient");
-    return by.stream().findFirst();
+    if (filteredOutNewIncomingFollowSet.isEmpty())
+      log.debug("no existing FollowSetsEvent found for recipient [{}], return Optional.empty()", awardRecipientPublicKey);
+
+    return filteredOutNewIncomingFollowSet.stream().findFirst().map(FollowSetsEvent::asGenericEventRecord);
   }
 
   private void deletePrevious(EventIF eventIF) {
-    deleteEventServiceIF.processIncomingEvent(eventIF, new Relay(superconductorRelayUrl));
+//    deleteEventServiceIF.processIncomingEvent(eventIF, new Relay(superconductorRelayUrl));
+    cacheServiceIF.deleteEvent(
+       new DeletionEvent(
+          superconductorInstanceIdentity,
+          new EventTag(eventIF.getId(), eventIF.getRelayTag().orElseThrow().getRelay().getUrl()),
+          "Delete from FollowSetsEventKindPlugin",
+          new Relay(superconductorRelayUrl)));
+    log.debug("debug for breakpoint, check DB contents");
   }
 
   @Override

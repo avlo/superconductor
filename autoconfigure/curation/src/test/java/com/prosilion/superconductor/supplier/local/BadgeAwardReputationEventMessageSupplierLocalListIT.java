@@ -4,6 +4,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
@@ -15,6 +16,9 @@ import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.supplier.local.abstracts.AbstractBadgeAwardReputationEventMessageSupplierLocalListIT;
 import com.prosilion.superconductor.util.EventAttributesMap;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -34,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
    "superconductor.event.curation.active=true"
 })
 public class BadgeAwardReputationEventMessageSupplierLocalListIT extends AbstractBadgeAwardReputationEventMessageSupplierLocalListIT {
+  private static final List<Kind> KIND_LIST = List.of(Kind.BADGE_AWARD_EVENT, Kind.FOLLOW_SETS, Kind.BADGE_SETS_EVENT, Kind.CURATION_SETS_BADGE_AWARD_EVENT);
   private final CacheServiceIF cacheServiceIF;
 
   @Autowired
@@ -45,10 +50,32 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
     this.cacheServiceIF = cacheServiceIF;
   }
 
+  Function<CacheServiceIF, List<GenericEventRecord>> getall = cacheServiceIF ->
+     cacheServiceIF.getAll().stream().filter(event -> List.of(Kind.BADGE_AWARD_EVENT, Kind.FOLLOW_SETS, Kind.BADGE_SETS_EVENT, Kind.CURATION_SETS_BADGE_AWARD_EVENT).contains(event.getKind())).toList();
+
+  BiFunction<List<GenericEventRecord>, Kind, Integer> kindCountFxn = (cacheServiceIFx, kind) ->
+     cacheServiceIFx.stream().map(GenericEventRecord::getKind).filter(kind::equals).toList().size();
+
   @Test
   void bSuperconductorEventThenAfterimageReq() throws NostrException {
     createAndSubmitSuppliedParameterEvent("-1", createDownvoteEventForCanonicalRecipient());
-    createAndSubmitSuppliedParameterEvent("0", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterEvent("-1", createUpvoteEventForCanonicalRecipient());
+    List<GenericEventRecord> apply = getall.apply(cacheServiceIF);
+    
+    // pass
+    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
+    assertEquals(2, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
+    assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));
+    assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
+    
+    // below shows both FOLLOWS_SET getting deleted when should just be the first
+    assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.FOLLOW_SETS));
+
+    // fail, provides clues as to all FOLLOW_SETS being deleted
+    assertEquals(1, kindCountFxn.apply(apply, Kind.FOLLOW_SETS)); // size is (incorectly) 0
+    assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
+    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
+    
   }
 
   @Test
@@ -56,6 +83,22 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
     createAndSubmitSuppliedParameterEvent("1", createUpvoteEventForCanonicalRecipient());
     createAndSubmitSuppliedParameterEvent("2", createUpvoteEventForCanonicalRecipient());
     createAndSubmitSuppliedParameterEvent("1", createDownvoteEventForCanonicalRecipient());
+
+    List<GenericEventRecord> apply = getall.apply(cacheServiceIF);
+    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
+    assertEquals(3, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
+    assertEquals(1, kindCountFxn.apply(apply, Kind.FOLLOW_SETS));
+    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
+
+    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));
+    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
+    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.FOLLOW_SETS));
+    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
+  }
+
+  private int getEventCountByKindIncludesDeletedEvents(Kind kind) {
+    return cacheServiceIF.getAllIncludingDeleted().stream().map(GenericEventRecord::getKind)
+       .filter(kind::equals).toList().size();
   }
 
   @Test

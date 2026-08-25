@@ -42,7 +42,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
 
   @Override
   public Optional<BadgeSetsEvent> materialize(@NonNull EventIF incomingBadgeSetsEvent) {
-    log.debug("materialize(EventIF incomingBadgeSetsEvent):\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
+    log.debug("materialize incomingBadgeSetsEvent:\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
     Optional<BadgeSetsEvent> badgeSetsEvent = cacheBadgeDefinitionReputationEventServiceIF
        .getByExpanded(
           incomingBadgeSetsEvent.requireFirstTag(AddressTag.class))

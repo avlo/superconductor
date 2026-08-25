@@ -89,7 +89,7 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
     assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));
     assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
     assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.FOLLOW_SETS));
-    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
+    assertEquals(5, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
   }
 
   private int getEventCountByKindIncludesDeletedEvents(Kind kind) {
@@ -115,6 +115,12 @@ public class BadgeAwardReputationEventMessageSupplierLocalListIT extends Abstrac
 
     createAndSubmitSuppliedParameterEvent("5", createUpvoteEventForCanonicalRecipient());
     createAndSubmitSuppliedParameterEvent("4", createDownvoteEventForCanonicalRecipient());
+    List<GenericEventRecord> apply = getall.apply(cacheServiceIF);
+    
+    assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
+    assertEquals(9, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
+    assertEquals(2, kindCountFxn.apply(apply, Kind.FOLLOW_SETS));
+    assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
   }
 
   private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createUpvoteEventForCanonicalRecipient() {

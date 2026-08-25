@@ -26,9 +26,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,16 +79,13 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
     List<BadgeAwardReputationEvent> existingBadgeAwardReputationEvents =
        cacheFollowSetsEventServiceIF.getBadgeAwardReputationEvents(materializedIncomingFollowSetsEvent);
 
-    Map<AddressTag, BadgeAwardReputationEvent> existingBadgeAwardReputationEventsByDefinition =
-       existingBadgeAwardReputationEvents.stream()
-          .collect(Collectors.toMap(
-             UniqueAddressTagEvent::getAddressTag,
-             Function.identity()));
-
     List<BadgeAwardReputationEvent> newReputationEvents =
        updateReputationEvents(
           materializedIncomingFollowSetsEvent,
-          existingBadgeAwardReputationEventsByDefinition);
+          existingBadgeAwardReputationEvents.stream()
+             .collect(Collectors.toMap(
+                UniqueAddressTagEvent::getAddressTag,
+                Function.identity())));
 
     log.debug("(6ofY) ... newReputationEvent:\n  {}", newReputationEvents.stream().map(EventIF::createPrettyPrintJson));
 //    TODO: possibly reverse order below
@@ -100,9 +99,11 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
   }
 
   private @NonNull List<BadgeAwardReputationEvent> updateReputationEvents(FollowSetsEvent followSetsEvent, Map<AddressTag, BadgeAwardReputationEvent> previousReputationEventsByDefinition) {
-    List<BadgeAwardReputationEvent> updatedReputationEvents = followSetsEvent.getBadgeSetsEventList().stream()
+    return followSetsEvent.getBadgeSetsEventList().stream()
        .map(badgeSetsEvent ->
-          tryBadgeAwardReputationEventFromMap(previousReputationEventsByDefinition, badgeSetsEvent)
+          Optional.ofNullable(
+                previousReputationEventsByDefinition
+                   .get(badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag()))
              .orElseGet(() ->
                 createFreshBadgeAwardReputationEvent(followSetsEvent, badgeSetsEvent)))
        .map(previousReputationEvent ->
@@ -111,54 +112,35 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
              filterNewCuratedBadgeAwardGenericEvents(followSetsEvent, previousReputationEvent.getAddressTag()),
              previousReputationEvent))
        .toList();
-
-
-    return updatedReputationEvents;
   }
 
-  private Optional<BadgeAwardReputationEvent> tryBadgeAwardReputationEventFromMap(
-     Map<AddressTag, BadgeAwardReputationEvent> mapPreviousReputationByDefinition,
-     BadgeSetsEvent badgeSetsEvent) {
-    BadgeAwardReputationEvent value = mapPreviousReputationByDefinition.get(badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag());
-    Optional<BadgeAwardReputationEvent> value1 = Optional.ofNullable(value);
-    return value1;
-  }
+  BiFunction<Stream<BadgeSetsEvent>, AddressTag, List<CuratedBadgeAwardGenericEvent>> fxnDo =
+     (badgeSetsEventStream, addressTag) ->
+        badgeSetsEventStream.filter(badgeaa ->
+              badgeaa.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag().equals(addressTag)).findFirst()
+           .map(BadgeSetsEvent::getCuratedBadgeAwardGenericEventList).stream()
+           .flatMap(Collection::stream).toList();
 
   private List<CuratedBadgeAwardGenericEvent> filterNewCuratedBadgeAwardGenericEvents(FollowSetsEvent followSetsEvent, AddressTag addressTag) {
-    Optional<FollowSetsEvent> awardRecipientExistingFollowSets = findAwardRecipientExistingFollowSets(followSetsEvent);
-
-    List<CuratedBadgeAwardGenericEvent> matchedExistingBadgeSetsEventCuratedAwardEvents =
-       awardRecipientExistingFollowSets.stream()
-          .map(FollowSetsEvent::getBadgeSetsEventList)
-          .flatMap(Collection::stream)
-          .filter(badgeSetsEvent ->
-             badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag().equals(addressTag)).findFirst()
-          .map(BadgeSetsEvent::getCuratedBadgeAwardGenericEventList).stream()
-          .flatMap(Collection::stream).toList();
-
-    List<CuratedBadgeAwardGenericEvent> incomingBadgeSetsEventCuratedAwardEvents =
-       followSetsEvent.getBadgeSetsEventList().stream()
-          .filter(badgeSetsEvent ->
-             badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag().equals(addressTag)).findFirst()
-          .map(BadgeSetsEvent::getCuratedBadgeAwardGenericEventList).stream()
-          .flatMap(Collection::stream).toList();
-
-    List<CuratedBadgeAwardGenericEvent> uniqueNewCuratedAwards = incomingBadgeSetsEventCuratedAwardEvents.stream().filter(e ->
-       !matchedExistingBadgeSetsEventCuratedAwardEvents.stream().toList().contains(e)).toList();
-
-    return uniqueNewCuratedAwards;
+    return
+       fxnDo.apply(
+             followSetsEvent.getBadgeSetsEventList().stream(), addressTag).stream()
+          .filter(e ->
+             !fxnDo.apply(findAwardRecipientExistingFollowSets(followSetsEvent).stream()
+                   .map(FollowSetsEvent::getBadgeSetsEventList).flatMap(Collection::stream), addressTag)
+                .contains(e))
+          .toList();
   }
 
   private Optional<FollowSetsEvent> findAwardRecipientExistingFollowSets(FollowSetsEvent followSetsEvent) {
-    PublicKey awardRecipientPublicKey = followSetsEvent.getAwardRecipientPublicKey();
-    PubKeyTag pubKeyTag = new PubKeyTag(awardRecipientPublicKey);
-    List<FollowSetsEvent> existingFollowSetsEventOpt = cacheFollowSetsEventServiceIF.getBy(pubKeyTag).stream().toList();
-    List<FollowSetsEvent> filteredOutNewIncomingFollowSet = existingFollowSetsEventOpt.stream().filter(Predicate.not(followSetsEvent::equals)).toList();
+    List<FollowSetsEvent> filteredOutNewIncomingFollowSet =
+       cacheFollowSetsEventServiceIF.getBy(new PubKeyTag(followSetsEvent.getAwardRecipientPublicKey()))
+          .stream().filter(Predicate.not(followSetsEvent::equals)).toList();
 
     if (filteredOutNewIncomingFollowSet.size() > 1)
       throw new NostrException("found more than one follow sets for a given recipient");
     if (filteredOutNewIncomingFollowSet.isEmpty())
-      log.debug("no existing FollowSetsEvent found for recipient [{}], return Optional.empty()", awardRecipientPublicKey);
+      log.debug("no existing FollowSetsEvent found for recipient [{}], return Optional.empty()", followSetsEvent.getAwardRecipientPublicKey());
 
     return filteredOutNewIncomingFollowSet.stream().findFirst();
   }

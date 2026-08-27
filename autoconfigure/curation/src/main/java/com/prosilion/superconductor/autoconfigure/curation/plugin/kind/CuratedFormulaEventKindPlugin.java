@@ -5,7 +5,6 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
@@ -38,11 +37,7 @@ public class CuratedFormulaEventKindPlugin extends NonPublishingEventKindPlugin 
        eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
 
     String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
-    CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(
-       superconductorInstanceIdentity,
-       incomingFormulaEventIntoCuratedEvent.asGenericEventRecord(),
-       new ReferenceTag(guaranteedSourceRelayUrl),
-       superconductorRelay);
+    CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(incomingFormulaEventIntoCuratedEvent.asGenericEventRecord());
 
     log.debug("calling super.processIncomingEvent(curatedFormulaEvent, superconductorRelay):\n{}",
        curatedFormulaEvent.createPrettyPrintJson());

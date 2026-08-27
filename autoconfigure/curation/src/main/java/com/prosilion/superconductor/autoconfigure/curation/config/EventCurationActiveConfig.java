@@ -263,8 +263,8 @@ public class EventCurationActiveConfig {
   @Bean("formulaEventKindPlugin")
   @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
   FormulaEventKindPlugin formulaEventKindPlugin(
-     @NonNull CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin) {
-    return new FormulaEventKindPlugin(curatedFormulaEventKindPlugin);
+     @NonNull EventPlugin eventPlugin) {
+    return new FormulaEventKindPlugin(eventPlugin);
   }
 
   @Bean("badgeDefinitionReputationEventKindTypePlugin")

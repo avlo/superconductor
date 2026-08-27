@@ -1,23 +1,14 @@
 package com.prosilion.superconductor.supplier.remote.abstracts;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
-import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.BaseMessage;
-import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
-import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.supplier.AbstractBaseBadgeAwardReputationEventMessageListIT;
 import com.prosilion.superconductor.util.EventAttributesMap;
@@ -30,7 +21,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.prosilion.superconductor.BaseCacheFollowSetsEventServiceIT.getEventIFs;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -78,36 +68,6 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierRemoteList
     return badgeAwardEventRelay;
   }
 
-  protected void createAndSubmitSuppliedParameterVoteEventOld(String expectedScore, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event) {
-    submitRelayEventWithDuration_backup(
-       event,
-       awardEventRelayUrl);
-
-    List<BaseMessage> baseMessages = new NostrSingleRequestService().send(
-       createSuperconductorReqMessageEvent(generateRandomHex64String(),
-          new Filters(
-             new ReferencedPublicKeyFilter(
-                new PubKeyTag(event.getAwardRecipientPublicKey())),
-             new KindFilter(Kind.BADGE_AWARD_EVENT))), definitionEventRelayUrl);
-
-    List<EventIF> receivedEventIFs = getGenericEvents(baseMessages);
-    assertTrue(receivedEventIFs.stream().map(EventIF::getId).anyMatch(event.getId()::contains));
-
-    ReqMessage reqMessage = new ReqMessage(
-       generateRandomHex64String(),
-       new Filters(
-          new ReferencedPublicKeyFilter(
-             new PubKeyTag(event.getAwardRecipientPublicKey())),
-          new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT)));
-
-    List<BaseMessage> subscriber = new NostrSingleRequestService().send(reqMessage, awardEventRelayUrl);
-    List<EventIF> genericEvents = getGenericEvents(subscriber);
-
-    assertEquals(
-       expectedScore,
-       genericEvents.getFirst().getContent());
-  }
-
   protected void validateSetupCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents() {
     List<EventIF> sanityCheckReturnedBadgeDefinitionEvents = getEventIFs(
        new NostrSingleRequestService().send(
@@ -129,39 +89,7 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierRemoteList
     assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(contains));
   }
 
-  public List<CuratedFormulaEvent> getDbCuratedFormulaEventListOld() {
-    List<EventIF> sanityCheckReturnedFormulaEventIFs = getEventIFs(
-       new NostrSingleRequestService().send(
-          new ReqMessage(
-             generateRandomHex64String(),
-             new Filters(
-                new KindFilter(Kind.ARBITRARY_CUSTOM_APP_DATA))),
-          definitionEventRelayUrl));
-
-    log.debug("returned events:");
-    log.debug("  {}", sanityCheckReturnedFormulaEventIFs);
-
-    Set<String> sanityCheckFormulaEventIds = sanityCheckReturnedFormulaEventIFs.stream()
-       .map(EventIF::getId)
-       .collect(Collectors.toSet());
-
-    assertTrue(sanityCheckFormulaEventIds.stream().anyMatch(
-       EventAttributesMap.asEventList(formulaEventList).stream().map(FormulaEvent::getId)
-          .toList()::contains));
-
-    List<CuratedFormulaEvent> curatedFormulaEventList = EventAttributesMap.asEventList(formulaEventList).stream()
-       .map(formulaEvent ->
-          new CuratedFormulaEvent(
-             superconductorInstanceIdentity,
-             formulaEvent,
-             new ReferenceTag(getDefinitionEventRelayUrl()),
-             getAwardEventRelay())).toList();
-
-    curatedFormulaEventList.forEach(curatedFormulaEvent -> assertTrue(
-       new NostrEventPublisher(awardEventRelayUrl)
-          .send(
-             new EventMessage(curatedFormulaEvent)).getFlag()));
-
-    return curatedFormulaEventList;
+  @Override
+  protected void validateResidualDbEventCounts() {
   }
 }

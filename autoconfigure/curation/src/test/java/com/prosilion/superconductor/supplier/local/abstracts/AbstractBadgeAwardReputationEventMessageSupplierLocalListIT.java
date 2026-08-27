@@ -22,6 +22,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.prosilion.superconductor.BaseCacheFollowSetsEventServiceIT.getEventIFs;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -78,5 +79,13 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
     Predicate<String> contains = EventAttributesMap.asEventList(this.badgeDefinitionGenericEventList).stream().map(EventIF::getId).toList()::contains;
 
     assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(contains));
+  }
+
+  @Override
+  protected void validateResidualDbEventCounts() {
+    assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));
+    assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
+    assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.FOLLOW_SETS));
+    assertEquals(16, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
   }
 }

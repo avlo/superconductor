@@ -15,7 +15,6 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filterable;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
-import com.prosilion.nostr.filter.tag.ExternalIdentityTagFilter;
 import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
@@ -65,36 +64,20 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
         new KindFilter(Kind.BADGE_SETS_EVENT),
         new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
 
-  @Test
-  void bSuperconductorEventThenAfterimageReq() throws NostrException {
-    createAndSubmitSuppliedParameterVoteEvent("-1", createDownvoteEventForCanonicalRecipient());
-    createAndSubmitSuppliedParameterVoteEvent("0", createUpvoteEventForCanonicalRecipient());
-    List<GenericEventRecord> apply = getall.apply(getAllFxn().get());
-
-    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
-    assertEquals(2, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
-    assertEquals(1, kindCountFxn.apply(apply, Kind.FOLLOW_SETS));
-    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
-
-    assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));
-    assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
-    assertEquals(2, getEventCountByKindIncludesDeletedEvents(Kind.FOLLOW_SETS));
-    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
-  }
-
   protected final String definitionEventRelayUrl;
-
   protected final String awardEventRelayUrl;
+
   protected final List<EventAttributesMap<FormulaEvent>> formulaEventList;
   protected final List<EventAttributesMap<BadgeDefinitionGenericEvent>> badgeDefinitionGenericEventList;
-
   protected final List<EventAttributesMap<CuratedFormulaEvent>> dbCuratedFormulaEventList;
 
   abstract protected Relay getAwardEventRelay();
 
   abstract protected String getDefinitionEventRelayUrl();
+
   abstract protected Supplier<List<GenericEventRecord>> getAllFxn();
   abstract protected Supplier<List<GenericEventRecord>> getAllDeletedFxn();
+  abstract protected void validateResidualDbEventCounts();
 
   private final Function<List<GenericEventRecord>, List<GenericEventRecord>> getall = genericEventRecordList ->
      genericEventRecordList.stream().filter(event -> ALL_KINDS.contains(event.getKind())).toList();
@@ -120,26 +103,8 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     submitAimgEvent(
        createBadgeDefinitionReputationEvent());
   }
+
   //  TODO: check (potential) overuse of services in console/debug (all 3 tests methods)
-
-  @Test
-  void cSuperconductorEventThenAfterimageReq() throws NostrException {
-    createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForCanonicalRecipient());
-    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForCanonicalRecipient());
-    createAndSubmitSuppliedParameterVoteEvent("1", createDownvoteEventForCanonicalRecipient());
-
-    List<GenericEventRecord> apply = getall.apply(getAllFxn().get());
-    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
-    assertEquals(3, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
-    assertEquals(1, kindCountFxn.apply(apply, Kind.FOLLOW_SETS));
-    assertEquals(1, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
-
-    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));
-    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
-    assertEquals(3, getEventCountByKindIncludesDeletedEvents(Kind.FOLLOW_SETS));
-    assertEquals(5, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
-  }
-
   @Test
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
     createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForCanonicalRecipient());
@@ -164,10 +129,13 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     assertEquals(9, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
     assertEquals(2, kindCountFxn.apply(apply, Kind.FOLLOW_SETS));
     assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
+
+    validateResidualDbEventCounts();
   }
 
-  private int getEventCountByKindIncludesDeletedEvents(Kind kind) {
-    return getAllDeletedFxn().get().stream().map(GenericEventRecord::getKind)
+  protected int getEventCountByKindIncludesDeletedEvents(Kind kind) {
+    List<GenericEventRecord> genericEventRecords = getAllDeletedFxn().get();
+    return genericEventRecords.stream().map(GenericEventRecord::getKind)
        .filter(kind::equals).toList().size();
   }
 

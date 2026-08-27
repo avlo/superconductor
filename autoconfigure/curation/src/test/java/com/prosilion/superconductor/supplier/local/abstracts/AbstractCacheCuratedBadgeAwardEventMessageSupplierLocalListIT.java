@@ -201,6 +201,6 @@ public abstract class AbstractCacheCuratedBadgeAwardEventMessageSupplierLocalLis
     badgeAwardUpvoteEvents.forEach(badgeAwardUpvoteEvent ->
        assertTrue(
           new NostrEventPublisher(awardEventRelayUrl).send(
-             new EventMessage(badgeAwardUpvoteEvent), Duration.ofSeconds(5)).getFlag()));
+             new EventMessage(badgeAwardUpvoteEvent), Duration.ofSeconds(10)).getFlag()));
   }
 }

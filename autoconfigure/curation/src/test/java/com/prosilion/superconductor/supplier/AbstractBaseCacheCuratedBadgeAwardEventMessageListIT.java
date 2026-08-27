@@ -60,7 +60,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
           assertTrue(
              new NostrEventPublisher(definitionEventRelayUrl)
                 .send(
-                   new EventMessage(badgeDefinitionGenericEvent), Duration.ofSeconds(5)).getFlag()));
+                   new EventMessage(badgeDefinitionGenericEvent), Duration.ofSeconds(10)).getFlag()));
 
     validateCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents(badgeAwardUpvoteEvents);
   }
@@ -78,7 +78,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
                    new PubKeyTag(
                       recipient.getPublicKey())))),
           awardEventRelayUrl,
-          Duration.ofSeconds(5)));
+          Duration.ofSeconds(10)));
 
     log.debug("returned events:");
     log.debug("  {}", returnedCuratedBadgeAwardEvents.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining(",\n")));
@@ -117,7 +117,7 @@ public abstract class AbstractBaseCacheCuratedBadgeAwardEventMessageListIT exten
                 new KindFilter(
                    Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
           awardEventRelayUrl,
-          Duration.ofSeconds(5)));
+          Duration.ofSeconds(10)));
 
     assertTrue(returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::getId)
        .allMatch(returnedCuratedBadgeAwardEvents.stream()

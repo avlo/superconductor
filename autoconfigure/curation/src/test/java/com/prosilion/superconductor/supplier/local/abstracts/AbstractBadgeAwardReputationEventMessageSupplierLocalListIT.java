@@ -1,99 +1,82 @@
 package com.prosilion.superconductor.supplier.local.abstracts;
 
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.FormulaEvent;
+import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.filter.Filters;
+import com.prosilion.nostr.filter.event.KindFilter;
+import com.prosilion.nostr.message.ReqMessage;
+import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.supplier.AbstractBaseBadgeAwardReputationEventMessageListIT;
 import com.prosilion.superconductor.util.EventAttributesMap;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.prosilion.superconductor.BaseCacheFollowSetsEventServiceIT.getEventIFs;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @Slf4j
 public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListIT extends AbstractBaseBadgeAwardReputationEventMessageListIT {
+  CacheServiceIF cacheServiceIF;
 
   protected AbstractBadgeAwardReputationEventMessageSupplierLocalListIT(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String definitionEventRelayUrl,
-     @NonNull String awardEventRelayUrl) {
+     @NonNull String awardEventRelayUrl,
+     CacheServiceIF cacheServiceIF) {
     super(superconductorInstanceIdentity, definitionEventRelayUrl, awardEventRelayUrl);
+    this.cacheServiceIF = cacheServiceIF;
   }
 
   @Override
-  protected List<EventAttributesMap<FormulaEvent>> createFormulaEventList() {
-    List<EventAttributesMap<FormulaEvent>> eventAttributesMap = EventAttributesMap.asEventAttributesMap(
-       List.of(
-          createPlusOneFormulaEvent()
-          ,
-          createMinusOneFormulaEvent()
-//       ,
-//       createMinusOneFormulaEvent()
-       ));
-    return eventAttributesMap;
+  protected Supplier<List<GenericEventRecord>> getAllFxn() {
+    return () -> cacheServiceIF.getAll();
   }
 
   @Override
-  protected List<EventAttributesMap<BadgeDefinitionGenericEvent>> createBadgeDefinitionGenericEventList() {
-    return
-       EventAttributesMap.asEventAttributesMap(List.of(
-          createBadgeAwardUpvoteDefinitionEvent()
-          ,
-          createBadgeAwardDownvoteDefinitionEvent()
-       ));
+  protected Supplier<List<GenericEventRecord>> getAllDeletedFxn() {
+    return () -> cacheServiceIF.getAllIncludingDeleted();
   }
 
-  protected BadgeDefinitionGenericEvent createBadgeAwardUpvoteDefinitionEvent() {
-    return new BadgeDefinitionGenericEvent(
-       upvoteDefnCreator,
-       upvoteIdentifierTag,
-       String.format("awardUpvoteDefinitionEvent, definition creator PublicKey: [%s]", upvoteDefnCreator.getPublicKey()),
-       new Relay(definitionEventRelayUrl));
+  @Override
+  protected String getDefinitionEventRelayUrl() {
+    return definitionEventRelayUrl;
   }
 
-  protected BadgeDefinitionGenericEvent createBadgeAwardDownvoteDefinitionEvent() {
-    return new BadgeDefinitionGenericEvent(
-       upvoteDefnCreator,
-       downvoteIdentifierTag,
-       String.format("awardDownvoteDefinitionEvent, definition creator PublicKey: [%s]", upvoteDefnCreator.getPublicKey()),
-       new Relay(definitionEventRelayUrl));
+  @Override
+  protected Relay getAwardEventRelay() {
+    return new Relay(awardEventRelayUrl);
   }
 
-  protected BadgeDefinitionGenericEvent createBadgeAwardUpvoteDefinitionDifferentEvent() {
-    return new BadgeDefinitionGenericEvent(
-       upvoteDefnCreatorDifferent,
-       upvoteIdentifierTagDifferent,
-       String.format("awardUpvoteDefinitionEventDifferent, definition creator PublicKey: [%s]", upvoteDefnCreator.getPublicKey()),
-       new Relay(definitionEventRelayUrl));
-  }
+  protected void validateSetupCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents() {
+    List<EventIF> sanityCheckReturnedBadgeDefinitionEvents = getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
+          definitionEventRelayUrl));
 
-  protected FormulaEvent createPlusOneFormulaEvent() {
-    return new FormulaEvent(
-       formulaCreator,
-       formulaUpvoteIdentifierTag,
-       EventAttributesMap.getFirstByIdentifierTag(
-          this.badgeDefinitionGenericEventList, upvoteIdentifierTag),
-       PLUS_ONE_FORMULA,
-       new Relay(definitionEventRelayUrl));
-  }
+    log.debug("returned BadgeDefinitionEvents:");
+    log.debug("  {}", sanityCheckReturnedBadgeDefinitionEvents);
 
-  protected FormulaEvent createMinusOneFormulaEvent() {
-    return new FormulaEvent(
-       formulaCreator,
-       formulaDownvoteIdentifierTag,
-       EventAttributesMap.getFirstByIdentifierTag(
-          this.badgeDefinitionGenericEventList, downvoteIdentifierTag),
-       MINUS_ONE_FORMULA,
-       new Relay(definitionEventRelayUrl));
-  }
+    Set<String> sanityCheckCurationSetsBadgeDefinitionEventIds =
+       sanityCheckReturnedBadgeDefinitionEvents.stream()
+          .map(event -> event.requireFirstTag(EventTag.class))
+          .map(EventTag::getEventId)
+          .collect(Collectors.toSet());
 
-  protected FormulaEvent createPlusTenFormulaEvent() {
-    return new FormulaEvent(
-       formulaCreatorDifferent,
-       formulaUpvoteIdentifierTagDifferent,
-       EventAttributesMap.getFirstByIdentifierTag(
-          this.badgeDefinitionGenericEventList, upvoteIdentifierTagDifferent),
-       PLUS_TEN_FORMULA,
-       new Relay(definitionEventRelayUrl));
+    Predicate<String> contains = EventAttributesMap.asEventList(this.badgeDefinitionGenericEventList).stream().map(EventIF::getId).toList()::contains;
+
+    assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(contains));
   }
 }

@@ -11,10 +11,10 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +35,16 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
   }
 
-  //  TODO: duplicate in @CacheFollowsEventSeervice, consolidate  
+  //  TODO: duplicate in @CacheFollowsEventService, consolidate  
   @Override
   public Optional<FormulaEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return cacheReferenceEventTagServiceIF.getEvent(eventId, relay).flatMap(this::materialize);
+    log.debug("inside getEvent(eventId, relay) ...");
+    log.debug("calling cacheReferenceEventTagServiceIF.getEvent(eventId) [{}], relay [{}]", eventId, relay.getUrl());
+
+    Optional<GenericEventRecord> event = cacheReferenceEventTagServiceIF.getEvent(eventId, relay);
+    log.debug("received FormulaEvent as Optional<GenericEventRecord>\n{}", event.map(GenericEventRecord::createPrettyPrintJson).orElse("  [ Optional.empty()] "));
+
+    return event.flatMap(this::materialize);
   }
 
   @Override
@@ -58,7 +64,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
     return cacheReferenceAddressTagServiceIF
        .getByExpanded(
           new AddressTag(
-             Kind.ARBITRARY_CUSTOM_APP_DATA,
+             getKind(),
              publicKey,
              identifierTag,
              relay))
@@ -70,7 +76,7 @@ public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
   public Optional<FormulaEvent> getByDirect(@NonNull AddressTag addressTag) {
     return cacheKindAddressTagServiceIF
        .getByDirect(
-          Kind.ARBITRARY_CUSTOM_APP_DATA,
+          getKind(),
           addressTag)
        .stream().findFirst()
        .flatMap(this::getFormulaEventById);

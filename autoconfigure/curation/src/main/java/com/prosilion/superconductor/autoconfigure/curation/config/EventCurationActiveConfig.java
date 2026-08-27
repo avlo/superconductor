@@ -271,12 +271,16 @@ public class EventCurationActiveConfig {
   @ConditionalOnMissingBean(name = "badgeDefinitionReputationEventKindTypePlugin")
   BadgeDefinitionReputationEventKindTypePlugin badgeDefinitionReputationEventKindTypePlugin(
      @NonNull String superconductorRelayUrl,
-     @NonNull EventPlugin eventPlugin) {
+     @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF,
+     @NonNull EventPlugin eventPlugin,
+     CacheServiceIF cacheServiceIF) {
     return new BadgeDefinitionReputationEventKindTypePlugin(
        superconductorRelayUrl,
+       cacheCuratedFormulaEventServiceIF,
        new EventKindTypePlugin(
           BADGE_DEFINITION_REPUTATION_KIND_TYPE,
-          eventPlugin));
+          eventPlugin),
+       cacheServiceIF);
   }
 
   @Bean("badgeSetsEventKindPlugin")

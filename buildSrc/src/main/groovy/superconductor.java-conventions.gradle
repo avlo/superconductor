@@ -136,6 +136,7 @@ testing {
               excludeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT")
               excludeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteListIT")
               excludeTestsMatching("CacheCuratedFormulaEventMessageSupplierRemoteIT")
+              excludeTestsMatching("BadgeAwardReputationEventMessageSupplierRemoteListIT")
             }
           }
         }
@@ -175,6 +176,7 @@ tasks.register('integrationTestDocker', Test) {
     includeTestsMatching("CacheCuratedBadgeDefinitionEventMessageSupplierRemoteListIT")
     includeTestsMatching("CacheCuratedBadgeAwardGenericEventMessageSupplierRemoteListIT")
     includeTestsMatching("CacheCuratedFormulaEventMessageSupplierRemoteIT")
+    includeTestsMatching("BadgeAwardReputationEventMessageSupplierRemoteListIT")
   }
 //  systemProperty "junit.jupiter.testclass.order.default", "org.junit.jupiter.api.ClassOrderer$ReverseClassOrderer"
 }

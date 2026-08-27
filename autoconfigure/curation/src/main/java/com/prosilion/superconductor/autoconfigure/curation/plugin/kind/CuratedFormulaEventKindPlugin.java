@@ -1,9 +1,9 @@
 package com.prosilion.superconductor.autoconfigure.curation.plugin.kind;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
@@ -29,22 +29,24 @@ public class CuratedFormulaEventKindPlugin extends NonPublishingEventKindPlugin 
   }
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
-    Optional<RelayTag> eventRelayTag = event.findFirstTag(RelayTag.class);
-    log.debug("processing incoming FormulaEvent using eventRelayTag url [{}]",
-       eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingFormulaEventIntoCuratedEvent, @NonNull Relay fromRelay) {
+    log.debug("inside processIncomingEvent(incomingFormulaEventIntoCuratedEvent, fromRelay):\n{} ...",
+       incomingFormulaEventIntoCuratedEvent.createPrettyPrintJson());
 
-    super.processIncomingEvent(event, fromRelay);
+    Optional<RelayTag> eventRelayTag = incomingFormulaEventIntoCuratedEvent.findFirstTag(RelayTag.class);
+    log.debug("... using eventRelayTag url [{}]",
+       eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
 
     String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
     CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(
        superconductorInstanceIdentity,
-       event.asGenericEventRecord(),
+       incomingFormulaEventIntoCuratedEvent.asGenericEventRecord(),
        new ReferenceTag(guaranteedSourceRelayUrl),
        superconductorRelay);
 
-    log.debug("creating CuratedFormulaEvent referencing eventRelayTag url [{}]", guaranteedSourceRelayUrl);
-    return super.processIncomingEvent(curatedFormulaEvent, superconductorRelay);
+    log.debug("calling super.processIncomingEvent(curatedFormulaEvent, superconductorRelay):\n{}",
+       curatedFormulaEvent.createPrettyPrintJson());
+    return super.processIncomingEvent(curatedFormulaEvent, new Relay(guaranteedSourceRelayUrl));
   }
 
   @Override

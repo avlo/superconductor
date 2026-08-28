@@ -92,12 +92,14 @@ public class EventCurationActiveConfig {
      @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
      @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
      @NonNull CacheCuratedFormulaEventService cacheCuratedFormulaEventService,
+     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
     return new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
        cacheDereferenceEventTagService,
        cacheDereferenceAddressTagService,
        cacheCuratedFormulaEventService,
+       cacheCuratedBadgeDefinitionGenericEventServiceIF,
        cacheKindAddressTagServiceIF);
   }
 
@@ -312,6 +314,7 @@ public class EventCurationActiveConfig {
      @NonNull NotifierService notifierService,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
      @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
+     @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
      @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
      @NonNull BadgeAwardReputationEventKindTypePlugin badgeAwardReputationEventKindTypePlugin,
      @NonNull CacheServiceIF cacheServiceIF) {
@@ -322,6 +325,7 @@ public class EventCurationActiveConfig {
        eventPlugin,
        cacheFollowSetsEventService,
        cacheBadgeSetsEventServiceIF,
+       cacheBadgeDefinitionReputationEventServiceIF,
        badgeSetsEventKindPlugin,
        badgeAwardReputationEventKindTypePlugin,
        cacheServiceIF);

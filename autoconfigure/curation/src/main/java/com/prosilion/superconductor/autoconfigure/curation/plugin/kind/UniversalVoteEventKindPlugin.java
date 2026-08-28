@@ -6,10 +6,8 @@ import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
@@ -129,17 +127,7 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
              .orElse(fromRelay.getUrl())),
        superconductorRelay);
 
-    super.processIncomingEvent(curatedBadgeAwardEvent, superconductorRelay);
-
-    BadgeSetsEvent transientBadgeSetsEvent =
-       new BadgeSetsEvent(
-          superconductorInstanceIdentity,
-          existingDefnReputation,
-          curatedBadgeAwardEvent,
-          superconductorRelay);
-
-    FollowSetsEvent followSetsEvent = new FollowSetsEvent(superconductorInstanceIdentity, transientBadgeSetsEvent, superconductorRelay);
-    return followSetsEventKindPlugin.processIncomingEventUnvalidated(followSetsEvent, awardEventConsolidatedRelay);
+    return followSetsEventKindPlugin.processIncomingCuratedBadgeAwardGenericEvent(curatedBadgeAwardEvent, fromRelay);
   }
 
   @Override

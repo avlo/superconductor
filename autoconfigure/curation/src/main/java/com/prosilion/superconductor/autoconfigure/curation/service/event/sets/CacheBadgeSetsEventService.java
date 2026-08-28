@@ -81,10 +81,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
 
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
-    return cacheReferenceEventTagServiceIF.getByExpanded(eventTag)
-       .filter(genericEventRecord ->
-          genericEventRecord.requireFirstTag(PubKeyTag.class).equals(pubKeyTag))
-       .flatMap(this::materialize);
+    return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(getKind(), pubKeyTag, eventTag));
   }
 
   @Override

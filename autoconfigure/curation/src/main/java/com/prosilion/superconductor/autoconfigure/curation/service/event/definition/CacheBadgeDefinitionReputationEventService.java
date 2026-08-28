@@ -3,13 +3,16 @@ package com.prosilion.superconductor.autoconfigure.curation.service.event.defini
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionAbstractEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDefinitionReputationEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
@@ -25,20 +28,34 @@ import static com.prosilion.superconductor.autoconfigure.base.service.event.Cach
 public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceIF {
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
+  private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
 
   public CacheBadgeDefinitionReputationEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
      @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF,
+     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF) {
     super(cacheServiceIF, cacheReferenceEventTagServiceIF, cacheReferenceAddressTagServiceIF);
     this.cacheCuratedFormulaEventServiceIF = cacheCuratedFormulaEventServiceIF;
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
+    this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
   }
 
   private boolean supports(@NonNull GenericEventRecord eventRecord) {
     return eventRecord.findFirstTag(ExternalIdentityTag.class).isPresent();
+  }
+
+  @Override
+  public List<BadgeDefinitionReputationEvent> findByMatching(CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent) {
+    return
+       cacheCuratedFormulaEventServiceIF.getByAuthorAndIdentifierTag(
+             curatedBadgeAwardGenericEvent.getPublicKey(),
+             cacheCuratedBadgeDefinitionGenericEventServiceIF.getEvent(
+                curatedBadgeAwardGenericEvent.getIdentifierTag().getUuid(), // hash(a3_0009Tag), aka ["a", "30009:BDG_DEF_UP_CREATOR_PK:BDG_DEF_UNIT_UP"]
+                curatedBadgeAwardGenericEvent.requireFirstTag(RelayTag.class).getRelay()).orElseThrow().getIdentifierTag())
+          .map(CuratedFormulaEvent::asAddressableEventAddressTag).map(this::getByDirect).stream().flatMap(Optional::stream).toList();
   }
 
   @Override

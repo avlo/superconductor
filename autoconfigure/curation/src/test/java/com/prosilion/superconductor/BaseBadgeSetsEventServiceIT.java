@@ -37,6 +37,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestDir
 
   private final CuratedBadgeAwardGenericEvent curationSetsUpvoteEvent;
   private final BadgeSetsEvent badgeSetsUpvoteEvent;
+  CacheServiceIF cacheServiceIF;
 
   public BaseBadgeSetsEventServiceIT(
      @NonNull @Value("${superconductor.relay.url}") String relayUrl,
@@ -44,6 +45,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestDir
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull @Qualifier("cacheBadgeSetsEventService") CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF) {
     super(superconductorInstanceIdentity);
+    this.cacheServiceIF = cacheServiceIF;
     this.cacheBadgeSetsEventServiceIF = cacheBadgeSetsEventServiceIF;
     Relay relay = new Relay(relayUrl);
 
@@ -104,12 +106,12 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestDir
 
   @Test
   public void testGetByPubKeyTagEventTag() {
-    Optional<BadgeSetsEvent> byAddressTag = cacheBadgeSetsEventServiceIF.getBy(
+    Optional<BadgeSetsEvent> byPubkeyTagAndEventTag = cacheBadgeSetsEventServiceIF.getBy(
        new PubKeyTag(recipient.getPublicKey()),
        new EventTag(curationSetsUpvoteEvent.getEventId(), curationSetsUpvoteEvent.getRelay().orElseThrow().getUrl()));
-    assertTrue(byAddressTag.isPresent());
-    assertEquals(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());
-    compareEvents(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());
+    assertTrue(byPubkeyTagAndEventTag.isPresent());
+    assertEquals(badgeSetsUpvoteEvent, byPubkeyTagAndEventTag.orElseThrow());
+    compareEvents(badgeSetsUpvoteEvent, byPubkeyTagAndEventTag.orElseThrow());
   }
 
   @Test

@@ -1,10 +1,13 @@
 package com.prosilion.superconductor.event;
 
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
@@ -12,7 +15,9 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
+import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
@@ -56,6 +61,9 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
 
   BadgeDefinitionGenericEvent awardDownvoteDefinitionEvent;
 
+  BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent;
+  CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent;
+
   CacheServiceIF cacheServiceIF;
 
   @Autowired
@@ -76,6 +84,20 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
 
     this.awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, downvoteIdentifierTag, relay);
     cacheServiceIF.save(this.awardDownvoteDefinitionEvent);
+
+    this.badgeAwardGenericEvent = new BadgeAwardGenericEvent<>(
+       submitter,
+       recipient.getPublicKey(),
+       awardDownvoteDefinitionEvent,
+       relay);
+    cacheServiceIF.save(badgeAwardGenericEvent);
+
+    this.curatedBadgeDefinitionGenericEvent = new CuratedBadgeDefinitionGenericEvent(
+       superconductorInstanceIdentity,
+       badgeAwardGenericEvent.getBadgeDefinitionEvent(),
+       new ReferenceTag(badgeAwardGenericEvent.requireFirstTag(RelayTag.class).getRelay().getUrl()),
+       badgeAwardGenericEvent.requireFirstTag(RelayTag.class).getRelay());
+    cacheServiceIF.save(curatedBadgeDefinitionGenericEvent);
 
     plusOneCuratedFormulaEvent =
        new CuratedFormulaEvent(
@@ -103,36 +125,43 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
        mock(CacheCuratedFormulaEventServiceIF.class);
     CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF =
        mock(CacheKindAddressTagServiceIF.class);
+    CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF =
+       mock(CacheCuratedBadgeDefinitionGenericEventServiceIF.class);
 
     assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
        null,
        cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        cacheFormulaEventServiceIF,
+       cacheCuratedBadgeDefinitionGenericEventServiceIF,
        cacheKindAddressTagServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
        null,
        cacheReferenceAddressTagServiceIF,
        cacheFormulaEventServiceIF,
+       cacheCuratedBadgeDefinitionGenericEventServiceIF,
        cacheKindAddressTagServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
        null,
        cacheFormulaEventServiceIF,
+       cacheCuratedBadgeDefinitionGenericEventServiceIF,
        cacheKindAddressTagServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        null,
+       cacheCuratedBadgeDefinitionGenericEventServiceIF,
        cacheKindAddressTagServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeDefinitionReputationEventService(
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        cacheFormulaEventServiceIF,
+       cacheCuratedBadgeDefinitionGenericEventServiceIF,
        null));
   }
 
@@ -256,8 +285,18 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
 
     BadgeDefinitionReputationEvent reconstructed = cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord()).orElseThrow();
     assertEquals(dbRepDefnEventPlusMinus, reconstructed);
-  }
 
+    CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(
+       superconductorInstanceIdentity,
+       badgeAwardGenericEvent,
+       curatedBadgeDefinitionGenericEvent,
+       new ReferenceTag(relay.getUrl()),
+       relay);
+
+    List<BadgeDefinitionReputationEvent> byMatching = cacheBadgeDefinitionReputationEventService.findByMatching(curatedBadgeAwardGenericEvent);
+    assertEquals(1, byMatching.size());
+    assertEquals(dbRepDefnEventPlusMinus, byMatching.getFirst());
+  }
 
   @Test
   public void testGetByPubKeyTagIdentifierTag() {

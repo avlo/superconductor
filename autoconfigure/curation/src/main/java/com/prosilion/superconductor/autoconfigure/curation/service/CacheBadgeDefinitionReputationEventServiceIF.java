@@ -1,10 +1,12 @@
 package com.prosilion.superconductor.autoconfigure.curation.service;
 
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionAbstractEventServiceIF;
+import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 
@@ -18,4 +20,5 @@ import lombok.NonNull;
 public interface CacheBadgeDefinitionReputationEventServiceIF extends CacheBadgeDefinitionAbstractEventServiceIF<BadgeDefinitionReputationEvent> {
   Optional<BadgeDefinitionReputationEvent> getByDirect(@NonNull AddressTag addressTag);
   Optional<BadgeDefinitionReputationEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag);
+  List<BadgeDefinitionReputationEvent> findByMatching(CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent);
 }

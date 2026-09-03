@@ -12,6 +12,7 @@ import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
@@ -89,14 +90,16 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
        incomingFollowSetsEvent.getRelayTag().map(RelayTag::getRelay).orElseThrow());
     if (existingEvent.isPresent()) return existingEvent.map(BaseEvent::getGenericEventRecord);
 
+    PubKeyTag recipientPubKeyTag = incomingFollowSetsEvent.getTypeSpecificTags(PubKeyTag.class).getFirst();
     log.debug("(1of9) getting incomingFollowSetsEvent's BadgeSetsEventList...");
-    Map<EventTag, BadgeSetsEvent> reconstructedFollowSetsEventBadgeSetsEvents =
-       incomingFollowSetsEvent.getTypeSpecificTags(EventTag.class).stream()
+    Map<AddressTag, BadgeSetsEvent> reconstructedFollowSetsEventBadgeSetsEvents =
+       incomingFollowSetsEvent.getTypeSpecificTags(AddressTag.class).stream()
           .collect(
              Collectors.toMap(
                 Function.identity(),
-                eventTag -> cacheBadgeSetsEventServiceIF.getEvent(eventTag.getEventId(), eventTag.requireRelay()).orElseThrow()));
-
+                addressTag -> cacheBadgeSetsEventServiceIF.getBy(
+                   recipientPubKeyTag, addressTag.getIdentifierTag()).orElseThrow()));
+    
     List<BadgeSetsEvent> incomingFollowSetBadgeSetsEvents = reconstructedFollowSetsEventBadgeSetsEvents.values().stream().toList();
     return processIncomingFollowSetsBadgeSetsEvents(incomingFollowSetBadgeSetsEvents, fromRelay);
   }

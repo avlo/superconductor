@@ -8,7 +8,8 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.event.internal.Relay;
-import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.AddressTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
@@ -61,30 +62,29 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
   private List<BadgeSetsEvent> getBadgeSetsEvents(GenericEventRecord genericEventRecord) {
     log.debug("... getBadgeSetsEvents for genericEventRecord ...");
-    List<EventTag> eventTags = genericEventRecord.getTypeSpecificTags(EventTag.class);
-    if (eventTags.isEmpty())
-      throw new NostrException(String.format("FollowSetsEvent requires at least one EventTag:%n%s", genericEventRecord.createPrettyPrintJson()));
+    List<AddressTag> addressTagList = genericEventRecord.getTypeSpecificTags(AddressTag.class);
+    PubKeyTag recipient = genericEventRecord.getTypeSpecificTags(PubKeyTag.class).getFirst();
+    if (addressTagList.isEmpty())
+      throw new NostrException(String.format("FollowSetsEvent requires at least one AddressTag:%n%s", genericEventRecord.createPrettyPrintJson()));
 
-    List<BadgeSetsEvent> badgeSetsEvents = eventTags.stream()
-       .map(eventTag ->
-          getEvent(eventTag))
+    List<BadgeSetsEvent> badgeSetsEvents = addressTagList.stream()
+       .map(addressTag ->
+          getBadgeSetsEvent(recipient, addressTag.getIdentifierTag()))
        .flatMap(Optional::stream).toList();
 
-    if (badgeSetsEvents.isEmpty() || eventTags.size() != badgeSetsEvents.size()) {
-      log.debug("eventTags.size != badgeSetsEvent.size");
-      log.debug("eventTags:\n  [{}]", eventTags.stream().map(Record::toString).collect(Collectors.joining("], [")));
+    if (badgeSetsEvents.isEmpty() || addressTagList.size() != badgeSetsEvents.size()) {
+      log.debug("addressTagList.size != badgeSetsEvent.size");
+      log.debug("addressTagList:\n  [{}]", addressTagList.stream().map(Record::toString).collect(Collectors.joining("], [")));
       log.debug("badgeSetsEvents:\n  [{}]", badgeSetsEvents.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining("], [")));
       throw new NostrException(
-         String.format("eventTags.size [%d] != badgeSetsEvent.size [%d]", eventTags.size(), badgeSetsEvents.size()));
+         String.format("addressTagList.size [%d] != badgeSetsEvent.size [%d]", addressTagList.size(), badgeSetsEvents.size()));
     }
     return badgeSetsEvents;
   }
 
-  private Optional<BadgeSetsEvent> getEvent(EventTag eventTag) {
-    log.debug("calling cacheBadgeSetsEventServiceIF.getEvent(eventTag) id: [{}] ...", eventTag.getEventId());
-    Optional<BadgeSetsEvent> event = cacheBadgeSetsEventServiceIF.getEvent(
-       eventTag.getEventId(),
-       eventTag.requireRelay());
+  private Optional<BadgeSetsEvent> getBadgeSetsEvent(PubKeyTag recipient, IdentifierTag identifierTag) {
+    log.debug("calling cacheBadgeSetsEventServiceIF.getBy(recipient, identifierTag):  [{}], [{}] ...", recipient.getPublicKey().toHexString(), identifierTag);
+    Optional<BadgeSetsEvent> event = cacheBadgeSetsEventServiceIF.getBy(recipient, identifierTag);
     log.debug("returning BadgeSetsEvent:\n{}",
        event.map(BadgeSetsEvent::createPrettyPrintJson).orElse("Optional.empty()"));
     return event;
@@ -124,8 +124,8 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
   }
 
   @Override
-  public Optional<FollowSetsEvent> getByDirect(@NonNull EventTag eventTag) {
-    return cacheServiceIF.getFirstEventByKindAndEventTag(getKind(), eventTag).flatMap(this::materialize);
+  public Optional<FollowSetsEvent> getByDirect(@NonNull AddressTag addressTag) {
+    return cacheServiceIF.getFirstEventByKindAndAddressTag(getKind(), addressTag).flatMap(this::materialize);
   }
 
   @Override

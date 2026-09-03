@@ -194,17 +194,6 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
   }
 
   @Test
-  void testGetByPubKeyTagAndEventTag() {
-    mockLocalgetByPubkeyTagEventTagReturnsEmptyOptional();
-    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
-    EventTag eventTag = event.getTypeSpecificTags(EventTag.class).getFirst();
-    CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
-
-    Optional<BadgeSetsEvent> actual = cacheBadgeSetsEventService.getBy(pubKeyTag, eventTag);
-    assertTrue(actual.isEmpty());
-  }
-
-  @Test
   void testGetByPubKeyTagAndIdentifierTagReturnsEmptyOptional() {
     PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
     IdentifierTag identifierTag = new IdentifierTag("missing");

@@ -144,10 +144,13 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestDir
 
   @Test
   public void testGetByPubKeyTagIdentifierTag() {
+    IdentifierTag identifierTag = BadgeSetsEvent.generateIdentifierTag(
+       badgeDefinitionReputationEventPlusOneFormula,
+       recipient.getPublicKey());
+
     Optional<BadgeSetsEvent> byAddressTag = cacheBadgeSetsEventServiceIF.getBy(
        new PubKeyTag(recipient.getPublicKey()),
-       new IdentifierTag(
-          badgeDefinitionReputationEventPlusOneFormula.getReputationDefinitionCreatorPublicKey().toHexString()));
+       identifierTag);
     assertTrue(byAddressTag.isPresent());
     assertEquals(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());
     compareEvents(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());

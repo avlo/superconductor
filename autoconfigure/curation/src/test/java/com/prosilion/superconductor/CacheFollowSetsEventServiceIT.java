@@ -9,6 +9,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.BadgeSetsEventKindPlugin;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheFollowSetsEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheFollowSetsEventService;
 import com.prosilion.superconductor.base.service.event.CacheBadgeAwardReputationEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.mock;
    "superconductor.event.curation.active=true"
 })
 public class CacheFollowSetsEventServiceIT extends BaseCacheFollowSetsEventServiceIT {
-  private final CacheFollowSetsEventService cacheFollowSetsEventService;
+  private final CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF;
   private final EventServiceIF eventServiceIF;
 
   @Autowired
@@ -53,9 +54,9 @@ public class CacheFollowSetsEventServiceIT extends BaseCacheFollowSetsEventServi
      @NonNull BadgeSetsEventKindPlugin badgeSetsEventKindPlugin,
      @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventService cacheFollowSetsEventService) {
-    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, badgeSetsEventKindPlugin, deleteEventServiceIF, eventServiceIF, cacheFollowSetsEventService);
-    this.cacheFollowSetsEventService = cacheFollowSetsEventService;
+     @NonNull @Qualifier("cacheFollowSetsEventService") CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF) {
+    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, badgeSetsEventKindPlugin, deleteEventServiceIF, eventServiceIF, cacheFollowSetsEventServiceIF);
+    this.cacheFollowSetsEventServiceIF = cacheFollowSetsEventServiceIF;
     this.eventServiceIF = eventServiceIF;
   }
 
@@ -105,29 +106,29 @@ public class CacheFollowSetsEventServiceIT extends BaseCacheFollowSetsEventServi
 
   @Test
   void testMaterializeRejectsNullEvent() {
-    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.materialize((EventIF) null));
+    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventServiceIF.materialize((EventIF) null));
   }
 
   @Test
   void testGetEventRejectsNullParameters() {
-    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getEvent(null, relay));
-    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getEvent(Util.generateRandomHex64String(), null));
+    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventServiceIF.getEvent(null, relay));
+    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventServiceIF.getEvent(Util.generateRandomHex64String(), null));
   }
 
   @Test
   void testGetBadgeAwardReputationEventsRejectsNullFollowSetsEvent() {
     assertThrows(NullPointerException.class, () ->
-       cacheFollowSetsEventService.getBadgeAwardReputationEvents((FollowSetsEvent) null));
+       cacheFollowSetsEventServiceIF.getBadgeAwardReputationEvents((FollowSetsEvent) null));
   }
 
   @Test
   void testGetByPubKeyTagRejectsNullPubKeyTag() {
-    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getBy((PubKeyTag) null));
+    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventServiceIF.getBy((PubKeyTag) null));
   }
 
   @Test
   void testGetByDirectRejectsNullEventTag() {
-    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventService.getByDirect(null));
+    assertThrows(NullPointerException.class, () -> cacheFollowSetsEventServiceIF.getByDirect(null));
   }
 
   @Test
@@ -138,20 +139,19 @@ public class CacheFollowSetsEventServiceIT extends BaseCacheFollowSetsEventServi
        relay);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
     
-    List<FollowSetsEvent> actual = cacheFollowSetsEventService.getBy(new PubKeyTag(recipient.getPublicKey()));
+    List<FollowSetsEvent> actual = cacheFollowSetsEventServiceIF.getBy(new PubKeyTag(recipient.getPublicKey()));
     assertFalse(actual.isEmpty());
   }
 
   @Test
-  void testGetByDirectEventTag() {
+  void testGetByAddressTag() {
     FollowSetsEvent followSetsEvent = new FollowSetsEvent(
        superconductorInstanceIdentity,
        dbSynchedBadgeSetsEvent_1,
        relay);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
     
-    EventTag eventTag = new EventTag(getBadgeSetsUpvoteEvent().getId(), relay.getUrl());
-    Optional<FollowSetsEvent> actual = cacheFollowSetsEventService.getByDirect(eventTag);
+    Optional<FollowSetsEvent> actual = cacheFollowSetsEventServiceIF.getByDirect(getBadgeSetsUpvoteEvent().asAddressableEventAddressTag());
     assertFalse(actual.isEmpty());
 
     assertThrows(NostrException.class, () -> new FollowSetsEvent(followSetsEvent.asGenericEventRecord(), List.of()));

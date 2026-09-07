@@ -6,7 +6,6 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
-import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
@@ -109,7 +108,7 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
 
-    Set<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+    Set<String> eventIds = returnedEventIFs.stream()
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).collect(Collectors.toSet());
 
@@ -128,7 +127,7 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
     log.debug("returned events:");
     log.debug("  {}", returnedEventIFs);
 
-    Set<String> eventIds = returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+    Set<String> eventIds = returnedEventIFs.stream()
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).collect(Collectors.toSet());
 
@@ -164,28 +163,28 @@ public abstract class AbstractBaseCacheCuratedFormulaEventMessageIT extends Base
     log.debug("returned events:");
     log.debug("  {}", returnedCuratedFormulaEvents);
 
-    List<String> eventIds = returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
+    List<String> eventIds = returnedCuratedFormulaEvents.stream()
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
 
     assertTrue(eventIds.stream().anyMatch(this.formulaEventList.stream().map(FormulaEvent::getId).toList()::contains));
 
-    assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
+    assertTrue(returnedCuratedFormulaEvents.stream()
        .map(event -> event.requireFirstTag(PubKeyTag.class)).map(PubKeyTag::getPublicKey)
        .allMatch(formulaCreator.getPublicKey()::equals));
 
-    assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
+    assertTrue(returnedCuratedFormulaEvents.stream()
        .map(event -> event.requireFirstTag(AddressTag.class))
        .anyMatch(
           this.formulaEventList.stream().map(FormulaEvent::asAddressableEventAddressTag).toList()::contains));
 
-    assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
+    assertTrue(returnedCuratedFormulaEvents.stream()
        .map(event -> event.requireFirstTag(EventTag.class)).map(EventTag::eventId)
        .anyMatch(
           this.formulaEventList.stream().map(FormulaEvent::getId).toList()::contains));
 
-    assertTrue(returnedCuratedFormulaEvents.stream().map(EventIF::asGenericEventRecord)
-       .map(GenericEventRecord::getContent)
+    assertTrue(returnedCuratedFormulaEvents.stream()
+       .map(EventIF::getContent)
        .anyMatch(
           this.formulaEventList.stream().map(FormulaEvent::getFormula).toList()::contains));
   }

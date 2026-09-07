@@ -3,7 +3,6 @@ package com.prosilion.superconductor;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.DeletionEvent;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -125,9 +124,24 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
        badgeSetsUpvoteEvent_1,
        relay);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_1), followSetsEvent_1.getRelay().orElseThrow());
+    cacheServiceIF.deleteEvent(
+       new DeletionEvent(
+          superconductorInstanceIdentity,
+          new EventTag(badgeSetsUpvoteEvent_1.getId()),
+          "delete me",
+          relay));
 
     List<FollowSetsEvent> actual_1 = cacheFollowSetsEventService.getBy(new PubKeyTag(recipient.getPublicKey()));
     assertEquals(1, actual_1.size());
+    assertTrue(cacheServiceIF.getEventByEventId(actual_1.getFirst().getId()).isPresent());
+
+    List<BadgeSetsEvent> badgeSetsEventList = actual_1.getFirst().getBadgeSetsEventList();
+    badgeSetsEventList.forEach(badgeSetsEventToDelete ->
+       cacheServiceIF.deleteEvent(new DeletionEvent(
+          superconductorInstanceIdentity,
+          new EventTag(badgeSetsEventToDelete.getId()),
+          "delete me",
+          relay)));
 //
 // start event 2
 //
@@ -144,22 +158,12 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
        new ReferenceTag(badgeAwardUpvoteEvent_2.getRelay().map(Relay::getUrl).orElseThrow()),
        relay);
     cacheServiceIF.save(curatedBadgeAwardUpvoteEvent_2);
-//    eventServiceIF.processIncomingEvent(new EventMessage(curationSetsUpvoteEvent_2), curationSetsUpvoteEvent_2.getRelay().orElseThrow());
 
     BadgeSetsEvent badgeSetsUpvoteEvent_2 = new BadgeSetsEvent(
        superconductorInstanceIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
        List.of(curatedBadgeAwardUpvoteEvent_1, curatedBadgeAwardUpvoteEvent_2),
        relay);
-//    cacheServiceIF.deleteEvent(badgeSetsUpvoteEvent_1);
-
-//    *************************************************
-//    *************************************************
-//    must delete existing badgeSetsEvent
-//    *************************************************
-//    *************************************************    
-    DeletionEvent deletionBadgeSetsUpvoteEvent_1 = deleteFxn(badgeSetsUpvoteEvent_1);
-    eventServiceIF.processIncomingEvent(new EventMessage(deletionBadgeSetsUpvoteEvent_1), badgeAwardUpvoteEvent_1.getRelay().orElseThrow());
     cacheServiceIF.save(badgeSetsUpvoteEvent_2);
 
     FollowSetsEvent followSetsEvent_2 = new FollowSetsEvent(
@@ -167,61 +171,10 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
        badgeSetsUpvoteEvent_2,
        relay);
 
-//    cacheServiceIF.deleteEvent(followSetsEvent_1);
-
-//    *************************************************
-//    *************************************************
-//    must delete existing followsetsEvent
-//    *************************************************
-//    *************************************************    
-    DeletionEvent deletionFollowSetsEvent_1 = deleteFxn(followSetsEvent_1);
-    eventServiceIF.processIncomingEvent(new EventMessage(deletionFollowSetsEvent_1), followSetsEvent_1.getRelay().orElseThrow());
-
-    cacheServiceIF.save(badgeSetsUpvoteEvent_2);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_2), followSetsEvent_2.getRelay().orElseThrow());
     List<FollowSetsEvent> actual_2 = cacheFollowSetsEventService.getBy(new PubKeyTag(recipient.getPublicKey()));
     assertEquals(1, actual_2.size());
 
-    assertTrue(cacheServiceIF.getEventByEventId(followSetsEvent_2.getId()).isPresent());
-
-//    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
-//
-//    FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getEvent(followSetsEvent.getId(), relay).orElseThrow();
-//    assertEquals(followSetsEvent, dbFollowSetsEventByEventId);
-//
-//    assertEquals(dbFollowSetsEventByEventId.getAwardRecipientPublicKey(), recipient.getPublicKey());
-//    assertTrue(
-//       dbFollowSetsEventByEventId.getBadgeSetsEventList().stream()
-//          .map(BadgeSetsEvent::getBadgeDefinitionReputationEvent).anyMatch(badgeDefinitionReputationEventPlusOneFormula::equals));
-//
-//    assertEquals(followSetsEvent.getBadgeSetsEventList(), dbFollowSetsEventByEventId.getBadgeSetsEventList());
-//    assertEquals(followSetsEvent.getEventTags(), dbFollowSetsEventByEventId.getEventTags());
-//    assertEquals(followSetsEvent.asAddressableEventAddressTag(), dbFollowSetsEventByEventId.asAddressableEventAddressTag());
-//    assertEquals(followSetsEvent.getIdentifierTag(), dbFollowSetsEventByEventId.getIdentifierTag());
-//    assertEquals(followSetsEvent.getAwardRecipientPublicKey(), dbFollowSetsEventByEventId.getAwardRecipientPublicKey());
-//    assertEquals(followSetsEvent.getBadgeSetsEventList().size(), dbFollowSetsEventByEventId.getBadgeSetsEventList().size());
-//    assertEquals(1, followSetsEvent.getBadgeSetsEventList().size());
-//
-//    List<EventIF> returnedEventIFs = TestUtils.getEventIFs(
-//       new NostrSingleRequestService()
-//          .send(
-//             new ReqMessage(
-//                Factory.generateRandomHex64String(),
-//                new Filters(
-//                   new KindFilter(
-//                      Kind.FOLLOW_SETS))),
-//             relay.getUrl()));
-//
-//    log.debug("returned events:");
-//    log.debug("  {}", returnedEventIFs);
-//    assertTrue(returnedEventIFs.stream().map(EventIF::getKind).toList().contains(Kind.FOLLOW_SETS));
-//
-//    assertTrue(returnedEventIFs.stream().map(cacheFollowSetsEventService::materialize)
-//       .flatMap(Optional::stream)
-//       .anyMatch(dbFollowSetsEventByEventId::equals));
-  }
-
-  private DeletionEvent deleteFxn(EventIF eventIF) {
-    return new DeletionEvent(aImgIdentity, List.of(new EventTag(eventIF.getId())), "delete me", relay);
+    assertTrue(cacheServiceIF.getEventByEventId(actual_2.getFirst().getId()).isPresent());
   }
 }

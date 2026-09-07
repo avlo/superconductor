@@ -256,17 +256,20 @@ public class EventCurationActiveConfig {
   @Bean("curatedFormulaEventKindPlugin")
   @ConditionalOnMissingBean(name = "curatedFormulaEventKindPlugin")
   CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin(
-     @NonNull String superconductorRelayUrl,
-     @NonNull Identity superconductorInstanceIdentity,
      @NonNull EventPlugin eventPlugin) {
-    return new CuratedFormulaEventKindPlugin(superconductorInstanceIdentity, superconductorRelayUrl, eventPlugin);
+    return new CuratedFormulaEventKindPlugin(eventPlugin);
   }
 
   @Bean("formulaEventKindPlugin")
   @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
   FormulaEventKindPlugin formulaEventKindPlugin(
-     @NonNull EventPlugin eventPlugin) {
-    return new FormulaEventKindPlugin(eventPlugin);
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String superconductorRelayUrl,
+     @NonNull CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin) {
+    return new FormulaEventKindPlugin(
+       superconductorInstanceIdentity,
+       superconductorRelayUrl,
+       curatedFormulaEventKindPlugin);
   }
 
   @Bean("badgeDefinitionReputationEventKindTypePlugin")

@@ -70,15 +70,30 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
   }
 
   public Optional<GenericEventRecord> processIncomingCuratedBadgeAwardGenericEvent(@NonNull CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent, @NonNull Relay fromRelay) {
+    log.debug("inside processIncomingCuratedBadgeAwardGenericEvent(CuratedBadgeAwardGenericEvent):\n{}", curatedBadgeAwardGenericEvent.createPrettyPrintJson());
     PublicKey recipientPublicKey = curatedBadgeAwardGenericEvent.getAwardRecipientPublicKey();
+
+    log.debug("calling cacheBadgeDefinitionReputationEventServiceIF.findByMatching(curatedBadgeAwardGenericEvent) ...");
     List<BadgeDefinitionReputationEvent> matchingBadgeDefinitionReputationEventList = cacheBadgeDefinitionReputationEventServiceIF.findByMatching(curatedBadgeAwardGenericEvent);
+    log.debug("... returned matchingBadgeDefinitionReputationEventList:\n{}",
+       matchingBadgeDefinitionReputationEventList.stream().map(BadgeDefinitionReputationEvent::createPrettyPrintJson).collect(Collectors.joining(",\n")));
 
+    List<AddressTag> addressTagStream = matchingBadgeDefinitionReputationEventList.stream().map(AddressableEvent::asAddressableEventAddressTag).toList();
+    log.debug("... matchingBadgeDefinitionReputationEventList.map(AddressableEvent::asAddressableEventAddressTag)...\n{}",
+       addressTagStream.stream().map(AddressTag::toStringPrettyPrint).collect(Collectors.joining(",\n")));
+
+    PubKeyTag recipientPubKeyTag = new PubKeyTag(recipientPublicKey);
     List<BadgeSetsEvent> recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent =
-       matchingBadgeDefinitionReputationEventList.stream().map(AddressableEvent::asAddressableEventAddressTag).map(addressTag ->
-          cacheBadgeSetsEventServiceIF.getBy(
-             new PubKeyTag(recipientPublicKey),
-             addressTag)).flatMap(Optional::stream).toList();
+       addressTagStream.stream().map(addressTag ->
+       {
+         log.debug("... calling cacheBadgeSetsEventServiceIF.getBy(recipientPublicKey, addressTag) ...\nrecipientPublicKey:  [{}]\naddressTag:  {}",
+            recipientPubKeyTag.getPublicKey().toHexString(), addressTag.toStringPrettyPrint());
+         Optional<BadgeSetsEvent> optionalBadgeSetsEvent = cacheBadgeSetsEventServiceIF.getBy(recipientPubKeyTag, addressTag);
+         log.debug("... returned optionalBadgeSetsEvent:\n{}", optionalBadgeSetsEvent.map(BadgeSetsEvent::createPrettyPrintJson).orElse("  [EMPTY_OPTIONAL]"));
+         return optionalBadgeSetsEvent;
+       }).flatMap(Optional::stream).toList();
 
+    log.debug("... calling processIncomingFollowSetsBadgeSetsEvents(recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent) ...");
     return processIncomingFollowSetsBadgeSetsEvents(recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent, fromRelay);
   }
 
@@ -99,7 +114,7 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
                 Function.identity(),
                 addressTag -> cacheBadgeSetsEventServiceIF.getBy(
                    recipientPubKeyTag, addressTag.getIdentifierTag()).orElseThrow()));
-    
+
     List<BadgeSetsEvent> incomingFollowSetBadgeSetsEvents = reconstructedFollowSetsEventBadgeSetsEvents.values().stream().toList();
     return processIncomingFollowSetsBadgeSetsEvents(incomingFollowSetBadgeSetsEvents, fromRelay);
   }

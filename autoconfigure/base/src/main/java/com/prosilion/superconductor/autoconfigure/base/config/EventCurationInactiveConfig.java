@@ -6,6 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
+import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.condition.EventCurationInactiveCondition;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
@@ -50,8 +51,13 @@ public class EventCurationInactiveConfig {
   @Bean("formulaEventKindPlugin")
   @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
   FormulaEventKindPlugin formulaEventKindPlugin(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String superconductorRelayUrl,
      @NonNull EventPlugin eventPlugin) {
-    return new FormulaEventKindPlugin(eventPlugin);
+    return new FormulaEventKindPlugin(
+       superconductorInstanceIdentity,
+       superconductorRelayUrl,
+       eventPlugin);
   }
 
   @Bean("eventKindMaterializers")

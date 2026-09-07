@@ -65,29 +65,29 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF voteEvent, @NonNull Relay fromRelay) {
-    log.debug("processing incoming voteEvent\n{}", voteEvent.createPrettyPrintJson());
+    log.debug("inside processIncomingEvent(voteEvent)\n{}", voteEvent.createPrettyPrintJson());
+    Relay awardEventConsolidatedRelay = voteEvent.getRelayTag().map(RelayTag::getRelay).orElse(fromRelay);
+
+    EventTag eventTag = new EventTag(
+       voteEvent.getId(),
+       awardEventConsolidatedRelay.getUrl());
     Optional<CuratedBadgeAwardGenericEvent> existingVoteEvent = cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(
-       new EventTag(voteEvent.getId(),
-          voteEvent.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow()));
+       eventTag);
     if (existingVoteEvent.isPresent()) {
       log.debug("returning existing matching voteEvent");
       return existingVoteEvent.map(BaseEvent::getGenericEventRecord);
     }
 
     PubKeyTag recipientPublicKeyAsPubKeyTag = voteEvent.requireFirstTag(PubKeyTag.class);
-    Optional<Relay> awardEventRelay = voteEvent.getRelayTag().map(RelayTag::getRelay);
-    Relay awardEventConsolidatedRelay = awardEventRelay.orElse(fromRelay);
-    EventTag eventTag = new EventTag(voteEvent.getId(), awardEventConsolidatedRelay.getUrl());
-
     Optional<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEvent = cacheCuratedBadgeAwardGenericEventServiceIF.getBy(recipientPublicKeyAsPubKeyTag, eventTag);
     if (curatedBadgeAwardGenericEvent.isPresent())
       return curatedBadgeAwardGenericEvent.map(EventIF::asGenericEventRecord);
 
-    Optional<RelayTag> relayTag = voteEvent.findFirstTag(RelayTag.class);
     AddressTag suppliedAddressTag = voteEvent.requireFirstTag(AddressTag.class);
 
     Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent =
-       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag, relayTag, fromRelay);
+       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag, 
+          Optional.of(new RelayTag(awardEventConsolidatedRelay)), fromRelay);
 
     if (curatedBadgeDefinitionGenericEvent.isEmpty()) {
       log.debug("non-existent curatedBadgeDefinitionGenericEvent (and therefore, badgeDefinitionGenericEvent).  return Optional.empty()");

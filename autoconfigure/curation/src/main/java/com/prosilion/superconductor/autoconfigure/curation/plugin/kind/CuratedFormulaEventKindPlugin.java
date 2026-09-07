@@ -6,7 +6,6 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.RelayTag;
-import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
 import java.util.Optional;
@@ -15,29 +14,22 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CuratedFormulaEventKindPlugin extends NonPublishingEventKindPlugin {
-  private final Identity superconductorInstanceIdentity;
-  private final Relay superconductorRelay;
 
-  public CuratedFormulaEventKindPlugin(
-     @NonNull Identity superconductorInstanceIdentity,
-     @NonNull String superconductorRelayUrl,
-     @NonNull EventPluginIF eventPluginIF) {
+  public CuratedFormulaEventKindPlugin(@NonNull EventPluginIF eventPluginIF) {
     super(eventPluginIF);
-    this.superconductorInstanceIdentity = superconductorInstanceIdentity;
-    this.superconductorRelay = new Relay(superconductorRelayUrl);
   }
 
   @Override
-  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingFormulaEventIntoCuratedEvent, @NonNull Relay fromRelay) {
-    log.debug("inside processIncomingEvent(incomingFormulaEventIntoCuratedEvent, fromRelay):\n{} ...",
-       incomingFormulaEventIntoCuratedEvent.createPrettyPrintJson());
+  public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingCuratedFormulaEvent, @NonNull Relay fromRelay) {
+    log.debug("inside processIncomingEvent(incomingCuratedFormulaEvent, fromRelay):\n{} ...",
+       incomingCuratedFormulaEvent.createPrettyPrintJson());
 
-    Optional<RelayTag> eventRelayTag = incomingFormulaEventIntoCuratedEvent.findFirstTag(RelayTag.class);
+    Optional<RelayTag> eventRelayTag = incomingCuratedFormulaEvent.findFirstTag(RelayTag.class);
     log.debug("... using eventRelayTag url [{}]",
        eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
 
     String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
-    CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(incomingFormulaEventIntoCuratedEvent.asGenericEventRecord());
+    CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(incomingCuratedFormulaEvent.asGenericEventRecord());
 
     log.debug("calling super.processIncomingEvent(curatedFormulaEvent, superconductorRelay):\n{}",
        curatedFormulaEvent.createPrettyPrintJson());

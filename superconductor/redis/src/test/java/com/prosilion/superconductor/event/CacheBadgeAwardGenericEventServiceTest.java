@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.event;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -9,9 +9,9 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.CacheServiceTestFixture;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
-import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class CacheBadgeAwardGenericEventServiceTest
-   extends CacheServiceTestFixture<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> {
+   extends CacheServiceTestFixture<BadgeAwardCanonicalEvent> {
   @Mock
   CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   @Mock
@@ -85,7 +85,7 @@ public class CacheBadgeAwardGenericEventServiceTest
     mockBadgeDefinition();
     CacheBadgeAwardGenericEventService service = createService();
 
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actual =
+    Optional<BadgeAwardCanonicalEvent> actual =
        service.getEvent(eventId, relay);
 
     assertEquals(eventId, actual.orElseThrow().getId());
@@ -101,7 +101,7 @@ public class CacheBadgeAwardGenericEventServiceTest
     mockBadgeDefinition();
     CacheBadgeAwardGenericEventService service = createService();
 
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actual =
+    Optional<BadgeAwardCanonicalEvent> actual =
        service.getEvent(eventId, relay);
 
     assertEquals(eventId, actual.orElseThrow().getId());
@@ -119,7 +119,7 @@ public class CacheBadgeAwardGenericEventServiceTest
        .getEvent(eventId, relay);
     CacheBadgeAwardGenericEventService service = createService();
 
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actual =
+    Optional<BadgeAwardCanonicalEvent> actual =
        service.getEvent(eventId, relay);
 
     assertEquals(Optional.empty(), actual);
@@ -134,7 +134,7 @@ public class CacheBadgeAwardGenericEventServiceTest
     mockBadgeDefinition();
     CacheBadgeAwardGenericEventService service = createService();
 
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actual =
+    Optional<BadgeAwardCanonicalEvent> actual =
        service.getByDirect(addressTag);
 
     assertEquals(eventId, actual.orElseThrow().getId());
@@ -150,7 +150,7 @@ public class CacheBadgeAwardGenericEventServiceTest
        .getByDirect(Kind.BADGE_AWARD_EVENT, addressTag);
     CacheBadgeAwardGenericEventService service = createService();
 
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actual =
+    Optional<BadgeAwardCanonicalEvent> actual =
        service.getByDirect(addressTag);
 
     assertEquals(Optional.empty(), actual);
@@ -168,7 +168,7 @@ public class CacheBadgeAwardGenericEventServiceTest
        .getByDirect(Kind.BADGE_AWARD_EVENT, addressTag);
     mockBadgeDefinition();
 
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actual =
+    Optional<BadgeAwardCanonicalEvent> actual =
        createService().getByDirect(addressTag);
 
     assertEquals(eventId, actual.orElseThrow().getId());
@@ -179,7 +179,7 @@ public class CacheBadgeAwardGenericEventServiceTest
     mockBadgeDefinition();
     CacheBadgeAwardGenericEventService service = createService();
 
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actual =
+    Optional<BadgeAwardCanonicalEvent> actual =
        service.materialize(event.getGenericEventRecord());
 
     assertEquals(event, actual.orElseThrow());
@@ -194,17 +194,17 @@ public class CacheBadgeAwardGenericEventServiceTest
        .when(cacheBadgeDefinitionGenericEventServiceIF)
        .getByExpanded(event.getAddressTag());
 
-    Optional<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> actual =
+    Optional<BadgeAwardCanonicalEvent> actual =
        createService().materialize(event.getGenericEventRecord());
 
     assertEquals(Optional.empty(), actual);
   }
 
   @Override
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
+  protected BadgeAwardCanonicalEvent createEvent() {
     this.badgeDefinitionGenericEvent =
        new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
-    return new BadgeAwardGenericEvent<>(
+    return new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        badgeDefinitionGenericEvent,

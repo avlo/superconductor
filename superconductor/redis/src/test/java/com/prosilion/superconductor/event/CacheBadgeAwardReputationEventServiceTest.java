@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.event;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -147,8 +147,8 @@ public class CacheBadgeAwardReputationEventServiceTest
     AddressTag addressTag = badgeDefinitionReputationEvent.asAddressableEventAddressTag();
     BadgeDefinitionGenericEvent genericDefinition =
        new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay);
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> genericAward =
-       new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent genericAward =
+       new BadgeAwardCanonicalEvent(
           aImgIdentity, recipient.getPublicKey(), genericDefinition, relay);
     doReturn(List.of(genericAward.getGenericEventRecord()))
        .when(cacheKindAddressTagServiceIF)

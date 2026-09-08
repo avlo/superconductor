@@ -2,7 +2,7 @@ package com.prosilion.superconductor;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.AbstractSetsEvent;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -13,7 +13,6 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
-import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -42,7 +41,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
   CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService;
 
   BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent;
-  BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent;
+  BadgeAwardCanonicalEvent badgeAwardUpvoteEvent;
 
   @Test
   void testGetEventFromLocalCache() {
@@ -182,7 +181,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
        upvoteIdentifierTag,
        relay);
 
-    this.badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(  // <------------------------- no relay
+    this.badgeAwardUpvoteEvent = new BadgeAwardCanonicalEvent(  // <------------------------- no relay
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent);
@@ -202,7 +201,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
        upvoteDefnCreator,
        upvoteIdentifierTag,
        relay);
-    this.badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
+    this.badgeAwardUpvoteEvent = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,

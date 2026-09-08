@@ -1,6 +1,6 @@
 package com.prosilion.superconductor;
 
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -227,7 +227,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG,
        relay,
        formulaEvent);
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardEvent = new BadgeAwardCanonicalEvent(
        submitter, recipient.getPublicKey(), badgeDefinitionEvent, relay);
     this.curatedBadgeAwardEvent = new CuratedBadgeAwardGenericEvent(
        aImgIdentity,

@@ -1,6 +1,6 @@
 package com.prosilion.superconductor.tag;
 
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends CacheServiceTestFixture<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> {
+public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends CacheServiceTestFixture<BadgeAwardCanonicalEvent> {
   @Test
   void testGetEventByEventId() {
     mockLocalGetEventByEventId();
@@ -92,8 +92,8 @@ public class CacheReferenceEventTagServiceUsingBadgeAwardUpvoteEventTest extends
   }
 
   @Override
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
-    return new BadgeAwardGenericEvent<>(
+  protected BadgeAwardCanonicalEvent createEvent() {
+    return new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        new BadgeDefinitionGenericEvent(

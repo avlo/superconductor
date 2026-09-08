@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.tag;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends CacheServiceTestFixture<BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> {
+public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends CacheServiceTestFixture<BadgeAwardCanonicalEvent> {
   private static final Kind KIND = Kind.BADGE_AWARD_EVENT;
 
   @Test
@@ -128,8 +128,8 @@ public class CacheKindAddressTagServiceUsingBadgeAwardUpvoteEventTest extends Ca
   }
 
   @Override
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createEvent() {
-    return new BadgeAwardGenericEvent<>(
+  protected BadgeAwardCanonicalEvent createEvent() {
+    return new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        new BadgeDefinitionGenericEvent(upvoteDefnCreator, upvoteIdentifierTag, relay));

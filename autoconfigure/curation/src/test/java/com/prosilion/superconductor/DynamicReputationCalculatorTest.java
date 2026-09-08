@@ -1,7 +1,7 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeAwardReputationEvent;
@@ -89,7 +89,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
 
   @Test
   void testCalculatorZeroPlusOne() {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curationSetsEvent = new CuratedBadgeAwardGenericEvent(
        superconductorInstanceIdentity,
        badgeAwardEvent,
@@ -126,7 +126,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
 
   @Test
   void testCalculatorOnePlusOne() {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardEvent = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,
@@ -173,7 +173,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
 
   @Test
   void testCalculatorZeroMinusOne() {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curationSetsEvent = getCuratedBadgeAwardEvent(badgeAwardEvent);
 
     BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
@@ -193,7 +193,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
 
   @Test
   void testCalculatorStartsWithMinusOneThenPlusOne() {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent = getCuratedBadgeAwardEvent(badgeAwardUpvoteEvent);
 
     BadgeAwardReputationEvent reputationFirstEventIsMinusOneBadgeAwardEvent = new BadgeAwardReputationEvent(
@@ -215,10 +215,10 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
 
   @Test
   void testCalculatorZeroMinusOnePlusOne() {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent = getCuratedBadgeAwardEvent(badgeAwardUpvoteEvent);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardDownvoteEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardDownvoteEvent = getCuratedBadgeAwardEvent(badgeAwardDownvoteEvent);
 
     BadgeAwardReputationEvent reputationFirstEventIsMinusOneBadgeAwardEvent = new BadgeAwardReputationEvent(
@@ -242,10 +242,10 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
 
   @Test
   void testCalculatorZeroPlusOneMinusOne() {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent = getCuratedBadgeAwardEvent(badgeAwardUpvoteEvent);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardDownvoteEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardDownvoteEvent = getCuratedBadgeAwardEvent(badgeAwardDownvoteEvent);
 
     BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
@@ -275,10 +275,10 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        new BigDecimal("1"),
        relay);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent_1 = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent_1 = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent_1 = getCuratedBadgeAwardEvent(badgeAwardUpvoteEvent_1);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent_1 = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardDownvoteEvent_1 = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardDownvoteEvent_1 = getCuratedBadgeAwardEvent(badgeAwardDownvoteEvent_1);
 
     BadgeSetsEvent badgeSetsEvent_1 = new BadgeSetsEvent(
@@ -306,10 +306,10 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
 //  below tests same badgeSetsEvent does not change reputation calculation/score
     assertEquals("1", secondRecalculatedBadgeAwardReputationEvent.getContent());
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent_2 = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent_2 = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent_2 = getCuratedBadgeAwardEvent(badgeAwardUpvoteEvent_2);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent_2 = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardDownvoteEvent_2 = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curatedBadgeAwardDownvoteEvent_2 = getCuratedBadgeAwardEvent(badgeAwardDownvoteEvent_2);
 
     BadgeSetsEvent thirdBadgeSetsEvent = new BadgeSetsEvent(
@@ -357,7 +357,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        relay,
        plusOneCuratedFormulaEvent, minusOneCuratedFormulaEvent);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent = createBadgeAwardEvent(awardUpvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curationSetsEventUpvote = getCuratedBadgeAwardEvent(badgeAwardUpvoteEvent);
 
     BadgeSetsEvent badgeSetsEvent_1 = new BadgeSetsEvent(
@@ -365,7 +365,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        badgeDefinitionReputationContainingPlusOneFormulaEventAndMinusOneFormulaEvent,
        curationSetsEventUpvote, relay);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
+    BadgeAwardCanonicalEvent badgeAwardDownvoteEvent = createBadgeAwardEvent(awardDownvoteDefinitionEvent);
     CuratedBadgeAwardGenericEvent curationSetsEventDownvote = getCuratedBadgeAwardEvent(badgeAwardDownvoteEvent);
 
     BadgeSetsEvent badgeSetsEvent_2 = new BadgeSetsEvent(
@@ -384,7 +384,7 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
     assertEquals("1", badgeAwardReputationEvent_1.getContent());
   }
 
-  private @NonNull CuratedBadgeAwardGenericEvent getCuratedBadgeAwardEvent(BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent) {
+  private @NonNull CuratedBadgeAwardGenericEvent getCuratedBadgeAwardEvent(BadgeAwardCanonicalEvent badgeAwardEvent) {
     return new CuratedBadgeAwardGenericEvent(
        superconductorInstanceIdentity,
        badgeAwardEvent,
@@ -393,8 +393,8 @@ public class DynamicReputationCalculatorTest extends BaseTestFixtures {
        relay);
   }
 
-  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createBadgeAwardEvent(BadgeDefinitionGenericEvent awardDefinitionEvent) {
-    return new BadgeAwardGenericEvent<>(
+  private BadgeAwardCanonicalEvent createBadgeAwardEvent(BadgeDefinitionGenericEvent awardDefinitionEvent) {
+    return new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardDefinitionEvent,

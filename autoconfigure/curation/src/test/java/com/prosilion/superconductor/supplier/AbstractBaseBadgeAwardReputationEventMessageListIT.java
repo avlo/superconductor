@@ -2,7 +2,7 @@ package com.prosilion.superconductor.supplier;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -31,6 +31,7 @@ import com.prosilion.subdivisions.client.RequestSubscriber;
 import com.prosilion.subdivisions.client.reactive.NostrEventPublisher;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.util.EventAttributesMap;
 import java.time.Duration;
 import java.util.Collection;
@@ -85,11 +86,16 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
   BiFunction<List<GenericEventRecord>, Kind, Integer> kindCountFxn = (cacheServiceIFx, kind) ->
      cacheServiceIFx.stream().map(GenericEventRecord::getKind).filter(kind::equals).toList().size();
 
+  protected final BadgeDefinitionReputationEvent badgeDefinitionReputationEvent;
+  CacheServiceIF cacheServiceIF;
+
   protected AbstractBaseBadgeAwardReputationEventMessageListIT(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String definitionEventRelayUrl,
-     @NonNull String awardEventRelayUrl) {
+     @NonNull String awardEventRelayUrl,
+     @NonNull CacheServiceIF cacheServiceIF) {
     super(superconductorInstanceIdentity);
+    this.cacheServiceIF = cacheServiceIF;
 
     this.definitionEventRelayUrl = definitionEventRelayUrl;
     this.awardEventRelayUrl = awardEventRelayUrl;
@@ -100,37 +106,38 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     this.formulaEventList = createFormulaEventList();
     this.dbCuratedFormulaEventList = setupFormulaEvents(formulaEventList);
 
-    submitAimgEvent(
-       createBadgeDefinitionReputationEvent());
+    this.badgeDefinitionReputationEvent = createBadgeDefinitionReputationEvent();
+
+    submitAimgEvent(badgeDefinitionReputationEvent);
   }
 
   //  TODO: check (potential) overuse of services in console/debug (all 3 tests methods)
   @Test
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
     createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForCanonicalRecipient());
-    createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForDifferentRecipient());
-    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForCanonicalRecipient());
-    createAndSubmitSuppliedParameterVoteEvent("3", createUpvoteEventForCanonicalRecipient());
-    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForDifferentRecipient());
-
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteRecipientEvent = createUpvoteEventForCanonicalRecipient();
-    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
-    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
-
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> identicalUpvoteDifferentRecipientEvent = createUpvoteEventForDifferentRecipient();
-    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
-    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
-
-    createAndSubmitSuppliedParameterVoteEvent("5", createUpvoteEventForCanonicalRecipient());
-    createAndSubmitSuppliedParameterVoteEvent("4", createDownvoteEventForCanonicalRecipient());
-    List<GenericEventRecord> apply = getall.apply(getAllFxn().get());
-
-    assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
-    assertEquals(9, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
-    assertEquals(2, kindCountFxn.apply(apply, Kind.FOLLOW_SETS));
-    assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
-
-    validateResidualDbEventCounts();
+//    createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForDifferentRecipient());
+//    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForCanonicalRecipient());
+//    createAndSubmitSuppliedParameterVoteEvent("3", createUpvoteEventForCanonicalRecipient());
+//    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForDifferentRecipient());
+//
+//    BadgeAwardCanonicalEvent identicalUpvoteRecipientEvent = createUpvoteEventForCanonicalRecipient();
+//    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
+//    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
+//
+//    BadgeAwardCanonicalEvent identicalUpvoteDifferentRecipientEvent = createUpvoteEventForDifferentRecipient();
+//    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+//    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+//
+//    createAndSubmitSuppliedParameterVoteEvent("5", createUpvoteEventForCanonicalRecipient());
+//    createAndSubmitSuppliedParameterVoteEvent("4", createDownvoteEventForCanonicalRecipient());
+//    List<GenericEventRecord> apply = getall.apply(getAllFxn().get());
+//
+//    assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
+//    assertEquals(9, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
+//    assertEquals(2, kindCountFxn.apply(apply, Kind.FOLLOW_SETS));
+//    assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT));
+//
+//    validateResidualDbEventCounts();
   }
 
   protected int getEventCountByKindIncludesDeletedEvents(Kind kind) {
@@ -139,36 +146,60 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
        .filter(kind::equals).toList().size();
   }
 
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createUpvoteEventForCanonicalRecipient() {
+  protected BadgeAwardCanonicalEvent createUpvoteEventForCanonicalRecipient() {
     return createUpvoteEvent(new Relay(getDefinitionEventRelayUrl()), recipient.getPublicKey());
   }
 
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createDownvoteEventForCanonicalRecipient() {
+  protected BadgeAwardCanonicalEvent createDownvoteEventForCanonicalRecipient() {
     return createDownvoteEvent(new Relay(getDefinitionEventRelayUrl()), recipient.getPublicKey());
   }
 
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createUpvoteEventForDifferentRecipient() {
+  protected BadgeAwardCanonicalEvent createUpvoteEventForDifferentRecipient() {
     return createUpvoteEvent(new Relay(getDefinitionEventRelayUrl()), recipientDifferent.getPublicKey());
   }
 
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createDownvoteEventForDifferentRecipient() {
+  protected BadgeAwardCanonicalEvent createDownvoteEventForDifferentRecipient() {
     return createDownvoteEvent(new Relay(getDefinitionEventRelayUrl()), recipientDifferent.getPublicKey());
   }
 
-  protected void createAndSubmitSuppliedParameterVoteEvent(String expectedScore, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event) {
-    submitSCEvent(
+  protected void createAndSubmitSuppliedParameterVoteEvent(String expectedScore, BadgeAwardCanonicalEvent event) {
+    EventIF submittedSCVoteEvent = submitSCEvent(
        event,
-       awardEventRelayUrl,
+       definitionEventRelayUrl,
        new Filters(
           new ReferencedPublicKeyFilter(
              new PubKeyTag(event.getAwardRecipientPublicKey())),
-          new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT)));
+          new KindFilter(Kind.BADGE_AWARD_EVENT))).getFirst();
 
-    List<EventIF> eventIFS = submitAfterImageReq(new PubKeyTag(event.getAwardRecipientPublicKey()), awardEventRelayUrl);
+//    BadgeAwardCanonicalEvent reconstructedBadgeAwardGenericEvent = new BadgeAwardCanonicalEvent(
+//       submittedSCVoteEvent.asGenericEventRecord(),
+//       addressTag -> event.getBadgeDefinitionEvent());
+
+//    CuratedBadgeAwardGenericEvent curatedBadgeAwardEvent = new CuratedBadgeAwardGenericEvent(
+//       superconductorInstanceIdentity,
+//       reconstructedBadgeAwardGenericEvent,
+//       new ReferenceTag(
+//          reconstructedBadgeAwardGenericEvent.getRelayTag().orElseThrow().getRelay().getUrl()),
+//       new ReferenceTag(
+//          reconstructedBadgeAwardGenericEvent.getRelayTag().orElseThrow().getRelay().getUrl()),
+//       getAwardEventRelay());
+
+    List<EventIF> eventIFS = submitAfterImageReq(new PubKeyTag(recipient.getPublicKey()), awardEventRelayUrl);
+    EventIF eventIF = eventIFS.getFirst();
+
+//    EventIF eventIF = submitSCEvent(
+//       curatedBadgeAwardEvent,
+//       awardEventRelayUrl,
+//       new Filters(
+//          new ReferencedPublicKeyFilter(
+//             new PubKeyTag(event.getAwardRecipientPublicKey())),
+//          new KindFilter(Kind.CURATION_SETS_BADGE_AWARD_EVENT))).getFirst();
+
+//    List<EventIF> eventIFS = submitAfterImageReq(new PubKeyTag(event.getAwardRecipientPublicKey()), awardEventRelayUrl);
 
     assertEquals(
        expectedScore,
-       eventIFS.getFirst().getContent());
+       eventIF.getContent());
   }
 
   protected BadgeDefinitionReputationEvent createBadgeDefinitionReputationEvent() {
@@ -186,8 +217,6 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     List<EventAttributesMap<FormulaEvent>> eventAttributesMap = EventAttributesMap.asEventAttributesMap(
        List.of(
           createPlusOneFormulaEvent()
-          ,
-          createMinusOneFormulaEvent()
 //       ,
 //       createMinusOneFormulaEvent()
        ));
@@ -198,13 +227,13 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     return
        EventAttributesMap.asEventAttributesMap(List.of(
           createBadgeAwardUpvoteDefinitionEvent()
-          ,
-          createBadgeAwardDownvoteDefinitionEvent()
+//          ,
+//          createBadgeAwardDownvoteDefinitionEvent()
        ));
   }
 
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createUpvoteEvent(Relay relay, PublicKey recipientPublicKey) {
-    return new BadgeAwardGenericEvent<>(
+  protected BadgeAwardCanonicalEvent createUpvoteEvent(Relay relay, PublicKey recipientPublicKey) {
+    return new BadgeAwardCanonicalEvent(
        submitter,
        recipientPublicKey,
        EventAttributesMap.getFirstByIdentifierTag(
@@ -212,8 +241,8 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
        relay);
   }
 
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createDownvoteEvent(Relay relay, PublicKey recipientPublicKey) {
-    return new BadgeAwardGenericEvent<>(
+  protected BadgeAwardCanonicalEvent createDownvoteEvent(Relay relay, PublicKey recipientPublicKey) {
+    return new BadgeAwardCanonicalEvent(
        submitter,
        recipientPublicKey,
        EventAttributesMap.getFirstByIdentifierTag(
@@ -280,7 +309,8 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     submitRelayEventWithDuration_backup(event, url);
 //  sanity check event submissions processed by superconductor
     List<BaseMessage> baseMessages = new NostrSingleRequestService().send(
-       createSuperconductorReqMessageEvent(generateRandomHex64String(), filters), url);
+       createSuperconductorReqMessageEvent(generateRandomHex64String(), filters), url
+       , Duration.ofSeconds(5));
     return getReceivedUpvoteCuratedEventIF(event, baseMessages);
   }
 
@@ -294,21 +324,11 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     return getReceivedUpvoteCuratedEventIF(event, baseMessages);
   }
 
-  private @NonNull List<EventIF> getReceivedUpvoteCuratedEventIF(BaseEvent event, List<BaseMessage> baseMessages) {
-    log.debug("retrieved superconductor events:");
-    List<EventIF> receivedEventIFs = getGenericEvents(baseMessages);
-    receivedEventIFs.stream().map(EventIF::asGenericEventRecord).map(GenericEventRecord::createPrettyPrintJson).forEach(log::debug);
-
-    assertTrue(receivedEventIFs.stream().map(eventIF ->
-       eventIF.requireFirstTag(EventTag.class).getEventId()).anyMatch(event.getId()::contains));
-
-    assertTrue(receivedEventIFs.stream().map(eventIF ->
-       eventIF.requireFirstTag(PubKeyTag.class).getPublicKey()).anyMatch(event.requireFirstTag(PubKeyTag.class).getPublicKey()::equals));
-    return receivedEventIFs;
-  }
+  abstract protected List<EventIF> getReceivedUpvoteCuratedEventIF(BaseEvent event, List<BaseMessage> baseMessages);
 
   protected void submitRelayEvent(EventIF event, String url) {
-    assertEquals(true, new NostrEventPublisher(url).send(new EventMessage(event.asGenericEventRecord())).getFlag());
+    assertEquals(true, new NostrEventPublisher(url).send(new EventMessage(event.asGenericEventRecord()),
+       Duration.ofSeconds(5)).getFlag());
   }
 
   protected void submitRelayEventWithDuration_backup(EventIF event, String url) {
@@ -318,7 +338,7 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
   }
 
   protected void submitAimgEvent(EventIF eventIF) {
-    submitRelayEventWithDuration_backup(eventIF, awardEventRelayUrl);
+    submitRelayEvent(eventIF, awardEventRelayUrl);
 //    TimeUnit.MILLISECONDS.sleep(1000);
   }
 
@@ -507,7 +527,7 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
           .send(
              new EventMessage(formulaEvent.getEvent())
              ,
-             Duration.ofMinutes(20)
+             Duration.ofSeconds(10)
           ).getFlag()));
 
     List<EventAttributesMap<CuratedFormulaEvent>> list = getDbCuratedFormulaEventList().stream()

@@ -3,6 +3,7 @@ package com.prosilion.superconductor.autoconfigure.curation.service.event.sets;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -43,19 +44,29 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
   @Override
   public Optional<BadgeSetsEvent> materialize(@NonNull EventIF incomingBadgeSetsEvent) {
     log.debug("materialize incomingBadgeSetsEvent:\n  {}", incomingBadgeSetsEvent.createPrettyPrintJson());
+    
     Optional<BadgeSetsEvent> badgeSetsEvent = cacheBadgeDefinitionReputationEventServiceIF
        .getByExpanded(
           incomingBadgeSetsEvent.requireFirstTag(AddressTag.class))
        .map(badgeDefinitionReputationEvent ->
-          new BadgeSetsEvent(
-             incomingBadgeSetsEvent.asGenericEventRecord(),
-             badgeDefinitionReputationEvent,
-             incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class).stream()
-                .map(eventTag -> cacheCuratedBadgeAwardGenericEventServiceIF
-                   .getEvent(eventTag.eventId(), eventTag.requireRelay()))
-                .flatMap(Optional::stream)
-                .distinct()
-                .toList()));
+       {
+         List<EventTag> typeSpecificTags = incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class);
+
+         List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEvents = typeSpecificTags.stream()
+            .map(eventTag -> cacheCuratedBadgeAwardGenericEventServiceIF
+               .getEvent(eventTag.eventId(), eventTag.requireRelay()))
+            .flatMap(Optional::stream)
+            
+            .distinct()
+            .toList();
+         
+         BadgeSetsEvent badgeSetsEvent1 = new BadgeSetsEvent(
+            incomingBadgeSetsEvent.asGenericEventRecord(),
+            badgeDefinitionReputationEvent,
+            curatedBadgeAwardGenericEvents);
+         
+         return badgeSetsEvent1;
+       });
     return badgeSetsEvent;
   }
 

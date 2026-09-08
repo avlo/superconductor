@@ -1,13 +1,16 @@
 package com.prosilion.superconductor.supplier.local.abstracts;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
+import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -34,7 +37,7 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
      @NonNull String definitionEventRelayUrl,
      @NonNull String awardEventRelayUrl,
      CacheServiceIF cacheServiceIF) {
-    super(superconductorInstanceIdentity, definitionEventRelayUrl, awardEventRelayUrl);
+    super(superconductorInstanceIdentity, definitionEventRelayUrl, awardEventRelayUrl, cacheServiceIF);
     this.cacheServiceIF = cacheServiceIF;
   }
 
@@ -81,6 +84,20 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
     assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(contains));
   }
 
+  protected List<EventIF> getReceivedUpvoteCuratedEventIF(BaseEvent event, List<BaseMessage> baseMessages) {
+    log.debug("retrieved superconductor events:");
+    List<EventIF> receivedEventIFs = getGenericEvents(baseMessages);
+    receivedEventIFs.stream().map(EventIF::createPrettyPrintJson).forEach(log::debug);
+
+//    assertTrue(receivedEventIFs.stream()
+//       .map(eventIF -> eventIF.requireFirstTag(EventTag.class).getEventId())
+//       .anyMatch(event.getId()::contains));
+
+    assertTrue(receivedEventIFs.stream().map(eventIF ->
+       eventIF.requireFirstTag(PubKeyTag.class).getPublicKey()).anyMatch(event.requireFirstTag(PubKeyTag.class).getPublicKey()::equals));
+    return receivedEventIFs;
+  }
+  
   @Override
   protected void validateResidualDbEventCounts() {
     assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));

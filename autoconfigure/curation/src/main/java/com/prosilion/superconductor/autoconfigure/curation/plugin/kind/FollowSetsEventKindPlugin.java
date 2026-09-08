@@ -84,14 +84,28 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
 
     PubKeyTag recipientPubKeyTag = new PubKeyTag(recipientPublicKey);
     List<BadgeSetsEvent> recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent =
-       addressTagStream.stream().map(addressTag ->
-       {
-         log.debug("... calling cacheBadgeSetsEventServiceIF.getBy(recipientPublicKey, addressTag) ...\nrecipientPublicKey:  [{}]\naddressTag:  {}",
-            recipientPubKeyTag.getPublicKey().toHexString(), addressTag.toStringPrettyPrint());
-         Optional<BadgeSetsEvent> optionalBadgeSetsEvent = cacheBadgeSetsEventServiceIF.getBy(recipientPubKeyTag, addressTag);
-         log.debug("... returned optionalBadgeSetsEvent:\n{}", optionalBadgeSetsEvent.map(BadgeSetsEvent::createPrettyPrintJson).orElse("  [EMPTY_OPTIONAL]"));
-         return optionalBadgeSetsEvent;
-       }).flatMap(Optional::stream).toList();
+       matchingBadgeDefinitionReputationEventList.stream().map(badgeDefinitionReputationEvent ->
+          {
+            log.debug("... calling cacheBadgeSetsEventServiceIF.getBy(recipientPublicKey, badgeDefinitionReputationEvent) ...\nrecipientPublicKey:  [{}]\nbadgeDefinitionReputationEvent:  {}",
+               recipientPubKeyTag.getPublicKey().toHexString(),
+               badgeDefinitionReputationEvent.asAddressableEventAddressTag().toStringPrettyPrint());
+
+            BadgeSetsEvent badgeSetsEvent =
+               cacheBadgeSetsEventServiceIF
+                  .getBy(
+                     recipientPubKeyTag,
+                     badgeDefinitionReputationEvent.asAddressableEventAddressTag())
+                  .orElse(
+                     new BadgeSetsEvent(
+                        superconductorInstanceIdentity,
+                        badgeDefinitionReputationEvent,
+                        curatedBadgeAwardGenericEvent,
+                        new Relay(superconductorRelayUrl)));
+            
+            log.debug("... returned badgeSetsEvent:\n{}", badgeSetsEvent.createPrettyPrintJson());
+            return badgeSetsEvent;
+          })
+          .toList();
 
     log.debug("... calling processIncomingFollowSetsBadgeSetsEvents(recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent) ...");
     return processIncomingFollowSetsBadgeSetsEvents(recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent, fromRelay);

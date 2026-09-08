@@ -126,6 +126,7 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
              .orElse(fromRelay.getUrl())),
        superconductorRelay);
 
+    GenericEventRecord genericEventRecord = super.processIncomingEvent(curatedBadgeAwardEvent, fromRelay).orElseThrow();
     return followSetsEventKindPlugin.processIncomingCuratedBadgeAwardGenericEvent(curatedBadgeAwardEvent, fromRelay);
   }
 

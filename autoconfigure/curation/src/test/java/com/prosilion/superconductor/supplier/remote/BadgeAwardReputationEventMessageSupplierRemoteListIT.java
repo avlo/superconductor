@@ -2,6 +2,7 @@ package com.prosilion.superconductor.supplier.remote;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.config.SingleContainerCuratedTestConfig;
 import com.prosilion.superconductor.supplier.remote.abstracts.AbstractBadgeAwardReputationEventMessageSupplierRemoteListIT;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
@@ -24,7 +25,8 @@ public class BadgeAwardReputationEventMessageSupplierRemoteListIT extends Abstra
   BadgeAwardReputationEventMessageSupplierRemoteListIT(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull @Value("${superconductor.relay.url.two}") String superconductorRelayUrlTwo,
-     @NonNull @Value("${superconductor.relay.url.three}") String superconductorRelayUrlThree) throws NostrException {
-    super(superconductorInstanceIdentity, superconductorRelayUrlTwo, superconductorRelayUrlThree);
+     @NonNull @Value("${superconductor.relay.url.three}") String superconductorRelayUrlThree,
+     @NonNull CacheServiceIF cacheServiceIF) throws NostrException {
+    super(superconductorInstanceIdentity, superconductorRelayUrlTwo, superconductorRelayUrlThree, cacheServiceIF);
   }
 }

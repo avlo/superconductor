@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.base;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
@@ -20,31 +20,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseBadgeAwardUpvoteEventMessageAuthIT {
-	public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
+  public static final String IDENTIFIER_TAG_UUID = Factory.generateRandomHex64String();
 
-	public static final Relay relay = new Relay("ws://localhost:5555");
-	private final BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> event;
-	private final String relayUrl;
+  public static final Relay relay = new Relay("ws://localhost:5555");
+  private final BadgeAwardCanonicalEvent event;
+  private final String relayUrl;
 
-	public BaseBadgeAwardUpvoteEventMessageAuthIT(
-		@NonNull Identity superconductorInstanceIdentity,
-		@NonNull String relayUrl) throws NostrException {
-		this.relayUrl = relayUrl;
-		Identity authorIdentity = Identity.generateRandomIdentity();
-		this.event = new BadgeAwardGenericEvent<>(
-			authorIdentity,
-			Identity.generateRandomIdentity().getPublicKey(),
-			new BadgeDefinitionGenericEvent(
-				superconductorInstanceIdentity,
-				new IdentifierTag(IDENTIFIER_TAG_UUID),
-				relay),
-			relay);
-	}
+  public BaseBadgeAwardUpvoteEventMessageAuthIT(
+     @NonNull Identity superconductorInstanceIdentity,
+     @NonNull String relayUrl) throws NostrException {
+    this.relayUrl = relayUrl;
+    Identity authorIdentity = Identity.generateRandomIdentity();
+    this.event = new BadgeAwardCanonicalEvent(
+       authorIdentity,
+       Identity.generateRandomIdentity().getPublicKey(),
+       new BadgeDefinitionGenericEvent(
+          superconductorInstanceIdentity,
+          new IdentifierTag(IDENTIFIER_TAG_UUID),
+          relay),
+       relay);
+  }
 
-	@Test
-	void testValidExistingEventThenAfterImageReputationRequest() throws IOException, NostrException {
-		OkMessage send = new NostrEventPublisher(relayUrl).send(new EventMessage(event));
-		assertFalse(send.getFlag());
-		assertTrue(send.getMessage().contains("auth-required:"));
-	}
+  @Test
+  void testValidExistingEventThenAfterImageReputationRequest() throws IOException, NostrException {
+    OkMessage send = new NostrEventPublisher(relayUrl).send(new EventMessage(event));
+    assertFalse(send.getFlag());
+    assertTrue(send.getMessage().contains("auth-required:"));
+  }
 }

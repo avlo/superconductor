@@ -1,6 +1,6 @@
 package com.prosilion.superconductor;
 
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -69,7 +69,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestDir
        plusOneCuratedFormulaEvent);
     cacheServiceIF.save(badgeDefinitionReputationEventPlusOneFormula);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,

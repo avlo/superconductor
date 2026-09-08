@@ -71,7 +71,7 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT 
       log.debug("returned events:");
       log.debug("  {}", returnedEventIFs);
 
-      eventIds.addAll(returnedEventIFs.stream().map(EventIF::asGenericEventRecord)
+      eventIds.addAll(returnedEventIFs.stream()
          .map(event -> event.requireFirstTag(EventTag.class))
          .map(EventTag::getEventId).collect(Collectors.toSet()));
     });
@@ -93,13 +93,13 @@ public abstract class AbstractBaseCacheCuratedBadgeDefinitionEventMessageListIT 
 
     assertEquals(badgeDefinitionGenericEventList.size(), returnedCuratedBadgeDefinitionEvents.size());
 
-    List<String> eventIds = returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
+    List<String> eventIds = returnedCuratedBadgeDefinitionEvents.stream()
        .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventTag::getEventId).toList();
 
     assertTrue(badgeDefinitionGenericEventList.stream().map(BadgeDefinitionGenericEvent::getId).toList().containsAll(eventIds));
 
-    assertTrue(returnedCuratedBadgeDefinitionEvents.stream().map(EventIF::asGenericEventRecord)
+    assertTrue(returnedCuratedBadgeDefinitionEvents.stream()
        .map(event -> event.requireFirstTag(AddressTag.class))
        .allMatch(badgeDefinitionGenericEventList.stream().map(BadgeDefinitionGenericEvent::asAddressableEventAddressTag).toList()::contains));
   }

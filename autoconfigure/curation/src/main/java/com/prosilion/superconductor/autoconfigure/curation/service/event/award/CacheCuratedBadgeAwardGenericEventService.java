@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.curation.service.event.award;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeAwardGenericEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
-public class CacheCuratedBadgeAwardGenericEventService extends AbstractCacheCuratedEventService<CuratedBadgeAwardGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> implements CacheCuratedBadgeAwardGenericEventServiceIF {
+public class CacheCuratedBadgeAwardGenericEventService extends AbstractCacheCuratedEventService<CuratedBadgeAwardGenericEvent, BadgeAwardCanonicalEvent> implements CacheCuratedBadgeAwardGenericEventServiceIF {
   private final CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF;
 
   public CacheCuratedBadgeAwardGenericEventService(
@@ -77,7 +78,7 @@ public class CacheCuratedBadgeAwardGenericEventService extends AbstractCacheCura
 
   @Override
   protected CuratedBadgeAwardGenericEvent createFromFetched(
-     @NonNull BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent,
+     @NonNull BadgeAwardCanonicalEvent badgeAwardGenericEvent,
      @NonNull Relay relay) {
     return new CuratedBadgeAwardGenericEvent(
        super.getInstanceIdentity(),

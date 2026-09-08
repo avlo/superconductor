@@ -1,7 +1,7 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
@@ -56,7 +56,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
        new ReferenceTag(relayUrl),
        relay);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent = new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,
@@ -131,7 +131,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
 
   @Test
   public void testGetByDirectEventTagFromBackingServiceAfterLocalMiss() {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
+    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
        createAndSaveBackingBadgeAward();
     EventTag eventTag = new EventTag(
        badgeAwardGenericEvent.getId(),
@@ -146,7 +146,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
 
   @Test
   public void testGetByDirectAddressTagFromBackingServiceAfterLocalMiss() {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
+    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
        createAndSaveBackingBadgeAward();
     AddressTag addressTag =
        badgeAwardGenericEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag();
@@ -187,14 +187,14 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
     assertThrows(NostrException.class, () -> cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(nonExistentEventTagEventId));
   }
 
-  private BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createAndSaveBackingBadgeAward() {
+  private BadgeAwardCanonicalEvent createAndSaveBackingBadgeAward() {
     BadgeDefinitionGenericEvent badgeDefinitionGenericEvent =
        new BadgeDefinitionGenericEvent(
           Identity.generateRandomIdentity(),
           upvoteIdentifierTag,
           relay);
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
-       new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
+       new BadgeAwardCanonicalEvent(
           Identity.generateRandomIdentity(),
           recipient.getPublicKey(),
           badgeDefinitionGenericEvent,

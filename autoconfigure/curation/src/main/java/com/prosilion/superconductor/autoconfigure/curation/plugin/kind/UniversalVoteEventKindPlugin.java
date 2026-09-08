@@ -2,8 +2,7 @@ package com.prosilion.superconductor.autoconfigure.curation.plugin.kind;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -86,7 +85,7 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
     AddressTag suppliedAddressTag = voteEvent.requireFirstTag(AddressTag.class);
 
     Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent =
-       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag, 
+       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag,
           Optional.of(new RelayTag(awardEventConsolidatedRelay)), fromRelay);
 
     if (curatedBadgeDefinitionGenericEvent.isEmpty()) {
@@ -113,8 +112,8 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
           new NostrException(String.format("no BadgeDefinitionReputationEvent found for formulaEventAddressableEventAddressTag:\n  %s",
              formulaEventAddressableEventAddressTag.toStringPrettyPrint())));
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
-       new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
+       new BadgeAwardCanonicalEvent(
           voteEvent.asGenericEventRecord(), addressTag -> existingDefnReputation);
 
     CuratedBadgeAwardGenericEvent curatedBadgeAwardEvent = new CuratedBadgeAwardGenericEvent(

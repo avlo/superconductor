@@ -2,7 +2,7 @@ package com.prosilion.superconductor.base;
 
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.internal.Relay;
@@ -56,7 +56,7 @@ public abstract class BaseBadgeAwardDownvoteEventSupplierRemoteIT extends BaseIn
              eventMessageBadgeDefinitionDownvoteEvent)
           .getFlag());
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardDownvoteEvent = new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardDownvoteEvent = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        badgeDefinitionDownvoteEvent,

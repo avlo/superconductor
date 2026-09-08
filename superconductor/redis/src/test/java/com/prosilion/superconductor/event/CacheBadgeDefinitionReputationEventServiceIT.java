@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.event;
 
 import com.prosilion.nostr.NostrException;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -61,7 +61,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
 
   BadgeDefinitionGenericEvent awardDownvoteDefinitionEvent;
 
-  BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent;
+  BadgeAwardCanonicalEvent badgeAwardGenericEvent;
   CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent;
 
   CacheServiceIF cacheServiceIF;
@@ -85,7 +85,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     this.awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, downvoteIdentifierTag, relay);
     cacheServiceIF.save(this.awardDownvoteDefinitionEvent);
 
-    this.badgeAwardGenericEvent = new BadgeAwardGenericEvent<>(
+    this.badgeAwardGenericEvent = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardDownvoteDefinitionEvent,

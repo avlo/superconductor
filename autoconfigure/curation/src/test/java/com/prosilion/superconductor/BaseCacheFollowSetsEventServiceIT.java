@@ -1,7 +1,7 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
@@ -85,7 +85,7 @@ public abstract class BaseCacheFollowSetsEventServiceIT extends BaseIntegrationT
        relay);
     cacheServiceIF.save(plusOneCuratedFormulaEvent);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent_1 = new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent_1 = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,
@@ -140,7 +140,7 @@ public abstract class BaseCacheFollowSetsEventServiceIT extends BaseIntegrationT
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_1), followSetsEvent_1.getRelay().orElseThrow());
     validateDbUpdatedFollowSetsEvent(followSetsEvent_1);
 
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent_2 = new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent_2 = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
@@ -40,7 +40,7 @@ public class EventCurationInactiveConfig {
 
   @Bean("badgeAwardGenericEventKindPlugin")
   @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPlugin")
-  BadgeAwardGenericEventKindPlugin<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> badgeAwardGenericEventKindPlugin(
+  BadgeAwardGenericEventKindPlugin<BadgeDefinitionGenericEvent, BadgeAwardCanonicalEvent> badgeAwardGenericEventKindPlugin(
      @NonNull NotifierService notifierService,
      @NonNull EventPlugin eventPlugin) {
     return new BadgeAwardGenericEventKindPlugin<>(

@@ -1,8 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.curation.plugin.kind;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
@@ -56,8 +55,8 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
 
     log.debug("found existing curatedBadgeDefinitionGenericEvent (and therefore, badgeDefinitionGenericEvent):\n{}\nre-composing BadgeAwardGenericEvent...",
        curatedBadgeDefinitionGenericEvent.get().createPrettyPrintJson());
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardGenericEvent =
-       new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
+       new BadgeAwardCanonicalEvent(
           event.asGenericEventRecord(),
           aTag -> curatedBadgeDefinitionGenericEvent.get().getBadgeDefinitionGenericEvent());
     log.debug("...done:\n{}", badgeAwardGenericEvent.createPrettyPrintJson());

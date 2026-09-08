@@ -1,19 +1,19 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.award;
 
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
-import com.prosilion.superconductor.base.service.event.CacheBadgeAwardGenericEventServiceIF;
-import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
 import java.util.function.Function;
 import lombok.NonNull;
 
-public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionGenericEvent, BadgeAwardGenericEvent<BadgeDefinitionGenericEvent>> implements CacheBadgeAwardGenericEventServiceIF {
+public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionGenericEvent, BadgeAwardCanonicalEvent> implements CacheBadgeAwardGenericEventServiceIF {
   public CacheBadgeAwardGenericEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
@@ -32,9 +32,9 @@ public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractE
   }
 
   @Override
-  protected BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> createBadgeAwardEvent(
+  protected BadgeAwardCanonicalEvent createBadgeAwardEvent(
      @NonNull GenericEventRecord eventRecord,
      @NonNull Function<AddressTag, BadgeDefinitionGenericEvent> badgeDefinitionResolver) {
-    return new BadgeAwardGenericEvent<>(eventRecord, badgeDefinitionResolver);
+    return new BadgeAwardCanonicalEvent(eventRecord, badgeDefinitionResolver);
   }
 }

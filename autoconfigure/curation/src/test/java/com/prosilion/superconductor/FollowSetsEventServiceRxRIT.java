@@ -1,6 +1,6 @@
 package com.prosilion.superconductor;
 
-import com.prosilion.nostr.event.BadgeAwardGenericEvent;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.FollowSetsEvent;
@@ -98,7 +98,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
 
   @Test
   void testGetByPubKeyTag() {
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent_1 = new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent_1 = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,
@@ -145,7 +145,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
 //
 // start event 2
 //
-    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardUpvoteEvent_2 = new BadgeAwardGenericEvent<>(
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent_2 = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,

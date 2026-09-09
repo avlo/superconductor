@@ -116,7 +116,7 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
     createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForCanonicalRecipient());
 //    createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForDifferentRecipient());
-//    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForCanonicalRecipient());
 //    createAndSubmitSuppliedParameterVoteEvent("3", createUpvoteEventForCanonicalRecipient());
 //    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForDifferentRecipient());
 //

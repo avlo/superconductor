@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,30 +86,59 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
     PubKeyTag recipientPubKeyTag = new PubKeyTag(recipientPublicKey);
     List<BadgeSetsEvent> recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent =
        matchingBadgeDefinitionReputationEventList.stream().map(badgeDefinitionReputationEvent ->
-          {
-            log.debug("... calling cacheBadgeSetsEventServiceIF.getBy(recipientPublicKey, badgeDefinitionReputationEvent) ...\nrecipientPublicKey:  [{}]\nbadgeDefinitionReputationEvent:  {}",
-               recipientPubKeyTag.getPublicKey().toHexString(),
-               badgeDefinitionReputationEvent.asAddressableEventAddressTag().toStringPrettyPrint());
-
-            BadgeSetsEvent badgeSetsEvent =
-               cacheBadgeSetsEventServiceIF
-                  .getBy(
-                     recipientPubKeyTag,
-                     badgeDefinitionReputationEvent.asAddressableEventAddressTag())
-                  .orElse(
-                     new BadgeSetsEvent(
-                        superconductorInstanceIdentity,
-                        badgeDefinitionReputationEvent,
-                        curatedBadgeAwardGenericEvent,
-                        new Relay(superconductorRelayUrl)));
-            
-            log.debug("... returned badgeSetsEvent:\n{}", badgeSetsEvent.createPrettyPrintJson());
-            return badgeSetsEvent;
-          })
+             constructFromIncoming(curatedBadgeAwardGenericEvent, badgeDefinitionReputationEvent, recipientPubKeyTag))
           .toList();
 
     log.debug("... calling processIncomingFollowSetsBadgeSetsEvents(recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent) ...");
     return processIncomingFollowSetsBadgeSetsEvents(recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent, fromRelay);
+  }
+
+  private @NonNull BadgeSetsEvent constructFromIncoming(CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent, BadgeDefinitionReputationEvent badgeDefinitionReputationEvent, PubKeyTag recipientPubKeyTag) {
+    log.debug("... calling cacheBadgeSetsEventServiceIF.getBy(recipientPublicKey, badgeDefinitionReputationEvent) ...\nrecipientPublicKey:  [{}]\nbadgeDefinitionReputationEvent:  {}",
+       recipientPubKeyTag.getPublicKey().toHexString(),
+       badgeDefinitionReputationEvent.asAddressableEventAddressTag().toStringPrettyPrint());
+
+    BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
+       superconductorInstanceIdentity,
+       badgeDefinitionReputationEvent,
+       curatedBadgeAwardGenericEvent,
+       new Relay(superconductorRelayUrl));
+
+    log.debug("... returned badgeSetsEvent:\n{}", badgeSetsEvent.createPrettyPrintJson());
+    return badgeSetsEvent;
+  }
+
+  private @NonNull BadgeSetsEvent constructFromExisting(CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent, BadgeDefinitionReputationEvent badgeDefinitionReputationEvent, PubKeyTag recipientPubKeyTag) {
+    log.debug("... calling cacheBadgeSetsEventServiceIF.getBy(recipientPublicKey, badgeDefinitionReputationEvent) ...\nrecipientPublicKey:  [{}]\nbadgeDefinitionReputationEvent:  {}",
+       recipientPubKeyTag.getPublicKey().toHexString(),
+       badgeDefinitionReputationEvent.asAddressableEventAddressTag().toStringPrettyPrint());
+
+    Optional<BadgeSetsEvent> optionalBadgeSetsEvent = cacheBadgeSetsEventServiceIF
+       .getBy(
+          recipientPubKeyTag,
+          badgeDefinitionReputationEvent.asAddressableEventAddressTag());
+    optionalBadgeSetsEvent.map(existingBadgeSetsEvent ->
+    {
+      BadgeSetsEvent badgeSetsEvent1 = new BadgeSetsEvent(
+         superconductorInstanceIdentity,
+         badgeDefinitionReputationEvent,
+         Stream.concat(
+            existingBadgeSetsEvent.getCuratedBadgeAwardGenericEventList().stream(),
+            Stream.of(curatedBadgeAwardGenericEvent)).toList(),
+         new Relay(superconductorRelayUrl));
+      return badgeSetsEvent1;
+    });
+    BadgeSetsEvent badgeSetsEvent =
+       optionalBadgeSetsEvent
+          .orElseGet(() ->
+             new BadgeSetsEvent(
+                superconductorInstanceIdentity,
+                badgeDefinitionReputationEvent,
+                curatedBadgeAwardGenericEvent,
+                new Relay(superconductorRelayUrl)));
+
+    log.debug("... returned badgeSetsEvent:\n{}", badgeSetsEvent.createPrettyPrintJson());
+    return badgeSetsEvent;
   }
 
   @Override
@@ -160,7 +190,7 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
     findAwardRecipientExistingFollowSets(materializedFollowSetsEvent).ifPresent(followSetsEvent -> {
       log.debug("(7.1of9) ... deleting previous existingDbFollowSets ...");
       log.debug("(7.2of9) ... first, delete previous FollowSetsEvent's BadgeSetsEvent(s) ...");
-      followSetsEvent.getBadgeSetsEventList().forEach(this::deletePrevious);
+//      followSetsEvent.getBadgeSetsEventList().forEach(this::deletePrevious);
       log.debug("(7.3of9) ... finally, delete the previous existingDbFollowSetsEvent itself ...");
       deletePrevious(followSetsEvent);
       log.debug("(7.4of9) ... done");

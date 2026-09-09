@@ -22,6 +22,7 @@ import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKin
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.PublishingEventKindTypePlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +31,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_AWARD_REPUTATION_EXTERNAL_IDENTITY_TAG;
 
@@ -79,13 +80,15 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
     List<BadgeAwardReputationEvent> existingBadgeAwardReputationEvents =
        cacheFollowSetsEventServiceIF.getBadgeAwardReputationEvents(materializedIncomingFollowSetsEvent);
 
+    Map<AddressTag, BadgeAwardReputationEvent> previousReputationEventsMappedByAddressTag = existingBadgeAwardReputationEvents.stream()
+       .collect(Collectors.toMap(
+          UniqueAddressTagEvent::getAddressTag,
+          Function.identity()));
+
     List<BadgeAwardReputationEvent> newReputationEvents =
        updateReputationEvents(
           materializedIncomingFollowSetsEvent,
-          existingBadgeAwardReputationEvents.stream()
-             .collect(Collectors.toMap(
-                UniqueAddressTagEvent::getAddressTag,
-                Function.identity())));
+          previousReputationEventsMappedByAddressTag);
 
     log.debug("(6ofY) ... newReputationEvent:\n  {}", newReputationEvents.stream().map(EventIF::createPrettyPrintJson));
 //    TODO: possibly reverse order below
@@ -98,52 +101,78 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
     return genericEventRecords.stream().findFirst();
   }
 
-  private @NonNull List<BadgeAwardReputationEvent> updateReputationEvents(FollowSetsEvent followSetsEvent, Map<AddressTag, BadgeAwardReputationEvent> previousReputationEventsByDefinition) {
-    return followSetsEvent.getBadgeSetsEventList().stream()
+  private @NonNull List<BadgeAwardReputationEvent> updateReputationEvents(
+     FollowSetsEvent materializedIncomingFollowSetsEvent,
+     Map<AddressTag, BadgeAwardReputationEvent> previousReputationEventsMappedByAddressTag) {
+
+    return materializedIncomingFollowSetsEvent.getBadgeSetsEventList().stream()
        .map(badgeSetsEvent ->
-          Optional.ofNullable(
-                previousReputationEventsByDefinition
-                   .get(badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag()))
-             .orElseGet(() ->
-                createNewBadgeAwardReputationEvent(followSetsEvent, badgeSetsEvent)))
+       {
+         Optional<BadgeAwardReputationEvent> badgeAwardReputationEvent =
+            Optional.ofNullable(
+               previousReputationEventsMappedByAddressTag
+                  .get(badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag()));
+         return badgeAwardReputationEvent
+            .orElseGet(() ->
+            {
+              BadgeAwardReputationEvent newBadgeAwardReputationEvent = createNewBadgeAwardReputationEvent(materializedIncomingFollowSetsEvent, badgeSetsEvent);
+              return newBadgeAwardReputationEvent;
+            });
+       })
        .map(previousReputationEvent ->
           calculateBadgeAwardReputationEvent(
              previousReputationEvent.getBadgeDefinitionEvent(),
-             filterNewCuratedBadgeAwardGenericEvents(followSetsEvent, previousReputationEvent.getAddressTag()),
+             filterNewCuratedBadgeAwardGenericEvents(materializedIncomingFollowSetsEvent, previousReputationEvent.getAddressTag()),
              previousReputationEvent))
        .toList();
   }
 
-  private final BiFunction<Stream<BadgeSetsEvent>, AddressTag, List<CuratedBadgeAwardGenericEvent>> fxnDo =
-     (badgeSetsEventStream, addressTag) ->
-        badgeSetsEventStream.filter(badgeaa ->
-              badgeaa.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag().equals(addressTag)).findFirst()
-           .map(BadgeSetsEvent::getCuratedBadgeAwardGenericEventList).stream()
-           .flatMap(Collection::stream).toList();
+  private List<CuratedBadgeAwardGenericEvent> filterNewCuratedBadgeAwardGenericEvents(FollowSetsEvent incomingFollowSetsEvent, AddressTag addressTag) {
+    List<CuratedBadgeAwardGenericEvent> incomingBadgeSetsEventCuratedBadgeAwardGenericEventList =
+       getCuratedBadgeAwardEventListOfMatchingBadgeDefnRepnEventFxn
+          .apply(incomingFollowSetsEvent.getBadgeSetsEventList(), addressTag);
 
-  private List<CuratedBadgeAwardGenericEvent> filterNewCuratedBadgeAwardGenericEvents(FollowSetsEvent followSetsEvent, AddressTag addressTag) {
-    return
-       fxnDo.apply(
-             followSetsEvent.getBadgeSetsEventList().stream(), addressTag).stream()
-          .filter(e ->
-             !fxnDo.apply(findAwardRecipientExistingFollowSets(followSetsEvent).stream()
-                   .map(FollowSetsEvent::getBadgeSetsEventList).flatMap(Collection::stream), addressTag)
-                .contains(e))
-          .toList();
+    Optional<FollowSetsEvent> awardRecipientExistingFollowSetsOpt = findAwardRecipientExistingFollowSets(incomingFollowSetsEvent);
+
+    List<CuratedBadgeAwardGenericEvent> matchedExistingBadgeSetsEventCuratedBadgeAwardGenericEventList =
+       awardRecipientExistingFollowSetsOpt.stream()
+          .map(existingFollowSetsEvent ->
+             getCuratedBadgeAwardEventListOfMatchingBadgeDefnRepnEventFxn.apply(existingFollowSetsEvent.getBadgeSetsEventList(), addressTag))
+          .flatMap(Collection::stream).toList();
+
+    List<CuratedBadgeAwardGenericEvent> uniqueNewCuratedBadgeAwardGenericEvents = new ArrayList<>((CollectionUtils.removeAll(
+       matchedExistingBadgeSetsEventCuratedBadgeAwardGenericEventList,
+       incomingBadgeSetsEventCuratedBadgeAwardGenericEventList)));
+
+    List<CuratedBadgeAwardGenericEvent> uniqueNewCuratedBadgeAwardGenericEventsReverse = new ArrayList<>((CollectionUtils.removeAll(
+       incomingBadgeSetsEventCuratedBadgeAwardGenericEventList,
+       matchedExistingBadgeSetsEventCuratedBadgeAwardGenericEventList)));
+    
+    return uniqueNewCuratedBadgeAwardGenericEventsReverse;
   }
 
-  private Optional<FollowSetsEvent> findAwardRecipientExistingFollowSets(FollowSetsEvent followSetsEvent) {
-    List<FollowSetsEvent> filteredOutNewIncomingFollowSet =
-       cacheFollowSetsEventServiceIF.getBy(new PubKeyTag(followSetsEvent.getAwardRecipientPublicKey()))
-          .stream().filter(Predicate.not(followSetsEvent::equals)).toList();
+  private Optional<FollowSetsEvent> findAwardRecipientExistingFollowSets(FollowSetsEvent incomingFollowSetsEvent) {
+    List<FollowSetsEvent> recipientExistingFollowSetsEvent = cacheFollowSetsEventServiceIF.getBy(new PubKeyTag(incomingFollowSetsEvent.getAwardRecipientPublicKey()));
+    List<FollowSetsEvent> existingFollowSetsNotEqualToIncomingFollowSets = recipientExistingFollowSetsEvent.stream().filter(Predicate.not(incomingFollowSetsEvent::equals)).toList();
 
-    if (filteredOutNewIncomingFollowSet.size() > 1)
+    if (existingFollowSetsNotEqualToIncomingFollowSets.size() > 1) {
       throw new NostrException("found more than one follow sets for a given recipient");
-    if (filteredOutNewIncomingFollowSet.isEmpty())
-      log.debug("no existing FollowSetsEvent found for recipient [{}], return Optional.empty()", followSetsEvent.getAwardRecipientPublicKey());
+    }
+    if (existingFollowSetsNotEqualToIncomingFollowSets.isEmpty()) {
+      log.debug("no existing FollowSetsEvent found for recipient [{}], return Optional.empty()", incomingFollowSetsEvent.getAwardRecipientPublicKey());
+    }
 
-    return filteredOutNewIncomingFollowSet.stream().findFirst();
+    return existingFollowSetsNotEqualToIncomingFollowSets.stream().findFirst();
   }
+
+  private final BiFunction<List<BadgeSetsEvent>, AddressTag, List<CuratedBadgeAwardGenericEvent>> getCuratedBadgeAwardEventListOfMatchingBadgeDefnRepnEventFxn =
+     (badgeSetsEventList, addressTag) ->
+     {
+       List<BadgeSetsEvent> matchingBadgeSetsEventListShouldOnlyBeOne = badgeSetsEventList.stream().filter(badgeSetsEvent ->
+          badgeSetsEvent.getBadgeDefinitionReputationEvent().asAddressableEventAddressTag().equals(addressTag)).toList();
+       BadgeSetsEvent first = matchingBadgeSetsEventListShouldOnlyBeOne.getFirst();
+       return first.getCuratedBadgeAwardGenericEventList();
+     };
 
   private BadgeAwardReputationEvent createNewBadgeAwardReputationEvent(FollowSetsEvent followSetsEvent, BadgeSetsEvent badgeSetsEvent) {
     return createBadgeAwardReputationEvent(

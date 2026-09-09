@@ -115,21 +115,21 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
   @Test
   void aSuperconductorEventThenAfterimageReq() throws NostrException {
     createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForCanonicalRecipient());
-//    createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForDifferentRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForDifferentRecipient());
     createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForCanonicalRecipient());
-//    createAndSubmitSuppliedParameterVoteEvent("3", createUpvoteEventForCanonicalRecipient());
-//    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForDifferentRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("3", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForDifferentRecipient());
 //
-//    BadgeAwardCanonicalEvent identicalUpvoteRecipientEvent = createUpvoteEventForCanonicalRecipient();
-//    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
-//    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
+    BadgeAwardCanonicalEvent identicalUpvoteRecipientEvent = createUpvoteEventForCanonicalRecipient();
+    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
+    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
 //
-//    BadgeAwardCanonicalEvent identicalUpvoteDifferentRecipientEvent = createUpvoteEventForDifferentRecipient();
-//    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
-//    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+    BadgeAwardCanonicalEvent identicalUpvoteDifferentRecipientEvent = createUpvoteEventForDifferentRecipient();
+    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
 //
-//    createAndSubmitSuppliedParameterVoteEvent("5", createUpvoteEventForCanonicalRecipient());
-//    createAndSubmitSuppliedParameterVoteEvent("4", createDownvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("5", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("4", createDownvoteEventForCanonicalRecipient());
 //    List<GenericEventRecord> apply = getall.apply(getAllFxn().get());
 //
 //    assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
@@ -147,7 +147,11 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
   }
 
   protected BadgeAwardCanonicalEvent createUpvoteEventForCanonicalRecipient() {
-    return createUpvoteEvent(new Relay(getDefinitionEventRelayUrl()), recipient.getPublicKey());
+    PublicKey recipientPublicKey = recipient.getPublicKey();
+    log.debug("recipientPublicKey: [{}]", recipientPublicKey.toHexString());
+    BadgeAwardCanonicalEvent recipientUpvoteEvent = createUpvoteEvent(new Relay(getDefinitionEventRelayUrl()), recipientPublicKey);
+    log.debug("recipientPublicKey id: [{}]", recipientUpvoteEvent.getId());
+    return recipientUpvoteEvent;
   }
 
   protected BadgeAwardCanonicalEvent createDownvoteEventForCanonicalRecipient() {
@@ -155,7 +159,11 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
   }
 
   protected BadgeAwardCanonicalEvent createUpvoteEventForDifferentRecipient() {
-    return createUpvoteEvent(new Relay(getDefinitionEventRelayUrl()), recipientDifferent.getPublicKey());
+    PublicKey recipientDifferentPublicKey = recipientDifferent.getPublicKey();
+    log.debug("recipientDifferentPublicKey: [{}]", recipientDifferentPublicKey.toHexString());
+    BadgeAwardCanonicalEvent recipientDifferentUpvoteEvent = createUpvoteEvent(new Relay(getDefinitionEventRelayUrl()), recipientDifferentPublicKey);
+    log.debug("recipientDifferentUpvoteEvent id: [{}]", recipientDifferentUpvoteEvent.getId());
+    return recipientDifferentUpvoteEvent;
   }
 
   protected BadgeAwardCanonicalEvent createDownvoteEventForDifferentRecipient() {
@@ -184,7 +192,7 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
 //          reconstructedBadgeAwardGenericEvent.getRelayTag().orElseThrow().getRelay().getUrl()),
 //       getAwardEventRelay());
 
-    List<EventIF> eventIFS = submitAfterImageReq(new PubKeyTag(recipient.getPublicKey()), awardEventRelayUrl);
+    List<EventIF> eventIFS = submitAfterImageReq(new PubKeyTag(event.getAwardRecipientPublicKey()), awardEventRelayUrl);
     EventIF eventIF = eventIFS.getFirst();
 
 //    EventIF eventIF = submitSCEvent(
@@ -217,8 +225,8 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     List<EventAttributesMap<FormulaEvent>> eventAttributesMap = EventAttributesMap.asEventAttributesMap(
        List.of(
           createPlusOneFormulaEvent()
-//       ,
-//       createMinusOneFormulaEvent()
+          ,
+          createMinusOneFormulaEvent()
        ));
     return eventAttributesMap;
   }
@@ -227,8 +235,8 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     return
        EventAttributesMap.asEventAttributesMap(List.of(
           createBadgeAwardUpvoteDefinitionEvent()
-//          ,
-//          createBadgeAwardDownvoteDefinitionEvent()
+          ,
+          createBadgeAwardDownvoteDefinitionEvent()
        ));
   }
 

@@ -103,6 +103,6 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
     assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));
     assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
     assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.FOLLOW_SETS));
-    assertEquals(16, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
+    assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
   }
 }

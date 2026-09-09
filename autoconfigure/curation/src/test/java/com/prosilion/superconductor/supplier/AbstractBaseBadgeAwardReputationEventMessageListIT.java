@@ -119,25 +119,25 @@ public abstract class AbstractBaseBadgeAwardReputationEventMessageListIT extends
     createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForCanonicalRecipient());
     createAndSubmitSuppliedParameterVoteEvent("3", createUpvoteEventForCanonicalRecipient());
     createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForDifferentRecipient());
-//
+
     BadgeAwardCanonicalEvent identicalUpvoteRecipientEvent = createUpvoteEventForCanonicalRecipient();
     createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
     createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
-//
+
     BadgeAwardCanonicalEvent identicalUpvoteDifferentRecipientEvent = createUpvoteEventForDifferentRecipient();
     createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
     createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
-//
+
     createAndSubmitSuppliedParameterVoteEvent("5", createUpvoteEventForCanonicalRecipient());
     createAndSubmitSuppliedParameterVoteEvent("4", createDownvoteEventForCanonicalRecipient());
     List<GenericEventRecord> apply = getall.apply(getAllFxn().get());
-//
+
     assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
     assertEquals(9, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
     assertEquals(2, kindCountFxn.apply(apply, Kind.FOLLOW_SETS));
     assertEquals(9, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT)); // TODO: currently not deleting BADGE_SETS_EVENTs, otherwise should be "2" 
-//
-//    validateResidualDbEventCounts();
+
+    validateResidualDbEventCounts();
   }
 
   protected int getEventCountByKindIncludesDeletedEvents(Kind kind) {

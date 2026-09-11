@@ -56,6 +56,15 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCach
        badgeDefinition -> badgeDefinition.getRelay().or(() -> addressTag.findRelay()).orElseThrow());
   }
 
+//  TODO: appears to not be necessary (currently) determine definitively before removal
+  /*
+  was previously called from UniversalVoteEventKindPlugin via:
+    Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent =
+       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag,
+          Optional.of(new RelayTag(awardEventConsolidatedRelay)), fromRelay);
+  but has been replaced in UniversalVoteEventKindPlugin by:
+    cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(...)
+   */
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(
      AddressTag addressTag,

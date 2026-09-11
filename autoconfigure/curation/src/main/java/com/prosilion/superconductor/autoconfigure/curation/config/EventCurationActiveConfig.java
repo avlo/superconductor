@@ -335,10 +335,10 @@ public class EventCurationActiveConfig {
      @NonNull String superconductorRelayUrl,
      @NonNull EventPlugin eventPlugin,
      @NonNull NotifierService notifierService,
-     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull ReputationCalculationServiceIF reputationCalculationServiceIF,
      @NonNull CacheFollowSetsEventService cacheFollowSetsEventService,
-     @NonNull DeleteEventServiceIF deleteEventServiceIF) {
+     @NonNull DeleteEventServiceIF deleteEventServiceIF,
+     @NonNull CacheServiceIF cacheServiceIF) {
     return new BadgeAwardReputationEventKindTypePlugin(
        superconductorRelayUrl,
        superconductorInstanceIdentity,
@@ -346,10 +346,10 @@ public class EventCurationActiveConfig {
        new EventKindTypePlugin(
           BADGE_AWARD_REPUTATION_KIND_TYPE,
           eventPlugin),
-       cacheServiceIF,
        reputationCalculationServiceIF,
        cacheFollowSetsEventService,
-       deleteEventServiceIF);
+       deleteEventServiceIF,
+       cacheServiceIF);
   }
 
   @Bean("eventKindMaterializers")

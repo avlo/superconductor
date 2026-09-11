@@ -32,7 +32,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
   private final CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
   private final DeleteEventServiceIF deleteEventServiceIF;
-  private final CacheServiceIF cacheServiceIF;
+  CacheServiceIF cacheServiceIF;
 
   public BadgeSetsEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
@@ -41,7 +41,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
      @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF,
      @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull EventPlugin eventPlugin,
-     @NonNull CacheServiceIF cacheServiceIF) {
+     CacheServiceIF cacheServiceIF) {
     super(eventPlugin);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.superconductorRelayUrl = superconductorRelayUrl;

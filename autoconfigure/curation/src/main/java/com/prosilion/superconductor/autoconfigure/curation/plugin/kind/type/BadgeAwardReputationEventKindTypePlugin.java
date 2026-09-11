@@ -42,27 +42,27 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKindTypePlugin {
   private final String superconductorRelayUrl;
   private final Identity superconductorInstanceIdentity;
-  private final CacheServiceIF cacheServiceIF;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF;
   private final ReputationCalculationServiceIF reputationCalculationServiceIF;
   private final DeleteEventServiceIF deleteEventServiceIF;
+  CacheServiceIF cacheServiceIF;
 
   public BadgeAwardReputationEventKindTypePlugin(
      @NonNull String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull NotifierService notifierService,
      @NonNull EventKindTypePluginIF eventKindTypePlugin,
-     @NonNull CacheServiceIF cacheServiceIF,
      @NonNull ReputationCalculationServiceIF reputationCalculationServiceIF,
      @NonNull CacheFollowSetsEventServiceIF cacheFollowSetsEventServiceIF,
-     @NonNull DeleteEventServiceIF deleteEventServiceIF) {
+     @NonNull DeleteEventServiceIF deleteEventServiceIF,
+     CacheServiceIF cacheServiceIF) {
     super(notifierService, eventKindTypePlugin);
-    this.cacheServiceIF = cacheServiceIF;
     this.superconductorRelayUrl = superconductorRelayUrl;
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.reputationCalculationServiceIF = reputationCalculationServiceIF;
     this.cacheFollowSetsEventServiceIF = cacheFollowSetsEventServiceIF;
     this.deleteEventServiceIF = deleteEventServiceIF;
+    this.cacheServiceIF = cacheServiceIF;
     log.debug("using superconductorRelayUrl: [{}]", superconductorRelayUrl);
   }
 
@@ -147,7 +147,7 @@ public class BadgeAwardReputationEventKindTypePlugin extends PublishingEventKind
     List<CuratedBadgeAwardGenericEvent> uniqueNewCuratedBadgeAwardGenericEventsReverse = new ArrayList<>((CollectionUtils.removeAll(
        incomingBadgeSetsEventCuratedBadgeAwardGenericEventList,
        matchedExistingBadgeSetsEventCuratedBadgeAwardGenericEventList)));
-    
+
     return uniqueNewCuratedBadgeAwardGenericEventsReverse;
   }
 

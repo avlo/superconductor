@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 public class CuratedBadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKindPlugin {
   private final Identity superconductorInstanceIdentity;
   private final Relay superconductorRelay;
-  private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
 
   public CuratedBadgeDefinitionGenericEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
@@ -31,7 +30,6 @@ public class CuratedBadgeDefinitionGenericEventKindPlugin extends NonPublishingE
     super(eventPluginIF);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.superconductorRelay = new Relay(superconductorRelayUrl);
-    this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
   }
 
   @Override
@@ -41,8 +39,6 @@ public class CuratedBadgeDefinitionGenericEventKindPlugin extends NonPublishingE
     Optional<RelayTag> eventRelayTag = event.findFirstTag(RelayTag.class);
     log.debug("processing incoming BadgeDefinitionGenericEvent using event RelayTag url [{}]",
        eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
-
-//    super.processIncomingEvent(event, fromRelay);  // save incoming BadgeDefinitionGenericEvent
 
     String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
     CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent = new CuratedBadgeDefinitionGenericEvent(

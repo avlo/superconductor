@@ -78,7 +78,7 @@ public class RedisConfig {
     return new ApiUi(eventApiUiIF, reqApiUiIF);
   }
 
-  @Bean
+  @Bean(name = "superconductorRelayUrl")
   @ConditionalOnMissingBean
   String superconductorRelayUrl(@NonNull @Value("${superconductor.relay.url}") String superconductorRelayUrl) {
     return superconductorRelayUrl;

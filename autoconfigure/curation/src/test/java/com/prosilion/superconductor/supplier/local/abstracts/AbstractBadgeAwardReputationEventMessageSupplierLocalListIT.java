@@ -1,17 +1,21 @@
 package com.prosilion.superconductor.supplier.local.abstracts;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
+import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
+import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.ReqMessage;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
+import com.prosilion.nostr.util.Util;
 import com.prosilion.subdivisions.client.reactive.NostrSingleRequestService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.supplier.AbstractBaseBadgeAwardReputationEventMessageListIT;
@@ -39,6 +43,63 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
      CacheServiceIF cacheServiceIF) {
     super(superconductorInstanceIdentity, definitionEventRelayUrl, awardEventRelayUrl, cacheServiceIF);
     this.cacheServiceIF = cacheServiceIF;
+//    setupBadgeDefinitionEvents(badgeDefinitionGenericEventList);
+  }
+
+  void setupBadgeDefinitionEvents(List<EventAttributesMap<BadgeDefinitionGenericEvent>> badgeDefinitionGenericEventList) {
+    EventAttributesMap.asEventList(badgeDefinitionGenericEventList)
+       .forEach(badgeDefinitionGenericEvent ->
+          cacheServiceIF.save(badgeDefinitionGenericEvent));
+  }
+
+  protected void validateSetupCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents() {
+    List<EventIF> sanityCheckReturnedBadgeDefinitionEvents = getEventIFs(
+       new NostrSingleRequestService().send(
+          new ReqMessage(
+             Util.generateRandomHex64String(),
+             new Filters(
+                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
+          awardEventRelayUrl));
+
+    log.debug("returned BadgeDefinitionEvents:");
+    log.debug("  {}", sanityCheckReturnedBadgeDefinitionEvents);
+
+    Set<String> sanityCheckCurationSetsBadgeDefinitionEventIds =
+       sanityCheckReturnedBadgeDefinitionEvents.stream()
+          .map(event -> event.requireFirstTag(EventTag.class))
+          .map(EventTag::getEventId)
+          .collect(Collectors.toSet());
+
+    Predicate<String> contains = EventAttributesMap.asEventList(this.badgeDefinitionGenericEventList).stream().map(EventIF::getId).toList()::contains;
+
+    assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(contains));
+  }
+
+  protected void createAndSubmitSuppliedParameterVoteEvent(String expectedScore, BadgeAwardCanonicalEvent voteEvent) {
+    EventIF submittedSCVoteEvent = submitEventThenReqFilterValidation(
+       voteEvent,
+       definitionEventRelayUrl,
+       new Filters(
+          new ReferencedPublicKeyFilter(
+             new PubKeyTag(voteEvent.getAwardRecipientPublicKey())),
+          new KindFilter(Kind.BADGE_AWARD_EVENT))).getFirst();
+
+    List<EventIF> eventIFS = submitAfterImageReq(new PubKeyTag(voteEvent.getAwardRecipientPublicKey()), definitionEventRelayUrl);
+    EventIF eventIF = eventIFS.getFirst();
+
+    assertEquals(
+       expectedScore,
+       eventIF.getContent());
+  }
+
+  protected List<EventIF> getReceivedUpvoteCuratedEventIF(BaseEvent event, List<BaseMessage> baseMessages) {
+    log.debug("retrieved superconductor events:");
+    List<EventIF> receivedEventIFs = getGenericEvents(baseMessages);
+    receivedEventIFs.stream().map(EventIF::createPrettyPrintJson).forEach(log::debug);
+
+    assertTrue(receivedEventIFs.stream().map(eventIF ->
+       eventIF.requireFirstTag(PubKeyTag.class).getPublicKey()).anyMatch(event.requireFirstTag(PubKeyTag.class).getPublicKey()::equals));
+    return receivedEventIFs;
   }
 
   @Override
@@ -61,43 +122,6 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
     return new Relay(awardEventRelayUrl);
   }
 
-  protected void validateSetupCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents() {
-    List<EventIF> sanityCheckReturnedBadgeDefinitionEvents = getEventIFs(
-       new NostrSingleRequestService().send(
-          new ReqMessage(
-             generateRandomHex64String(),
-             new Filters(
-                new KindFilter(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT))),
-          definitionEventRelayUrl));
-
-    log.debug("returned BadgeDefinitionEvents:");
-    log.debug("  {}", sanityCheckReturnedBadgeDefinitionEvents);
-
-    Set<String> sanityCheckCurationSetsBadgeDefinitionEventIds =
-       sanityCheckReturnedBadgeDefinitionEvents.stream()
-          .map(event -> event.requireFirstTag(EventTag.class))
-          .map(EventTag::getEventId)
-          .collect(Collectors.toSet());
-
-    Predicate<String> contains = EventAttributesMap.asEventList(this.badgeDefinitionGenericEventList).stream().map(EventIF::getId).toList()::contains;
-
-    assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(contains));
-  }
-
-  protected List<EventIF> getReceivedUpvoteCuratedEventIF(BaseEvent event, List<BaseMessage> baseMessages) {
-    log.debug("retrieved superconductor events:");
-    List<EventIF> receivedEventIFs = getGenericEvents(baseMessages);
-    receivedEventIFs.stream().map(EventIF::createPrettyPrintJson).forEach(log::debug);
-
-//    assertTrue(receivedEventIFs.stream()
-//       .map(eventIF -> eventIF.requireFirstTag(EventTag.class).getEventId())
-//       .anyMatch(event.getId()::contains));
-
-    assertTrue(receivedEventIFs.stream().map(eventIF ->
-       eventIF.requireFirstTag(PubKeyTag.class).getPublicKey()).anyMatch(event.requireFirstTag(PubKeyTag.class).getPublicKey()::equals));
-    return receivedEventIFs;
-  }
-  
   @Override
   protected void validateResidualDbEventCounts() {
     assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_AWARD_EVENT));

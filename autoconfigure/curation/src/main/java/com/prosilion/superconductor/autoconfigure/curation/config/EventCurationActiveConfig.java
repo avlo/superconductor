@@ -169,12 +169,14 @@ public class EventCurationActiveConfig {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF) {
+     @NonNull CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF,
+     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF) {
     return new CacheCuratedBadgeAwardGenericEventService(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
        cacheServiceIF,
-       cacheBadgeAwardGenericEventServiceIF);
+       cacheBadgeAwardGenericEventServiceIF,
+       cacheCuratedBadgeDefinitionGenericEventServiceIF);
   }
 
   @Bean
@@ -216,23 +218,17 @@ public class EventCurationActiveConfig {
   @Bean("badgeAwardGenericEventKindPlugin")
   @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPlugin")
   UniversalVoteEventKindPlugin badgeAwardGenericEventKindPlugin(
-     @NonNull String afterimageRelayUrl,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
+     @NonNull String superconductorRelayUrl,
      @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
-     @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService,
-     @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF,
      @NonNull FollowSetsEventKindPlugin followSetsEventKindPlugin,
-     @NonNull EventPlugin eventPlugin,
+     @NonNull CuratedBadgeAwardGenericEventKindPlugin curatedBadgeAwardGenericEventKindPlugin,
      @NonNull Identity afterimageInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF) {
     return new UniversalVoteEventKindPlugin(
-       afterimageRelayUrl,
-       cacheCuratedBadgeAwardGenericEventService,
+       superconductorRelayUrl,
        cacheCuratedBadgeDefinitionGenericEventService,
-       cacheBadgeDefinitionReputationEventService,
-       cacheCuratedFormulaEventServiceIF,
        followSetsEventKindPlugin,
-       eventPlugin,
+       curatedBadgeAwardGenericEventKindPlugin,
        afterimageInstanceIdentity,
        cacheServiceIF);
   }
@@ -240,17 +236,15 @@ public class EventCurationActiveConfig {
   @Bean("curatedBadgeAwardGenericEventKindPlugin")
   @ConditionalOnMissingBean(name = "curatedBadgeAwardGenericEventKindPlugin")
   public CuratedBadgeAwardGenericEventKindPlugin curatedBadgeAwardGenericEventKindPlugin(
-     @NonNull String superconductorRelayUrl,
-     @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull NotifierService notifierService,
-     @NonNull EventPlugin eventPlugin) {
+     @NonNull EventPlugin eventPlugin,
+     CacheServiceIF cacheServiceIF) {
     return new CuratedBadgeAwardGenericEventKindPlugin(
-       superconductorInstanceIdentity,
-       superconductorRelayUrl,
        cacheCuratedBadgeDefinitionGenericEventServiceIF,
        notifierService,
-       eventPlugin);
+       eventPlugin,
+       cacheServiceIF);
   }
 
   @Bean("curatedFormulaEventKindPlugin")

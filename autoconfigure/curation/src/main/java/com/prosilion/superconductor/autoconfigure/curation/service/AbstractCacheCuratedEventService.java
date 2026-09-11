@@ -18,7 +18,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public abstract class AbstractCacheCuratedEventService<T extends AddressableEvent, U extends BaseEvent> implements CacheCuratedEventServiceIF<T> {
   private final CacheServiceIF cacheServiceIF;
 
@@ -35,6 +37,9 @@ public abstract class AbstractCacheCuratedEventService<T extends AddressableEven
     this.relay = new Relay(relay);
     this.cacheServiceIF = cacheServiceIF;
   }
+
+  protected abstract T createFrom(@NonNull GenericEventRecord eventRecord);
+  protected abstract T createFromFetched(@NonNull U baseEvent, @NonNull Relay relay);
 
   @Override
   public final Optional<T> materialize(@NonNull EventIF event) {
@@ -89,23 +94,26 @@ public abstract class AbstractCacheCuratedEventService<T extends AddressableEven
   protected final Optional<T> findOrCurate(
      @NonNull Supplier<Optional<T>> localLookup,
      @NonNull Supplier<Optional<U>> sourceLookup,
-     @NonNull Function<U, Relay> referenceRelayResolver) {
-    return localLookup.get()
-       .or(() -> curate(sourceLookup.get(), referenceRelayResolver));
+     @NonNull Function<U, Relay> referenceRelayFxn) {
+    log.debug("inside findOrCurate(localLookup, sourceLookup, referenceRelayFxn) ...");
+    Optional<T> localEvent = localLookup.get();
+    localEvent.ifPresentOrElse(t -> log.debug("found localEvent:\n{}", t.createPrettyPrintJson()),
+       () -> log.debug("local event not found, trying sourceLookup ..."));
+    return localEvent
+       .or(() -> curate(sourceLookup.get(), referenceRelayFxn));
   }
 
-  private Optional<T> curate(
-     Optional<U> sourceEvent,
-     Function<U, Relay> referenceRelayResolver) {
+  private Optional<T> curate(Optional<U> sourceEvent, Function<U, Relay> referenceRelayFxn) {
     return sourceEvent
-       .map(event -> createFromFetched(event, referenceRelayResolver.apply(event)))
        .map(event -> {
+         T fromFetched = createFromFetched(event, referenceRelayFxn.apply(event));
+         log.debug("successfully fetched event:\n{}", fromFetched.createPrettyPrintJson());
+         return fromFetched;
+       })
+       .map(event -> {
+         log.debug("saving fetched event:\n{}", event.createPrettyPrintJson());
          cacheServiceIF.save(event);
          return event;
        });
   }
-
-  protected abstract T createFrom(@NonNull GenericEventRecord eventRecord);
-
-  protected abstract T createFromFetched(@NonNull U baseEvent, @NonNull Relay relay);
 }

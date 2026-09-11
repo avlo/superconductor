@@ -13,6 +13,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheCuratedBadgeDefinitionGenericEventService;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -39,6 +40,8 @@ import static org.mockito.Mockito.verify;
 public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedServiceTestFixture<CuratedBadgeAwardGenericEvent> {
   @Mock
   CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService;
+  @Mock
+  CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService;
 
   BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent;
   BadgeAwardCanonicalEvent badgeAwardUpvoteEvent;
@@ -221,6 +224,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
        aImgIdentity,
        relay.getUrl(),
        cacheServiceIF,
-       cacheBadgeAwardGenericEventService);
+       cacheBadgeAwardGenericEventService,
+       cacheCuratedBadgeDefinitionGenericEventService);
   }
 }

@@ -15,6 +15,7 @@ import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCache
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
+import java.util.Arrays;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCach
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull EventTag eventTag) {
+    log.debug("inside CacheCuratedBadgeDefinitionGenericEventService getByDirect(eventTag) ...");
     return findOrCurate(
        () -> findFirstByEventTag(eventTag),
        () -> cacheBadgeDefinitionGenericEventServiceIF.getEvent(
@@ -48,11 +50,10 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCach
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull AddressTag addressTag) {
-    Optional<CuratedBadgeDefinitionGenericEvent> orCurate = findOrCurate(
+    return findOrCurate(
        () -> getFirstByAddressTag(addressTag),
        () -> getByExpanded(addressTag),
        badgeDefinition -> badgeDefinition.getRelay().or(() -> addressTag.findRelay()).orElseThrow());
-    return orCurate;
   }
 
   @Override
@@ -60,71 +61,44 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCach
      AddressTag addressTag,
      Optional<RelayTag> relayTag,
      Relay fromRelay) {
-    Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent = attempt_1of2_AvailableServiceRequests(
-       addressTag.findRelay()
-          .map(relay ->
-             addressTag_1stOf3_FormatOptions(relay, addressTag))
-          .or(() -> relayTag.map(rTag ->
-             addressTag_2ndOf3_FormatOptions(rTag, addressTag)))
-          .orElseGet(() ->
-             addressTag_3rdOf3_FormatOptions(addressTag)));
-    Optional<CuratedBadgeDefinitionGenericEvent> or = curatedBadgeDefinitionGenericEvent
-       .or(() ->
-       {
-         Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent1 = attempt_2of2_AvailableServiceRequests(
-            new AddressTag(
-               addressTag.getKind(),
-               addressTag.getPublicKey(),
-               addressTag.getIdentifierTag(),
-               fromRelay));
-         return curatedBadgeDefinitionGenericEvent1;
-       });
+    log.debug("inside getByDirect(AddressTag, Optional<RelayTag>, Relay) ...\ntrying attempt_1of2 (original event contains/references relayTag/null)...");
+    Optional<CuratedBadgeDefinitionGenericEvent> event =
+       getFirstByAddressTag(
+          addressTagBuilder(
+             addressTag,
+             addressTag.findRelay()
+                .or(() -> relayTag.map(RelayTag::getRelay))
+                .orElse(null)));
+
+    if (event.isPresent()) {
+      log.debug("attempt_1of2 found curatedBadgeDefinitionGenericEvent:\n{}",
+         event.get().createPrettyPrintJson());
+      return event;
+    }
+
+    log.debug("attempt_1of2 (event contains/references relayTag/null) not found, trying attempt_2of2 (fromRelay)...");
+    Optional<CuratedBadgeDefinitionGenericEvent> or =
+       getFirstByAddressTag(
+          addressTagBuilder(addressTag, fromRelay));
+
+    or.ifPresentOrElse(curatedBadgeDefinitionGenericEvent ->
+          log.debug("attempt_2of2 found curatedBadgeDefinitionGenericEvent:\n{}",
+             curatedBadgeDefinitionGenericEvent.createPrettyPrintJson()),
+       () ->
+          log.debug("attempt_2of2 event not found, return Optional.empty()"));
+
     return or;
   }
 
-  private AddressTag addressTag_1stOf3_FormatOptions(Relay relay, AddressTag suppliedAddressTag) {
-    log.debug("supplied AddressTag has a relay, use addressTag_1stOf3_FormatOptions(AddressTag suppliedAddressTag).  addressTag:\n{}", suppliedAddressTag.toStringPrettyPrint());
-    AddressTag addressTag = new AddressTag(
-       suppliedAddressTag.getKind(),
-       suppliedAddressTag.getPublicKey(),
-       suppliedAddressTag.getIdentifierTag(),
-       relay);
-    return addressTag;
-  }
-
-  private AddressTag addressTag_2ndOf3_FormatOptions(RelayTag relayTag, AddressTag suppliedAddressTag) {
-    log.debug("supplied AddressTag did not have a relay, trying with RelayTag, use addressTag_2ndOf3_FormatOptions(AddressTag suppliedAddressTag).  addressTag:\n{}", suppliedAddressTag.toStringPrettyPrint());
+  private AddressTag addressTagBuilder(AddressTag suppliedAddressTag, Relay... relay) {
+    Relay fromRelay = Arrays.stream(relay).findFirst().orElse(null);
+    log.debug("addressTagBuilder suppliedAddressTag:\n{}relay variad: [{}]", suppliedAddressTag.toStringPrettyPrint(),
+       Optional.ofNullable(fromRelay).map(Relay::getUrl).orElse("NULL"));
     return new AddressTag(
        suppliedAddressTag.getKind(),
        suppliedAddressTag.getPublicKey(),
        suppliedAddressTag.getIdentifierTag(),
-       relayTag.getRelay());
-  }
-
-  private @NonNull AddressTag addressTag_3rdOf3_FormatOptions(AddressTag suppliedAddressTag) {
-    log.debug("No relay variant of any kind found, addressTag_3rdOf3_FormatOptions(AddressTag suppliedAddressTag).  addressTag:\n{}", suppliedAddressTag.toStringPrettyPrint());
-    AddressTag addressTag = new AddressTag(
-       suppliedAddressTag.getKind(),
-       suppliedAddressTag.getPublicKey(),
-       suppliedAddressTag.getIdentifierTag());
-    return addressTag;
-  }
-
-  private Optional<CuratedBadgeDefinitionGenericEvent> attempt_1of2_AvailableServiceRequests(AddressTag addressTag) {
-    log.debug("inside attempt_1of2_AvailableServiceRequests using (AddressTag addressTag).  addressTag:\n{}",
-       addressTag.toStringPrettyPrint());
-    Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent = getByDirect(addressTag);
-    log.debug(curatedBadgeDefinitionGenericEvent.map(BaseEvent::createPrettyPrintJson).orElse(
-       "nothing found locally, or with addressTag containing Relay.  returning Optional.empty()"));
-    return curatedBadgeDefinitionGenericEvent;
-  }
-
-  private Optional<CuratedBadgeDefinitionGenericEvent> attempt_2of2_AvailableServiceRequests(AddressTag addressTagConstructedFromRelayTagIfPresent) {
-    log.debug("inside attempt_2of2_AvailableServiceRequests(AddressTag addressTagConstructedFromRelayTagIfPresent).  addressTag:\n{}",
-       addressTagConstructedFromRelayTagIfPresent.toStringPrettyPrint());
-    Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent = getByDirect(addressTagConstructedFromRelayTagIfPresent);
-    log.debug(curatedBadgeDefinitionGenericEvent.map(BaseEvent::createPrettyPrintJson).orElse("Optional.empty()"));
-    return curatedBadgeDefinitionGenericEvent;
+       fromRelay);
   }
 
   private Optional<CuratedBadgeDefinitionGenericEvent> getFirstByAddressTag(@NonNull AddressTag addressTag) {
@@ -147,11 +121,14 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCach
   protected CuratedBadgeDefinitionGenericEvent createFromFetched(
      @NonNull BadgeDefinitionGenericEvent badgeDefinitionGenericEvent,
      @NonNull Relay relay) {
-    return new CuratedBadgeDefinitionGenericEvent(
+    log.debug("inside createFromFetched(BadgeDefinitionGenericEvent, Relay) ...");
+    CuratedBadgeDefinitionGenericEvent event = new CuratedBadgeDefinitionGenericEvent(
        super.getInstanceIdentity(),
        badgeDefinitionGenericEvent,
        new ReferenceTag(relay.getUrl()),
        super.getRelay());
+    log.debug("returning curatedBadgeDefinitionGenericEvent:\n{}", event.createPrettyPrintJson());
+    return event;
   }
 
   @Override

@@ -2,7 +2,6 @@ package com.prosilion.superconductor.supplier.local.abstracts;
 
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
-import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -27,12 +26,15 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import static com.prosilion.superconductor.BaseCacheFollowSetsEventServiceIT.getEventIFs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListIT extends AbstractBaseBadgeAwardReputationEventMessageListIT {
   CacheServiceIF cacheServiceIF;
 
@@ -43,13 +45,6 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
      CacheServiceIF cacheServiceIF) {
     super(superconductorInstanceIdentity, definitionEventRelayUrl, awardEventRelayUrl, cacheServiceIF);
     this.cacheServiceIF = cacheServiceIF;
-//    setupBadgeDefinitionEvents(badgeDefinitionGenericEventList);
-  }
-
-  void setupBadgeDefinitionEvents(List<EventAttributesMap<BadgeDefinitionGenericEvent>> badgeDefinitionGenericEventList) {
-    EventAttributesMap.asEventList(badgeDefinitionGenericEventList)
-       .forEach(badgeDefinitionGenericEvent ->
-          cacheServiceIF.save(badgeDefinitionGenericEvent));
   }
 
   protected void validateSetupCorrectlyCreatedAndPersistedCurationSetsBadgeDefinitionEvents() {

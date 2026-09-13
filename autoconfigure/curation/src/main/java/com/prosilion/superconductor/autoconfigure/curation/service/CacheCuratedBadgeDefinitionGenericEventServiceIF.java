@@ -7,12 +7,9 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import java.util.Optional;
-import org.jspecify.annotations.NonNull;
+import lombok.NonNull;
 
 public interface CacheCuratedBadgeDefinitionGenericEventServiceIF extends CacheTagMappedEventServiceIF<CuratedBadgeDefinitionGenericEvent, EventTag>, CacheCuratedEventServiceIF<CuratedBadgeDefinitionGenericEvent> {
   Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull AddressTag addressTag);
-  Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(
-     AddressTag addressTag,
-     Optional<RelayTag> relayTag,
-     Relay fromRelay);
+  Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull AddressTag addressTag, Optional<RelayTag> relayTag, @NonNull Relay fromRelay);
 }

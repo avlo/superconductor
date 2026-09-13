@@ -1,6 +1,5 @@
 package com.prosilion.superconductor.autoconfigure.curation.plugin.kind;
 
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -62,20 +61,21 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
       return Optional.of(incomingVoteEvent.asGenericEventRecord());
     }
 
-    Relay awardEventConsolidatedRelay = incomingVoteEvent.getRelayTag().map(RelayTag::getRelay).orElse(fromRelay);
-    log.debug("awardEventConsolidatedRelay: [{}]", awardEventConsolidatedRelay);
-
     AddressTag suppliedAddressTag = incomingVoteEvent.requireFirstTag(AddressTag.class);
-    log.debug("calling cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag):\n  {}", suppliedAddressTag);
+    log.debug("calling cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag, relayTag(nullable), fromRelay):\n  {}", suppliedAddressTag);
 
     CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent =
-       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(suppliedAddressTag).orElseThrow(() ->
-          new NostrException("non-existent curatedBadgeDefinitionGenericEvent1"));
+       cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(
+          suppliedAddressTag,
+          incomingVoteEvent.getRelayTag(),
+          fromRelay).orElseThrow();
+    log.debug("getByDirect(...) returned curatedBadgeDefinitionGenericEvent:\n  {}", curatedBadgeDefinitionGenericEvent.createPrettyPrintJson());
 
     BadgeAwardCanonicalEvent reconstructedVoteEvent =
        new BadgeAwardCanonicalEvent(
           incomingVoteEvent.asGenericEventRecord(),
           addressTag -> curatedBadgeDefinitionGenericEvent.getBadgeDefinitionGenericEvent());
+    log.debug("reconstructedVoteEvent:\n  {}", reconstructedVoteEvent.createPrettyPrintJson());
 
     CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent =
        new CuratedBadgeAwardGenericEvent(
@@ -84,6 +84,8 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
           curatedBadgeDefinitionGenericEvent,
           new ReferenceTag(fromRelay.getUrl()),
           superconductorRelay);
+    log.debug("constructed new CuratedBadgeAwardGenericEvent:\n  {}", curatedBadgeAwardGenericEvent.createPrettyPrintJson());
+
     super.processIncomingEvent(curatedBadgeAwardGenericEvent, fromRelay);
     return followSetsEventKindPlugin.processIncomingCuratedBadgeAwardGenericEvent(curatedBadgeAwardGenericEvent, fromRelay);
   }

@@ -92,7 +92,10 @@ public class CacheFollowSetsEventService implements CacheFollowSetsEventServiceI
 
   @Override
   public Optional<FollowSetsEvent> getEvent(@NonNull String eventId, @NonNull Relay relay) {
-    return cacheReferenceEventTagServiceIF.getEvent(eventId, relay).flatMap(this::materialize);
+    log.debug("inside getEvent(eventId, relay), calling cacheReferenceEventTagServiceIF.getEvent(eventId, relay): [{}], [{}]", eventId, relay.getUrl());
+    Optional<FollowSetsEvent> followSetsEvent = cacheReferenceEventTagServiceIF.getEvent(eventId, relay).flatMap(this::materialize);
+    log.debug("returning followSetsEvent:\n  {}", followSetsEvent.map(FollowSetsEvent::createPrettyPrintJson).orElse("EMPTY OPTIONAL"));
+    return followSetsEvent;
   }
 
   @Override

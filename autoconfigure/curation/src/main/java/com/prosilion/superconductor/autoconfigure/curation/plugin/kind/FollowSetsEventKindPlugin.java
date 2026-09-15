@@ -160,6 +160,8 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
                    recipientPubKeyTag, addressTag.getIdentifierTag()).orElseThrow()));
 
     List<BadgeSetsEvent> incomingFollowSetBadgeSetsEvents = reconstructedFollowSetsEventBadgeSetsEvents.values().stream().toList();
+    log.debug("(2of9) created reconstructedFollowSetsEventBadgeSetsEvents Map<AddressTag, BadgeSetsEvent>:\n{}",
+       incomingFollowSetBadgeSetsEvents.stream().map(EventIF::createPrettyPrintJson).collect(Collectors.joining(",\n")));
     return processIncomingFollowSetsBadgeSetsEvents(incomingFollowSetBadgeSetsEvents, fromRelay);
   }
 

@@ -97,6 +97,7 @@ public class CacheBadgeSetsEventService implements CacheBadgeSetsEventServiceIF 
 
   @Override
   public Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
+    log.debug("inside getBy(PubKeyTag, IdentifierTag):\n  [{}]\n  [{}]", pubKeyTag.getPublicKey().toHexString(), identifierTag.getUuid());
     return materializeFirst(cacheServiceIF.getEventsByKindAndPubKeyTagAndIdentifierTag(getKind(), pubKeyTag, identifierTag));
   }
 

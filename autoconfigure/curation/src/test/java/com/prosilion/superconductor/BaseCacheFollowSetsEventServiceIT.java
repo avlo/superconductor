@@ -14,6 +14,7 @@ import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.KindFilter;
+import com.prosilion.nostr.filter.tag.ReferencedPublicKeyFilter;
 import com.prosilion.nostr.message.BaseMessage;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.message.ReqMessage;
@@ -138,7 +139,7 @@ public abstract class BaseCacheFollowSetsEventServiceIT extends BaseIntegrationT
        relay);
 
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_1), followSetsEvent_1.getRelay().orElseThrow());
-    validateDbUpdatedFollowSetsEvent(followSetsEvent_1);
+    validateDbUpdatedFollowSetsEvent(followSetsEvent_1, "1");
 
     BadgeAwardCanonicalEvent badgeAwardUpvoteEvent_2 = new BadgeAwardCanonicalEvent(
        submitter,
@@ -161,10 +162,10 @@ public abstract class BaseCacheFollowSetsEventServiceIT extends BaseIntegrationT
        relay);
 
 //    cacheServiceIF.save(badgeSetsUpvoteEvent_2);
-//    GenericEventRecord dbSynchedBadgeSetsEventGER = badgeSetsEventKindPlugin.processIncomingEvent(setupTempGerCtorBadgeSetsEvent, relay).orElseThrow();
+    GenericEventRecord dbSynchedBadgeSetsEventGER = badgeSetsEventKindPlugin.processIncomingEvent(setupTempGerCtorBadgeSetsEvent, relay).orElseThrow();
 
     BadgeSetsEvent dbSynchedBadgeSetsEvent_2 = new BadgeSetsEvent(
-       setupTempGerCtorBadgeSetsEvent.asGenericEventRecord(),
+       dbSynchedBadgeSetsEventGER,
        badgeDefinitionReputationEventPlusOneFormula,
        List.of(
           curatedBadgeAwardGenericEvent_1,
@@ -176,13 +177,13 @@ public abstract class BaseCacheFollowSetsEventServiceIT extends BaseIntegrationT
        relay);
 
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_2), followSetsEvent_2.getRelay().orElseThrow());
-    validateDbUpdatedFollowSetsEvent(followSetsEvent_2);
+    validateDbUpdatedFollowSetsEvent(followSetsEvent_2, "2");
   }
 
-  private void validateDbUpdatedFollowSetsEvent(FollowSetsEvent followSetsEvent) {
+  private void validateDbUpdatedFollowSetsEvent(FollowSetsEvent followSetsEvent, String excpectedScore) {
     FollowSetsEvent dbFollowSetsEventByEventId = cacheFollowSetsEventService.getBy(new PubKeyTag(followSetsEvent.getAwardRecipientPublicKey())).getFirst();
 
-    assertEquals(dbFollowSetsEventByEventId.getAwardRecipientPublicKey(), recipient.getPublicKey());
+    assertEquals(recipient.getPublicKey(), dbFollowSetsEventByEventId.getAwardRecipientPublicKey());
     assertTrue(
        dbFollowSetsEventByEventId.getBadgeSetsEventList().stream()
           .map(BadgeSetsEvent::getBadgeDefinitionReputationEvent).anyMatch(badgeDefinitionReputationEventPlusOneFormula::equals));
@@ -215,6 +216,21 @@ public abstract class BaseCacheFollowSetsEventServiceIT extends BaseIntegrationT
        .flatMap(Optional::stream)
        .anyMatch(dbFollowSetsEventByEventId::equals));
     log.debug("done");
+
+    List<EventIF> returnedReputationEvents = getEventIFs(
+       new NostrSingleRequestService()
+          .send(
+             new ReqMessage(
+                generateRandomHex64String(),
+                new Filters(
+                   new ReferencedPublicKeyFilter(
+                      new PubKeyTag(recipient.getPublicKey())),
+                   new KindFilter(
+                      Kind.BADGE_AWARD_EVENT))),
+             relay.getUrl()));
+    
+    assertEquals(1, returnedReputationEvents.size());
+    assertEquals(excpectedScore, returnedReputationEvents.getFirst().getContent());
   }
 
   public static List<EventIF> getEventIFs(List<BaseMessage> returnedBaseMessages) {

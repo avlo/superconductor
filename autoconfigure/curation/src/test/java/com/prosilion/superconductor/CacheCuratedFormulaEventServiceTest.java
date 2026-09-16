@@ -10,8 +10,8 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.formula.CacheCuratedFormulaEventService;
-import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import java.util.Optional;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -33,6 +33,9 @@ public class CacheCuratedFormulaEventServiceTest extends CacheCuratedServiceTest
 
   @Mock
   CacheFormulaEventService cacheFormulaEventService;
+
+  @Mock
+  CacheReferenceAddressTagService cacheReferenceAddressTagService;
 
   FormulaEvent formulaEvent;
 
@@ -121,6 +124,7 @@ public class CacheCuratedFormulaEventServiceTest extends CacheCuratedServiceTest
        aImgIdentity,
        relay.getUrl(),
        cacheServiceIF,
-       cacheFormulaEventService);
+       cacheFormulaEventService,
+       cacheReferenceAddressTagService);
   }
 }

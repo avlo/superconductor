@@ -86,12 +86,6 @@ public abstract class BaseCacheFollowSetsEventServiceIT extends BaseIntegrationT
        relay);
     cacheServiceIF.save(plusOneCuratedFormulaEvent);
 
-    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent_1 = new BadgeAwardCanonicalEvent(
-       submitter,
-       recipient.getPublicKey(),
-       awardUpvoteDefinitionEvent,
-       relay);
-
     this.badgeDefinitionReputationEventPlusOneFormula = new BadgeDefinitionReputationEvent(
        superconductorInstanceIdentity,
        repDefnCreator.getPublicKey(),
@@ -100,6 +94,12 @@ public abstract class BaseCacheFollowSetsEventServiceIT extends BaseIntegrationT
        relay,
        plusOneCuratedFormulaEvent);
     cacheServiceIF.save(badgeDefinitionReputationEventPlusOneFormula);
+    
+    BadgeAwardCanonicalEvent badgeAwardUpvoteEvent_1 = new BadgeAwardCanonicalEvent(
+       submitter,
+       recipient.getPublicKey(),
+       awardUpvoteDefinitionEvent,
+       relay);
 
     this.curatedBadgeAwardGenericEvent_1 = new CuratedBadgeAwardGenericEvent(
        superconductorInstanceIdentity,

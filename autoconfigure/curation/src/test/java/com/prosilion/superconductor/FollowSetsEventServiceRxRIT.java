@@ -1,5 +1,6 @@
 package com.prosilion.superconductor;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.DeletionEvent;
@@ -12,7 +13,9 @@ import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
@@ -23,6 +26,7 @@ import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtur
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.NonNull;
@@ -112,36 +116,19 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
        relay);
     cacheServiceIF.save(curatedBadgeAwardUpvoteEvent_1);
 
-    BadgeSetsEvent badgeSetsUpvoteEvent_1 = new BadgeSetsEvent(
-       superconductorInstanceIdentity,
-       badgeDefinitionReputationEventPlusOneFormula,
-       curatedBadgeAwardUpvoteEvent_1,
-       relay);
-    cacheServiceIF.save(badgeSetsUpvoteEvent_1);
+    BadgeSetsEvent badgeSetsEvent_1 = getBadgeSetsEvent(List.of(curatedBadgeAwardUpvoteEvent_1));
 
     FollowSetsEvent followSetsEvent_1 = new FollowSetsEvent(
        superconductorInstanceIdentity,
-       badgeSetsUpvoteEvent_1,
+       badgeSetsEvent_1,
        relay);
+    
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_1), followSetsEvent_1.getRelay().orElseThrow());
-    cacheServiceIF.deleteEvent(
-       new DeletionEvent(
-          superconductorInstanceIdentity,
-          new EventTag(badgeSetsUpvoteEvent_1.getId()),
-          "delete me",
-          relay));
-
+    
     List<FollowSetsEvent> actual_1 = cacheFollowSetsEventService.getBy(new PubKeyTag(recipient.getPublicKey()));
     assertEquals(1, actual_1.size());
     assertTrue(cacheServiceIF.getEventByEventId(actual_1.getFirst().getId()).isPresent());
 
-    List<BadgeSetsEvent> badgeSetsEventList = actual_1.getFirst().getBadgeSetsEventList();
-    badgeSetsEventList.forEach(badgeSetsEventToDelete ->
-       cacheServiceIF.deleteEvent(new DeletionEvent(
-          superconductorInstanceIdentity,
-          new EventTag(badgeSetsEventToDelete.getId()),
-          "delete me",
-          relay)));
 //
 // start event 2
 //
@@ -159,22 +146,37 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
        relay);
     cacheServiceIF.save(curatedBadgeAwardUpvoteEvent_2);
 
-    BadgeSetsEvent badgeSetsUpvoteEvent_2 = new BadgeSetsEvent(
-       superconductorInstanceIdentity,
-       badgeDefinitionReputationEventPlusOneFormula,
-       List.of(curatedBadgeAwardUpvoteEvent_1, curatedBadgeAwardUpvoteEvent_2),
-       relay);
-    cacheServiceIF.save(badgeSetsUpvoteEvent_2);
+    BadgeSetsEvent badgeSetsEvent_2 = getBadgeSetsEvent(
+       List.of(
+          curatedBadgeAwardUpvoteEvent_1,
+          curatedBadgeAwardUpvoteEvent_2));
 
     FollowSetsEvent followSetsEvent_2 = new FollowSetsEvent(
        superconductorInstanceIdentity,
-       badgeSetsUpvoteEvent_2,
+       badgeSetsEvent_2,
        relay);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_2), followSetsEvent_2.getRelay().orElseThrow());
+    eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent_2), relay);
     List<FollowSetsEvent> actual_2 = cacheFollowSetsEventService.getBy(new PubKeyTag(recipient.getPublicKey()));
     assertEquals(1, actual_2.size());
 
     assertTrue(cacheServiceIF.getEventByEventId(actual_2.getFirst().getId()).isPresent());
+  }
+
+  private @NonNull BadgeSetsEvent getBadgeSetsEvent(List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventList) {
+    BadgeSetsEvent setupTempGerCtorBadgeSetsEvent = new BadgeSetsEvent(
+       superconductorInstanceIdentity,
+       badgeDefinitionReputationEventPlusOneFormula,
+       curatedBadgeAwardGenericEventList,
+       relay);
+
+    eventServiceIF.processIncomingEvent(new EventMessage(setupTempGerCtorBadgeSetsEvent), relay);
+    GenericEventRecord newestBadgeSetsEvent = cacheServiceIF.getByKind(Kind.BADGE_SETS_EVENT).stream().max(Comparator.comparing(GenericEventRecord::getCreatedAt)).orElseThrow();
+
+    BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
+       newestBadgeSetsEvent,
+       badgeDefinitionReputationEventPlusOneFormula,
+       curatedBadgeAwardGenericEventList);
+    return badgeSetsEvent;
   }
 }

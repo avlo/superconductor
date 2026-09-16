@@ -1,10 +1,14 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.nostr.NostrException;
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
+import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.message.EventMessage;
+import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
+import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
@@ -19,8 +23,10 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagService
 import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -33,6 +39,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @Slf4j
@@ -150,9 +157,14 @@ public class CacheFollowSetsEventServiceIT extends BaseCacheFollowSetsEventServi
        dbSynchedBadgeSetsEvent_1,
        relay);
     eventServiceIF.processIncomingEvent(new EventMessage(followSetsEvent), followSetsEvent.getRelay().orElseThrow());
-    
-    Optional<FollowSetsEvent> actual = cacheFollowSetsEventServiceIF.getByDirect(getBadgeSetsUpvoteEvent().asAddressableEventAddressTag());
-    assertFalse(actual.isEmpty());
+
+    GenericEventRecord newestBadgeSetsEvent = cacheServiceIF.getByKind(Kind.BADGE_SETS_EVENT).stream().max(Comparator.comparing(GenericEventRecord::getCreatedAt)).orElseThrow();
+    AddressTag badgeSetsEventAsAddressTag = new AddressTag(
+       newestBadgeSetsEvent.getKind(),
+       newestBadgeSetsEvent.getPublicKey(),
+       newestBadgeSetsEvent.requireFirstTag(IdentifierTag.class));
+    Optional<FollowSetsEvent> actual = cacheFollowSetsEventServiceIF.getByDirect(badgeSetsEventAsAddressTag);
+    assertTrue(actual.isPresent());
 
     assertThrows(NostrException.class, () -> new FollowSetsEvent(followSetsEvent.asGenericEventRecord(), List.of()));
   }

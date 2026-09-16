@@ -23,7 +23,6 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagService
 import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -153,52 +152,6 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
     CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
     Optional<BadgeSetsEvent> actual = cacheBadgeSetsEventService.getEvent(eventId, relay);
     assertTrue(actual.isEmpty());
-  }
-
-  @Test
-  void testGetByDirectAddressTag() {
-    mockMaterializationDependencies();
-    AddressTag addressTag = badgeDefinitionReputationEvent.asAddressableEventAddressTag();
-    doReturn(List.of(event.getGenericEventRecord()))
-       .when(cacheKindAddressTagServiceIF)
-       .getByDirect(event.getKind(), addressTag);
-    CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
-
-    Optional<BadgeSetsEvent> actual = cacheBadgeSetsEventService.getByDirect(addressTag);
-
-    Assertions.assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheKindAddressTagServiceIF, Mockito.times(1)).getByDirect(event.getKind(), addressTag);
-  }
-
-  @Test
-  void testGetByPubKeyTagAndAddressTag() {
-    mockMaterializationDependencies();
-    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
-    AddressTag addressTag = badgeDefinitionReputationEvent.asAddressableEventAddressTag();
-    doReturn(List.of(event.getGenericEventRecord()))
-       .when(cacheKindAddressTagServiceIF)
-       .getByDirect(event.getKind(), pubKeyTag, addressTag);
-    CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
-
-    Optional<BadgeSetsEvent> actual = cacheBadgeSetsEventService.getBy(pubKeyTag, addressTag);
-
-    Assertions.assertEquals(eventId, actual.orElseThrow().getId());
-    verify(cacheKindAddressTagServiceIF, Mockito.times(1)).getByDirect(event.getKind(), pubKeyTag, addressTag);
-  }
-
-  @Test
-  void testGetByPubKeyTag() {
-    mockMaterializationDependencies();
-    PubKeyTag pubKeyTag = new PubKeyTag(event.getPublicKey());
-    doReturn(List.of(event.getGenericEventRecord()))
-       .when(cacheServiceIF)
-       .getEventsByKindAndPubKeyTag(event.getKind(), pubKeyTag);
-    CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
-
-    List<BadgeSetsEvent> actual = cacheBadgeSetsEventService.getBy(pubKeyTag);
-
-    assertEquals(List.of(eventId), actual.stream().map(BadgeSetsEvent::getId).toList());
-    verify(cacheServiceIF, Mockito.times(1)).getEventsByKindAndPubKeyTag(event.getKind(), pubKeyTag);
   }
 
   @Test

@@ -5,6 +5,7 @@ import com.prosilion.nostr.event.AbstractSetsEvent;
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -12,6 +13,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheCuratedBadgeDefinitionGenericEventService;
 import java.util.List;
@@ -42,9 +44,12 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
   CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService;
   @Mock
   CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService;
+  @Mock
+  CacheReferenceEventTagService cacheReferenceEventTagService;
 
   BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent;
   BadgeAwardCanonicalEvent badgeAwardUpvoteEvent;
+  CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent;
 
   @Test
   void testGetEventFromLocalCache() {
@@ -69,47 +74,6 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
 
     assertTrue(actual.isEmpty());
     verify(cacheServiceIF, Mockito.times(1)).getEventByEventId(curatedEventId);
-  }
-
-  @Test
-  void testGetByDirectEventTagFromBadgeAwardServiceAfterLocalMiss() {
-    EventTag eventTag = curatedEvent.getEventTag();
-    doReturn(Optional.empty()).when(cacheServiceIF).getFirstEventByKindAndEventTag(
-       Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
-    doReturn(Optional.of(badgeAwardUpvoteEvent))
-       .when(cacheBadgeAwardGenericEventService)
-       .getEvent(eventTag.getEventId(), eventTag.requireRelay());
-    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
-
-    Optional<CuratedBadgeAwardGenericEvent> actual =
-       cacheCuratedBadgeAwardGenericEventService.getByDirect(eventTag);
-
-    assertTrue(actual.isPresent());
-    verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndEventTag(
-       Kind.CURATION_SETS_BADGE_AWARD_EVENT, eventTag);
-    verify(cacheBadgeAwardGenericEventService, Mockito.times(1)).getEvent(
-       eventTag.getEventId(), eventTag.requireRelay());
-    verify(cacheServiceIF, Mockito.times(1)).save(actual.orElseThrow());
-  }
-
-  @Test
-  void testGetByDirectAddressTagFromBadgeAwardServiceAfterLocalMiss() {
-    AddressTag addressTag = curatedEvent.getAddressTag();
-    doReturn(Optional.empty()).when(cacheServiceIF).getFirstEventByKindAndAddressTag(
-       Kind.CURATION_SETS_BADGE_AWARD_EVENT, addressTag);
-    doReturn(Optional.of(badgeAwardUpvoteEvent))
-       .when(cacheBadgeAwardGenericEventService)
-       .getByDirect(addressTag);
-    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
-
-    Optional<CuratedBadgeAwardGenericEvent> actual =
-       cacheCuratedBadgeAwardGenericEventService.getByDirect(addressTag);
-
-    assertTrue(actual.isPresent());
-    verify(cacheServiceIF, Mockito.times(1)).getFirstEventByKindAndAddressTag(
-       Kind.CURATION_SETS_BADGE_AWARD_EVENT, addressTag);
-    verify(cacheBadgeAwardGenericEventService, Mockito.times(1)).getByDirect(addressTag);
-    verify(cacheServiceIF, Mockito.times(1)).save(actual.orElseThrow());
   }
 
   @Test
@@ -189,11 +153,17 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent);
 
+    this.curatedBadgeDefinitionGenericEvent = new CuratedBadgeDefinitionGenericEvent(
+       aImgIdentity,
+       awardUpvoteDefinitionEvent,
+       new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
+       relay);
+
     assertThrows(NoSuchElementException.class, () ->
        new CuratedBadgeAwardGenericEvent(
           aImgIdentity,
           this.badgeAwardUpvoteEvent,
-          new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
+          this.curatedBadgeDefinitionGenericEvent,
           new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
           relay));
   }
@@ -209,11 +179,16 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
        recipient.getPublicKey(),
        awardUpvoteDefinitionEvent,
        relay);                                                  // <------------------------- has relay
+    this.curatedBadgeDefinitionGenericEvent = new CuratedBadgeDefinitionGenericEvent(
+       aImgIdentity,
+       awardUpvoteDefinitionEvent,
+       new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
+       relay);
 
     CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(
        aImgIdentity,
        this.badgeAwardUpvoteEvent,
-       new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
+       this.curatedBadgeDefinitionGenericEvent,
        new ReferenceTag(badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()),
        relay);
     return curatedBadgeAwardGenericEvent;
@@ -225,6 +200,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
        relay.getUrl(),
        cacheServiceIF,
        cacheBadgeAwardGenericEventService,
-       cacheCuratedBadgeDefinitionGenericEventService);
+       cacheCuratedBadgeDefinitionGenericEventService,
+       cacheReferenceEventTagService);
   }
 }

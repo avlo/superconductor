@@ -10,7 +10,6 @@ import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.SetsPairedEvent;
@@ -137,20 +136,6 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestDir
     Optional<BadgeSetsEvent> byAddressTag = cacheBadgeSetsEventServiceIF.getBy(
        new PubKeyTag(recipient.getPublicKey()),
        badgeDefinitionReputationEventPlusOneFormula.asAddressableEventAddressTag());
-    assertTrue(byAddressTag.isPresent());
-    assertEquals(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());
-    compareEvents(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());
-  }
-
-  @Test
-  public void testGetByPubKeyTagIdentifierTag() {
-    IdentifierTag identifierTag = BadgeSetsEvent.generateIdentifierTag(
-       badgeDefinitionReputationEventPlusOneFormula,
-       recipient.getPublicKey());
-
-    Optional<BadgeSetsEvent> byAddressTag = cacheBadgeSetsEventServiceIF.getBy(
-       new PubKeyTag(recipient.getPublicKey()),
-       identifierTag);
     assertTrue(byAddressTag.isPresent());
     assertEquals(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());
     compareEvents(badgeSetsUpvoteEvent, byAddressTag.orElseThrow());

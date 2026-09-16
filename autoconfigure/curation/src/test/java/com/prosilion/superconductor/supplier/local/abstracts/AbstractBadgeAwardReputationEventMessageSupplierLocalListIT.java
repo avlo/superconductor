@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.supplier.local.abstracts;
 
+import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BaseEvent;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import static com.prosilion.superconductor.BaseCacheFollowSetsEventServiceIT.getEventIFs;
@@ -123,5 +125,36 @@ public abstract class AbstractBadgeAwardReputationEventMessageSupplierLocalListI
     assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.CURATION_SETS_BADGE_AWARD_EVENT));
     assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.FOLLOW_SETS));
     assertEquals(9, getEventCountByKindIncludesDeletedEvents(Kind.BADGE_SETS_EVENT));
+  }
+
+  @Test
+  void bSuperconductorEventsWithoutRelayTagsThenAfterimageReq() throws NostrException {
+    this.badgeDefinitionGenericEventList = createBadgeDefinitionGenericEventMissingRelayTagList();
+    setupBadgeDefinitionEvents(badgeDefinitionGenericEventList);
+
+    createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("1", createUpvoteEventForDifferentRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("3", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("2", createUpvoteEventForDifferentRecipient());
+
+    BadgeAwardCanonicalEvent identicalUpvoteRecipientEvent = createUpvoteEventForCanonicalRecipient();
+    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
+    createAndSubmitSuppliedParameterVoteEvent("4", identicalUpvoteRecipientEvent);
+
+    BadgeAwardCanonicalEvent identicalUpvoteDifferentRecipientEvent = createUpvoteEventForDifferentRecipient();
+    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+    createAndSubmitSuppliedParameterVoteEvent("3", identicalUpvoteDifferentRecipientEvent);
+
+    createAndSubmitSuppliedParameterVoteEvent("5", createUpvoteEventForCanonicalRecipient());
+    createAndSubmitSuppliedParameterVoteEvent("4", createDownvoteEventForCanonicalRecipient());
+    List<GenericEventRecord> apply = getall.apply(getAllFxn().get());
+
+    assertEquals(2, kindCountFxn.apply(apply, Kind.BADGE_AWARD_EVENT));
+    assertEquals(9, kindCountFxn.apply(apply, Kind.CURATION_SETS_BADGE_AWARD_EVENT));
+    assertEquals(2, kindCountFxn.apply(apply, Kind.FOLLOW_SETS));
+    assertEquals(9, kindCountFxn.apply(apply, Kind.BADGE_SETS_EVENT)); // TODO: currently not deleting BADGE_SETS_EVENTs, otherwise should be "2" 
+
+    validateResidualDbEventCounts();
   }
 }

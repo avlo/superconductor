@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.tag;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.EventTag;
@@ -31,7 +32,7 @@ public class CacheReferenceEventTagService extends CacheReferenceAbstractTagServ
   }
 
   @Override
-  protected Filters createFilters(@NonNull EventTag eventTag) {
-    return TagFilterFactory.forEvent(eventTag);
+  protected Filters createFilters(@NonNull EventTag eventTag, Kind... kind) {
+    return TagFilterFactory.forEvent(eventTag, kind);
   }
 }

@@ -13,21 +13,27 @@ import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCacheCuratedEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
-import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
 import java.util.Optional;
-import org.jspecify.annotations.NonNull;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventService<CuratedFormulaEvent, FormulaEvent> implements CacheCuratedFormulaEventServiceIF {
   private final CacheFormulaEventServiceIF cacheFormulaEventServiceIF;
+  private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
 
   public CacheCuratedFormulaEventService(
      @NonNull Identity instanceIdentity,
      @NonNull String relayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF) {
+     @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF,
+     @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF) {
     super(instanceIdentity, relayUrl, cacheServiceIF);
     this.cacheFormulaEventServiceIF = cacheFormulaEventServiceIF;
+    this.cacheReferenceAddressTagServiceIF = cacheReferenceAddressTagServiceIF;
   }
 
   @Override
@@ -55,6 +61,18 @@ public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventSe
        () -> findFirstByAddressTag(addressTag),
        () -> cacheFormulaEventServiceIF.getByDirect(addressTag),
        formulaEvent -> formulaEvent.getRelay().orElseThrow());
+  }
+
+  @Override
+  public Optional<CuratedFormulaEvent> getByExpanded(@NonNull AddressTag referencedAbstractEventTag) {
+    log.debug("inside getByExpanded(AddressTag):\n  {}", referencedAbstractEventTag.toStringPrettyPrint());
+    Optional<GenericEventRecord> byExpanded = cacheReferenceAddressTagServiceIF.getByExpanded(referencedAbstractEventTag);
+    log.debug("returned getByExpanded(AddressTag):\n  {}", byExpanded.map(GenericEventRecord::createPrettyPrintJson).orElse(
+       "[ EMPTY OPTIONAL ]"));
+    Optional<CuratedFormulaEvent> curatedFormulaEvent = byExpanded.flatMap(this::materialize);
+    log.debug("returning materialized Optional CuratedFormulaEvent:\n  {}", curatedFormulaEvent.map(CuratedFormulaEvent::createPrettyPrintJson).orElse(
+       "[ EMPTY OPTIONAL ]"));
+    return curatedFormulaEvent;
   }
 
   @Override

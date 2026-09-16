@@ -18,31 +18,48 @@ import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCache
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeAwardGenericEventServiceIF;
 import java.util.List;
 import java.util.Optional;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 
 @Slf4j
 public class CacheCuratedBadgeAwardGenericEventService extends AbstractCacheCuratedEventService<CuratedBadgeAwardGenericEvent, BadgeAwardCanonicalEvent> implements CacheCuratedBadgeAwardGenericEventServiceIF {
   private final CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF;
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
+  private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
 
   public CacheCuratedBadgeAwardGenericEventService(
      @NonNull Identity instanceIdentity,
      @NonNull String relayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF,
-     CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF) {
+     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
+     @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF) {
     super(instanceIdentity, relayUrl, cacheServiceIF);
     this.cacheBadgeAwardGenericEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
     this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
+    this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
   }
 
   @Override
   protected CuratedBadgeAwardGenericEvent createFrom(@NonNull GenericEventRecord eventRecord) {
     return new CuratedBadgeAwardGenericEvent(eventRecord);
+  }
+
+  @Override
+  public Optional<CuratedBadgeAwardGenericEvent> getByExpanded(@NonNull EventTag referencedAbstractEventTag) {
+    log.debug("inside getByExpanded(@NonNull EventTag referencedAbstractEventTag)");
+    Optional<GenericEventRecord> curatedBadgeAwardGenericEventGER = cacheReferenceEventTagServiceIF.getByExpanded(referencedAbstractEventTag, getKind());
+    log.debug("returned curatedBadgeAwardGenericEventGER:\n {}",
+       curatedBadgeAwardGenericEventGER.map(GenericEventRecord::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
+
+    Optional<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventOpt = curatedBadgeAwardGenericEventGER.flatMap(this::materialize);
+    log.debug("materialized curatedBadgeAwardGenericEventOpt:\n {}",
+       curatedBadgeAwardGenericEventOpt.map(CuratedBadgeAwardGenericEvent::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
+    return curatedBadgeAwardGenericEventOpt;
   }
 
   @Override

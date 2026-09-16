@@ -3,7 +3,6 @@ package com.prosilion.superconductor.autoconfigure.curation.plugin.kind;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.AddressableEvent;
-import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FollowSetsEvent;
@@ -15,7 +14,6 @@ import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.PubKeyTag;
-import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.BadgeAwardReputationEventKindTypePlugin;
@@ -32,7 +30,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -108,46 +105,14 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
     return badgeSetsEvent;
   }
 
-  private @NonNull BadgeSetsEvent constructFromExisting(CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent, BadgeDefinitionReputationEvent badgeDefinitionReputationEvent, PubKeyTag recipientPubKeyTag) {
-    log.debug("... calling cacheBadgeSetsEventServiceIF.getBy(recipientPublicKey, badgeDefinitionReputationEvent) ...\nrecipientPublicKey:  [{}]\nbadgeDefinitionReputationEvent:  {}",
-       recipientPubKeyTag.getPublicKey().toHexString(),
-       badgeDefinitionReputationEvent.asAddressableEventAddressTag().toStringPrettyPrint());
-
-    Optional<BadgeSetsEvent> optionalBadgeSetsEvent = cacheBadgeSetsEventServiceIF
-       .getBy(
-          recipientPubKeyTag,
-          badgeDefinitionReputationEvent.asAddressableEventAddressTag());
-    optionalBadgeSetsEvent.map(existingBadgeSetsEvent ->
-    {
-      BadgeSetsEvent badgeSetsEvent1 = new BadgeSetsEvent(
-         superconductorInstanceIdentity,
-         badgeDefinitionReputationEvent,
-         Stream.concat(
-            existingBadgeSetsEvent.getCuratedBadgeAwardGenericEventList().stream(),
-            Stream.of(curatedBadgeAwardGenericEvent)).toList(),
-         new Relay(superconductorRelayUrl));
-      return badgeSetsEvent1;
-    });
-    BadgeSetsEvent badgeSetsEvent =
-       optionalBadgeSetsEvent
-          .orElseGet(() ->
-             new BadgeSetsEvent(
-                superconductorInstanceIdentity,
-                badgeDefinitionReputationEvent,
-                curatedBadgeAwardGenericEvent,
-                new Relay(superconductorRelayUrl)));
-
-    log.debug("... returned badgeSetsEvent:\n{}", badgeSetsEvent.createPrettyPrintJson());
-    return badgeSetsEvent;
-  }
-
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingFollowSetsEvent, @NonNull Relay fromRelay) {
     log.debug("processing incoming FollowSetsEvent\n{}", incomingFollowSetsEvent.createPrettyPrintJson());
-    Optional<FollowSetsEvent> existingEvent = cacheFollowSetsEventServiceIF.getEvent(
-       incomingFollowSetsEvent.getId(),
-       incomingFollowSetsEvent.getRelayTag().map(RelayTag::getRelay).orElseThrow());
-    if (existingEvent.isPresent()) return existingEvent.map(BaseEvent::getGenericEventRecord);
+    Optional<GenericEventRecord> existingEvent = cacheServiceIF.getEventByEventId(incomingFollowSetsEvent.getId());
+    if (existingEvent.isPresent()) {
+      log.debug("FollowSetsEvent already exists, just return it");
+      return existingEvent;
+    }
 
     PubKeyTag recipientPubKeyTag = incomingFollowSetsEvent.getTypeSpecificTags(PubKeyTag.class).getFirst();
     log.debug("(1of9) getting incomingFollowSetsEvent's BadgeSetsEventList...");
@@ -156,8 +121,7 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
           .collect(
              Collectors.toMap(
                 Function.identity(),
-                addressTag -> cacheBadgeSetsEventServiceIF.getBy(
-                   recipientPubKeyTag, addressTag.getIdentifierTag()).orElseThrow()));
+                addressTag -> cacheBadgeSetsEventServiceIF.getByExpanded(addressTag).orElseThrow()));
 
     List<BadgeSetsEvent> incomingFollowSetBadgeSetsEvents = reconstructedFollowSetsEventBadgeSetsEvents.values().stream().toList();
     log.debug("(2of9) created reconstructedFollowSetsEventBadgeSetsEvents Map<AddressTag, BadgeSetsEvent>:\n{}",

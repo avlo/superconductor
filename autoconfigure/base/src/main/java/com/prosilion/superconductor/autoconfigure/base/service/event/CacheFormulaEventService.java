@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CacheFormulaEventService implements CacheFormulaEventServiceIF {
-  public static final String NON_EXISTENT_ADDRESS_TAG = "FormulaEvent [%s] is missing required AddressTag";
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;

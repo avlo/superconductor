@@ -1,5 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.tag;
 
+import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.tag.AddressTag;
@@ -26,7 +27,7 @@ public class CacheReferenceAddressTagService extends CacheReferenceAbstractTagSe
   }
 
   @Override
-  protected Filters createFilters(@NonNull AddressTag addressTag) {
+  protected Filters createFilters(@NonNull AddressTag addressTag, Kind... kind) {
     return TagFilterFactory.forAddressIdentity(addressTag);
   }
 }

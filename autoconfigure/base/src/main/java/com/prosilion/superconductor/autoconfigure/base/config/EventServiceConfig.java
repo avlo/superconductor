@@ -47,7 +47,7 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheReferenceAddressTagService cacheDereferenceAddressTagService(
+  CacheReferenceAddressTagService cacheReferenceAddressTagService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull RemoteEventQueryServiceIF remoteEventQueryServiceIF) {
     return new CacheReferenceAddressTagService(cacheServiceIF, remoteEventQueryServiceIF);
@@ -55,7 +55,7 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheReferenceEventTagService cacheDereferenceEventTagService(
+  CacheReferenceEventTagService cacheReferenceEventTagService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull RemoteEventQueryServiceIF remoteEventQueryServiceIF) {
     return new CacheReferenceEventTagService(cacheServiceIF, remoteEventQueryServiceIF);
@@ -72,31 +72,37 @@ public class EventServiceConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheFormulaEventService cacheFormulaEventService(
-     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-     @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService,
-     @NonNull CacheKindAddressTagService cacheDereferenceKindAddressTagService) {
-    return new CacheFormulaEventService(cacheDereferenceEventTagService, cacheDereferenceAddressTagService, cacheDereferenceKindAddressTagService);
+     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
+     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
+     @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
+    return new CacheFormulaEventService(
+       cacheReferenceEventTagService,
+       cacheReferenceAddressTagService,
+       cacheKindAddressTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService(
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
-     @NonNull CacheReferenceAddressTagService cacheDereferenceAddressTagService) {
-    return new CacheBadgeDefinitionGenericEventService(cacheServiceIF, cacheDereferenceEventTagService, cacheDereferenceAddressTagService);
+     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
+     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService) {
+    return new CacheBadgeDefinitionGenericEventService(
+       cacheServiceIF,
+       cacheReferenceEventTagService,
+       cacheReferenceAddressTagService);
   }
 
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService(
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheReferenceEventTagService cacheDereferenceEventTagService,
+     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
     return new CacheBadgeAwardGenericEventService(
        cacheServiceIF,
-       cacheDereferenceEventTagService,
+       cacheReferenceEventTagService,
        cacheBadgeDefinitionGenericEventService,
        cacheKindAddressTagService);
   }

@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.base.service.event.tag;
 
-import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.GenericEventId;
 import com.prosilion.nostr.filter.Filters;
 import com.prosilion.nostr.filter.event.AuthorFilter;
 import com.prosilion.nostr.filter.event.EventFilter;
@@ -13,14 +13,23 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import java.util.Arrays;
 import lombok.NonNull;
 
 final class TagFilterFactory {
   private TagFilterFactory() {
   }
 
-  static Filters forEvent(@NonNull EventTag eventTag) {
-    return new Filters(new EventFilter(new GenericEventId(eventTag.getEventId())));
+  static Filters forEvent(@NonNull EventTag eventTag, Kind... kind) {
+    return
+       Arrays.stream(kind).map(KindFilter::new).findFirst()
+          .map(kindFilter ->
+             new Filters(
+                new EventFilter(new GenericEventId(eventTag.getEventId())),
+                kindFilter))
+          .orElseGet(() ->
+             new Filters(
+                new EventFilter(new GenericEventId(eventTag.getEventId()))));
   }
 
   static Filters forAddressIdentity(@NonNull AddressTag addressTag) {

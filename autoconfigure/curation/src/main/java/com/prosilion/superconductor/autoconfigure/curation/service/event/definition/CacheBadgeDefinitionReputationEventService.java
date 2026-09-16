@@ -19,13 +19,18 @@ import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
-import static com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService.NON_EXISTENT_ADDRESS_TAG;
-
+@Slf4j
 public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceIF {
+  public static final String NON_EXISTENT_ADDRESS_TAG = "cacheBadgeDefinitionReputationEventGER:%n  %s%nis missing required AddressTag: %s";
+  
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
@@ -59,30 +64,57 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   }
 
   @Override
-  protected BadgeDefinitionReputationEvent createBadgeDefinitionEvent(@NonNull GenericEventRecord eventRecord) {
-    List<CuratedFormulaEvent> curatedFormulaEvents = getCuratedFormulaEvents(eventRecord);
+  protected BadgeDefinitionReputationEvent createBadgeDefinitionEvent(
+     @NonNull GenericEventRecord cacheBadgeDefinitionReputationEventGER) {
 
-    return new BadgeDefinitionReputationEvent(
-       eventRecord, addressTag ->
-       curatedFormulaEvents.stream()
-          .filter(curatedFormulaEvent ->
-             curatedFormulaEvent.asAddressableEventAddressTag().equals(addressTag))
-          .findFirst()
+    log.debug("inside createBadgeDefinitionEvent(GenericEventRecord):\n  {}",
+       cacheBadgeDefinitionReputationEventGER.createPrettyPrintJson());
+    List<CuratedFormulaEvent> curatedFormulaEvents = getCuratedFormulaEvents(cacheBadgeDefinitionReputationEventGER);
+
+    log.debug("received curatedFormulaEvents:\n  {}",
+       curatedFormulaEvents.stream().map(CuratedFormulaEvent::createPrettyPrintJson).collect(Collectors.joining(",\n  ")));
+
+    Map<AddressTag, CuratedFormulaEvent> addressTagCuratedFormulaEventMap = curatedFormulaEvents.stream()
+       .collect(Collectors.toMap(
+          CuratedFormulaEvent::asAddressableEventAddressTag,
+          Function.identity()));
+
+    BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
+       cacheBadgeDefinitionReputationEventGER, addressTag ->
+       Optional.ofNullable(addressTagCuratedFormulaEventMap.get(addressTag))
           .orElseThrow(() ->
-             new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG, eventRecord))));
+             new NostrException(
+                String.format(
+                   NON_EXISTENT_ADDRESS_TAG,
+                   cacheBadgeDefinitionReputationEventGER.createPrettyPrintJson(),
+                   addressTag))));
+    log.debug("createBadgeDefinitionEvent successfully returning BadgeDefinitionReputationEvent:\n  {}",
+       badgeDefinitionReputationEvent.createPrettyPrintJson());
+    return badgeDefinitionReputationEvent;
   }
 
-  private List<CuratedFormulaEvent> getCuratedFormulaEvents(@NonNull GenericEventRecord cacheBadgeDefinitionReputationEvent) {
-    List<AddressTag> addressTagsAreCuratedFormulaEvents = cacheBadgeDefinitionReputationEvent.getTypeSpecificTags(AddressTag.class);
+  private List<CuratedFormulaEvent> getCuratedFormulaEvents(
+     @NonNull GenericEventRecord cacheBadgeDefinitionReputationEventGER) {
+
+    log.debug("inside getCuratedFormulaEvents(GenericEventRecord):\n  {}",
+       cacheBadgeDefinitionReputationEventGER.createPrettyPrintJson());
+
+    List<AddressTag> addressTagsAreCuratedFormulaEvents = cacheBadgeDefinitionReputationEventGER.getTypeSpecificTags(AddressTag.class);
+
     if (addressTagsAreCuratedFormulaEvents.isEmpty())
 //          TODO: revisit throw -vs- Optional.empty()      
-      throw new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG, cacheBadgeDefinitionReputationEvent));
+      throw new NostrException(String.format(NON_EXISTENT_ADDRESS_TAG, cacheBadgeDefinitionReputationEventGER));
 
     List<CuratedFormulaEvent> curatedFormulaEvents = addressTagsAreCuratedFormulaEvents.stream()
        .map(addressTag ->
-          cacheCuratedFormulaEventServiceIF.getByAuthorAndIdentifierTag(
-             addressTag.getPublicKey(),
-             addressTag.getIdentifierTag())).flatMap(Optional::stream).toList();
+       {
+         log.debug("calling cacheCuratedFormulaEventServiceIF.getByExpanded(addressTag): {}", addressTag.toStringPrettyPrint());
+         Optional<CuratedFormulaEvent> byAuthorAndIdentifierTag =
+            cacheCuratedFormulaEventServiceIF.getByExpanded(addressTag);
+         log.debug("returned CuratedFormulaEvent:\n  {}",
+            byAuthorAndIdentifierTag.map(CuratedFormulaEvent::createPrettyPrintJson).orElse("*** EMPTY OPTIONAL WILL YIELD EXCEPTION ***"));
+         return byAuthorAndIdentifierTag;
+       }).flatMap(Optional::stream).toList();
 
     if (!Objects.equals(addressTagsAreCuratedFormulaEvents.size(), curatedFormulaEvents.size()))
       throw new NostrException(
@@ -90,6 +122,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
             addressTagsAreCuratedFormulaEvents.size(),
             curatedFormulaEvents.size()));
 
+    log.debug("getCuratedFormulaEvents() successfully returning curatedFormulaEvents:\n  {}", curatedFormulaEvents.stream().map(CuratedFormulaEvent::createPrettyPrintJson).collect(Collectors.joining(",\n ")));
     return curatedFormulaEvents;
   }
 

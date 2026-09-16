@@ -12,15 +12,16 @@ import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 
+// TODO: determine whether/not to save/curate retrieved items / alternate sol'n
 public class CacheKindAddressTagService implements CacheKindAddressTagServiceIF {
   private final CacheServiceIF cacheServiceIF;
-  private final CacheAsideEventLookup cacheAsideEventLookup;
+  private final RemoteEventQueryServiceIF remoteEventQueryServiceIF;
 
   public CacheKindAddressTagService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull RemoteEventQueryServiceIF remoteEventQueryServiceIF) {
     this.cacheServiceIF = cacheServiceIF;
-    this.cacheAsideEventLookup = new CacheAsideEventLookup(remoteEventQueryServiceIF);
+    this.remoteEventQueryServiceIF = remoteEventQueryServiceIF;
   }
 
   @Override
@@ -30,18 +31,23 @@ public class CacheKindAddressTagService implements CacheKindAddressTagServiceIF 
 
   @Override
   public Optional<GenericEventRecord> getBy(@NonNull Kind kind, @NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag, @NonNull String relayUrl) {
-    return cacheAsideEventLookup.findFirst(
-       () -> findLocalByKindPubKeyAndIdentifier(kind, pubKeyTag, identifierTag),
-       relayUrl,
-       TagFilterFactory.forReferencedPubKeyAndIdentifier(kind, pubKeyTag, identifierTag));
+    return findLocalByKindPubKeyAndIdentifier(kind, pubKeyTag, identifierTag)
+       .or(() ->
+          remoteEventQueryServiceIF.sendRemoteReq(
+             relayUrl,
+             TagFilterFactory.forReferencedPubKeyAndIdentifier(kind, pubKeyTag, identifierTag)).stream().findFirst());
   }
 
   @Override
   public List<GenericEventRecord> getByDirect(@NonNull Kind kind, @NonNull AddressTag addressTag) {
-    return cacheAsideEventLookup.findAll(
-       () -> findLocalByKindAndAddress(kind, addressTag),
-       addressTag.requireRelay().getUrl(),
-       TagFilterFactory.forAddressReference(kind, addressTag));
+    List<GenericEventRecord> genericEventRecordList = findLocalByKindAndAddress(kind, addressTag);
+    return
+       genericEventRecordList.isEmpty() ?
+          remoteEventQueryServiceIF.sendRemoteReq(
+             addressTag.requireRelay().getUrl(),
+             TagFilterFactory.forAddressReference(kind, addressTag))
+          :
+          genericEventRecordList;
   }
 
   private List<GenericEventRecord> findLocalByKindPubKeyAndAddress(

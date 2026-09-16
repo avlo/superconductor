@@ -123,12 +123,14 @@ public class EventCurationActiveConfig {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF) {
+     @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF,
+     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService) {
     return new CacheCuratedFormulaEventService(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
        cacheServiceIF,
-       cacheFormulaEventServiceIF);
+       cacheFormulaEventServiceIF,
+       cacheReferenceAddressTagService);
   }
 
   @Bean
@@ -137,12 +139,14 @@ public class EventCurationActiveConfig {
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
+     @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
      @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
     return new CacheBadgeSetsEventService(
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        cacheReferenceEventTagServiceIF,
+       cacheReferenceAddressTagService,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF);
   }
@@ -170,13 +174,15 @@ public class EventCurationActiveConfig {
      @NonNull String superconductorRelayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF,
-     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF) {
+     @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
+     @NonNull CacheReferenceEventTagService cacheReferenceEventTagService) {
     return new CacheCuratedBadgeAwardGenericEventService(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
        cacheServiceIF,
        cacheBadgeAwardGenericEventServiceIF,
-       cacheCuratedBadgeDefinitionGenericEventServiceIF);
+       cacheCuratedBadgeDefinitionGenericEventServiceIF,
+       cacheReferenceEventTagService);
   }
 
   @Bean

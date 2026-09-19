@@ -3,9 +3,11 @@ package com.prosilion.superconductor.autoconfigure.curation.plugin.kind;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
+import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.RelayTag;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
 import java.util.Optional;
@@ -14,15 +16,24 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CuratedFormulaEventKindPlugin extends NonPublishingEventKindPlugin {
+  private final CacheServiceIF cacheServiceIF;
 
-  public CuratedFormulaEventKindPlugin(@NonNull EventPluginIF eventPluginIF) {
+  public CuratedFormulaEventKindPlugin(
+     @NonNull EventPluginIF eventPluginIF,
+     @NonNull CacheServiceIF cacheServiceIF) {
     super(eventPluginIF);
+    this.cacheServiceIF = cacheServiceIF;
   }
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingCuratedFormulaEvent, @NonNull Relay fromRelay) {
-    log.debug("inside processIncomingEvent(incomingCuratedFormulaEvent, fromRelay):\n{} ...",
+    log.info("inside processIncomingEvent(incomingCuratedFormulaEvent, fromRelay):\n{} ...",
        incomingCuratedFormulaEvent.createPrettyPrintJson());
+
+    if (cacheServiceIF.getEventByEventId(incomingCuratedFormulaEvent.getId()).isPresent()) {
+      log.info("return already existing identical incomingCuratedFormulaEvent");
+      return Optional.of(incomingCuratedFormulaEvent.asGenericEventRecord());
+    }
 
     Optional<RelayTag> eventRelayTag = incomingCuratedFormulaEvent.findFirstTag(RelayTag.class);
     log.debug("... using eventRelayTag url [{}]",

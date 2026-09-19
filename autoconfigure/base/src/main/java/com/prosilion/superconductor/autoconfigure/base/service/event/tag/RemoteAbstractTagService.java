@@ -40,15 +40,15 @@ public class RemoteAbstractTagService implements RemoteEventQueryServiceIF {
      @NonNull String relayUrl,
      @NonNull Filters filters) {
     ReqMessage reqMessage = new ReqMessage(Util.generateRandomHex64String(), filters);
-    log.debug(
-       "Querying relay [{}] with subscriber [{}] and filters:\n{}",
+    log.info(
+       "Querying relay: {} with subscriber [{}] and filters: [\n{}]",
        relayUrl,
        reqMessage.getSubscriptionId(),
        filters.toString(4));
 
     List<GenericEventRecord> events = getGenericEvents(
        awaitUsingWebSocketClient(reqMessage, relayUrl));
-    log.debug("Relay [{}] returned [{}] events", relayUrl, events.size());
+    log.debug("Relay [{}] returned [{}] event count", relayUrl, events.size());
     return events;
   }
 
@@ -63,12 +63,16 @@ public class RemoteAbstractTagService implements RemoteEventQueryServiceIF {
 
   private List<BaseMessage> awaitUsingWebSocketClient(ReqMessage reqMessage, String relayUrl) {
     try {
+      log.info("awaitUsingWebSocketClient(reqMessage, relayUrl): {}", relayUrl);
       VThreadWebSocketClient vThreadWebSocketClient = new VThreadWebSocketClient(relayUrl);
       vThreadWebSocketClient.send(reqMessage);
       RequestSubscriber.await(waitDuration, () -> !vThreadWebSocketClient.getEvents().isEmpty());
-      return vThreadWebSocketClient.getPopulatedEvents().stream()
+      List<BaseMessage> list = vThreadWebSocketClient.getPopulatedEvents().stream()
          .map(this::decodeMessage)
          .toList();
+      vThreadWebSocketClient.closeSession();
+      log.info("closed session, URL:  {}", relayUrl);
+      return list;
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new RemoteEventQueryException(

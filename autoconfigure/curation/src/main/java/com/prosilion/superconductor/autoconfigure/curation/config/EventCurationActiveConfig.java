@@ -136,6 +136,8 @@ public class EventCurationActiveConfig {
   @Bean
   @ConditionalOnMissingBean
   CacheBadgeSetsEventService cacheBadgeSetsEventService(
+     @NonNull Identity instanceIdentity,
+     @NonNull String relayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
@@ -143,6 +145,8 @@ public class EventCurationActiveConfig {
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
      @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
     return new CacheBadgeSetsEventService(
+       instanceIdentity,
+       relayUrl,
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        cacheReferenceEventTagServiceIF,
@@ -213,12 +217,14 @@ public class EventCurationActiveConfig {
      @NonNull String superconductorRelayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
-     @NonNull EventPlugin eventPlugin) {
+     @NonNull EventPlugin eventPlugin,
+     @NonNull CacheServiceIF cacheServiceIF) {
     return new CuratedBadgeDefinitionGenericEventKindPlugin(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
        cacheCuratedBadgeDefinitionGenericEventService,
-       eventPlugin);
+       eventPlugin,
+       cacheServiceIF);
   }
 
   @Bean("badgeAwardGenericEventKindPlugin")
@@ -256,8 +262,11 @@ public class EventCurationActiveConfig {
   @Bean("curatedFormulaEventKindPlugin")
   @ConditionalOnMissingBean(name = "curatedFormulaEventKindPlugin")
   CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin(
-     @NonNull EventPlugin eventPlugin) {
-    return new CuratedFormulaEventKindPlugin(eventPlugin);
+     @NonNull EventPlugin eventPlugin,
+     @NonNull CacheServiceIF cacheServiceIF) {
+    return new CuratedFormulaEventKindPlugin(
+       eventPlugin,
+       cacheServiceIF);
   }
 
   @Bean("formulaEventKindPlugin")

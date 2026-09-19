@@ -32,7 +32,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
   private final CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
   private final DeleteEventServiceIF deleteEventServiceIF;
-  CacheServiceIF cacheServiceIF;
+  private final CacheServiceIF cacheServiceIF;
 
   public BadgeSetsEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
@@ -41,7 +41,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
      @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF,
      @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull EventPlugin eventPlugin,
-     CacheServiceIF cacheServiceIF) {
+     @NonNull CacheServiceIF cacheServiceIF) {
     super(eventPlugin);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.superconductorRelayUrl = superconductorRelayUrl;
@@ -54,12 +54,25 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
   //  TODO: examine re-arch of EventPluginIF such that processIncomingEvent(...) returns BadgeSetsEvent instead of GenericEventRecord  
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingBadgeSetsEvent, @NonNull Relay fromRelay) {
-    log.debug("processing incoming badgeSetsEvent\n{}", incomingBadgeSetsEvent.createPrettyPrintJson());
+    log.info("processing incoming badgeSetsEvent\n{}", incomingBadgeSetsEvent.createPrettyPrintJson());
+
+    if (cacheServiceIF.getEventByEventId(incomingBadgeSetsEvent.getId()).isPresent()) {
+      log.info("return already existing identical incomingBadgeSetsEvent");
+      return Optional.of(incomingBadgeSetsEvent.asGenericEventRecord());
+    }
+
     PubKeyTag recipientPubKeyTag = incomingBadgeSetsEvent.requireFirstTag(PubKeyTag.class);
     AddressTag badgeDefinitionReputationEventAsAddressTag = incomingBadgeSetsEvent.requireFirstTag(AddressTag.class);
 
     Optional<BadgeSetsEvent> existingBadgeSetsEventOpt = cacheBadgeSetsEventServiceIF.getBy(recipientPubKeyTag, badgeDefinitionReputationEventAsAddressTag);
 
+    if (existingBadgeSetsEventOpt.isPresent()) {
+      if (existingBadgeSetsEventOpt.get().equalsSoft(incomingBadgeSetsEvent.asGenericEventRecord())) {
+        log.info("return already existing softEquals existingBadgeSetsEvent");
+        return existingBadgeSetsEventOpt.map(BaseEvent::asGenericEventRecord);
+      }
+    }
+    
     BadgeSetsEvent materializedIncomingBadgeSetsEvent = cacheBadgeSetsEventServiceIF.materialize(incomingBadgeSetsEvent).orElseThrow();
 
     List<CuratedBadgeAwardGenericEvent> existingCuratedBadgeAwardGenericEvents =

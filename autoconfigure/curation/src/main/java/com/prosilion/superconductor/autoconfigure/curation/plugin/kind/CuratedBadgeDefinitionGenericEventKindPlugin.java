@@ -10,6 +10,7 @@ import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
+import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
 import java.util.Optional;
@@ -21,20 +22,28 @@ import lombok.extern.slf4j.Slf4j;
 public class CuratedBadgeDefinitionGenericEventKindPlugin extends NonPublishingEventKindPlugin {
   private final Identity superconductorInstanceIdentity;
   private final Relay superconductorRelay;
+  private final CacheServiceIF cacheServiceIF;
 
   public CuratedBadgeDefinitionGenericEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
-     @NonNull EventPluginIF eventPluginIF) {
+     @NonNull EventPluginIF eventPluginIF,
+     @NonNull CacheServiceIF cacheServiceIF) {
     super(eventPluginIF);
     this.superconductorInstanceIdentity = superconductorInstanceIdentity;
     this.superconductorRelay = new Relay(superconductorRelayUrl);
+    this.cacheServiceIF = cacheServiceIF;
   }
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF event, @NonNull Relay fromRelay) {
-    log.debug("processIncomingEvent(event, fromRelay) [{}]...\n{}", fromRelay.getUrl(), event.createPrettyPrintJson());
+    log.info("processIncomingEvent(event, fromRelay) [{}]...\n{}", fromRelay.getUrl(), event.createPrettyPrintJson());
+
+    if (cacheServiceIF.getEventByEventId(event.getId()).isPresent()) {
+      log.info("return already existing identical CuratedBadgeDefinitionGenericEvent");
+      return Optional.of(event.asGenericEventRecord());
+    }
 
     Optional<RelayTag> eventRelayTag = event.findFirstTag(RelayTag.class);
     log.debug("processing incoming BadgeDefinitionGenericEvent using event RelayTag url [{}]",

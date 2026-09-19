@@ -9,7 +9,9 @@ import com.prosilion.superconductor.base.cache.tag.CacheReferenceAbstractTagServ
 import com.prosilion.superconductor.base.cache.tag.RemoteEventQueryServiceIF;
 import java.util.Optional;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstractEventTag> implements CacheReferenceAbstractTagServiceIF<T> {
   protected final CacheServiceIF cacheServiceIF;
   private final RemoteEventQueryServiceIF remoteEventQueryServiceIF;
@@ -24,13 +26,12 @@ public abstract class CacheReferenceAbstractTagService<T extends ReferencedAbstr
   @Override
   public Optional<GenericEventRecord> getByExpanded(@NonNull T abstractTag, Kind... kind) {
     Optional<GenericEventRecord> genericEventRecord = tryGetLocalExpandedEvent(abstractTag);
-    return genericEventRecord
-       .or(() ->
-          abstractTag.findRelay().flatMap(relay ->
-             remoteEventQueryServiceIF.sendRemoteReq(
-                   relay.getUrl(),
-                   createFilters(abstractTag, kind))
-                .stream().findFirst()));
+    return genericEventRecord.or(() -> abstractTag.findRelay().flatMap(relay -> {
+      Optional<GenericEventRecord> gerOptional = remoteEventQueryServiceIF.sendRemoteReq(relay.getUrl(), createFilters(abstractTag, kind)).stream().findFirst();
+      log.info("remoteEventQueryServiceIF.sendRemoteReq(...) returned:\n  {}", gerOptional.map(ger -> ger.createPrettyPrintJson()).orElse("[EMPTY OPTIONAL]"));
+      gerOptional.ifPresent(cacheServiceIF::save);
+      return gerOptional;
+    }));
   }
 
   protected abstract Filters createFilters(@NonNull T tag, Kind... kind);

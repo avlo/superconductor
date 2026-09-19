@@ -93,9 +93,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     return badgeDefinitionReputationEvent;
   }
 
-  private List<CuratedFormulaEvent> getCuratedFormulaEvents(
-     @NonNull GenericEventRecord cacheBadgeDefinitionReputationEventGER) {
-
+  private List<CuratedFormulaEvent> getCuratedFormulaEvents(@NonNull GenericEventRecord cacheBadgeDefinitionReputationEventGER) {
     log.debug("inside getCuratedFormulaEvents(GenericEventRecord):\n  {}",
        cacheBadgeDefinitionReputationEventGER.createPrettyPrintJson());
 
@@ -108,7 +106,7 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
     List<CuratedFormulaEvent> curatedFormulaEvents = addressTagsAreCuratedFormulaEvents.stream()
        .map(addressTag ->
        {
-         log.debug("calling cacheCuratedFormulaEventServiceIF.getByExpanded(addressTag): {}", addressTag.toStringPrettyPrint());
+         log.debug("calling cacheCuratedFormulaEventServiceIF.getByExpanded(addressTag): {}", addressTag);
          Optional<CuratedFormulaEvent> byAuthorAndIdentifierTag =
             cacheCuratedFormulaEventServiceIF.getByExpanded(addressTag);
          log.debug("returned CuratedFormulaEvent:\n  {}",

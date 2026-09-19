@@ -65,13 +65,13 @@ public class CacheCuratedFormulaEventService extends AbstractCacheCuratedEventSe
 
   @Override
   public Optional<CuratedFormulaEvent> getByExpanded(@NonNull AddressTag referencedAbstractEventTag) {
-    log.debug("inside getByExpanded(AddressTag):\n  {}", referencedAbstractEventTag.toStringPrettyPrint());
+    log.debug("inside getByExpanded AddressTag): {}", referencedAbstractEventTag);
     Optional<GenericEventRecord> byExpanded = cacheReferenceAddressTagServiceIF.getByExpanded(referencedAbstractEventTag);
-    log.debug("returned getByExpanded(AddressTag):\n  {}", byExpanded.map(GenericEventRecord::createPrettyPrintJson).orElse(
-       "[ EMPTY OPTIONAL ]"));
+    log.debug("returned getByExpanded(AddressTag): {}", byExpanded.map(GenericEventRecord::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
+
     Optional<CuratedFormulaEvent> curatedFormulaEvent = byExpanded.flatMap(this::materialize);
-    log.debug("returning materialized Optional CuratedFormulaEvent:\n  {}", curatedFormulaEvent.map(CuratedFormulaEvent::createPrettyPrintJson).orElse(
-       "[ EMPTY OPTIONAL ]"));
+
+    log.debug("returning materialized Optional CuratedFormulaEvent:\n  {}", curatedFormulaEvent.map(CuratedFormulaEvent::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
     return curatedFormulaEvent;
   }
 

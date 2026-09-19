@@ -57,6 +57,8 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
   @Test
   void testConstructorRejectsNullDependencies() {
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        null,
        cacheKindAddressTagServiceIF,
        cacheReferenceEventTagServiceIF,
@@ -64,6 +66,8 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        null,
        cacheReferenceEventTagServiceIF,
@@ -71,6 +75,8 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        null,
@@ -78,6 +84,8 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        cacheReferenceEventTagServiceIF,
@@ -85,6 +93,8 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        null,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        cacheReferenceEventTagServiceIF,
@@ -148,7 +158,6 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
 
   @Test
   void testGetEventByEventId() {
-    mockLocalGetEventByEventIdReturnsEmptyOptional();
     CacheBadgeSetsEventService cacheBadgeSetsEventService = createService();
     Optional<BadgeSetsEvent> actual = cacheBadgeSetsEventService.getEvent(eventId, relay);
     assertTrue(actual.isEmpty());
@@ -202,6 +211,8 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
 
   private CacheBadgeSetsEventService createService() {
     return new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        cacheReferenceEventTagServiceIF,

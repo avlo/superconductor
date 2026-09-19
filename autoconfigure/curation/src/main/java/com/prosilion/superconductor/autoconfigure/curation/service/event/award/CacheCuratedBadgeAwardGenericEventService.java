@@ -118,14 +118,14 @@ public class CacheCuratedBadgeAwardGenericEventService extends AbstractCacheCura
          String.format("cacheCuratedBadgeDefinitionGenericEventServiceIF.getEvent() failed for eventId: [%s]", curatedBadgeDefinitionGenericEvent.getEventId()));
     }
 
-    log.debug("CuratedBadgeDefinitionGenericEvent retrieved, creating new CuratedBadgeAwardGenericEvent() ...");
+    log.debug("createFromFetched(...) retrieved CuratedBadgeDefinitionGenericEvent, creating new CuratedBadgeAwardGenericEvent() ...");
     CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(
        super.getInstanceIdentity(),
        badgeAwardGenericEvent,
        curatedBadgeDefinitionGenericEvent,
        new ReferenceTag(badgeAwardGenericEvent.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow(() -> new NostrException(("revisit what/if exception here thrown")))),
        super.getRelay());
-    log.debug("returning curatedBadgeAwardGenericEvent:\n{}", curatedBadgeAwardGenericEvent.createPrettyPrintJson());
+    log.debug("  {}", curatedBadgeAwardGenericEvent.createPrettyPrintJson());
     return curatedBadgeAwardGenericEvent;
   }
 

@@ -61,6 +61,8 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        mock(CacheCuratedBadgeAwardGenericEventServiceIF.class);
 
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        null,
        cacheKindAddressTagServiceIF,
        cacheReferenceEventTagServiceIF,
@@ -68,6 +70,8 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        null,
        cacheReferenceEventTagServiceIF,
@@ -75,6 +79,8 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        null,
@@ -82,6 +88,8 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        cacheReferenceEventTagServiceIF,
@@ -89,6 +97,8 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        null,
        cacheCuratedBadgeAwardGenericEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
        cacheReferenceEventTagServiceIF,

@@ -21,13 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 // our SportsCar extends CarDecorator
 public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKindPlugin {
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
-  CacheServiceIF cacheServiceIF;
+  private final CacheServiceIF cacheServiceIF;
 
   public CuratedBadgeAwardGenericEventKindPlugin(
      @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull NotifierService notifierService,
      @NonNull EventPluginIF eventPluginIF,
-     CacheServiceIF cacheServiceIF) {
+     @NonNull CacheServiceIF cacheServiceIF) {
     super(notifierService, eventPluginIF);
     this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
     this.cacheServiceIF = cacheServiceIF;
@@ -36,7 +36,12 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(
      @NonNull EventIF incomingCuratedBadgeAwardGenericEvent, @NonNull Relay fromRelay) {
-    log.debug("processIncomingEvent(incomingCuratedBadgeAwardGenericEvent, fromRelay) [{}]...\n{}", fromRelay.getUrl(), incomingCuratedBadgeAwardGenericEvent.createPrettyPrintJson());
+    log.info("processIncomingEvent(incomingCuratedBadgeAwardGenericEvent, fromRelay) [{}]...\n{}", fromRelay.getUrl(), incomingCuratedBadgeAwardGenericEvent.createPrettyPrintJson());
+
+    if (cacheServiceIF.getEventByEventId(incomingCuratedBadgeAwardGenericEvent.getId()).isPresent()) {
+      log.info("return already existing identical incomingCuratedBadgeAwardGenericEvent");
+      return Optional.of(incomingCuratedBadgeAwardGenericEvent.asGenericEventRecord());
+    }
 
     RelayTag relayTag = incomingCuratedBadgeAwardGenericEvent.requireFirstTag(RelayTag.class);
     IdentifierTag suppliedIdentifierTag = incomingCuratedBadgeAwardGenericEvent.requireFirstTag(IdentifierTag.class);

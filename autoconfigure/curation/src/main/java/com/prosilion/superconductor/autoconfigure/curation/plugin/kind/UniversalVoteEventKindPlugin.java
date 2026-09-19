@@ -48,8 +48,13 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(@NonNull EventIF incomingVoteEvent, @NonNull Relay fromRelay) {
-    log.debug("inside processIncomingEvent(incomingVoteEvent)\n{}", incomingVoteEvent.createPrettyPrintJson());
+    log.info("processIncomingEvent(incomingVoteEvent)\n{}", incomingVoteEvent.createPrettyPrintJson());
 
+    if (cacheServiceIF.getEventByEventId(incomingVoteEvent.getId()).isPresent()) {
+      log.info("return already existing identical incomingVoteEvent");
+      return Optional.of(incomingVoteEvent.asGenericEventRecord());
+    }
+    
     Optional<GenericEventRecord> existingVoteEvent = cacheServiceIF.getEventsByKindAndPubKeyTagAndEventTag(
        Kind.CURATION_SETS_BADGE_AWARD_EVENT,
        incomingVoteEvent.requireFirstTag(PubKeyTag.class),
@@ -87,7 +92,12 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
     log.debug("constructed new CuratedBadgeAwardGenericEvent:\n  {}", curatedBadgeAwardGenericEvent.createPrettyPrintJson());
 
     super.processIncomingEvent(curatedBadgeAwardGenericEvent, fromRelay);
-    return followSetsEventKindPlugin.processIncomingCuratedBadgeAwardGenericEvent(curatedBadgeAwardGenericEvent, fromRelay);
+    log.debug("completed super.processIncomingEvent(curatedBadgeAwardGenericEvent, fromRelay)");
+
+    log.debug("calling followSetsEventKindPlugin.processIncomingCuratedBadgeAwardGenericEvent(curatedBadgeAwardGenericEvent, fromRelay)");
+    Optional<GenericEventRecord> genericEventRecord = followSetsEventKindPlugin.processIncomingCuratedBadgeAwardGenericEvent(curatedBadgeAwardGenericEvent, fromRelay);
+    log.debug("completed. returning genericEventRecord");
+    return genericEventRecord;
   }
 
   @Override

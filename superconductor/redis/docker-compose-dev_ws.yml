@@ -9,7 +9,7 @@ services:
     volumes:
       - superconductor-db:/data
   superconductor-app:
-    image: superconductor-app-redis:1.18.1
+    image: superconductor-app-redis:1.19.0
     ports:
       - "5555:5555"
     depends_on:

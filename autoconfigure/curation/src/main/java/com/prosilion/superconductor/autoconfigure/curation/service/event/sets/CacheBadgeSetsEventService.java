@@ -18,7 +18,6 @@ import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedB
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 public class CacheBadgeSetsEventService extends AbstractCacheCuratedEventService<BadgeSetsEvent, BadgeSetsEvent> implements CacheBadgeSetsEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
-  private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
   private final CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
   private final CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
@@ -39,14 +37,12 @@ public class CacheBadgeSetsEventService extends AbstractCacheCuratedEventService
      @NonNull String relayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
-     @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
      @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
     super(instanceIdentity, relayUrl, cacheServiceIF);
     this.cacheServiceIF = cacheServiceIF;
     this.cacheKindAddressTagServiceIF = cacheKindAddressTagServiceIF;
-    this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
     this.cacheReferenceAddressTagServiceIF = cacheReferenceAddressTagServiceIF;
     this.cacheBadgeDefinitionReputationEventServiceIF = cacheBadgeDefinitionReputationEventServiceIF;
     this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardGenericEventServiceIF;
@@ -58,12 +54,12 @@ public class CacheBadgeSetsEventService extends AbstractCacheCuratedEventService
 
     AddressTag referencedAbstractEventTag = genericEventRecord.requireFirstTag(AddressTag.class);
     log.debug("calling cacheBadgeDefinitionReputationEventServiceIF.getByExpanded(genericEventRecord.requireFirstTag(AddressTag):\n  {}", referencedAbstractEventTag);
-    
+
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent =
        cacheBadgeDefinitionReputationEventServiceIF.getByExpanded(referencedAbstractEventTag)
           .orElseThrow();
     log.debug("returned BadgeDefinitionReputationEvent:\n  {}", badgeDefinitionReputationEvent.createPrettyPrintJson());
-    
+
     List<EventTag> eventTagList = genericEventRecord.getTypeSpecificTags(EventTag.class);
     List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEvents = eventTagList.stream()
        .map(eventTag -> {

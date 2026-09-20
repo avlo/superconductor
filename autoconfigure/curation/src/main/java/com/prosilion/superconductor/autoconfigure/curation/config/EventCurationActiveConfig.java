@@ -149,7 +149,6 @@ public class EventCurationActiveConfig {
        relayUrl,
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
-       cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagService,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF);

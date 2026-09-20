@@ -2,13 +2,11 @@ package com.prosilion.superconductor;
 
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
-import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -19,7 +17,6 @@ import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedB
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheBadgeSetsEventService;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
@@ -33,8 +30,6 @@ import static com.prosilion.superconductor.base.service.event.plugin.kind.type.S
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -42,8 +37,6 @@ import static org.mockito.Mockito.verify;
 public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<BadgeSetsEvent> {
   @Mock
   CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
-  @Mock
-  CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
   @Mock
   CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF;
   @Mock
@@ -61,7 +54,6 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        relay.getUrl(),
        null,
        cacheKindAddressTagServiceIF,
-       cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
@@ -69,16 +61,6 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        superconductorInstanceIdentity,
        relay.getUrl(),
        cacheServiceIF,
-       null,
-       cacheReferenceEventTagServiceIF,
-       cacheReferenceAddressTagServiceIF,
-       cacheBadgeDefinitionReputationEventServiceIF,
-       cacheCuratedBadgeAwardGenericEventServiceIF));
-    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
-       superconductorInstanceIdentity,
-       relay.getUrl(),
-       cacheServiceIF,
-       cacheKindAddressTagServiceIF,
        null,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
@@ -88,7 +70,14 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
-       cacheReferenceEventTagServiceIF,
+       null,
+       cacheBadgeDefinitionReputationEventServiceIF,
+       cacheCuratedBadgeAwardGenericEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
+       cacheServiceIF,
+       cacheKindAddressTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        null,
        cacheCuratedBadgeAwardGenericEventServiceIF));
@@ -97,7 +86,6 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
-       cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        null));
@@ -105,7 +93,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
 
   @Test
   void testMaterializeRejectsNullEvent() {
-    assertThrows(NullPointerException.class, () -> createService().materialize((EventIF) null));
+    assertThrows(NullPointerException.class, () -> createService().materialize(null));
   }
 
   @Test
@@ -118,7 +106,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
 
   @Test
   void testGetByDirectRejectsNullAddressTag() {
-    assertThrows(NullPointerException.class, () -> createService().getByDirect((AddressTag) null));
+    assertThrows(NullPointerException.class, () -> createService().getByDirect(null));
   }
 
   @Test
@@ -133,7 +121,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
 
   @Test
   void testGetByPubKeyTagRejectsNullPubKeyTag() {
-    assertThrows(NullPointerException.class, () -> createService().getBy((PubKeyTag) null));
+    assertThrows(NullPointerException.class, () -> createService().getBy(null));
   }
 
   @Test
@@ -215,30 +203,8 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
-       cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF);
-  }
-
-  private void mockMaterializationDependencies() {
-    doReturn(Optional.of(badgeDefinitionReputationEvent))
-       .when(cacheBadgeDefinitionReputationEventServiceIF)
-       .getByExpanded(badgeDefinitionReputationEvent.asAddressableEventAddressTag());
-    doReturn(Optional.of(curatedBadgeAwardEvent))
-       .when(cacheCuratedBadgeAwardGenericEventServiceIF)
-       .getEvent(curatedBadgeAwardEvent.getId(), relay);
-  }
-
-  protected void mockLocalGetEventByEventIdReturnsEmptyOptional() {
-    doReturn(Optional.empty())
-       .when(cacheReferenceEventTagServiceIF)
-       .getEvent(eq(eventId), any(Relay.class));
-  }
-
-  protected void mockLocalgetByPubkeyTagEventTagReturnsEmptyOptional() {
-    doReturn(Optional.empty())
-       .when(cacheReferenceEventTagServiceIF)
-       .getByExpanded(any(EventTag.class));
   }
 }

@@ -51,7 +51,7 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCach
     Optional<CuratedBadgeDefinitionGenericEvent> orCurate = findOrCurate(
        () -> getFirstByAddressTag(addressTag),
        () -> getByExpanded(addressTag),
-       badgeDefinition -> badgeDefinition.getRelay().or(() -> addressTag.findRelay()).orElseThrow());
+       badgeDefinition -> badgeDefinition.getRelay().or(addressTag::findRelay).orElseThrow());
     return orCurate;
   }
 

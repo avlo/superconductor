@@ -14,7 +14,6 @@ import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.Ca
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
-import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +52,6 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
   void testConstructorRejectsNullDependencies() {
     CacheServiceIF cacheServiceIF = mock(CacheServiceIF.class);
     CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF = mock(CacheKindAddressTagServiceIF.class);
-    CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF = mock(CacheReferenceEventTagServiceIF.class);
     CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF = mock(CacheReferenceAddressTagServiceIF.class);
     CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF =
        mock(CacheBadgeDefinitionReputationEventServiceIF.class);
@@ -65,7 +63,6 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        relay.getUrl(),
        null,
        cacheKindAddressTagServiceIF,
-       cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        cacheCuratedBadgeAwardGenericEventServiceIF));
@@ -73,16 +70,6 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        superconductorInstanceIdentity,
        relay.getUrl(),
        cacheServiceIF,
-       null,
-       cacheReferenceEventTagServiceIF,
-       cacheReferenceAddressTagServiceIF,
-       cacheBadgeDefinitionReputationEventServiceIF,
-       cacheCuratedBadgeAwardGenericEventServiceIF));
-    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
-       superconductorInstanceIdentity,
-       relay.getUrl(),
-       cacheServiceIF,
-       cacheKindAddressTagServiceIF,
        null,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
@@ -92,7 +79,14 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
-       cacheReferenceEventTagServiceIF,
+       null,
+       cacheBadgeDefinitionReputationEventServiceIF,
+       cacheCuratedBadgeAwardGenericEventServiceIF));
+    assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
+       superconductorInstanceIdentity,
+       relay.getUrl(),
+       cacheServiceIF,
+       cacheKindAddressTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        null,
        cacheCuratedBadgeAwardGenericEventServiceIF));
@@ -101,7 +95,6 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
        relay.getUrl(),
        cacheServiceIF,
        cacheKindAddressTagServiceIF,
-       cacheReferenceEventTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
        null));
@@ -131,7 +124,7 @@ public class CacheBadgeSetsEventServiceIT extends BaseBadgeSetsEventServiceIT {
 
   @Test
   void testGetByPubKeyTagRejectsNullPubKeyTag() {
-    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventServiceIF.getBy((PubKeyTag) null));
+    assertThrows(NullPointerException.class, () -> cacheBadgeSetsEventServiceIF.getBy(null));
   }
 
   @Test

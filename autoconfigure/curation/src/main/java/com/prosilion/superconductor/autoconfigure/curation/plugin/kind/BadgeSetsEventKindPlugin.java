@@ -13,8 +13,8 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
@@ -30,7 +30,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
   private final Identity superconductorInstanceIdentity;
   private final String superconductorRelayUrl;
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
-  private final CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
+  private final CacheTagMappedEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
   private final DeleteEventServiceIF deleteEventServiceIF;
   private final CacheServiceIF cacheServiceIF;
 
@@ -38,7 +38,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF,
+     @NonNull CacheTagMappedEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF,
      @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull EventPlugin eventPlugin,
      @NonNull CacheServiceIF cacheServiceIF) {
@@ -72,32 +72,22 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
         return existingBadgeSetsEventOpt.map(BaseEvent::asGenericEventRecord);
       }
     }
-    
+
     BadgeSetsEvent materializedIncomingBadgeSetsEvent = cacheBadgeSetsEventServiceIF.materialize(incomingBadgeSetsEvent).orElseThrow();
 
-    List<CuratedBadgeAwardGenericEvent> existingCuratedBadgeAwardGenericEvents =
-       existingBadgeSetsEventOpt.stream()
-          .map(BadgeSetsEvent::getCuratedBadgeAwardGenericEventList).flatMap(Collection::stream).toList();
+    List<CuratedBadgeAwardGenericEvent> existingCuratedBadgeAwardGenericEvents = existingBadgeSetsEventOpt.stream().map(BadgeSetsEvent::getCuratedBadgeAwardGenericEventList).flatMap(Collection::stream).toList();
 
     List<String> incomingBadgeSetsEventCuratedUpvoteEventIds = incomingBadgeSetsEvent.getTypeSpecificTags(EventTag.class).stream().map(EventTag::eventId).toList();
 
-    List<String> newUniqueCuratedBadgeAwardGenericEventIds = incomingBadgeSetsEventCuratedUpvoteEventIds.stream().filter(eventId ->
-       !existingCuratedBadgeAwardGenericEvents.stream().map(BaseEvent::getId).toList().contains(eventId)).toList();
+    List<String> newUniqueCuratedBadgeAwardGenericEventIds = incomingBadgeSetsEventCuratedUpvoteEventIds.stream().filter(eventId -> !existingCuratedBadgeAwardGenericEvents.stream().map(BaseEvent::getId).toList().contains(eventId)).toList();
 
-    List<CuratedBadgeAwardGenericEvent> newCuratedBadgeAwardGenericEventList =
-       newUniqueCuratedBadgeAwardGenericEventIds.stream()
-          .map(newUniqueCuratedBadgeAwardGenericEventId ->
-             cacheCuratedBadgeAwardGenericEventServiceIF.getEvent(
-                newUniqueCuratedBadgeAwardGenericEventId,
-                incomingBadgeSetsEvent.requireFirstTag(RelayTag.class).getRelay())).flatMap(Optional::stream).toList();
+    List<CuratedBadgeAwardGenericEvent> newCuratedBadgeAwardGenericEventList = newUniqueCuratedBadgeAwardGenericEventIds.stream().map(newUniqueCuratedBadgeAwardGenericEventId -> cacheCuratedBadgeAwardGenericEventServiceIF.getEvent(newUniqueCuratedBadgeAwardGenericEventId, incomingBadgeSetsEvent.requireFirstTag(RelayTag.class).getRelay())).flatMap(Optional::stream).toList();
 
     ArrayList<CuratedBadgeAwardGenericEvent> updatedCuratedBadgeAwardGenericEventList = new ArrayList<>();
     updatedCuratedBadgeAwardGenericEventList.addAll(existingCuratedBadgeAwardGenericEvents);
     updatedCuratedBadgeAwardGenericEventList.addAll(newCuratedBadgeAwardGenericEventList);
 
-    BadgeSetsEvent newBadgeSetsEvent = materializedIncomingBadgeSetsEvent.createNewFromExisting(
-       superconductorInstanceIdentity,
-       updatedCuratedBadgeAwardGenericEventList);
+    BadgeSetsEvent newBadgeSetsEvent = materializedIncomingBadgeSetsEvent.createNewFromExisting(superconductorInstanceIdentity, updatedCuratedBadgeAwardGenericEventList);
 
 //    below saves and then deletes same badgesetsevent
 //    existingBadgeSetsEventOpt.ifPresent(this::checkDelete);

@@ -24,12 +24,12 @@ import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.Badg
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.BadgeDefinitionReputationEventKindTypePlugin;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceRxRIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.ReputationCalculationServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheBadgeAwardReputationEventService;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventServiceRxR;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheBadgeDefinitionReputationEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheCuratedBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.formula.CacheCuratedFormulaEventService;
@@ -140,10 +140,9 @@ public class EventCurationActiveConfig {
      @NonNull String relayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF,
-     @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheReferenceAddressTagService cacheReferenceAddressTagService,
      @NonNull CacheBadgeDefinitionReputationEventServiceIF cacheBadgeDefinitionReputationEventServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
+     @NonNull CacheCuratedBadgeAwardGenericEventServiceRxRIF cacheCuratedBadgeAwardGenericEventServiceIF) {
     return new CacheBadgeSetsEventService(
        instanceIdentity,
        relayUrl,
@@ -172,14 +171,14 @@ public class EventCurationActiveConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService(
+  CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventServiceRxR(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF,
      @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull CacheReferenceEventTagService cacheReferenceEventTagService) {
-    return new CacheCuratedBadgeAwardGenericEventService(
+    return new CacheCuratedBadgeAwardGenericEventServiceRxR(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
        cacheServiceIF,
@@ -302,7 +301,7 @@ public class EventCurationActiveConfig {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
+     @NonNull CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventService,
      @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull EventPlugin eventPlugin,
      @NonNull CacheServiceIF cacheServiceIF) {
@@ -371,7 +370,7 @@ public class EventCurationActiveConfig {
   Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> eventKindMaterializers(
      @NonNull CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService,
+     @NonNull CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventServiceRxR,
      @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
      @NonNull CacheCuratedFormulaEventService cacheCuratedFormulaEventService,
      @NonNull CacheBadgeSetsEventService cacheBadgeSetsEventService,
@@ -379,42 +378,31 @@ public class EventCurationActiveConfig {
      @NonNull CacheFormulaEventService cacheFormulaEventService) {
     Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
 
-    kindFxnMap.put(
-       Kind.CURATION_SETS_BADGE_AWARD_EVENT,
-       cacheCuratedBadgeAwardGenericEventService::materialize);
+    kindFxnMap.put(Kind.CURATION_SETS_BADGE_AWARD_EVENT,
+       cacheCuratedBadgeAwardGenericEventServiceRxR::materialize);
 
-    kindFxnMap.put(
-       Kind.CURATION_SETS_BADGE_DEFINITION_EVENT,
+    kindFxnMap.put(Kind.CURATION_SETS_BADGE_DEFINITION_EVENT,
        cacheCuratedBadgeDefinitionGenericEventService::materialize);
 
-    kindFxnMap.put(
-       Kind.CURATION_SETS_FORMULA_EVENT,
+    kindFxnMap.put(Kind.CURATION_SETS_FORMULA_EVENT,
        cacheCuratedFormulaEventService::materialize);
 
-    kindFxnMap.put(
-       Kind.BADGE_AWARD_EVENT,
+    kindFxnMap.put(Kind.BADGE_AWARD_EVENT,
        cacheBadgeAwardGenericEventService::materialize);
 
-    kindFxnMap.put(
-       Kind.BADGE_DEFINITION_EVENT,
+    kindFxnMap.put(Kind.BADGE_DEFINITION_EVENT,
        cacheBadgeDefinitionGenericEventService::materialize);
 
-    kindFxnMap.put(
-       Kind.FOLLOW_SETS,
+    kindFxnMap.put(Kind.FOLLOW_SETS,
        cacheFollowSetsEventService::materialize);
 
-    kindFxnMap.put(
-       Kind.BADGE_SETS_EVENT,
+    kindFxnMap.put(Kind.BADGE_SETS_EVENT,
        cacheBadgeSetsEventService::materialize);
 
-    kindFxnMap.put(
-       Kind.ARBITRARY_CUSTOM_APP_DATA,
+    kindFxnMap.put(Kind.ARBITRARY_CUSTOM_APP_DATA,
        cacheFormulaEventService::materialize);
 
-    kindFxnMap.put(
-       Kind.DELETION,
-       eventIF -> Optional.of(new DeletionEvent(
-          eventIF.asGenericEventRecord())));
+    kindFxnMap.put(Kind.DELETION, eventIF -> Optional.of(new DeletionEvent(eventIF.asGenericEventRecord())));
 
     return kindFxnMap;
   }
@@ -426,12 +414,10 @@ public class EventCurationActiveConfig {
      @NonNull CacheBadgeDefinitionReputationEventService cacheBadgeDefinitionReputationEventService) {
     Map<Kind, Function<EventIF, Optional<? extends BaseEvent>>> kindFxnMap = new HashMap<>();
 
-    kindFxnMap.put(
-       Kind.BADGE_AWARD_EVENT,
+    kindFxnMap.put(Kind.BADGE_AWARD_EVENT,
        cacheBadgeAwardReputationEventService::materialize);
 
-    kindFxnMap.put(
-       Kind.BADGE_DEFINITION_EVENT,
+    kindFxnMap.put(Kind.BADGE_DEFINITION_EVENT,
        cacheBadgeDefinitionReputationEventService::materialize);
 
     return kindFxnMap;

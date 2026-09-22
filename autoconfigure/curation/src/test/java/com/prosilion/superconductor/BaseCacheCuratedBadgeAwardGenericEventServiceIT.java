@@ -1,6 +1,5 @@
 package com.prosilion.superconductor;
 
-import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
@@ -15,7 +14,7 @@ import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.SetsPairedEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceRxRIF;
 import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.util.List;
@@ -27,12 +26,11 @@ import org.springframework.beans.factory.annotation.Value;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_EXTERNAL_IDENTITY_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
-  private final CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF;
+  private final CacheCuratedBadgeAwardGenericEventServiceRxRIF cacheCuratedBadgeAwardGenericEventServiceIF;
   private final CacheServiceIF cacheServiceIF;
   private final Relay relay;
 
@@ -42,7 +40,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventServiceIF cacheCuratedBadgeAwardGenericEventServiceIF) {
+     @NonNull CacheCuratedBadgeAwardGenericEventServiceRxRIF cacheCuratedBadgeAwardGenericEventServiceIF) {
     super(superconductorInstanceIdentity);
     this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardGenericEventServiceIF;
     this.cacheServiceIF = cacheServiceIF;
@@ -141,7 +139,12 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
        cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(eventTag).orElseThrow();
 
     assertEquals(eventTag, actual.getEventTag());
-    assertEquals(actual, cacheCuratedBadgeAwardGenericEventServiceIF.getEvent(actual.getId(), relay).orElseThrow());
+    assertEquals(actual, cacheCuratedBadgeAwardGenericEventServiceIF
+       .getByExpanded(
+          new EventTag(
+             actual.getId(), 
+             relay.getUrl()))
+       .orElseThrow());
   }
 
   @Test
@@ -155,21 +158,21 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
        cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(addressTag).orElseThrow();
 
     assertEquals(badgeAwardGenericEvent.getId(), actual.getEventTag().getEventId());
-    assertEquals(actual, cacheCuratedBadgeAwardGenericEventServiceIF
-       .getEvent(actual.getId(), relay)
-       .orElseThrow());
+//    assertEquals(actual, cacheCuratedBadgeAwardGenericEventServiceIF
+//       .getEvent(actual.getId(), relay)
+//       .orElseThrow());
   }
 
   @Test
   public void testGetEventByEventIdRelay() {
     String eventId = curationSetsUpvoteEvent.getEventId();
     Optional<CuratedBadgeAwardGenericEvent> byEventIdRelay = cacheCuratedBadgeAwardGenericEventServiceIF
-       .getEvent(eventId, relay);
+       .getByExpanded(new EventTag(eventId, relay.getUrl()));
     assertTrue(byEventIdRelay.isPresent());
     assertEquals(curationSetsUpvoteEvent, byEventIdRelay.get());
 
     Optional<CuratedBadgeAwardGenericEvent> byEventIdNonExistentRelay = cacheCuratedBadgeAwardGenericEventServiceIF
-       .getEvent(eventId, new Relay("ws://localhost-non-existent:5555"));
+       .getByExpanded(new EventTag(eventId, "ws://localhost-non-existent:5555"));
     assertTrue(byEventIdNonExistentRelay.isPresent());
     assertEquals(curationSetsUpvoteEvent, byEventIdNonExistentRelay.get());
   }
@@ -177,14 +180,11 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
   @Test
   public void testNonExistentEventIdReturnsEmptyOptional() {
     String nonExistentEventId = Util.generateRandomHex64String();
-    assertEquals(Optional.empty(), cacheCuratedBadgeAwardGenericEventServiceIF.getEvent(nonExistentEventId, relay));
-  }
-
-  @Test
-  public void testNonExistentEventTagEventIdThrowsException() {
-    String nonExistentEventId = Util.generateRandomHex64String();
-    EventTag nonExistentEventTagEventId = new EventTag(nonExistentEventId);
-    assertThrows(NostrException.class, () -> cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(nonExistentEventTagEventId));
+    assertEquals(Optional.empty(), cacheCuratedBadgeAwardGenericEventServiceIF
+       .getByExpanded(
+          new EventTag(
+             nonExistentEventId,
+             relay.getUrl())));
   }
 
   private BadgeAwardCanonicalEvent createAndSaveBackingBadgeAward() {

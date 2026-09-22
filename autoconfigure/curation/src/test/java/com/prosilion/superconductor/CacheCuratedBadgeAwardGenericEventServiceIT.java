@@ -1,7 +1,7 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventServiceRxR;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
@@ -26,7 +26,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceIT extends BaseCacheCurate
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService) {
+     @NonNull CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventService) {
     super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, cacheCuratedBadgeAwardGenericEventService);
   }
 }

@@ -11,7 +11,8 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormul
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardGenericEventKindPlugin;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginRxR;
+import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardGenericEventKindPluginRxR;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
@@ -37,12 +38,12 @@ public class EventCurationInactiveConfig {
     return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
   }
 
-  @Bean("badgeAwardGenericEventKindPlugin")
-  @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPlugin")
-  BadgeAwardGenericEventKindPlugin<BadgeAwardCanonicalEvent> badgeAwardGenericEventKindPlugin(
+  @Bean("badgeAwardGenericEventKindPluginRxR")
+  @ConditionalOnMissingBean(name = "badgeAwardGenericEventKindPluginRxR")
+  BadgeAwardGenericEventKindPluginRxR badgeAwardGenericEventKindPluginRxR(
      @NonNull NotifierService notifierService,
-     @NonNull EventPlugin eventPlugin) {
-    return new BadgeAwardGenericEventKindPlugin<>(
+     @NonNull EventPluginRxR<BadgeAwardCanonicalEvent> eventPlugin) {
+    return new BadgeAwardGenericEventKindPluginRxR(
        notifierService,
        eventPlugin);
   }

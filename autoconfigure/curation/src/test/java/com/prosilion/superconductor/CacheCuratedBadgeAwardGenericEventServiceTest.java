@@ -14,7 +14,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceEventTagService;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventServiceRxR;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.definition.CacheCuratedBadgeDefinitionGenericEventService;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -54,7 +54,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
   @Test
   void testGetEventFromLocalCache() {
     mockLocalGetEventByEventId();
-    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
+    CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
        cacheCuratedBadgeAwardGenericEventService.getEvent(curatedEventId, relay);
@@ -67,7 +67,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
   @Test
   void testGetEventFromBadgeAwardServiceAfterLocalMiss() {
     doReturn(Optional.empty()).when(cacheServiceIF).getEventByEventId(curatedEventId);
-    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
+    CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
        cacheCuratedBadgeAwardGenericEventService.getEvent(curatedEventId, relay);
@@ -82,7 +82,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
     doReturn(List.of(curatedEvent.getGenericEventRecord()))
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag);
-    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
+    CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventService = createService();
 
     List<CuratedBadgeAwardGenericEvent> actual = cacheCuratedBadgeAwardGenericEventService.getBy(pubKeyTag);
 
@@ -97,7 +97,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
     doReturn(List.of(curatedEvent.getGenericEventRecord()))
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTagAndEventTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag, eventTag);
-    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
+    CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
        cacheCuratedBadgeAwardGenericEventService.getBy(pubKeyTag, eventTag);
@@ -114,7 +114,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
     doReturn(List.of())
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTagAndIdentifierTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag, identifierTag);
-    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
+    CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventService = createService();
 
     List<CuratedBadgeAwardGenericEvent> actual =
        cacheCuratedBadgeAwardGenericEventService.getBy(pubKeyTag, identifierTag);
@@ -131,7 +131,7 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
     doReturn(List.of())
        .when(cacheServiceIF)
        .getEventsByKindAndPubKeyTagAndAddressTag(Kind.CURATION_SETS_BADGE_AWARD_EVENT, pubKeyTag, addressTag);
-    CacheCuratedBadgeAwardGenericEventService cacheCuratedBadgeAwardGenericEventService = createService();
+    CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventService = createService();
 
     Optional<CuratedBadgeAwardGenericEvent> actual =
        cacheCuratedBadgeAwardGenericEventService.getBy(pubKeyTag, addressTag);
@@ -194,8 +194,8 @@ public class CacheCuratedBadgeAwardGenericEventServiceTest extends CacheCuratedS
     return curatedBadgeAwardGenericEvent;
   }
 
-  private CacheCuratedBadgeAwardGenericEventService createService() {
-    return new CacheCuratedBadgeAwardGenericEventService(
+  private CacheCuratedBadgeAwardGenericEventServiceRxR createService() {
+    return new CacheCuratedBadgeAwardGenericEventServiceRxR(
        aImgIdentity,
        relay.getUrl(),
        cacheServiceIF,

@@ -8,7 +8,7 @@ import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.CacheServiceTestFixture;
-import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardCanonicalEventService;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CacheBadgeAwardGenericEventServiceTest
+public class CacheBadgeAwardCanonicalEventServiceTest
    extends CacheServiceTestFixture<BadgeAwardCanonicalEvent> {
   @Mock
   CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
@@ -39,22 +39,22 @@ public class CacheBadgeAwardGenericEventServiceTest
 
   @Test
   void testConstructorRejectsNullDependencies() {
-    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardGenericEventService(
+    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardCanonicalEventService(
        null,
        cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionGenericEventServiceIF,
        cacheKindAddressTagServiceIF));
-    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardGenericEventService(
+    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardCanonicalEventService(
        cacheServiceIF,
        null,
        cacheBadgeDefinitionGenericEventServiceIF,
        cacheKindAddressTagServiceIF));
-    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardGenericEventService(
+    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardCanonicalEventService(
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
        null,
        cacheKindAddressTagServiceIF));
-    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardGenericEventService(
+    assertThrows(NullPointerException.class, () -> new CacheBadgeAwardCanonicalEventService(
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionGenericEventServiceIF,
@@ -68,7 +68,7 @@ public class CacheBadgeAwardGenericEventServiceTest
 
   @Test
   void testGetEventRejectsNullParameters() {
-    CacheBadgeAwardGenericEventService service = createService();
+    CacheBadgeAwardCanonicalEventService service = createService();
 
     assertThrows(NullPointerException.class, () -> service.getEvent(null, relay));
     assertThrows(NullPointerException.class, () -> service.getEvent(eventId, null));
@@ -83,7 +83,7 @@ public class CacheBadgeAwardGenericEventServiceTest
   void testGetEventByEventIdFromLocalCache() {
     mockLocalGetEventByEventId();
     mockBadgeDefinition();
-    CacheBadgeAwardGenericEventService service = createService();
+    CacheBadgeAwardCanonicalEventService service = createService();
 
     Optional<BadgeAwardCanonicalEvent> actual =
        service.getEvent(eventId, relay);
@@ -99,7 +99,7 @@ public class CacheBadgeAwardGenericEventServiceTest
        .when(cacheReferenceEventTagServiceIF)
        .getEvent(eventId, relay);
     mockBadgeDefinition();
-    CacheBadgeAwardGenericEventService service = createService();
+    CacheBadgeAwardCanonicalEventService service = createService();
 
     Optional<BadgeAwardCanonicalEvent> actual =
        service.getEvent(eventId, relay);
@@ -117,7 +117,7 @@ public class CacheBadgeAwardGenericEventServiceTest
     doReturn(Optional.empty())
        .when(cacheReferenceEventTagServiceIF)
        .getEvent(eventId, relay);
-    CacheBadgeAwardGenericEventService service = createService();
+    CacheBadgeAwardCanonicalEventService service = createService();
 
     Optional<BadgeAwardCanonicalEvent> actual =
        service.getEvent(eventId, relay);
@@ -132,7 +132,7 @@ public class CacheBadgeAwardGenericEventServiceTest
        .when(cacheKindAddressTagServiceIF)
        .getByDirect(Kind.BADGE_AWARD_EVENT, addressTag);
     mockBadgeDefinition();
-    CacheBadgeAwardGenericEventService service = createService();
+    CacheBadgeAwardCanonicalEventService service = createService();
 
     Optional<BadgeAwardCanonicalEvent> actual =
        service.getByDirect(addressTag);
@@ -148,7 +148,7 @@ public class CacheBadgeAwardGenericEventServiceTest
     doReturn(List.of())
        .when(cacheKindAddressTagServiceIF)
        .getByDirect(Kind.BADGE_AWARD_EVENT, addressTag);
-    CacheBadgeAwardGenericEventService service = createService();
+    CacheBadgeAwardCanonicalEventService service = createService();
 
     Optional<BadgeAwardCanonicalEvent> actual =
        service.getByDirect(addressTag);
@@ -177,7 +177,7 @@ public class CacheBadgeAwardGenericEventServiceTest
   @Test
   void testMaterialize() {
     mockBadgeDefinition();
-    CacheBadgeAwardGenericEventService service = createService();
+    CacheBadgeAwardCanonicalEventService service = createService();
 
     Optional<BadgeAwardCanonicalEvent> actual =
        service.materialize(event.getGenericEventRecord());
@@ -211,8 +211,8 @@ public class CacheBadgeAwardGenericEventServiceTest
        relay);
   }
 
-  private CacheBadgeAwardGenericEventService createService() {
-    return new CacheBadgeAwardGenericEventService(
+  private CacheBadgeAwardCanonicalEventService createService() {
+    return new CacheBadgeAwardCanonicalEventService(
        cacheServiceIF,
        cacheReferenceEventTagServiceIF,
        cacheBadgeDefinitionGenericEventServiceIF,

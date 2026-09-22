@@ -59,7 +59,7 @@ public abstract class AbstractCacheBadgeAwardCanonicalEventMessageSupplierRemote
     Set<String> sanityCheckBadgeDefinitionEventIds = sanityCheckReturnedBadgeDefinitionEvents.stream().map(EventIF::getId).collect(Collectors.toSet());
 
     assertTrue(sanityCheckBadgeDefinitionEventIds.stream().anyMatch(
-       badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
+       badgeAwardCanonicalEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
           .map(BaseEvent::getId).toList()::contains));
 
     badgeAwardUpvoteEvents.forEach(badgeAwardUpvoteEvent -> {

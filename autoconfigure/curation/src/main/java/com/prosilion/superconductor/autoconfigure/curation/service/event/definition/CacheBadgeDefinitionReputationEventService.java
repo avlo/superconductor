@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.curation.service.event.defini
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.ExternalIdentityTag;
@@ -53,13 +53,13 @@ public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefini
   }
 
   @Override
-  public List<BadgeDefinitionReputationEvent> findByMatching(CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent) {
+  public List<BadgeDefinitionReputationEvent> findByMatching(CuratedBadgeAwardCanonicalEvent curatedBadgeAwardCanonicalEvent) {
     return
        cacheCuratedFormulaEventServiceIF.getByAuthorAndIdentifierTag(
-             curatedBadgeAwardGenericEvent.getPublicKey(),
+             curatedBadgeAwardCanonicalEvent.getPublicKey(),
              cacheCuratedBadgeDefinitionGenericEventServiceIF.getEvent(
-                curatedBadgeAwardGenericEvent.getIdentifierTag().getUuid(), // hash(a3_0009Tag), aka ["a", "30009:BDG_DEF_UP_CREATOR_PK:BDG_DEF_UNIT_UP"]
-                curatedBadgeAwardGenericEvent.requireFirstTag(RelayTag.class).getRelay()).orElseThrow().getIdentifierTag())
+                curatedBadgeAwardCanonicalEvent.getIdentifierTag().getUuid(), // hash(a3_0009Tag), aka ["a", "30009:BDG_DEF_UP_CREATOR_PK:BDG_DEF_UNIT_UP"]
+                curatedBadgeAwardCanonicalEvent.requireFirstTag(RelayTag.class).getRelay()).orElseThrow().getIdentifierTag())
           .map(CuratedFormulaEvent::asAddressableEventAddressTag).map(this::getByDirect).stream().flatMap(Optional::stream).toList();
   }
 

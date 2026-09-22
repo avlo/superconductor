@@ -5,7 +5,7 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
-import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardCanonicalEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheKindAddressTagService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.tag.CacheReferenceAddressTagService;
@@ -96,12 +96,12 @@ public class EventServiceConfig {
 
   @Bean
   @ConditionalOnMissingBean
-  CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService(
+  CacheBadgeAwardCanonicalEventService cacheBadgeAwardCanonicalEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagService cacheReferenceEventTagService,
      @NonNull CacheBadgeDefinitionGenericEventService cacheBadgeDefinitionGenericEventService,
      @NonNull CacheKindAddressTagService cacheKindAddressTagService) {
-    return new CacheBadgeAwardGenericEventService(
+    return new CacheBadgeAwardCanonicalEventService(
        cacheServiceIF,
        cacheReferenceEventTagService,
        cacheBadgeDefinitionGenericEventService,

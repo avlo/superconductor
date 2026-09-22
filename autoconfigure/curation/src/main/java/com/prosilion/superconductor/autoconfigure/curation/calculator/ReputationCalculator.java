@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.curation.calculator;
 import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.event.curated.BadgeAwardReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
@@ -31,7 +31,7 @@ public class ReputationCalculator implements ReputationCalculatorIF {
      @NonNull PublicKey voteReceiverPubkey,
      @NonNull BadgeAwardReputationEvent previousReputationEvent,
      @NonNull List<CuratedFormulaEvent> curatedFormulaEventList,
-     @NonNull List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventList) throws NostrException {
+     @NonNull List<CuratedBadgeAwardCanonicalEvent> curatedBadgeAwardCanonicalEventList) throws NostrException {
     if (curatedFormulaEventList.isEmpty())
       throw new NostrException("calculateUpdatedReputationEvent received empty List<CuratedFormulaEvent>");
     return createReputationEvent(
@@ -39,14 +39,14 @@ public class ReputationCalculator implements ReputationCalculatorIF {
        calculateReputationEventScore(
           curatedFormulaEventList.stream()
              .filter(curatedFormulaEvent ->
-                contains(curatedBadgeAwardGenericEventList, curatedFormulaEvent)),
+                contains(curatedBadgeAwardCanonicalEventList, curatedFormulaEvent)),
           previousReputationEvent),
        previousReputationEvent.getBadgeDefinitionEvent());
   }
 
-  private boolean contains(@NonNull List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventList, CuratedFormulaEvent curatedFormulaEvent) {
-    return curatedBadgeAwardGenericEventList.stream()
-       .map(CuratedBadgeAwardGenericEvent::getAddressTag)
+  private boolean contains(@NonNull List<CuratedBadgeAwardCanonicalEvent> curatedBadgeAwardCanonicalEventList, CuratedFormulaEvent curatedFormulaEvent) {
+    return curatedBadgeAwardCanonicalEventList.stream()
+       .map(CuratedBadgeAwardCanonicalEvent::getAddressTag)
        .map(AddressTag::getIdentifierTag).toList().contains(curatedFormulaEvent.getIdentifierTag());
   }
 

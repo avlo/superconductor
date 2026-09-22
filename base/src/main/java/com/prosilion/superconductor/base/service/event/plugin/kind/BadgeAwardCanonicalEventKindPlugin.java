@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // our SportsCar extends CarDecorator
-public class BadgeAwardGenericEventKindPluginRxR extends PublishingEventKindPluginRxR<BadgeAwardCanonicalEvent> {
+public class BadgeAwardCanonicalEventKindPlugin extends PublishingEventKindPluginRxR<BadgeAwardCanonicalEvent> {
 
-  public BadgeAwardGenericEventKindPluginRxR(
+  public BadgeAwardCanonicalEventKindPlugin(
      @NonNull NotifierService notifierService,
      @NonNull EventPluginRxR<BadgeAwardCanonicalEvent> eventPluginIF) {
     super(notifierService, eventPluginIF);

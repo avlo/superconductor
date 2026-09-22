@@ -4,7 +4,7 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
@@ -82,20 +82,20 @@ public class UniversalVoteEventKindPlugin extends NonPublishingEventKindPlugin {
           addressTag -> curatedBadgeDefinitionGenericEvent.getBadgeDefinitionGenericEvent());
     log.debug("reconstructedVoteEvent:\n  {}", reconstructedVoteEvent.createPrettyPrintJson());
 
-    CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent =
-       new CuratedBadgeAwardGenericEvent(
+    CuratedBadgeAwardCanonicalEvent curatedBadgeAwardCanonicalEvent =
+       new CuratedBadgeAwardCanonicalEvent(
           superconductorInstanceIdentity,
           reconstructedVoteEvent,
           curatedBadgeDefinitionGenericEvent,
           new ReferenceTag(fromRelay.getUrl()),
           superconductorRelay);
-    log.debug("constructed new CuratedBadgeAwardGenericEvent:\n  {}", curatedBadgeAwardGenericEvent.createPrettyPrintJson());
+    log.debug("constructed new CuratedBadgeAwardCanonicalEvent:\n  {}", curatedBadgeAwardCanonicalEvent.createPrettyPrintJson());
 
-    super.processIncomingEvent(curatedBadgeAwardGenericEvent, fromRelay);
-    log.debug("completed super.processIncomingEvent(curatedBadgeAwardGenericEvent, fromRelay)");
+    super.processIncomingEvent(curatedBadgeAwardCanonicalEvent, fromRelay);
+    log.debug("completed super.processIncomingEvent(curatedBadgeAwardCanonicalEvent, fromRelay)");
 
-    log.debug("calling followSetsEventKindPlugin.processIncomingCuratedBadgeAwardGenericEvent(curatedBadgeAwardGenericEvent, fromRelay)");
-    Optional<GenericEventRecord> genericEventRecord = followSetsEventKindPlugin.processIncomingCuratedBadgeAwardGenericEvent(curatedBadgeAwardGenericEvent, fromRelay);
+    log.debug("calling followSetsEventKindPlugin.processIncomingCuratedBadgeAwardCanonicalEvent(curatedBadgeAwardCanonicalEvent, fromRelay)");
+    Optional<GenericEventRecord> genericEventRecord = followSetsEventKindPlugin.processIncomingCuratedBadgeAwardCanonicalEvent(curatedBadgeAwardCanonicalEvent, fromRelay);
     log.debug("completed. returning genericEventRecord");
     return genericEventRecord;
   }

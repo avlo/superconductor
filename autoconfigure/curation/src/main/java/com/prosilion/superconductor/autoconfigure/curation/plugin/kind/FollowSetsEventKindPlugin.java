@@ -9,7 +9,7 @@ import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -67,12 +67,12 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
     log.debug("using superconductorRelayUrl: [{}]", superconductorRelayUrl);
   }
 
-  public Optional<GenericEventRecord> processIncomingCuratedBadgeAwardGenericEvent(@NonNull CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent, @NonNull Relay fromRelay) {
-    log.info("processIncomingCuratedBadgeAwardGenericEvent(CuratedBadgeAwardGenericEvent):\n{}", curatedBadgeAwardGenericEvent.createPrettyPrintJson());
-    PublicKey recipientPublicKey = curatedBadgeAwardGenericEvent.getAwardRecipientPublicKey();
+  public Optional<GenericEventRecord> processIncomingCuratedBadgeAwardCanonicalEvent(@NonNull CuratedBadgeAwardCanonicalEvent curatedBadgeAwardCanonicalEvent, @NonNull Relay fromRelay) {
+    log.info("processIncomingCuratedBadgeAwardCanonicalEvent(CuratedBadgeAwardCanonicalEvent):\n{}", curatedBadgeAwardCanonicalEvent.createPrettyPrintJson());
+    PublicKey recipientPublicKey = curatedBadgeAwardCanonicalEvent.getAwardRecipientPublicKey();
 
-    log.debug("calling cacheBadgeDefinitionReputationEventServiceIF.findByMatching(curatedBadgeAwardGenericEvent) ...");
-    List<BadgeDefinitionReputationEvent> matchingBadgeDefinitionReputationEventList = cacheBadgeDefinitionReputationEventServiceIF.findByMatching(curatedBadgeAwardGenericEvent);
+    log.debug("calling cacheBadgeDefinitionReputationEventServiceIF.findByMatching(curatedBadgeAwardCanonicalEvent) ...");
+    List<BadgeDefinitionReputationEvent> matchingBadgeDefinitionReputationEventList = cacheBadgeDefinitionReputationEventServiceIF.findByMatching(curatedBadgeAwardCanonicalEvent);
     log.debug("... returned matchingBadgeDefinitionReputationEventList:\n{}",
        matchingBadgeDefinitionReputationEventList.stream().map(BadgeDefinitionReputationEvent::createPrettyPrintJson).collect(Collectors.joining(",\n")));
 
@@ -83,7 +83,7 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
     PubKeyTag recipientPubKeyTag = new PubKeyTag(recipientPublicKey);
     List<BadgeSetsEvent> recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent =
        matchingBadgeDefinitionReputationEventList.stream().map(badgeDefinitionReputationEvent ->
-             constructFromIncoming(curatedBadgeAwardGenericEvent, badgeDefinitionReputationEvent, recipientPubKeyTag))
+             constructFromIncoming(curatedBadgeAwardCanonicalEvent, badgeDefinitionReputationEvent, recipientPubKeyTag))
           .toList();
 
     log.debug("... calling processIncomingFollowSetsBadgeSetsEvents(recipientBadgeSetsEventListThatMatchBadgeDefinitionReputationEvent) ...");
@@ -179,13 +179,13 @@ public class FollowSetsEventKindPlugin extends PublishingEventKindPlugin { // ki
     log.debug("done.");
   }
 
-  private @NonNull BadgeSetsEvent constructFromIncoming(CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent, BadgeDefinitionReputationEvent badgeDefinitionReputationEvent, PubKeyTag recipientPubKeyTag) {
-    log.debug("inside constructFromIncoming(CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent, BadgeDefinitionReputationEvent badgeDefinitionReputationEvent, PubKeyTag");
+  private @NonNull BadgeSetsEvent constructFromIncoming(CuratedBadgeAwardCanonicalEvent curatedBadgeAwardCanonicalEvent, BadgeDefinitionReputationEvent badgeDefinitionReputationEvent, PubKeyTag recipientPubKeyTag) {
+    log.debug("inside constructFromIncoming(CuratedBadgeAwardCanonicalEvent curatedBadgeAwardCanonicalEvent, BadgeDefinitionReputationEvent badgeDefinitionReputationEvent, PubKeyTag");
 
     BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
        superconductorInstanceIdentity,
        badgeDefinitionReputationEvent,
-       curatedBadgeAwardGenericEvent,
+       curatedBadgeAwardCanonicalEvent,
        new Relay(superconductorRelayUrl));
 
     log.debug("... constructFromIncoming(...) returned badgeSetsEvent:\n{}", badgeSetsEvent.createPrettyPrintJson());

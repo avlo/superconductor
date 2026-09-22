@@ -5,7 +5,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardGenericEventService;
+import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardCanonicalEventService;
 import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.EventServiceIF;
@@ -27,23 +27,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EmbeddedRedisStandalone
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class CacheBadgeAwardGenericEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
+public class CacheBadgeAwardCanonicalEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final BadgeDefinitionGenericEvent badgeDefinitionUpvoteEvent;
-  private final CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService;
+  private final CacheBadgeAwardCanonicalEventService cacheBadgeAwardCanonicalEventService;
 
   private final EventServiceIF eventServiceIF;
   private final Relay relay;
 
   @Autowired
-  public CacheBadgeAwardGenericEventServiceIT(
+  public CacheBadgeAwardCanonicalEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUri,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull @Qualifier("eventService") EventServiceIF eventServiceIF,
-     @NonNull @Qualifier("cacheBadgeAwardGenericEventService") CacheBadgeAwardGenericEventService cacheBadgeAwardGenericEventService) {
+     @NonNull @Qualifier("cacheBadgeAwardCanonicalEventService") CacheBadgeAwardCanonicalEventService cacheBadgeAwardCanonicalEventService) {
     super(superconductorInstanceIdentity);
     this.eventServiceIF = eventServiceIF;
-    this.cacheBadgeAwardGenericEventService = cacheBadgeAwardGenericEventService;
+    this.cacheBadgeAwardCanonicalEventService = cacheBadgeAwardCanonicalEventService;
     this.relay = new Relay(relayUri);
 
     this.badgeDefinitionUpvoteEvent = new BadgeDefinitionGenericEvent(
@@ -54,18 +54,18 @@ public class CacheBadgeAwardGenericEventServiceIT extends BaseIntegrationTestDir
   }
 
   @Test
-  public void testSaveBadgeAwardGenericEventUpvote() {
-    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
+  public void testSaveBadgeAwardCanonicalEventUpvote() {
+    BadgeAwardCanonicalEvent badgeAwardCanonicalEvent =
        new BadgeAwardCanonicalEvent(
           superconductorInstanceIdentity,
           recipient.getPublicKey(),
           badgeDefinitionUpvoteEvent,
           relay);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericEvent), relay);
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardCanonicalEvent), relay);
     BadgeAwardCanonicalEvent dbGenericAwardEvent =
-       cacheBadgeAwardGenericEventService
-          .materialize(badgeAwardGenericEvent.asGenericEventRecord())
+       cacheBadgeAwardCanonicalEventService
+          .materialize(badgeAwardCanonicalEvent.asGenericEventRecord())
           .orElseThrow();
 
     assertEquals(badgeDefinitionUpvoteEvent, dbGenericAwardEvent.getBadgeDefinitionEvent());
@@ -73,34 +73,34 @@ public class CacheBadgeAwardGenericEventServiceIT extends BaseIntegrationTestDir
 
   @Test
   public void testGetByEventId() {
-    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
+    BadgeAwardCanonicalEvent badgeAwardCanonicalEvent =
        new BadgeAwardCanonicalEvent(
           superconductorInstanceIdentity,
           recipient.getPublicKey(),
           badgeDefinitionUpvoteEvent,
           relay);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericEvent), relay);
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardCanonicalEvent), relay);
 
     Optional<BadgeAwardCanonicalEvent> actualAwardUpvoteDefinitionEvent =
-       cacheBadgeAwardGenericEventService.getEvent(badgeAwardGenericEvent.getId(), relay);
+       cacheBadgeAwardCanonicalEventService.getEvent(badgeAwardCanonicalEvent.getId(), relay);
 
     assertTrue(actualAwardUpvoteDefinitionEvent.isPresent());
   }
 
   @Test
   public void testGetByDirectAddressTag() {
-    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
+    BadgeAwardCanonicalEvent badgeAwardCanonicalEvent =
        new BadgeAwardCanonicalEvent(
           superconductorInstanceIdentity,
           recipient.getPublicKey(),
           badgeDefinitionUpvoteEvent,
           relay);
 
-    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardGenericEvent), relay);
+    eventServiceIF.processIncomingEvent(new EventMessage(badgeAwardCanonicalEvent), relay);
 
     Optional<BadgeAwardCanonicalEvent> actualAwardUpvoteDefinitionEvent =
-       cacheBadgeAwardGenericEventService.getByDirect(badgeDefinitionUpvoteEvent.asAddressableEventAddressTag());
+       cacheBadgeAwardCanonicalEventService.getByDirect(badgeDefinitionUpvoteEvent.asAddressableEventAddressTag());
 
     assertTrue(actualAwardUpvoteDefinitionEvent.isPresent());
   }

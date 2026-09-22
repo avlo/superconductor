@@ -3,7 +3,7 @@ package com.prosilion.superconductor.autoconfigure.curation.plugin.kind;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.IdentifierTag;
@@ -19,11 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // our SportsCar extends CarDecorator
-public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKindPlugin {
+public class CuratedBadgeAwardCanonicalEventKindPlugin extends PublishingEventKindPlugin {
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
   private final CacheServiceIF cacheServiceIF;
 
-  public CuratedBadgeAwardGenericEventKindPlugin(
+  public CuratedBadgeAwardCanonicalEventKindPlugin(
      @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull NotifierService notifierService,
      @NonNull EventPluginIF eventPluginIF,
@@ -35,16 +35,16 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
 
   @Override
   public Optional<GenericEventRecord> processIncomingEvent(
-     @NonNull EventIF incomingCuratedBadgeAwardGenericEvent, @NonNull Relay fromRelay) {
-    log.info("processIncomingEvent(incomingCuratedBadgeAwardGenericEvent, fromRelay) [{}]...\n{}", fromRelay.getUrl(), incomingCuratedBadgeAwardGenericEvent.createPrettyPrintJson());
+     @NonNull EventIF incomingCuratedBadgeAwardCanonicalEvent, @NonNull Relay fromRelay) {
+    log.info("processIncomingEvent(incomingCuratedBadgeAwardCanonicalEvent, fromRelay) [{}]...\n{}", fromRelay.getUrl(), incomingCuratedBadgeAwardCanonicalEvent.createPrettyPrintJson());
 
-    if (cacheServiceIF.getEventByEventId(incomingCuratedBadgeAwardGenericEvent.getId()).isPresent()) {
-      log.info("return already existing identical incomingCuratedBadgeAwardGenericEvent");
-      return Optional.of(incomingCuratedBadgeAwardGenericEvent.asGenericEventRecord());
+    if (cacheServiceIF.getEventByEventId(incomingCuratedBadgeAwardCanonicalEvent.getId()).isPresent()) {
+      log.info("return already existing identical incomingCuratedBadgeAwardCanonicalEvent");
+      return Optional.of(incomingCuratedBadgeAwardCanonicalEvent.asGenericEventRecord());
     }
 
-    RelayTag relayTag = incomingCuratedBadgeAwardGenericEvent.requireFirstTag(RelayTag.class);
-    IdentifierTag suppliedIdentifierTag = incomingCuratedBadgeAwardGenericEvent.requireFirstTag(IdentifierTag.class);
+    RelayTag relayTag = incomingCuratedBadgeAwardCanonicalEvent.requireFirstTag(RelayTag.class);
+    IdentifierTag suppliedIdentifierTag = incomingCuratedBadgeAwardCanonicalEvent.requireFirstTag(IdentifierTag.class);
 
     Optional<CuratedBadgeDefinitionGenericEvent> curatedBadgeDefinitionGenericEvent =
        cacheCuratedBadgeDefinitionGenericEventServiceIF.getEvent(
@@ -56,12 +56,12 @@ public class CuratedBadgeAwardGenericEventKindPlugin extends PublishingEventKind
     }
 
     String guaranteedSourceRelayUrl = relayTag.getRelay().getUrl();
-    CuratedBadgeAwardGenericEvent reconstructedCuratedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(
-       incomingCuratedBadgeAwardGenericEvent.asGenericEventRecord());
-    log.debug("...done:\n{}", reconstructedCuratedBadgeAwardGenericEvent.createPrettyPrintJson());
+    CuratedBadgeAwardCanonicalEvent reconstructedCuratedBadgeAwardCanonicalEvent = new CuratedBadgeAwardCanonicalEvent(
+       incomingCuratedBadgeAwardCanonicalEvent.asGenericEventRecord());
+    log.debug("...done:\n{}", reconstructedCuratedBadgeAwardCanonicalEvent.createPrettyPrintJson());
 
-    log.debug("saving CuratedBadgeAwardGenericEvent with guaranteedSourceRelayUrl as ReferenceTag URL: [{}]", guaranteedSourceRelayUrl);
-    return super.processIncomingEvent(reconstructedCuratedBadgeAwardGenericEvent, fromRelay);
+    log.debug("saving CuratedBadgeAwardCanonicalEvent with guaranteedSourceRelayUrl as ReferenceTag URL: [{}]", guaranteedSourceRelayUrl);
+    return super.processIncomingEvent(reconstructedCuratedBadgeAwardCanonicalEvent, fromRelay);
   }
 
   @Override

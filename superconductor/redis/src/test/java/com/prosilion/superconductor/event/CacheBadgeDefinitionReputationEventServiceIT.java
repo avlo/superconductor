@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
@@ -61,7 +61,7 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
 
   BadgeDefinitionGenericEvent awardDownvoteDefinitionEvent;
 
-  BadgeAwardCanonicalEvent badgeAwardGenericEvent;
+  BadgeAwardCanonicalEvent badgeAwardCanonicalEvent;
   CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent;
 
   CacheServiceIF cacheServiceIF;
@@ -85,18 +85,18 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     this.awardDownvoteDefinitionEvent = new BadgeDefinitionGenericEvent(upvoteDefnCreator, downvoteIdentifierTag, relay);
     cacheServiceIF.save(this.awardDownvoteDefinitionEvent);
 
-    this.badgeAwardGenericEvent = new BadgeAwardCanonicalEvent(
+    this.badgeAwardCanonicalEvent = new BadgeAwardCanonicalEvent(
        submitter,
        recipient.getPublicKey(),
        awardDownvoteDefinitionEvent,
        relay);
-    cacheServiceIF.save(badgeAwardGenericEvent);
+    cacheServiceIF.save(badgeAwardCanonicalEvent);
 
     this.curatedBadgeDefinitionGenericEvent = new CuratedBadgeDefinitionGenericEvent(
        superconductorInstanceIdentity,
-       badgeAwardGenericEvent.getBadgeDefinitionEvent(),
-       new ReferenceTag(badgeAwardGenericEvent.requireFirstTag(RelayTag.class).getRelay().getUrl()),
-       badgeAwardGenericEvent.requireFirstTag(RelayTag.class).getRelay());
+       badgeAwardCanonicalEvent.getBadgeDefinitionEvent(),
+       new ReferenceTag(badgeAwardCanonicalEvent.requireFirstTag(RelayTag.class).getRelay().getUrl()),
+       badgeAwardCanonicalEvent.requireFirstTag(RelayTag.class).getRelay());
     cacheServiceIF.save(curatedBadgeDefinitionGenericEvent);
 
     plusOneCuratedFormulaEvent =
@@ -286,14 +286,14 @@ public class CacheBadgeDefinitionReputationEventServiceIT extends BaseIntegratio
     BadgeDefinitionReputationEvent reconstructed = cacheBadgeDefinitionReputationEventService.materialize(badgeDefinitionReputationEventPlusOneMinusOne.asGenericEventRecord()).orElseThrow();
     assertEquals(dbRepDefnEventPlusMinus, reconstructed);
 
-    CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(
+    CuratedBadgeAwardCanonicalEvent curatedBadgeAwardCanonicalEvent = new CuratedBadgeAwardCanonicalEvent(
        superconductorInstanceIdentity,
-       badgeAwardGenericEvent,
+       badgeAwardCanonicalEvent,
        curatedBadgeDefinitionGenericEvent,
        new ReferenceTag(relay.getUrl()),
        relay);
 
-    List<BadgeDefinitionReputationEvent> byMatching = cacheBadgeDefinitionReputationEventService.findByMatching(curatedBadgeAwardGenericEvent);
+    List<BadgeDefinitionReputationEvent> byMatching = cacheBadgeDefinitionReputationEventService.findByMatching(curatedBadgeAwardCanonicalEvent);
     assertEquals(1, byMatching.size());
     assertEquals(dbRepDefnEventPlusMinus, byMatching.getFirst());
   }

@@ -9,7 +9,7 @@ import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
@@ -108,7 +108,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
        awardUpvoteDefinitionEvent,
        relay);
 
-    CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent_1 = new CuratedBadgeAwardGenericEvent(
+    CuratedBadgeAwardCanonicalEvent curatedBadgeAwardUpvoteEvent_1 = new CuratedBadgeAwardCanonicalEvent(
        superconductorInstanceIdentity,
        badgeAwardUpvoteEvent_1,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
@@ -138,7 +138,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
        awardUpvoteDefinitionEvent,
        relay);
 
-    CuratedBadgeAwardGenericEvent curatedBadgeAwardUpvoteEvent_2 = new CuratedBadgeAwardGenericEvent(
+    CuratedBadgeAwardCanonicalEvent curatedBadgeAwardUpvoteEvent_2 = new CuratedBadgeAwardCanonicalEvent(
        superconductorInstanceIdentity,
        badgeAwardUpvoteEvent_2,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
@@ -163,11 +163,11 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
     assertTrue(cacheServiceIF.getEventByEventId(actual_2.getFirst().getId()).isPresent());
   }
 
-  private @NonNull BadgeSetsEvent getBadgeSetsEvent(List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventList) {
+  private @NonNull BadgeSetsEvent getBadgeSetsEvent(List<CuratedBadgeAwardCanonicalEvent> curatedBadgeAwardCanonicalEventList) {
     BadgeSetsEvent setupTempGerCtorBadgeSetsEvent = new BadgeSetsEvent(
        superconductorInstanceIdentity,
        badgeDefinitionReputationEventPlusOneFormula,
-       curatedBadgeAwardGenericEventList,
+       curatedBadgeAwardCanonicalEventList,
        relay);
 
     eventServiceIF.processIncomingEvent(new EventMessage(setupTempGerCtorBadgeSetsEvent), relay);
@@ -176,7 +176,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
     BadgeSetsEvent badgeSetsEvent = new BadgeSetsEvent(
        newestBadgeSetsEvent,
        badgeDefinitionReputationEventPlusOneFormula,
-       curatedBadgeAwardGenericEventList);
+       curatedBadgeAwardCanonicalEventList);
     return badgeSetsEvent;
   }
 }

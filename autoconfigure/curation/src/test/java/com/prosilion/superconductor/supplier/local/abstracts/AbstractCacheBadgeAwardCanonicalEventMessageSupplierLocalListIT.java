@@ -110,7 +110,7 @@ public abstract class AbstractCacheBadgeAwardCanonicalEventMessageSupplierLocalL
        .collect(Collectors.toSet());
 
     assertTrue(sanityCheckCurationSetsBadgeDefinitionEventIds.stream().anyMatch(
-       badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
+       badgeAwardCanonicalEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
           .map(BaseEvent::getId).toList()::contains));
 
     badgeAwardUpvoteEvents.forEach(badgeAwardUpvoteEvent ->

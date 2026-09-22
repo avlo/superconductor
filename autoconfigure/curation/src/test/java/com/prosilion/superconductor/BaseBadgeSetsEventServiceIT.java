@@ -6,7 +6,7 @@ import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.EventTag;
@@ -34,7 +34,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestDir
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
 
-  private final CuratedBadgeAwardGenericEvent curationSetsUpvoteEvent;
+  private final CuratedBadgeAwardCanonicalEvent curationSetsUpvoteEvent;
   private final BadgeSetsEvent badgeSetsUpvoteEvent;
   CacheServiceIF cacheServiceIF;
 
@@ -78,7 +78,7 @@ public abstract class BaseBadgeSetsEventServiceIT extends BaseIntegrationTestDir
        awardUpvoteDefinitionEvent.asAddressableEventAddressTag(),
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElseThrow()));
 
-    this.curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
+    this.curationSetsUpvoteEvent = new CuratedBadgeAwardCanonicalEvent(
        superconductorInstanceIdentity,
        badgeAwardUpvoteEvent,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),

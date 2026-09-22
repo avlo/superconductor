@@ -8,13 +8,13 @@ import com.prosilion.nostr.tag.ExternalIdentityTag;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
-import com.prosilion.superconductor.base.service.event.CacheBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheBadgeAwardCanonicalEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
 import java.util.function.Function;
 import lombok.NonNull;
 
-public class CacheBadgeAwardGenericEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionGenericEvent, BadgeAwardCanonicalEvent> implements CacheBadgeAwardGenericEventServiceIF {
-  public CacheBadgeAwardGenericEventService(
+public class CacheBadgeAwardCanonicalEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionGenericEvent, BadgeAwardCanonicalEvent> implements CacheBadgeAwardCanonicalEventServiceIF {
+  public CacheBadgeAwardCanonicalEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,
      @NonNull CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF,

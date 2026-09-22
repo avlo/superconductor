@@ -4,7 +4,7 @@ import com.prosilion.nostr.NostrException;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
@@ -15,105 +15,105 @@ import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCacheCuratedEventServiceRxR;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceRxRIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardCanonicalEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
-import com.prosilion.superconductor.base.service.event.CacheBadgeAwardGenericEventServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheBadgeAwardCanonicalEventServiceIF;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheCuratedBadgeAwardGenericEventServiceRxR extends
+public class CacheCuratedBadgeAwardCanonicalEventService extends
    AbstractCacheCuratedEventServiceRxR<
-      CuratedBadgeAwardGenericEvent,
+      CuratedBadgeAwardCanonicalEvent,
       BadgeAwardCanonicalEvent,
       EventTag> implements
-   CacheCuratedBadgeAwardGenericEventServiceRxRIF {
-  private final CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF;
+   CacheCuratedBadgeAwardCanonicalEventServiceIF {
+  private final CacheBadgeAwardCanonicalEventServiceIF cacheBadgeAwardCanonicalEventServiceIF;
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;
 
-  public CacheCuratedBadgeAwardGenericEventServiceRxR(
+  public CacheCuratedBadgeAwardCanonicalEventService(
      @NonNull Identity instanceIdentity,
      @NonNull String relayUrl,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheBadgeAwardGenericEventServiceIF cacheBadgeAwardGenericEventServiceIF,
+     @NonNull CacheBadgeAwardCanonicalEventServiceIF cacheBadgeAwardCanonicalEventServiceIF,
      @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF) {
     super(instanceIdentity, relayUrl, cacheServiceIF);
-    this.cacheBadgeAwardGenericEventServiceIF = cacheBadgeAwardGenericEventServiceIF;
+    this.cacheBadgeAwardCanonicalEventServiceIF = cacheBadgeAwardCanonicalEventServiceIF;
     this.cacheCuratedBadgeDefinitionGenericEventServiceIF = cacheCuratedBadgeDefinitionGenericEventServiceIF;
     this.cacheReferenceEventTagServiceIF = cacheReferenceEventTagServiceIF;
   }
 
   @Override
-  protected CuratedBadgeAwardGenericEvent createFrom(@NonNull GenericEventRecord eventRecord) {
-    return new CuratedBadgeAwardGenericEvent(eventRecord);
+  protected CuratedBadgeAwardCanonicalEvent createFrom(@NonNull GenericEventRecord eventRecord) {
+    return new CuratedBadgeAwardCanonicalEvent(eventRecord);
   }
 
   @Override
-  public Optional<CuratedBadgeAwardGenericEvent> getByExpanded(@NonNull EventTag referencedAbstractEventTag) {
+  public Optional<CuratedBadgeAwardCanonicalEvent> getByExpanded(@NonNull EventTag referencedAbstractEventTag) {
     log.debug("inside getByExpanded(@NonNull EventTag referencedAbstractEventTag)");
-    Optional<GenericEventRecord> curatedBadgeAwardGenericEventGER = cacheReferenceEventTagServiceIF.getByExpanded(referencedAbstractEventTag, getKind());
-    log.debug("returned curatedBadgeAwardGenericEventGER:\n {}",
-       curatedBadgeAwardGenericEventGER.map(GenericEventRecord::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
+    Optional<GenericEventRecord> curatedBadgeAwardCanonicalEventGER = cacheReferenceEventTagServiceIF.getByExpanded(referencedAbstractEventTag, getKind());
+    log.debug("returned curatedBadgeAwardCanonicalEventGER:\n {}",
+       curatedBadgeAwardCanonicalEventGER.map(GenericEventRecord::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
 
-    Optional<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventOpt = curatedBadgeAwardGenericEventGER.flatMap(this::materialize);
-    log.debug("materialized curatedBadgeAwardGenericEventOpt:\n {}",
-       curatedBadgeAwardGenericEventOpt.map(CuratedBadgeAwardGenericEvent::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
-    return curatedBadgeAwardGenericEventOpt;
+    Optional<CuratedBadgeAwardCanonicalEvent> curatedBadgeAwardCanonicalEventOpt = curatedBadgeAwardCanonicalEventGER.flatMap(this::materialize);
+    log.debug("materialized curatedBadgeAwardCanonicalEventOpt:\n {}",
+       curatedBadgeAwardCanonicalEventOpt.map(CuratedBadgeAwardCanonicalEvent::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
+    return curatedBadgeAwardCanonicalEventOpt;
   }
 
   @Override
-  public List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag) {
+  public List<CuratedBadgeAwardCanonicalEvent> getBy(@NonNull PubKeyTag pubKeyTag) {
     return findByPubKeyTag(pubKeyTag);
   }
 
   @Override
-  public Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
+  public Optional<CuratedBadgeAwardCanonicalEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag) {
     return findFirstByPubKeyTagAndEventTag(pubKeyTag, eventTag);
   }
 
   @Override
-  public List<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
+  public List<CuratedBadgeAwardCanonicalEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull IdentifierTag identifierTag) {
     return findByPubKeyTagAndIdentifierTag(pubKeyTag, identifierTag);
   }
 
   @Override
-  public Optional<CuratedBadgeAwardGenericEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
+  public Optional<CuratedBadgeAwardCanonicalEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag) {
     return findFirstByPubKeyTagAndAddressTag(pubKeyTag, addressTag);
   }
 
   @Override
-  public Optional<CuratedBadgeAwardGenericEvent> getByDirect(@NonNull EventTag eventTag) {
-    log.debug("inside CacheCuratedBadgeAwardGenericEventService getByDirect(eventTag) ...");
+  public Optional<CuratedBadgeAwardCanonicalEvent> getByDirect(@NonNull EventTag eventTag) {
+    log.debug("inside CacheCuratedBadgeAwardCanonicalEventService getByDirect(eventTag) ...");
     return findOrCurate(
        () -> findFirstByEventTag(eventTag),
-       () -> cacheBadgeAwardGenericEventServiceIF.getEvent(
+       () -> cacheBadgeAwardCanonicalEventServiceIF.getEvent(
           eventTag.eventId(), eventTag.requireRelay()),
        badgeAward -> badgeAward.getRelay().orElseThrow());
   }
 
   @Override
-  public Optional<CuratedBadgeAwardGenericEvent> getByDirect(@NonNull AddressTag addressTag) {
+  public Optional<CuratedBadgeAwardCanonicalEvent> getByDirect(@NonNull AddressTag addressTag) {
     return findOrCurate(
        () -> findFirstByAddressTag(addressTag),
-       () -> cacheBadgeAwardGenericEventServiceIF.getByDirect(addressTag),
+       () -> cacheBadgeAwardCanonicalEventServiceIF.getByDirect(addressTag),
        badgeAward -> badgeAward.getRelay().orElseThrow());
   }
 
   @Override
-  protected CuratedBadgeAwardGenericEvent createFromFetched(
-     @NonNull BadgeAwardCanonicalEvent badgeAwardGenericEvent,
+  protected CuratedBadgeAwardCanonicalEvent createFromFetched(
+     @NonNull BadgeAwardCanonicalEvent badgeAwardCanonicalEvent,
      @NonNull Relay relay) {
     log.debug("inside createFromFetched(BadgeAwardCanonicalEvent, Relay) ...");
 
-    log.debug("calling cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(badgeAwardGenericEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag()) ...");
+    log.debug("calling cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(badgeAwardCanonicalEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag()) ...");
     CuratedBadgeDefinitionGenericEvent curatedBadgeDefinitionGenericEvent = cacheCuratedBadgeDefinitionGenericEventServiceIF.getByDirect(
-          badgeAwardGenericEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag())
+          badgeAwardCanonicalEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag())
        .orElseThrow(() -> new NostrException(("unable to find nor construct CuratedBadgeDefinitionGenericEvent")));
 
     log.debug("sanity check CuratedBadgeDefinitionGenericEvent was created && persisted...");
@@ -123,15 +123,15 @@ public class CacheCuratedBadgeAwardGenericEventServiceRxR extends
          String.format("cacheCuratedBadgeDefinitionGenericEventServiceIF.getEvent() failed for eventId: [%s]", curatedBadgeDefinitionGenericEvent.getEventId()));
     }
 
-    log.debug("createFromFetched(...) retrieved CuratedBadgeDefinitionGenericEvent, creating new CuratedBadgeAwardGenericEvent() ...");
-    CuratedBadgeAwardGenericEvent curatedBadgeAwardGenericEvent = new CuratedBadgeAwardGenericEvent(
+    log.debug("createFromFetched(...) retrieved CuratedBadgeDefinitionGenericEvent, creating new CuratedBadgeAwardCanonicalEvent() ...");
+    CuratedBadgeAwardCanonicalEvent curatedBadgeAwardCanonicalEvent = new CuratedBadgeAwardCanonicalEvent(
        super.getInstanceIdentity(),
-       badgeAwardGenericEvent,
+       badgeAwardCanonicalEvent,
        curatedBadgeDefinitionGenericEvent,
-       new ReferenceTag(badgeAwardGenericEvent.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow(() -> new NostrException(("revisit what/if exception here thrown")))),
+       new ReferenceTag(badgeAwardCanonicalEvent.getRelayTag().map(RelayTag::getRelay).map(Relay::getUrl).orElseThrow(() -> new NostrException(("revisit what/if exception here thrown")))),
        super.getRelay());
-    log.debug("  {}", curatedBadgeAwardGenericEvent.createPrettyPrintJson());
-    return curatedBadgeAwardGenericEvent;
+    log.debug("  {}", curatedBadgeAwardCanonicalEvent.createPrettyPrintJson());
+    return curatedBadgeAwardCanonicalEvent;
   }
 
   @Override

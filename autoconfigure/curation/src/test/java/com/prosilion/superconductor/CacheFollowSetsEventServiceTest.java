@@ -10,7 +10,7 @@
 //import com.prosilion.nostr.event.curated.BadgeAwardReputationEvent;
 //import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 //import com.prosilion.nostr.event.curated.BadgeSetsEvent;
-//import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+//import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 //import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 //import com.prosilion.nostr.tag.AddressTag;
 //import com.prosilion.nostr.tag.PubKeyTag;
@@ -255,7 +255,7 @@
 //          formulaEvent);
 //    BadgeAwardGenericEvent<BadgeDefinitionGenericEvent> badgeAwardEvent = new BadgeAwardGenericEvent<>(
 //       submitter, recipient.getPublicKey(), badgeDefinitionEvent, relay);
-//    CuratedBadgeAwardGenericEvent curatedBadgeAwardEvent = new CuratedBadgeAwardGenericEvent(
+//    CuratedBadgeAwardCanonicalEvent curatedBadgeAwardEvent = new CuratedBadgeAwardCanonicalEvent(
 //       aImgIdentity,
 //       badgeAwardEvent,
 //       new ReferenceTag(relay.getUrl()),

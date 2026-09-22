@@ -4,7 +4,7 @@ import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
@@ -14,7 +14,7 @@ import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.SetsPairedEvent;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.util.Util;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceRxRIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardCanonicalEventServiceIF;
 import com.prosilion.superconductor.base.BaseIntegrationTestDirtiesContextFixtures;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import java.util.List;
@@ -29,20 +29,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
-  private final CacheCuratedBadgeAwardGenericEventServiceRxRIF cacheCuratedBadgeAwardGenericEventServiceIF;
+public abstract class BaseCacheCuratedBadgeAwardCanonicalEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
+  private final CacheCuratedBadgeAwardCanonicalEventServiceIF cacheCuratedBadgeAwardCanonicalEventServiceIF;
   private final CacheServiceIF cacheServiceIF;
   private final Relay relay;
 
-  CuratedBadgeAwardGenericEvent curationSetsUpvoteEvent;
+  CuratedBadgeAwardCanonicalEvent curationSetsUpvoteEvent;
 
-  public BaseCacheCuratedBadgeAwardGenericEventServiceIT(
+  public BaseCacheCuratedBadgeAwardCanonicalEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventServiceRxRIF cacheCuratedBadgeAwardGenericEventServiceIF) {
+     @NonNull CacheCuratedBadgeAwardCanonicalEventServiceIF cacheCuratedBadgeAwardCanonicalEventServiceIF) {
     super(superconductorInstanceIdentity);
-    this.cacheCuratedBadgeAwardGenericEventServiceIF = cacheCuratedBadgeAwardGenericEventServiceIF;
+    this.cacheCuratedBadgeAwardCanonicalEventServiceIF = cacheCuratedBadgeAwardCanonicalEventServiceIF;
     this.cacheServiceIF = cacheServiceIF;
     this.relay = new Relay(relayUrl);
 
@@ -74,7 +74,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
        badgeDefnEventAsAddressTag,
        new EventTag(badgeAwardUpvoteEvent.getId(), badgeAwardUpvoteEvent.getRelay().map(Relay::getUrl).orElse(null)));
 
-    this.curationSetsUpvoteEvent = new CuratedBadgeAwardGenericEvent(
+    this.curationSetsUpvoteEvent = new CuratedBadgeAwardCanonicalEvent(
        superconductorInstanceIdentity,
        badgeAwardUpvoteEvent,
        new ReferenceTag(awardUpvoteDefinitionEvent.getRelay().map(Relay::getUrl).orElseThrow()),
@@ -85,7 +85,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
 
   @Test
   public void testGetEventByPubKeyTag() {
-    List<CuratedBadgeAwardGenericEvent> byPubKeyTag = cacheCuratedBadgeAwardGenericEventServiceIF
+    List<CuratedBadgeAwardCanonicalEvent> byPubKeyTag = cacheCuratedBadgeAwardCanonicalEventServiceIF
        .getBy(
           new PubKeyTag(curationSetsUpvoteEvent.getAwardRecipientPublicKey()));
     assertEquals(1, byPubKeyTag.size());
@@ -94,7 +94,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
 
   @Test
   public void testGetEventByPubKeyTagEventTag() {
-    Optional<CuratedBadgeAwardGenericEvent> byPubKeyTagEventTag = cacheCuratedBadgeAwardGenericEventServiceIF
+    Optional<CuratedBadgeAwardCanonicalEvent> byPubKeyTagEventTag = cacheCuratedBadgeAwardCanonicalEventServiceIF
        .getBy(
           new PubKeyTag(curationSetsUpvoteEvent.getAwardRecipientPublicKey()),
           curationSetsUpvoteEvent.getEventTag());
@@ -103,7 +103,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
 
   @Test
   public void testGetEventByPubKeyTagIdentifierTag() {
-    List<CuratedBadgeAwardGenericEvent> byPubKeyTagIdentifierTag = cacheCuratedBadgeAwardGenericEventServiceIF
+    List<CuratedBadgeAwardCanonicalEvent> byPubKeyTagIdentifierTag = cacheCuratedBadgeAwardCanonicalEventServiceIF
        .getBy(new PubKeyTag(curationSetsUpvoteEvent.getAwardRecipientPublicKey()), curationSetsUpvoteEvent.getIdentifierTag());
     assertEquals(1, byPubKeyTagIdentifierTag.size());
     assertEquals(curationSetsUpvoteEvent, byPubKeyTagIdentifierTag.getFirst());
@@ -111,8 +111,8 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
 
   @Test
   public void testGetEventByPubKeyTagAddressTag() {
-    Optional<CuratedBadgeAwardGenericEvent> actual =
-       cacheCuratedBadgeAwardGenericEventServiceIF.getBy(
+    Optional<CuratedBadgeAwardCanonicalEvent> actual =
+       cacheCuratedBadgeAwardCanonicalEventServiceIF.getBy(
           new PubKeyTag(curationSetsUpvoteEvent.getAwardRecipientPublicKey()),
           curationSetsUpvoteEvent.getAddressTag());
 
@@ -121,7 +121,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
 
   @Test
   public void testGetEventByEventTag() {
-    Optional<CuratedBadgeAwardGenericEvent> byPubKeyTagIdentifierTag = cacheCuratedBadgeAwardGenericEventServiceIF
+    Optional<CuratedBadgeAwardCanonicalEvent> byPubKeyTagIdentifierTag = cacheCuratedBadgeAwardCanonicalEventServiceIF
        .getByDirect(curationSetsUpvoteEvent.getEventTag());
     assertTrue(byPubKeyTagIdentifierTag.isPresent());
     assertEquals(curationSetsUpvoteEvent, byPubKeyTagIdentifierTag.get());
@@ -129,36 +129,36 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
 
   @Test
   public void testGetByDirectEventTagFromBackingServiceAfterLocalMiss() {
-    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
+    BadgeAwardCanonicalEvent badgeAwardCanonicalEvent =
        createAndSaveBackingBadgeAward();
     EventTag eventTag = new EventTag(
-       badgeAwardGenericEvent.getId(),
-       badgeAwardGenericEvent.getRelay().map(Relay::getUrl).orElseThrow());
+       badgeAwardCanonicalEvent.getId(),
+       badgeAwardCanonicalEvent.getRelay().map(Relay::getUrl).orElseThrow());
 
-    CuratedBadgeAwardGenericEvent actual =
-       cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(eventTag).orElseThrow();
+    CuratedBadgeAwardCanonicalEvent actual =
+       cacheCuratedBadgeAwardCanonicalEventServiceIF.getByDirect(eventTag).orElseThrow();
 
     assertEquals(eventTag, actual.getEventTag());
-    assertEquals(actual, cacheCuratedBadgeAwardGenericEventServiceIF
+    assertEquals(actual, cacheCuratedBadgeAwardCanonicalEventServiceIF
        .getByExpanded(
           new EventTag(
-             actual.getId(), 
+             actual.getId(),
              relay.getUrl()))
        .orElseThrow());
   }
 
   @Test
   public void testGetByDirectAddressTagFromBackingServiceAfterLocalMiss() {
-    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
+    BadgeAwardCanonicalEvent badgeAwardCanonicalEvent =
        createAndSaveBackingBadgeAward();
     AddressTag addressTag =
-       badgeAwardGenericEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag();
+       badgeAwardCanonicalEvent.getBadgeDefinitionEvent().asAddressableEventAddressTag();
 
-    CuratedBadgeAwardGenericEvent actual =
-       cacheCuratedBadgeAwardGenericEventServiceIF.getByDirect(addressTag).orElseThrow();
+    CuratedBadgeAwardCanonicalEvent actual =
+       cacheCuratedBadgeAwardCanonicalEventServiceIF.getByDirect(addressTag).orElseThrow();
 
-    assertEquals(badgeAwardGenericEvent.getId(), actual.getEventTag().getEventId());
-//    assertEquals(actual, cacheCuratedBadgeAwardGenericEventServiceIF
+    assertEquals(badgeAwardCanonicalEvent.getId(), actual.getEventTag().getEventId());
+//    assertEquals(actual, cacheCuratedBadgeAwardCanonicalEventServiceIF
 //       .getEvent(actual.getId(), relay)
 //       .orElseThrow());
   }
@@ -166,12 +166,12 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
   @Test
   public void testGetEventByEventIdRelay() {
     String eventId = curationSetsUpvoteEvent.getEventId();
-    Optional<CuratedBadgeAwardGenericEvent> byEventIdRelay = cacheCuratedBadgeAwardGenericEventServiceIF
+    Optional<CuratedBadgeAwardCanonicalEvent> byEventIdRelay = cacheCuratedBadgeAwardCanonicalEventServiceIF
        .getByExpanded(new EventTag(eventId, relay.getUrl()));
     assertTrue(byEventIdRelay.isPresent());
     assertEquals(curationSetsUpvoteEvent, byEventIdRelay.get());
 
-    Optional<CuratedBadgeAwardGenericEvent> byEventIdNonExistentRelay = cacheCuratedBadgeAwardGenericEventServiceIF
+    Optional<CuratedBadgeAwardCanonicalEvent> byEventIdNonExistentRelay = cacheCuratedBadgeAwardCanonicalEventServiceIF
        .getByExpanded(new EventTag(eventId, "ws://localhost-non-existent:5555"));
     assertTrue(byEventIdNonExistentRelay.isPresent());
     assertEquals(curationSetsUpvoteEvent, byEventIdNonExistentRelay.get());
@@ -180,7 +180,7 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
   @Test
   public void testNonExistentEventIdReturnsEmptyOptional() {
     String nonExistentEventId = Util.generateRandomHex64String();
-    assertEquals(Optional.empty(), cacheCuratedBadgeAwardGenericEventServiceIF
+    assertEquals(Optional.empty(), cacheCuratedBadgeAwardCanonicalEventServiceIF
        .getByExpanded(
           new EventTag(
              nonExistentEventId,
@@ -193,14 +193,14 @@ public abstract class BaseCacheCuratedBadgeAwardGenericEventServiceIT extends Ba
           Identity.generateRandomIdentity(),
           upvoteIdentifierTag,
           relay);
-    BadgeAwardCanonicalEvent badgeAwardGenericEvent =
+    BadgeAwardCanonicalEvent badgeAwardCanonicalEvent =
        new BadgeAwardCanonicalEvent(
           Identity.generateRandomIdentity(),
           recipient.getPublicKey(),
           badgeDefinitionGenericEvent,
           relay);
     cacheServiceIF.save(badgeDefinitionGenericEvent);
-    cacheServiceIF.save(badgeAwardGenericEvent);
-    return badgeAwardGenericEvent;
+    cacheServiceIF.save(badgeAwardCanonicalEvent);
+    return badgeAwardCanonicalEvent;
   }
 }

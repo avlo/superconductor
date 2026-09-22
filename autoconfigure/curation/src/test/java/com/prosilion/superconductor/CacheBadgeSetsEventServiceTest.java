@@ -5,7 +5,7 @@ import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.curated.BadgeDefinitionReputationEvent;
 import com.prosilion.nostr.event.curated.BadgeSetsEvent;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
@@ -13,7 +13,7 @@ import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDefinitionReputationEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardGenericEventServiceRxRIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardCanonicalEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.CacheBadgeSetsEventService;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
@@ -42,10 +42,10 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
   @Mock
   CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
   @Mock
-  CacheCuratedBadgeAwardGenericEventServiceRxRIF cacheCuratedBadgeAwardGenericEventServiceIF;
+  CacheCuratedBadgeAwardCanonicalEventServiceIF cacheCuratedBadgeAwardCanonicalEventServiceIF;
 
   BadgeDefinitionReputationEvent badgeDefinitionReputationEvent;
-  CuratedBadgeAwardGenericEvent curatedBadgeAwardEvent;
+  CuratedBadgeAwardCanonicalEvent curatedBadgeAwardEvent;
 
   @Test
   void testConstructorRejectsNullDependencies() {
@@ -56,7 +56,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        cacheKindAddressTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
-       cacheCuratedBadgeAwardGenericEventServiceIF));
+       cacheCuratedBadgeAwardCanonicalEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        superconductorInstanceIdentity,
        relay.getUrl(),
@@ -64,7 +64,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        null,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
-       cacheCuratedBadgeAwardGenericEventServiceIF));
+       cacheCuratedBadgeAwardCanonicalEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        superconductorInstanceIdentity,
        relay.getUrl(),
@@ -72,7 +72,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        cacheKindAddressTagServiceIF,
        null,
        cacheBadgeDefinitionReputationEventServiceIF,
-       cacheCuratedBadgeAwardGenericEventServiceIF));
+       cacheCuratedBadgeAwardCanonicalEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        superconductorInstanceIdentity,
        relay.getUrl(),
@@ -80,7 +80,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        cacheKindAddressTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        null,
-       cacheCuratedBadgeAwardGenericEventServiceIF));
+       cacheCuratedBadgeAwardCanonicalEventServiceIF));
     assertThrows(NullPointerException.class, () -> new CacheBadgeSetsEventService(
        superconductorInstanceIdentity,
        relay.getUrl(),
@@ -187,7 +187,7 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        formulaEvent);
     BadgeAwardCanonicalEvent badgeAwardEvent = new BadgeAwardCanonicalEvent(
        submitter, recipient.getPublicKey(), badgeDefinitionEvent, relay);
-    this.curatedBadgeAwardEvent = new CuratedBadgeAwardGenericEvent(
+    this.curatedBadgeAwardEvent = new CuratedBadgeAwardCanonicalEvent(
        aImgIdentity,
        badgeAwardEvent,
        new ReferenceTag(relay.getUrl()),
@@ -205,6 +205,6 @@ public class CacheBadgeSetsEventServiceTest extends CacheServiceTestFixture<Badg
        cacheKindAddressTagServiceIF,
        cacheReferenceAddressTagServiceIF,
        cacheBadgeDefinitionReputationEventServiceIF,
-       cacheCuratedBadgeAwardGenericEventServiceIF);
+       cacheCuratedBadgeAwardCanonicalEventServiceIF);
   }
 }

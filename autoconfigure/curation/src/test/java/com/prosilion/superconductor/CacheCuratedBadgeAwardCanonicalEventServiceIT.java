@@ -1,7 +1,7 @@
 package com.prosilion.superconductor;
 
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardGenericEventServiceRxR;
+import com.prosilion.superconductor.autoconfigure.curation.service.event.award.CacheCuratedBadgeAwardCanonicalEventService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import io.github.tobi.laa.spring.boot.embedded.redis.standalone.EmbeddedRedisStandalone;
 import lombok.NonNull;
@@ -19,14 +19,14 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = {
    "superconductor.event.curation.active=true"
 })
-public class CacheCuratedBadgeAwardGenericEventServiceIT extends BaseCacheCuratedBadgeAwardGenericEventServiceIT {
+public class CacheCuratedBadgeAwardCanonicalEventServiceIT extends BaseCacheCuratedBadgeAwardCanonicalEventServiceIT {
 
   @Autowired
-  public CacheCuratedBadgeAwardGenericEventServiceIT(
+  public CacheCuratedBadgeAwardCanonicalEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull CacheCuratedBadgeAwardGenericEventServiceRxR cacheCuratedBadgeAwardGenericEventService) {
-    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, cacheCuratedBadgeAwardGenericEventService);
+     @NonNull CacheCuratedBadgeAwardCanonicalEventService cacheCuratedBadgeAwardCanonicalEventService) {
+    super(relayUrl, superconductorInstanceIdentity, cacheServiceIF, cacheCuratedBadgeAwardCanonicalEventService);
   }
 }

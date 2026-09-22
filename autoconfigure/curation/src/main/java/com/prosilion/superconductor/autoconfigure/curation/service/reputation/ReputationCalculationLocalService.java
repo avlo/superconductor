@@ -1,7 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.curation.service.reputation;
 
 import com.prosilion.nostr.event.curated.BadgeAwardReputationEvent;
-import com.prosilion.nostr.event.curated.CuratedBadgeAwardGenericEvent;
+import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.autoconfigure.curation.calculator.ReputationCalculatorIF;
@@ -21,8 +21,8 @@ public class ReputationCalculationLocalService implements ReputationCalculationS
      @NonNull PublicKey voteReceiverPubkey,
      @NonNull BadgeAwardReputationEvent previousReputationEvent,
      @NonNull List<CuratedFormulaEvent> curatedFormulaEventList,
-     @NonNull List<CuratedBadgeAwardGenericEvent> curatedBadgeAwardGenericEventList) {
+     @NonNull List<CuratedBadgeAwardCanonicalEvent> curatedBadgeAwardCanonicalEventList) {
     return reputationCalculator.calculateUpdatedReputationEvent(
-       voteReceiverPubkey, previousReputationEvent, curatedFormulaEventList, curatedBadgeAwardGenericEventList);
+       voteReceiverPubkey, previousReputationEvent, curatedFormulaEventList, curatedBadgeAwardCanonicalEventList);
   }
 }

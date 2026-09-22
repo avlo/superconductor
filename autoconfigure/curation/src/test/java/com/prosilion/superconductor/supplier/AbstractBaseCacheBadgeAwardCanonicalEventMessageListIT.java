@@ -36,7 +36,7 @@ public abstract class AbstractBaseCacheBadgeAwardCanonicalEventMessageListIT ext
   protected final String awardEventRelayUrl;
   protected final String definitionEventRelayUrl;
 
-  protected final List<BadgeAwardCanonicalEvent> badgeAwardGenericEventList;
+  protected final List<BadgeAwardCanonicalEvent> badgeAwardCanonicalEventList;
 
   abstract protected List<BadgeAwardCanonicalEvent> createBadgeAwardEventList();
   abstract protected void validatePersistedCurationSetsBadgeDefinitionEvents(List<BadgeAwardCanonicalEvent> badgeAwardUpvoteEvents);
@@ -53,8 +53,8 @@ public abstract class AbstractBaseCacheBadgeAwardCanonicalEventMessageListIT ext
     this.awardEventRelayUrl = awardEventRelayUrl;
     this.cacheServiceIF = cacheServiceIF;
 
-    this.badgeAwardGenericEventList = createBadgeAwardEventList();
-    setupBadgeAwardEventBadgeDefinitionEvents(badgeAwardGenericEventList);
+    this.badgeAwardCanonicalEventList = createBadgeAwardEventList();
+    setupBadgeAwardEventBadgeDefinitionEvents(badgeAwardCanonicalEventList);
   }
 
   private void setupBadgeAwardEventBadgeDefinitionEvents(List<BadgeAwardCanonicalEvent> badgeAwardUpvoteEvents) {
@@ -90,13 +90,13 @@ public abstract class AbstractBaseCacheBadgeAwardCanonicalEventMessageListIT ext
   }
 
   private void validateResults(List<EventIF> returnedBadgeAwardCanonicalEvents) {
-    assertEquals(badgeAwardGenericEventList.size(), returnedBadgeAwardCanonicalEvents.size());
+    assertEquals(badgeAwardCanonicalEventList.size(), returnedBadgeAwardCanonicalEvents.size());
 
     List<String> eventIds = returnedBadgeAwardCanonicalEvents.stream()
 //       .map(event -> event.requireFirstTag(EventTag.class))
        .map(EventIF::getId).toList();
 
-    assertTrue(eventIds.stream().anyMatch(this.badgeAwardGenericEventList.stream().map(BadgeAwardCanonicalEvent::getId).toList()::contains));
+    assertTrue(eventIds.stream().anyMatch(this.badgeAwardCanonicalEventList.stream().map(BadgeAwardCanonicalEvent::getId).toList()::contains));
 
     assertTrue(returnedBadgeAwardCanonicalEvents.stream()
        .map(event -> event.requireFirstTag(PubKeyTag.class))
@@ -106,7 +106,7 @@ public abstract class AbstractBaseCacheBadgeAwardCanonicalEventMessageListIT ext
        returnedBadgeAwardCanonicalEvents.stream()
           .map(event -> event.requireFirstTag(AddressTag.class).getIdentifierTag())
           .anyMatch(
-             this.badgeAwardGenericEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
+             this.badgeAwardCanonicalEventList.stream().map(BadgeAwardAbstractEvent::getBadgeDefinitionEvent)
                 .map(BadgeDefinitionGenericEvent::getIdentifierTag)
                 .toList()::contains));
 

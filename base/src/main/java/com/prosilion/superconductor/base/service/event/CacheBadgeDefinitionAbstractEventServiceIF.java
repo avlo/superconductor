@@ -7,6 +7,7 @@ import com.prosilion.superconductor.base.cache.mapped.CacheAddressableEventServi
 import java.util.Optional;
 import lombok.NonNull;
 
-public interface CacheBadgeDefinitionAbstractEventServiceIF<T extends AddressableEvent> extends CacheAddressableEventServiceIF<T, AddressTag> {
+public interface CacheBadgeDefinitionAbstractEventServiceIF<
+   T extends AddressableEvent> extends CacheAddressableEventServiceIF<T, AddressTag> {
   Optional<T> getEvent(@NonNull String eventId, @NonNull Relay relay);
 }

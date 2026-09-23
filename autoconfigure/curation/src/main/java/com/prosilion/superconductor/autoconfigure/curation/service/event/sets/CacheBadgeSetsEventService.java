@@ -25,10 +25,12 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheBadgeSetsEventService extends AbstractCacheCuratedEventService<
-   BadgeSetsEvent,
-   BadgeSetsEvent,
-   AddressTag> implements CacheBadgeSetsEventServiceIF {
+public class CacheBadgeSetsEventService extends
+   AbstractCacheCuratedEventService<
+      BadgeSetsEvent,
+      BadgeSetsEvent,
+      AddressTag> implements
+   CacheBadgeSetsEventServiceIF {
   private final CacheServiceIF cacheServiceIF;
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;

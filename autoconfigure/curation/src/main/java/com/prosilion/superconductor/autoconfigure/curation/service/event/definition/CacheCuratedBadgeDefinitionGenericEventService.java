@@ -12,7 +12,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCacheCuratedEventServiceRxR;
+import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCacheCuratedEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
@@ -22,10 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CacheCuratedBadgeDefinitionGenericEventService extends
-   AbstractCacheCuratedEventServiceRxR<
-      CuratedBadgeDefinitionGenericEvent,
-      BadgeDefinitionGenericEvent,
-      AddressTag> implements
+   AbstractCacheCuratedEventService<
+         CuratedBadgeDefinitionGenericEvent,
+         BadgeDefinitionGenericEvent,
+         AddressTag> implements
    CacheCuratedBadgeDefinitionGenericEventServiceIF {
   private final CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF;
 

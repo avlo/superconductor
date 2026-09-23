@@ -14,7 +14,7 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCacheCuratedEventServiceRxR;
+import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCacheCuratedEventService;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardCanonicalEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
@@ -27,10 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CacheCuratedBadgeAwardCanonicalEventService extends
-   AbstractCacheCuratedEventServiceRxR<
-      CuratedBadgeAwardCanonicalEvent,
-      BadgeAwardCanonicalEvent,
-      EventTag> implements
+   AbstractCacheCuratedEventService<
+         CuratedBadgeAwardCanonicalEvent,
+         BadgeAwardCanonicalEvent,
+         EventTag> implements
    CacheCuratedBadgeAwardCanonicalEventServiceIF {
   private final CacheBadgeAwardCanonicalEventServiceIF cacheBadgeAwardCanonicalEventServiceIF;
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;

@@ -12,9 +12,10 @@ import java.util.Optional;
 import lombok.NonNull;
 
 public interface CacheBadgeSetsEventServiceIF extends
-   CacheTagMappedEventServiceIF<BadgeSetsEvent, AddressTag>,
-   CacheCuratedEventServiceIF<BadgeSetsEvent>,
-   CacheAddressableEventServiceIF<BadgeSetsEvent, AddressTag> {
+   CacheCuratedAbstractEventServiceIF<
+      BadgeSetsEvent,
+      BadgeSetsEvent,
+      AddressTag> {
   List<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag);
   Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull EventTag eventTag);
   Optional<BadgeSetsEvent> getBy(@NonNull PubKeyTag pubKeyTag, @NonNull AddressTag addressTag);

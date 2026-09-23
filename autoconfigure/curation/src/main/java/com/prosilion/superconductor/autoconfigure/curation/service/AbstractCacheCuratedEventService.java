@@ -9,9 +9,12 @@ import com.prosilion.nostr.tag.AddressTag;
 import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
+import com.prosilion.nostr.tag.ReferencedAbstractEventTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.nostr.user.PublicKey;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.base.cache.mapped.CacheAddressableEventServiceIF;
+import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -21,7 +24,13 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractCacheCuratedEventService<T extends AddressableEvent, U extends BaseEvent> implements CacheCuratedEventServiceIF<T> {
+public abstract class AbstractCacheCuratedEventService<
+   T extends AddressableEvent,
+   U extends BaseEvent,
+   V extends ReferencedAbstractEventTag> implements
+   CacheTagMappedEventServiceIF<T, V>,
+   CacheCuratedEventServiceIF<T>,
+   CacheAddressableEventServiceIF<T, V> {
   private final CacheServiceIF cacheServiceIF;
 
   @Getter

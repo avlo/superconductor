@@ -14,7 +14,6 @@ import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.RemoteEventQueryServiceIF;
 import com.prosilion.superconductor.base.service.event.DeleteEventService;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginRxR;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -122,17 +121,17 @@ public class EventServiceConfig {
        kindClassStringMap);
   }
 
-  @Bean
-  @ConditionalOnMissingBean
-  <T extends BaseEvent> EventPluginRxR<T> eventPluginRxR(
-     @NonNull CacheServiceIF cacheServiceIF,
-     @NonNull @Qualifier("eventKindMaterializers") Map<Kind, Function<EventIF, Optional<T>>> eventKindMaterializers,
-     @NonNull @Qualifier("eventKindTypeMaterializers") Map<Kind, Function<EventIF, Optional<T>>> eventKindTypeMaterializers,
-     @NonNull @Qualifier("kindClassStringMap") Map<Kind, String> kindClassStringMap) {
-    return new EventPluginRxR<>(
-       cacheServiceIF,
-       eventKindMaterializers,
-       eventKindTypeMaterializers,
-       kindClassStringMap);
-  }
+//  @Bean
+//  @ConditionalOnMissingBean
+//  <T extends BaseEvent> EventPluginRxR<T> eventPluginRxR(
+//     @NonNull CacheServiceIF cacheServiceIF,
+//     @NonNull @Qualifier("eventKindMaterializers") Map<Kind, Function<EventIF, Optional<T>>> eventKindMaterializers,
+//     @NonNull @Qualifier("eventKindTypeMaterializers") Map<Kind, Function<EventIF, Optional<T>>> eventKindTypeMaterializers,
+//     @NonNull @Qualifier("kindClassStringMap") Map<Kind, String> kindClassStringMap) {
+//    return new EventPluginRxR<>(
+//       cacheServiceIF,
+//       eventKindMaterializers,
+//       eventKindTypeMaterializers,
+//       kindClassStringMap);
+//  }
 }

@@ -13,8 +13,8 @@ import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardCanonicalEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
-import com.prosilion.superconductor.base.cache.mapped.CacheTagMappedEventServiceIF;
 import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
@@ -30,7 +30,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
   private final Identity superconductorInstanceIdentity;
   private final String superconductorRelayUrl;
   private final CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF;
-  private final CacheTagMappedEventServiceIF cacheCuratedBadgeAwardCanonicalEventServiceIF;
+  private final CacheCuratedBadgeAwardCanonicalEventServiceIF cacheCuratedBadgeAwardCanonicalEventServiceIF;
   private final DeleteEventServiceIF deleteEventServiceIF;
   private final CacheServiceIF cacheServiceIF;
 
@@ -38,7 +38,7 @@ public class BadgeSetsEventKindPlugin extends NonPublishingEventKindPlugin {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheBadgeSetsEventServiceIF cacheBadgeSetsEventServiceIF,
-     @NonNull CacheTagMappedEventServiceIF cacheCuratedBadgeAwardCanonicalEventServiceIF,
+     @NonNull CacheCuratedBadgeAwardCanonicalEventServiceIF cacheCuratedBadgeAwardCanonicalEventServiceIF,
      @NonNull DeleteEventServiceIF deleteEventServiceIF,
      @NonNull EventPlugin eventPlugin,
      @NonNull CacheServiceIF cacheServiceIF) {

@@ -1,7 +1,6 @@
 package com.prosilion.superconductor.autoconfigure.base.config;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
@@ -11,7 +10,6 @@ import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormul
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardCanonicalEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginRxR;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardCanonicalEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
@@ -42,7 +40,7 @@ public class EventCurationInactiveConfig {
   @ConditionalOnMissingBean(name = "badgeAwardCanonicalEventKindPlugin")
   BadgeAwardCanonicalEventKindPlugin badgeAwardCanonicalEventKindPlugin(
      @NonNull NotifierService notifierService,
-     @NonNull EventPluginRxR<BadgeAwardCanonicalEvent> eventPlugin) {
+     @NonNull EventPlugin eventPlugin) {
     return new BadgeAwardCanonicalEventKindPlugin(
        notifierService,
        eventPlugin);

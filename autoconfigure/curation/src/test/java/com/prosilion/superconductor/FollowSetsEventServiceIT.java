@@ -3,7 +3,6 @@ package com.prosilion.superconductor;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
-import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.FollowSetsEvent;
 import com.prosilion.nostr.event.FormulaEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -13,9 +12,6 @@ import com.prosilion.nostr.event.curated.CuratedBadgeAwardCanonicalEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.message.EventMessage;
-import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.nostr.tag.EventTag;
-import com.prosilion.nostr.tag.IdentifierTag;
 import com.prosilion.nostr.tag.PubKeyTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.user.Identity;
@@ -50,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestPropertySource(properties = {
    "superconductor.event.curation.active=true"
 })
-public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesContextFixtures {
+public class FollowSetsEventServiceIT extends BaseIntegrationTestDirtiesContextFixtures {
   private final BadgeDefinitionReputationEvent badgeDefinitionReputationEventPlusOneFormula;
   private final CacheFollowSetsEventServiceIF cacheFollowSetsEventService;
   private final CacheServiceIF cacheServiceIF;
@@ -60,7 +56,7 @@ public class FollowSetsEventServiceRxRIT extends BaseIntegrationTestDirtiesConte
   private final BadgeDefinitionGenericEvent awardUpvoteDefinitionEvent;
 
   @Autowired
-  public FollowSetsEventServiceRxRIT(
+  public FollowSetsEventServiceIT(
      @Value("${superconductor.relay.url}") String relayUrl,
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull CacheServiceIF cacheServiceIF,

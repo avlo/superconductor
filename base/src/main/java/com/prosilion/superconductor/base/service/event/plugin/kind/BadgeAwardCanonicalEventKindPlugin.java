@@ -1,19 +1,18 @@
 package com.prosilion.superconductor.base.service.event.plugin.kind;
 
 import com.prosilion.nostr.enums.Kind;
-import com.prosilion.nostr.event.BadgeAwardCanonicalEvent;
-import com.prosilion.superconductor.base.service.event.plugin.EventPluginRxR;
+import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // our SportsCar extends CarDecorator
-public class BadgeAwardCanonicalEventKindPlugin extends PublishingEventKindPluginRxR<BadgeAwardCanonicalEvent> {
+public class BadgeAwardCanonicalEventKindPlugin extends PublishingEventKindPlugin {
 
   public BadgeAwardCanonicalEventKindPlugin(
      @NonNull NotifierService notifierService,
-     @NonNull EventPluginRxR<BadgeAwardCanonicalEvent> eventPluginIF) {
+     @NonNull EventPluginIF eventPluginIF) {
     super(notifierService, eventPluginIF);
   }
 

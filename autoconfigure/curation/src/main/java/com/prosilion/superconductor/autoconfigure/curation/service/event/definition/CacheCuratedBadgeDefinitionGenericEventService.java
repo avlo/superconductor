@@ -1,6 +1,7 @@
 package com.prosilion.superconductor.autoconfigure.curation.service.event.definition;
 
 import com.prosilion.nostr.enums.Kind;
+import com.prosilion.nostr.event.AddressableEvent;
 import com.prosilion.nostr.event.BadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.GenericEventRecord;
@@ -11,7 +12,7 @@ import com.prosilion.nostr.tag.EventTag;
 import com.prosilion.nostr.tag.ReferenceTag;
 import com.prosilion.nostr.tag.RelayTag;
 import com.prosilion.nostr.user.Identity;
-import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCacheCuratedEventService;
+import com.prosilion.superconductor.autoconfigure.curation.service.AbstractCacheCuratedEventServiceRxR;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
@@ -20,7 +21,12 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCacheCuratedEventService<CuratedBadgeDefinitionGenericEvent, BadgeDefinitionGenericEvent> implements CacheCuratedBadgeDefinitionGenericEventServiceIF {
+public class CacheCuratedBadgeDefinitionGenericEventService extends
+   AbstractCacheCuratedEventServiceRxR<
+      CuratedBadgeDefinitionGenericEvent,
+      BadgeDefinitionGenericEvent,
+      AddressTag> implements
+   CacheCuratedBadgeDefinitionGenericEventServiceIF {
   private final CacheBadgeDefinitionGenericEventServiceIF cacheBadgeDefinitionGenericEventServiceIF;
 
   public CacheCuratedBadgeDefinitionGenericEventService(
@@ -50,16 +56,16 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCach
   public Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(@NonNull AddressTag addressTag) {
     Optional<CuratedBadgeDefinitionGenericEvent> orCurate = findOrCurate(
        () -> getFirstByAddressTag(addressTag),
-       () -> getByExpanded(addressTag),
+       () -> cacheBadgeDefinitionGenericEventServiceIF.getByExpanded(addressTag),
        badgeDefinition -> badgeDefinition.getRelay().or(addressTag::findRelay).orElseThrow());
     return orCurate;
   }
 
   @Override
   public Optional<CuratedBadgeDefinitionGenericEvent> getByDirect(
-     AddressTag addressTag,
+     @NonNull AddressTag addressTag,
      Optional<RelayTag> relayTag,
-     Relay fromRelay) {
+     @NonNull Relay fromRelay) {
 
     Optional<Optional<CuratedBadgeDefinitionGenericEvent>> curatedBadgeDefinitionGenericEvent_attempt_1of3 =
        addressTag.findRelay()
@@ -109,12 +115,13 @@ public class CacheCuratedBadgeDefinitionGenericEventService extends AbstractCach
     return firstByAddressTag;
   }
 
-  private Optional<BadgeDefinitionGenericEvent> getByExpanded(@NonNull AddressTag addressTag) {
+  @Override
+  public Optional<CuratedBadgeDefinitionGenericEvent> getByExpanded(@NonNull AddressTag addressTag) {
     log.debug("attempting getByExpanded(AddressTag):\n {}", addressTag.toStringPrettyPrint());
     Optional<BadgeDefinitionGenericEvent> byExpanded = cacheBadgeDefinitionGenericEventServiceIF.getByExpanded(addressTag);
     log.debug(byExpanded.map(BaseEvent::createPrettyPrintJson).orElse(
        "cacheBadgeDefinitionGenericEventServiceIF.getByExpanded(addressTag) returned Optional.empty()"));
-    return byExpanded;
+    return byExpanded.map(AddressableEvent::asAddressableEventAddressTag).flatMap(this::getFirstByAddressTag);
   }
 
   @Override

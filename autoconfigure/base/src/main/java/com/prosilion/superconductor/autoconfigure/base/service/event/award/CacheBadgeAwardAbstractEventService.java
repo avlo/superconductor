@@ -7,18 +7,19 @@ import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.AddressTag;
-import com.prosilion.superconductor.base.service.event.CacheBadgeAwardAbstractEventServiceIF;
-import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionAbstractEventServiceIF;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceEventTagServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheBadgeAwardAbstractEventServiceIF;
+import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionAbstractEventServiceIF;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.NonNull;
 
 public abstract class CacheBadgeAwardAbstractEventService<
-   S extends AddressableEvent,
-   T extends BadgeAwardAbstractEvent<S>> implements CacheBadgeAwardAbstractEventServiceIF<S, T> {
+      S extends AddressableEvent,
+      T extends BadgeAwardAbstractEvent<S>> implements
+   CacheBadgeAwardAbstractEventServiceIF<S, T> {
 
   private final CacheServiceIF cacheServiceIF;
   private final CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF;

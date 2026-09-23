@@ -13,7 +13,10 @@ import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGener
 import java.util.function.Function;
 import lombok.NonNull;
 
-public class CacheBadgeAwardCanonicalEventService extends CacheBadgeAwardAbstractEventService<BadgeDefinitionGenericEvent, BadgeAwardCanonicalEvent> implements CacheBadgeAwardCanonicalEventServiceIF {
+public class CacheBadgeAwardCanonicalEventService extends 
+      CacheBadgeAwardAbstractEventService<BadgeDefinitionGenericEvent, BadgeAwardCanonicalEvent>
+   implements
+      CacheBadgeAwardCanonicalEventServiceIF {
   public CacheBadgeAwardCanonicalEventService(
      @NonNull CacheServiceIF cacheServiceIF,
      @NonNull CacheReferenceEventTagServiceIF cacheReferenceEventTagServiceIF,

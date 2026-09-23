@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CacheBadgeDefinitionReputationEventService extends CacheBadgeDefinitionAbstractEventService<BadgeDefinitionReputationEvent> implements CacheBadgeDefinitionReputationEventServiceIF {
   public static final String NON_EXISTENT_ADDRESS_TAG = "cacheBadgeDefinitionReputationEventGER:%n  %s%nis missing required AddressTag: %s";
-  
+
   private final CacheKindAddressTagServiceIF cacheKindAddressTagServiceIF;
   private final CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
   private final CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF;

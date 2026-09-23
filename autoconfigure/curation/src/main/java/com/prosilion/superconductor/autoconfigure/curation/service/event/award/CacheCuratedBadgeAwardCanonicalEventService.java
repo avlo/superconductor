@@ -118,7 +118,8 @@ public class CacheCuratedBadgeAwardCanonicalEventService extends
 
     log.debug("sanity check CuratedBadgeDefinitionGenericEvent was created && persisted...");
     if (cacheCuratedBadgeDefinitionGenericEventServiceIF.getEvent(
-       curatedBadgeDefinitionGenericEvent.getId(), curatedBadgeDefinitionGenericEvent.requireFirstTag(RelayTag.class).getRelay()).isEmpty()) {
+       curatedBadgeDefinitionGenericEvent.getId(),
+       curatedBadgeDefinitionGenericEvent.requireFirstTag(RelayTag.class).getRelay()).isEmpty()) {
       throw new NostrException(
          String.format("cacheCuratedBadgeDefinitionGenericEventServiceIF.getEvent() failed for eventId: [%s]", curatedBadgeDefinitionGenericEvent.getEventId()));
     }

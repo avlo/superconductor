@@ -24,7 +24,6 @@ import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.Badg
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.type.BadgeDefinitionReputationEventKindTypePlugin;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeDefinitionReputationEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheBadgeSetsEventServiceIF;
-import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeAwardCanonicalEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
 import com.prosilion.superconductor.autoconfigure.curation.service.ReputationCalculationServiceIF;
@@ -38,7 +37,6 @@ import com.prosilion.superconductor.autoconfigure.curation.service.event.sets.Ca
 import com.prosilion.superconductor.autoconfigure.curation.service.reputation.ReputationCalculationLocalService;
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheKindAddressTagServiceIF;
-import com.prosilion.superconductor.base.service.event.CacheBadgeAwardCanonicalEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheBadgeDefinitionGenericEventServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.DeleteEventServiceIF;
@@ -47,16 +45,17 @@ import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefiniti
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_AWARD_REPUTATION_KIND_TYPE;
 import static com.prosilion.superconductor.base.service.event.plugin.kind.type.SuperconductorKindType.BADGE_DEFINITION_REPUTATION_KIND_TYPE;
@@ -260,10 +259,10 @@ public class EventCurationActiveConfig {
   @ConditionalOnMissingBean(name = "curatedFormulaEventKindPlugin")
   CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin(
      @NonNull EventPlugin eventPlugin,
-     @NonNull CacheServiceIF cacheServiceIF) {
+     @NonNull CacheCuratedFormulaEventService cacheCuratedFormulaEventService) {
     return new CuratedFormulaEventKindPlugin(
        eventPlugin,
-       cacheServiceIF);
+       cacheCuratedFormulaEventService);
   }
 
   @Bean("formulaEventKindPlugin")
@@ -271,10 +270,12 @@ public class EventCurationActiveConfig {
   FormulaEventKindPlugin formulaEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
+     @NonNull CacheFormulaEventService cacheFormulaEventService,
      @NonNull CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin) {
     return new FormulaEventKindPlugin(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
+       cacheFormulaEventService,
        curatedFormulaEventKindPlugin);
   }
 

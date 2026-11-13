@@ -3,26 +3,26 @@ package com.prosilion.superconductor.autoconfigure.curation.plugin.kind;
 import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.EventIF;
 import com.prosilion.nostr.event.GenericEventRecord;
-import com.prosilion.nostr.event.curated.CuratedBadgeDefinitionGenericEvent;
 import com.prosilion.nostr.event.curated.CuratedFormulaEvent;
 import com.prosilion.nostr.event.internal.Relay;
 import com.prosilion.nostr.tag.RelayTag;
-import com.prosilion.superconductor.base.cache.CacheServiceIF;
+import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.NonPublishingEventKindPlugin;
-import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 @Slf4j
 public class CuratedFormulaEventKindPlugin extends NonPublishingEventKindPlugin {
-  private final CacheServiceIF cacheServiceIF;
+  private final CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF;
 
   public CuratedFormulaEventKindPlugin(
      @NonNull EventPluginIF eventPluginIF,
-     @NonNull CacheServiceIF cacheServiceIF) {
+     @NonNull CacheCuratedFormulaEventServiceIF cacheCuratedFormulaEventServiceIF) {
     super(eventPluginIF);
-    this.cacheServiceIF = cacheServiceIF;
+    this.cacheCuratedFormulaEventServiceIF = cacheCuratedFormulaEventServiceIF;
   }
 
   @Override
@@ -30,21 +30,21 @@ public class CuratedFormulaEventKindPlugin extends NonPublishingEventKindPlugin 
     log.info("inside processIncomingEvent(incomingCuratedFormulaEvent, fromRelay):\n{} ...",
        incomingCuratedFormulaEvent.createPrettyPrintJson());
 
-    if (cacheServiceIF.getEventByEventId(incomingCuratedFormulaEvent.getId()).isPresent()) {
-      log.info("return already existing identical incomingCuratedFormulaEvent");
-      return Optional.of(incomingCuratedFormulaEvent.asGenericEventRecord());
-    }
-
     Optional<RelayTag> eventRelayTag = incomingCuratedFormulaEvent.findFirstTag(RelayTag.class);
     log.debug("... using eventRelayTag url [{}]",
        eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
 
-    String guaranteedSourceRelayUrl = eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse(fromRelay.getUrl());
-    CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(incomingCuratedFormulaEvent.asGenericEventRecord());
+    Relay guaranteedSourceRelay = eventRelayTag.map(RelayTag::getRelay).orElse(fromRelay);
 
+    if (cacheCuratedFormulaEventServiceIF.getEvent(incomingCuratedFormulaEvent.getId(), guaranteedSourceRelay).isPresent()) {
+      log.info("return already existing identical incomingCuratedFormulaEvent");
+      return Optional.of(incomingCuratedFormulaEvent.asGenericEventRecord());
+    }
+
+    CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(incomingCuratedFormulaEvent.asGenericEventRecord());
     log.debug("calling super.processIncomingEvent(curatedFormulaEvent, superconductorRelay):\n{}",
        curatedFormulaEvent.createPrettyPrintJson());
-    return super.processIncomingEvent(curatedFormulaEvent, new Relay(guaranteedSourceRelayUrl));
+    return super.processIncomingEvent(curatedFormulaEvent, new Relay(guaranteedSourceRelay.getUrl()));
   }
 
   @Override

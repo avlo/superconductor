@@ -9,21 +9,23 @@ import com.prosilion.superconductor.autoconfigure.base.condition.EventCurationIn
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardCanonicalEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
+import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardCanonicalEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.FormulaEventKindPlugin;
 import com.prosilion.superconductor.base.service.request.subscriber.NotifierService;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Slf4j
 @AutoConfiguration
@@ -33,7 +35,7 @@ public class EventCurationInactiveConfig {
   @Bean("badgeDefinitionGenericEventKindPlugin")
   public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
      @NonNull EventPlugin eventPlugin) {
-    return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
+    return new  BadgeDefinitionGenericEventKindPlugin(eventPlugin);
   }
 
   @Bean("badgeAwardCanonicalEventKindPlugin")
@@ -51,10 +53,12 @@ public class EventCurationInactiveConfig {
   FormulaEventKindPlugin formulaEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
+     @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF,
      @NonNull EventPlugin eventPlugin) {
     return new FormulaEventKindPlugin(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
+       cacheFormulaEventServiceIF,
        eventPlugin);
   }
 

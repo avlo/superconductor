@@ -18,6 +18,7 @@ import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.BadgeSets
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedBadgeAwardCanonicalEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedBadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CuratedFormulaEventKindPlugin;
+import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CurationBadgeDefinitionGenericEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.CurationFormulaEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.FollowSetsEventKindPlugin;
 import com.prosilion.superconductor.autoconfigure.curation.plugin.kind.UniversalVoteEventKindPlugin;
@@ -209,27 +210,29 @@ public class EventCurationActiveConfig {
        cacheDereferenceKindAddressTagService);
   }
 
-  @ConditionalOnMissingBean
-  @Bean("badgeDefinitionGenericEventKindPlugin")
-  public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
-     @NonNull CuratedBadgeDefinitionGenericEventKindPlugin curatedBadgeDefinitionGenericEventKindPlugin) {
-    return new BadgeDefinitionGenericEventKindPlugin(curatedBadgeDefinitionGenericEventKindPlugin);
+  @Bean("curatedBadgeDefinitionGenericEventKindPlugin")
+  @ConditionalOnMissingBean(name = "curatedBadgeDefinitionGenericEventKindPlugin")
+  CuratedBadgeDefinitionGenericEventKindPlugin curatedBadgeDefinitionGenericEventKindPlugin(
+     @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
+     @NonNull EventPlugin eventPlugin) {
+    return new CuratedBadgeDefinitionGenericEventKindPlugin(
+       cacheCuratedBadgeDefinitionGenericEventService,
+       eventPlugin);
   }
 
-  @ConditionalOnMissingBean
-  @Bean("curatedBadgeDefinitionGenericEventKindPlugin")
-  public CuratedBadgeDefinitionGenericEventKindPlugin curatedBadgeDefinitionGenericEventKindPlugin(
-     @NonNull String superconductorRelayUrl,
+  @Bean("badgeDefinitionGenericEventKindPlugin")
+  @ConditionalOnMissingBean(name = "badgeDefinitionGenericEventKindPlugin")
+  CurationBadgeDefinitionGenericEventKindPlugin curationBadgeDefinitionGenericEventKindPlugin(
      @NonNull Identity superconductorInstanceIdentity,
-     @NonNull CacheCuratedBadgeDefinitionGenericEventService cacheCuratedBadgeDefinitionGenericEventService,
-     @NonNull EventPlugin eventPlugin,
-     @NonNull CacheServiceIF cacheServiceIF) {
-    return new CuratedBadgeDefinitionGenericEventKindPlugin(
+     @NonNull String superconductorRelayUrl,
+     @NonNull @Qualifier("curatedBadgeDefinitionGenericEventKindPlugin") CuratedBadgeDefinitionGenericEventKindPlugin curatedBadgeDefinitionGenericEventKindPlugin,
+     @NonNull EventPlugin eventPlugin) {
+    return new CurationBadgeDefinitionGenericEventKindPlugin(
        superconductorInstanceIdentity,
        superconductorRelayUrl,
-       cacheCuratedBadgeDefinitionGenericEventService,
-       eventPlugin,
-       cacheServiceIF);
+       new BadgeDefinitionGenericEventKindPlugin(eventPlugin),
+       curatedBadgeDefinitionGenericEventKindPlugin,
+       true);
   }
 
   @Bean("badgeAwardCanonicalEventKindPlugin")
@@ -252,7 +255,7 @@ public class EventCurationActiveConfig {
 
   @Bean("curatedBadgeAwardCanonicalEventKindPlugin")
   @ConditionalOnMissingBean(name = "curatedBadgeAwardCanonicalEventKindPlugin")
-  public CuratedBadgeAwardCanonicalEventKindPlugin curatedBadgeAwardCanonicalEventKindPlugin(
+  CuratedBadgeAwardCanonicalEventKindPlugin curatedBadgeAwardCanonicalEventKindPlugin(
      @NonNull CacheCuratedBadgeDefinitionGenericEventServiceIF cacheCuratedBadgeDefinitionGenericEventServiceIF,
      @NonNull NotifierService notifierService,
      @NonNull EventPlugin eventPlugin,
@@ -281,10 +284,8 @@ public class EventCurationActiveConfig {
      @NonNull Identity superconductorInstanceIdentity,
      @NonNull String superconductorRelayUrl,
      @NonNull CacheFormulaEventService cacheFormulaEventService,
-     @NonNull EventPlugin eventPlugin,
-     @NonNull @Qualifier("curatedFormulaEventKindPlugin") CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin
-//     , @NonNull Boolean superconductorEventCurationActive
-  ) {
+     @NonNull @Qualifier("curatedFormulaEventKindPlugin") CuratedFormulaEventKindPlugin curatedFormulaEventKindPlugin,
+     @NonNull EventPlugin eventPlugin) {
     log.debug("EventCurationActiveConfig loading FormulaEventKindPlugin");
     return new CurationFormulaEventKindPlugin(
        superconductorInstanceIdentity,

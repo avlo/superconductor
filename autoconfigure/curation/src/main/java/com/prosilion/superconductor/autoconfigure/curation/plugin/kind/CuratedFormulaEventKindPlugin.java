@@ -44,7 +44,7 @@ public class CuratedFormulaEventKindPlugin extends NonPublishingEventKindPlugin 
     CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(incomingCuratedFormulaEvent.asGenericEventRecord());
     log.debug("calling super.processIncomingEvent(curatedFormulaEvent, superconductorRelay):\n{}",
        curatedFormulaEvent.createPrettyPrintJson());
-    return super.processIncomingEvent(curatedFormulaEvent, new Relay(guaranteedSourceRelay.getUrl()));
+    return super.processIncomingEvent(curatedFormulaEvent, guaranteedSourceRelay);
   }
 
   @Override

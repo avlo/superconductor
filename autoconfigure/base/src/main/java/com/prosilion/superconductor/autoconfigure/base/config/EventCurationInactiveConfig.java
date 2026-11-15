@@ -4,12 +4,10 @@ import com.prosilion.nostr.enums.Kind;
 import com.prosilion.nostr.event.BaseEvent;
 import com.prosilion.nostr.event.DeletionEvent;
 import com.prosilion.nostr.event.EventIF;
-import com.prosilion.nostr.user.Identity;
 import com.prosilion.superconductor.autoconfigure.base.condition.EventCurationInactiveCondition;
 import com.prosilion.superconductor.autoconfigure.base.service.event.CacheFormulaEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.award.CacheBadgeAwardCanonicalEventService;
 import com.prosilion.superconductor.autoconfigure.base.service.event.definition.CacheBadgeDefinitionGenericEventService;
-import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.EventPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeAwardCanonicalEventKindPlugin;
 import com.prosilion.superconductor.base.service.event.plugin.kind.BadgeDefinitionGenericEventKindPlugin;
@@ -35,7 +33,7 @@ public class EventCurationInactiveConfig {
   @Bean("badgeDefinitionGenericEventKindPlugin")
   public BadgeDefinitionGenericEventKindPlugin badgeDefinitionGenericEventKindPlugin(
      @NonNull EventPlugin eventPlugin) {
-    return new  BadgeDefinitionGenericEventKindPlugin(eventPlugin);
+    return new BadgeDefinitionGenericEventKindPlugin(eventPlugin);
   }
 
   @Bean("badgeAwardCanonicalEventKindPlugin")
@@ -51,14 +49,11 @@ public class EventCurationInactiveConfig {
   @Bean("formulaEventKindPlugin")
   @ConditionalOnMissingBean(name = "formulaEventKindPlugin")
   FormulaEventKindPlugin formulaEventKindPlugin(
-     @NonNull Identity superconductorInstanceIdentity,
-     @NonNull String superconductorRelayUrl,
-     @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF,
+     @NonNull CacheFormulaEventService cacheFormulaEventService,
      @NonNull EventPlugin eventPlugin) {
+    log.debug("EventCurationInactiveConfig loading FormulaEventKindPlugin");
     return new FormulaEventKindPlugin(
-       superconductorInstanceIdentity,
-       superconductorRelayUrl,
-       cacheFormulaEventServiceIF,
+       cacheFormulaEventService,
        eventPlugin);
   }
 

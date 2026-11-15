@@ -37,6 +37,7 @@ public class CacheCuratedFormulaEventService extends
      @NonNull CacheFormulaEventServiceIF cacheFormulaEventServiceIF,
      @NonNull CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF) {
     super(instanceIdentity, relayUrl, cacheServiceIF);
+    log.debug("CacheCuratedFormulaEventService ctor");
     this.cacheFormulaEventServiceIF = cacheFormulaEventServiceIF;
     this.cacheReferenceAddressTagServiceIF = cacheReferenceAddressTagServiceIF;
   }

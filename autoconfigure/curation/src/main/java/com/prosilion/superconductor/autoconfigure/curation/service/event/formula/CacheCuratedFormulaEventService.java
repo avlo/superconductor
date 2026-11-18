@@ -16,16 +16,17 @@ import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedF
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.cache.tag.CacheReferenceAddressTagServiceIF;
 import com.prosilion.superconductor.base.service.event.CacheFormulaEventServiceIF;
-import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
 
 @Slf4j
 public class CacheCuratedFormulaEventService extends
    AbstractCacheCuratedEventService<
-         CuratedFormulaEvent,
-         FormulaEvent,
-         AddressTag> implements
+      CuratedFormulaEvent,
+      FormulaEvent,
+      AddressTag> implements
    CacheCuratedFormulaEventServiceIF {
   private final CacheFormulaEventServiceIF cacheFormulaEventServiceIF;
   private final CacheReferenceAddressTagServiceIF cacheReferenceAddressTagServiceIF;
@@ -75,7 +76,13 @@ public class CacheCuratedFormulaEventService extends
     Optional<GenericEventRecord> byExpanded = cacheReferenceAddressTagServiceIF.getByExpanded(referencedAbstractEventTag);
     log.debug("returned getByExpanded(AddressTag): {}", byExpanded.map(GenericEventRecord::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
 
-    Optional<CuratedFormulaEvent> curatedFormulaEvent = byExpanded.flatMap(this::materialize);
+    Optional<CuratedFormulaEvent> curatedFormulaEvent = byExpanded.flatMap(this::materialize)
+       .or(() ->
+          cacheFormulaEventServiceIF.getBy(
+             referencedAbstractEventTag.getPublicKey(),
+             referencedAbstractEventTag.getIdentifierTag(),
+             referencedAbstractEventTag.getRelay()).map(formulaEvent ->
+             createFromFetched(formulaEvent, referencedAbstractEventTag.getRelay())));
 
     log.debug("returning materialized Optional CuratedFormulaEvent:\n  {}", curatedFormulaEvent.map(CuratedFormulaEvent::createPrettyPrintJson).orElse("[ EMPTY OPTIONAL ]"));
     return curatedFormulaEvent;
@@ -85,11 +92,12 @@ public class CacheCuratedFormulaEventService extends
   protected CuratedFormulaEvent createFromFetched(
      @NonNull FormulaEvent formulaEvent,
      @NonNull Relay relay) {
-    return new CuratedFormulaEvent(
+    CuratedFormulaEvent curatedFormulaEvent = new CuratedFormulaEvent(
        super.getInstanceIdentity(),
        formulaEvent,
        new ReferenceTag(relay.getUrl()),
        super.getRelay());
+    return curatedFormulaEvent;
   }
 
   @Override

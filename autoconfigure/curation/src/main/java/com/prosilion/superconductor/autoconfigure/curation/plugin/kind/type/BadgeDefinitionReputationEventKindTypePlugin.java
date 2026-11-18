@@ -12,10 +12,11 @@ import com.prosilion.superconductor.autoconfigure.curation.service.CacheCuratedF
 import com.prosilion.superconductor.base.cache.CacheServiceIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.EventKindTypePluginIF;
 import com.prosilion.superconductor.base.service.event.plugin.kind.type.NonPublishingEventKindTypePlugin;
-import java.util.List;
-import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 // our SportsCar extends CarDecorator
@@ -43,10 +44,7 @@ public class BadgeDefinitionReputationEventKindTypePlugin extends NonPublishingE
        eventRelayTag.map(RelayTag::getRelay).map(Relay::getUrl).orElse("NULL"));
 
     List<CuratedFormulaEvent> curatedFormulaEventList =
-       incomingBadgeDefinitionReputationEvent.getTypeSpecificTags(AddressTag.class).stream().map(addressTag ->
-          cacheCuratedFormulaEventServiceIF.getByAuthorAndIdentifierTag(
-             addressTag.getPublicKey(),
-             addressTag.getIdentifierTag())).flatMap(Optional::stream).toList();
+       incomingBadgeDefinitionReputationEvent.getTypeSpecificTags(AddressTag.class).stream().map(cacheCuratedFormulaEventServiceIF::getByExpanded).flatMap(Optional::stream).toList();
 
     BadgeDefinitionReputationEvent badgeDefinitionReputationEvent = new BadgeDefinitionReputationEvent(
        incomingBadgeDefinitionReputationEvent.asGenericEventRecord(),
